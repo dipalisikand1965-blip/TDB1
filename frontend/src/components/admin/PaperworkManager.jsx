@@ -841,7 +841,7 @@ const PaperworkManager = () => {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label>Enable for Concierge</Label>
+                  <Label>Enable for Concierge®</Label>
                   <Switch 
                     checked={settings.quick_access?.enabled_for_concierge || false}
                     onCheckedChange={(v) => setSettings({

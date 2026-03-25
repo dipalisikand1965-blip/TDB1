@@ -264,7 +264,7 @@ function MiraImagineCard({ card, pet, token }) {
         <p style={{ fontSize:11, fontWeight:600, color:G.light, fontStyle:"italic", marginBottom:12 }}>{card.reason}</p>
         {requested
           ? <div style={{ borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:"rgba(255,173,155,0.20)", border:`1px solid ${G.light}40`, color:G.light, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-              <Check size={13} /> Sent to Concierge!
+              <Check size={13} /> Sent to Concierge®!
             </div>
           : <button onClick={handleRequest} disabled={sending} style={{ width:"100%", borderRadius:10, padding:8, fontSize:11, fontWeight:700, background:sending?`${G.green}60`:`linear-gradient(135deg,${G.green},${G.mid})`, border:"none", color:"#fff", cursor:sending?"wait":"pointer", opacity:sending?0.7:1, display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
               {sending && <Loader2 size={11} style={{ animation:"spin 1s linear infinite" }} />}
@@ -448,8 +448,8 @@ function MiraPicksSection({ pet }) {
                     <span style={{ fontSize:10, fontWeight:800, color:scoreColor, minWidth:26 }}>{score}</span>
                   </div>}
                   {!isService && pick.mira_reason && <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontStyle:"italic" }}>{pick.mira_reason}</p>}
-                  {isService && <p style={{ fontSize:10, color:G.mid, lineHeight:1.4, margin:0, fontStyle:'italic' }}>Concierge support for play and activity.</p>}
-                  <p style={{ fontSize:9, color:isService?G.mid:G.green, fontWeight:700, margin:"6px 0 0" }}>{isService?"Tap → Talk to Concierge":"Tap → View & Add"}</p>
+                  {isService && <p style={{ fontSize:10, color:G.mid, lineHeight:1.4, margin:0, fontStyle:'italic' }}>Concierge® support for play and activity.</p>}
+                  <p style={{ fontSize:9, color:isService?G.mid:G.green, fontWeight:700, margin:"6px 0 0" }}>{isService?"Tap → Talk to Concierge®":"Tap → View & Add"}</p>
                 </div>
               </div>
             );
@@ -472,7 +472,7 @@ function MiraPicksSection({ pet }) {
             <div style={{ padding:"20px 24px" }}>
               <p style={{ fontSize:13, color:"#555", marginBottom:16 }}>Our concierge team will reach out within 48 hours for <strong>{petName}</strong>.</p>
               {conciergeSent
-                ? <div style={{ textAlign:"center", padding:12, borderRadius:12, background:G.greenBg, border:`1px solid ${G.greenBorder}` }}><Check size={20} style={{ color:G.green, margin:"0 auto 6px" }} /><p style={{ fontWeight:700, color:G.green, margin:0 }}>Sent to Concierge!</p></div>
+                ? <div style={{ textAlign:"center", padding:12, borderRadius:12, background:G.greenBg, border:`1px solid ${G.greenBorder}` }}><Check size={20} style={{ color:G.green, margin:"0 auto 6px" }} /><p style={{ fontWeight:700, color:G.green, margin:0 }}>Sent to Concierge®!</p></div>
                 : <button onClick={() => handleServiceConcierge(conciergeService)} disabled={conciergeSending} style={{ width:"100%", background:`linear-gradient(135deg,${G.green},${G.mid})`, color:"#fff", border:"none", borderRadius:12, padding:13, fontSize:14, fontWeight:700, cursor:conciergeSending?"wait":"pointer" }}>
                     {conciergeSending?"Sending…":`Book this for ${petName} →`}
                   </button>}
@@ -1301,7 +1301,7 @@ function ServiceBookingModal({ service, pet, onClose }) {
   );
 }
 
-// ── Play Concierge section — REPLACED by PlayConciergeSection (watercolour cards)
+// ── Play Concierge® section — REPLACED by PlayConciergeSection (watercolour cards)
 function PlayConcierge() { return null; }
 // eslint-disable-next-line no-unused-vars
 function _PlayConciergeOld({ pet, token }) {
@@ -1387,7 +1387,7 @@ const PlaySoulPage = () => {
 
   usePlatformTracking({ pillar: "play", pet: currentPet });
 
-  // handleNearMeBook — wires "Book via Concierge" on PlayNearMe cards
+  // handleNearMeBook — wires "Book via Concierge®" on PlayNearMe cards
   const handlePlayBook = useCallback(async (spot, city) => {
     tdc.nearme({ query: spot?.name || city || "play spot", pillar: "play", pet: petData, channel: "play_nearme_card" });
     try {
@@ -1647,7 +1647,7 @@ const PlaySoulPage = () => {
             <div style={{display:"flex",justifyContent:"flex-end",marginBottom:12}}>
               <button onClick={()=>setPlayConciergOpen(true)}
                 style={{background:`linear-gradient(135deg,${G.light},${G.deep})`,color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>
-                ✦ Book via Concierge →
+                ✦ Book via Concierge® →
               </button>
             </div>
             <BuddyMeetup pet={petData} />
@@ -1666,7 +1666,7 @@ const PlaySoulPage = () => {
 
       <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
 
-      {/* Play Concierge Modal — Care-style chip selector */}
+      {/* Play Concierge® Modal — Care-style chip selector */}
       {playConciergOpen && (
         <div onClick={()=>setPlayConciergOpen(false)}
           style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -1675,12 +1675,12 @@ const PlaySoulPage = () => {
             <button onClick={()=>setPlayConciergOpen(false)}
               style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
             <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(230,111,81,0.10)",border:"1px solid rgba(230,111,81,0.30)",borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
-              <span style={{fontSize:11,fontWeight:600,color:"#C44400",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Play Concierge</span>
+              <span style={{fontSize:11,fontWeight:600,color:"#C44400",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Play Concierge®</span>
             </div>
             <h2 style={{fontSize:22,fontWeight:800,color:"#1a2a0a",fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>
               What does <span style={{color:G.light}}>{petData?.name||"your dog"}</span> want to do?
             </h2>
-            <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge takes over.</p>
+            <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge® takes over.</p>
             <p style={{fontSize:13,fontWeight:700,color:G.deep,marginBottom:12}}>What are we planning?</p>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
               {["Find a dog park nearby","Coordinate a playdate","Book agility training","Book a swim session","Find indoor play","Socialisation class","Off-lead adventure","Puppy play session","Just exploring"].map(opt=>(
@@ -1709,7 +1709,7 @@ const PlaySoulPage = () => {
               setPlayConciergOpen(false);
             }}
               style={{width:"100%",background:`linear-gradient(135deg,${G.light},${G.deep})`,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
-              ✦ Send to {petData?.name||"your dog"}'s Concierge
+              ✦ Send to {petData?.name||"your dog"}'s Concierge®
             </button>
           </div>
         </div>

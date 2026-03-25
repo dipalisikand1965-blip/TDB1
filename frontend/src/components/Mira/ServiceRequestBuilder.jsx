@@ -432,7 +432,7 @@ const ServiceRequestBuilder = ({
             <Check className="w-8 h-8 text-green-400" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-2">Request Submitted!</h3>
-          <p className="text-slate-400">Your Concierge has been notified and will reach out shortly.</p>
+          <p className="text-slate-400">Your Concierge® has been notified and will reach out shortly.</p>
         </div>
       </div>
     );

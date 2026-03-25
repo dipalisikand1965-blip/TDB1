@@ -151,10 +151,17 @@ export default function EmergencyMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🚨 Emergency</div>
             </div>
             {contextPets?.length > 1 && (
-              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
-                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {contextPets.map(p => (
+                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
+                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
+                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>{petName}'s Emergency Centre</div>
@@ -300,7 +307,7 @@ export default function EmergencyMobilePage() {
           </div>
         )}
 
-        {/* Concierge Confirmation Sheet */}
+        {/* Concierge® Confirmation Sheet */}
         {conciergeOpen && selectedSvc && (
           <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>
@@ -310,7 +317,7 @@ export default function EmergencyMobilePage() {
                 {selectedSvc?.waNotified ? (
                   <>
                     <div style={{ background:'#F0FDF4', border:'1px solid #86EFAC', borderRadius:10, padding:'10px 14px', marginBottom:12, fontSize:14 }}>
-                      <span style={{ color:'#16A34A', fontWeight:700 }}>✓ Concierge notified via WhatsApp</span><br/>
+                      <span style={{ color:'#16A34A', fontWeight:700 }}>✓ Concierge® notified via WhatsApp</span><br/>
                       <span style={{ color:'#15803D' }}>Our team will respond within minutes.</span>
                     </div>
                   </>

@@ -4,7 +4,7 @@
  * CONCIERGE-LED VET VISIT INTAKE FLOW
  * 
  * Multi-step wizard for scheduling vet visits.
- * All requests go to Concierge - no direct booking.
+ * All requests go to Concierge® - no direct booking.
  * 
  * Flow: Reason → Concerns → Timing → Handling → Location → Review
  */
@@ -317,7 +317,7 @@ const VetVisitFlowModal = ({
     }
   };
   
-  // Submit to Concierge
+  // Submit to Concierge®
   const handleSubmit = async () => {
     // ── tdc.book — canonical intent ticket ──
     tdc.book({ service: service?.name || service?.type || 'a service', pillar: "care", pet, channel: "vet_visit_flow_modal" });

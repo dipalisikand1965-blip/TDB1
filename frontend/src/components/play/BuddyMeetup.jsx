@@ -141,7 +141,7 @@ export default function BuddyMeetup({ pet }) {
           Buddy search started!
         </div>
         <div style={{ fontSize:14, color:G.mutedText, lineHeight:1.6, marginBottom:20 }}>
-          Mira is finding the perfect match for {petName}. Your Concierge will reach out with options within 48 hours.
+          Mira is finding the perfect match for {petName}. Your Concierge® will reach out with options within 48 hours.
         </div>
         <button onClick={() => setStep(0)} style={{
           background:"#fff", border:`1.5px solid ${G.greenBorder}`, borderRadius:12,

@@ -297,7 +297,7 @@ function resolvePickImage(pick) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// MIRA IMAGINE CARD — dark green, "Mira Imagines" badge, Concierge CTA
+// MIRA IMAGINE CARD — dark green, "Mira Imagines" badge, Concierge® CTA
 // ─────────────────────────────────────────────────────────────
 function MiraImagineCard({ item, pet, token }) {
   const [state,  setState]  = useState("idle");
@@ -345,9 +345,9 @@ function MiraImagineCard({ item, pet, token }) {
       </div>
       <div style={{ padding:"0 12px 12px" }}>
         {state === "sent"
-          ? <div style={{ textAlign:"center", fontSize:13, fontWeight:700, color:"#34D399" }}>✓ Sent to Concierge!</div>
+          ? <div style={{ textAlign:"center", fontSize:13, fontWeight:700, color:"#34D399" }}>✓ Sent to Concierge®!</div>
           : <button onClick={send} disabled={state==="sending"} style={{ width:"100%", background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", border:"none", borderRadius:10, padding:"10px", fontSize:13, fontWeight:700, cursor:"pointer", opacity:state==="sending"?0.7:1 }} data-testid={`mira-imagine-btn-${item.id}`}>
-              {state==="sending" ? "Sending…" : "Tap — Concierge →"}
+              {state==="sending" ? "Sending…" : "Tap — Concierge® →"}
             </button>}
       </div>
     </div>
@@ -543,9 +543,9 @@ function MiraPicksSection({ pet }) {
                   </div>
                   <span style={{ fontSize:10, fontWeight:800, color:scoreColor, minWidth:26 }}>{score}</span>
                 </div>}
-                {isService ? <p style={{ fontSize:10, color:G.deepMid, lineHeight:1.4, margin:0, fontStyle:"italic" }}>Concierge support for wellness care.</p> : pick.mira_reason && <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontStyle:"italic" }}>{pick.mira_reason}</p>}
+                {isService ? <p style={{ fontSize:10, color:G.deepMid, lineHeight:1.4, margin:0, fontStyle:"italic" }}>Concierge® support for wellness care.</p> : pick.mira_reason && <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontStyle:"italic" }}>{pick.mira_reason}</p>}
                 <p style={{ fontSize:9, color:isService?G.deepMid:G.sage, fontWeight:700, margin:"6px 0 0", letterSpacing:"0.04em" }}>
-                  {isService?"Tap → Talk to Concierge":"Tap → View & Add"}
+                  {isService?"Tap → Talk to Concierge®":"Tap → View & Add"}
                 </p>
               </div>
             </div>
@@ -569,9 +569,9 @@ function MiraPicksSection({ pet }) {
             <div style={{ padding:"20px 24px" }}>
               <p style={{ fontSize:13, color:"#555", marginBottom:16 }}>Our concierge team will reach out within 48 hours to arrange this for <strong>{petName}</strong>.</p>
               {conciergeSent
-                ? <div style={{ textAlign:"center", padding:12, borderRadius:12, background:`rgba(64,145,108,0.08)`, border:`1px solid rgba(64,145,108,0.3)` }}><Check size={20} style={{ color:G.sage, margin:"0 auto 6px" }} /><p style={{ fontWeight:700, color:G.sage, margin:0, fontSize:14 }}>Sent to Concierge!</p></div>
+                ? <div style={{ textAlign:"center", padding:12, borderRadius:12, background:`rgba(64,145,108,0.08)`, border:`1px solid rgba(64,145,108,0.3)` }}><Check size={20} style={{ color:G.sage, margin:"0 auto 6px" }} /><p style={{ fontWeight:700, color:G.sage, margin:0, fontSize:14 }}>Sent to Concierge®!</p></div>
                 : <button onClick={() => handleServiceConcierge(conciergeService)} disabled={conciergeSending} data-testid="care-service-modal-btn" style={{ width:"100%", background:`linear-gradient(135deg,${G.sage},${G.deepMid})`, color:"#fff", border:"none", borderRadius:12, padding:13, fontSize:14, fontWeight:700, cursor:conciergeSending?"wait":"pointer", opacity:conciergeSending?0.7:1 }}>
-                    {conciergeSending?"Sending…":`Send to Concierge for ${petName} →`}
+                    {conciergeSending?"Sending…":`Send to Concierge® for ${petName} →`}
                   </button>}
             </div>
           </div>
@@ -1493,7 +1493,7 @@ function BookingConfirmed({ service, pet, onClose }) {
 const CARE_SERVICES = [
   { id:"grooming", icon:"✂️", illustrationUrl:null, illustrationBg:`linear-gradient(135deg,${G.pale},${G.light})`, free:false, name:"Grooming", tagline:"Hygiene, coat care, bath, nail trim", desc:"We find the right groomer for {petName}'s coat type, book, and follow up.", accentColor:"#C2185B", steps:5 },
   { id:"vet", icon:"🏥", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)", free:false, name:"Vet Visits", tagline:"Clinic discovery, booking & follow-up", desc:"Trusted vets near you — clinic or home visit. Bookings confirmed, records collected.", accentColor:"#1565C0", steps:4 },
-  { id:"boarding", icon:"🏡", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)", free:false, name:"Boarding & Daycare", tagline:"Overnight boarding & daytime supervision", desc:"We find the right boarding for {petName} — vetted, reviewed, and booked by your Concierge.", accentColor:"#2D6A4F", steps:4 },
+  { id:"boarding", icon:"🏡", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)", free:false, name:"Boarding & Daycare", tagline:"Overnight boarding & daytime supervision", desc:"We find the right boarding for {petName} — vetted, reviewed, and booked by your Concierge®.", accentColor:"#2D6A4F", steps:4 },
   { id:"sitting", icon:"🏠", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#FFF8E1,#FFE082)", free:false, name:"Pet Sitting", tagline:"In-home care, feeding & companionship", desc:"Someone comes to {petName}'s home. A few hours or overnight — whichever {petName} needs.", accentColor:"#E65100", steps:4 },
   { id:"behaviour", icon:"💜", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)", free:false, name:"Behaviour Support", tagline:"Anxiety, fear & stress support", desc:"Certified behaviourists and trainers — matched to {petName}'s specific triggers and needs.", accentColor:"#6A1B9A", steps:5 },
   { id:"senior", icon:"🌸", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#FCE4EC,#F8BBD9)", free:false, name:"Senior & Special Needs", tagline:"Comfort, mobility & special handling", desc:"Gentle, specialised care for {petName}'s golden years — or any special needs.", accentColor:"#AD1457", steps:4 },
@@ -1603,7 +1603,7 @@ function VetFlow({ pet, service, onClose, sendToConcierge }) {
       <BookingHeader service={service} step={step} totalSteps={4} pet={pet} onClose={onClose} />
       <div style={{ padding:"20px 24px", overflowY:"auto", flex:1 }}>
         <PetBadge pet={pet} />
-        <MiraKnows text={`${pet.name}'s vaccination records and health history are on file with your Concierge. The vet will be briefed before the visit.`} />
+        <MiraKnows text={`${pet.name}'s vaccination records and health history are on file with your Concierge®. The vet will be briefed before the visit.`} />
         {step===1 && (<>
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>Reason for visit</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
@@ -1726,7 +1726,7 @@ function SittingFlow({ pet, service, onClose, sendToConcierge }) {
       <BookingHeader service={service} step={step} totalSteps={4} pet={pet} onClose={onClose} />
       <div style={{ padding:"20px 24px", overflowY:"auto", flex:1 }}>
         <PetBadge pet={pet} />
-        <MiraKnows text={`${pet.name}'s feeding routine and medication needs are already on file with your Concierge.`} />
+        <MiraKnows text={`${pet.name}'s feeding routine and medication needs are already on file with your Concierge®.`} />
         {step===1 && (<>
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>What type of pet sitting does {pet.name} need?</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
@@ -1865,7 +1865,7 @@ function SeniorFlow({ pet, service, onClose, sendToConcierge }) {
         {step===4 && (<>
           <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>Vet involvement?</div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr", gap:10 }}>
-            {[{v:"have",icon:"✅",l:"I have a vet managing this",s:"Concierge coordinates alongside existing vet"},{v:"need",icon:"🔍",l:"I need a vet first",s:"Help me find the right specialist"},{v:"second",icon:"💬",l:"I want a second opinion",s:"Not confident in current treatment plan"}].map(o=>(
+            {[{v:"have",icon:"✅",l:"I have a vet managing this",s:"Concierge® coordinates alongside existing vet"},{v:"need",icon:"🔍",l:"I need a vet first",s:"Help me find the right specialist"},{v:"second",icon:"💬",l:"I want a second opinion",s:"Not confident in current treatment plan"}].map(o=>(
               <StepCard key={o.v} label={o.l} sub={o.s} icon={o.icon} selected={vetInvolv===o.v} onClick={()=>setVetInvolv(o.v)} />
             ))}
           </div>
@@ -2048,8 +2048,8 @@ function CareConcierge({ pet }) {
           petId={pet?.id}
         />
       )}
-      <div style={{ fontSize:20, fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>Care Concierge Services</div>
-      <div style={{ fontSize:13, color:G.mutedText, marginBottom:20 }}>Concierge-led care coordination — from finding the right groomer to making sure {pet.name} is comfortable every step of the way.</div>
+      <div style={{ fontSize:20, fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>Care Concierge® Services</div>
+      <div style={{ fontSize:13, color:G.mutedText, marginBottom:20 }}>Concierge®-led care coordination — from finding the right groomer to making sure {pet.name} is comfortable every step of the way.</div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:20 }} className="care-svc-grid">
         <style>{`@media(max-width:640px){.care-svc-grid{grid-template-columns:repeat(2,1fr);}}`}</style>
         {CARE_SERVICES.map(svc => (
@@ -2097,7 +2097,7 @@ function CareConcierge({ pet }) {
               <span style={{ fontSize:12, color:"rgba(255,255,255,0.50)", marginLeft:6 }}>care moments arranged</span>
             </div>
             <button onClick={()=>setConciergeOpen(true)} style={{ display:"inline-flex", alignItems:"center", gap:8, background:`linear-gradient(135deg,${G.sage},${G.light})`, color:G.deep, border:"none", borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:800, cursor:"pointer" }} data-testid="care-talk-concierge-btn">
-              🌿 Talk to your Care Concierge
+              🌿 Talk to your Care Concierge®
             </button>
             <span style={{ fontSize:12, color:"rgba(255,255,255,0.40)" }}>48h response promise · Emergency: 5 min</span>
           </div>
@@ -2147,7 +2147,7 @@ export default function CareSoulPage() {
   // ── tdc page visit tracking ──────────────────────────────────────────────
   usePlatformTracking({ pillar: "care", pet: currentPet });
 
-  // handleNearMeBook — wires "Book via Concierge" on CareNearMe cards
+  // handleNearMeBook — wires "Book via Concierge®" on CareNearMe cards
   const handleNearMeBook = useCallback(async (provider, city) => {
     const venueName = provider?.name || (city ? `a provider in ${city}` : "a grooming/care provider");
     // Fire tdc intent

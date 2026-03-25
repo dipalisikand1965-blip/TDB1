@@ -156,7 +156,7 @@ const TicketCard = ({ ticket, section, isSelected, isUnread, onClick }) => {
 
   const senderLabel = lastMsg
     ? ['concierge', 'admin'].includes(lastMsg.sender)
-      ? 'Concierge'
+      ? 'Concierge®'
       : lastMsg.sender === 'mira'
         ? 'Mira'
         : 'You'

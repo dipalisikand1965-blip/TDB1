@@ -7,7 +7,7 @@
  * - Pet parent makes final choice
  * - Creates service desk ticket on submission
  * 
- * Philosophy: "Mira suggests, Parent chooses, Concierge executes"
+ * Philosophy: "Mira suggests, Parent chooses, Concierge® executes"
  */
 
 import React, { useState, useEffect } from 'react';
@@ -293,8 +293,8 @@ const CareServiceFlowModal = ({
         });
         onClose();
         
-        // Navigate to Mira OS with Concierge panel open and ticket focused
-        // Using state to tell MiraDemoPage to open Concierge with this ticket
+        // Navigate to Mira OS with Concierge® panel open and ticket focused
+        // Using state to tell MiraDemoPage to open Concierge® with this ticket
         setTimeout(() => {
           window.location.href = `/mira-demo?openConcierge=true&ticket=${result.ticketId}`;
         }, 500);

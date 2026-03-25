@@ -8,7 +8,7 @@
  * - Personalized product carousel
  * - Quick action buttons
  * - ElevenLabs voice (Eloise)
- * - Concierge handoff cards
+ * - Concierge® handoff cards
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -305,7 +305,7 @@ const MiraWidget = ({
     }
   };
 
-  // Connect to WhatsApp Concierge
+  // Connect to WhatsApp Concierge®
   const connectToConcierge = () => {
     const message = encodeURIComponent(
       `Hi, I need help with my pet ${currentPet.name} (${currentPet.breed}). Can you assist?`
@@ -435,21 +435,21 @@ const MiraWidget = ({
                 <p>{msg.content}</p>
               </div>
               
-              {/* Concierge Handoff Card */}
+              {/* Concierge® Handoff Card */}
               {msg.needs_concierge && (
                 <div className="mira-widget-concierge-card">
                   <div className="mira-widget-concierge-icon">
                     <MessageCircle className="w-5 h-5" />
                   </div>
                   <div className="mira-widget-concierge-text">
-                    <strong>This needs your Pet Concierge</strong>
+                    <strong>This needs your Pet Concierge®</strong>
                     <p>This request involves planning, coordination, or personalized service that our concierge team handles best.</p>
                   </div>
                   <button 
                     onClick={connectToConcierge}
                     className="mira-widget-concierge-btn"
                   >
-                    Connect with Concierge
+                    Connect with Concierge®
                   </button>
                 </div>
               )}

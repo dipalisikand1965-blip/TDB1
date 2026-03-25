@@ -1,6 +1,6 @@
 /**
  * ConciergeDashboard.jsx
- * Admin view for managing Mira → Concierge handoff tickets
+ * Admin view for managing Mira → Concierge® handoff tickets
  */
 
 import React, { useState, useEffect } from 'react';
@@ -118,10 +118,10 @@ const ConciergeDashboard = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <div>
             <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 700, margin: 0 }}>
-              Concierge Dashboard
+              Concierge® Dashboard
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.6)', margin: '4px 0 0 0' }}>
-              Manage Mira → Concierge handoff tickets
+              Manage Mira → Concierge® handoff tickets
             </p>
           </div>
           <button

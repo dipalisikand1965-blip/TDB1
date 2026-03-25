@@ -308,7 +308,7 @@ const StayPage = () => {
     }
   };
 
-  // Submit Stay Request to Concierge
+  // Submit Stay Request to Concierge®
   const submitStayRequest = async () => {
     if (!stayRequestForm.resort_name || !stayRequestForm.location) {
       toast({ 
@@ -371,7 +371,7 @@ ${stayRequestForm.special_requests || 'None'}
         const data = await response.json();
         toast({ 
           title: '✅ Stay Request Submitted!', 
-          description: 'Our Concierge team will contact you shortly to assist with your booking.'
+          description: 'Our Concierge® team will contact you shortly to assist with your booking.'
         });
         setShowChecklistPopup(false);
         // Reset form
@@ -2145,7 +2145,7 @@ ${stayRequestForm.special_requests || 'None'}
                 ) : (
                   <>
                     <MessageCircle className="w-4 h-4 mr-2" />
-                    Submit to Concierge
+                    Submit to Concierge®
                   </>
                 )}
               </Button>

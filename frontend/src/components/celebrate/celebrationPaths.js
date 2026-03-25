@@ -190,7 +190,7 @@ export const CELEBRATION_PATHS = [
     visibleSteps: ['Choose location', 'Plan outfit', 'Find photographer'],
     hiddenSteps: ['Prepare {petName}', 'Shoot Day Brief'],
     expansionTitle: "Capture {petName} at Their Most Beautiful",
-    expansionSubtitle: '5 steps. One Shoot Day Brief for your Concierge.',
+    expansionSubtitle: '5 steps. One Shoot Day Brief for your Concierge®.',
     deliverableName: 'Shoot Day Brief',
     deliverableIcon: '📸',
     deliverableSubtitle: 'Location · Outfit · Photographer · Preparation notes',
@@ -252,7 +252,7 @@ export const CELEBRATION_PATHS = [
       {
         id: 'brief',
         title: 'Shoot Day Brief',
-        description: "Location, timing, outfit, photographer, and {petName}'s preparation notes — all in one document. Hand it to the Concierge.",
+        description: "Location, timing, outfit, photographer, and {petName}'s preparation notes — all in one document. Hand it to the Concierge®.",
         ctaLabel: 'Get my brief →',
         ctaType: 'deliverable'
       }

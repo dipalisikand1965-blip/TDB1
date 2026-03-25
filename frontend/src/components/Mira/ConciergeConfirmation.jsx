@@ -134,7 +134,7 @@ const ConciergeConfirmation = ({
           <div className="flex items-center justify-center gap-2 mt-3">
             <Clock className="w-3.5 h-3.5 text-emerald-200" />
             <span className="text-emerald-100 text-xs">
-              Your Concierge typically responds within 2-4 hours
+              Your Concierge® typically responds within 2-4 hours
             </span>
           </div>
         </div>

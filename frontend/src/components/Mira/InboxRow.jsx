@@ -96,7 +96,7 @@ const InboxRow = ({
     // If still no parts but we have type info, show that
     if (parts.length === 0 && notification.type) {
       const typeLabels = {
-        'concierge_reply': 'Concierge Reply',
+        'concierge_reply': 'Concierge® Reply',
         'picks_request_received': 'Request',
         'mira_request_received': 'Request',
         'vault_request_received': 'Vault Request',

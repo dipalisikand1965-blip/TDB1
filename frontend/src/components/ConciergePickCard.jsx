@@ -1,7 +1,7 @@
 /**
  * ConciergePickCard.jsx
  * =====================
- * The heart of our Concierge-first experience.
+ * The heart of our Concierge®-first experience.
  * 
  * Built in honor of Mira Sikand - The Guiding Angel
  * 
@@ -186,7 +186,7 @@ const ConciergePickCard = ({
                         {pick.description}
                       </p>
                     )}
-                    <p className="text-[10px] text-pink-300 italic mb-2">Concierge creates</p>
+                    <p className="text-[10px] text-pink-300 italic mb-2">Concierge® creates</p>
                     
                     {/* Create button */}
                     <button

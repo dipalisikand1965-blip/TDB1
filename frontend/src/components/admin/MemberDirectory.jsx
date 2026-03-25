@@ -874,7 +874,7 @@ const MemberProfileConsole = ({ member, onClose, onRefresh }) => {
                 <Card className="p-4 text-center">
                   <Sparkles className="w-6 h-6 mx-auto text-pink-500 mb-2" />
                   <p className="text-2xl font-bold">{memberData.total_requests || 0}</p>
-                  <p className="text-xs text-gray-500">Concierge Requests</p>
+                  <p className="text-xs text-gray-500">Concierge® Requests</p>
                 </Card>
                 <Card className="p-4 text-center">
                   <Calendar className="w-6 h-6 mx-auto text-blue-500 mb-2" />

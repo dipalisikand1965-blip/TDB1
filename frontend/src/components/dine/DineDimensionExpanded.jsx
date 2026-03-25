@@ -191,7 +191,7 @@ const DineDimensionExpanded = ({ dimension, pet, token, onClose }) => {
             onClose();
             window.dispatchEvent(new CustomEvent('openMiraAI', { detail: { message: `Help me choose ${dimension.title.toLowerCase()} for ${petName}`, context: 'dine' } }));
           }}
-          onConcierge={() => sendToConcierge({ requestType: 'concierge', label: dimension.title, message: `Concierge help for ${dimension.title} for ${petName}`, petName, pillar: 'dine' })}
+          onConcierge={() => sendToConcierge({ requestType: 'concierge', label: dimension.title, message: `Concierge® help for ${dimension.title} for ${petName}`, petName, pillar: 'dine' })}
         />
       </div>
 

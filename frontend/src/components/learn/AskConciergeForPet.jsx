@@ -1,6 +1,6 @@
 /**
  * AskConciergeForPet.jsx
- * "Need help for Bruno?" - Concierge action cards
+ * "Need help for Bruno?" - Concierge® action cards
  * Human help layer with illustrated icons
  */
 
@@ -79,7 +79,7 @@ const AskConciergeForPet = ({ pet, onAction, onAskConcierge }) => {
           ))}
         </div>
         
-        {/* Ask Concierge Button */}
+        {/* Ask Concierge® Button */}
         <div className="flex justify-center">
           <Button
             onClick={onAskConcierge}
@@ -87,7 +87,7 @@ const AskConciergeForPet = ({ pet, onAction, onAskConcierge }) => {
             variant="outline"
           >
             <MessageCircle className="w-5 h-5" />
-            Ask Concierge
+            Ask Concierge®
           </Button>
         </div>
       </div>

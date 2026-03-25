@@ -6,7 +6,7 @@
  * Mirrors Celebrate's birthday path architecture exactly.
  * Amber/terracotta colour world.
  *
- * 6 PATHS, each with 4 guided steps → Hand to Concierge
+ * 6 PATHS, each with 4 guided steps → Hand to Concierge®
  * WIRING: POST /api/concierge/nutrition-path
  */
 
@@ -97,8 +97,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Allergy-Safe Plan`,
         summaryFields: ["Known allergens", "Safe protein", "Safe ingredients", "Next step"],
-        cta: "🛡️ Hand to Concierge",
-        conciergeNote: "Your Concierge will source allergy-safe products matching this plan.",
+        cta: "🛡️ Hand to Concierge®",
+        conciergeNote: "Your Concierge® will source allergy-safe products matching this plan.",
       },
     },
 
@@ -151,8 +151,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Health Nutrition Plan`,
         summaryFields: ["Health condition", "Chosen meal", "Supplement protocol", "Next step"],
-        cta: "💜 Hand to Concierge",
-        conciergeNote: "Your Concierge will source treatment-safe products and coordinate with your vet.",
+        cta: "💜 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will source treatment-safe products and coordinate with your vet.",
       },
     },
 
@@ -211,8 +211,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Homemade Cooking Plan`,
         summaryFields: ["Difficulty level", "Safe ingredients", "First recipe", "Next step"],
-        cta: "👩‍🍳 Hand to Concierge",
-        conciergeNote: "Your Concierge will send ingredient guides and connect you with our vet-nutritionist.",
+        cta: "👩‍🍳 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will send ingredient guides and connect you with our vet-nutritionist.",
       },
     },
 
@@ -270,8 +270,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Weight Management Programme`,
         summaryFields: ["Weight goal", "Chosen meal plan", "Activity plan", "Next step"],
-        cta: "⚖️ Hand to Concierge",
-        conciergeNote: "Your Concierge will coordinate with our nutritionist and set up a progress check schedule.",
+        cta: "⚖️ Hand to Concierge®",
+        conciergeNote: "Your Concierge® will coordinate with our nutritionist and set up a progress check schedule.",
       },
     },
 
@@ -330,8 +330,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Senior Nutrition Plan`,
         summaryFields: ["Senior priorities", "Chosen meal", "Supplement stack", "Next step"],
-        cta: "🌿 Hand to Concierge",
-        conciergeNote: "Your Concierge will coordinate with our senior pet nutritionist and arrange delivery.",
+        cta: "🌿 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will coordinate with our senior pet nutritionist and arrange delivery.",
       },
     },
 
@@ -391,8 +391,8 @@ function buildPaths(pet) {
       step4: {
         title: `${name}'s Prescription Diet Plan`,
         summaryFields: ["Medical diet type", "Chosen food", "Vet coordination", "Next step"],
-        cta: "💊 Hand to Concierge",
-        conciergeNote: "Your Concierge will liaise with your vet, source the prescription food, and arrange delivery.",
+        cta: "💊 Hand to Concierge®",
+        conciergeNote: "Your Concierge® will liaise with your vet, source the prescription food, and arrange delivery.",
       },
     },
   ];
@@ -601,7 +601,7 @@ function PathFlowModal({ path, pet, onClose }) {
     } finally {
       setSubmitting(false);
       setSubmitted(true);
-      toast.success(`${path.title.replace(" Path","")} sent to Concierge`, { description: "We'll reach out within 48 hours." });
+      toast.success(`${path.title.replace(" Path","")} sent to Concierge®`, { description: "We'll reach out within 48 hours." });
     }
   };
 
@@ -623,10 +623,10 @@ function PathFlowModal({ path, pet, onClose }) {
             fontSize:28, marginBottom:20,
           }}>♥</div>
           <div style={{ fontSize:22, fontWeight:800, color:"#FFFFFF", fontFamily:"Georgia,serif", marginBottom:10 }}>
-            {path.title.replace(" Path","")} sent to your Concierge.
+            {path.title.replace(" Path","")} sent to your Concierge®.
           </div>
           <div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>
-            Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥
+            Everything is in good hands.<br/>Your Concierge® will reach out within 48 hours. ♥
           </div>
           <button
             onClick={onClose}
@@ -648,7 +648,7 @@ function PathFlowModal({ path, pet, onClose }) {
         : (selections.step1[0] || pet?.healthCondition || "Not specified"),
       [path.step4.summaryFields[1]]: selections.step2 || "Not selected",
       [path.step4.summaryFields[2]]: Array.isArray(selections.step3) ? selections.step3.join(", ") || "Not selected" : (selections.step3 || "Not selected"),
-      [path.step4.summaryFields[3]]: "Concierge will contact within 48h",
+      [path.step4.summaryFields[3]]: "Concierge® will contact within 48h",
     };
 
     return (

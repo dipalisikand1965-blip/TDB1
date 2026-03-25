@@ -407,8 +407,8 @@ const LearnReader = ({
     }
   };
   
-  // Handle "Ask Mira" - opens Concierge with context (zero re-asking)
-  // Per LEARN Bible: Concierge opener shows "I've read X. Help me with Y."
+  // Handle "Ask Mira" - opens Concierge® with context (zero re-asking)
+  // Per LEARN Bible: Concierge® opener shows "I've read X. Help me with Y."
   const handleAskMira = () => {
     // Record "completed" event - they're seeking help based on this guide
     recordLearnEvent('completed');

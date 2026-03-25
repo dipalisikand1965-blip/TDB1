@@ -153,7 +153,7 @@ const EMOTIONAL_COLLECTIONS = {
   },
   parent_gifts: {
     name: "For Dog Mum/Dad",
-    label: "Concierge Services",
+    label: "Concierge® Services",
     collections: ["parent", "gift", "human"],
     product_types: ["mug", "tote_bag", "keychain"],
     exclude: [],

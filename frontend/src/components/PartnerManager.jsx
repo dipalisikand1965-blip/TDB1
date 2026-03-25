@@ -151,7 +151,7 @@ const PartnerManager = ({ getAuthHeader }) => {
         if (selectedApp?.id === appId) {
           setSelectedApp({ ...selectedApp, admin_notes: conciergeNotes });
         }
-        alert('Concierge notes saved!');
+        alert('Concierge® notes saved!');
       } else {
         alert('Failed to save notes');
       }
@@ -515,10 +515,10 @@ const PartnerManager = ({ getAuthHeader }) => {
                 })}
               </div>
               
-              {/* Concierge Notes Section */}
+              {/* Concierge® Notes Section */}
               <div className="border-t pt-4">
                 <Label className="text-gray-700 font-semibold flex items-center gap-2 mb-2">
-                  📝 Concierge Notes
+                  📝 Concierge® Notes
                   <span className="text-xs font-normal text-gray-400">(Internal use only)</span>
                 </Label>
                 <Textarea

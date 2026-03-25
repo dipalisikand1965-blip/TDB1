@@ -253,7 +253,7 @@ const PicksHistoryTab = ({ pet, user }) => {
         </Card>
       )}
 
-      {/* Concierge CTA */}
+      {/* Concierge® CTA */}
       {filteredPicks.length > 0 && (
         <Card className="p-4 bg-gradient-to-r from-emerald-500/10 to-teal-500/5 border-emerald-500/20">
           <div className="flex items-center gap-4">

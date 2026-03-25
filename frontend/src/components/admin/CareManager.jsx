@@ -1210,10 +1210,10 @@ const CareManager = ({ getAuthHeader }) => {
               </div>
             </div>
 
-            {/* Concierge */}
+            {/* Concierge® */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Concierge Note</Label>
+                <Label>Concierge® Note</Label>
                 <Input value={productForm.concierge_note} onChange={(e) => setProductForm({...productForm, concierge_note: e.target.value})} placeholder="Supports comfortable grooming prep" />
               </div>
               <div>
@@ -1345,10 +1345,10 @@ const CareManager = ({ getAuthHeader }) => {
               </div>
             </div>
 
-            {/* Concierge Flow */}
+            {/* Concierge® Flow */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Concierge Flow Mapping</Label>
+                <Label>Concierge® Flow Mapping</Label>
                 <Input value={bundleForm.concierge_flow_mapping} onChange={(e) => setBundleForm({...bundleForm, concierge_flow_mapping: e.target.value})} placeholder="grooming_request" />
               </div>
               <div>

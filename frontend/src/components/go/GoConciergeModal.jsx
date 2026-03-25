@@ -69,11 +69,11 @@ export default function GoConciergeModal({ pet, service, token, onClose }) {
           <div style={{ padding:"48px 36px", textAlign:"center" }}>
             <div style={{ width:72, height:72, borderRadius:"50%", background:`linear-gradient(135deg,${G.teal},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:32, margin:"0 auto 20px" }}>✈️</div>
             <div style={{ fontSize:22, fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:8 }}>
-              Sent to {petName}'s Go Concierge.
+              Sent to {petName}'s Go Concierge®.
             </div>
             <div style={{ fontSize:14, color:G.mutedText, lineHeight:1.7, marginBottom:28 }}>
               Everything is in good hands.<br/>
-              Your Concierge will reach out within 48 hours. ♥<br/><br/>
+              Your Concierge® will reach out within 48 hours. ♥<br/><br/>
               We already have your contact details — you don't need to chase.
             </div>
             <button onClick={onClose} style={{ background:"#F5F5F5", border:"none", borderRadius:20, padding:"10px 28px", fontSize:13, fontWeight:600, color:"#555", cursor:"pointer" }}>Close</button>
@@ -87,7 +87,7 @@ export default function GoConciergeModal({ pet, service, token, onClose }) {
 
             {/* Eyebrow */}
             <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:G.pale, border:`1px solid rgba(26,188,156,0.30)`, borderRadius:20, padding:"4px 12px", color:G.teal, fontSize:12, fontWeight:600, marginBottom:16 }}>
-              ✈️ {petName}'s Go Concierge
+              ✈️ {petName}'s Go Concierge®
             </div>
 
             {/* Title */}
@@ -95,7 +95,7 @@ export default function GoConciergeModal({ pet, service, token, onClose }) {
               What should <span style={{ color:G.teal }}>{petName}'s</span> trip feel like?
             </div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:26 }}>
-              Three questions. Then your Concierge takes over.
+              Three questions. Then your Concierge® takes over.
             </div>
 
             {/* Q1 */}
@@ -135,10 +135,10 @@ export default function GoConciergeModal({ pet, service, token, onClose }) {
             {/* Send */}
             <button onClick={canSend && !sending ? handleSend : undefined}
               style={{ width:"100%", background:canSend?`linear-gradient(135deg,${G.teal},${G.deepMid})`:"#E8E0D8", color:canSend?"#fff":"#999", border:"none", borderRadius:40, padding:"15px", fontSize:16, fontWeight:800, cursor:canSend&&!sending?"pointer":"not-allowed", marginBottom:10, opacity:sending?0.7:1 }}>
-              {sending?"Sending…":"Send to my Go Concierge →"}
+              {sending?"Sending…":"Send to my Go Concierge® →"}
             </button>
             <div style={{ fontSize:12, color:"#888", textAlign:"center", lineHeight:1.6 }}>
-              We already have your contact details.<br/>Your Concierge will reach out — you don't need to chase.
+              We already have your contact details.<br/>Your Concierge® will reach out — you don't need to chase.
             </div>
           </div>
         )}

@@ -208,7 +208,7 @@ const VaultManager = ({
     }
   }, [isOpen, miraResponse, userMessage, pillar]);
 
-  // Send to Concierge via unified endpoint
+  // Send to Concierge® via unified endpoint
   const sendToConcierge = useCallback(async (vaultData) => {
     try {
       const response = await fetch(`${API_URL}/api/mira/vault/send-to-concierge`, {
@@ -240,7 +240,7 @@ const VaultManager = ({
       
       return result;
     } catch (error) {
-      console.error('[VAULT] Failed to send to Concierge:', error);
+      console.error('[VAULT] Failed to send to Concierge®:', error);
       throw error;
     }
   }, [activeVault, sessionId, member, pet, pillar, onVaultSent]);

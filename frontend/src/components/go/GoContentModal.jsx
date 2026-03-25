@@ -188,7 +188,7 @@ const MiraGoImaginesCard = ({ item, pet, apiUrl, token }) => {
       <div style={{ padding: '0 12px 12px' }}>
         {state === 'sent' ? (
           <div style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: G.light }}>
-            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge!
+            <Check size={12} style={{ display: 'inline', marginRight: 4 }} /> Sent to Concierge®!
           </div>
         ) : (
           <button
@@ -238,7 +238,7 @@ const generateGoImagines = (pet, category) => {
       { id: 'go-imagine-health-1', emoji: '💊', name: condition ? `${petName}'s Travel First Aid (${condition}-safe)` : `${petName}'s Travel First Aid Kit`, description: condition ? `Vet-approved first aid kit with ${condition}-safe products, vet records organiser, and motion sickness relief.` : `Everything from bandages to motion sickness meds — Mira's travel health kit for ${petName}.` },
     ],
     stay: [
-      { id: 'go-imagine-stay-1', emoji: '🏡', name: `${petName}'s Perfect Stay`, description: breed ? `A boutique, verified pet-friendly property curated for ${breed}s — sourced by our Concierge team.` : `Mira researches boutique stays that genuinely love dogs — not just pet-tolerant.` },
+      { id: 'go-imagine-stay-1', emoji: '🏡', name: `${petName}'s Perfect Stay`, description: breed ? `A boutique, verified pet-friendly property curated for ${breed}s — sourced by our Concierge® team.` : `Mira researches boutique stays that genuinely love dogs — not just pet-tolerant.` },
       { id: 'go-imagine-stay-2', emoji: '🐾', name: `Premium Boarding for ${petName}`, description: `A personally vetted boarding facility with daily updates and the right environment for ${petName}.` },
     ],
   };
@@ -524,7 +524,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
                   <div style={{ marginBottom: 18 }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: G.darkText, marginBottom: 4 }}>Mira is imagining {config.label} for {petName}</p>
                     <p style={{ fontSize: 12, color: '#888', lineHeight: 1.5 }}>
-                      These don't exist in our range yet — tap any card and our Concierge will source them for you.
+                      These don't exist in our range yet — tap any card and our Concierge® will source them for you.
                     </p>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(180px, 100%), 1fr))', gap: 12 }}>

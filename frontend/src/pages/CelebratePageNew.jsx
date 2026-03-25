@@ -13,7 +13,7 @@
  * 6. GUIDED PATHS → Birthday Party | Gotcha Day | Photoshoot
  * 7. CELEBRATION WALL → Community moments
  * 
- * IMPORTANT: Mira widget and Concierge button remain visible throughout
+ * IMPORTANT: Mira widget and Concierge® button remain visible throughout
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -127,7 +127,7 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
         <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:"#1a0a2e",margin:0,fontFamily:"Georgia,serif"}}>
           Mira's Picks for <span style={{color:"#C44DFF"}}>{petName}</span>
         </h3>
-        <span style={{fontSize:11,background:"linear-gradient(135deg,#C44DFF,#FF6B9D)",color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?(hasScoredProducts?"AI Scored":"Concierge Curated"):"Pet Specific"}</span>
+        <span style={{fontSize:11,background:"linear-gradient(135deg,#C44DFF,#FF6B9D)",color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{picks.length>0?(hasScoredProducts?"AI Scored":"Concierge® Curated"):"Pet Specific"}</span>
       </div>
       <p style={{fontSize:13,color:"#888",marginBottom:16,lineHeight:1.5}}>{subtitle}</p>
       {!picksLoading&&picks.length===0&&(
@@ -156,7 +156,7 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
               onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)}
               onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}>
               <div style={{width:"100%",height:130,background:"#FAF5FF",overflow:"hidden",position:"relative"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#3B0764,#7C3AED)",color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,18)}</div>}</div>
-              <div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:"#1a0a2e",lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{!isService&&<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}><div style={{flex:1,height:4,background:"#FAF5FF",borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div>}{isService&&<p style={{fontSize:11,color:'#7C3AED',lineHeight:1.45,margin:'0 0 8px'}}>Concierge planning for {petName}'s celebration.</p>}<button onClick={(e)=>{e.stopPropagation();isService?onOpenService?.(pick.name):setSelPick(pick);}} style={{width:'100%',background:'linear-gradient(135deg,#C44DFF,#FF6B9D)',color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Talk to Concierge →':'View details →'}</button></div>
+              <div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:"#1a0a2e",lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{!isService&&<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}><div style={{flex:1,height:4,background:"#FAF5FF",borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div>}{isService&&<p style={{fontSize:11,color:'#7C3AED',lineHeight:1.45,margin:'0 0 8px'}}>Concierge® planning for {petName}'s celebration.</p>}<button onClick={(e)=>{e.stopPropagation();isService?onOpenService?.(pick.name):setSelPick(pick);}} style={{width:'100%',background:'linear-gradient(135deg,#C44DFF,#FF6B9D)',color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Talk to Concierge® →':'View details →'}</button></div>
             </div>
           );})}
         </div>
@@ -392,11 +392,11 @@ const CelebratePageNew = () => {
   const [cakeModalOpen, setCakeModalOpen] = useState(false);
   const handleTalkToConcierge = useCallback(async () => {
     // Fire tdc tracking immediately
-    tdc.book({ service: 'Celebration Concierge', pillar: 'celebrate', pet: selectedPet, channel: 'celebrate_concierge_btn' });
+    tdc.book({ service: 'Celebration Concierge®', pillar: 'celebrate', pet: selectedPet, channel: 'celebrate_concierge_btn' });
     // Bulletproof delivery — works on mobile + desktop regardless of network
     const { sendToAdminInbox } = await import('../utils/sendToAdminInbox');
     sendToAdminInbox({
-      service: `${selectedPet?.name || 'Your pet'}'s Celebration — Talk to Concierge`,
+      service: `${selectedPet?.name || 'Your pet'}'s Celebration — Talk to Concierge®`,
       pillar: 'celebrate',
       pet: selectedPet,
       channel: 'celebrate_concierge_btn',

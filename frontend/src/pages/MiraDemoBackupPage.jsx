@@ -182,7 +182,7 @@ const DOCK_ITEMS = [
 ];
 
 // CONCIERGE OPERATING HOURS
-// The Concierge works from 6:30 AM to 11:30 PM
+// The Concierge® works from 6:30 AM to 11:30 PM
 // After hours, Mira takes requests and promises follow-up
 const CONCIERGE_HOURS = {
   start: { hour: 6, minute: 30 },
@@ -199,8 +199,8 @@ const isConciergeLive = () => {
   return currentTime >= startTime && currentTime <= endTime;
 };
 
-// Generate dynamic Concierge request card for ANY request
-// MIRA DOCTRINE: Concierge can do ANYTHING (legal, moral, no medical)
+// Generate dynamic Concierge® request card for ANY request
+// MIRA DOCTRINE: Concierge® can do ANYTHING (legal, moral, no medical)
 const generateConciergeRequest = (query, petName) => {
   const lowerQuery = query.toLowerCase();
   
@@ -979,7 +979,7 @@ const MiraDemoBackupPage = () => {
   }, [conversationHistory, detectConversationComplete]);
   
   // FLOATING TOOLBAR - Clean conversation flow
-  // Insight & Concierge icons at top, expand on tap
+  // Insight & Concierge® icons at top, expand on tap
   const [showInsightsPanel, setShowInsightsPanel] = useState(false);
   const [showConciergePanel, setShowConciergePanel] = useState(false);
   const [latestInsights, setLatestInsights] = useState([]); // Collected from all messages
@@ -1873,7 +1873,7 @@ const MiraDemoBackupPage = () => {
     return newTicket;
   }, [currentTicket, pet, user]);
   
-  // Engage Concierge - Flip ticket status, NOT create new ticket
+  // Engage Concierge® - Flip ticket status, NOT create new ticket
   const engageConcierge = useCallback(async (reason, contextData = {}) => {
     if (!currentTicket) return;
     
@@ -1908,7 +1908,7 @@ const MiraDemoBackupPage = () => {
           context_data: contextData
         })
       });
-      console.log('[HANDOFF] Ticket handed to Concierge:', currentTicket.id);
+      console.log('[HANDOFF] Ticket handed to Concierge®:', currentTicket.id);
     } catch (error) {
       console.error('[HANDOFF] API error:', error);
     }
@@ -2937,10 +2937,10 @@ const MiraDemoBackupPage = () => {
       const hasNoDirectMatch = !shouldShowProducts && !hasServiceIntent && !hasExperienceIntent;
       const dynamicConciergeRequest = hasNoDirectMatch ? generateConciergeRequest(inputQuery, pet.name) : null;
       
-      // Check if Concierge is live (6:30 AM - 11:30 PM)
+      // Check if Concierge® is live (6:30 AM - 11:30 PM)
       const conciergeIsLive = isConciergeLive();
       
-      // MIRA DOCTRINE: Concierge is premium service, not failure
+      // MIRA DOCTRINE: Concierge® is premium service, not failure
       // ALWAYS show concierge - they can do ANYTHING
       const userWantsConcierge = inputQuery.toLowerCase().includes('concierge') || 
                                   inputQuery.toLowerCase().includes('help me') ||
@@ -2948,7 +2948,7 @@ const MiraDemoBackupPage = () => {
                                   inputQuery.toLowerCase().includes('plan');
       const hasConciergeFraming = data.response?.concierge_framing && data.response.concierge_framing.length > 0;
       // ALWAYS suggest concierge - they can handle any request
-      const shouldSuggestConcierge = true; // Concierge can do ANYTHING
+      const shouldSuggestConcierge = true; // Concierge® can do ANYTHING
       
       const miraMessage = {
         type: 'mira',
@@ -3477,7 +3477,7 @@ const MiraDemoBackupPage = () => {
       };
       setConversationHistory(prev => [...prev, miraConfirmation]);
       
-      console.log('[HANDOFF] Ticket handed off to Concierge:', currentTicket.id, '-> Queue:', conciergeQueue);
+      console.log('[HANDOFF] Ticket handed off to Concierge®:', currentTicket.id, '-> Queue:', conciergeQueue);
       
     } catch (error) {
       console.error('[HANDOFF] Failed:', error);
@@ -4060,7 +4060,7 @@ const MiraDemoBackupPage = () => {
         </button>
       </nav>
       
-      {/* FLOATING ACTION BAR - Always visible, clean icons for Insight/Concierge/History */}
+      {/* FLOATING ACTION BAR - Always visible, clean icons for Insight/Concierge®/History */}
       {conversationHistory.length > 0 && (
         <div className="mp-floating-bar" data-testid="floating-action-bar">
           {/* Past Chats */}
@@ -4084,7 +4084,7 @@ const MiraDemoBackupPage = () => {
             <Sparkles size={10} className="insight-sparkle" />
           </button>
           
-          {/* Concierge Help - C° icon */}
+          {/* Concierge® Help - C° icon */}
           <button 
             className={`mp-float-btn concierge-float-btn ${showConciergePanel ? 'active' : ''}`}
             onClick={() => setShowConciergePanel(!showConciergePanel)}
@@ -4136,7 +4136,7 @@ const MiraDemoBackupPage = () => {
       {showConciergePanel && (
         <div className="mp-concierge-panel" data-testid="concierge-panel">
           <div className="mp-concierge-panel-header">
-            <span><span className="panel-c">C</span><span className="panel-degree">°</span> Concierge Help</span>
+            <span><span className="panel-c">C</span><span className="panel-degree">°</span> Concierge® Help</span>
             <button onClick={() => setShowConciergePanel(false)}><X size={16} /></button>
           </div>
           <p className="mp-concierge-panel-desc">Your pet Concierge® can help with anything for {pet.name}.</p>
@@ -4650,7 +4650,7 @@ const MiraDemoBackupPage = () => {
                             </div>
                           )}
                           
-                          {/* Need help? Concierge CTA - Always visible */}
+                          {/* Need help? Concierge® CTA - Always visible */}
                           <button 
                             className="mp-header-help"
                             onClick={() => { hapticFeedback.buttonTap(); setShowConciergePanel(true); }}
@@ -4823,7 +4823,7 @@ const MiraDemoBackupPage = () => {
                                         </span>
                                       </div>
                                       
-                                      {/* Concierge Whisper - Personalized curator note */}
+                                      {/* Concierge® Whisper - Personalized curator note */}
                                       {product.concierge_whisper && (
                                         <div className="mp-concierge-whisper">
                                           <span className="mp-whisper-badge">C°</span>
@@ -4835,8 +4835,8 @@ const MiraDemoBackupPage = () => {
                                         className="mp-product-add mp-send-concierge"
                                         onClick={() => { 
                                           hapticFeedback.productSelect(); 
-                                          // Add to picks for Concierge - no cart functionality
-                                          console.log(`[PICKS] Added ${product.name} to Concierge picks`);
+                                          // Add to picks for Concierge® - no cart functionality
+                                          console.log(`[PICKS] Added ${product.name} to Concierge® picks`);
                                         }}
                                         data-testid={`add-product-${pIdx}`}
                                       >
@@ -5030,7 +5030,7 @@ const MiraDemoBackupPage = () => {
                                     className="hotel-book-btn"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      // Engage Concierge for hotel booking
+                                      // Engage Concierge® for hotel booking
                                       engageConcierge('hotel_booking', {
                                         hotel_name: hotel.name,
                                         city: hotel.city || msg.data.travel_city,
@@ -5188,7 +5188,7 @@ const MiraDemoBackupPage = () => {
                           )}
                           
                           {/* DYNAMIC CONCIERGE REQUEST - For ANY request without direct match */}
-                          {/* MIRA DOCTRINE: Concierge can do ANYTHING (legal, moral, no medical) */}
+                          {/* MIRA DOCTRINE: Concierge® can do ANYTHING (legal, moral, no medical) */}
                           {msg.dynamicConciergeRequest && (
                             <div className="mp-dynamic-request">
                               <p className="mp-dynamic-intro">
@@ -5796,7 +5796,7 @@ const MiraDemoBackupPage = () => {
             sessionId={sessionId}
             member={user}
             onVaultSent={(result) => {
-              console.log('[VAULT] Sent to Concierge:', result);
+              console.log('[VAULT] Sent to Concierge®:', result);
               if (result.success) {
                 setMessages(prev => [...prev, {
                   type: 'mira',

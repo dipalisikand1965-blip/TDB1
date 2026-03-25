@@ -78,8 +78,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s End-of-Life Plan`,
         summaryFields:["Quality of life","Comfort care","Final goodbye approach","Next step"],
-        cta:"🕊️ Hand to Concierge — gently",
-        conciergeNote:"Your Concierge will arrange a home visit from a compassionate vet and support you through every next step, at your pace.",
+        cta:"🕊️ Hand to Concierge® — gently",
+        conciergeNote:"Your Concierge® will arrange a home visit from a compassionate vet and support you through every next step, at your pace.",
       },
     },
     {
@@ -130,8 +130,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s Farewell Arrangements`,
         summaryFields:["What feels right","Type of service","Keeping them close","Next step"],
-        cta:"🌸 Hand to Concierge",
-        conciergeNote:"Your Concierge will arrange everything with complete dignity. You will not need to make phone calls or manage logistics. We handle all of it.",
+        cta:"🌸 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will arrange everything with complete dignity. You will not need to make phone calls or manage logistics. We handle all of it.",
       },
     },
     {
@@ -181,8 +181,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s Memorial Plan`,
         summaryFields:["How to remember them","Permanent memorial","Sharing their story","Next step"],
-        cta:"💛 Hand to Concierge",
-        conciergeNote:"Your Concierge will commission the memorial pieces, arrange the portrait artist, and help you prepare the tribute.",
+        cta:"💛 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will commission the memorial pieces, arrange the portrait artist, and help you prepare the tribute.",
       },
     },
     {
@@ -234,8 +234,8 @@ function buildPaths(pet) {
       step4:{
         title:"Your Grief Support Plan",
         summaryFields:["Where you are","What helps","Support chosen","Next step"],
-        cta:"💙 Hand to Concierge",
-        conciergeNote:"Your Concierge will connect you with the right counsellor or support group — gently, and at your pace.",
+        cta:"💙 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will connect you with the right counsellor or support group — gently, and at your pace.",
       },
     },
     {
@@ -286,8 +286,8 @@ function buildPaths(pet) {
       step4:{
         title:`Your Celebration of ${name}'s Life`,
         summaryFields:["Who they were","Memories to gather","How to share","Next step"],
-        cta:"✨ Hand to Concierge",
-        conciergeNote:"Your Concierge will commission the photo book, help prepare the tribute, and arrange any gathering — exactly as you want it.",
+        cta:"✨ Hand to Concierge®",
+        conciergeNote:"Your Concierge® will commission the photo book, help prepare the tribute, and arrange any gathering — exactly as you want it.",
       },
     },
   ]
@@ -318,10 +318,10 @@ function PathFlowModal({ path, pet, onClose }) {
     setSubmitted(true);
   }; // POST /api/concierge/farewell-path
 
-  if(submitted)return(<ModalShell onClose={onClose} noPadding><div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}><div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div><div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge.</div><div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥</div><button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Done</button></div></ModalShell>);
+  if(submitted)return(<ModalShell onClose={onClose} noPadding><div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}><div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div><div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge®.</div><div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge® will reach out within 48 hours. ♥</div><button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Done</button></div></ModalShell>);
 
   if(currentStep===4&&completedSteps.includes(3)){
-    const summaryData={[path.step4.summaryFields[0]]:selections.step1.join(", ")||"Not specified",[path.step4.summaryFields[1]]:selections.step2||"Not selected",[path.step4.summaryFields[2]]:selections.step3.join(", ")||"Not selected",[path.step4.summaryFields[3]]:"Concierge will contact within 48h"};
+    const summaryData={[path.step4.summaryFields[0]]:selections.step1.join(", ")||"Not specified",[path.step4.summaryFields[1]]:selections.step2||"Not selected",[path.step4.summaryFields[2]]:selections.step3.join(", ")||"Not selected",[path.step4.summaryFields[3]]:"Concierge® will contact within 48h"};
     return(<ModalShell onClose={onClose}><div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}><div style={{ width:44, height:44, borderRadius:10, background:path.iconBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{path.icon}</div><div><div style={{ fontSize:17, fontWeight:800, color:"#1A0A00", fontFamily:"Georgia,serif" }}>{path.title.replace(" Path",` for ${pet.name}`)}</div><div style={{ fontSize:12, color:"#888", marginTop:2 }}>{path.step4.summaryFields.join(" · ")} · All confirmed</div></div><button onClick={onClose} style={{ marginLeft:"auto", background:"#F5F5F5", border:"none", borderRadius:"50%", width:32, height:32, fontSize:16, cursor:"pointer", color:"#555" }}>✕</button></div><div style={{ background:"#fff", border:"1px solid #F0E8E0", borderRadius:14, marginBottom:20, overflow:"hidden" }}>{Object.entries(summaryData).map(([k,v],i)=>(<div key={k} style={{ display:"flex", alignItems:"flex-start", padding:"14px 18px", borderBottom:i<Object.entries(summaryData).length-1?"1px solid #F5F0EA":"none" }}><div style={{ fontSize:13, fontWeight:700, color:path.accentColor, width:160, flexShrink:0 }}>{k}</div><div style={{ fontSize:13, color:"#1A0A00", flex:1, lineHeight:1.5 }}>{v}</div></div>))}</div><button onClick={handleSubmit} style={{ width:"100%", background:`linear-gradient(135deg,${path.accentColor},${G.mid})`, color:"#fff", border:"none", borderRadius:14, padding:"16px", fontSize:16, fontWeight:800, cursor:"pointer", marginBottom:10 }}>{path.step4.cta}</button><div style={{ fontSize:12, color:"#888", textAlign:"center" }}>{path.step4.conciergeNote}</div></ModalShell>);
   }
 

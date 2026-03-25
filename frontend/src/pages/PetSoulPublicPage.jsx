@@ -388,7 +388,7 @@ export default function PetSoulPublicPage() {
               {icon:"📝",label:"Soul Profile answers",pts:"+105 pts at onboarding"},
               {icon:"💬",label:"Every Mira conversation",pts:"Memory updated"},
               {icon:"🛍️",label:"Every order placed",pts:"Preferences learned"},
-              {icon:"🤝",label:"Every Concierge request",pts:"Behaviour tracked"},
+              {icon:"🤝",label:"Every Concierge® request",pts:"Behaviour tracked"},
               {icon:"📅",label:"Reminders & milestones",pts:"Life events remembered"},
               {icon:"🎂",label:"Birthdays & celebrations",pts:"Traditions built"},
             ].map((item,i)=>(

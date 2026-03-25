@@ -643,7 +643,7 @@ const CuratedConciergeSection = ({
           />
         )}
 
-        {/* Concierge Products (server order) */}
+        {/* Concierge® Products (server order) */}
         {data.concierge_products?.map((card) => (
           <ConciergeCard
             key={card.id}
@@ -655,7 +655,7 @@ const CuratedConciergeSection = ({
           />
         ))}
 
-        {/* Concierge Services (server order) */}
+        {/* Concierge® Services (server order) */}
         {data.concierge_services?.map((card) => (
           <ConciergeCard
             key={card.id}

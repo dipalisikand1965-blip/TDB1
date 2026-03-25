@@ -13,7 +13,7 @@
  * 7. Paperwork Bundles (Bundle configuration)
  * 8. Services (Document services)
  * 9. Personalized Products (Breed/archetype picks)
- * 10. Concierge Services (Premium assistance)
+ * 10. Concierge® Services (Premium assistance)
  * 11. Mira's Smart Prompts (AI suggestions)
  */
 
@@ -287,7 +287,7 @@ const MiraPromptEditor = ({ prompts, onUpdate }) => {
     { value: 'tip', label: 'Contextual Tip', color: 'bg-blue-100 text-blue-700' },
     { value: 'reminder', label: 'Proactive Reminder', color: 'bg-amber-100 text-amber-700' },
     { value: 'suggestion', label: 'Document Suggestion', color: 'bg-green-100 text-green-700' },
-    { value: 'nudge', label: 'Concierge Nudge', color: 'bg-purple-100 text-purple-700' },
+    { value: 'nudge', label: 'Concierge® Nudge', color: 'bg-purple-100 text-purple-700' },
   ];
 
   const addPrompt = () => {
@@ -393,7 +393,7 @@ const PaperworkPageCMS = () => {
       products: { enabled: true, title: 'Document Essentials' },
       services: { enabled: true, title: 'Document Services' },
       personalizedPicks: { enabled: true, title: 'Recommended for {petName}' },
-      conciergeServices: { enabled: true, title: 'Concierge Assistance' },
+      conciergeServices: { enabled: true, title: 'Concierge® Assistance' },
       miraPrompts: { enabled: true }
     }
   });
@@ -407,7 +407,7 @@ const PaperworkPageCMS = () => {
   // Reminder templates
   const [reminderTemplates, setReminderTemplates] = useState([]);
   
-  // Concierge services
+  // Concierge® services
   const [conciergeServices, setConciergeServices] = useState([]);
   
   // Mira prompts
@@ -613,7 +613,7 @@ const PaperworkPageCMS = () => {
   const addConciergeService = () => {
     setConciergeServices(prev => [...prev, {
       id: Date.now().toString(),
-      name: 'New Concierge Service',
+      name: 'New Concierge® Service',
       description: '',
       price: null,
       turnaround: '',
@@ -698,7 +698,7 @@ const PaperworkPageCMS = () => {
             <PawPrint className="w-3.5 h-3.5" /> Personalized
           </TabsTrigger>
           <TabsTrigger value="concierge" className="flex items-center gap-1 text-xs">
-            <Crown className="w-3.5 h-3.5" /> Concierge
+            <Crown className="w-3.5 h-3.5" /> Concierge®
           </TabsTrigger>
           <TabsTrigger value="miraprompts" className="flex items-center gap-1 text-xs">
             <Brain className="w-3.5 h-3.5" /> Mira Prompts
@@ -1234,13 +1234,13 @@ const PaperworkPageCMS = () => {
           </Card>
         </TabsContent>
 
-        {/* Concierge Services Tab */}
+        {/* Concierge® Services Tab */}
         <TabsContent value="concierge" className="mt-6">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Crown className="w-5 h-5 text-purple-500" /> Concierge Services ({conciergeServices.length})
+                  <Crown className="w-5 h-5 text-purple-500" /> Concierge® Services ({conciergeServices.length})
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
                   Premium assistance options for document management

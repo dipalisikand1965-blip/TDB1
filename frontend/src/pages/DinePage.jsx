@@ -801,7 +801,7 @@ const DinePage = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════════════════
-          10. MIRA CURATED LAYER - Unified Concierge (Gold Standard)
+          10. MIRA CURATED LAYER - Unified Concierge® (Gold Standard)
           ═══════════════════════════════════════════════════════════════════════════════ */}
       <MiraCuratedLayer
         pillar="dine"
@@ -849,7 +849,7 @@ const DinePage = () => {
       <div id="services" data-testid="dine-services-section">
         <ServiceCatalogSection
           pillar="dine"
-          title="Dining Concierge Services"
+          title="Dining Concierge® Services"
           subtitle="Illustrated concierge-led support for reservations, celebrations, catering, and nutrition guidance"
           maxServices={8}
           hidePrice={true}

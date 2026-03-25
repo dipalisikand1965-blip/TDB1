@@ -1,7 +1,7 @@
 /**
  * FloatingActionBar - Quick Action Buttons
  * ========================================
- * Floating buttons for History, Insights, Concierge, New Chat
+ * Floating buttons for History, Insights, Concierge®, New Chat
  * Shows when conversation has messages
  * 
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
@@ -17,7 +17,7 @@ import { History, PawPrint, Sparkles, Plus } from 'lucide-react';
  * @param {boolean} props.isVisible - Whether bar should be shown
  * @param {boolean} props.showPastChats - Past chats panel active
  * @param {boolean} props.showInsights - Insights panel active
- * @param {boolean} props.showConcierge - Concierge panel active
+ * @param {boolean} props.showConcierge - Concierge® panel active
  * @param {Function} props.onPastChatsClick - Open past chats
  * @param {Function} props.onInsightsClick - Toggle insights panel
  * @param {Function} props.onConciergeClick - Toggle concierge panel
@@ -58,7 +58,7 @@ const FloatingActionBar = ({
         <Sparkles size={10} className="insight-sparkle" />
       </button>
       
-      {/* Concierge Help - C° icon */}
+      {/* Concierge® Help - C° icon */}
       <button 
         className={`mp-float-btn concierge-float-btn ${showConcierge ? 'active' : ''}`}
         onClick={onConciergeClick}

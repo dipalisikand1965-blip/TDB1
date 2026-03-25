@@ -45,7 +45,7 @@ function timeAgo(ts) {
 function StatusBadge({ status }) {
   const map = {
     open:                { label: 'Open',       bg: 'rgba(59,130,246,0.12)', color: '#60A5FA' },
-    awaiting_concierge:  { label: 'Concierge',  bg: 'rgba(232,160,69,0.12)', color: '#E8A045' },
+    awaiting_concierge:  { label: 'Concierge®',  bg: 'rgba(232,160,69,0.12)', color: '#E8A045' },
     in_progress:         { label: 'In Progress',bg: 'rgba(77,191,168,0.12)', color: '#4DBFA8' },
     resolved:            { label: 'Resolved',   bg: 'rgba(34,197,94,0.12)',  color: '#4ADE80' },
     closed:              { label: 'Closed',     bg: 'rgba(244,239,230,0.06)',color: 'rgba(244,239,230,0.4)' },
@@ -122,7 +122,7 @@ export default function MyRequestsPage() {
           const hasConciergReply = newMsgs.some(m => m.sender === 'concierge' || m.sender === 'admin');
           if (hasConciergReply) {
             newCount++;
-            setToast(`Concierge replied to your ${ticket.pillar || 'request'} ✦`);
+            setToast(`Concierge® replied to your ${ticket.pillar || 'request'} ✦`);
           }
         }
         prevTicketsRef.current[ticket.ticket_id] = { thread_length: currLen };
@@ -333,7 +333,7 @@ export default function MyRequestsPage() {
         <div style={c.empty}>
           <div style={{ fontSize: '40px', marginBottom: '12px' }}>📬</div>
           <div style={{ fontSize: '15px', fontWeight: 500, marginBottom: '6px', color: '#F4EFE6' }}>No requests yet</div>
-          <div style={{ fontSize: '13px' }}>Tap any "Book →" or "Send to Concierge" button to get started</div>
+          <div style={{ fontSize: '13px' }}>Tap any "Book →" or "Send to Concierge®" button to get started</div>
         </div>
       ) : (
         <div style={c.list}>

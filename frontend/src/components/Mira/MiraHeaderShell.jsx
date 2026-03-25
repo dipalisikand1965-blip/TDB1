@@ -2,7 +2,7 @@
  * MiraHeaderShell.jsx
  * 
  * MIRA OS Header Navigation Shell
- * 7 Tabs: Mojo | Today | Picks | Services | Insights | Learn | Concierge
+ * 7 Tabs: Mojo | Today | Picks | Services | Insights | Learn | Concierge®
  * 
  * Each tab contains components mapped by their "dimension"
  * This is a SHELL - it doesn't replace components, it organizes them
@@ -66,7 +66,7 @@ const HEADER_TABS = [
   },
   { 
     id: 'concierge', 
-    label: 'Concierge', 
+    label: 'Concierge®', 
     icon: Users, 
     dimension: 'human',
     description: 'When humans step in?',
@@ -110,7 +110,7 @@ export const COMPONENT_DIMENSIONS = {
   LearnModal: { dimension: 'knowledge', surface: ['desktop', 'mobile'] },
   HelpModal: { dimension: 'knowledge', surface: ['desktop', 'mobile'] },
   
-  // Human dimension (Concierge)
+  // Human dimension (Concierge®)
   ConciergePanel: { dimension: 'human', surface: ['desktop', 'mobile'] },
   HandoffSummary: { dimension: 'human', surface: ['desktop', 'mobile'] }
 };

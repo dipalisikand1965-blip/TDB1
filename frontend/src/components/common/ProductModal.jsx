@@ -132,7 +132,7 @@ export default function ProductModal({ item, pet, pillar, onClose, onBook, colou
           <div style={{display:"flex",gap:10}}>
             <button onClick={handleBook} disabled={booked||booking}
               style={{flex:1,padding:"14px",borderRadius:12,border:"none",background:booked?"#E8F5E9":`linear-gradient(135deg,${colour},#E91E8C)`,color:booked?"#16A34A":"#fff",fontSize:14,fontWeight:700,cursor:booked?"default":"pointer",opacity:booking?0.7:1}}>
-              {booked?"✓ Concierge® is on it":booking?"Sending…":isService?"Book via Concierge →":isQuote?"Request a Quote →":"Order via Concierge →"}
+              {booked?"✓ Concierge® is on it":booking?"Sending…":isService?"Book via Concierge® →":isQuote?"Request a Quote →":"Order via Concierge® →"}
             </button>
             <button title="Save to Pet Vault" style={{padding:"14px 16px",borderRadius:12,border:`1px solid ${colour}30`,background:"#fff",color:colour,fontSize:13,fontWeight:600,cursor:"pointer"}}>🔖</button>
           </div>

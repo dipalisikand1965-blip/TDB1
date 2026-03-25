@@ -94,8 +94,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s Emergency Preparedness Plan`,
         summaryFields:["Current readiness","Kit to build","Contacts to save","Next step"],
-        cta:"🛡️ Hand to Concierge",
-        conciergeNote:"Your Concierge will source the kit items, find your nearest 24hr vet, and set up the emergency contact card.",
+        cta:"🛡️ Hand to Concierge®",
+        conciergeNote:"Your Concierge® will source the kit items, find your nearest 24hr vet, and set up the emergency contact card.",
       },
     },
 
@@ -151,8 +151,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s Lost Pet Recovery Plan`,
         summaryFields:["Immediate actions","Spreading the word","Search strategy","Next step"],
-        cta:"📍 Hand to Concierge",
-        conciergeNote:"Your Concierge will create the poster, activate the local network, and coordinate the search.",
+        cta:"📍 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will create the poster, activate the local network, and coordinate the search.",
       },
     },
 
@@ -208,8 +208,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s First Aid Readiness Plan`,
         summaryFields:["Current kit","Scenarios to prep for","Training approach","Next step"],
-        cta:"🩺 Hand to Concierge",
-        conciergeNote:"Your Concierge will source the kit, book the training, and prepare the scenario-specific guides.",
+        cta:"🩺 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will source the kit, book the training, and prepare the scenario-specific guides.",
       },
     },
 
@@ -263,8 +263,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s Financial Protection Plan`,
         summaryFields:["Current situation","Insurance approach","Emergency setup","Next step"],
-        cta:"🛡️ Hand to Concierge",
-        conciergeNote:"Your Concierge will compare insurance options, prepare the documents, and set up the claim procedure.",
+        cta:"🛡️ Hand to Concierge®",
+        conciergeNote:"Your Concierge® will compare insurance options, prepare the documents, and set up the claim procedure.",
       },
     },
 
@@ -319,8 +319,8 @@ function buildPaths(pet) {
       step4:{
         title:`${name}'s Emergency Vet Network`,
         summaryFields:["Current vets on file","After-hours access","Specialists","Next step"],
-        cta:"🏥 Hand to Concierge",
-        conciergeNote:"Your Concierge will find the nearest 24-hour vets, save the numbers, and create your emergency vet card.",
+        cta:"🏥 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will find the nearest 24-hour vets, save the numbers, and create your emergency vet card.",
       },
     },
   ];
@@ -415,8 +415,8 @@ function PathFlowModal({ path, pet, onClose }) {
     <ModalShell onClose={onClose} noPadding>
       <div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
         <div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div>
-        <div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge.</div>
-        <div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge will reach out within 2 hours. ♥</div>
+        <div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge®.</div>
+        <div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge® will reach out within 2 hours. ♥</div>
         <button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Done</button>
       </div>
     </ModalShell>
@@ -427,7 +427,7 @@ function PathFlowModal({ path, pet, onClose }) {
       [path.step4.summaryFields[0]]: selections.step1.join(", ") || "Not specified",
       [path.step4.summaryFields[1]]: selections.step2 || "Not selected",
       [path.step4.summaryFields[2]]: selections.step3.join(", ") || "Not selected",
-      [path.step4.summaryFields[3]]: "Concierge will contact within 2h",
+      [path.step4.summaryFields[3]]: "Concierge® will contact within 2h",
     };
     return (
       <ModalShell onClose={onClose}>

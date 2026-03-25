@@ -2,7 +2,7 @@
  * MealsPage.jsx
  * Fresh Pet Meals - Nutritious meals and food subscriptions for pets
  * 
- * ARCHITECTURE: Curated Concierge Section ON TOP → Then Catalogue Below
+ * ARCHITECTURE: Curated Concierge® Section ON TOP → Then Catalogue Below
  * 
  * GUARDRAILS:
  * - Canonical Card IDs are FIXED FOREVER: fresh-trial-pack, fresh-weekly-plan, fresh-allergy-safe
@@ -741,7 +741,7 @@ const MealsPage = () => {
               petAvoid={activePet?.allergies || activePet?.soul_data?.allergies || []}
             />
             
-            {/* 3 Canonical Concierge Cards */}
+            {/* 3 Canonical Concierge® Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               {cardOrder.map(card => (
                 <ConciergeProductCard

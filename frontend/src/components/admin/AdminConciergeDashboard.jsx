@@ -333,7 +333,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, users, loadingUsers }
     onSubmit({
       user_id: selectedUser.id,
       pet_id: selectedPet?.id,
-      subject: subject || 'Hello from Concierge',
+      subject: subject || 'Hello from Concierge®',
       initial_message: message.trim()
     });
     
@@ -457,7 +457,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, users, loadingUsers }
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Hello from Concierge"
+                  placeholder="Hello from Concierge®"
                   className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/30"
                 />
               </div>
@@ -816,7 +816,7 @@ const AdminConciergeDashboard = () => {
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
           <div className="flex items-center gap-2">
             <MessageCircle size={20} className="text-purple-400" />
-            <h2 className="text-lg font-medium text-white">Concierge</h2>
+            <h2 className="text-lg font-medium text-white">Concierge®</h2>
           </div>
           
           <div className="flex items-center gap-2">

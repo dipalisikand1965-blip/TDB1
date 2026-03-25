@@ -9,7 +9,7 @@
  * - Middle: "Awaiting You" shelf (always pinned - the killer UX)
  *   - Unread dot indicator (pink/amber)
  *   - "New" badge label
- *   - Preview with "Concierge:" prefix
+ *   - Preview with "Concierge®:" prefix
  * - Next: Active Requests (status tabs + smart grouping)
  * - Bottom: Orders (only if there are orders - no empty modules)
  * 
@@ -192,10 +192,10 @@ const AwaitingCard = memo(({ ticket, onAction, onSelect, isUnread = false }) => 
             )}
           </div>
           
-          {/* Preview row - WhatsApp style with "Concierge:" prefix */}
+          {/* Preview row - WhatsApp style with "Concierge®:" prefix */}
           <p className={`text-xs mb-2 truncate ${isUnread ? 'text-white/80 font-medium' : 'text-slate-400'}`}>
             {hasConciergReply && (
-              <span className="text-purple-400 font-semibold">Concierge: </span>
+              <span className="text-purple-400 font-semibold">Concierge®: </span>
             )}
             {lastMessage || `${ticket.pet_display} • ${ticket.status_display?.description}`}
           </p>
@@ -485,7 +485,7 @@ const ServicesPanel = ({
             )}
           </div>
           <p className="text-[10px] text-slate-400 mt-0.5">
-            Your execution thread with Concierge. Updates and replies live here.
+            Your execution thread with Concierge®. Updates and replies live here.
           </p>
         </div>
         <button 

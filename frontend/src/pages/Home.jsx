@@ -1012,7 +1012,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Pet Concierge Section */}
+        {/* Pet Concierge® Section */}
         <section className="py-24 relative">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-900/10 to-transparent" />
           
@@ -1061,7 +1061,7 @@ const Home = () => {
                     <Phone className="w-4 h-4 mr-2" /> WhatsApp Us
                   </Button>
                   <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
-                    <Mail className="w-4 h-4 mr-2" /> Email Concierge
+                    <Mail className="w-4 h-4 mr-2" /> Email Concierge®
                   </Button>
                 </div>
               </motion.div>

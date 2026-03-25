@@ -43,7 +43,7 @@ function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'
 const FAREWELL_SERVICES = [
   { id:"eol_planning",  icon:"🕊️", name:"End-of-Life Care Planning",     tagline:"Quality of life, with dignity",     price:"Free",   desc:"Mira guides quality-of-life conversations with your vet — pain management, dignity, and timing." },
   { id:"euthanasia",    icon:"💙", name:"Euthanasia Support & Guidance", tagline:"When the time comes",               price:"Free",   desc:"Gentle guidance through the decision and process — what to expect, how to say goodbye, how to be present." },
-  { id:"cremation",     icon:"🌿", name:"Cremation Arrangement",         tagline:"Handled with care",                 price:"₹2,999", desc:"Concierge arranges the full cremation — collection, service, and return of remains — with complete dignity." },
+  { id:"cremation",     icon:"🌿", name:"Cremation Arrangement",         tagline:"Handled with care",                 price:"₹2,999", desc:"Concierge® arranges the full cremation — collection, service, and return of remains — with complete dignity." },
   { id:"memorial",      icon:"🌷", name:"Memorial Product Creation",      tagline:"A tribute as unique as they were", price:"₹1,499", desc:"Paw print casting, memory box, custom portrait, engraved stone — we create a lasting tribute." },
   { id:"ceremony",      icon:"🕯️", name:"Rainbow Bridge Ceremony",        tagline:"A send-off with love",             price:"₹3,999", desc:"A gentle farewell ceremony at home or at a partner location — readings, flowers, paw print, and space to grieve." },
   { id:"grief_counsel", icon:"💜", name:"Grief Counselling Referral",     tagline:"Your grief is real and valid",     price:"Free",   desc:"Mira connects you with a pet grief counsellor — because the loss of a dog is the loss of unconditional love." },
@@ -133,10 +133,17 @@ export default function FarewellMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🌷 Farewell</div>
             </div>
             {contextPets?.length > 1 && (
-              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
-                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {contextPets.map(p => (
+                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
+                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
+                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Honour {petName}'s Legacy</div>
@@ -261,7 +268,7 @@ export default function FarewellMobilePage() {
           </div>
         )}
 
-        {/* Concierge Confirmation Sheet */}
+        {/* Concierge® Confirmation Sheet */}
         {conciergeOpen && selectedSvc && (
           <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>

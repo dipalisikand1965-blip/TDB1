@@ -105,7 +105,7 @@ function StayCard({ spot, pet, onBook }) {
         )}
         <button onClick={() => onBook?.(spot, spot.location_name || spot.vicinity)}
           style={{ width: "100%", background: `linear-gradient(135deg,${G.teal},${G.mid})`, color: "#fff", border: "none", borderRadius: 10, padding: "9px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
-          Book via Concierge →
+          Book via Concierge® →
         </button>
       </div>
     </div>
@@ -173,7 +173,7 @@ export default function PetFriendlyStays({ pet, onBook }) {
       setResultLabel(data.location_name || query || "your area");
     } catch (err) {
       console.error("[PetFriendlyStays]", err);
-      setError("Couldn't load results. Try a different destination or let Concierge help.");
+      setError("Couldn't load results. Try a different destination or let Concierge® help.");
     } finally {
       setLoading(false);
     }
@@ -246,7 +246,7 @@ export default function PetFriendlyStays({ pet, onBook }) {
           Pet-friendly stays — <span style={{ color: G.teal }}>anywhere in the world</span>
         </h3>
         <p style={{ fontSize: 12, color: "#888", margin: 0, lineHeight: 1.5 }}>
-          Search any destination — India or international. Every result is bookable via your Go Concierge.
+          Search any destination — India or international. Every result is bookable via your Go Concierge®.
         </p>
       </div>
 
@@ -330,7 +330,7 @@ export default function PetFriendlyStays({ pet, onBook }) {
           </div>
           <div style={{ fontSize: 14, color: G.mutedText, marginBottom: 24, lineHeight: 1.7 }}>
             Search any city or country — from Coorg to Cape Town, Goa to Gstaad.<br />
-            Our Concierge books whatever you find.
+            Our Concierge® books whatever you find.
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
             {["Goa 🇮🇳", "Coorg 🇮🇳", "Manali 🇮🇳", "Bali 🇮🇩", "Paris 🇫🇷", "London 🇬🇧"].map(d => (
@@ -363,7 +363,7 @@ export default function PetFriendlyStays({ pet, onBook }) {
           <div style={{ fontSize: 13, color: G.mutedText, marginBottom: 16 }}>{error}</div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
             <button onClick={() => doFetch(activeQuery === "near_me" ? null : activeQuery, activeQuery === "near_me" ? userCoords : null, activeType)} style={{ background: G.teal, color: G.deep, border: "none", borderRadius: 20, padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Try again</button>
-            <button onClick={() => onBook?.(null, activeQuery === "near_me" ? "your area" : activeQuery)} style={{ background: G.pale, color: G.mid, border: `1px solid ${G.light}`, borderRadius: 20, padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Ask Concierge instead</button>
+            <button onClick={() => onBook?.(null, activeQuery === "near_me" ? "your area" : activeQuery)} style={{ background: G.pale, color: G.mid, border: `1px solid ${G.light}`, borderRadius: 20, padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Ask Concierge® instead</button>
           </div>
         </div>
       )}
@@ -376,11 +376,11 @@ export default function PetFriendlyStays({ pet, onBook }) {
             No results in {activeQuery === "near_me" ? "your area" : activeQuery}
           </div>
           <div style={{ fontSize: 13, color: G.mutedText, marginBottom: 20, lineHeight: 1.6 }}>
-            Google doesn't have full coverage here — but our Concierge does personal research for anywhere.
+            Google doesn't have full coverage here — but our Concierge® does personal research for anywhere.
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
             <button onClick={() => setActiveType("all")} style={{ background: G.teal, color: G.deep, border: "none", borderRadius: 20, padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Try all stay types</button>
-            <button onClick={() => onBook?.(null, activeQuery === "near_me" ? "your area" : activeQuery)} style={{ background: G.pale, color: G.mid, border: `1px solid ${G.light}`, borderRadius: 20, padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Ask Concierge</button>
+            <button onClick={() => onBook?.(null, activeQuery === "near_me" ? "your area" : activeQuery)} style={{ background: G.pale, color: G.mid, border: `1px solid ${G.light}`, borderRadius: 20, padding: "8px 18px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Ask Concierge®</button>
           </div>
         </div>
       )}
@@ -404,16 +404,16 @@ export default function PetFriendlyStays({ pet, onBook }) {
         </>
       )}
 
-      {/* Concierge CTA */}
+      {/* Concierge® CTA */}
       {(spots.length > 0 || error) && (
         <div style={{ background: `linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius: 16, padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 4 }}>Not finding exactly what you need?</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.60)", lineHeight: 1.6 }}>Our Concierge researches beyond Google — boutique properties, verified pet policies, places that genuinely love dogs.</div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.60)", lineHeight: 1.6 }}>Our Concierge® researches beyond Google — boutique properties, verified pet policies, places that genuinely love dogs.</div>
           </div>
           <button onClick={() => onBook?.(null, activeQuery === "near_me" ? "your area" : activeQuery)}
             style={{ flexShrink: 0, background: `linear-gradient(135deg,${G.teal},${G.light})`, color: G.deep, border: "none", borderRadius: 12, padding: "11px 22px", fontSize: 13, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>
-            Ask our Concierge →
+            Ask our Concierge® →
           </button>
         </div>
       )}

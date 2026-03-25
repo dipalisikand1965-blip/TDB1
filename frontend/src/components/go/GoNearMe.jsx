@@ -117,11 +117,11 @@ export default function GoNearMe({ currentPet, setConciergeToast }) {
       {!loading && searched && results.length === 0 && (
         <div style={{ textAlign:'center', padding:'24px 0', color:G.muted, fontSize:14 }}>
           <div style={{ fontSize:32, marginBottom:8 }}>🔍</div>
-          <div>No results found. Try a different city or let Concierge search for you.</div>
+          <div>No results found. Try a different city or let Concierge® search for you.</div>
           <button
             onClick={() => tdc.book({ service:`Go NearMe search for ${petName}`, pillar:'go', pet:currentPet, channel:'go_nearme_fallback' })}
             style={{ marginTop:12, padding:'10px 20px', borderRadius:14, background:G.teal, border:'none', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-            Ask Concierge →
+            Ask Concierge® →
           </button>
         </div>
       )}
@@ -154,7 +154,7 @@ export default function GoNearMe({ currentPet, setConciergeToast }) {
                   )}
                   <button onClick={() => bookViaConc(place)}
                     style={{ marginLeft:'auto', padding:'7px 16px', borderRadius:14, background:G.teal, border:'none', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer', flexShrink:0 }}>
-                    Book via Concierge →
+                    Book via Concierge® →
                   </button>
                 </div>
               </div>

@@ -218,10 +218,11 @@ export default function MobileMenu({
   unreadRequests  = 0,
   unreadBell      = 0,
   pawPoints       = 0,
-  userName        = "there",
+  userName        = null,
 }) {
   const navigate  = useNavigate();
   const { logout } = useAuth();
+  const isLoggedIn = !!userName;
 
   // Lock body scroll when open
   useEffect(() => {
@@ -243,7 +244,7 @@ export default function MobileMenu({
     navigate("/");
   };
 
-  const firstName = userName?.split(" ")[0] || "there";
+  const firstName = userName?.split(" ")[0] || "Welcome";
 
   return createPortal(
     <>
@@ -275,7 +276,7 @@ export default function MobileMenu({
               color: "#F5F0E8",
               fontFamily: "Georgia, serif",
             }}>
-              Hi, {firstName} 🌷
+              {isLoggedIn ? `Hi, ${firstName} 🌷` : "Hello, dog lover 🐾"}
             </div>
           </div>
 
@@ -366,77 +367,72 @@ export default function MobileMenu({
 
         <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "4px 0" }}/>
 
-        {/* ── Nav links ── */}
-        <div className="tdc-nav-link" onClick={() => go("/pet-home")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#FEF3C7", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🏠</div>
-          <span>Pet Home</span>
-        </div>
-
-        <div className="tdc-nav-link" onClick={() => go("/my-requests")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#F0FFF4", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>📋</div>
-          <span>My Requests</span>
-          {unreadRequests > 0 && (
-            <div style={{
-              marginLeft: "auto",
-              background: "#E91E8C", color: "#fff",
-              borderRadius: 999, padding: "2px 8px",
-              fontSize: 11, fontWeight: 700,
-            }}>
-              {unreadRequests > 9 ? "9+" : unreadRequests}
+        {/* ── Nav links — only for logged-in users ── */}
+        {isLoggedIn ? (
+          <>
+            <div className="tdc-nav-link" onClick={() => go("/pet-home")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#FEF3C7", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🏠</div>
+              <span>Pet Home</span>
             </div>
-          )}
-        </div>
 
-        <div className="tdc-nav-link" onClick={() => go("/pet-home")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#F5F3FF", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🐾</div>
-          <span>Pet Soul™</span>
-        </div>
-
-        <div className="tdc-nav-link" onClick={() => go("/paw-points")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#FFFBF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🏆</div>
-          <span>Paw Points</span>
-          {pawPoints > 0 && (
-            <div style={{
-              marginLeft: "auto",
-              fontSize: 12, fontWeight: 700, color: "#C9973A",
-            }}>
-              {pawPoints.toLocaleString()} pts
+            <div className="tdc-nav-link" onClick={() => go("/my-requests")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#F0FFF4", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>📋</div>
+              <span>My Requests</span>
+              {unreadRequests > 0 && (
+                <div style={{ marginLeft: "auto", background: "#E91E8C", color: "#fff", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>
+                  {unreadRequests > 9 ? "9+" : unreadRequests}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="tdc-nav-link" onClick={() => go("/cart")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#F0FFF4", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🛒</div>
-          <span>My Cart</span>
-        </div>
-
-        {/* Bell / notifications — separate from My Requests */}
-        <div className="tdc-nav-link" onClick={() => go("/notifications")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#FFFBF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🔔</div>
-          <span>Notifications</span>
-          {unreadBell > 0 && (
-            <div style={{
-              marginLeft: "auto",
-              background: "#C9973A", color: "#fff",
-              borderRadius: 999, padding: "2px 8px",
-              fontSize: 11, fontWeight: 700,
-            }}>
-              {unreadBell > 9 ? "9+" : unreadBell}
+            <div className="tdc-nav-link" onClick={() => go("/pet-home")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#F5F3FF", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🐾</div>
+              <span>Pet Soul™</span>
             </div>
-          )}
-        </div>
 
-        <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "4px 0" }}/>
+            <div className="tdc-nav-link" onClick={() => go("/paw-points")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#FFFBF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🏆</div>
+              <span>Paw Points</span>
+              {pawPoints > 0 && <div style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: "#C9973A" }}>{pawPoints.toLocaleString()} pts</div>}
+            </div>
 
-        <div className="tdc-nav-link" onClick={() => go("/account")}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#F8FAFC", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>👤</div>
-          <span style={{ color: "#64748B" }}>Account Settings</span>
-        </div>
+            <div className="tdc-nav-link" onClick={() => go("/cart")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#F0FFF4", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🛒</div>
+              <span>My Cart</span>
+            </div>
 
-        <div className="tdc-nav-link" onClick={handleLogout}>
-          <div style={{ width:32, height:32, borderRadius:10, background:"#FFF5F5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🚪</div>
-          <span style={{ color: "#DC2626" }}>Sign Out</span>
-        </div>
+            <div className="tdc-nav-link" onClick={() => go("/notifications")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#FFFBF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🔔</div>
+              <span>Notifications</span>
+              {unreadBell > 0 && <div style={{ marginLeft: "auto", background: "#C9973A", color: "#fff", borderRadius: 999, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{unreadBell > 9 ? "9+" : unreadBell}</div>}
+            </div>
+
+            <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "4px 0" }}/>
+
+            <div className="tdc-nav-link" onClick={() => go("/account")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#F8FAFC", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>👤</div>
+              <span style={{ color: "#64748B" }}>Account Settings</span>
+            </div>
+
+            <div className="tdc-nav-link" onClick={handleLogout}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"#FFF5F5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🚪</div>
+              <span style={{ color: "#DC2626" }}>Sign Out</span>
+            </div>
+          </>
+        ) : (
+          /* Not logged in — show sign-in / join CTA */
+          <div style={{ padding: "16px 20px" }}>
+            <div style={{ fontSize: 13, color: "#64748B", marginBottom: 12 }}>Sign in to access your pet profile, requests, and personalised picks.</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => go("/login")}
+                style={{ flex: 1, padding: "12px", borderRadius: 12, border: "1.5px solid #0F172A", background: "#0F172A", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                data-testid="menu-signin-btn">Sign In</button>
+              <button onClick={() => go("/membership")}
+                style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: "linear-gradient(135deg,#9333EA,#EC4899)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                data-testid="menu-join-btn">Join Now</button>
+            </div>
+          </div>
+        )}
 
         {/* Mystique dedication */}
         <div style={{

@@ -313,7 +313,7 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
               {petName}'s request is in good hands.
             </h3>
             <p style={{ fontSize:14, color:"#666", lineHeight:1.6, marginBottom:24 }}>
-              Your Concierge has everything they need. Expect a message within 48 hours. ♥
+              Your Concierge® has everything they need. Expect a message within 48 hours. ♥
             </p>
             <p style={{ fontSize:12, color:"rgba(201,151,58,0.80)", fontWeight:600 }}>
               48h response promise
@@ -343,7 +343,7 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
               fontSize:12, fontWeight:600, color:"#F0C060", marginBottom:16
             }}>
               <span style={{ color:"#C9973A" }}>★</span>
-              {petName}'s Concierge
+              {petName}'s Concierge®
             </div>
 
             {/* Title — dynamic per pillar */}
@@ -354,7 +354,7 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
 
             {/* Subtitle */}
             <p style={{ fontSize:13, color:"#888", marginBottom:10, lineHeight:1.5 }}>
-              Three questions. Then your Concierge takes over.
+              Three questions. Then your Concierge® takes over.
             </p>
 
             {/* Service name callout */}
@@ -434,11 +434,11 @@ function BookingModal({ service, pet, user, onClose, onBooked }) {
                        fontSize:15, fontWeight:800, cursor: loading ? "not-allowed" : "pointer",
                        opacity: loading ? 0.7 : 1 }}
               data-testid="svc-submit-btn">
-              {loading ? "Sending..." : "Send to my Concierge →"}
+              {loading ? "Sending..." : "Send to my Concierge® →"}
             </button>
 
             <p style={{ fontSize:11, color:"#aaa", textAlign:"center", marginTop:12, lineHeight:1.5 }}>
-              We already have your contact details. Your Concierge will reach out — you don't need to chase.
+              We already have your contact details. Your Concierge® will reach out — you don't need to chase.
             </p>
           </>
         )}
@@ -486,7 +486,7 @@ function ServiceCard({ service, groupColour, pet, onBook }) {
           style={{ width:"100%", padding:"10px", borderRadius:10, fontSize:13, fontWeight:700,
                    background:`linear-gradient(135deg,#C9973A,#F0C060)`,
                    color:"#1A0A00", border:"none", cursor:"pointer" }}>
-          Book via Concierge →
+          Book via Concierge® →
         </button>
       </div>
     </div>
@@ -775,14 +775,14 @@ const ServicesSoulPage = () => {
           ))
         )}
 
-        {/* Concierge note */}
+        {/* Concierge® note */}
         <div style={{ background:G.pale, borderRadius:12, padding:"16px 20px",
                       marginBottom:48, textAlign:"center" }}>
           <div style={{ fontSize:13, fontWeight:600, color:G.deep, marginBottom:4 }}>
             ✦ Mira is the Brain · Concierge® is the Hands
           </div>
           <div style={{ fontSize:12, color:G.mutedText, lineHeight:1.6 }}>
-            Every booking goes to a real Concierge who arranges, confirms, and follows up.
+            Every booking goes to a real Concierge® who arranges, confirms, and follows up.
             No bots, no automated bookings — a person who knows your dog.
           </div>
         </div>

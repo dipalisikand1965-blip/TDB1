@@ -182,7 +182,7 @@ export const ROUTINE_ICONS = {
   'night': { emoji: '🌙', label: 'Night', time: '9-10 PM' }
 };
 
-// Concierge action icons
+// Concierge® action icons
 export const CONCIERGE_ICONS = {
   'build_routine': { emoji: '📅', label: 'Build a routine' },
   'products': { emoji: '🛍️', label: 'Products for {petName}' },

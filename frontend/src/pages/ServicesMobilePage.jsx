@@ -113,7 +113,7 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:14, fontWeight:600, color:G.dark, marginBottom:2 }}>{svc.name}</div>
                       {svc.description && <div style={{ fontSize:14, color:G.taupe }}>{svc.description.slice(0, 80)}{svc.description.length > 80 ? '…' : ''}</div>}
-                      {/* POLICY: Services are NEVER priced — always via Concierge */}
+                      {/* POLICY: Services are NEVER priced — always via Concierge® */}
                       <div style={{ fontSize:12, fontWeight:600, letterSpacing:'0.05em', color:`${group.colour}`, marginTop:4, opacity:0.7 }}>
                         PRICE ON REQUEST · CONCIERGE
                       </div>
@@ -201,10 +201,17 @@ export default function ServicesMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🤝 Services</div>
             </div>
             {contextPets?.length > 1 && (
-              <select value={currentPet?.id} onChange={e => { vibe(); setCurrentPet(contextPets.find(p => p.id === e.target.value)); }}
-                style={{ background:'rgba(255,255,255,0.12)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:999, padding:'7px 14px', color:'#fff', fontSize:14 }}>
-                {contextPets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {contextPets.map(p => (
+                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
+                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
+                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:12 }}>
@@ -252,10 +259,10 @@ export default function ServicesMobilePage() {
           <PersonalisedBreedSection pet={currentPet} pillar="services" token={token} />
         </div>
 
-        {/* Concierge CTA */}
+        {/* Concierge® CTA */}
         <div style={{ margin:'0 16px 24px', background:G.dark, borderRadius:24, padding:20 }}>
           <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:14, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
-          <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge.</div>
+          <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge®.</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
           <button onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_cta' }); }}
             style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>

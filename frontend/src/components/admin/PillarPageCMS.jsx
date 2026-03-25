@@ -15,7 +15,7 @@
  * 5. Bundles (Curated bundles)
  * 6. Services (Related services)
  * 7. Personalized (Breed/archetype/soul picks)
- * 8. Concierge (Premium assistance)
+ * 8. Concierge® (Premium assistance)
  * 9. Mira Prompts (AI suggestions)
  * 10. Custom Tab (Pillar-specific features)
  */
@@ -828,7 +828,7 @@ const MiraPromptEditor = ({ prompts, onUpdate }) => {
     { value: 'tip', label: 'Contextual Tip', color: 'bg-blue-100 text-blue-700' },
     { value: 'reminder', label: 'Proactive Reminder', color: 'bg-amber-100 text-amber-700' },
     { value: 'suggestion', label: 'Suggestion', color: 'bg-green-100 text-green-700' },
-    { value: 'nudge', label: 'Concierge Nudge', color: 'bg-purple-100 text-purple-700' },
+    { value: 'nudge', label: 'Concierge® Nudge', color: 'bg-purple-100 text-purple-700' },
   ];
 
   const addPrompt = () => {
@@ -932,7 +932,7 @@ const PillarPageCMS = ({ pillar }) => {
   // Categories
   const [categories, setCategories] = useState(config?.categories || []);
   
-  // Concierge services
+  // Concierge® services
   const [conciergeServices, setConciergeServices] = useState([]);
   
   // Mira prompts
@@ -1079,7 +1079,7 @@ const PillarPageCMS = ({ pillar }) => {
   const addConciergeService = () => {
     setConciergeServices(prev => [...prev, {
       id: Date.now().toString(),
-      name: 'New Concierge Service',
+      name: 'New Concierge® Service',
       description: '',
       price: null,
       turnaround: '',
@@ -1171,7 +1171,7 @@ const PillarPageCMS = ({ pillar }) => {
         <TabsList className="grid grid-cols-4 w-full bg-gray-100 p-1 rounded-lg mb-2">
           <TabsTrigger value="services" className="text-xs"><Briefcase className="w-3.5 h-3.5 mr-1" /> Services</TabsTrigger>
           <TabsTrigger value="personalized" className="text-xs"><PawPrint className="w-3.5 h-3.5 mr-1" /> Personalized</TabsTrigger>
-          <TabsTrigger value="concierge" className="text-xs"><Crown className="w-3.5 h-3.5 mr-1" /> Concierge</TabsTrigger>
+          <TabsTrigger value="concierge" className="text-xs"><Crown className="w-3.5 h-3.5 mr-1" /> Concierge®</TabsTrigger>
           <TabsTrigger value="miraprompts" className="text-xs"><Brain className="w-3.5 h-3.5 mr-1" /> Mira Prompts</TabsTrigger>
         </TabsList>
         {/* NEW: Third row of tabs for Help Buckets, Daily Tips, Guided Paths */}
@@ -1451,11 +1451,11 @@ const PillarPageCMS = ({ pillar }) => {
           </Card>
         </TabsContent>
 
-        {/* Concierge Tab */}
+        {/* Concierge® Tab */}
         <TabsContent value="concierge" className="mt-6">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Concierge Services ({conciergeServices.length})</h2>
+              <h2 className="text-lg font-semibold">Concierge® Services ({conciergeServices.length})</h2>
               <Button onClick={addConciergeService} className="bg-purple-500 hover:bg-purple-600">
                 <Plus className="w-4 h-4 mr-2" /> Add Service
               </Button>

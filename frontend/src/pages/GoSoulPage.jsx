@@ -287,7 +287,7 @@ function MiraImagineCard({ card, pet, token }) {
         <p style={{ fontSize:13, fontWeight:600, color:G.light, fontStyle:"italic", marginBottom:12 }}>{card.reason}</p>
         {requested
           ? <div style={{ borderRadius:10, padding:10, fontSize:13, fontWeight:700, background:`rgba(26,188,156,0.20)`, border:`1px solid ${G.light}40`, color:G.light, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-              <Check size={13} /> Sent to Concierge!
+              <Check size={13} /> Sent to Concierge®!
             </div>
           : <button onClick={handleRequest} disabled={sending} style={{ width:"100%", borderRadius:10, padding:10, fontSize:13, fontWeight:700, background:sending?`${G.teal}60`:`linear-gradient(135deg,${G.teal},${G.deepMid})`, border:"none", color:"#fff", cursor:sending?"wait":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5, opacity:sending?0.7:1 }}>
               {sending && <Loader2 size={11} style={{ animation:"spin 1s linear infinite" }} />}
@@ -329,7 +329,7 @@ function MiraPicksSection({ pet }) {
     if (size) cards.push({ emoji:"🎒", bg:`linear-gradient(135deg,${G.deep},#0a2a3a)`, name:`${cap(size)} Breed Flight Kit`, desc:`Everything ${petName} needs for cabin or cargo travel — sized for ${size.toLowerCase()} dogs`, reason:`Because ${petName} is a ${size.toLowerCase()} dog` });
     if (anxious) cards.push({ emoji:"😌", bg:`linear-gradient(135deg,#0a2a18,${G.deepMid})`, name:"Anxious Traveller Pack", desc:`Complete calming system for ${petName} — spray, chews, compression wrap + Mira's pre-travel protocol`, reason:`Because ${petName} has travel anxiety` });
     if (breed) cards.push({ emoji:"✈️", bg:`linear-gradient(135deg,${G.deep},#1a3a5c)`, name:`${breed} Travel Bundle`, desc:`Personalised travel kit for ${breed}s — carrier, safety harness, and calming treats sized and matched`, reason:`Mira knows ${breed}s have specific travel needs` });
-    cards.push({ emoji:"🗺️", bg:`linear-gradient(135deg,#0a1a2a,#0d3349)`, name:"Complete Travel Co-ordination", desc:`Mira handles everything — flights, boarding, documentation, and a vet-checked kit for ${petName}`, reason:`Because travel with a dog deserves a Concierge` });
+    cards.push({ emoji:"🗺️", bg:`linear-gradient(135deg,#0a1a2a,#0d3349)`, name:"Complete Travel Co-ordination", desc:`Mira handles everything — flights, boarding, documentation, and a vet-checked kit for ${petName}`, reason:`Because travel with a dog deserves a Concierge®` });
     return cards.slice(0, 4);
   })();
 
@@ -440,9 +440,9 @@ function MiraPicksSection({ pet }) {
                     <span style={{ fontSize:10, fontWeight:800, color:scoreColor, minWidth:26 }}>{score}</span>
                   </div>}
                   {!isService && pick.mira_reason && <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden", fontStyle:"italic" }}>{pick.mira_reason}</p>}
-                  {isService && <p style={{ fontSize:10, color:G.deepMid, lineHeight:1.4, margin:0, fontStyle:'italic' }}>Concierge support for travel planning.</p>}
+                  {isService && <p style={{ fontSize:10, color:G.deepMid, lineHeight:1.4, margin:0, fontStyle:'italic' }}>Concierge® support for travel planning.</p>}
                   <p style={{ fontSize:9, color:isService?G.deepMid:G.teal, fontWeight:700, margin:"6px 0 0" }}>
-                    {isService?"Tap → Talk to Concierge":"Tap → View & Add"}
+                    {isService?"Tap → Talk to Concierge®":"Tap → View & Add"}
                   </p>
                 </div>
               </div>
@@ -467,7 +467,7 @@ function MiraPicksSection({ pet }) {
             <div style={{ padding:"20px 24px" }}>
               <p style={{ fontSize:13, color:"#555", marginBottom:16 }}>Our concierge team will reach out within 48 hours for <strong>{petName}</strong>.</p>
               {conciergeSent
-                ? <div style={{ textAlign:"center", padding:12, borderRadius:12, background:`rgba(26,188,156,0.08)`, border:`1px solid rgba(26,188,156,0.3)` }}><Check size={20} style={{ color:G.teal, margin:"0 auto 6px" }} /><p style={{ fontWeight:700, color:G.teal, margin:0 }}>Sent to Concierge!</p></div>
+                ? <div style={{ textAlign:"center", padding:12, borderRadius:12, background:`rgba(26,188,156,0.08)`, border:`1px solid rgba(26,188,156,0.3)` }}><Check size={20} style={{ color:G.teal, margin:"0 auto 6px" }} /><p style={{ fontWeight:700, color:G.teal, margin:0 }}>Sent to Concierge®!</p></div>
                 : <button onClick={() => handleServiceConcierge(conciergeService)} disabled={conciergeSending} style={{ width:"100%", background:`linear-gradient(135deg,${G.teal},${G.deepMid})`, color:"#fff", border:"none", borderRadius:12, padding:13, fontSize:14, fontWeight:700, cursor:conciergeSending?"wait":"pointer" }}>
                     {conciergeSending?"Sending…":`Book this for ${petName} →`}
                   </button>}
@@ -1736,7 +1736,7 @@ function GoConcierge({ pet, token }) {
               <span style={{ fontSize:12, color:"rgba(255,255,255,0.50)", marginLeft:6 }}>trips arranged</span>
             </div>
             <button onClick={() => setActiveService("planning")} style={{ display:"inline-flex", alignItems:"center", gap:8, background:`linear-gradient(135deg,${G.teal},${G.light})`, color:G.deep, border:"none", borderRadius:10, padding:"12px 22px", fontSize:14, fontWeight:800, cursor:"pointer" }}>
-              ✈️ Talk to your Go Concierge
+              ✈️ Talk to your Go Concierge®
             </button>
             <span style={{ fontSize:12, color:"rgba(255,255,255,0.40)" }}>48h response · Emergency: 5 min</span>
           </div>
@@ -1826,7 +1826,7 @@ const GoSoulPage = () => {
 
   usePlatformTracking({ pillar: "go", pet: currentPet });
 
-  // handleNearMeBook — wires "Book via Concierge" on any nearby place card
+  // handleNearMeBook — wires "Book via Concierge®" on any nearby place card
   const handleNearMeBook = useCallback(async (spot, city) => {
     // Fire tdc.nearme immediately
     tdc.nearme({ query: spot?.name || city || "travel stay", pillar: "go", pet: petData, channel: "go_nearme_card" });
@@ -2081,7 +2081,7 @@ const GoSoulPage = () => {
       </div>
     <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
 
-    {/* Go Concierge Modal — Care-style chip selector */}
+    {/* Go Concierge® Modal — Care-style chip selector */}
     {goConciergOpen && (
       <div onClick={()=>setGoConciergOpen(false)}
         style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -2090,12 +2090,12 @@ const GoSoulPage = () => {
           <button onClick={()=>setGoConciergOpen(false)}
             style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
           <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(26,188,156,0.10)",border:"1px solid rgba(26,188,156,0.30)",borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
-            <span style={{fontSize:11,fontWeight:600,color:"#0d6e5a",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Go Concierge</span>
+            <span style={{fontSize:11,fontWeight:600,color:"#0d6e5a",letterSpacing:"0.06em",textTransform:"uppercase"}}>★ {petData?.name||"your dog"}'s Go Concierge®</span>
           </div>
           <h2 style={{fontSize:22,fontWeight:800,color:"#0d2b22",fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>
             Where is <span style={{color:G.teal}}>{petData?.name||"your dog"}</span> heading?
           </h2>
-          <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge takes over.</p>
+          <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then your Concierge® takes over.</p>
           <p style={{fontSize:13,fontWeight:700,color:G.deep,marginBottom:12}}>What are we planning?</p>
           <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
             {["Pet-friendly hotel","Overnight boarding","Day care","Road trip","Flight with pet","Pet sitter at home","International travel","Local staycation","Just exploring"].map(opt=>(
@@ -2124,7 +2124,7 @@ const GoSoulPage = () => {
             setGoConciergOpen(false);
           }}
             style={{width:"100%",background:`linear-gradient(135deg,${G.teal},${G.deep})`,color:"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:"pointer"}}>
-            ✦ Send to {petData?.name||"your dog"}'s Concierge
+            ✦ Send to {petData?.name||"your dog"}'s Concierge®
           </button>
         </div>
       </div>

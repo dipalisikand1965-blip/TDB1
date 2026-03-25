@@ -409,7 +409,7 @@ const MiraMemoryManager = ({ authHeaders = {} }) => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="w-full max-w-md mx-4">
             <CardHeader>
-              <CardTitle>Add Concierge Note</CardTitle>
+              <CardTitle>Add Concierge® Note</CardTitle>
               <CardDescription>
                 Add a memory note for {searchEmail}
               </CardDescription>

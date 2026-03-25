@@ -80,8 +80,8 @@ function buildPaths(pet) {
       step4:{
         title:"Your Breed Match Plan",
         summaryFields:["Your lifestyle","Family situation","Breed preferences","Next step"],
-        cta:"🔍 Hand to Concierge",
-        conciergeNote:"Your Concierge will prepare a breed match report and connect you with ethical adoption centres for the recommended breed.",
+        cta:"🔍 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will prepare a breed match report and connect you with ethical adoption centres for the recommended breed.",
       },
     },
     {
@@ -131,8 +131,8 @@ function buildPaths(pet) {
       step4:{
         title:"Your Adoption Readiness Plan",
         summaryFields:["Home situation","Financial readiness","Time commitment","Next step"],
-        cta:"✅ Hand to Concierge",
-        conciergeNote:"Your Concierge will review the readiness assessment and identify anything to address before proceeding.",
+        cta:"✅ Hand to Concierge®",
+        conciergeNote:"Your Concierge® will review the readiness assessment and identify anything to address before proceeding.",
       },
     },
     {
@@ -185,8 +185,8 @@ function buildPaths(pet) {
       step4:{
         title:"Your Home Preparation Plan",
         summaryFields:["Dog-proofing","Must-have supplies","Routine setup","Next step"],
-        cta:"🏡 Hand to Concierge",
-        conciergeNote:"Your Concierge will source the supplies, arrange the first vet appointment, and prepare the first-week routine guide.",
+        cta:"🏡 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will source the supplies, arrange the first vet appointment, and prepare the first-week routine guide.",
       },
     },
     {
@@ -237,8 +237,8 @@ function buildPaths(pet) {
       step4:{
         title:"Your First 30 Days Plan",
         summaryFields:["Week one approach","Vet and health","Training foundations","Next step"],
-        cta:"🐾 Hand to Concierge",
-        conciergeNote:"Your Concierge will book the first vet appointment, prepare the week-by-week guide, and be on call for questions throughout the first month.",
+        cta:"🐾 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will book the first vet appointment, prepare the week-by-week guide, and be on call for questions throughout the first month.",
       },
     },
     {
@@ -289,8 +289,8 @@ function buildPaths(pet) {
       step4:{
         title:"Your Rescue Dog Plan",
         summaryFields:["Their background","Signs to watch for","Trust-building approach","Next step"],
-        cta:"💛 Hand to Concierge",
-        conciergeNote:"Your Concierge will connect you with a rescue-experienced behaviourist and prepare the trauma-aware care guide specific to this dog's background.",
+        cta:"💛 Hand to Concierge®",
+        conciergeNote:"Your Concierge® will connect you with a rescue-experienced behaviourist and prepare the trauma-aware care guide specific to this dog's background.",
       },
     },
   ]
@@ -329,10 +329,10 @@ function PathFlowModal({ path, pet, onClose }) {
     setSubmitted(true);
   };
 
-  if(submitted)return(<ModalShell onClose={onClose} noPadding><div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}><div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div><div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge.</div><div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge will reach out within 48 hours. ♥</div><button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Done</button></div></ModalShell>);
+  if(submitted)return(<ModalShell onClose={onClose} noPadding><div style={{ background:`linear-gradient(135deg,${G.deep},${G.mid})`, borderRadius:20, padding:"48px 40px", textAlign:"center", minHeight:320, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}><div style={{ width:64, height:64, borderRadius:"50%", background:`linear-gradient(135deg,${path.accentColor},${G.light})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, marginBottom:20 }}>♥</div><div style={{ fontSize:22, fontWeight:800, color:"#fff", fontFamily:"Georgia,serif", marginBottom:10 }}>{path.title.replace(" Path","")} sent to your Concierge®.</div><div style={{ fontSize:14, color:"rgba(255,255,255,0.55)", marginBottom:28, lineHeight:1.6 }}>Everything is in good hands.<br/>Your Concierge® will reach out within 48 hours. ♥</div><button onClick={onClose} style={{ background:"rgba(255,255,255,0.12)", border:"1px solid rgba(255,255,255,0.20)", color:"#fff", borderRadius:20, padding:"10px 24px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Done</button></div></ModalShell>);
 
   if(currentStep===4&&completedSteps.includes(3)){
-    const summaryData={[path.step4.summaryFields[0]]:selections.step1.join(", ")||"Not specified",[path.step4.summaryFields[1]]:selections.step2||"Not selected",[path.step4.summaryFields[2]]:selections.step3.join(", ")||"Not selected",[path.step4.summaryFields[3]]:"Concierge will contact within 48h"};
+    const summaryData={[path.step4.summaryFields[0]]:selections.step1.join(", ")||"Not specified",[path.step4.summaryFields[1]]:selections.step2||"Not selected",[path.step4.summaryFields[2]]:selections.step3.join(", ")||"Not selected",[path.step4.summaryFields[3]]:"Concierge® will contact within 48h"};
     return(<ModalShell onClose={onClose}><div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}><div style={{ width:44, height:44, borderRadius:10, background:path.iconBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{path.icon}</div><div><div style={{ fontSize:17, fontWeight:800, color:"#1A0A00", fontFamily:"Georgia,serif" }}>{path.title.replace(" Path",` for ${safePetName}`)}</div><div style={{ fontSize:12, color:"#888", marginTop:2 }}>{path.step4.summaryFields.join(" · ")} · All confirmed</div></div><button onClick={onClose} style={{ marginLeft:"auto", background:"#F5F5F5", border:"none", borderRadius:"50%", width:32, height:32, fontSize:16, cursor:"pointer", color:"#555" }}>✕</button></div><div style={{ background:"#fff", border:"1px solid #F0E8E0", borderRadius:14, marginBottom:20, overflow:"hidden" }}>{Object.entries(summaryData).map(([k,v],i)=>(<div key={k} style={{ display:"flex", alignItems:"flex-start", padding:"14px 18px", borderBottom:i<Object.entries(summaryData).length-1?"1px solid #F5F0EA":"none" }}><div style={{ fontSize:13, fontWeight:700, color:path.accentColor, width:160, flexShrink:0 }}>{k}</div><div style={{ fontSize:13, color:"#1A0A00", flex:1, lineHeight:1.5 }}>{v}</div></div>))}</div><button onClick={handleSubmit} style={{ width:"100%", background:`linear-gradient(135deg,${path.accentColor},${G.mid})`, color:"#fff", border:"none", borderRadius:14, padding:"16px", fontSize:16, fontWeight:800, cursor:"pointer", marginBottom:10 }}>{path.step4.cta}</button><div style={{ fontSize:12, color:"#888", textAlign:"center" }}>{path.step4.conciergeNote}</div></ModalShell>);
   }
 

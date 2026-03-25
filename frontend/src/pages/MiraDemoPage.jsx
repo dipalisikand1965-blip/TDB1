@@ -105,7 +105,7 @@ const VetVisitFlowModal = lazy(() => import('../components/VetVisitFlowModal'));
 const CareServiceFlowModal = lazy(() => import('../components/CareServiceFlowModal'));
 const TodayPanel = lazy(() => import('../components/Mira/TodayPanel'));
 
-// Quick Concierge Modal - "Send to Concierge" CTA for Mira suggestions
+// Quick Concierge® Modal - "Send to Concierge®" CTA for Mira suggestions
 const QuickConciergeModal = lazy(() => import('../components/Mira/QuickConciergeModal'));
 
 // Simple loading fallback for lazy components
@@ -518,10 +518,10 @@ const MiraDemoPage = () => {
   const [showCareServiceFlowModal, setShowCareServiceFlowModal] = useState(false);
   
   // ═══════════════════════════════════════════════════════════════════════════════
-  // QUICK CONCIERGE MODAL - "Send to Concierge" CTA for Mira suggestions
+  // QUICK CONCIERGE MODAL - "Send to Concierge®" CTA for Mira suggestions
   // When Mira suggests actionable items, C° button glows golden
   // User clicks → Quick confirmation modal → UNIFIED SERVICE FLOW
-  // SSOT Reference: /app/memory/SSOT.md - "Quick Send to Concierge" feature
+  // SSOT Reference: /app/memory/SSOT.md - "Quick Send to Concierge®" feature
   // ═══════════════════════════════════════════════════════════════════════════════
   const [showQuickConciergeModal, setShowQuickConciergeModal] = useState(false);
   const [actionableSuggestion, setActionableSuggestion] = useState(null);
@@ -804,7 +804,7 @@ const MiraDemoPage = () => {
   // PENDING CONCIERGE CONTEXT: From LEARN "Ask Mira" flow
   const [pendingConciergeContext, setPendingConciergeContext] = useState(null);
   
-  // CONCIERGE HOME PANEL: New Concierge OS Layer home screen
+  // CONCIERGE HOME PANEL: New Concierge® OS Layer home screen
   const [showConciergeHome, setShowConciergeHome] = useState(false);
   // CONCIERGE THREAD PANEL: Conversation detail view
   const [conciergeThread, setConciergeThread] = useState({ isOpen: false, threadId: null, thread: null, messages: [] });
@@ -937,7 +937,7 @@ const MiraDemoPage = () => {
     // hasNew flag means Mira just recommended something
     const hasLocalNewPicks = miraPicks?.hasNew === true && localPicksCount > 0;
     
-    // Check if there's an actionable suggestion for Concierge GLOW state
+    // Check if there's an actionable suggestion for Concierge® GLOW state
     const hasActionableSuggestion = actionableSuggestion !== null;
     
     console.log('[ICON STATE DEBUG] miraPicks:', JSON.stringify({
@@ -1429,7 +1429,7 @@ const MiraDemoPage = () => {
   
   // ═══════════════════════════════════════════════════════════════════════════
   // CONCIERGE CONFIRMATION - Service Request Received Banner
-  // Part of UNIFORM SERVICE FLOW: User → Mira Ticket → Admin Notification → Concierge
+  // Part of UNIFORM SERVICE FLOW: User → Mira Ticket → Admin Notification → Concierge®
   // ═══════════════════════════════════════════════════════════════════════════
   const [conciergeConfirmation, setConciergeConfirmation] = useState(null);
   
@@ -2639,7 +2639,7 @@ const MiraDemoPage = () => {
     return newTicket;
   }, [currentTicket, pet, user, token]);
   
-  // Engage Concierge - Flip ticket status, NOT create new ticket
+  // Engage Concierge® - Flip ticket status, NOT create new ticket
   const engageConcierge = useCallback(async (reason, contextData = {}) => {
     if (!currentTicket) return;
     
@@ -2674,7 +2674,7 @@ const MiraDemoPage = () => {
           context_data: contextData
         })
       });
-      console.log('[HANDOFF] Ticket handed to Concierge:', currentTicket.id);
+      console.log('[HANDOFF] Ticket handed to Concierge®:', currentTicket.id);
     } catch (error) {
       console.error('[HANDOFF] API error:', error);
     }
@@ -3247,11 +3247,11 @@ const MiraDemoPage = () => {
     setShowConversationEndBanner,
     setConversationComplete,
     
-    // Concierge
+    // Concierge®
     setConciergeConfirmation,
     setShowConciergePanel,
     
-    // Quick Send to Concierge (C° GLOW state)
+    // Quick Send to Concierge® (C° GLOW state)
     setActionableSuggestion,
     
     // Training Videos
@@ -3878,7 +3878,7 @@ const MiraDemoPage = () => {
     if (item.action === 'openChat') {
       window.dispatchEvent(new CustomEvent('openMiraAI'));
     } else if (item.action === 'openConcierge') {
-      // Open the Concierge Home Panel (same as header CONCIERGE tab)
+      // Open the Concierge® Home Panel (same as header CONCIERGE tab)
       setShowConciergeHome(true);
     } else if (item.action === 'openHelp') {
       setShowHelpModal(true);
@@ -4331,7 +4331,7 @@ const MiraDemoPage = () => {
           return null;
         }}
         onSendToConcierge={async (data) => {
-          console.log('[UNIFIED VAULT] Send to Concierge:', data);
+          console.log('[UNIFIED VAULT] Send to Concierge®:', data);
           setShowUnifiedVault(false);
           await handleConciergeHandoff({
             pet_name: pet.name,
@@ -4515,7 +4515,7 @@ const MiraDemoPage = () => {
                     }, 100);
                   }}
                   onBookNow={(request, alert) => {
-                    // "Book Now" - Send request to Mira who will route to Concierge
+                    // "Book Now" - Send request to Mira who will route to Concierge®
                     // The message format triggers service request detection on backend
                     const bookingMessage = `I want to book ${request.title}. ${request.details}`;
                     setQuery(bookingMessage);
@@ -4633,7 +4633,7 @@ const MiraDemoPage = () => {
               */}
               
               {/* STATUS INDICATORS - Non-clickable, passive status display
-                  Shows C° (Concierge) and PICKS counts when there's activity
+                  Shows C° (Concierge®) and PICKS counts when there's activity
                   Spec: NOT clickable, no tap target, no hover state
                   Visual: dot + count, dot = new but low urgency, number = attention needed
               */}
@@ -4653,7 +4653,7 @@ const MiraDemoPage = () => {
                   }}
                   data-testid="chat-status-indicators"
                 >
-                  {/* C° Indicator - Concierge awaiting count */}
+                  {/* C° Indicator - Concierge® awaiting count */}
                   {(apiCounts?.awaitingYouCount || 0) > 0 && (
                     <div 
                       style={{
@@ -5210,8 +5210,8 @@ const MiraDemoPage = () => {
               });
             }}
             onOpenConcierge={(conciergeData) => {
-              // "Ask Mira" - opens Concierge with context (zero re-asking)
-              // Per LEARN Bible: Concierge opener shows "I've read X. Help me with Y."
+              // "Ask Mira" - opens Concierge® with context (zero re-asking)
+              // Per LEARN Bible: Concierge® opener shows "I've read X. Help me with Y."
               console.log('[LEARN → CONCIERGE] Opening concierge with context:', conciergeData);
               setShowLearnPanel(false);
               
@@ -5228,7 +5228,7 @@ const MiraDemoPage = () => {
                 });
               }
               
-              // Open the new Concierge Home Panel
+              // Open the new Concierge® Home Panel
               setShowConciergeHome(true);
             }}
           />
@@ -5424,7 +5424,7 @@ const MiraDemoPage = () => {
             sessionId={sessionId}
             member={user}
             onVaultSent={(result) => {
-              console.log('[VAULT] Sent to Concierge:', result);
+              console.log('[VAULT] Sent to Concierge®:', result);
               if (result.success) {
                 setConversationHistory(prev => [...prev, {
                   type: 'mira',
@@ -5481,7 +5481,7 @@ const MiraDemoPage = () => {
         />
       </Suspense>
       
-      {/* Quick Concierge Modal - "Send to Concierge" CTA for Mira suggestions */}
+      {/* Quick Concierge® Modal - "Send to Concierge®" CTA for Mira suggestions */}
       <Suspense fallback={<LazyFallback />}>
         <QuickConciergeModal
           isOpen={showQuickConciergeModal}
@@ -5494,7 +5494,7 @@ const MiraDemoPage = () => {
           petName={pet?.name}
           userId={user?.id}
           onSuccess={(data) => {
-            console.log('[QUICK CONCIERGE] Sent to Concierge:', data);
+            console.log('[QUICK CONCIERGE] Sent to Concierge®:', data);
             setActionableSuggestion(null); // Clear glow state on success
           }}
         />

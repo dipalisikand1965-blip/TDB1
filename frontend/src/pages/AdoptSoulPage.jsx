@@ -58,7 +58,7 @@ const ADOPT_SERVICES = [
   { id:"home_assessment", icon:"🏠", name:"Home Readiness Assessment",     tagline:"Before they arrive",               price:"Free",   steps:2, accentColor:"#7B1D4E", desc:"Mira's team checks your home for safety, space and setup — gives you a step-by-step readiness plan.", miraKnows:"Most new owners underestimate how much prep is needed. I walk you through everything." },
   { id:"rescue_network",  icon:"🐾", name:"Rescue Partner Network",        tagline:"Matched, not random",              price:"Free",   steps:2, accentColor:"#D4537E", desc:"Mira connects you with verified rescue partners and specific dogs matching your lifestyle.", miraKnows:"I've built relationships with rescue centres across India — so you find the right dog, not just any dog." },
   { id:"post_adopt",      icon:"❤️", name:"Post-Adoption Support",         tagline:"First 30 days matter most",        price:"Free",   steps:2, accentColor:"#7B1D4E", desc:"Behaviour guidance, settling-in support, and vet coordination — Mira walks you through the first month.", miraKnows:"The first 30 days at home shape the rest of the dog's life. I'll be with you every step." },
-  { id:"adopt_paperwork", icon:"📋", name:"Adoption Paperwork Guidance",   tagline:"No confusion, no gaps",            price:"Free",   steps:2, accentColor:"#D4537E", desc:"All adoption forms, microchipping, registration and vet records — Concierge handles the paperwork.", miraKnows:"Adoption paperwork is often skipped. Doing it right protects you and the dog." },
+  { id:"adopt_paperwork", icon:"📋", name:"Adoption Paperwork Guidance",   tagline:"No confusion, no gaps",            price:"Free",   steps:2, accentColor:"#D4537E", desc:"All adoption forms, microchipping, registration and vet records — Concierge® handles the paperwork.", miraKnows:"Adoption paperwork is often skipped. Doing it right protects you and the dog." },
   { id:"multi_pet",       icon:"🐕", name:"Multi-Pet Integration",         tagline:"First introductions matter",       price:"₹999",   steps:2, accentColor:"#7B1D4E", desc:"Expert guidance on introducing a new dog to existing pets — step-by-step, safe, stress-free.", miraKnows:"The first meeting between pets sets the tone for life. I'll make sure it goes right." },
 ];
 
@@ -177,7 +177,7 @@ function MiraPicksSection({ pet, onOpenService }) {
   },[pet?.id]);
   const productPicks = picks.filter(p => p.entity_type === 'product' || p.type === 'product' || (!p.entity_type && !p.type));
   const servicePicks = picks.filter(p => p.entity_type === 'service' || p.type === 'service');
-  const badgeLabel = productPicks.length > 0 ? 'AI Scored' : servicePicks.length > 0 ? 'Concierge Curated' : 'Curated';
+  const badgeLabel = productPicks.length > 0 ? 'AI Scored' : servicePicks.length > 0 ? 'Concierge® Curated' : 'Curated';
   return (
     <section style={{marginBottom:28}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
@@ -210,7 +210,7 @@ function AdoptConciergeModal({ isOpen, onClose, token, preSelected }) {
         {sent?(<div style={{textAlign:"center",padding:"16px 0"}}><div style={{fontSize:40,marginBottom:16}}>❤️</div><h3 style={{fontSize:18,fontWeight:800,color:G.darkText,marginBottom:10}}>Mira's on it</h3><p style={{fontSize:14,color:G.mutedText,marginBottom:24}}>Our team will contact you within 48 hours.</p><button onClick={onClose} style={{background:G.rose,color:"#fff",border:"none",borderRadius:12,padding:"12px 28px",fontSize:14,fontWeight:700,cursor:"pointer"}}>Done</button></div>):(
           <>
             <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
-            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:G.pale,border:`1px solid ${G.border}`,borderRadius:9999,padding:"4px 14px",marginBottom:20}}><span style={{fontSize:11,fontWeight:600,color:G.rose,letterSpacing:"0.06em",textTransform:"uppercase"}}>★ Adoption Concierge</span></div>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:G.pale,border:`1px solid ${G.border}`,borderRadius:9999,padding:"4px 14px",marginBottom:20}}><span style={{fontSize:11,fontWeight:600,color:G.rose,letterSpacing:"0.06em",textTransform:"uppercase"}}>★ Adoption Concierge®</span></div>
             <h2 style={{fontSize:22,fontWeight:800,color:G.darkText,fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>Where are you on your <span style={{color:G.rose}}>adoption journey?</span></h2>
             <p style={{fontSize:14,color:"#888",marginBottom:24}}>Three questions. Then Mira takes over.</p>
             <p style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:12}}>What do you need help with?</p>

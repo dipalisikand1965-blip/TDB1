@@ -439,11 +439,11 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
           </div>
         )}
 
-        {/* Talk to Concierge CTA */}
+        {/* Talk to Concierge® CTA */}
         <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-lg border border-red-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>
             <p className="font-semibold text-gray-900">Can't find what you need?</p>
-            <p className="text-sm text-gray-600">Our Concierge team can help locate emergency services near you</p>
+            <p className="text-sm text-gray-600">Our Concierge® team can help locate emergency services near you</p>
           </div>
           <a 
             href="https://wa.me/918971702582?text=Hi, I need help finding emergency pet services near me"
@@ -452,7 +452,7 @@ const NearbyEmergencyHelp = ({ userLocation }) => {
             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg flex items-center gap-2 whitespace-nowrap"
           >
             <Phone className="w-4 h-4" />
-            Talk to Concierge
+            Talk to Concierge®
           </a>
         </div>
       </div>

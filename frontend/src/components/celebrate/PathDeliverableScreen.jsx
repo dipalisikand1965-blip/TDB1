@@ -2,7 +2,7 @@
  * PathDeliverableScreen.jsx
  * 
  * The deliverable at the end of each guided path.
- * Dark bg with white inner card + "Hand to Concierge" CTA.
+ * Dark bg with white inner card + "Hand to Concierge®" CTA.
  * Source: GuidedCelebrationPaths_MASTER.docx Section 7 + deliverable sections.
  */
 
@@ -92,10 +92,10 @@ const PathDeliverableScreen = ({ path, petName, pet, userChoices, onReset }) => 
           fontSize: 24, margin: '0 auto 14px'
         }}>♥</div>
         <h3 style={{ fontSize: 18, fontWeight: 800, color: '#FFFFFF', marginBottom: 8 }}>
-          {resolve(path.deliverableName)} sent to your Concierge.
+          {resolve(path.deliverableName)} sent to your Concierge®.
         </h3>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', marginBottom: 20, lineHeight: 1.6 }}>
-          Everything is in good hands. Your Concierge will reach out within 48 hours. ♥
+          Everything is in good hands. Your Concierge® will reach out within 48 hours. ♥
         </p>
         <button
           onClick={onReset}
@@ -164,11 +164,11 @@ const PathDeliverableScreen = ({ path, petName, pet, userChoices, onReset }) => 
         }}
         data-testid={`deliverable-hand-to-concierge-${path.id}`}
       >
-        {sending ? 'Sending...' : '👑 Hand to Concierge'}
+        {sending ? 'Sending...' : '👑 Hand to Concierge®'}
       </button>
 
       <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.40)', textAlign: 'center', lineHeight: 1.5 }}>
-        Your Concierge will execute everything in this {path.deliverableName.toLowerCase()}. 48h response promise.
+        Your Concierge® will execute everything in this {path.deliverableName.toLowerCase()}. 48h response promise.
       </p>
     </div>
   );

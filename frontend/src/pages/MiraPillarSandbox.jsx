@@ -6,7 +6,7 @@
  * CONCEPT:
  * - Beautiful pillar landing (Stay as test)
  * - Catalogue products (with prices, Add to Cart)
- * - Concierge Cards (no prices, dynamic, "Ask Concierge®")
+ * - Concierge® Cards (no prices, dynamic, "Ask Concierge®")
  * - ONE "Talk to Mira" FAB → Opens full Mira-demo experience
  * 
  * UNIFIED SERVICE FLOW:
@@ -357,7 +357,7 @@ const MiraPillarSandbox = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <Badge className="bg-purple-100 text-purple-700 mb-4">
-            <Sparkles className="w-3 h-3 mr-1" /> Concierge Creates
+            <Sparkles className="w-3 h-3 mr-1" /> Concierge® Creates
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             Personalized Stay Experiences
@@ -445,7 +445,7 @@ const MiraPillarSandbox = () => {
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8 text-green-400" />
               </div>
-              <h3 className="font-bold text-xl mb-2">Concierge Hands</h3>
+              <h3 className="font-bold text-xl mb-2">Concierge® Hands</h3>
               <p className="text-purple-200">
                 A real human concierge handles the details. We coordinate, verify, and ensure everything is perfect.
               </p>

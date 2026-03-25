@@ -602,7 +602,7 @@ const EmergencyPage = () => {
           ═══════════════════════════════════════════════════════════════════════════ */}
       <ServiceCatalogSection 
         pillar="emergency"
-        title="Concierge Will Assist"
+        title="Concierge® Will Assist"
         subtitle="We can help coordinate things for you right now"
         maxServices={6}
         hidePrice={true}
@@ -733,7 +733,7 @@ const EmergencyPage = () => {
                         className="w-full mt-3 text-xs"
                         onClick={openWhatsAppConcierge}
                       >
-                        Get Concierge Help
+                        Get Concierge® Help
                       </Button>
                     </div>
                   )}
@@ -778,7 +778,7 @@ const EmergencyPage = () => {
             <Card className="p-4 border-l-4 border-purple-500">
               <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
                 <Phone className="w-4 h-4 text-purple-600" />
-                Concierge Follow-up
+                Concierge® Follow-up
               </h3>
               <p className="text-sm text-gray-600">
                 Our team will check in on your pet's recovery and help with any post-emergency needs.
@@ -789,7 +789,7 @@ const EmergencyPage = () => {
           <div className="text-center mt-6">
             <Button onClick={openWhatsAppConcierge} className="bg-emerald-600 hover:bg-emerald-700">
               <Phone className="w-4 h-4 mr-2" />
-              Schedule Follow-up with Concierge
+              Schedule Follow-up with Concierge®
             </Button>
           </div>
         </div>
@@ -1025,7 +1025,7 @@ const EmergencyPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Concierge Button */}
+      {/* Concierge® Button */}
       <ConciergeButton 
         pillar="emergency" 
         position="bottom-right"
