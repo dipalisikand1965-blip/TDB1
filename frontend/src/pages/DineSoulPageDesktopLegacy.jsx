@@ -179,20 +179,22 @@ function containsAllergen(allergen, text) {
 }
 
 // ─── Mira Intelligence: filter, sort, dim, and reason products for pet ────────
+const ALLERGEN_MAP_DESKTOP = { chicken:['chicken','poultry','fowl'], soy:['soy','soya','tofu','edamame'], wheat:['wheat','gluten','flour','barley'], dairy:['milk','cheese','butter','lactose','whey'], eggs:['egg','eggs'], beef:['beef','bovine'], pork:['pork','ham','bacon'], lamb:['lamb','mutton'], fish:['fish','salmon','tuna','cod','anchovy'] };
 function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
   const petName = pet?.name || 'your dog';
   const allergyTerms = allergies.map(a => a.toLowerCase().trim());
   const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
 
-  return products
-    // 1. Remove products containing known allergens
+  const filtered = products
+    // 1. Remove products containing known allergens (with synonym matching)
     .filter(p => {
       if (!allergyTerms.length) return true;
-      const productText = `${p.name} ${p.description || ''}`.toLowerCase();
+      const productText = `${p.name} ${p.description || ''} ${(p.ingredients||[]).join(' ')}`.toLowerCase();
       const freeFromText = (p.allergy_free || '').toLowerCase();
       return !allergyTerms.some(allergen => {
-        if (isSafeFromAllergen(allergen, productText, freeFromText)) return false;
-        return containsAllergen(allergen, productText);
+        const synonyms = ALLERGEN_MAP_DESKTOP[allergen] || [allergen];
+        if (synonyms.some(syn => freeFromText.includes(`${syn}-free`) || freeFromText.includes(`${syn} free`))) return false;
+        return synonyms.some(syn => { const cleaned = productText.replace(new RegExp(`${syn}[- ]free`,'gi'),''); return cleaned.includes(syn); });
       });
     })
     // 2. Enrich with Mira flags + "Why Mira picked this"
@@ -218,22 +220,26 @@ function applyMiraIntelligence(products, allergies, loves, healthCondition, nutr
       // "Why Mira picked this" — prefer existing DB hint
       let mira_hint = p.mira_hint || null;
       if (!mira_hint) {
-        if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
+        if (matchedLove) mira_hint = `${petName} loves ${matchedLove.charAt(0).toUpperCase()+matchedLove.slice(1)}`;
         else if (isHealthSafe) mira_hint = `Safe during ${petName}'s treatment`;
         else if (isAllergySafe) mira_hint = `Free from ${allergyTerms.join(' & ')} — safe for ${petName}`;
         else if (p.mira_tag) mira_hint = p.mira_tag;
       }
 
-      return { ...p, mira_hint, _loved: !!matchedLove, _healthSafe: isHealthSafe, _dimmed: !!conflictsGoal };
+      return { ...p, mira_hint, _loved: !!matchedLove, _healthSafe: isHealthSafe, _dimmed: !!conflictsGoal, miraPick: false };
     })
-    // 3. Sort: loved → health-safe → rest
+    // 3. Sort: loved → health-safe → rest → dimmed last
     .sort((a, b) => {
+      if (a._dimmed && !b._dimmed) return 1;
+      if (!a._dimmed && b._dimmed) return -1;
       if (a._loved && !b._loved) return -1;
       if (!a._loved && b._loved) return 1;
       if (a._healthSafe && !b._healthSafe) return -1;
       if (!a._healthSafe && b._healthSafe) return 1;
       return 0;
     });
+  if (filtered.length > 0) filtered[0] = { ...filtered[0], miraPick: true };
+  return filtered;
 }
 
 // ─── Soul Question Card (Dine — amber themed) ────────────────────────────────
@@ -1086,6 +1092,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const healthCondition = getHealthCondition(pet);
   const nutritionGoal = pet?.doggy_soul_answers?.nutrition_goal || null;
   const intelligent = applyMiraIntelligence(allRaw, allergies, loves, healthCondition, nutritionGoal, pet);
+  // Mark top result as Mira's pick
+  const miraPickProduct = intelligent[0] || null;
 
   // Dynamic tabs from actual sub_categories in API data
   const tabList = ['All', ...Object.keys(rawByTab)];
@@ -1171,19 +1179,36 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
                 : `All ${dim.name} products were filtered — they contain ${allergies.join(', ')} which ${petName} is allergic to.`}
             </div>
           ) : (
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))",gap:12}}>
-              {products.map(p => (
-                <div key={p.id} style={{opacity: p._dimmed ? 0.4 : 1, position:"relative"}} data-testid={`dim-product-${p.id}`}>
-                  {p._loved && (
-                    <div style={{position:"absolute",top:-6,right:-6,zIndex:2,background:"#E91E63",borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff"}}>♥</div>
-                  )}
-                  {p._dimmed && (
-                    <div style={{position:"absolute",top:4,left:4,zIndex:2,background:"rgba(0,0,0,0.6)",borderRadius:6,padding:"2px 6px",fontSize:9,color:"#fff",fontWeight:700}}>Conflicts goal</div>
-                  )}
-                  <SharedProductCard product={p} pillar="dine" selectedPet={pet} miraContext={miraCtx} />
+            <>
+              {/* Mira's pick callout */}
+              {miraPickProduct && miraPickProduct.mira_hint && (
+                <div style={{background:"linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))",border:"1px solid rgba(255,140,66,0.3)",borderRadius:12,padding:"10px 14px",display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"linear-gradient(135deg,#FF8C42,#C44DFF)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:"#fff",flexShrink:0}}>✦</div>
+                  <div style={{fontSize:13,color:"#3D1A00",lineHeight:1.4}}>
+                    <strong>Mira&apos;s pick:</strong> {miraPickProduct.name}
+                    <span style={{color:"#888",marginLeft:5}}>— {miraPickProduct.mira_hint}</span>
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill, minmax(min(200px, 100%), 1fr))",gap:12}}>
+                {products.map((p, idx) => (
+                  <div key={p.id} style={{opacity: p._dimmed ? 0.4 : 1, position:"relative", border: idx===0&&p===miraPickProduct ? "2px solid #FF8C42" : undefined, borderRadius: idx===0&&p===miraPickProduct ? 12 : undefined}} data-testid={`dim-product-${p.id}`}>
+                    {p._loved && (
+                      <div style={{position:"absolute",top:-6,right:-6,zIndex:2,background:"#E91E63",borderRadius:"50%",width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff"}}>♥</div>
+                    )}
+                    {p._dimmed && (
+                      <div style={{position:"absolute",top:4,left:4,zIndex:2,background:"rgba(0,0,0,0.6)",borderRadius:6,padding:"2px 6px",fontSize:9,color:"#fff",fontWeight:700}}>Conflicts goal</div>
+                    )}
+                    <SharedProductCard product={p} pillar="dine" selectedPet={pet} miraContext={miraCtx} />
+                  </div>
+                ))}
+              </div>
+              {/* Footer */}
+              <div style={{borderTop:"1px solid #FFF3E0",paddingTop:10,marginTop:10,fontSize:12,color:"#888",display:"flex",justifyContent:"space-between"}}>
+                <span>{products.length} items shown · filtered for {petName}{allergies.length > 0 ? ` · no ${allergies.join(', ')}` : ''}</span>
+                {allRaw.length > intelligent.length && <span style={{color:"#E87722",fontWeight:600}}>{allRaw.length - intelligent.length} blocked (allergens)</span>}
+              </div>
+            </>
           )}
         </>
       )}

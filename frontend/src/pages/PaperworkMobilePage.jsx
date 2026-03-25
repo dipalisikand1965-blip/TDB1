@@ -13,6 +13,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import DocumentVault from '../components/paperwork/DocumentVault';
@@ -72,7 +73,7 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
       .then(r => r.ok ? r.json() : null)
       .then(d => {
         const prods = d?.products || [];
-        setProducts(filterBreedProducts(prods, pet?.breed));
+        setProducts(applyMiraFilter(filterBreedProducts(prods, pet?.breed), pet));
       })
       .catch(() => {});
 

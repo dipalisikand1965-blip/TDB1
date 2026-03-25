@@ -167,15 +167,18 @@ function applyMiraIntelligence(products, allergies, loves, healthCondition, nutr
   const petName = pet?.name || 'your dog';
   const allergyTerms = allergies.map(a => a.toLowerCase().trim());
   const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
+  // Allergen synonym map — checks ingredient synonyms not just the allergen name
+  const ALLERGEN_MAP = { chicken:['chicken','poultry','fowl'], soy:['soy','soya','tofu','edamame'], wheat:['wheat','gluten','flour','barley'], dairy:['milk','cheese','butter','lactose','whey'], eggs:['egg','eggs'], beef:['beef','bovine'], pork:['pork','ham','bacon'], lamb:['lamb','mutton'], fish:['fish','salmon','tuna','cod','anchovy'] };
 
-  return products
+  const filtered = products
     .filter(p => {
       if (!allergyTerms.length) return true;
-      const productText = `${p.name} ${p.description || ''}`.toLowerCase();
+      const productText = `${p.name} ${p.description || ''} ${(p.ingredients||[]).join(' ')}`.toLowerCase();
       const freeFromText = (p.allergy_free || '').toLowerCase();
       return !allergyTerms.some(allergen => {
-        if (isSafeFromAllergen(allergen, productText, freeFromText)) return false;
-        return containsAllergen(allergen, productText);
+        const synonyms = ALLERGEN_MAP[allergen] || [allergen];
+        if (synonyms.some(syn => freeFromText.includes(`${syn}-free`) || freeFromText.includes(`${syn} free`))) return false;
+        return synonyms.some(syn => { const cleaned = productText.replace(new RegExp(`${syn}[- ]free`,'gi'),''); return cleaned.includes(syn); });
       });
     })
     .map(p => {
@@ -197,20 +200,24 @@ function applyMiraIntelligence(products, allergies, loves, healthCondition, nutr
       );
       let mira_hint = p.mira_hint || null;
       if (!mira_hint) {
-        if (matchedLove) mira_hint = `Matches ${petName}'s love for ${matchedLove}`;
+        if (matchedLove) mira_hint = `${petName} loves ${matchedLove.charAt(0).toUpperCase()+matchedLove.slice(1)}`;
         else if (isHealthSafe) mira_hint = `Safe during ${petName}'s treatment`;
         else if (isAllergySafe) mira_hint = `Free from ${allergyTerms.join(' & ')} — safe for ${petName}`;
         else if (p.mira_tag) mira_hint = p.mira_tag;
       }
-      return { ...p, mira_hint, _loved: !!matchedLove, _healthSafe: isHealthSafe, _dimmed: !!conflictsGoal };
+      return { ...p, mira_hint, _loved: !!matchedLove, _healthSafe: isHealthSafe, _dimmed: !!conflictsGoal, miraPick: false };
     })
     .sort((a, b) => {
+      if (a._dimmed && !b._dimmed) return 1;
+      if (!a._dimmed && b._dimmed) return -1;
       if (a._loved && !b._loved) return -1;
       if (!a._loved && b._loved) return 1;
       if (a._healthSafe && !b._healthSafe) return -1;
       if (!a._healthSafe && b._healthSafe) return 1;
       return 0;
     });
+  if (filtered.length > 0) filtered[0] = { ...filtered[0], miraPick: true };
+  return filtered;
 }
 
 // ── Dimensions ────────────────────────────────────────────────
@@ -231,6 +238,10 @@ const normCard = (p, petName) => ({
   imageUrl: p.cloudinary_url || p.image_url || p.mockup_url || p.image,
   tag: p.breed && p.breed !== 'all' ? `For ${p.breed}` : null,
   mira_hint: p.mira_hint,
+  miraPick: p.miraPick || false,
+  _loved: p._loved || false,
+  _dimmed: p._dimmed || false,
+  _healthSafe: p._healthSafe || false,
   sub_category: p.sub_category,
   bg: C.chipBg,
   raw: p,
@@ -422,7 +433,12 @@ function DineProductCard({ product, onAdd, onTap }) {
   return (
     <div
       className="dp-card"
-      style={{ overflow:'hidden', cursor:'pointer' }}
+      style={{
+        overflow:'hidden', cursor:'pointer',
+        border: product.miraPick ? '2px solid #FF8C42' : '1px solid #F0E8E0',
+        opacity: product._dimmed ? 0.55 : 1,
+        transition: 'opacity 0.2s',
+      }}
       onClick={() => onTap?.(product)}
       data-testid={`dine-product-${product.id || product.name}`}
     >
@@ -430,7 +446,8 @@ function DineProductCard({ product, onAdd, onTap }) {
         {product.imageUrl
           ? <img src={product.imageUrl} alt={product.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
           : <span style={{ fontSize:32 }}>🍖</span>}
-        {product.tag && <div style={{ position:'absolute', top:8, left:8, background:'rgba(43,23,11,0.75)', borderRadius:6, padding:'2px 7px', fontSize:10, color:'#fff', fontWeight:700 }}>{product.tag}</div>}
+        {product.miraPick && <div style={{ position:'absolute', top:8, left:8, background:'linear-gradient(135deg,#FF8C42,#C44DFF)', borderRadius:6, padding:'2px 7px', fontSize:9, color:'#fff', fontWeight:700 }}>✦ Mira&apos;s pick</div>}
+        {!product.miraPick && product.tag && <div style={{ position:'absolute', top:8, left:8, background:'rgba(43,23,11,0.75)', borderRadius:6, padding:'2px 7px', fontSize:10, color:'#fff', fontWeight:700 }}>{product.tag}</div>}
         {product.mira_hint && <div style={{ position:'absolute', bottom:0, left:0, right:0, background:'linear-gradient(transparent,rgba(43,23,11,0.7))', padding:'4px 8px', fontSize:10, color:'#FFD080' }}>✦ {product.mira_hint}</div>}
       </div>
       <div style={{ padding:'10px 12px 14px' }}>
@@ -534,21 +551,47 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
           {normalised.length === 0 ? (
             <div style={{ textAlign:'center', padding:'24px 0' }}>
               <div style={{ fontSize:28, marginBottom:8 }}>{currentDim.icon}</div>
-              <div style={{ fontSize:14, color:C.taupe }}>
-                {activeTab !== 'All' ? `No ${activeTab} products yet.` : `Mira is curating ${currentDim.name} for ${name}. Check back soon.`}
-              </div>
-              {activeTab !== 'All' && (
+              {allergies.length > 0 ? (
+                <>
+                  <div style={{ fontSize:14, color:C.taupe }}>Mira filtered everything here for {name}&apos;s {allergies.slice(0,2).join(' & ')} allergies.</div>
+                  <div style={{ marginTop:8, fontSize:13, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
+                </>
+              ) : (
+                <div style={{ fontSize:14, color:C.taupe }}>
+                  {activeTab !== 'All' ? `No ${activeTab} products yet.` : `Mira is curating ${currentDim.name} for ${name}. Check back soon.`}
+                </div>
+              )}
+              {activeTab !== 'All' && normalised.length === 0 && !allergies.length && (
                 <button onClick={() => setActiveTab('All')} style={{ marginTop:12, padding:'8px 16px', borderRadius:999, background:C.chipBg, color:C.chipTxt, border:'none', cursor:'pointer', fontSize:13, fontWeight:600 }}>
                   Show all →
                 </button>
               )}
             </div>
           ) : (
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-              {normalised.map(p => (
-                <DineProductCard key={p.id} product={p} onAdd={onAdd} onTap={onTap} />
-              ))}
-            </div>
+            <>
+              {/* Mira's pick callout */}
+              {normalised[0]?.miraPick && normalised[0]?.mira_hint && (
+                <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+                  <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
+                  <div style={{ fontSize:13, color:'#3D1A00', lineHeight:1.4 }}>
+                    <strong>Mira&apos;s pick:</strong> {normalised[0].name}
+                    <span style={{ color:'#888', marginLeft:5 }}>— {normalised[0].mira_hint}</span>
+                  </div>
+                </div>
+              )}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+                {normalised.map(p => (
+                  <DineProductCard key={p.id} product={p} onAdd={onAdd} onTap={onTap} />
+                ))}
+              </div>
+              {/* Footer */}
+              <div style={{ borderTop:`1px solid ${C.chipBg}`, paddingTop:10, marginTop:10, fontSize:12, color:C.taupe, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <span>{normalised.length} items · filtered for {name}{allergies.length > 0 ? ` · no ${allergies.slice(0,2).join(', ')}` : ''}</span>
+                {rawProducts.length > normalised.length && (
+                  <span style={{ color:C.orange, fontWeight:600 }}>{rawProducts.length - normalised.length} filtered</span>
+                )}
+              </div>
+            </>
           )}
         </div>
       )}

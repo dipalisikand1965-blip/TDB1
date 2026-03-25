@@ -39,6 +39,8 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
+import { applyMiraFilter } from '../hooks/useMiraFilter';
+
 function getAllergies(pet) {
   const raw = pet?.allergies; let arr = [];
   if (Array.isArray(raw)) arr = raw;
@@ -53,14 +55,6 @@ function getCoatType(pet) {
   return 'medium';
 }
 function getHealthCondition(pet) { return pet?.health_condition || pet?.medical_condition || null; }
-function applyMiraIntelligence(products, allergies, coat, condition, pet) {
-  if (!allergies?.length && !coat && !condition) return products;
-  return products.filter(p => {
-    const text = `${p.name} ${p.description || ''} ${p.ingredients || ''}`.toLowerCase();
-    if (allergies?.length) { for (const a of allergies) { if (text.includes(a.toLowerCase()) && !text.includes('free')) return false; } }
-    return true;
-  });
-}
 const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
 function filterBreedProducts(products, petBreed) {
   const pl=(petBreed||'').toLowerCase(); const pw=pl.split(/\s+/).filter(w=>w.length>2);
@@ -116,11 +110,10 @@ export default function CareMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const allergies = getAllergies(currentPet);
-  const coat = getCoatType(currentPet);
-  const condition = getHealthCondition(currentPet);
-  const intelligent = applyMiraIntelligence(allRaw, allergies, coat, condition, currentPet);
+  const intelligent = applyMiraFilter(allRaw, currentPet);
   const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
   const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
+  const miraPick = products.find(p => p.miraPick) || products[0] || null;
 
   return (
     <PillarPageLayout pillar="care" hideHero hideNavigation>
@@ -219,24 +212,53 @@ export default function CareMobilePage() {
                   <div style={{ display:'flex', gap:12, marginBottom:12, fontSize:12, color:'#888' }}>
                     <span style={{ color:'#27AE60', fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
                     {allRaw.length - intelligent.length > 0 && (
-                      <span style={{ color:'#E87722' }}>✗ {allRaw.length - intelligent.length} filtered</span>
+                      <span style={{ color:'#E87722' }}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
                     )}
+                  </div>
+                )}
+
+                {/* Mira's pick callout */}
+                {miraPick && miraPick.mira_hint && (
+                  <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
+                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, color:'#fff', flexShrink:0 }}>✦</div>
+                    <div style={{ fontSize:13, color:'#3D1A00', lineHeight:1.4 }}>
+                      <strong>Mira's pick:</strong> {miraPick.name}
+                      <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>
+                    </div>
                   </div>
                 )}
 
                 {products.length === 0 ? (
                   <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    <div style={{ fontSize:32, marginBottom:8 }}>🌿</div>
-                    <div>Loading care products for {petName}…</div>
+                    {allergies.length > 0 ? (
+                      <>
+                        <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
+                        <div>Mira filtered everything here for {petName}&apos;s {allergies.join(' & ')} allergies.</div>
+                        <div style={{ marginTop:8, fontSize:13, color:'#27AE60', fontWeight:600 }}>Ask Concierge to source safe alternatives →</div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize:32, marginBottom:8 }}>🌿</div>
+                        <div>Loading care products for {petName}…</div>
+                      </>
+                    )}
                   </div>
                 ) : (
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                    {products.slice(0, 40).map(p => (
-                      <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="care" selectedPet={currentPet}
-                        onAddToCart={() => handleAddToCart(p)}
-                        onClick={() => { vibe(); setSelectedProduct(p); }} />
-                    ))}
-                  </div>
+                  <>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                      {products.slice(0, 40).map(p => (
+                        <div key={p.id||p._id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1, position:'relative' }}>
+                          <SharedProductCard product={p} pillar="care" selectedPet={currentPet}
+                            onAddToCart={() => handleAddToCart(p)}
+                            onClick={() => { vibe(); setSelectedProduct(p); }} />
+                        </div>
+                      ))}
+                    </div>
+                    {/* Footer */}
+                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12, color:'#888' }}>
+                      <span>{products.length} items · filtered for {petName}{allergies.length > 0 ? ` · no ${allergies.join(', ')}` : ''}</span>
+                    </div>
+                  </>
                 )}
 
                 {/* Mira Imagines */}
