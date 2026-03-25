@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import CloudinaryUploader from './CloudinaryUploader';
 import AIImagePromptField from './AIImagePromptField';
+import MediaTabPanel from './MediaTabPanel';
 import { ALL_PILLARS, PILLAR_SUBCATEGORIES } from './ProductBoxConfig';
 
 const PILLARS = ALL_PILLARS.map(p => p.id);
@@ -1790,34 +1791,33 @@ const SoulProductsManager = () => {
                   onChange={e => setEditBreedProd(p => ({...p, is_mockup: e.target.checked}))}/>
                 <label htmlFor="ep-mockup" className="text-sm">Is Mockup</label>
               </div>
-              {/* Image upload */}
-              <div>
-                <Label className="text-xs mb-1 block">Image (Upload or paste URL)</Label>
-                <AIImagePromptField
-                  entityType="breed_product"
-                  entityId={editBreedProd?.id}
-                  currentPrompt={editBreedProd?.ai_image_prompt || ''}
-                  onPromptChange={val => setEditBreedProd(p => ({ ...p, ai_image_prompt: val }))}
-                  onImageGenerated={(url) => setEditBreedProd(p => ({ ...p, cloudinary_url: url, mockup_url: url }))}
-                />
-                <div className="mt-2">
-                <CloudinaryUploader
-                  productId={editBreedProd.id}
-                  currentImageUrl={editBreedProd.cloudinary_url || editBreedProd.mockup_url}
-                  onUploadSuccess={url => setEditBreedProd(p => ({...p, cloudinary_url: url, mockup_url: url}))}
-                />
-                <Input placeholder="Or paste Cloudinary URL…" value={editBreedProd.cloudinary_url||''} className="text-xs mt-2"
-                  onChange={e => setEditBreedProd(p => ({...p, cloudinary_url: e.target.value, mockup_url: e.target.value}))}/>
-                {(editBreedProd.cloudinary_url || editBreedProd.mockup_url) && (
-                  <div className="rounded-lg overflow-hidden border w-24 h-24 mt-2">
-                    <img src={editBreedProd.cloudinary_url || editBreedProd.mockup_url} alt="" className="w-full h-full object-cover"/>
-                  </div>
-                )}
-              </div>
+              {/* Media section — full MediaTabPanel */}
+              <div className="col-span-2">
+                <MediaTabPanel
+                    imageUrl={editBreedProd.cloudinary_url || editBreedProd.mockup_url || ''}
+                    onImageChange={(url) => setEditBreedProd(p => ({...p, cloudinary_url: url, mockup_url: url}))}
+                    entityType="breed_product"
+                    entityId={editBreedProd.id || ''}
+                    entityName={editBreedProd.name || editBreedProd.product_type || ''}
+                    breed={editBreedProd.breed || ''}
+                  />
+                </div>
             </div>
             </div>
           )}
           <DialogFooter className="gap-2">
+            {/* Fix 6 — Activate / Deactivate */}
+            <Button
+              type="button"
+              variant="outline"
+              className={editBreedProd?.active !== false
+                ? "border-red-400 text-red-600 hover:bg-red-50"
+                : "border-green-500 text-green-700 hover:bg-green-50"}
+              onClick={() => setEditBreedProd(p => ({...p, active: !p.active}))}
+              data-testid="breed-product-activate-btn"
+            >
+              {editBreedProd?.active !== false ? 'Deactivate' : 'Activate'}
+            </Button>
             <Button variant="outline" onClick={() => setEditBreedProdOpen(false)}>Cancel</Button>
             <Button onClick={saveBreedProd} disabled={savingBreedProd} className="bg-purple-600 hover:bg-purple-700">
               {savingBreedProd ? <Loader2 className="w-4 h-4 mr-2 animate-spin"/> : <Check className="w-4 h-4 mr-2"/>}Save
