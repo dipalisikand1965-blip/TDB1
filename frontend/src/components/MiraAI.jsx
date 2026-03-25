@@ -1263,15 +1263,9 @@ const MiraAI = () => {
   );
   
   if (!isOpen) {
-    // On pillar pages, MiraChatWidget handles the orb - don't render duplicate
-    if (isOnPillarPage) {
-      return null;
-    }
-    
-    // HIDE on mobile - MobileNavBar FAB handles Mira on mobile
     return (
       <div 
-        className="hidden sm:block fixed bottom-8 right-8 z-[9998]" 
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 sm:bottom-8 sm:right-8 sm:left-auto sm:translate-x-0 z-[9999]" 
         data-testid="mira-orb-container"
       >
         <MiraOrb 
