@@ -273,17 +273,77 @@ function DineProfileSheet({ pet, onClose }) {
             ))}
           </div>
 
-          <div style={{ margin: '16px 0', width: '100%', borderRadius: 14, background: '#2D1B69', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ width: 44, height: 44, background: '#7C3AED', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: '#fff', flexShrink: 0 }}>✦</div>
+          <div
+            style={{
+              width: '100%',
+              borderRadius: 14,
+              background: '#2D1B69',
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              margin: '16px 0',
+              minHeight: 72,
+            }}
+          >
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                background: '#7C3AED',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                color: '#fff',
+                flexShrink: 0,
+              }}
+            >
+              ✦
+            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Mira is learning {name}</div>
-              <div style={{ fontSize: 13, color: '#C4B5FD', lineHeight: 1.55 }}>
-                Complete {name}&apos;s Soul Profile to get real scored picks. Mira already knows {breed} traits — your profile adds the personal layer.
+              <div
+                style={{
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#fff',
+                  marginBottom: 2,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Mira is learning {name}
+              </div>
+              <div
+                style={{
+                  fontSize: 13,
+                  color: '#C4B5FD',
+                  lineHeight: 1.4,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Complete {name}&apos;s Soul Profile to get real scored picks.
               </div>
             </div>
             <button
               onClick={() => { window.location.href = `/pet/${pet?.id || pet?._id}?tab=personality`; }}
-              style={{ background: '#4C1D95', border: '1px solid #7C3AED', borderRadius: 20, padding: '10px 18px', color: '#fff', fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', cursor: 'pointer', flexShrink: 0 }}
+              style={{
+                background: '#4C1D95',
+                border: '1px solid #7C3AED',
+                borderRadius: 20,
+                padding: '10px 16px',
+                color: '#fff',
+                fontSize: 13,
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+                flexShrink: 0,
+                minHeight: 44,
+              }}
             >
               Complete Profile →
             </button>
