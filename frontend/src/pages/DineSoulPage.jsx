@@ -974,9 +974,6 @@ function DineMobilePage() {
           </div>
         </div>
 
-        {/* ── Soul Profile ── */}
-        <DinePetProfileCard pet={currentPet} onOpen={() => setProfileOpen(true)} />
-
         {/* ── Pillar Soul Profile (soul questions on page) ── */}
         <div style={{ padding:'0 16px 8px' }}>
           <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
