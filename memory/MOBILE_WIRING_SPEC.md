@@ -1,227 +1,388 @@
-# Mobile Wiring Specification — Complete Gap Analysis
-## Last Updated: 2026-03-25
+# Mobile Wiring Specification — The Doggy Company
+## Last Updated: 2026-03-25 (Session 2 Complete)
 
-## Pattern (Reference: DineSoulPage.jsx v11)
-Every mobile page follows this pattern:
+This document is the source of truth for mobile pillar implementation status.
+Desktop pages are LOCKED. All mobile work is in `*MobilePage.jsx` files.
+
+---
+
+## ARCHITECTURE
+
 ```
-1. Dark gradient hero (32px top padding for navbar clearance)
-2. Pet photo + name + breed badge
-3. Allergy chips
-4. PillarSoulProfile (green-bordered soul questions)
-5. Category strip (pills that open ContentModal)
-6. TOP-LEVEL TABS (Eat & Nourish / Dine Out style)
-7. Product grid (behind Mira bar as modal, or inline)
-8. MiraImaginesBreed
-9. PersonalisedBreedSection
-10. GuidedPaths
-11. ConciergeSection / NearMe
-12. Soul Made card
-13. ProductDetailModal on product tap
-14. ContentModal on category pill tap
+PillarSoulPage.jsx
+  const [isDesktop] = useState(() => window.innerWidth >= 1024);
+  useEffect(() => { resize listener → setIsDesktop(window.innerWidth >= 1024); });
+  if (!isDesktop) return <PillarMobilePage />;
+  // ...desktop JSX (NEVER TOUCH)
 ```
 
-## DESKTOP → MOBILE WIRING INSTRUCTIONS PER PILLAR
+## STANDARD MOBILE PAGE PATTERN
 
----
-
-### 1. DINE (DineSoulPage.jsx) — REFERENCE ✅
-- **Status**: Complete (v11)
-- **Tabs**: Eat & Nourish / Dine Out ✅
-- **Pills**: DineCategoryStrip → opens DineContentModal ⚠️ NEEDS FIX — currently filters inline, should open modal
-- **Products**: Full apiProducts grouped by category, SharedProductCard grid
-- **Modals**: DineContentModal, ProductDetailModal, TummyProfile sheet
-- **Intelligence**: applyMiraIntelligence ✅
-- **soulScoreUpdated**: ✅
-
-**FIX NEEDED**: DineCategoryStrip pill tap should open DineContentModal (like Celebrate pills open CelebrateContentModal). Currently line ~1000+ filters products inline instead.
-
----
-
-### 2. CELEBRATE (CelebrateMobilePage.jsx) — MOSTLY COMPLETE ✅
-- **Status**: 471 lines, well-wired
-- **Tabs**: None (category pills serve as navigation) ✅
-- **Pills**: CelebrateCategoryStrip → CelebrateContentModal ✅
-- **Breed Cakes**: → DoggyBakeryCakeModal ✅
-- **Birthday Box**: MiraBirthdayBox → BirthdayBoxBuilder (multi-step) ✅
-- **Products**: Mira Picks in bottom sheet modal ✅
-- **Browse**: BirthdayBoxBrowseDrawer ✅
-
-**REMAINING**: None — this is the gold standard after Dine.
-
----
-
-### 3. CARE (CareMobilePage.jsx) — NEEDS TABS + SERVICE FLOWS
-- **Status**: 246 lines, products in Mira modal
-- **Desktop tabs**: `dimTab` = products | personalised, `activeTab` = All | sub-categories
-- **Desktop service flows**: 8 multi-step booking flows:
-  1. Grooming (5 steps: breed→coat→comfort→services→confirm)
-  2. Vet Visit (3 steps: type→symptoms→confirm)
-  3. Boarding & Daycare (4 steps: dates→facility→meals→confirm)
-  4. Pet Sitting (3 steps: dates→instructions→confirm)
-  5. Dental Care (2 steps: issue→confirm)
-  6. Rehabilitation (3 steps: condition→goals→confirm)
-  7. Senior Care (3 steps: conditions→needs→confirm)
-  8. Emergency Vet (2 steps: emergency→dispatch)
-
-**MUST ADD TO MOBILE**:
 ```jsx
-// Top tabs (Products / Personalised)
-const [dimTab, setDimTab] = useState("products");
-// Sub-category tabs within Products
-const [activeTab, setActiveTab] = useState("All");
-// Tab bar JSX (copy from desktop CareSoulPage lines 1126-1136)
-// dimTab === "personalised" → <PersonalisedBreedSection>
-// dimTab === "products" → product grid with sub-category filter
+export default function XxxMobilePage() {
+  const { token } = useAuth();
+  const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
+  const { addToCart } = useCart();
+  const { request } = useConcierge({ pet: currentPet, pillar: 'xxx' });
+
+  const [loading, setLoading] = useState(true);
+  const [allRaw, setAllRaw] = useState([]);
+  const [activeTab, setActiveTab] = useState('xxx');
+  const [dimTab, setDimTab] = useState('products');
+
+  // Load pets from context
+  useEffect(() => {
+    if (contextPets !== undefined) setLoading(false);
+    if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
+  }, [contextPets, currentPet, setCurrentPet]);
+
+  // Fetch products
+  useEffect(() => {
+    if (!currentPet?.id) return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=xxx&limit=200`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.products) setAllRaw(filterBreedProducts(d.products, currentPet?.breed)); });
+  }, [currentPet?.id, token]);
+
+  // Apply intelligence
+  const intelligent = applyMiraIntelligence(allRaw, allergies, coat, condition, currentPet);
+  const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
+}
 ```
-- **Category strip**: CareCategoryStrip → CareContentModal (wire onDimSelect)
-- **Service flows**: Import and wire CareServiceModal or build inline multi-step forms
 
----
+## CRITICAL UTILITIES (copy into each mobile page)
 
-### 4. GO (GoMobilePage.jsx) — NEEDS TABS + SERVICE FLOWS
-- **Status**: 191 lines, basic product grid
-- **Desktop tabs**: `dimTab` = products | personalised, `activeTab` = All | sub-categories
-- **Desktop service flows**: 8 booking flows (Pet Taxi, Travel Kit, Pet-Friendly Hotel, Pet Sitter, Travel Vet, Travel Insurance, Pet Passport, Pet Airlines)
-- **Category strip**: GoCategoryStrip → GoContentModal ✅ wired
+```js
+// ALWAYS include these in every mobile page:
+const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
 
-**MUST ADD**: Same tab structure as Care. Wire GoContentModal on pill tap.
+function filterBreedProducts(products, petBreed) {
+  const pl=(petBreed||'').toLowerCase();
+  const pw=pl.split(/\s+/).filter(w=>w.length>2);
+  return products.filter(p=>{
+    const n=(p.name||'').toLowerCase();
+    for(const b of KNOWN_BREEDS){
+      if(n.includes(b)){
+        if(!pl)return false;
+        if(n.includes(pl))return true;
+        if(pw.some(w=>b.includes(w)))return true;
+        return false;
+      }
+    }
+    return true;
+  });
+}
 
----
+function getAllergies(pet) {
+  const raw=pet?.allergies; let arr=[];
+  if(Array.isArray(raw))arr=raw;
+  else if(typeof raw==='string')arr=raw.split(',').map(s=>s.trim());
+  return arr.filter(a=>a&&!['none','no allergies','nil','n/a'].includes(a.toLowerCase()));
+}
 
-### 5. PLAY (PlayMobilePage.jsx) — NEEDS TABS
-- **Status**: 124 lines, basic product grid
-- **Desktop tabs**: `dimTab` = products | personalised, `activeTab` = All | sub-categories
-- **Category strip**: PlayCategoryStrip → PlayContentModal ✅ wired
-- **Special**: BuddyMeetup component (social meetup feature)
-
-**MUST ADD**: dimTab/activeTab tabs, BuddyMeetup section.
-
----
-
-### 6. LEARN (LearnMobilePage.jsx) — NEEDS DIMENSION TABS + VIDEO TAB
-- **Status**: 107 lines, basic product grid
-- **Desktop structure**: 7 dimensions (Foundations, Behaviour, Training, Tricks, Health, Safety, Breed Guide). Each dimension has 3 sub-tabs: Products / Videos / Services
-- **No category strip** on desktop — uses dimension pills instead
-
-**MUST ADD**: 
-- 7 dimension pills
-- dimTab (Products / Videos / Services) within each dimension
-- Video fetching + rendering
-- Service cards per dimension
-
----
-
-### 7. SHOP (ShopMobilePage.jsx) — MINIMAL GAPS
-- **Status**: 103 lines, product grid with PersonalisedBreedSection
-- **Desktop**: No top tabs, just product grid with breed filtering
-- **No category strip**
-
-**REMAINING**: Mostly complete. May want to add SoulMadeCollection.
-
----
-
-### 8. SERVICES (ServicesMobilePage.jsx) — NEEDS SERVICE GROUPS
-- **Status**: 74 lines (smallest mobile page)
-- **Desktop structure**: 5 service groups, each with sub-services:
-  1. Pamper & Groom (grooming, spa, coat care)
-  2. Health & Vet (vet visits, dental, rehab)
-  3. Train & Learn (training, behaviour, enrichment)
-  4. Celebrate & Special (parties, photography, gifts)
-  5. Travel & Paperwork (travel docs, pet taxi, insurance)
-
-**MUST ADD**: 5 service group cards with expand/collapse, sub-service listings, booking CTAs.
-
----
-
-### 9. ADOPT (AdoptMobilePage.jsx) — NEEDS 3 TABS
-- **Status**: 87 lines
-- **Desktop tabs**: 
-  1. "Find Your Dog" — adoption listings
-  2. "Book Guidance" — adoption services
-  3. "Find Rescue" — nearby rescues/shelters
-
-**MUST ADD**:
-```jsx
-const [activeTab, setActiveTab] = useState("adopt");
-// Tab bar with 3 tabs
-// activeTab==="adopt" → adoption content
-// activeTab==="services" → service booking cards
-// activeTab==="find" → NearMe rescue centers
+function applyMiraIntelligence(products, allergies) {
+  if(!allergies?.length)return products;
+  return products.filter(p=>{
+    const text=`${p.name} ${p.description||''}`.toLowerCase();
+    for(const a of allergies){if(text.includes(a.toLowerCase())&&!text.includes('free'))return false;}
+    return true;
+  });
+}
 ```
 
 ---
 
-### 10. FAREWELL (FarewellMobilePage.jsx) — NEEDS 3 TABS
-- **Status**: 85 lines
-- **Desktop tabs**:
-  1. "Legacy & Memorial" — memorial products
-  2. "Get Support" — grief services
-  3. "Find Care" — nearby services
+## PILLAR STATUS MATRIX
 
-**MUST ADD**: Same 3-tab pattern as Adopt but with farewell-specific content.
+### 🍖 DINE — `/dine` — DineSoulPage.jsx → DineSoulPage.jsx (v11, IS the mobile)
+**Mobile file:** `/app/frontend/src/pages/DineSoulPage.jsx` (serves both)
+**Status:** ✅ 95% Complete
 
----
-
-### 11. EMERGENCY (EmergencyMobilePage.jsx) — NEEDS 3 TABS + SERVICE DISPATCH
-- **Status**: 95 lines
-- **Desktop tabs**:
-  1. "Emergency Kit" — emergency products + dimTab (Products/Services)
-  2. "Book Help" — emergency service booking
-  3. "Find Vet" — nearby emergency vets
-
-**MUST ADD**: 3 tabs + emergency service dispatch cards (within Products/Services sub-tabs).
+| Feature | Status |
+|---|---|
+| Eat & Nourish / Dine Out tabs | ✅ |
+| DineCategoryStrip pills → DineContentModal (internal) | ✅ |
+| GuidedNutritionPaths | ✅ |
+| DineConciergeSection | ✅ |
+| MealBoxCard | ✅ |
+| PersonalisedBreedSection | ✅ |
+| TummyProfile | ✅ |
+| applyMiraIntelligence | ✅ |
+| MiraPicksSection (AI curated row) | ❌ P1 |
 
 ---
 
-### 12. PAPERWORK (PaperworkMobilePage.jsx) — NEEDS DIMENSION TABS
-- **Status**: 91 lines
-- **Desktop structure**: 7 dimensions (Identity & Safety, Health Records, Travel Documents, Insurance, Breeding, Legal, End of Life). Each dimension has 3 sub-tabs: Products / Services / Advisory
-- **Special**: DocumentVault component
+### 🎉 CELEBRATE — `/celebrate` — CelebratePageNew.jsx → CelebrateMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/CelebrateMobilePage.jsx`
+**Status:** ✅ 98% Complete
 
-**MUST ADD**: Dimension pills + dimTab (Products/Services/Advisory) per dimension + DocumentVault.
+| Feature | Desktop Source | Mobile Status |
+|---|---|---|
+| CelebrateCategoryStrip (pills → modals) | CelebratePageNew.jsx:~280 | ✅ |
+| CelebrateContentModal | CelebratePageNew.jsx:~300 | ✅ (via strip) |
+| MiraBirthdayBox | CelebratePageNew.jsx:~350 | ✅ |
+| BirthdayBoxBuilder multi-step | CelebratePageNew.jsx:~400 | ✅ |
+| BirthdayBoxBrowseDrawer | CelebratePageNew.jsx:~450 | ✅ |
+| CelebrateServiceGrid ("Celebrate Personally") | CelebratePageNew.jsx:~500 | ✅ (added Session 2) |
+| GuidedCelebratePaths | CelebratePageNew.jsx:~550 | ✅ |
+| CelebrateNearMe | CelebratePageNew.jsx:~580 | ✅ |
+| PersonalisedBreedSection | CelebratePageNew.jsx:~600 | ✅ |
+| MiraImaginesBreed | CelebratePageNew.jsx:~620 | ✅ |
+| SoulCelebrationPillars | CelebratePageNew.jsx:~200 | ❌ P1 |
+| CelebrationMemoryWall | CelebratePageNew.jsx:~650 | ❌ P2 |
+| MiraSoulNudge | CelebratePageNew.jsx:~180 | ❌ P2 |
+| MiraImaginesCard | CelebratePageNew.jsx:~630 | ❌ P1 |
+| MiraPicksSection | CelebratePageNew.jsx:~160 | ❌ P1 |
+| ConciergeIntakeModal (full multi-step) | CelebratePageNew.jsx:~608 | Partial (inline sheet) |
 
 ---
 
-## FONT SIZE REFERENCE (from Dine v11)
-```
-Hero pet name: fontSize:20, fontWeight:800
-Hero subtitle: fontSize:13, color:rgba(255,255,255,0.7)
-Hero breed badge: fontSize:11
-Allergy chip: fontSize:11
-Section heading: fontSize:18, fontWeight:700
-Product card title: fontSize:13, fontWeight:600
-Product card price: fontSize:12
-Button CTA: fontSize:13, fontWeight:700
-Mira bar text: fontSize:13
-Tab button: fontSize:12-13
-Sub-tab button: fontSize:11
-Small accent: fontSize:10-11
-```
+### 🌿 CARE — `/care` — CareSoulPage.jsx → CareMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/CareMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/CareSoulPage.jsx`
+**Status:** ✅ 90% Complete
 
-## CUSTOMER-FACING PAGES NEEDING MOBILE AUDIT
-1. /join — MiraMeetsYourPet.jsx (onboarding flow)
-2. /login — Login.jsx
-3. /register — Register.jsx
-4. /forgot-password — ForgotPassword.jsx
-5. /dashboard — MemberDashboard.jsx (tabs: Overview, Orders, Pets, Settings)
-6. /checkout — Checkout.jsx
-7. /my-pets — MyPets.jsx
-8. /pet-home/:id — PetHomePage.jsx
-9. /my-requests — MyRequestsPage.jsx
-10. /cart — (part of Navbar/Checkout flow)
-11. /search — SearchResults.jsx
-12. /about — AboutPage.jsx
-13. /faqs — FAQs.jsx
-14. / — LandingPage.jsx (hero, pillars, CTA)
-15. /pet-wrapped — PetWrappedViewer.jsx
-16. /soul-builder — SoulBuilder.jsx
-17. /notifications — NotificationsInbox.jsx
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| Tab bar: Care & Products / Care Services / Find Care | CareSoulPage.jsx:~2270 | ✅ |
+| dimTab: All Products / Personalised | CareSoulPage.jsx:~1200 | ✅ |
+| Sub-category pill filter | CareSoulPage.jsx:~1250 | ✅ |
+| applyMiraIntelligence (allergy filter) | CareSoulPage.jsx:~1155 | ✅ |
+| Allergy filter stats display | CareSoulPage.jsx:~1170 | ✅ |
+| PersonalisedBreedSection | CareSoulPage.jsx:~1450 | ✅ |
+| MiraImaginesCard | CareSoulPage.jsx:~1460 | ✅ |
+| CareConciergeSection | CareSoulPage.jsx:~2370 | ✅ |
+| CareNearMe | CareSoulPage.jsx:~2430 | ✅ |
+| GuidedCarePaths | CareSoulPage.jsx:~1400 | ✅ |
+| MiraImaginesBreed | CareSoulPage.jsx:~1480 | ✅ |
+| SoulMadeModal | CareSoulPage.jsx:~1500 | ✅ |
+| CareCategoryStrip (pill nav) | CareSoulPage.jsx:~2300 | ✅ (inline pills equiv.) |
+| WellnessProfile widget | CareSoulPage.jsx:794 | ❌ P1 |
+| MiraPicksSection | CareSoulPage.jsx:358 | ❌ P1 |
+| ServiceBookingModal (5-step) | CareSoulPage.jsx:1655 | ❌ P2 (ConciergeSection equiv.) |
 
-## IMPLEMENTATION ORDER (Recommended)
-1. Adopt, Farewell, Emergency — simple 3-tab pattern (copy from desktop)
-2. Care, Go, Play — dimTab + activeTab + sub-category filtering
-3. Dine pills fix — open DineContentModal instead of filtering inline
-4. Paperwork, Learn — dimension pills + 3 sub-tabs per dimension
-5. Services — 5 service group cards
-6. Customer-facing pages audit
-7. Font size consistency pass across all pages
+---
+
+### ✈️ GO — `/go` — GoSoulPage.jsx → GoMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/GoMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/GoSoulPage.jsx`
+**Status:** ✅ 90% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| Tab bar: Go & Products / Services / Stay | GoSoulPage.jsx:~2130 | ✅ |
+| dimTab: All Products / Personalised | GoSoulPage.jsx:~1200 | ✅ |
+| Sub-category pill filter | GoSoulPage.jsx:~1250 | ✅ |
+| PersonalisedBreedSection | GoSoulPage.jsx:~1450 | ✅ |
+| MiraImaginesCard | GoSoulPage.jsx:~1460 | ✅ |
+| GoConciergeSection | GoSoulPage.jsx:~2150 | ✅ |
+| PetFriendlyStays | GoSoulPage.jsx:~2160 | ✅ |
+| GuidedGoPaths | GoSoulPage.jsx:~1400 | ✅ |
+| MiraImaginesBreed | GoSoulPage.jsx:~1480 | ✅ |
+| SoulMadeModal | GoSoulPage.jsx:~1500 | ✅ |
+| TripProfile widget | GoSoulPage.jsx:~850 | ❌ P1 |
+| MiraPicksSection | GoSoulPage.jsx:~380 | ❌ P1 |
+| GoServiceModal (8 booking flows) | GoSoulPage.jsx:~1600 | ❌ P2 (GoConciergeSection equiv.) |
+| GoNearMe | GoSoulPage.jsx:~2120 | ❌ P1 |
+
+---
+
+### 🎾 PLAY — `/play` — PlaySoulPage.jsx → PlayMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/PlayMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/PlaySoulPage.jsx`
+**Status:** ✅ 90% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| Tab bar: Play & Products / Services / Find Play | PlaySoulPage.jsx:~1660 | ✅ |
+| dimTab: All Products / Personalised | PlaySoulPage.jsx:~1200 | ✅ |
+| Sub-category pill filter | PlaySoulPage.jsx:~1250 | ✅ |
+| PersonalisedBreedSection | PlaySoulPage.jsx:~1450 | ✅ |
+| MiraImaginesCard | PlaySoulPage.jsx:~1460 | ✅ |
+| BuddyMeetup | PlaySoulPage.jsx:~1680 | ✅ |
+| PlayConciergeSection | PlaySoulPage.jsx:~1700 | ✅ |
+| PlayNearMe | PlaySoulPage.jsx:~1720 | ✅ |
+| GuidedPlayPaths | PlaySoulPage.jsx:~1400 | ✅ |
+| MiraImaginesBreed | PlaySoulPage.jsx:~1480 | ✅ |
+| SoulMadeModal | PlaySoulPage.jsx:~1500 | ✅ |
+| ActivityProfile widget | PlaySoulPage.jsx:~900 | ❌ P1 |
+| MiraPicksSection | PlaySoulPage.jsx:~400 | ❌ P1 |
+
+---
+
+### 🎓 LEARN — `/learn` — LearnSoulPage.jsx → LearnMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/LearnMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/LearnSoulPage.jsx`
+**Status:** ✅ 90% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| 7 dimension pills | LearnSoulPage.jsx:~123 | ✅ |
+| dimTab: Products / Videos / Book per dim | LearnSoulPage.jsx:~850 | ✅ |
+| Products fetch per dim sub_category | LearnSoulPage.jsx:~870 | ✅ |
+| Videos fetch from YouTube API | LearnSoulPage.jsx:~890 | ✅ |
+| Book tab service cards | LearnSoulPage.jsx:~950 | ✅ |
+| GuidedLearnPaths | LearnSoulPage.jsx:~1100 | ✅ |
+| PersonalisedBreedSection | LearnSoulPage.jsx:~1150 | ✅ |
+| MiraImaginesBreed | LearnSoulPage.jsx:~1200 | ✅ |
+| MiraImaginesCard | LearnSoulPage.jsx:~1220 | ✅ |
+| SoulMadeModal | LearnSoulPage.jsx:~1250 | ✅ |
+| LearnNearMe (component exists!) | LearnSoulPage.jsx:~1300 | ❌ P1 (just add it) |
+| LearnProfile widget | LearnSoulPage.jsx:~600 | ❌ P1 |
+| MiraPicksSection | LearnSoulPage.jsx:~350 | ❌ P1 |
+
+**LearnNearMe path:** `/app/frontend/src/components/learn/LearnNearMe.jsx`
+**Fix:** Add a 4th "Find Trainers" tab or section after the dimension panel.
+
+---
+
+### 🛍️ SHOP — `/shop` — ShopSoulPage.jsx → ShopMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/ShopMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/ShopSoulPage.jsx`
+**Status:** ✅ 95% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| MiraPicksSection (AI curated) | ShopSoulPage.jsx:~125 | ❌ P1 |
+| DoggyBakerySection | ShopSoulPage.jsx:~244 | ✅ (added Session 2) |
+| BreedCollectionSection | ShopSoulPage.jsx:~381 | ❌ P1 |
+| ShopBrowseSection | ShopSoulPage.jsx:~450 | ❌ P1 |
+| PersonalisedBreedSection | ShopSoulPage.jsx:~500 | ✅ |
+| SoulMadeModal | ShopSoulPage.jsx:~550 | ✅ |
+
+---
+
+### 🤝 SERVICES — `/services` — ServicesSoulPage.jsx → ServicesMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/ServicesMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/ServicesSoulPage.jsx`
+**Status:** ✅ 95% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| 7 service group cards | ServicesSoulPage.jsx:~730 | ✅ |
+| Lazy fetch per group | ServicesSoulPage.jsx:~750 | ✅ |
+| PersonalisedBreedSection | ServicesSoulPage.jsx:~780 | ✅ |
+| Booking confirmation sheet | ServicesSoulPage.jsx:~800 | ✅ |
+| MiraPicksSection | ServicesSoulPage.jsx:~200 | ❌ P1 |
+
+---
+
+### 🐾 ADOPT — `/adopt` — AdoptSoulPage.jsx → AdoptMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/AdoptMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/AdoptSoulPage.jsx`
+**Status:** ✅ 95% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| 3 tabs: Find Your Dog / Book Guidance / Find Rescue | AdoptSoulPage.jsx:~319 | ✅ |
+| Stage tracker | AdoptSoulPage.jsx:~330 | ✅ |
+| ADOPT_SERVICES cards (6) | AdoptSoulPage.jsx:~350 | ✅ |
+| GuidedAdoptPaths | AdoptSoulPage.jsx:~380 | ✅ |
+| AdoptNearMe | AdoptSoulPage.jsx:~390 | ✅ |
+| MiraImaginesBreed | AdoptSoulPage.jsx:~370 | ✅ |
+| MiraImaginesCard | AdoptSoulPage.jsx:~360 | ✅ |
+| AdoptProfile widget | AdoptSoulPage.jsx:~200 | ❌ P1 |
+| MiraPicksSection | AdoptSoulPage.jsx:~145 | ❌ P1 |
+| Multi-step ConciergeModal | AdoptSoulPage.jsx:~400 | Partial (confirmation sheet) |
+
+---
+
+### 🌷 FAREWELL — `/farewell` — FarewellSoulPage.jsx → FarewellMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/FarewellMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/FarewellSoulPage.jsx`
+**Status:** ✅ 95% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| 3 tabs: Legacy & Memorial / Get Support / Find Care | FarewellSoulPage.jsx:~352 | ✅ |
+| Product sub-category tabs within Memorial | FarewellSoulPage.jsx:~360 | ✅ |
+| FAREWELL_SERVICES cards (6) | FarewellSoulPage.jsx:~380 | ✅ |
+| GuidedFarewellPaths | FarewellSoulPage.jsx:~410 | ✅ |
+| FarewellNearMe | FarewellSoulPage.jsx:~478 | ✅ |
+| MiraImaginesCard | FarewellSoulPage.jsx:~420 | ✅ |
+| SoulMadeModal | FarewellSoulPage.jsx:~450 | ✅ |
+| FarewellProfile widget | FarewellSoulPage.jsx:~200 | ❌ P1 |
+| MiraPicksSection | FarewellSoulPage.jsx:~150 | ❌ P1 |
+
+---
+
+### 🚨 EMERGENCY — `/emergency` — EmergencySoulPage.jsx → EmergencyMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/EmergencyMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/EmergencySoulPage.jsx`
+**Status:** ✅ 98% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| Persistent URGENT CTA (above tabs) | EmergencySoulPage.jsx:~260 | ✅ |
+| WhatsApp alert to concierge | NEW | ✅ (Session 2) |
+| 3 tabs: Emergency Kit / Book Help / Find Vet | EmergencySoulPage.jsx:~260 | ✅ |
+| dimTab: Products / Services within Emergency Kit | EmergencySoulPage.jsx:~245 | ✅ |
+| EMERG_SERVICES cards | EmergencySoulPage.jsx:~310 | ✅ |
+| GuidedEmergencyPaths | EmergencySoulPage.jsx:~580 | ✅ |
+| EmergencyNearMe | EmergencySoulPage.jsx:~598 | ✅ |
+| MiraImaginesBreed | EmergencySoulPage.jsx:~590 | ✅ |
+| EmergencyProfile widget | EmergencySoulPage.jsx:~110 | ❌ P1 |
+| MiraPicksSection | EmergencySoulPage.jsx:~150 | ❌ P1 |
+
+---
+
+### 📋 PAPERWORK — `/paperwork` — PaperworkSoulPage.jsx → PaperworkMobilePage.jsx
+**Mobile file:** `/app/frontend/src/pages/PaperworkMobilePage.jsx`
+**Desktop reference:** `/app/frontend/src/pages/PaperworkSoulPage.jsx`
+**Status:** ✅ 90% Complete
+
+| Feature | Desktop Line | Mobile Status |
+|---|---|---|
+| DocumentVault at top | PaperworkSoulPage.jsx:~180 | ✅ |
+| 7 dimension pills | PaperworkSoulPage.jsx:~107 | ✅ |
+| dimTab: Products / Services / Advisory per dim | PaperworkSoulPage.jsx:~200 | ✅ |
+| Products per dim sub_category | PaperworkSoulPage.jsx:~220 | ✅ |
+| Services per dim (organisation + certification) | PaperworkSoulPage.jsx:~240 | ✅ |
+| Advisory tab (ADVISORY_SERVICES) | PaperworkSoulPage.jsx:~260 | ✅ |
+| GuidedPaperworkPaths | PaperworkSoulPage.jsx:~300 | ✅ |
+| PersonalisedBreedSection | PaperworkSoulPage.jsx:~320 | ✅ |
+| MiraImaginesCard | PaperworkSoulPage.jsx:~340 | ✅ |
+| SoulMadeModal | PaperworkSoulPage.jsx:~360 | ✅ |
+| PaperworkNearMe (component exists!) | PaperworkSoulPage.jsx:~380 | ❌ P1 (just add it) |
+| ServiceBookingModal | PaperworkSoulPage.jsx:~400 | ❌ P2 |
+| MiraPicksSection | PaperworkSoulPage.jsx:~160 | ❌ P1 |
+
+**PaperworkNearMe path:** `/app/frontend/src/components/paperwork/PaperworkNearMe.jsx`
+
+---
+
+## IMPLEMENTATION PRIORITY ORDER
+
+### Next Agent — Do in This Order:
+
+1. **LearnNearMe** (5 min) — just add `<LearnNearMe>` to LearnMobilePage
+2. **PaperworkNearMe** (5 min) — just add `<PaperworkNearMe>` to PaperworkMobilePage
+3. **SoulCelebrationPillars** (10 min) — add to CelebrateMobilePage above CelebrateServiceGrid
+4. **MiraPicksSection** (30 min per pillar × 12) — highest impact, show on every pillar
+5. **Profile Widgets** (30 min each) — WellnessProfile, TripProfile, ActivityProfile, AdoptProfile, FarewellProfile, EmergencyProfile
+6. **BreedCollectionSection + ShopBrowseSection** (30 min) — Shop mobile
+7. **GoNearMe** (5 min) — add to Go mobile Stay tab
+
+---
+
+## NON-PILLAR PAGES — ALL COMPLETE ✅
+
+| Page | Status | Changes Made |
+|---|---|---|
+| `/` Landing | ✅ Fixed | 5 className-in-style bugs fixed |
+| `/login` | ✅ Good | Already had lg:hidden mobile section |
+| `/register` | ✅ Fixed | Full dark theme rewrite |
+| `/dashboard` | ✅ Good | Scrollable tabs, sm: breakpoints |
+| `/join` | ✅ Good | Mobile-first |
+| `/soul-builder` | ✅ Good | Single-column |
+| `/pet-home` | ✅ Good | sm: breakpoints |
+| `/my-pets` | ✅ Good | sm:/md: grid |
+| `/my-requests` | ✅ Good | overflow-x auto |
+| `/checkout` | ✅ Fixed | Order summary before form on mobile |
+| `/search` | ✅ Good | Responsive grid |
+| `/about` | ✅ Good | clamp() fluid |
+| `/faqs` | ✅ Good | Tailwind responsive |
+| `/notifications` | ✅ Good | Smart split: list on mobile, thread on desktop |
+| `/membership` | ✅ Fixed | clamp() pricing padding |
+| `/member/forgot-password` | ✅ Good | Shadcn Card |
+| `/reset-password` | ✅ Good | Shadcn Card |
