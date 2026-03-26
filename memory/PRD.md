@@ -214,11 +214,12 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 
 ## 9. PENDING TASKS (Priority for next session)
 
-### P0 — Next Session
-1. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
-2. Generate Full Migration Package Report (no code changes, just text report)
+### P0 — Next Session (Full Audit)
+1. Full audit of all 12 pillars — user will provide audit checklist
+2. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
+3. Generate Full Migration Package Report (no code changes, just text report)
 
-### P1 — Post-notification
+### P1 — Post-audit
 1. Watch & Learn YouTube sections (Care + Go)
 2. Add LearnNearMe, PaperworkNearMe, GoNearMe components to mobile pages
 
@@ -227,6 +228,15 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 2. Refactor Admin.jsx (7k lines)
 3. Refactor server.py (24k lines)
 4. Build Love pillar
+
+### Completed in Session 13 (P0/P1 Bug Sprint)
+1. ✅ Dine mobile profile card tap → opens DineProfileSheet (P0)
+2. ✅ Admin AI image auto-switches to Media tab on generation (P0)
+3. ✅ MiraPlanModal "↻ Regenerate Plan" button added (P1)
+4. ✅ "Mira explains why" expandable row verified working in ProductCard.jsx (P0 - was already done)
+5. ✅ Adopt + Paperwork DIM_TABS parity verified (P0 - already correct)
+6. ✅ Near Me tabs verified on all major mobile pages (P1 - already correct)
+7. ✅ Added watercolor_image, cloudinary_url, ai_prompt to Admin save allowedFields
 
 ---
 
