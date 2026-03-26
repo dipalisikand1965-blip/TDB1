@@ -167,3 +167,40 @@
 - This atomically updates: `image`, `image_url`, `thumbnail`, `watercolor_image`, `cloudinary_url`, `media.primary_image`, `media.images`, `ai_prompt`, `ai_image_prompt` in a single React render
 - Fixes: Primary Image URL at top now auto-updates immediately after AI generation completes
 
+
+## 2026-03-26 — P0/P1 Bug Sprint (Session 13)
+
+### DB Stats Delivered (User Request)
+- Total celebrate products: 1,705 in Celebrate pillar
+- Active cake products (products_master): 338
+- Birthday cake items (breed_products): 163
+- Products synced from thedoggybakery.com: 0 (all imported via production_csv_import)
+- DoggyBakeryCakeModal shows up to 8 breed-specific cakes per breed
+
+### P0 Fix 1: Dine Mobile Profile Card Click
+- `DineSoulPage.jsx` DineMobilePage hero: Pet avatar div + name text now have `onClick={() => { vibe('light'); setProfileOpen(true); }}`
+- Added `data-testid="dine-mobile-profile-avatar"` to the avatar
+- Opens DineProfileSheet showing pet soul/diet profile
+- Confirmed working by testing agent (100% PASS)
+
+### P0 Fix 2: Admin AI Image — Auto-switch to Media Tab
+- `ProductBoxEditor.jsx` polling flow (line 240): Added `setActiveTab('media')` after `setProduct(prev => ...)`
+- `ProductBoxEditor.jsx` onImageGenerated callback (line 1692): Added `setActiveTab('media')` 
+- Both flows now auto-switch the user to Media tab after AI image generation completes
+- Replaced deep-clone `JSON.parse(JSON.stringify(product))` with functional `setProduct(prev => ...)` — prevents stale closure state
+- Added `watercolor_image`, `cloudinary_url`, `ai_prompt` to saveProduct allowedFields in UnifiedProductBox.jsx
+
+### P1 Fix 3: MiraPlanModal Regenerate Button
+- Added `regenerateCount` state to MiraPlanModal.jsx
+- `handleRegenerate()` increments the count which triggers useEffect re-run (re-fetches new plan)
+- "↻ Regenerate Plan" button appears after cards load, at bottom of modal
+- `data-testid="mira-plan-regenerate-btn"` added
+- Confirmed working by testing agent (plan re-fetches in ~4-8s via Claude Haiku)
+
+### Already Verified (No Change Needed)
+- "Mira explains why" expandable row on ProductCard.jsx (lines 585-614) — already implemented
+- Adopt + Paperwork mobile DIM_TABS — verified matching desktop parity
+- Near Me tabs on all major pillar mobile pages — confirmed present (3-7 refs each)
+
+### Testing
+- Testing iteration 227: 100% frontend pass, 93% backend (1 timeout on AI endpoint, not real bug)
