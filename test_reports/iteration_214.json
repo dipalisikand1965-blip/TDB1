@@ -1,0 +1,69 @@
+{
+  "summary": "Tested Pet Life OS iteration 214 - Pawrent Journey feature. Fixed critical backend routing bug: pawrent-journey endpoints were defined after app.include_router(api_router) and never registered. Fixed by creating separate pawrent_journey_router. All 7 backend tests now pass. Frontend features verified via Playwright: /pawrent-journey route, PawrentJourneyCard on PetHomePage, Pawrent Journey in mobile menu, /go /play /care pages load without errors.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/pawrent-journey/complete-step and GET /api/pawrent-journey/progress/{pet_id}",
+        "issue": "Routes defined in api_router AFTER app.include_router(api_router) at line 21921 — FastAPI copies routes at include time so these were never registered. Returns 404 for all calls. FIXED: Created separate pawrent_journey_router with app.include_router(pawrent_journey_router) at end of file.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "POST /api/birthday-box/{pet_id}/build",
+        "issue": "Line 24435 has bare 'all_allergies' expression with no assignment and no return statement — will raise NameError when called. Endpoint is actually served by birthday_box_routes.py but duplicate in server.py is dead code."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Pet loading",
+        "issue": "Console error 'Failed to fetch pets: TypeError: Failed to fetch' appears on several pages after login — pre-existing issue, not from this iteration"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_pawrent_journey_214.py",
+    "/app/test_reports/pytest/pawrent_journey_214.xml"
+  ],
+  "action_items": [
+    "Fix bare 'all_allergies' expression at server.py line 24435 inside build_birthday_box — function has no return and will NameError at runtime",
+    "Review all api_router decorators defined after line 21921 to ensure they are dead code duplicates (birthday-box, analytics etc.) and not missing routes — e.g. admin/renewals endpoints at lines 23823-23844 return 404"
+  ],
+  "critical_code_review_comments": [
+    "FIXED: server.py - pawrent journey endpoints at lines 24440-24453 were added to api_router AFTER app.include_router(api_router) at line 21921. FastAPI copies routes at include_router time, so these were never registered. Moved to dedicated pawrent_journey_router with proper include_router call.",
+    "CRITICAL CODE SMELL: server.py has 24000+ lines with app.include_router(api_router) at line 21921, but route decorators continue until line 24459. Any new @api_router route added after line 21921 will silently fail (404). Recommend moving all new routes to separate router files.",
+    "Minor: server.py line 24435 - bare 'all_allergies' expression inside build_birthday_box function — missing assignment and return statement. Will cause NameError when POST /api/birthday-box/{pet_id}/build is called (but this endpoint is actually served by birthday_box_routes.py)."
+  ],
+  "updated_files": [
+    "/app/backend/server.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed after fix)",
+    "frontend": "100% (all 8 feature areas verified)"
+  },
+  "seed_data_creation": "Test steps added to pawrent_journey_progress collection during testing (pet-mojo-7327ad56)",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Pawrent Journey feature fully implemented and working. Backend fix applied: separate pawrent_journey_router created. Two endpoints work: GET /api/pawrent-journey/progress/{pet_id} and POST /api/pawrent-journey/complete-step. Frontend: /pawrent-journey route shows mode tabs, PawrentJourneyCard visible on PetHomePage, Pawrent Journey in mobile menu. /go, /play, /care pages all load without JSX errors.",
+  "test_results": {
+    "backend_endpoints": {
+      "GET /api/pawrent-journey/progress/{pet_id}": "PASS - returns {completed_steps: []} for new pet, returns array with completed steps after POST",
+      "POST /api/pawrent-journey/complete-step": "PASS - returns {ok: true}, persists step to MongoDB",
+      "Auth required": "PASS - returns 422 without token"
+    },
+    "frontend_features": {
+      "/go page (mobile)": "PASS - loads without JSX parsing errors",
+      "/play page (mobile)": "PASS - loads without JSX parsing errors",
+      "/care page (mobile)": "PASS - loads without errors, no blank page",
+      "/pawrent-journey route": "PASS - shows 'The Pawrent Journey' with 4 mode tabs: Considering, Welcome Home, Growing Together, Always There",
+      "PetHomePage PawrentJourneyCard": "PASS - visible below 'See Picks for Mojo' button with PAWRENT JOURNEY label",
+      "Mobile menu Pawrent Journey": "PASS - 'Pawrent Journey' link present with data-testid, navigates to /pawrent-journey",
+      "Services mobile Explore via Concierge": "PASS - ServicesMobilePage.jsx line 142 has 'Explore all {group.label} via Concierge® →'"
+    }
+  },
+  "rca_of_issue": "Root cause: In FastAPI, when app.include_router(router) is called, all routes currently registered on that router are copied into the app. Any @router.route decorators applied AFTER the include_router call are added to the router object but NOT to the app, resulting in 404 responses. server.py has app.include_router(api_router) at line 21921 but new pawrent-journey routes were added to api_router at lines 24440-24453 (after line 21921). Fix: Create a new APIRouter, define the endpoints there, and call app.include_router after all definitions."
+}

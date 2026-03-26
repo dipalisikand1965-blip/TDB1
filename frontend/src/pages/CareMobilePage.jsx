@@ -24,6 +24,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import '../styles/mobile-design-system.css';
@@ -226,6 +227,7 @@ export default function CareMobilePage() {
         )}
 
         {/* Tab Bar */}
+        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="care" />}
         <div className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[
             { id:'care',         label:'🌿 Care & Products' },

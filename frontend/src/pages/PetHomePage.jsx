@@ -50,6 +50,7 @@ import { getWrappedApiBase } from '../utils/api';
 import SoulChapterModal from '../components/SoulChapterModal';
 import DocumentVault from '../components/paperwork/DocumentVault';
 import { useAuth } from '../context/AuthContext';
+import { PawrentJourneyCard } from '../components/pawrent/PawrentJourney';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -773,6 +774,17 @@ const PetHomePage = () => {
           <Star className="w-5 h-5" />
           See Picks for {pet?.name}
         </motion.button>
+
+        {/* Pawrent Journey Card */}
+        {pet && (
+          <div className="mt-4">
+            <PawrentJourneyCard
+              pet={pet}
+              token={token}
+              onClick={() => navigate('/pawrent-journey')}
+            />
+          </div>
+        )}
         
         {/* Proactive Alerts */}
         {alerts.length > 0 && (

@@ -27,6 +27,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -174,6 +175,7 @@ export default function GoMobilePage() {
         )}
 
         {/* Tab Bar - iOS style */}
+        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" />}
         <div className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[
             { id:'go',       label:'✈️ Go & Products' },
@@ -278,6 +280,8 @@ export default function GoMobilePage() {
                   <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom travel tags, bags and accessories.</div>
                   <button className="go-cta">Explore Soul Made →</button>
                 </div>
+                  </>
+                )}
               </div>
             )}
           </div>
