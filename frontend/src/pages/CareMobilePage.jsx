@@ -343,43 +343,53 @@ export default function CareMobilePage() {
               Grooming, vet, boarding, behaviour — arranged through Concierge®.
             </div>
 
-            {/* Mobile-native vertical service cards */}
-            {[
-              { id:'grooming',   icon:'✂️', name:'Grooming',              tagline:'Coat care, bath, nail trim & styling',          accentColor:'#C2185B' },
-              { id:'vet',        icon:'🏥', name:'Vet Visits',             tagline:'Clinic discovery, booking & follow-up',          accentColor:'#1565C0' },
-              { id:'boarding',   icon:'🏡', name:'Boarding & Daycare',     tagline:'Overnight boarding & daytime supervision',        accentColor:'#2D6A4F' },
-              { id:'sitting',    icon:'🏠', name:'Pet Sitting',            tagline:'In-home care, feeding & companionship',           accentColor:'#E65100' },
-              { id:'behaviour',  icon:'💜', name:'Behaviour Support',      tagline:'Anxiety, fear & stress coaching',                 accentColor:'#6A1B9A' },
-              { id:'senior',     icon:'🌸', name:'Senior & Special Care',  tagline:'Comfort, mobility & special handling',            accentColor:'#AD1457' },
-              { id:'nutrition',  icon:'🥗', name:'Nutrition Consults',     tagline:'Diet plan, allergy support & vet-approved picks', accentColor:'#E65100' },
-              { id:'emergency',  icon:'🚨', name:'Emergency Help',         tagline:'Urgent care routing & 24/7 coordination',         accentColor:'#C62828', urgent:true },
-            ].map(svc => (
-              <div key={svc.id}
-                data-testid={`care-service-card-${svc.id}`}
-                style={{ background:'#fff', borderRadius:16, padding:'16px 18px', marginBottom:12,
-                  border:`1.5px solid ${svc.urgent ? '#FFCDD2' : G.pale}`,
-                  boxShadow: svc.urgent ? '0 2px 12px rgba(198,40,40,0.08)' : '0 2px 8px rgba(45,106,79,0.06)',
-                  display:'flex', alignItems:'center', gap:14 }}>
-                <div style={{ width:48, height:48, borderRadius:14, flexShrink:0,
-                  background:`${svc.accentColor}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>
-                  {svc.icon}
-                </div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontSize:15, fontWeight:800, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                  <div style={{ fontSize:12, color:'#666', lineHeight:1.4 }}>{svc.tagline}</div>
-                </div>
-                <button
-                  onClick={() => {
-                    const svcObj = CARE_SERVICES.find(s => s.id === svc.id);
-                    if (svcObj) setActiveSvcPath(svcObj);
-                    else setSvcBooking({ isOpen:true, serviceType:svc.id });
-                  }}
-                  style={{ flexShrink:0, padding:'9px 14px', borderRadius:12, border:'none', fontSize:13, fontWeight:700, cursor:'pointer',
-                    background: svc.urgent ? '#C62828' : G.deepMid, color:'#fff', whiteSpace:'nowrap' }}>
-                  Book →
-                </button>
-              </div>
-            ))}
+            {/* Mobile-native 2-col grid — exact visual match to desktop CareConcierge cards */}
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:20 }}>
+              {CARE_SERVICES.map(svc => {
+                const petN = currentPet?.name || 'your pet';
+                const desc = (svc.desc || '').replace(/\{petName\}/g, petN);
+                return (
+                  <div key={svc.id}
+                    data-testid={`care-service-card-${svc.id}`}
+                    style={{ background:'#fff', borderRadius:16, overflow:'hidden', boxShadow:'0 2px 12px rgba(0,0,0,0.07)',
+                      border:'1px solid rgba(0,0,0,0.06)', display:'flex', flexDirection:'column', position:'relative' }}>
+                    {/* Gradient header with emoji */}
+                    <div style={{ background: svc.illustrationBg, height:90,
+                      display:'flex', alignItems:'center', justifyContent:'center', fontSize:36, flexShrink:0 }}>
+                      {svc.icon}
+                    </div>
+                    {svc.urgent && (
+                      <div style={{ position:'absolute', top:8, right:8, background:'#C62828', color:'#fff',
+                        fontSize:9, fontWeight:800, borderRadius:6, padding:'2px 7px', letterSpacing:'0.05em' }}>
+                        URGENT
+                      </div>
+                    )}
+                    {svc.free && !svc.urgent && (
+                      <div style={{ position:'absolute', top:8, right:8, background:'#E8F5E9', color:'#2D6A4F',
+                        border:'1px solid #74C69D', fontSize:9, fontWeight:700, borderRadius:10, padding:'2px 8px' }}>
+                        Complimentary
+                      </div>
+                    )}
+                    {/* Card body */}
+                    <div style={{ padding:'12px 12px 14px', flex:1, display:'flex', flexDirection:'column' }}>
+                      <div style={{ fontSize:10, color:'#999', marginBottom:4, lineHeight:1.3 }}>{svc.tagline}</div>
+                      <div style={{ fontSize:13, fontWeight:800, color:'#1a1a1a', marginBottom:5, lineHeight:1.3 }}>{svc.name}</div>
+                      <div style={{ fontSize:11, color:'#555', lineHeight:1.4, flex:1, marginBottom:10 }}>{desc}</div>
+                      <button
+                        onClick={() => {
+                          const svcObj = CARE_SERVICES.find(s => s.id === svc.id);
+                          if (svcObj) setActiveSvcPath(svcObj);
+                          else setSvcBooking({ isOpen:true, serviceType:svc.id });
+                        }}
+                        style={{ background:'none', border:'none', padding:0, cursor:'pointer', textAlign:'left',
+                          fontSize:12, fontWeight:700, color: svc.urgent ? '#C62828' : '#2D6A4F' }}>
+                        {svc.urgent ? 'Get help now →' : `Book ${svc.steps}-step flow →`}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
             {/* Concierge illustrated cards below */}
             <div style={{ marginTop:8 }}>

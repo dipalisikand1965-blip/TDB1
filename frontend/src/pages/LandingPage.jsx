@@ -235,6 +235,7 @@ export default function LandingPage() {
           .tdc-isnot-grid > div { border-radius:16px !important; }
           .tdc-nav-text > button:not(:last-child) { display:none; }
           .tdc-hamburger { display:flex; }
+          .tdc-mobile-signin { display:inline-flex !important; }
           .tdc-hero-btns { flex-direction:column; align-items:center; }
           .tdc-hero-btns > button { width:100%; max-width:280px; }
           .tdc-soul-grid { grid-template-columns:repeat(2,1fr); }
@@ -322,12 +323,13 @@ export default function LandingPage() {
         </div>
         {/* Sign In — mobile only, always visible between logo and hamburger */}
         {!isAuthenticated && (
-          <a href="/login" style={{
-            display: "none",
-            color: C.amber, fontSize: 13, fontWeight: 500,
-            fontFamily: "DM Sans, sans-serif",
-            textDecoration: "none", letterSpacing: "0.01em",
-          }} className="tdc-mobile-signin">
+          <a href="/login"
+            className="tdc-mobile-signin"
+            style={{ display:'none', alignItems:'center',
+              color: C.amber, fontSize: 13, fontWeight: 500,
+              fontFamily: "DM Sans, sans-serif",
+              textDecoration: "none", letterSpacing: "0.01em",
+            }}>
             Sign in
           </a>
         )}

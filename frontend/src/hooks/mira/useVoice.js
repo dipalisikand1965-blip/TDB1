@@ -209,6 +209,58 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
     setIsSpeaking(false);
   }, []);
   
+  // ─── ElevenLabs Eloise voice (direct API, key rotation) ───────────────────
+  // To update: run `curl -X GET "https://api.elevenlabs.io/v1/voices" -H "xi-api-key: YOUR_KEY"`
+  // then find "Eloise" → paste her voice_id below.
+  // Current fallback: Bella (Professional, Bright, Warm) → hpp4J3VqNfWAUOO0d1Us
+  const ELOISE_VOICE_ID = 'hpp4J3VqNfWAUOO0d1Us'; // UPDATE when Eloise is added to account
+
+  const ELEVEN_KEYS = [
+    process.env.REACT_APP_ELEVEN_LABS_KEY_1,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_2,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_3,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_4,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_5,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_6,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_7,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_8,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_9,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_10,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_11,
+  ].filter(Boolean); // drop undefined slots
+
+  const elevenKeyIndexRef = useRef(0);
+  const getNextElevenKey = () => {
+    if (!ELEVEN_KEYS.length) return null;
+    const key = ELEVEN_KEYS[elevenKeyIndexRef.current % ELEVEN_KEYS.length];
+    elevenKeyIndexRef.current++;
+    return key;
+  };
+
+  const speakWithElevenLabs = useCallback(async (cleanText) => {
+    const key = getNextElevenKey();
+    if (!key) throw new Error('No ElevenLabs keys configured');
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${ELOISE_VOICE_ID}/stream`,
+      {
+        method: 'POST',
+        headers: { 'xi-api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: cleanText,
+          model_id: 'eleven_turbo_v2',
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+        }),
+      }
+    );
+    if (!response.ok) throw new Error(`ElevenLabs ${response.status}`);
+    const audioBlob = await response.blob();
+    const audio = new Audio(URL.createObjectURL(audioBlob));
+    audio.onended = () => setIsSpeaking(false);
+    audio.onerror = () => setIsSpeaking(false);
+    audioRef.current = audio;
+    audio.play();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Speak text with Mira's voice (TTS)
   const speak = useCallback(async (text) => {
     if (!voiceEnabled || !text) return;
@@ -255,37 +307,33 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
           : truncated;
       }
       
-      const response = await fetch(`${API_URL}/api/tts/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cleanText, personality })
-      });
-      
-      if (!response.ok) throw new Error('TTS request failed');
-      
-      const data = await response.json();
-      
-      const audio = new Audio();
-      audio.preload = 'auto';
-      audio.volume = 1.0;
-      
-      audio.onended = () => {
-        console.log('[useVoice] Finished speaking');
-        setIsSpeaking(false);
-      };
-      
-      audio.onerror = () => setIsSpeaking(false);
-      
-      audio.oncanplaythrough = () => {
-        audio.play().catch((e) => {
-          console.log('[useVoice] Playback blocked:', e.message);
-          setIsSpeaking(false);
+      // Try ElevenLabs first (Eloise voice, all devices), fallback to backend TTS
+      try {
+        await speakWithElevenLabs(cleanText);
+      } catch (elevenErr) {
+        console.log('[useVoice] ElevenLabs failed, falling back to backend TTS:', elevenErr.message);
+
+        const response = await fetch(`${API_URL}/api/tts/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: cleanText, personality })
         });
-      };
-      
-      audio.src = `data:audio/mpeg;base64,${data.audio_base64}`;
-      audio.load();
-      audioRef.current = audio;
+
+        if (!response.ok) throw new Error('TTS request failed');
+
+        const data = await response.json();
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.volume = 1.0;
+        audio.onended = () => { console.log('[useVoice] Finished speaking'); setIsSpeaking(false); };
+        audio.onerror = () => setIsSpeaking(false);
+        audio.oncanplaythrough = () => {
+          audio.play().catch((e) => { console.log('[useVoice] Playback blocked:', e.message); setIsSpeaking(false); });
+        };
+        audio.src = `data:audio/mpeg;base64,${data.audio_base64}`;
+        audio.load();
+        audioRef.current = audio;
+      }
       
     } catch (error) {
       console.log('[useVoice] TTS Error:', error.message);
