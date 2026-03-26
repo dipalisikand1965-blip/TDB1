@@ -1,6 +1,35 @@
 # The Doggy Company — Changelog
 
-## 2026-03-26 — Mobile UI Polish & Breed Filtering Sprint (Session 7)
+## 2026-03-26 — Image Priority Fix + Build Plan Modals + DB Sync (Session 10)
+
+### Image Priority Fixed Across ALL Product Cards
+- `ProductCard.jsx` `getValidImage()` and `getValidProductImage()`: Added `watercolor_image` as **first priority** (was completely missing). New order: `watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image → images[0]`
+- `BirthdayBoxBrowseDrawer.jsx` line 44: Added `watercolor_image` first
+- `SoulMadeModal.jsx` lines 371-374: Added `watercolor_image` first
+- `PersonalisedBreedSection.jsx` was already correct (unchanged)
+
+### DB Sync — 3,336 Breed Products Updated
+- Added `POST /api/admin/sync-image-fields` endpoint (admin auth required)
+- Ran sync: `cloudinary_url → watercolor_image` for 3,336 breed_products; `cloudinary_url → image_url` for 51 products_master
+- All Soul Made watercolor mockups now correctly display in all product card components
+
+### Admin AI Image Generation Bug Fixed
+- `server.py /admin/generate-image`: Fixed `col` was undefined (should be `collection_map.get(entity_type)`)
+- Tested: generates Cloudinary URL and saves `watercolor_image` field to breed_product
+
+### Build Plan Modals — All 3 Mobile Pillars
+- Created `frontend/src/components/mira/MiraPlanModal.jsx` — reusable bottom-sheet plan modal for ALL pillars
+- `PlayMobilePage.jsx`: "Build {pet}'s Play Plan →" now opens `MiraPlanModal(pillar=play)` instead of `request()`
+- `GoMobilePage.jsx`: "Plan {pet}'s Next Trip →" now opens `MiraPlanModal(pillar=go)` instead of `request()`
+- `DineSoulPage.jsx` (DineMobilePage): Added "Build {pet}'s Food Plan →" button + `MiraPlanModal(pillar=dine)`
+- MiraPlanModal gracefully falls back to curated static cards when `/api/mira/plan` returns 404
+
+### Breed Isolation Confirmed (100% clean)
+- API test: Mojo (Indie) → ZERO Labrador/Akita/Corgi products
+- API test: Mystique (Shih Tzu) → ZERO Labrador/Indie products
+- API test: Bruno (Labrador) → ZERO Indie/Corgi/Akita products
+
+
 
 ### Duplicate Mira Orb — Fixed
 - `MiraAI.jsx` hiddenPaths extended: `/pet-home`, `/dashboard`, `/my-pets`, `/my-requests` added
