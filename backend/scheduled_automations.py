@@ -351,15 +351,31 @@ async def run_birthday_reminders():
             if already_sent:
                 continue
 
-            # Send WhatsApp
+            # Send WhatsApp via template-aware service
             if phone:
-                wa_result = await send_whatsapp(phone, msg)
+                try:
+                    from services.whatsapp_service import send_birthday_reminder as _send_bday_reminder
+                    from services.whatsapp_service import send_birthday_today as _send_bday_today
+                    _user = {"phone": phone, "name": owner.get("name", ""), "email": owner_email, "id": owner_email}
+                    _pet = {"id": pet.get("id", ""), "name": pet_name}
+                    if days_left == 7:
+                        wa_result = await _send_bday_reminder(_user, _pet, 7)
+                    else:
+                        wa_result = await _send_bday_today(_user, _pet)
+                except Exception:
+                    wa_result = await send_whatsapp(phone, msg)
                 if wa_result.get("success"):
                     sent += 1
 
             # Send email
             if owner_email:
-                await send_email(owner_email, subject, email_html)
+                try:
+                    from services.email_service import send_birthday_reminder_email as _send_bday_email
+                    _user = {"email": owner_email, "name": owner.get("name", ""), "id": owner_email}
+                    _pet = {"id": pet.get("id", ""), "name": pet_name}
+                    await _send_bday_email(_user, _pet, days_left)
+                except Exception:
+                    await send_email(owner_email, subject, email_html)
 
             # Log it
             await db.birthday_reminder_log.insert_one({
@@ -427,15 +443,15 @@ async def run_medication_reminders():
             if already:
                 continue
 
-            msg = (
-                f"💊 *{pet_name}'s medication reminder*\n\n"
-                f"Don't forget today's medications:\n"
-                + "\n".join(med_lines) +
-                f"\n\nLog in your Health Vault after giving: {BASE_URL}/pet-home\n\n"
-                f"— *Mira, The Doggy Company*"
-            )
-
-            result = await send_whatsapp(phone, msg)
+            # Send via template-aware service
+            try:
+                from services.whatsapp_service import send_medication_reminder as _send_med
+                _user = {"phone": phone, "name": owner.get("name", ""), "email": owner_email, "id": owner_email}
+                _pet = {"id": pet_id, "name": pet_name}
+                _med = medications[0] if medications else {}
+                result = await _send_med(_user, _pet, _med)
+            except Exception:
+                result = await send_whatsapp(phone, msg)
             if result.get("success"):
                 sent += 1
 
