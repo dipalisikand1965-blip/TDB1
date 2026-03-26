@@ -387,7 +387,7 @@ function ShopBrowseSection({ pet, token }) {
       ) : (
         <>
           <div style={{ fontSize: 12, color: '#888', marginBottom: 10 }}>
-            {products.length} products · Sorted by Mira's score
+            Mira's picks for {petName}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {products.map(p => <SharedProductCard key={p.id || p._id || p.name} product={p} pillar={p.pillar || 'shop'} selectedPet={pet} />)}

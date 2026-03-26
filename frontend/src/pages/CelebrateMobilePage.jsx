@@ -465,7 +465,7 @@ export default function CelebrateMobilePage() {
               </div>
               {/* Footer */}
               <div style={{ borderTop:'1px solid rgba(255,255,255,0.1)', paddingTop:10, marginTop:12, fontSize:14, color:'rgba(255,255,255,0.45)', textAlign:'center' }}>
-                {miraProducts.length} items curated for {petName}
+                Curated for {petName} by Mira
               </div>
             </div>
           </div>

@@ -276,12 +276,8 @@ export default function PlayMobilePage() {
                       ))}
                     </div>
                     <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      {products.length} items · filtered for {petName}{allergies.length > 0 ? ` · no ${allergies.join(', ')}` : ''}
+                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
                     </div>
-                  </>
-                )}
-
-                <div style={{ marginTop:16 }}><MiraImaginesBreed pet={currentPet} pillar="play" token={token} /></div>
                 <div style={{ marginTop:16 }}><GuidedPlayPaths pet={currentPet} /></div>
 
                 <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>

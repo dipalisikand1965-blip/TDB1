@@ -263,7 +263,7 @@ export default function ServicesMobilePage() {
             </div>
           </div>
           <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Services for {petName}</div>
-          <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>1,025 services across 7 categories. All arranged by Concierge®.</div>
+          <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>Every service personally arranged by Concierge®. Matched to {petName}'s soul profile.</div>
           {SERVICE_GROUPS.map(group => (
             <ServiceGroupCard
               key={group.id}

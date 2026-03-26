@@ -335,7 +335,7 @@ export default function CareMobilePage() {
                     </div>
                     {/* Footer */}
                     <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:14, color:'#888' }}>
-                      <span>{products.length} items · filtered for {petName}{allergies.length > 0 ? ` · no ${allergies.join(', ')}` : ''}</span>
+                      <span>Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}</span>
                     </div>
                   </>
                 )}

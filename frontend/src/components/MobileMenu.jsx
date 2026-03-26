@@ -340,7 +340,12 @@ export default function MobileMenu({
         {/* ── Ask Mira ── */}
         <div style={{ padding: "12px 16px" }}>
           <button
-            onClick={() => go("/mira-os")}
+            onClick={() => {
+              onClose();
+              window.dispatchEvent(new CustomEvent('openMiraAI', {
+                detail: { pillar: 'general', message: '' }
+              }));
+            }}
             style={{
               width: "100%", padding: "13px",
               borderRadius: 14, border: "none",
@@ -385,9 +390,14 @@ export default function MobileMenu({
               )}
             </div>
 
-            <div className="tdc-nav-link" onClick={() => go("/pet-home")}>
+            <div className="tdc-nav-link" onClick={() => go("/my-pets")}>
               <div style={{ width:32, height:32, borderRadius:10, background:"#F5F3FF", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🐾</div>
               <span>Pet Soul™</span>
+            </div>
+
+            <div className="tdc-nav-link" onClick={() => go("/dashboard")}>
+              <div style={{ width:32, height:32, borderRadius:10, background:"linear-gradient(135deg,#FEF3C7,#FDE68A)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🪪</div>
+              <span>Pet Life Pass</span>
             </div>
 
             <div className="tdc-nav-link" onClick={() => go("/paw-points")}>

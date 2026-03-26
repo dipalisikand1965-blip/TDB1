@@ -1572,7 +1572,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                       </p>
                       <span className="text-xs rounded-full px-2 py-0.5 font-semibold"
                         style={{ background: 'rgba(255,140,66,0.12)', color: '#FF8C42' }}>
-                        {breedProducts.length} items
+                        Made for {petName}
                       </span>
                     </div>
                     <div className="grid gap-3"
@@ -1674,7 +1674,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                       </p>
                       <span className="text-xs rounded-full px-2 py-0.5 font-semibold"
                         style={{ background: 'rgba(168,85,247,0.12)', color: '#A855F7' }}>
-                        {breedProducts.length} items
+                        Made for {petName}
                       </span>
                     </div>
                     <div className="grid gap-3"
@@ -1826,7 +1826,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                           </span>
                           <span className="rounded-full text-xs font-bold text-white px-2 py-0.5"
                             style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-                            {myBreedItems.length} {myBreedItems.length === 1 ? 'item' : 'items'}
+                            Mira's picks
                           </span>
                         </div>
                         <div className="grid gap-3"
@@ -1841,7 +1841,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                           <hr style={{ borderColor: '#F0E8E0', margin: '0 0 16px' }} />
                           <p className="text-xs font-bold uppercase tracking-wider mb-3"
                             style={{ color: '#888', letterSpacing: '0.06em' }}>
-                            All {config.label} — {otherItems.length} items
+                            All {config.label}
                           </p>
                           <div className="grid gap-3"
                             style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
@@ -1866,7 +1866,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                     {filteredProducts.length > 0 && (
                       <p className="text-xs font-bold uppercase tracking-wider mb-3"
                         style={{ color: '#888', letterSpacing: '0.06em' }}>
-                        All {config.label} — {filteredProducts.length} items
+                        All {config.label}
                       </p>
                     )}
 
