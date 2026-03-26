@@ -24441,22 +24441,53 @@ pawrent_journey_router = APIRouter(prefix="/api")
 
 @pawrent_journey_router.post("/pawrent-journey/complete-step")
 async def complete_pawrent_step(body: dict, current_user = Depends(get_current_user)):
-    """Mark a Pawrent Journey step as completed for a pet."""
+    """Mark a Pawrent Journey step as completed and update streak."""
     user_email = current_user.get("email") if isinstance(current_user, dict) else str(current_user)
+    pet_id = body.get("pet_id")
+    now = datetime.now(timezone.utc)
+    today = now.date()
+
+    # Fetch existing record for streak calculation
+    existing = await db.pawrent_journey_progress.find_one({"pet_id": pet_id, "user": user_email})
+    
+    streak_days = 1
+    if existing:
+        last_action = existing.get("last_action_date")
+        current_streak = existing.get("streak_days", 0)
+        if last_action:
+            # Parse stored date
+            if isinstance(last_action, str):
+                last_date = datetime.fromisoformat(last_action).date()
+            else:
+                last_date = last_action.date()
+            
+            delta = (today - last_date).days
+            if delta == 0:
+                streak_days = current_streak or 1  # Already logged today, keep streak
+            elif delta == 1:
+                streak_days = (current_streak or 0) + 1  # Consecutive day → increment
+            else:
+                streak_days = 1  # Gap → reset
+
     await db.pawrent_journey_progress.update_one(
-        {"pet_id": body.get("pet_id"), "user": user_email},
+        {"pet_id": pet_id, "user": user_email},
         {"$addToSet": {"completed_steps": body.get("step_id")},
-         "$set": {"updated_at": datetime.now(timezone.utc)}},
+         "$set": {"updated_at": now, "last_action_date": now.isoformat(), "streak_days": streak_days}},
         upsert=True
     )
-    return {"ok": True}
+    return {"ok": True, "streak_days": streak_days}
 
 
 @pawrent_journey_router.get("/pawrent-journey/progress/{pet_id}")
 async def get_pawrent_progress(pet_id: str, current_user = Depends(get_current_user)):
-    """Get completed steps for a pet's Pawrent Journey."""
+    """Get completed steps and streak for a pet's Pawrent Journey."""
     user_email = current_user.get("email") if isinstance(current_user, dict) else str(current_user)
     doc = await db.pawrent_journey_progress.find_one({"pet_id": pet_id, "user": user_email})
-    return {"completed_steps": doc.get("completed_steps", []) if doc else []}
+    if not doc:
+        return {"completed_steps": [], "streak_days": 0}
+    return {
+        "completed_steps": doc.get("completed_steps", []),
+        "streak_days": doc.get("streak_days", 0),
+    }
 
 app.include_router(pawrent_journey_router)  # Pawrent Journey — must be after definitions

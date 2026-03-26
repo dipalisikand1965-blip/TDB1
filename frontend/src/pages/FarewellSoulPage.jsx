@@ -27,6 +27,7 @@ import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
 import FarewellMobilePage from './FarewellMobilePage';
+import { filterBreedProducts } from '../hooks/useMiraFilter';
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -55,11 +56,6 @@ const FAREWELL_SERVICES = [
   { id:"grief_counsel", icon:"💜", name:"Grief Counselling Referral",      tagline:"Your grief is real and valid",      price:"Free",   steps:2, accentColor:"#4B4B6E", desc:"Mira connects you with a pet grief counsellor — because the loss of a dog is the loss of unconditional love.", miraKnows:"Pet grief is real grief. You deserve support that understands that." },
 ];
 
-const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
-function filterBreedProducts(products, petBreed) {
-  const petLower=(petBreed||"").toLowerCase(); const petWords=petLower.split(/\s+/).filter(w=>w.length>2);
-  return products.filter(p=>{const nm=(p.name||"").toLowerCase();for(const b of KNOWN_BREEDS){if(nm.includes(b)){if(!petLower)return false;if(nm.includes(petLower))return true;if(petWords.some(w=>b.includes(w)))return true;return false;}}return true;});
-}
 
 function SoulChip({ icon, label, value }) {
   return <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(199,210,254,0.20)",border:"1px solid rgba(199,210,254,0.35)",borderRadius:9999,padding:"4px 12px",fontSize:11,fontWeight:600,color:"rgba(255,255,255,0.90)"}}>{icon&&<span>{icon}</span>}{label&&<span style={{opacity:0.75}}>{label}:</span>}{value}</span>;

@@ -60,6 +60,7 @@ import { tdc } from '../utils/tdc_intent';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import CelebrateMobilePage from './CelebrateMobilePage';
+import { filterBreedProducts } from '../hooks/useMiraFilter';
 
 const CELEBRATE_SERVICE_BLACKLIST = [
   'pet loss', 'grief', 'memorial', 'euthanasia', 'farewell', 'aftercare', 'counseling', 'counselling', 'rainbow bridge'
@@ -75,11 +76,6 @@ const isCelebrateSafeService = (pick) => {
 };
 
 // ─── KNOWN BREEDS (breed filter — PET FIRST, BREED NEXT) ────────────
-const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
-function filterBreedProducts(products, petBreed) {
-  const petLower=(petBreed||"").toLowerCase(); const petWords=petLower.split(/\s+/).filter(w=>w.length>2);
-  return products.filter(p=>{const nm=(p.name||"").toLowerCase();for(const b of KNOWN_BREEDS){if(nm.includes(b)){if(!petLower)return false;if(nm.includes(petLower))return true;if(petWords.some(w=>b.includes(w)))return true;return false;}}return true;});
-}
 
 // ─── MIRA PICKS SECTION ───────────────────────────────────────────────
 function CelebrateMiraPicksSection({ pet, token, onOpenService }) {

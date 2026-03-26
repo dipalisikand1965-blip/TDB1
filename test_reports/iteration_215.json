@@ -1,0 +1,41 @@
+{
+  "summary": "Iteration 215 - Breed filter fix + Pawrent Journey streak. Backend: 13/13 tests pass (Pawrent Journey GET/POST endpoints with streak_days). Frontend: filterBreedProducts unit tests all pass (7/7 scenarios). PawrentJourneyCard shows '🔥 1d streak' badge. /go, /care, /celebrate, /play pages load without errors. One critical bug found: ShopSoulPage.jsx uses filterBreedProducts without importing it, causing silent fallback to 'Mira Imagines' instead of actual picks.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ShopSoulPage.jsx",
+        "issue": "filterBreedProducts called on line 149 but NOT imported. useEffect's .catch() absorbs the ReferenceError silently, so picks never populate. 'Mira Imagines' fallback shows instead of actual breed-filtered picks from API. Fix: add `import { filterBreedProducts } from '../hooks/useMiraFilter';` to ShopSoulPage.jsx",
+        "selector": "ShopSoulPage.jsx:149",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_breed_filter_streak_215.py",
+    "/app/test_reports/pytest/breed_filter_streak_215.xml"
+  ],
+  "action_items": [
+    "Fix ShopSoulPage.jsx: add `import { filterBreedProducts } from '../hooks/useMiraFilter';` at the top — currently filterBreedProducts is called on line 149 without being imported, causing picks to silently fail and showing the 'Mira Imagines' fallback instead of real breed-filtered products from the API"
+  ],
+  "critical_code_review_comments": [
+    "CRITICAL: ShopSoulPage.jsx line 149 calls filterBreedProducts() without importing it. ReferenceError is swallowed by .catch(() => setLoading(false)), so picks stays empty and MiraImaginesBreed fallback is shown instead of actual API picks. This affects all pets on /shop page desktop view.",
+    "CelebrateMobilePage.jsx does NOT import filterBreedProducts — but this is intentional and correct: it uses applyMiraFilter which now contains Step 1b breed filter logic. No fix needed here.",
+    "filterBreedProducts v2 logic (useMiraFilter.js) verified correct: Akita product with breed_tags:['Akita'] returns HIDDEN for Labrador/Indie, all_breeds tags show for everyone, empty/no tags show for everyone, unrecognised breed tags show for everyone (safe fallback). All 7 unit test scenarios PASS."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (13/13 tests pass)",
+    "frontend": "90% (filterBreedProducts logic correct, streak badge works, 4 mobile pages load OK — ShopSoulPage picks silently broken)"
+  },
+  "seed_data_creation": "Pawrent Journey test steps added for pets: pet-bruno-7327ad58, pet-mojo-7327ad56, pet-lola-0faaab37 during streak tests",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Breed filter fix verified: filterBreedProducts v2 in useMiraFilter.js works correctly. Backend Pawrent Journey streak (GET + POST) fully tested and passing. PawrentJourneyCard shows 🔥 streak badge. PlayMobilePage, CareMobilePage, GoMobilePage all correctly import from useMiraFilter. ShopSoulPage.jsx is the remaining bug: missing import for filterBreedProducts causing silent failure on /shop desktop view.",
+  "rca_of_issue": "ShopSoulPage.jsx bug: When E1 removed local copies of filterBreedProducts from all 14 pages, ShopSoulPage's import was missed. The function is called in useEffect's .then() handler but never imported. JavaScript raises ReferenceError which is caught by .catch(() => setLoading(false)). This sets loading=false but picks=[]. The conditional `showImagines = !loading && picks.length === 0` becomes true, rendering MiraImaginesBreed (AI-imagined placeholder products) instead of real API-fetched picks. Mitigation: Add `import { filterBreedProducts } from '../hooks/useMiraFilter';` to ShopSoulPage.jsx."
+}

@@ -47,6 +47,7 @@ import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import LearnMobilePage from './LearnMobilePage';
+import { filterBreedProducts } from '../hooks/useMiraFilter';
 
 // ─── SOUL CHIP (hero chips — same as CareHero) ───────────────
 function SoulChip({ icon, label, value }) {
@@ -503,34 +504,7 @@ function LearnProfile({ pet, token }) {
 
 
 // ─── BREED FILTER (matches Care/Play exactly — never show wrong breeds) ──────
-const KNOWN_BREEDS = [
-  'american bully','beagle','border collie','boxer','cavalier','chihuahua',
-  'chow chow','cocker spaniel','dachshund','dalmatian','doberman',
-  'english bulldog','french bulldog','german shepherd','golden retriever',
-  'great dane','husky','indie','irish setter','italian greyhound',
-  'jack russell','labrador','lhasa apso','maltese','pomeranian',
-  'poodle','pug','rottweiler','schnoodle','scottish terrier',
-  'shih tzu','st bernard','saint bernard','yorkshire',
-  'akita','australian shepherd','corgi','samoyed','spitz',
-  'bernese mountain dog','bulldog','shiba inu','weimaraner',
-];
 
-function filterBreedProducts(products, petBreed) {
-  const petLower = (petBreed || '').trim().toLowerCase();
-  const petWords = petLower.split(/\s+/).filter(w => w.length > 2);
-  return products.filter(p => {
-    const nameLower = (p.name || '').toLowerCase();
-    for (const breed of KNOWN_BREEDS) {
-      if (nameLower.includes(breed)) {
-        if (!petLower) return false;
-        if (nameLower.includes(petLower)) return true;
-        if (petWords.some(w => breed.includes(w) || breed.startsWith(w))) return true;
-        return false;
-      }
-    }
-    return true;
-  });
-}
 
 // ─── LEARN CATEGORY CONFIG (strip pills + content modal) ────────────────────
 // dbCategory must match actual 'category' field in MongoDB (not dimension, which is unset until DB scripts run)

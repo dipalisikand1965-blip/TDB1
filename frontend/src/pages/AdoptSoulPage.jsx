@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { filterBreedProducts } from '../hooks/useMiraFilter';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
@@ -62,11 +63,6 @@ const ADOPT_SERVICES = [
   { id:"multi_pet",       icon:"🐕", name:"Multi-Pet Integration",         tagline:"First introductions matter",       price:"₹999",   steps:2, accentColor:"#7B1D4E", desc:"Expert guidance on introducing a new dog to existing pets — step-by-step, safe, stress-free.", miraKnows:"The first meeting between pets sets the tone for life. I'll make sure it goes right." },
 ];
 
-const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
-function filterBreedProducts(products, petBreed) {
-  const petLower=(petBreed||"").toLowerCase(); const petWords=petLower.split(/\s+/).filter(w=>w.length>2);
-  return products.filter(p=>{const nm=(p.name||"").toLowerCase();for(const b of KNOWN_BREEDS){if(nm.includes(b)){if(!petLower)return false;if(nm.includes(petLower))return true;if(petWords.some(w=>b.includes(w)))return true;return false;}}return true;});
-}
 function SoulChip({ icon, label, value }) {
   return <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(249,168,201,0.20)",border:"1px solid rgba(249,168,201,0.35)",borderRadius:9999,padding:"4px 12px",fontSize:11,fontWeight:600,color:"rgba(255,255,255,0.90)"}}>{icon&&<span>{icon}</span>}{label&&<span style={{opacity:0.75}}>{label}:</span>}{value}</span>;
 }
