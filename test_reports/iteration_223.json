@@ -1,0 +1,51 @@
+{
+  "summary": "Iteration 223 — Breed isolation fix validation. All critical fixes verified: (1) Pillar products strict breed filter working correctly — Shih Tzu sees ZERO Bernese/Akita/Labrador products in Play, (2) Indie sees ZERO cross-breed products in Play, (3) Soul Made breed-catalogue returns only correct-breed products (Indie→Indie only, Labrador→Labrador only, Shih Tzu→Shih Tzu only with zero cross-breed), (4) CareMobilePage loads without parse errors with Grooming/Dental/Coat dim pills visible, (5) Universal products (all_breeds tagged) correctly show for all breeds.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_breed_isolation_223.py",
+    "/app/test_reports/pytest/breed_isolation_223.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "pillar_products_routes.py: The fetch_limit is `min(limit * 4, 400)` when breed is specified. For large datasets, this may still miss products. Consider increasing to 800 or using pagination. Current behavior: 59 products returned for Shih Tzu/Indie — acceptable.",
+    "PersonalisedBreedSection.jsx line 205: imgUrl priority is watercolor_image > cloudinary_url > mockup_url > primary_image > image_url > image > images[0] — correct as per requirement.",
+    "breed_catalogue.py: Post-fetch safety filter (_detect_product_breed) is applied for cross-breed name check after MongoDB query — correct pattern.",
+    "_should_show_for_breed() step 2 (lines 66-67): For breed_pick/soul_made without breed in name, falls back to `req in name_lower`. This is restrictive for soul_made products without breed keyword in name — may need review if Soul Made products have non-breed names."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_breed_isolation_223.py"
+  ],
+  "success_rate": {
+    "backend": "100% (21/21 tests passed)",
+    "frontend": "100% (CareMobilePage parse-error fix confirmed, Play page breed isolation confirmed)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123",
+    "pets": "Mojo=Indie, Meister=Shih Tzu, Bruno=Labrador"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All breed isolation fixes verified in iteration 223. Key verified facts: (1) /api/admin/pillar-products?pillar=play&breed=Shih+Tzu returns 59 products, zero Bernese/Akita/Labrador products. (2) /api/breed-catalogue/products?breed=Indie returns 45 products, all named 'Indie ...' with breed=indie. (3) /api/breed-catalogue/products?breed=Labrador returns 90 products all Labrador-named. (4) CareMobilePage at /care on mobile (390px): data-testid=care-mobile present, care-dim-grooming and care-dim-dental pills visible, no console errors, no parse error. (5) Play page with Mojo (Indie) shows correct profile card 'Indie · short coat'. Previous known issue: MiraOSPage 'body stream already read' console error (non-breaking) reported in iter 222.",
+  "verified_features": {
+    "shih_tzu_play_zero_bernese": "PASS — 0 Bernese products in Play for Shih Tzu",
+    "shih_tzu_play_zero_akita": "PASS — 0 Akita products in Play for Shih Tzu",
+    "shih_tzu_play_zero_labrador": "PASS — 0 Labrador products in Play for Shih Tzu",
+    "indie_play_zero_bernese": "PASS — 0 Bernese products in Play for Indie",
+    "indie_play_zero_labrador": "PASS — 0 Labrador products in Play for Indie",
+    "indie_catalogue_indie_only": "PASS — Indie breed-catalogue returns only 'Indie ...' named products (45 total)",
+    "labrador_catalogue_labrador_only": "PASS — Labrador breed-catalogue returns only 'Labrador ...' named products (90 total)",
+    "shih_tzu_catalogue_no_cross_breed": "PASS — Shih Tzu breed-catalogue has 0 Bernese/Labrador/Akita products",
+    "care_mobile_page_loads": "PASS — CareMobilePage loads at 390px, data-testid=care-mobile present, dim pills visible (Grooming, Dental & Paw, Coat & Skin), no parse error, no console errors",
+    "play_page_mojo_indie": "PASS — Play page shows 'Mojo's Play Profile · Indie · short coat' for Mojo",
+    "universal_products_all_breeds": "PASS — 59 universal (all_breeds tagged) products show for both Shih Tzu and Indie in Play"
+  }
+}

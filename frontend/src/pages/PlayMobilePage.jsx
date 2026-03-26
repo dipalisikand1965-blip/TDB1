@@ -95,7 +95,7 @@ export default function PlayMobilePage() {
 
   useEffect(() => {
     if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
       .catch(() => {});

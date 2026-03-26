@@ -95,7 +95,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
 
   useEffect(() => {
     if (!dim.dbCategory) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&category=${encodeURIComponent(dim.dbCategory)}&limit=40`, {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&category=${encodeURIComponent(dim.dbCategory)}&limit=40&breed=${encodeURIComponent(pet?.breed||'')}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.ok ? r.json() : null)
