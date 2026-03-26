@@ -218,3 +218,12 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 
 ## CRITICAL RULE 10 (SESSION 9 DISCOVERY):
 **server.py has app.include_router(api_router) at line ~21921.** ANY @api_router routes added AFTER that line silently return 404. ALWAYS create a new router file or use separate include_router call at END of server.py.
+
+## SESSION 9 — ADDENDUM (Breed Filter + Streak)
+1. ✅ filterBreedProducts v2 in useMiraFilter.js — checks breed_tags field first, then falls back to name-based check
+2. ✅ applyMiraFilter Step 1b — filters out breed-specific products that don't match the pet
+3. ✅ mira_hint fixed — wrong-breed products now show "For specific breeds" instead of "Chosen for X by Mira"
+4. ✅ 14 pages updated — all local copies of filterBreedProducts replaced with import from useMiraFilter.js
+5. ✅ ShopSoulPage.jsx — added missing filterBreedProducts import (pre-existing bug, picks were silently failing)
+6. ✅ Streak counter — backend tracks streak_days in pawrent_journey_progress, PawrentJourneyCard shows 🔥 Xd streak badge
+
