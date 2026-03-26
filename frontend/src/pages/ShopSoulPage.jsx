@@ -28,6 +28,7 @@ import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
+import { filterBreedProducts } from "../hooks/useMiraFilter";
 import { ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
