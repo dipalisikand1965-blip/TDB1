@@ -14287,6 +14287,27 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
         logger.error(f"Auto-ticket for pet addition failed: {e}")
     
     logger.info(f"Created pet profile: {pet_id} - {pet.name}")
+
+    # Send pawrent welcome if puppy (< 6 months old)
+    try:
+        if pet.birth_date:
+            from datetime import date as dt_date
+            today = dt_date.today()
+            bday = None
+            try:
+                from datetime import datetime as _dt
+                bday = _dt.fromisoformat(str(pet.birth_date)).date()
+            except Exception:
+                pass
+            if bday and (today - bday).days < 183:  # < 6 months
+                import asyncio
+                from services.whatsapp_service import send_pawrent_welcome
+                asyncio.get_event_loop().create_task(
+                    send_pawrent_welcome(current_user, pet_data)
+                )
+    except Exception as _pw_err:
+        logger.warning(f"Pawrent welcome notification failed: {_pw_err}")
+
     return {"message": "Pet profile created", "pet": pet_data}
 
 
@@ -20003,7 +20024,26 @@ async def verify_payment(request: VerifyPaymentRequest):
                 }
             )
             logger.info(f"Updated onboarding ticket {existing_ticket['id']} - payment received")
-        
+
+        # Send order/membership confirmation via WhatsApp + Email
+        try:
+            from services.whatsapp_service import send_order_confirmed
+            from services.email_service import send_order_confirmed_email
+            user_for_notif = user or {"email": request.user_email, "name": order.get("user_name", ""), "phone": order.get("user_phone", "")}
+            order_for_notif = {
+                "orderId": request.razorpay_order_id,
+                "id": request.razorpay_payment_id,
+                "total": order.get("amount", 0),
+                "amount": order.get("amount", 0),
+                "plan_name": order.get("plan_name") or order.get("tier", "Pet Pass"),
+                "items_summary": order.get("plan_name") or order.get("tier", "Pet Pass"),
+            }
+            import asyncio
+            asyncio.get_event_loop().create_task(send_order_confirmed(user_for_notif, None, order_for_notif))
+            asyncio.get_event_loop().create_task(send_order_confirmed_email(user_for_notif, None, order_for_notif))
+        except Exception as _notif_err:
+            logger.warning(f"Payment notification failed: {_notif_err}")
+
         return {
             "success": True,
             "message": "Payment verified and Pet Pass activated!",

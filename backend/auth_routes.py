@@ -323,6 +323,16 @@ async def register_user(user: UserRegister):
         }
     )
     
+    # Send welcome WhatsApp + email in background
+    try:
+        import asyncio
+        from services.whatsapp_service import send_welcome_member
+        from services.email_service import send_welcome_email
+        asyncio.get_event_loop().create_task(send_welcome_member(user_doc))
+        asyncio.get_event_loop().create_task(send_welcome_email(user_doc))
+    except Exception as _we:
+        logger.warning(f"[AUTH] Welcome notification failed: {_we}")
+
     return {"message": "Registration successful", "user_id": user_doc["id"]}
 
 

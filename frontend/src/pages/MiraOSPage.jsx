@@ -466,8 +466,16 @@ const MiraOSPage = () => {
     showPetSelector,
     setShowPetSelector,
     isLoadingPets,
-    isRealPet
+    isRealPet,
+    loadUserPets
   } = usePet({ user, token });
+
+  // Load real pets when user is authenticated (fixes demo-pet flickering)
+  useEffect(() => {
+    if (user?.id && token) {
+      loadUserPets();
+    }
+  }, [user?.id, token]); // eslint-disable-line react-hooks/exhaustive-deps
   
   // ═══════════════════════════════════════════════════════════════════════════
   // VAULT MANAGEMENT
@@ -594,7 +602,7 @@ const MiraOSPage = () => {
         .catch(console.error);
       
       // Fetch proactive alerts
-      fetch(`${API_URL}/api/mira/proactive/${pet.id}`, {
+      fetch(`${API_URL}/api/mira/proactive/alerts/${pet.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => res.json())
@@ -603,7 +611,7 @@ const MiraOSPage = () => {
             const alerts = data.alerts || data.smartAlerts || [];
             setProactiveAlerts({
               smartAlerts: alerts,
-              criticalCount: data.criticalCount || alerts.filter(a => a.priority === 'high').length,
+              criticalCount: data.critical_count || data.criticalCount || alerts.filter(a => a.priority === 'high').length,
               celebrations: data.celebrations || [],
               healthReminders: data.healthReminders || [],
               upcomingEvents: data.upcomingEvents || []
@@ -611,7 +619,7 @@ const MiraOSPage = () => {
             // Update today tab badge
             setTabBadges(prev => ({
               ...prev,
-              today: data.criticalCount || alerts.filter(a => a.priority === 'high').length
+              today: data.critical_count || data.criticalCount || alerts.filter(a => a.priority === 'high').length || alerts.length
             }));
           }
         })
