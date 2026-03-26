@@ -32,7 +32,7 @@ import {
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
   ArrowLeft, ShoppingCart, Plus, Heart, ShoppingBag, Play, Package, MapPin
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Error boundary for safe markdown rendering
 class SafeMarkdownRenderer extends Component {
@@ -154,14 +154,22 @@ const shouldShowProducts = (responseText) => {
   return !SUPPRESS_PRODUCT_KEYWORDS.some(kw => lower.includes(kw));
 };
 
+const PILLAR_PATHS = [
+  '/dine', '/care', '/go', '/play', '/learn', '/celebrate-soul', '/celebrate',
+  '/shop', '/services', '/paperwork', '/emergency', '/farewell', '/adopt',
+  '/cakes', '/treats', '/meals', '/breed-cakes', '/product/'
+];
+
 const MiraChatWidget = ({ 
   pillar = 'general',
   onProductClick = null,
-  className = '' 
+  className = '',
+  hideMiraChatOnPillarPages = false
 }) => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const loc = useLocation();
 
   // Viewport-level mobile detection — ResizeObserver on document.body
   // Debounced at 150ms, handles device rotation and Chrome DevTools resize
@@ -440,12 +448,11 @@ const MiraChatWidget = ({
       }
     };
     
-    // Listen to BOTH event names — petChanged from PillarContext, petSelectionChanged from legacy code
+    // Listen ONLY to petChanged (dispatched by PillarContext which converts all petSelectionChanged → petChanged)
+    // Listening to both caused duplicate "Switching to X" messages
     window.addEventListener('petChanged', handlePetChange);
-    window.addEventListener('petSelectionChanged', handlePetChange);
     return () => {
       window.removeEventListener('petChanged', handlePetChange);
-      window.removeEventListener('petSelectionChanged', handlePetChange);
     };
   }, [pets]);
   
@@ -1040,8 +1047,12 @@ const MiraChatWidget = ({
         message: userMessage.content,
         session_id: sessionId,
         source: 'chat_widget',
-        current_pillar: pillar,
+        current_pillar: pillar || 'general',
         selected_pet_id: selectedPet?.id || null,
+        // Inline pet context as fallback — ensures Mira has data even if DB lookup is slow
+        pet_name: selectedPet?.name || null,
+        pet_breed: selectedPet?.breed || (selectedPet?.identity?.breed) || null,
+        soul_answers: selectedPet?.doggy_soul_answers || {},
         history: historyMessages.slice(-10), // last 10 messages from this session
         // Persistent memory context (from MongoDB — cross-session)
         persistent_preferences: persistentPreferences.slice(0, 10),
@@ -1511,6 +1522,12 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
+  // If hideMiraChatOnPillarPages=true, don't render on pages that have their own pillar widget
+  // This check is AFTER all hooks to comply with React rules of hooks
+  if (hideMiraChatOnPillarPages && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
+    return null;
+  }
+
   // Floating Button (when closed)
   // On mobile: show orb so user can directly tap Mira without relying solely on MobileNavBar
   // MiraFloatingButton (Pulse) is now hidden md:flex, so this orb is the main Mira entry on mobile
