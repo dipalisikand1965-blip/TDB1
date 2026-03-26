@@ -33,8 +33,10 @@ import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { WellnessProfile, MiraPicksSection } from './CareSoulPage';
+import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CareConcierge } from './CareSoulPage';
 import '../styles/mobile-design-system.css';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const G = {
   sage:'#40916C', deepMid:'#1B4332', mid:'#2D6A4F',
@@ -42,18 +44,6 @@ const G = {
   greenBorder:'rgba(64,145,108,0.2)', dark:'#0A1F13',
   darkText:'#1B4332', mutedText:'#40916C',
 };
-
-/* Service cards — exact copy of desktop CARE_SERVICES */
-const CARE_SERVICES = [
-  { id:'grooming',   icon:'✂️', name:'Grooming',             tagline:'Coat care, bath & nail trim',               price:'From Rs.999',  accentColor:'#C2185B' },
-  { id:'vet',        icon:'🏥', name:'Vet Visits',            tagline:'Clinic discovery, booking & follow-up',     price:'From Rs.499',  accentColor:'#1565C0' },
-  { id:'boarding',   icon:'🏡', name:'Boarding & Daycare',   tagline:'Overnight boarding & daytime supervision',   price:'From Rs.599',  accentColor:'#2D6A4F' },
-  { id:'sitting',    icon:'🏠', name:'Pet Sitting',           tagline:'In-home care, feeding & companionship',     price:'From Rs.799',  accentColor:'#E65100' },
-  { id:'behaviour',  icon:'💜', name:'Behaviour Support',    tagline:'Anxiety, fear & stress support',             price:'From Rs.1299', accentColor:'#6A1B9A' },
-  { id:'senior',     icon:'🌸', name:'Senior & Special Care',tagline:'Comfort, mobility & special handling',       price:'From Rs.999',  accentColor:'#AD1457' },
-  { id:'nutrition',  icon:'🥗', name:'Nutrition Consults',   tagline:'Diet consults & allergy support',            price:'From Rs.1499', accentColor:'#E65100' },
-  { id:'emergency',  icon:'🚨', name:'Emergency Help',       tagline:'Urgent care routing & coordination',         price:'Free',         accentColor:'#C62828', urgent:true },
-];
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
@@ -67,11 +57,50 @@ export default function CareMobilePage() {
   const [activeTab, setActiveTab]   = useState('care');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [svcBooking, setSvcBooking] = useState({ isOpen:false, serviceType:'grooming' });
+  const [openDim, setOpenDim]       = useState(null);
+  const [apiProducts, setApiProducts] = useState({});
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
   }, [contextPets, currentPet, setCurrentPet]);
+
+  // Fetch all care products — same logic as desktop CareSoulPage
+  useEffect(() => {
+    if (!currentPet) return;
+    const petBreed = (currentPet?.breed || 'indie').toLowerCase().trim();
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=600`)
+      .then(r => r.ok ? r.json() : null)
+      .then(async data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
+          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+          const dim = p.dimension || '';
+          const sub = p.sub_category || 'Other';
+          if (!dim) return;
+          if (!grouped[dim]) grouped[dim] = {};
+          if (!grouped[dim][sub]) grouped[dim][sub] = [];
+          grouped[dim][sub].push(p);
+        });
+        try {
+          const breedRes = await fetch(`${API_URL}/api/breed-catalogue/products?pillar=care&breed=${encodeURIComponent(currentPet.breed)}&limit=30`);
+          if (breedRes.ok) {
+            const breedData = await breedRes.json();
+            (breedData.products || []).forEach(p => {
+              const dimKey = 'Soul Care Products';
+              if (!grouped[dimKey]) grouped[dimKey] = {};
+              if (!grouped[dimKey]['soul']) grouped[dimKey]['soul'] = [];
+              if (!grouped[dimKey]['soul'].find(x => x.name === p.name)) {
+                grouped[dimKey]['soul'].push({ ...p, sub_category: 'soul', pillar: 'care' });
+              }
+            });
+          }
+        } catch (e) { /* non-critical */ }
+        setApiProducts(grouped);
+      }).catch(() => {});
+  }, [currentPet]);
 
   if (loading) return (
     <PillarPageLayout pillar="care" hideHero hideNavigation>
@@ -148,12 +177,7 @@ export default function CareMobilePage() {
         {activeTab === 'care' && currentPet && (
           <div style={{ padding:'16px' }}>
 
-            {/* Pawrent Journey */}
-            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="care" />
-
             {/* WellnessProfile — EXACT DESKTOP COMPONENT */}
-            {/* "Coco's Grooming Profile" bar → opens full wellness modal (Pic 1) */}
-            {/* Modal contains: GROW WELLNESS PROFILE + best practices + Vaccines/Medications/Allergies/Vet visits */}
             <WellnessProfile pet={currentPet} token={token} />
 
             {/* PillarSoulProfile */}
@@ -186,14 +210,89 @@ export default function CareMobilePage() {
                 How would <span style={{ color:G.sage }}>{petName}</span> love to be cared for?
               </h2>
               <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6 }}>
-                Choose a dimension above — everything is personalised to {petName}'s wellness profile.
+                Choose a dimension above — everything is personalised to {petName}'s wellness profile.{' '}
+                <span style={{ color:G.deepMid, fontWeight:600 }}>Glowing ones match what {petName} needs most.</span>
               </p>
             </div>
 
             {/* MiraPicksSection — EXACT DESKTOP COMPONENT */}
             <MiraPicksSection pet={currentPet} />
 
-            {/* Guided Care Paths */}
+            {/* ── "Care for [pet]" + 9 Dim Cards — EXACT DESKTOP SECTION ── */}
+            {(() => {
+              const careDims = getCareDims(currentPet);
+              const activeDim = careDims.find(d => d.id === openDim);
+              return (
+                <>
+                  <div style={{ fontSize:20, fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:'Georgia,serif' }}>
+                    Care for <span style={{ color:G.sage }}>{petName}</span>
+                  </div>
+                  <div style={{ fontSize:12, color:'#888', marginBottom:16 }}>
+                    {careDims.length} dimensions, matched to {petName}'s coat and health
+                  </div>
+
+                  <style>{`
+                    .care-dims-grid-mobile{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;}
+                    @media(min-width:480px){.care-dims-grid-mobile{grid-template-columns:repeat(3,1fr);}}
+                    @keyframes care-dim-spin{to{transform:rotate(360deg)}}
+                  `}</style>
+                  <div className="care-dims-grid-mobile">
+                    {careDims.map(dim => {
+                      const isOpen = openDim === dim.id;
+                      return (
+                        <div
+                          key={dim.id}
+                          onClick={() => {
+                            if (dim.id === 'soul_made') { setSoulMadeOpen(true); return; }
+                            setOpenDim(isOpen ? null : dim.id);
+                          }}
+                          data-testid={`care-dim-${dim.id}`}
+                          style={{
+                            background: dim.glow ? G.cream : '#fff',
+                            border: isOpen ? `2px solid ${G.sage}` : '2px solid transparent',
+                            borderRadius:12, padding:'14px 10px', cursor:'pointer',
+                            textAlign:'center', transition:'all 0.15s', minHeight:130,
+                            boxShadow: dim.glow && !isOpen ? `0 4px 20px ${dim.glowColor}` : 'none',
+                            position:'relative', opacity: dim.glow ? 1 : 0.72,
+                          }}>
+                          {dim.glow && !isOpen && (
+                            <div style={{ position:'absolute', top:8, right:8, width:8, height:8, borderRadius:'50%', background:G.sage, boxShadow:`0 0 6px ${G.sage}` }} />
+                          )}
+                          <div style={{ fontSize:24, marginBottom:8 }}>{dim.icon}</div>
+                          <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:3 }}>{dim.label}</div>
+                          <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.3 }}>{typeof dim.sub === 'string' ? dim.sub.replace(/{name}/g, petName) : ''}</div>
+                          {dim.badge && (
+                            <div style={{ display:'inline-flex', alignItems:'center', background:dim.badgeBg, color:'#fff', borderRadius:20, padding:'2px 7px', fontSize:9, fontWeight:700, marginTop:6 }}>
+                              {typeof dim.badge === 'string' ? dim.badge.replace(/{name}/g, petName) : dim.badge}
+                            </div>
+                          )}
+                          <span style={{ position:'absolute', bottom:6, right:8, fontSize:12, color:'rgba(0,0,0,0.25)', transition:'transform 0.2s', transform:isOpen?'rotate(90deg)':'none' }}>›</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Expanded dim panel — full width, below grid */}
+                  {activeDim && activeDim.id !== 'soul_made' && (
+                    <div style={{ marginBottom:16 }}>
+                      <DimExpanded
+                        dim={activeDim}
+                        pet={currentPet}
+                        onClose={() => setOpenDim(null)}
+                        apiProducts={apiProducts}
+                      />
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+
+            {/* PawrentFirstStepsTab — after the dims, same as desktop order */}
+            <div style={{ marginTop:16 }}>
+              <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="care" />
+            </div>
+
+            {/* GuidedCarePaths — EXACT DESKTOP COMPONENT */}
             <div style={{ marginTop:16 }}>
               <GuidedCarePaths pet={currentPet} />
             </div>
@@ -214,6 +313,9 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 2: Services ══════════ */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
+            {/* CareConcierge — 8 service cards + dark CTA — EXACT DESKTOP COMPONENT */}
+            <CareConcierge pet={currentPet} />
+            {/* CareConciergeSection — illustrated concierge cards */}
             <CareConciergeSection pet={currentPet} />
           </div>
         )}
