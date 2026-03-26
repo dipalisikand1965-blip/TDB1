@@ -343,6 +343,27 @@ export function applyMiraFilter(products, pet) {
       if (!allergies.length) return true;
       return !allergies.some(allergen => productContainsAllergen(product, allergen));
     })
+    // Step 1c — life stage HARD filter: puppy-named products ONLY for puppies
+    .filter(product => {
+      if (!petStage || petStage === 'puppy') return true; // puppy or unknown age → show all
+      const productText = [
+        product.name || '',
+        ...(Array.isArray(product.tags) ? product.tags : []),
+        ...(Array.isArray(product.life_stages) ? product.life_stages : []),
+        ...(Array.isArray(product.age_groups) ? product.age_groups : []),
+        product.sub_category || '',
+        product.category || '',
+      ].join(' ').toLowerCase();
+      // Hard block: if product is explicitly puppy-only, hide from adult/senior dogs
+      const isPuppyProduct = /\bpuppy\b|\bpuppies\b|\bpup\b/.test(productText);
+      if (isPuppyProduct) return false; // never show puppy products to adult/senior dogs
+      // Hard block: senior products only for seniors
+      if (petStage === 'adult') {
+        const isSeniorOnly = /\bsenior only\b|\bfor seniors\b/.test(productText);
+        if (isSeniorOnly) return false;
+      }
+      return true;
+    })
     // Step 1b — remove products with specific breed tags that don't match this pet
     .filter(product => {
       // If pet breed is a universal fallback → show all products (no breed filtering)

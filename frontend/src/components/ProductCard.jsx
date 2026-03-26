@@ -338,36 +338,35 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
+
+  // Helper: reject broken/staging URLs — never show emergentagent.com or empty URLs
+  const isValidUrl = (url) => {
+    if (!url || typeof url !== 'string') return false;
+    if (!url.startsWith('http')) return false;
+    if (url.includes('emergentagent.com')) return false; // broken staging URLs — always skip
+    if (url.includes('static.prod-images')) return false; // same staging CDN
+    return true;
+  };
   
-  // Get valid image - PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image → images[0]
+  // Get valid image - PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (only Shopify/Cloudinary) → images[0] (only Shopify)
   const getValidImage = () => {
     // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
-    if (product.watercolor_image && product.watercolor_image.startsWith('http')) {
-      return product.watercolor_image;
-    }
+    if (isValidUrl(product.watercolor_image)) return product.watercolor_image;
 
     // 2. cloudinary_url — direct Cloudinary upload
-    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
-      return product.cloudinary_url;
-    }
+    if (isValidUrl(product.cloudinary_url)) return product.cloudinary_url;
 
     // 3. mockup_url — breed product mockup
-    if (product.mockup_url && product.mockup_url.startsWith('http')) {
-      return product.mockup_url;
-    }
+    if (isValidUrl(product.mockup_url)) return product.mockup_url;
 
     // 4. primary_image
-    if (product.primary_image && product.primary_image.startsWith('http')) {
-      return product.primary_image;
-    }
+    if (isValidUrl(product.primary_image)) return product.primary_image;
 
     // 5. image_url — clean curated URL
-    if (product.image_url && product.image_url.startsWith('http')) {
-      return product.image_url;
-    }
+    if (isValidUrl(product.image_url)) return product.image_url;
 
-    // 6. Shopify CDN images
-    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
+    // 6. Shopify CDN or Cloudinary images in `image` field
+    if (isValidUrl(product.image) && (product.image.includes('shopify.com') || product.image.includes('cloudinary.com'))) {
       return product.image;
     }
     
@@ -395,13 +394,13 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
       }
     }
     
-    // 5. Fallback: legacy image field
-    if (product.image && product.image.startsWith('http')) {
+    // 5. Fallback: legacy image field — ONLY Shopify or Cloudinary, never emergentagent
+    if (isValidUrl(product.image) && (product.image.includes('shopify.com') || product.image.includes('cloudinary.com'))) {
       return product.image;
     }
     
-    // 6. Last resort: images array (Shopify/Emergent only)
-    if (product.images?.[0] && product.images[0].startsWith('http') && (product.images[0].includes('shopify.com') || product.images[0].includes('emergentagent.com'))) {
+    // 6. Last resort: images array (Shopify or Cloudinary only — never emergentagent)
+    if (product.images?.[0] && isValidUrl(product.images[0]) && (product.images[0].includes('shopify.com') || product.images[0].includes('cloudinary.com'))) {
       return product.images[0];
     }
     
@@ -818,13 +817,13 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       }
     }
     
-    // 5. Fallback: legacy image field
-    if (product.image && product.image.startsWith('http')) {
+    // 5. Fallback: legacy image field — ONLY Shopify or Cloudinary, never emergentagent
+    if (isValidUrl(product.image) && (product.image.includes('shopify.com') || product.image.includes('cloudinary.com'))) {
       return product.image;
     }
     
-    // 6. Last resort: images array (Shopify/Emergent only)
-    if (product.images?.[0] && product.images[0].startsWith('http') && (product.images[0].includes('shopify.com') || product.images[0].includes('emergentagent.com'))) {
+    // 6. Last resort: images array (Shopify or Cloudinary only — never emergentagent)
+    if (product.images?.[0] && isValidUrl(product.images[0]) && (product.images[0].includes('shopify.com') || product.images[0].includes('cloudinary.com'))) {
       return product.images[0];
     }
     

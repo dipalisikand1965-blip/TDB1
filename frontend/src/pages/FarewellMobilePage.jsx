@@ -41,12 +41,12 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
 const FAREWELL_SERVICES = [
-  { id:"eol_planning",  icon:"🕊️", name:"End-of-Life Care Planning",     tagline:"Quality of life, with dignity",     price:"Free",   desc:"Mira guides quality-of-life conversations with your vet — pain management, dignity, and timing." },
-  { id:"euthanasia",    icon:"💙", name:"Euthanasia Support & Guidance", tagline:"When the time comes",               price:"Free",   desc:"Gentle guidance through the decision and process — what to expect, how to say goodbye, how to be present." },
-  { id:"cremation",     icon:"🌿", name:"Cremation Arrangement",         tagline:"Handled with care",                 price:"₹2,999", desc:"Concierge® arranges the full cremation — collection, service, and return of remains — with complete dignity." },
-  { id:"memorial",      icon:"🌷", name:"Memorial Product Creation",      tagline:"A tribute as unique as they were", price:"₹1,499", desc:"Paw print casting, memory box, custom portrait, engraved stone — we create a lasting tribute." },
-  { id:"ceremony",      icon:"🕯️", name:"Rainbow Bridge Ceremony",        tagline:"A send-off with love",             price:"₹3,999", desc:"A gentle farewell ceremony at home or at a partner location — readings, flowers, paw print, and space to grieve." },
-  { id:"grief_counsel", icon:"💜", name:"Grief Counselling Referral",     tagline:"Your grief is real and valid",     price:"Free",   desc:"Mira connects you with a pet grief counsellor — because the loss of a dog is the loss of unconditional love." },
+  { id:"eol_planning",  icon:"🕊️", name:"End-of-Life Care Planning",     tagline:"Quality of life, with dignity",     desc:"Mira guides quality-of-life conversations with your vet — pain management, dignity, and timing." },
+  { id:"euthanasia",    icon:"💙", name:"Euthanasia Support & Guidance", tagline:"When the time comes",               desc:"Gentle guidance through the decision and process — what to expect, how to say goodbye, how to be present." },
+  { id:"cremation",     icon:"🌿", name:"Cremation Arrangement",         tagline:"Handled with care",                 desc:"Concierge® arranges the full cremation — collection, service, and return of remains — with complete dignity." },
+  { id:"memorial",      icon:"🌷", name:"Memorial Product Creation",      tagline:"A tribute as unique as they were", desc:"Paw print casting, memory box, custom portrait, engraved stone — we create a lasting tribute." },
+  { id:"ceremony",      icon:"🕯️", name:"Rainbow Bridge Ceremony",        tagline:"A send-off with love",             desc:"A gentle farewell ceremony at home or at a partner location — readings, flowers, paw print, and space to grieve." },
+  { id:"grief_counsel", icon:"💜", name:"Grief Counselling Referral",     tagline:"Your grief is real and valid",     desc:"Mira connects you with a pet grief counsellor — because the loss of a dog is the loss of unconditional love." },
 ];
 
 
@@ -66,6 +66,7 @@ export default function FarewellMobilePage() {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [services, setServices] = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [selectedSvc, setSelectedSvc] = useState(null);
 
@@ -79,6 +80,11 @@ export default function FarewellMobilePage() {
     fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed), currentPet)); })
+      .catch(() => {});
+    // Fetch farewell services from Service Box API
+    fetch(`${API_URL}/api/service-box/services?pillar=farewell&limit=20`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.services?.length) setServices(d.services); })
       .catch(() => {});
   }, [currentPet?.id, token]);
 
@@ -245,7 +251,7 @@ export default function FarewellMobilePage() {
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:4 }}>Gentle, concierge-led support — whenever you are ready.</div>
             <div style={{ fontSize:14, color:G.mutedText, fontStyle:'italic', marginBottom:20 }}>"Take your time. We're here whenever you're ready." — Mira</div>
             <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {FAREWELL_SERVICES.map(svc => (
+              {(services.length ? services : FAREWELL_SERVICES).map(svc => (
                 <div key={svc.id} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px', overflow:'hidden' }}>
                   <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10 }}>
                     <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon}</div>
@@ -255,7 +261,7 @@ export default function FarewellMobilePage() {
                     </div>
                     <div style={{ fontSize:14, fontWeight:700, color:G.indigo, flexShrink:0 }}></div>
                   </div>
-                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc.replace(/{name}/g, petName)}</div>
+                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{(svc.desc || svc.description || '').replace(/{name}/g, petName)}</div>
                   <button onClick={() => handleBookService(svc)} data-testid={`farewell-svc-book-${svc.id}`}
                     style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.indigo})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
                     Reach out gently →
