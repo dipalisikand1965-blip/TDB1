@@ -8145,6 +8145,10 @@ class MiraChatRequest(BaseModel):
     user_id: Optional[str] = None
     user_city: Optional[str] = None  # User's city for location-based recommendations
 
+    # Persistent memory (cross-session context from MongoDB)
+    persistent_preferences: Optional[List[str]] = []   # e.g. ["Mojo doesn't like baths"]
+    persistent_service_interests: Optional[List[str]] = []  # e.g. ["grooming", "birthday cake"]
+
 class MiraPetContext(BaseModel):
     pet_id: str
     pet_name: str
@@ -16098,6 +16102,17 @@ Use this weather information to advise the user on pet activities. Be specific a
                 role = msg.get("role", "unknown").upper()
                 content = msg.get("content", "")
                 history_text += f"{role}: {content}\n"
+        
+        # Persistent memory context (cross-session, from MongoDB via frontend)
+        if request.persistent_preferences:
+            history_text += "\n\nMEMORY — Pet preferences Mira has learned across sessions:\n"
+            for pref in request.persistent_preferences[:10]:
+                history_text += f"- {pref}\n"
+
+        if request.persistent_service_interests:
+            history_text += "\nMEMORY — Services this pet has shown interest in:\n"
+            for si in request.persistent_service_interests[:10]:
+                history_text += f"- {si}\n"
         
         # Cross-pillar context handling
         cross_pillar_note = ""

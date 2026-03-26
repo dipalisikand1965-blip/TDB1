@@ -37,6 +37,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { bookViaConcierge } from "../utils/MiraCardActions";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import { applyMiraFilter, filterBreedProducts } from "../hooks/useMiraFilter";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
@@ -872,11 +873,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }
   // Use pre-fetched products from parent — no internal fetch (same as Dine)
   const rawByTab = apiProducts[dim.id] || {};
   const allRaw   = Object.values(rawByTab).flat();
-
-  const allergies   = getAllergies(pet);
-  const size        = getSize(pet);
-  const health      = getHealth(pet);
-  const intelligent = applyMiraIntelligence(allRaw, allergies, size, health, pet);
+  // Use centralized v2 Mira filter (breed + allergen + size + life stage scoring)
+  const intelligent = applyMiraFilter(filterBreedProducts(allRaw, pet?.breed), pet);
 
   // Dynamic tabs from actual sub_categories in pre-fetched data
   const tabList = ["All", ...Object.keys(rawByTab)];
@@ -1440,24 +1438,11 @@ const PlaySoulPage = () => {
       .then(async data => {
         if (!data?.products?.length) { setApiLoading(false); return; }
         const DIM_IDS = ["outings", "playdates", "walking", "fitness", "swimming", "soul", "bundles"];
+        // Apply v2 breed filter before grouping (synonym-aware, replaces inline checks)
+        const breedFiltered = filterBreedProducts(data.products, petData?.breed);
         const grouped = {};
 
-        data.products.forEach(p => {
-          const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase().trim());
-          const btr = (p.breed_targets||[]).map(b=>b.toLowerCase().trim());
-          // breed_targets takes priority: if it has a specific breed, always use it (even if breed_tags says 'all_breeds')
-          const hasSpecificTarget = btr.length > 0 && !btr.includes('all_breeds') && !btr.includes('all');
-          if (hasSpecificTarget) {
-            const breedMatch = btr.some(b => petBreed.includes(b) || b.includes(petBreed));
-            if (!breedMatch) return;
-          } else {
-            // Fall back to breed_tags
-            const isAllBreeds = bt.includes('all_breeds') || bt.includes('all');
-            if (!isAllBreeds && bt.length > 0) {
-              if (!bt.includes(petBreed)) return;
-            }
-          }
-
+        breedFiltered.forEach(p => {
           const cat = (p.category || "").toLowerCase().trim();
           const sub = (p.sub_category || "").toLowerCase().trim();
           let dimId = null;

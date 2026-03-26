@@ -17,6 +17,7 @@ import {
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
+import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
@@ -295,7 +296,7 @@ const Checkout = () => {
     return () => clearTimeout(timeoutId);
   }, [formData.petName]);
 
-  // Fetch breed-specific product recommendations
+  // Fetch breed-specific product recommendations — uses v2 Mira engine
   useEffect(() => {
     const fetchBreedProducts = async () => {
       if (!formData.petBreed || formData.petBreed.length < 2) {
@@ -305,10 +306,21 @@ const Checkout = () => {
       
       setLoadingBreedProducts(true);
       try {
-        const res = await fetch(`${API_URL}/api/pet-soul/breed-products/${encodeURIComponent(formData.petBreed)}?limit=4`);
+        const res = await fetch(`${API_URL}/api/pet-soul/breed-products/${encodeURIComponent(formData.petBreed)}?limit=12`);
         if (res.ok) {
           const data = await res.json();
-          setBreedProducts(data.products || []);
+          const rawProds = data.products || [];
+          // Build a minimal pet object from form data for Mira filtering
+          const mockPet = {
+            breed: formData.petBreed,
+            name: formData.petName,
+            doggy_soul_answers: {
+              food_allergies: formData.allergies ? [formData.allergies] : [],
+            },
+          };
+          const breedFiltered = filterBreedProducts(rawProds, formData.petBreed);
+          const miraRanked    = applyMiraFilter(breedFiltered, mockPet);
+          setBreedProducts(miraRanked.slice(0, 4));
         }
       } catch (err) {
         console.error('Error fetching breed products:', err);
@@ -316,7 +328,6 @@ const Checkout = () => {
       setLoadingBreedProducts(false);
     };
     
-    // Debounce the fetch
     const timeoutId = setTimeout(fetchBreedProducts, 600);
     return () => clearTimeout(timeoutId);
   }, [formData.petBreed]);
