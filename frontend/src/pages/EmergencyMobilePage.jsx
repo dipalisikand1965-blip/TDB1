@@ -171,6 +171,7 @@ export default function EmergencyMobilePage() {
             <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)' }}>For life-threatening emergencies, call your vet directly.</div>
           </div>
           <button onClick={() => handleUrgentCTA()}
+            data-testid="emergency-sos-btn"
             style={{ flexShrink:0, background:'#fff', border:'none', borderRadius:20, padding:'6px 14px', fontSize:14, fontWeight:700, color:G.crimson, cursor:'pointer' }}>
             Get Help
           </button>
