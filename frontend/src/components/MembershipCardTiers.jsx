@@ -19,17 +19,16 @@ import { Badge } from './ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { 
   Crown, Star, Shield, Calendar, Award, PawPrint, 
-  Sparkles, Gift, ChevronRight, X, Copy, Check 
+  Sparkles, Gift, ChevronRight, X, Copy, Check, QrCode
 } from 'lucide-react';
 
-// Tier configurations
+// Tier configurations — thresholds match backend (paw_points_routes.py TIER_THRESHOLDS)
 const MEMBERSHIP_TIERS = {
   bronze: {
     name: 'Bronze Pup',
     minPoints: 0,
-    maxPoints: 999,
+    maxPoints: 499,
     gradient: 'from-amber-600 via-amber-500 to-amber-700',
-    bgGradient: 'from-amber-50 to-orange-50',
     icon: PawPrint,
     iconColor: 'text-amber-600',
     badgeColor: 'bg-amber-100 text-amber-700',
@@ -43,10 +42,9 @@ const MEMBERSHIP_TIERS = {
   },
   silver: {
     name: 'Silver Star',
-    minPoints: 1000,
-    maxPoints: 4999,
+    minPoints: 500,
+    maxPoints: 1499,
     gradient: 'from-slate-400 via-slate-300 to-slate-500',
-    bgGradient: 'from-slate-50 to-gray-100',
     icon: Star,
     iconColor: 'text-slate-500',
     badgeColor: 'bg-slate-100 text-slate-700',
@@ -61,10 +59,9 @@ const MEMBERSHIP_TIERS = {
   },
   gold: {
     name: 'Gold Crown',
-    minPoints: 5000,
-    maxPoints: Infinity,
+    minPoints: 1500,
+    maxPoints: 4999,
     gradient: 'from-yellow-500 via-amber-400 to-yellow-600',
-    bgGradient: 'from-yellow-50 to-amber-50',
     icon: Crown,
     iconColor: 'text-yellow-600',
     badgeColor: 'bg-yellow-100 text-yellow-700',
@@ -77,13 +74,33 @@ const MEMBERSHIP_TIERS = {
       'Surprise gifts on pet birthdays'
     ],
     pointsMultiplier: 2
+  },
+  platinum: {
+    name: 'Platinum Soul',
+    minPoints: 5000,
+    maxPoints: Infinity,
+    gradient: 'from-violet-600 via-purple-500 to-indigo-600',
+    icon: Sparkles,
+    iconColor: 'text-violet-300',
+    badgeColor: 'bg-violet-100 text-violet-700',
+    benefits: [
+      'All Gold benefits',
+      '20% off on all orders',
+      'Dedicated personal concierge',
+      'Exclusive Platinum events',
+      'Priority booking for all services',
+      'Annual gift box for your pet',
+      'Founder member recognition'
+    ],
+    pointsMultiplier: 3
   }
 };
 
-// Determine tier based on points
+// Determine tier based on points — mirrors backend logic
 const getTier = (points) => {
-  if (points >= 5000) return 'gold';
-  if (points >= 1000) return 'silver';
+  if (points >= 5000) return 'platinum';
+  if (points >= 1500) return 'gold';
+  if (points >= 500) return 'silver';
   return 'bronze';
 };
 
@@ -266,6 +283,38 @@ const MembershipCardTiers = ({ user, pet }) => {
                 <p className="text-white/70 text-xs">Valid Until</p>
                 <p className="text-lg font-bold">{formatDate(expiresAt)}</p>
                 <p className="text-xs text-white/60">Since {formatDate(memberSince)}</p>
+              </div>
+            </div>
+            
+            {/* Progress to next tier inside modal */}
+            {nextTier && (
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-white/80 text-sm font-medium">Progress to {MEMBERSHIP_TIERS[nextTier].name}</p>
+                  <span className="text-white/60 text-xs">{Math.round(progressPercent)}%</span>
+                </div>
+                <div className="h-2.5 bg-white/20 rounded-full overflow-hidden mb-1">
+                  <div className="h-full bg-white rounded-full transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+                </div>
+                <p className="text-white/50 text-xs text-right">{pointsToNext.toLocaleString()} pts to {MEMBERSHIP_TIERS[nextTier].name}</p>
+              </div>
+            )}
+            
+            {/* QR Code / Member Identity */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-4 flex items-center gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-md">
+                  <div className="grid grid-cols-3 gap-0.5 p-1">
+                    {[1,1,1,1,0,1,1,1,1].map((v,i) => (
+                      <div key={i} className={`w-3.5 h-3.5 rounded-sm ${v ? 'bg-gray-900' : 'bg-white'}`} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="text-white/60 text-xs mb-1">Member ID</p>
+                <p className="font-mono text-base font-bold text-white tracking-wider">{petPassNumber}</p>
+                <p className="text-white/50 text-xs mt-1">Show at any TDC event for access</p>
               </div>
             </div>
             

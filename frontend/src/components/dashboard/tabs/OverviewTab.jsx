@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { 
   ShoppingBag, PawPrint, Star, Package, Calendar, Sparkles, Crown,
-  ChevronRight, Gift, Cake, MessageCircle, Play, RefreshCw
+  ChevronRight, Gift, Cake, MessageCircle, Play, RefreshCw, Award
 } from 'lucide-react';
 import { toast } from '../../../hooks/use-toast';
+
+const API = process.env.REACT_APP_BACKEND_URL || '';
 
 // Lazy-loaded components
 const MiraPicksCard = React.lazy(() => import('../../MiraPicksCard'));
@@ -41,9 +43,20 @@ const OverviewTab = ({
   onPetChange
 }) => {
   const navigate = useNavigate();
+  const [badges, setBadges] = useState([]);
   
   // Get current pet (either selected or first)
   const currentPet = pets.find(p => p.id === selectedPetId) || pets[0];
+
+  // Fetch earned badges
+  useEffect(() => {
+    const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (!token) return;
+    fetch(`${API}/api/paw-points/my-badges`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.earned) setBadges(d.earned); })
+      .catch(() => {});
+  }, [user?.id]);
 
   return (
     <div className="animate-in fade-in-50 duration-300">
@@ -393,6 +406,35 @@ const OverviewTab = ({
           <p className="text-sm text-gray-500 mt-2">{currentPet ? 'Soul completion' : 'Active profiles'}</p>
         </Card>
       </div>
+
+      {/* BADGES EARNED */}
+      {badges.length > 0 && (
+        <Card className="mt-6 p-5 bg-gradient-to-r from-violet-50 via-purple-50 to-pink-50 border-purple-100 shadow-sm" data-testid="badges-section">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-purple-100 rounded-xl">
+                <Award className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Your Badges</h3>
+                <p className="text-xs text-gray-500">{badges.length} earned so far</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-100" onClick={() => onTabChange?.('rewards')}>
+              All Badges <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+            {badges.map(b => (
+              <div key={b.id} className="flex-shrink-0 flex flex-col items-center gap-1.5 p-3 bg-white rounded-xl shadow-sm border border-purple-100 min-w-[80px]" data-testid={`badge-${b.id}`}>
+                <span className="text-2xl">{b.emoji}</span>
+                <p className="text-xs font-semibold text-gray-700 text-center leading-tight">{b.name}</p>
+                <span className="text-[10px] text-purple-600 font-medium">+{b.points_reward} pts</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
       
       {/* ENGAGEMENT WIDGETS ROW */}
       <div className="grid md:grid-cols-2 gap-4 mt-6">
