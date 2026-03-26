@@ -11,7 +11,8 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
-import { applyMiraFilter, filterBreedProducts, KNOWN_BREEDS } from '../hooks/useMiraFilter';import PillarPageLayout from '../components/PillarPageLayout';
+import { applyMiraFilter, filterBreedProducts, KNOWN_BREEDS, excludeCakeProducts } from '../hooks/useMiraFilter';
+import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
@@ -58,7 +59,7 @@ function MiraPicksSection({ pet, token, onConcierge }) {
     })
       .then(r => r.ok ? r.json() : null)
       .then(pData => {
-        const breedFiltered = filterBreedProducts(pData?.picks || [], pet?.breed);
+        const breedFiltered = filterBreedProducts(excludeCakeProducts(pData?.picks || []), pet?.breed);
         // Apply full v2 Mira ranking (allergen + size + life stage + loves scoring)
         const ranked = applyMiraFilter(breedFiltered, pet);
         if (ranked.length) setPicks(ranked.slice(0, 12));

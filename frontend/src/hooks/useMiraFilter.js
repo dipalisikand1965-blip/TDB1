@@ -500,6 +500,31 @@ export function useMiraFilter(products, pet) {
   return applyMiraFilter(products, pet);
 }
 
+/**
+ * excludeCakeProducts — removes cake/birthday-cake products
+ * Cakes belong ONLY in the Celebrate pillar.
+ * Call this before applyMiraFilter on every non-Celebrate pillar page.
+ */
+const CAKE_CATEGORY_KEYS = new Set([
+  'cakes', 'cake', 'breed-cakes', 'breed_cakes',
+  'birthday-cakes', 'birthday_cakes',
+  'cake_decorations', 'cake-decorations',
+  'dognuts',
+]);
+
+export function excludeCakeProducts(products) {
+  return products.filter(p => {
+    const cat    = (p.category    || '').toLowerCase().replace(/_/g, '-').trim();
+    const subCat = (p.sub_category || '').toLowerCase().replace(/_/g, '-').trim();
+    // Exact match against known cake category keys
+    if (CAKE_CATEGORY_KEYS.has(cat) || CAKE_CATEGORY_KEYS.has(subCat)) return false;
+    // Broad name check: any product whose name starts with a known breed + "cake" / "birthday cake"
+    const name = (p.name || '').toLowerCase();
+    if (name.includes('birthday cake') || name.includes('breed cake') || subCat.includes('cake') || cat.includes('cake')) return false;
+    return true;
+  });
+}
+
 // ── All known breed names that could appear in product names/who_for fields ──
 export const KNOWN_BREEDS = [
   // Breeds with product catalogs (properly handled via BREED_SYNONYMS)
