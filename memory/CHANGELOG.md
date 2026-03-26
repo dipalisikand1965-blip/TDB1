@@ -1,6 +1,42 @@
 # The Doggy Company — Changelog
 
-## 2026-03-25 — Mobile Parity Sprint (Fork Agent)
+## 2026-03-26 — Mobile UI Polish & Breed Filtering Sprint (Session 7)
+
+### Duplicate Mira Orb — Fixed
+- `MiraAI.jsx` hiddenPaths extended: `/pet-home`, `/dashboard`, `/my-pets`, `/my-requests` added
+- No floating MiraAI orb on dashboard/pet-home; "Ask Mira" navbar button is sole entry point
+- MiraChatWidget (pillar-aware) remains on all 12 pillar pages
+
+### Strict Breed Filtering — Implemented
+- Added `KNOWN_BREEDS` array and `filterBreedProducts()` export to `useMiraFilter.js`
+- "Akita" products (or any other breed) CANNOT appear for Maltese (or any non-matching pet)
+- `PersonalisedBreedSection.jsx` now applies `filterBreedProducts()` + `limit=40` query
+- `ShopMobilePage.jsx` now imports `filterBreedProducts` from `useMiraFilter` (removed local duplicate)
+
+### "Request {breed} Collection" CTA — Added
+- Empty state in `PersonalisedBreedSection.jsx` now shows "Request {breed} Collection →" button
+- Button has `data-testid="request-breed-collection-btn"` and opens Concierge® pre-filled with breed
+- `handleRequestCollection` uses `tdc.request` + `bookViaConcierge` pattern
+
+### MiraPureOSPage Pillar Names — Fixed
+- `getPillarPicks()`: renamed `travel`→`go`, `enjoy`→`play`, removed `stay`, removed `fit`
+- Added new keys: `go`, `play`, `shop`, `emergency`, `farewell`, `paperwork` with proper data
+- `getQuickReplies()`: renamed `travel`→`go`, removed `stay`/`enjoy`/`fit` cases, added `go`/`shop`/`play`
+- `MiraPage.jsx` QUICK_ACTIONS: `travel`→`go`, `stay`→`play`
+
+### Dine Mobile Pet Switcher — Fixed
+- `DineSoulPage.jsx`: Replaced native `<select>` with pill buttons (matching all other mobile pages)
+- Active pill: white border + frosted glass; inactive: transparent + muted border
+
+### Watercolor Service Images — Verified
+- `ServicesMobilePage.jsx` correctly renders `watercolor_image` from API
+- Service API returns Cloudinary URLs in `watercolor_image` field (verified working)
+
+### Bug Fix: effectiveHidePrice → hidePrice
+- `PersonalisedBreedSection.jsx` line 226-227: Fixed latent `ReferenceError` (undefined variable)
+
+---
+
 
 ### Concierge® Global Branding
 - Added ® to ALL instances of "Concierge" in user-facing text across 187 files

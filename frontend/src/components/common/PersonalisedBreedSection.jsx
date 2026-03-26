@@ -223,8 +223,8 @@ export default function PersonalisedBreedSection({
                 <div style={{ fontSize:12, fontWeight:700, color:C.deep, marginBottom:3, lineHeight:1.3 }}>{p.name || p.title}</div>
                 {p.mira_hint && <div style={{ fontSize:10, color:C.orange, lineHeight:1.4, marginBottom:6 }}>{p.mira_hint}</div>}
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                  <span style={{ fontSize:effectiveHidePrice ? 11 : 13, fontWeight:800, color:effectiveHidePrice ? '#888' : C.deep }}>
-                    {effectiveHidePrice ? 'Pricing shared by Concierge®' : `₹${p.price?.toLocaleString?.() ?? p.price}`}
+                  <span style={{ fontSize:hidePrice ? 11 : 13, fontWeight:800, color:hidePrice ? '#888' : C.deep }}>
+                    {hidePrice ? 'Pricing shared by Concierge®' : `₹${p.price?.toLocaleString?.() ?? p.price}`}
                   </span>
                   <button
                     onClick={e => {

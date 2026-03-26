@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-25 (Session 6 Complete)
+## Last Updated: 2026-03-26 (Session 7 Complete)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -147,16 +147,15 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 
 ## 9. PENDING TASKS (Priority for next session)
 
-### P0 — Deployment Day (2026-03-26)
+### P0 — Next Session
 1. Celebrate mobile parity: BirthdayCountdown, SoulCelebrationPillars, CelebrationMemoryWall, MiraSoulNudge
-2. Add LearnNearMe, PaperworkNearMe, GoNearMe to mobile pages
-3. Apply Fix 5 & 6 (MediaTabPanel + Active toggle) to BreedCakeManager.jsx
-4. Mira "Explains Why" expandable card on product grids
+2. "Mira explains why" expandable row on product cards (user-approved)
+3. Watch & Learn YouTube sections (Care + Go)
 
-### P1 — Post-deployment
+### P1 — Post-mobile parity
 1. Services import: 143 old services → services_master (await user confirmation)
 2. Admin "Add New" for Soul Products (Breed Products + Breed Cakes with AI)
-3. Watch & Learn YouTube sections (Care + Go)
+3. Full mobile-desktop parity audit for Love, Fit, Groom pillars
 
 ### P2 — Future
 1. WhatsApp Daily Digest cron
