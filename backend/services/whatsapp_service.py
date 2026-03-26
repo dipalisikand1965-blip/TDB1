@@ -30,7 +30,10 @@ logger = logging.getLogger(__name__)
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 GUPSHUP_API_URL = "https://api.gupshup.io/wa/api/v1/msg"
-TEMPLATES_APPROVED = os.environ.get("WHATSAPP_TEMPLATES_APPROVED", "false").lower() == "true"
+
+def _templates_approved() -> bool:
+    """Read WHATSAPP_TEMPLATES_APPROVED at call time (not import time) so env changes take effect after restart."""
+    return os.environ.get("WHATSAPP_TEMPLATES_APPROVED", "false").lower() == "true"
 
 def get_gupshup_config() -> Dict[str, str]:
     return {
@@ -202,7 +205,7 @@ async def send_whatsapp(
         logger.info(f"[WA] Skipping duplicate: {idempotency_key}")
         return {"success": True, "skipped": True, "reason": "already_sent"}
 
-    if TEMPLATES_APPROVED:
+    if _templates_approved():
         result = await _send_template(phone, template_name, template_params)
         if result.get("success"):
             await _log(idempotency_key, template_name, phone, fallback_message, result)
@@ -213,7 +216,6 @@ async def send_whatsapp(
     result = await _send_freeform(phone, fallback_message, context)
     await _log(idempotency_key, f"freeform:{template_name}", phone, fallback_message, result)
     return result
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PUBLIC API — One function per template
