@@ -60,6 +60,7 @@ import NotificationBell from '../components/Mira/NotificationBell';
 import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
 import QuickReplies from '../components/Mira/QuickReplies';
 import MemoryWhisper from '../components/Mira/MemoryWhisper';
+import MiraMemoryCard from '../components/Mira/MiraMemoryCard';
 import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 
@@ -966,6 +967,13 @@ const MiraOSPage = () => {
             tier={soulKnowledge.tier}
             answered={soulKnowledge.answered}
             total={soulKnowledge.total}
+          />
+          
+          {/* Mira's Memory Card */}
+          <MiraMemoryCard
+            pet={pet}
+            soulAnswers={soulKnowledge.answers}
+            healthData={healthData}
           />
           
           {/* Core Traits Snapshot */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
@@ -8,9 +8,145 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialo
 import { 
   User, MessageCircle, Phone, Mail, Bell, Shield, Lock,
   Clock, Sparkles, CheckCircle2, BellRing, Smartphone, Settings,
-  Eye, EyeOff, Check, X, AlertTriangle
+  Eye, EyeOff, Check, X, AlertTriangle, PawPrint
 } from 'lucide-react';
 import { toast as toastFn } from '../../../hooks/use-toast';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// ── Notification Preference Types ────────────────────────────────────────────
+const NOTIF_TYPES = [
+  { key: 'daily_digest',         label: 'Daily Digest',         desc: 'Morning update + daily tip',   icon: '🌅' },
+  { key: 'birthday_reminders',   label: 'Birthday Reminders',   desc: '7-day advance warning',         icon: '🎂' },
+  { key: 'medication_reminders', label: 'Medication Reminders', desc: 'Upcoming medication due alerts', icon: '💊' },
+  { key: 'order_updates',        label: 'Order Updates',        desc: 'Shipping, delivery, confirmation',icon: '📦' },
+  { key: 'concierge_updates',    label: 'Concierge Updates',    desc: 'Mira replies and requests',     icon: '✦' },
+];
+
+function NotificationPreferencesPanel({ pets, token }) {
+  const [prefs, setPrefs] = useState({});
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  // Load preferences from API
+  const loadPrefs = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/api/member/notification-preferences`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPrefs(data.preferences || {});
+      }
+    } catch {}
+  }, [token]);
+
+  useEffect(() => {
+    loadPrefs();
+  }, [loadPrefs]);
+
+  useEffect(() => {
+    if (pets?.length && !selectedPet) setSelectedPet(pets[0]?.id || pets[0]?.pet_id || 'all');
+  }, [pets, selectedPet]);
+
+  const getPrefsForPet = (petId) => {
+    const defaults = { daily_digest: true, birthday_reminders: true, medication_reminders: true, order_updates: true, concierge_updates: true };
+    return { ...defaults, ...(prefs[petId] || {}) };
+  };
+
+  const handleToggle = async (petId, key, value) => {
+    const updated = {
+      ...prefs,
+      [petId]: { ...getPrefsForPet(petId), [key]: value }
+    };
+    setPrefs(updated);
+    setSaving(true);
+    setSaved(false);
+    try {
+      await fetch(`${API_URL}/api/member/notification-preferences`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preferences: updated })
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch {}
+    setSaving(false);
+  };
+
+  const currentPet = pets?.find(p => (p.id || p.pet_id) === selectedPet);
+  const currentPrefs = getPrefsForPet(selectedPet || 'all');
+
+  return (
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Bell className="w-4 h-4 text-purple-400" />
+          <span className="text-sm font-semibold text-white">Notification Preferences</span>
+        </div>
+        {saving && <span className="text-xs text-slate-500">Saving...</span>}
+        {saved && <span className="text-xs text-emerald-400 flex items-center gap-1"><Check className="w-3 h-3" /> Saved</span>}
+      </div>
+
+      {/* Pet selector tabs */}
+      {pets && pets.length > 1 && (
+        <div className="flex gap-2 flex-wrap" data-testid="notif-pet-selector">
+          {pets.map(pet => {
+            const pId = pet.id || pet.pet_id;
+            return (
+              <button
+                key={pId}
+                data-testid={`notif-pet-tab-${pId}`}
+                onClick={() => setSelectedPet(pId)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  selectedPet === pId
+                    ? 'bg-purple-500/30 text-purple-300 border border-purple-500/40'
+                    : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/5'
+                }`}
+              >
+                <PawPrint className="w-3 h-3" />
+                {pet.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Toggles */}
+      <div className="space-y-2" data-testid="notif-toggles">
+        {NOTIF_TYPES.map(({ key, label, desc, icon }) => (
+          <div
+            key={key}
+            className="flex items-center justify-between p-3 bg-white/3 border border-white/5 rounded-xl hover:bg-white/5 transition-all"
+            data-testid={`notif-toggle-${key}`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-base">{icon}</span>
+              <div>
+                <div className="text-sm font-medium text-white">{label}</div>
+                <div className="text-xs text-slate-500">{desc}</div>
+              </div>
+            </div>
+            <Switch
+              checked={currentPrefs[key] !== false}
+              onCheckedChange={(val) => handleToggle(selectedPet || 'all', key, val)}
+              data-testid={`notif-switch-${key}`}
+              className="data-[state=checked]:bg-purple-500"
+            />
+          </div>
+        ))}
+      </div>
+      {currentPet && (
+        <div className="text-xs text-slate-600 text-center">
+          Preferences for <span className="text-slate-400">{currentPet.name}</span> · Via WhatsApp & Email
+        </div>
+      )}
+    </div>
+  );
+}
 
 const SettingsTab = ({ 
   user,
@@ -28,7 +164,8 @@ const SettingsTab = ({
   sendTestNotification,
   setSettings,
   setShowVoiceActions,
-  toast
+  toast,
+  token,
 }) => {
   // Security modals state
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -226,33 +363,9 @@ const SettingsTab = ({
             </div>
           </Card>
 
-          {/* Notification Types */}
+          {/* Per-Pet Notification Preferences */}
           <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
-            <h3 className="text-base sm:text-lg font-bold mb-4 flex items-center gap-2 text-white">
-              <Bell className="w-5 h-5 text-purple-400" /> Notification Preferences
-            </h3>
-            <p className="text-sm text-slate-400 mb-4">What would you like to be notified about?</p>
-            <div className="space-y-3">
-              {[
-                { key: 'order_updates', icon: '📦', label: 'Order Updates', desc: 'Shipping, delivery & status changes' },
-                { key: 'promotional', icon: '🎁', label: 'Promotions & Offers', desc: 'Exclusive deals & new launches' },
-                { key: 'celebration_reminders', icon: '🎂', label: 'Celebration Reminders', desc: 'Pet birthdays & gotcha days' },
-                { key: 'health_reminders', icon: '💊', label: 'Health Reminders', desc: 'Vaccination & vet appointments' },
-                { key: 'community_updates', icon: '🐾', label: 'Community Updates', desc: 'Events, meetups & activities' },
-              ].map((item) => (
-                <div key={item.key} className="flex items-center justify-between p-3 bg-slate-800/30 rounded-xl">
-                  <div className="space-y-0.5 flex-1 min-w-0 mr-3">
-                    <label className="text-sm font-medium text-white truncate block">{item.icon} {item.label}</label>
-                    <p className="text-xs text-slate-400 truncate">{item.desc}</p>
-                  </div>
-                  <Switch 
-                    checked={settings[item.key]} 
-                    onCheckedChange={() => handleSettingChange(item.key)} 
-                    className="flex-shrink-0"
-                  />
-                </div>
-              ))}
-            </div>
+            <NotificationPreferencesPanel pets={pets} token={token} />
           </Card>
         </div>
       </div>
