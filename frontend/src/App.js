@@ -410,7 +410,10 @@ function AppRouter() {
         <Route path="/ask-mira" element={<MiraPage />} />
         
         {/* MIRA OS - Protected behind login + membership */}
-        <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
+        <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
+        
+        {/* MIRA OS CLASSIC - Legacy MiraDemo for fallback */}
+        <Route path="/mira-os-classic" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
         
         {/* Redirect old /mira-demo to /mira-os */}
         <Route path="/mira-demo" element={<MiraDemoRedirect />} />
@@ -427,8 +430,8 @@ function AppRouter() {
         {/* MIRA PURE OS - Full OS with tabs, pet selector (no hardcoded logic) */}
         <Route path="/mira-pure-os" element={<MiraPureOSPage />} />
         
-        {/* MIRA OS - New Header Shell Navigation Page */}
-        <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
+        {/* MIRA OS - New Header Shell Navigation Page (kept as backup reference) */}
+        {/* Route already defined above - remove duplicate */}
         
         {/* Mira Pillar Sandbox - Test page for unified Mira experience */}
         <Route path="/mira-pillar-sandbox" element={<MiraPillarSandbox />} />
