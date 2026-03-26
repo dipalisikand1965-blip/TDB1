@@ -337,3 +337,17 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 ## CRITICAL RULE 11 (SESSION 11 DISCOVERY):
 **DineSoulPage.jsx contains an inline DineMobilePage function** (all other pillars have separate *MobilePage.jsx files). Any changes to Dine mobile must edit DineSoulPage.jsx lines 767+. The desktop path (DineSoulPageDesktopLegacy) is strictly locked.
 
+
+## CHANGELOG — March 26, 2026 (Breed Fix Session)
+### CRITICAL BUG FIX: Breed Cross-Contamination (Zero Tolerance)
+- Fixed: Bernese Mountain Dog products showing for Shih Tzu Meister in Play
+- Root cause: Products tagged `all_breeds` but with breed names in names were treated as universal
+- Fix: NAME-FIRST rule — if product name has a known breed, it's ONLY for that breed (overrides all tags)
+- Backend: `_should_show_for_breed()` in pillar_products_routes.py + breed_catalogue.py
+- Frontend: `filterBreedProducts()` in useMiraFilter.js updated with same NAME-FIRST logic
+- DB: 3447 breed_products fixed (breed=all → specific breed). 420 products_master fixed.
+- CareMobilePage.jsx: Fixed critical parse error (missing function declaration). Added 9 dim pills.
+- PersonalisedBreedSection: watercolor_image priority for Soul Made illustrations
+- All mobile pages: now pass breed param to backend API
+- Admin generate-image: saves watercolor_image for breed_product entities
+- Test result: 21/21 PASS. Zero cross-breed contamination confirmed.
