@@ -597,7 +597,7 @@ const Navbar = () => {
           msOverflowStyle: 'none'
         }}
       >
-        <span>✦ World's first Pet Life OS · Built in memory of Mystique · Now in early access</span>
+        <span>✦ The world's first Pet Life OS · Built in memory of Mystique · Now in early access</span>
       </div>
 
       {/* Main Header Row */}

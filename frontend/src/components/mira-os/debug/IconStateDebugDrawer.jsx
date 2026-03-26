@@ -106,13 +106,11 @@ const IconStateDebugDrawer = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
 
-  // Only show in development or when ?debug=1 query param is present
+  // Only show when ?debug=1 query param is explicitly present (not in dev mode by default)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const debugParam = urlParams.get('debug');
-    const isDev = process.env.NODE_ENV === 'development' || debugParam === '1';
-    setIsDevMode(isDev);
-    console.log('[DEBUG DRAWER] Dev mode:', isDev, 'Debug param:', debugParam);
+    setIsDevMode(debugParam === '1');
   }, []);
 
   // Always show button in dev mode, even if no data
