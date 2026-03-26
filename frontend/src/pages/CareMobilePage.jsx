@@ -18,7 +18,7 @@
  *
  * Service booking uses CARE_SERVICES array + ServiceBookingModal (same as desktop)
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usePillarContext } from '../context/PillarContext';
@@ -33,7 +33,7 @@ import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CareConcierge } from './CareSoulPage';
+import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded } from './CareSoulPage';
 import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -59,6 +59,16 @@ export default function CareMobilePage() {
   const [svcBooking, setSvcBooking] = useState({ isOpen:false, serviceType:'grooming' });
   const [openDim, setOpenDim]       = useState(null);
   const [apiProducts, setApiProducts] = useState({});
+  const dimExpandedRef               = useRef(null);
+
+  // Auto-scroll into expanded dim panel whenever a dim is opened
+  useEffect(() => {
+    if (openDim && dimExpandedRef.current) {
+      setTimeout(() => {
+        dimExpandedRef.current?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }, 80);
+    }
+  }, [openDim]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -272,9 +282,9 @@ export default function CareMobilePage() {
                     })}
                   </div>
 
-                  {/* Expanded dim panel — full width, below grid */}
+                  {/* Expanded dim panel — full width, below grid, auto-scrolls into view */}
                   {activeDim && activeDim.id !== 'soul_made' && (
-                    <div style={{ marginBottom:16 }}>
+                    <div ref={dimExpandedRef} style={{ marginBottom:16, scrollMarginTop:72 }}>
                       <DimExpanded
                         dim={activeDim}
                         pet={currentPet}
@@ -313,10 +323,55 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 2: Services ══════════ */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
-            {/* CareConcierge — 8 service cards + dark CTA — EXACT DESKTOP COMPONENT */}
-            <CareConcierge pet={currentPet} />
-            {/* CareConciergeSection — illustrated concierge cards */}
-            <CareConciergeSection pet={currentPet} />
+            <div style={{ fontSize:22, fontWeight:800, color:G.darkText, marginBottom:4 }}>
+              Care Services for <span style={{ color:G.sage }}>{petName}</span>
+            </div>
+            <div style={{ fontSize:13, color:G.mutedText, marginBottom:20, lineHeight:1.6 }}>
+              Grooming, vet, boarding, behaviour — arranged through Concierge®.
+            </div>
+
+            {/* Mobile-native vertical service cards */}
+            {[
+              { id:'grooming',   icon:'✂️', name:'Grooming',              tagline:'Coat care, bath, nail trim & styling',          accentColor:'#C2185B' },
+              { id:'vet',        icon:'🏥', name:'Vet Visits',             tagline:'Clinic discovery, booking & follow-up',          accentColor:'#1565C0' },
+              { id:'boarding',   icon:'🏡', name:'Boarding & Daycare',     tagline:'Overnight boarding & daytime supervision',        accentColor:'#2D6A4F' },
+              { id:'sitting',    icon:'🏠', name:'Pet Sitting',            tagline:'In-home care, feeding & companionship',           accentColor:'#E65100' },
+              { id:'behaviour',  icon:'💜', name:'Behaviour Support',      tagline:'Anxiety, fear & stress coaching',                 accentColor:'#6A1B9A' },
+              { id:'senior',     icon:'🌸', name:'Senior & Special Care',  tagline:'Comfort, mobility & special handling',            accentColor:'#AD1457' },
+              { id:'nutrition',  icon:'🥗', name:'Nutrition Consults',     tagline:'Diet plan, allergy support & vet-approved picks', accentColor:'#E65100' },
+              { id:'emergency',  icon:'🚨', name:'Emergency Help',         tagline:'Urgent care routing & 24/7 coordination',         accentColor:'#C62828', urgent:true },
+            ].map(svc => (
+              <div key={svc.id}
+                data-testid={`care-service-card-${svc.id}`}
+                style={{ background:'#fff', borderRadius:16, padding:'16px 18px', marginBottom:12,
+                  border:`1.5px solid ${svc.urgent ? '#FFCDD2' : G.pale}`,
+                  boxShadow: svc.urgent ? '0 2px 12px rgba(198,40,40,0.08)' : '0 2px 8px rgba(45,106,79,0.06)',
+                  display:'flex', alignItems:'center', gap:14 }}>
+                <div style={{ width:48, height:48, borderRadius:14, flexShrink:0,
+                  background:`${svc.accentColor}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>
+                  {svc.icon}
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:15, fontWeight:800, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
+                  <div style={{ fontSize:12, color:'#666', lineHeight:1.4 }}>{svc.tagline}</div>
+                </div>
+                <button
+                  onClick={() => {
+                    vibe('medium');
+                    tdc.book({ service:svc.name, pillar:'care', pet:currentPet, channel:'care_services_tab' });
+                    setSvcBooking({ isOpen:true, serviceType:svc.id });
+                  }}
+                  style={{ flexShrink:0, padding:'9px 14px', borderRadius:12, border:'none', fontSize:13, fontWeight:700, cursor:'pointer',
+                    background: svc.urgent ? '#C62828' : G.deepMid, color:'#fff', whiteSpace:'nowrap' }}>
+                  Book →
+                </button>
+              </div>
+            ))}
+
+            {/* Concierge illustrated cards below */}
+            <div style={{ marginTop:8 }}>
+              <CareConciergeSection pet={currentPet} />
+            </div>
           </div>
         )}
 

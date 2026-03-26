@@ -320,6 +320,17 @@ export default function LandingPage() {
             {isAuthenticated ? "My Dogs →" : "Join Now"}
           </button>
         </div>
+        {/* Sign In — mobile only, always visible between logo and hamburger */}
+        {!isAuthenticated && (
+          <a href="/login" style={{
+            display: "none",
+            color: C.amber, fontSize: 13, fontWeight: 500,
+            fontFamily: "DM Sans, sans-serif",
+            textDecoration: "none", letterSpacing: "0.01em",
+          }} className="tdc-mobile-signin">
+            Sign in
+          </a>
+        )}
         {/* Hamburger — mobile only */}
         <div className="tdc-hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} data-testid="mobile-menu-toggle">
           <span style={mobileMenuOpen ? {transform:'rotate(45deg) translate(5px,5px)'} : {}} />
