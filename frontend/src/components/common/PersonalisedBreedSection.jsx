@@ -13,6 +13,7 @@ import { API_URL } from "../../utils/api";
 import SoulMadeModal from "../SoulMadeModal";
 import { tdc } from "../../utils/tdc_intent";
 import { bookViaConcierge } from "../../utils/MiraCardActions";
+import { filterBreedProducts } from "../../hooks/useMiraFilter";
 
 const PILLAR_COLORS = {
   dine:      { deep:"#1A2F1A", orange:"#C9973A", pale:"#FFF8EE" },
@@ -72,19 +73,30 @@ export default function PersonalisedBreedSection({
       amount: product?.price,
     });
   };
+  const handleRequestCollection = async () => {
+    tdc.request({ service: `${breed} collection request`, pillar, pet, channel: `${pillar}_breed_collection_request` });
+    await bookViaConcierge({
+      service: `${breed} Collection — Personalised Products`,
+      pillar,
+      pet,
+      channel: `${pillar}_breed_collection_request`,
+      amount: 0,
+    });
+  };
   const C        = PILLAR_COLORS[pillar] || PILLAR_COLORS.play;
-  const effectiveHidePrice = hidePrice || pillar === 'paperwork';
   const isConciergeMode = conciergeMode || pillar === 'paperwork';
 
   useEffect(() => {
     if (!breed) { setLoading(false); return; }
     const breedEncoded = encodeURIComponent(breed);
-    fetch(`${API_URL}/api/breed-catalogue/products?pillar=${pillar}&breed=${breedEncoded}&limit=20`)
+    fetch(`${API_URL}/api/breed-catalogue/products?pillar=${pillar}&breed=${breedEncoded}&limit=40`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const raw = data?.products || [];
-        // Safety net: only proper mockups (breed- prefix filename)
-        const clean = raw.filter(p => {
+        // Step 1 — strict breed filter: exclude products named for a different breed
+        const breedFiltered = filterBreedProducts(raw, breed);
+        // Step 2 — image safety net: only show products with proper mockup images
+        const clean = breedFiltered.filter(p => {
           const url = p.cloudinary_url || p.mockup_url || p.image_url || "";
           if (!url) return false;
           return url.split("/").pop().startsWith("breed-");
@@ -125,6 +137,21 @@ export default function PersonalisedBreedSection({
           <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.6, marginBottom:16 }}>
             Mira is working on {breed}-matched picks. Check back soon.
           </div>
+          {/* Request collection CTA */}
+          <button
+            data-testid="request-breed-collection-btn"
+            onClick={handleRequestCollection}
+            style={{
+              width:'100%', padding:'13px 18px', marginBottom:10,
+              background:'linear-gradient(135deg,rgba(233,30,140,0.8),rgba(155,89,182,0.8))',
+              border:'1px solid rgba(233,30,140,0.4)', borderRadius:14,
+              color:'#fff', fontSize:14, fontWeight:700, cursor:'pointer',
+              display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              fontFamily:'inherit', letterSpacing:'0.01em',
+            }}
+          >
+            Request {breed} Collection →
+          </button>
           <div
             data-testid="soul-made-trigger"
             onClick={() => setSoulMadeOpen(true)}
