@@ -278,7 +278,7 @@ export default function CelebrateMobilePage() {
       petName: currentPet?.name || '',
       petBreed: currentPet?.breed || '',
     } }));
-  }, []);
+  }, [currentPet]);
 
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
