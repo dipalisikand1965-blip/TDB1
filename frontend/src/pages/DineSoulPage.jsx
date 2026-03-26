@@ -32,6 +32,7 @@ import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -828,10 +829,11 @@ function DineMobilePage() {
         });
       });
       setApiProducts(grouped);
-      const flat = Object.values(grouped)
-        .flatMap(subMap => Object.values(subMap).flat())
-        .map(p => normCard(p, pet.name));
-      setFlatProducts(flat);
+      const rawFlat = Object.values(grouped).flatMap(subMap => Object.values(subMap).flat());
+      // Apply breed filter + Mira ranking before normCard
+      const breedFiltered = filterBreedProducts(rawFlat, pet.breed);
+      const miraRanked = applyMiraFilter(breedFiltered, pet).map(p => normCard(p, pet.name));
+      setFlatProducts(miraRanked);
     } catch {
       setApiProducts({});
       setFlatProducts([]);
@@ -848,10 +850,10 @@ function DineMobilePage() {
     fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=dine&limit=6&min_score=60&entity_type=product`, { headers:h })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        const allergies = getAllergies(currentPet);
-        const loves = getLoves(currentPet);
         const raw = (d?.picks || []);
-        const intelligent = applyMiraIntelligence(raw, allergies, loves, getHealthCondition(currentPet), getNutritionGoal(currentPet), currentPet);
+        // Use centralized breed filter + Mira ranking (replaces old applyMiraIntelligence)
+        const breedFiltered = filterBreedProducts(raw, currentPet.breed);
+        const intelligent = applyMiraFilter(breedFiltered, currentPet);
         setMiraProducts(intelligent.map(p => normCard(p, currentPet.name)));
       })
       .catch(() => {});

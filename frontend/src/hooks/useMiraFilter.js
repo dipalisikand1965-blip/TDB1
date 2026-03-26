@@ -49,27 +49,54 @@ const BREED_SYNONYMS = {
   labrador:         ['labrador', 'lab', 'labrador retriever'],
   golden:           ['golden', 'golden retriever'],
   german_shepherd:  ['german shepherd', 'german_shepherd', 'gsd', 'alsatian'],
-  indie:            ['indie', 'indian', 'indian pariah', 'desi', 'indie dog', 'street dog'],
+  indie:            ['indie', 'indian', 'indian pariah', 'desi', 'indie dog', 'street dog', 'mixed', 'desi dog'],
   poodle:           ['poodle', 'toy poodle', 'miniature poodle', 'standard poodle'],
   beagle:           ['beagle'],
   bulldog:          ['bulldog', 'english bulldog', 'french bulldog', 'frenchie'],
   boxer:            ['boxer'],
   rottweiler:       ['rottweiler', 'rottie'],
-  doberman:         ['doberman', 'dobermann'],
-  husky:            ['husky', 'siberian husky'],
+  doberman:         ['doberman', 'dobermann', 'doberman pinscher'],
+  husky:            ['husky', 'siberian husky', 'siberian_husky', 'grey husky', 'black husky', 'white husky'],
   pomeranian:       ['pomeranian', 'pom'],
   shih_tzu:         ['shih tzu', 'shih_tzu'],
   maltese:          ['maltese'],
   chihuahua:        ['chihuahua'],
-  yorkshire:        ['yorkshire', 'yorkshire terrier', 'yorkie'],
+  yorkshire:        ['yorkshire', 'yorkshire terrier', 'yorkie', 'york'],
   pug:              ['pug'],
   cocker_spaniel:   ['cocker spaniel', 'cocker_spaniel', 'spaniel'],
   dachshund:        ['dachshund', 'doxie'],
   lhasa_apso:       ['lhasa', 'lhasa apso'],
-  cavalier:         ['cavalier', 'cavalier king charles', 'king charles'],
+  cavalier:         ['cavalier', 'cavalier king charles', 'cavalier king charles spaniel', 'king charles'],
   border_collie:    ['border collie', 'border_collie'],
-  schnoodle:        ['schnoodle'],
+  schnoodle:        ['schnoodle', 'shnoodle'],
+  saint_bernard:    ['saint bernard', 'st bernard', 'st. bernard', 'st_bernard'],
+  jack_russell:     ['jack russell', 'jack russell terrier', 'jack_russell'],
 };
+
+// Breeds with no product catalog match → treat as universal (show for all pets)
+// These are valid breeds but we don't have breed-specific products for them
+const UNIVERSAL_FALLBACK_BREEDS = new Set([
+  'scottish terrier', 'scottish_terrier', 'scotty',
+  'vizsla',
+  'weimaraner',
+  'bernese mountain', 'bernese mountain dog', 'bernese',
+  'havanese',
+  'boston terrier', 'boston_terrier',
+  'akita',
+  'american bully', 'american_bully',
+  'samoyed',
+  'dalmatian',
+  'great dane',
+  'mastiff',
+  'greyhound',
+  'basenji',
+  'basset hound', 'basset_hound',
+  'bichon frise', 'bichon_frise',
+  'chow chow', 'chow_chow',
+  'maltipoo',
+  'pekingese',
+  'springer spaniel', 'springer_spaniel',
+]);
 
 // ── Size weight ranges (kg) ───────────────────────────────────────────────────
 const SIZE_COMPAT = {
@@ -138,8 +165,21 @@ function extractNutritionGoal(pet) {
 function extractBreedKey(pet) {
   const raw = (pet?.breed || '').toLowerCase().trim();
   if (!raw) return null;
+  // Check if it's a universal fallback breed first
+  if (UNIVERSAL_FALLBACK_BREEDS.has(raw)) return '__universal__';
   for (const [key, synonyms] of Object.entries(BREED_SYNONYMS)) {
     if (synonyms.some(s => raw.includes(s) || s.includes(raw))) return key;
+  }
+  // Check all synonyms for partial matches
+  for (const [key, synonyms] of Object.entries(BREED_SYNONYMS)) {
+    if (synonyms.some(s => {
+      const sWords = s.split(' ');
+      return sWords.some(sw => sw.length > 3 && raw.includes(sw));
+    })) return key;
+  }
+  // If raw breed is in universal fallback set (any variant)
+  for (const ub of UNIVERSAL_FALLBACK_BREEDS) {
+    if (raw.includes(ub) || ub.includes(raw)) return '__universal__';
   }
   // Fallback: use first word of breed as key
   return raw.split(' ')[0].replace(/[^a-z]/g, '');
@@ -305,6 +345,9 @@ export function applyMiraFilter(products, pet) {
     })
     // Step 1b — remove products with specific breed tags that don't match this pet
     .filter(product => {
+      // If pet breed is a universal fallback → show all products (no breed filtering)
+      if (petBreedKey === '__universal__') return true;
+
       const tags = [
         ...(Array.isArray(product.breed_tags) ? product.breed_tags : []),
         ...(product.breed_metadata?.breeds || []),
@@ -319,7 +362,6 @@ export function applyMiraFilter(products, pet) {
       if (isUniversal) return true;
 
       // Check if any tag maps to a KNOWN breed (otherwise treat as universal)
-      const synonymsForPet = petBreedKey ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey]) : [];
       const hasKnownBreedTag = tags.some(t => {
         const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
         return KNOWN_BREEDS.some(b => norm === b || norm.includes(b) || b.includes(norm));
@@ -458,17 +500,26 @@ export function useMiraFilter(products, pet) {
   return applyMiraFilter(products, pet);
 }
 
-// ── Breed exclusion filter (strict mode) ─────────────────────────────────────
-// All known breed names that could appear in product names/who_for fields
+// ── All known breed names that could appear in product names/who_for fields ──
 export const KNOWN_BREEDS = [
-  'akita','american bully','american staffordshire','australian shepherd',
-  'basenji','basset hound','beagle','bichon frise','border collie','boxer',
-  'cavalier','chihuahua','chow chow','cocker spaniel','dachshund','dalmatian',
-  'doberman','english bulldog','french bulldog','german shepherd','golden retriever',
-  'great dane','greyhound','husky','indie','jack russell','labrador',
-  'lhasa apso','maltese','maltipoo','mastiff','pekingese','pomeranian','poodle',
-  'pug','rottweiler','saint bernard','samoyed','shih tzu','siberian husky',
-  'springer spaniel','vizsla','weimaraner','yorkshire',
+  // Breeds with product catalogs (properly handled via BREED_SYNONYMS)
+  'labrador','golden retriever','german shepherd','indie','poodle',
+  'beagle','bulldog','english bulldog','french bulldog',
+  'boxer','rottweiler','doberman',
+  'husky','siberian husky',
+  'pomeranian','shih tzu','maltese','chihuahua',
+  'yorkshire','yorkshire terrier',
+  'pug','cocker spaniel','dachshund',
+  'lhasa apso','cavalier','cavalier king charles',
+  'border collie','schnoodle',
+  'saint bernard','st bernard','jack russell',
+  // Universal-fallback breeds (no dedicated catalog but valid breed names)
+  'akita','american bully','australian shepherd',
+  'basenji','basset hound','bichon frise','dalmatian',
+  'great dane','greyhound','maltipoo','mastiff','pekingese',
+  'samoyed','springer spaniel','vizsla','weimaraner',
+  'scottish terrier','bernese mountain','havanese','boston terrier',
+  'chow chow',
 ];
 
 /**
@@ -487,7 +538,13 @@ export const KNOWN_BREEDS = [
 export function filterBreedProducts(products, petBreed) {
   const pl = (petBreed || '').toLowerCase().trim();
   const petBreedKey = pl ? extractBreedKey({ breed: petBreed }) : null;
-  const synonyms = petBreedKey ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey]) : (pl ? [pl] : []);
+
+  // If pet breed is a known universal fallback → show all products
+  if (petBreedKey === '__universal__') return products;
+
+  const synonyms = petBreedKey && petBreedKey !== '__universal__'
+    ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey])
+    : (pl ? [pl] : []);
 
   return products.filter(p => {
     const breedTags = Array.isArray(p.breed_tags) ? p.breed_tags : [];
