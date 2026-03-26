@@ -302,6 +302,11 @@ async def register_user(user: UserRegister):
         "membership_expires": None,
         "chat_count_today": 0,
         "last_chat_date": None,
+        # ── Free Trial fields ──────────────────────────────────────────────
+        "account_tier": "trial",          # trial | active | paused
+        "account_status": "active",       # active | paused
+        "trial_start_date": datetime.now(timezone.utc).isoformat(),
+        "trial_notifications_sent": [],   # tracks which day-notifications were sent
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -383,7 +388,11 @@ async def login_user(user: UserLogin):
             "membership_status": db_user.get("membership_status"),
             "pet_pass_status": db_user.get("pet_pass_status"),
             "membership_expires": db_user.get("membership_expires"),
-            "loyalty_points": db_user.get("loyalty_points", 0)
+            "loyalty_points": db_user.get("loyalty_points", 0),
+            # Trial fields
+            "account_tier": db_user.get("account_tier", "active"),
+            "account_status": db_user.get("account_status", "active"),
+            "trial_start_date": db_user.get("trial_start_date"),
         },
         "mira_access": access
     }
@@ -396,6 +405,114 @@ async def get_user_info(current_user: dict = Depends(get_current_user)):
     user_data = {k: v for k, v in current_user.items() if k != "password_hash"}
     access = await check_mira_access(current_user["email"])
     return {"user": user_data, "mira_access": access}
+
+
+def compute_trial_status(user: dict) -> dict:
+    """
+    Compute the current trial status for a user.
+    Returns a dict with: tier, days_since_start, days_remaining,
+    trial_end_date, status_label, can_book, can_purchase
+    """
+    account_tier = user.get("account_tier", "active")
+    account_status = user.get("account_status", "active")
+    trial_start_raw = user.get("trial_start_date")
+
+    # Non-trial users: always active
+    if account_tier not in ("trial", "trial_ending", "grace_period", "paused"):
+        return {
+            "tier": account_tier or "active",
+            "days_since_start": None,
+            "days_remaining": None,
+            "trial_end_date": None,
+            "status_label": "Active Member",
+            "can_book": True,
+            "can_purchase": True,
+            "is_paused": False,
+        }
+
+    # If explicitly paused by admin
+    if account_status == "paused" or account_tier == "paused":
+        return {
+            "tier": "paused",
+            "days_since_start": None,
+            "days_remaining": 0,
+            "trial_end_date": None,
+            "status_label": "Account Paused",
+            "can_book": False,
+            "can_purchase": False,
+            "is_paused": True,
+        }
+
+    if not trial_start_raw:
+        # No start date — treat as active trial
+        return {
+            "tier": "trial",
+            "days_since_start": 0,
+            "days_remaining": 30,
+            "trial_end_date": None,
+            "status_label": "Free Trial — 30 days",
+            "can_book": True,
+            "can_purchase": True,
+            "is_paused": False,
+        }
+
+    try:
+        from datetime import date
+        start = datetime.fromisoformat(trial_start_raw.replace("Z", "+00:00"))
+        now = datetime.now(timezone.utc)
+        days_since = (now - start).days
+        days_remaining = max(0, 30 - days_since)
+        trial_end = start + timedelta(days=30)
+    except Exception:
+        return {
+            "tier": "trial",
+            "days_since_start": 0,
+            "days_remaining": 30,
+            "trial_end_date": None,
+            "status_label": "Free Trial",
+            "can_book": True,
+            "can_purchase": True,
+            "is_paused": False,
+        }
+
+    if days_since < 25:
+        tier = "trial"
+        label = f"Free Trial — {days_remaining} day{'s' if days_remaining != 1 else ''} left"
+        can_book, can_purchase = True, True
+        is_paused = False
+    elif days_since < 30:
+        tier = "trial_ending"
+        label = f"Trial ending soon — {days_remaining} day{'s' if days_remaining != 1 else ''} left"
+        can_book, can_purchase = True, True
+        is_paused = False
+    elif days_since < 44:
+        tier = "grace_period"
+        grace_days_left = max(0, 44 - days_since)
+        label = f"Trial ended — upgrade or account pauses in {grace_days_left} day{'s' if grace_days_left != 1 else ''}"
+        can_book, can_purchase = False, False
+        is_paused = False
+    else:
+        tier = "paused"
+        label = "Account Paused — upgrade to reactivate"
+        can_book, can_purchase = False, False
+        is_paused = True
+
+    return {
+        "tier": tier,
+        "days_since_start": days_since,
+        "days_remaining": days_remaining,
+        "trial_end_date": trial_end.isoformat(),
+        "status_label": label,
+        "can_book": can_book,
+        "can_purchase": can_purchase,
+        "is_paused": is_paused,
+    }
+
+
+@auth_router.get("/account-status")
+async def get_account_status(current_user: dict = Depends(get_current_user)):
+    """Get current account trial / tier status."""
+    return compute_trial_status(current_user)
 
 
 class ProfileUpdateRequest(BaseModel):

@@ -469,6 +469,97 @@ async def run_medication_reminders():
 
 
 # ── Scheduler Setup ──────────────────────────────────────────────────────────
+async def run_trial_status_check():
+    """
+    Daily cron (10 AM IST) — checks all trial users and sends lifecycle notifications.
+    Day 25 → tdc_trial_ending_5days warning
+    Day 30 → mark as grace_period, send tdc_trial_expired
+    Day 37 → send tdc_grace_period_warning
+    Day 44 → mark as paused, send tdc_account_paused
+    All data is preserved. No deletion.
+    """
+    db = get_automation_db()
+    if db is None:
+        logger.warning("[TRIAL] No DB connection — skipping trial check")
+        return
+
+    try:
+        from services.whatsapp_service import (
+            send_trial_ending_5days,
+            send_trial_expired,
+            send_grace_period_warning,
+            send_account_paused,
+        )
+    except ImportError as ie:
+        logger.warning(f"[TRIAL] WhatsApp service import failed: {ie}")
+        return
+
+    now = datetime.now(timezone.utc)
+    # Only look at trial / grace_period accounts that are not yet fully paused
+    cursor = db.users.find({
+        "account_tier": {"$in": ["trial", "trial_ending", "grace_period"]},
+        "account_status": {"$ne": "paused"},
+        "trial_start_date": {"$exists": True, "$ne": None},
+    }, {"_id": 0, "id": 1, "email": 1, "name": 1, "phone": 1, "trial_start_date": 1,
+        "trial_notifications_sent": 1, "account_tier": 1})
+
+    sent_count = 0
+    async for user in cursor:
+        try:
+            trial_start_raw = user.get("trial_start_date")
+            if not trial_start_raw:
+                continue
+            start = datetime.fromisoformat(trial_start_raw.replace("Z", "+00:00"))
+            days = (now - start).days
+            already_sent = set(user.get("trial_notifications_sent") or [])
+
+            if days >= 44 and "paused" not in already_sent:
+                # Pause the account
+                await db.users.update_one(
+                    {"id": user["id"]},
+                    {"$set": {"account_tier": "paused", "account_status": "paused"},
+                     "$addToSet": {"trial_notifications_sent": "paused"}}
+                )
+                await send_account_paused(user)
+                logger.info(f"[TRIAL] Paused {user['email']} (day {days})")
+                sent_count += 1
+
+            elif days >= 37 and "grace_7day" not in already_sent:
+                await db.users.update_one(
+                    {"id": user["id"]},
+                    {"$addToSet": {"trial_notifications_sent": "grace_7day"}}
+                )
+                await send_grace_period_warning(user)
+                logger.info(f"[TRIAL] Grace 7-day warning → {user['email']} (day {days})")
+                sent_count += 1
+
+            elif days >= 30 and "expired" not in already_sent:
+                # Switch to grace_period
+                await db.users.update_one(
+                    {"id": user["id"]},
+                    {"$set": {"account_tier": "grace_period"},
+                     "$addToSet": {"trial_notifications_sent": "expired"}}
+                )
+                await send_trial_expired(user)
+                logger.info(f"[TRIAL] Trial expired → {user['email']} (day {days})")
+                sent_count += 1
+
+            elif days >= 25 and "ending_5days" not in already_sent:
+                await db.users.update_one(
+                    {"id": user["id"]},
+                    {"$set": {"account_tier": "trial_ending"},
+                     "$addToSet": {"trial_notifications_sent": "ending_5days"}}
+                )
+                await send_trial_ending_5days(user)
+                logger.info(f"[TRIAL] 5-day warning → {user['email']} (day {days})")
+                sent_count += 1
+
+        except Exception as ex:
+            logger.error(f"[TRIAL] Error processing {user.get('email')}: {ex}")
+
+    logger.info(f"[TRIAL] Status check complete. {sent_count} notifications sent.")
+
+
 def create_scheduler():
     """Create and return an APScheduler AsyncIOScheduler with all jobs."""
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -502,6 +593,16 @@ def create_scheduler():
         trigger=CronTrigger(hour=9, minute=0, timezone="Asia/Kolkata"),
         id="medication_reminders",
         name="Medication Reminders",
+        replace_existing=True,
+        max_instances=1,
+    )
+
+    # g) Trial Status Check — 10 AM IST daily
+    scheduler.add_job(
+        run_trial_status_check,
+        trigger=CronTrigger(hour=10, minute=0, timezone="Asia/Kolkata"),
+        id="trial_status_check",
+        name="Trial Status & Lifecycle",
         replace_existing=True,
         max_instances=1,
     )

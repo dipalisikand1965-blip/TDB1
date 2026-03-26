@@ -407,13 +407,13 @@ const MembershipPayment = () => {
                 )}
               </Button>
               
-              {/* Demo Button for Testing */}
+              {/* Start Free Trial Button */}
               <Button 
                 onClick={handleDemoPayment}
                 variant="ghost"
                 className="w-full text-slate-400 hover:text-white hover:bg-slate-800 text-sm"
               >
-                Skip Payment (Demo Mode)
+                Start Free Trial (30 days, no card needed)
               </Button>
               
               {/* Back Button */}
