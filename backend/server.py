@@ -22316,6 +22316,16 @@ async def startup_load_admin_credentials():
     except Exception as e:
         logger.warning(f"Could not start retention scheduler: {e}")
 
+    # Start automation scheduler (daily digest, birthday & medication reminders)
+    try:
+        from scheduled_automations import create_scheduler, set_automation_db
+        set_automation_db(db)
+        automation_scheduler = create_scheduler()
+        automation_scheduler.start()
+        logger.info("Automation scheduler started — daily digest 8 AM, birthday 7 AM, meds 9 AM IST")
+    except Exception as e:
+        logger.warning(f"Could not start automation scheduler: {e}")
+
 # ==================== LEARN OS AUTO-SEED ====================
 
 async def auto_seed_learn_content():
@@ -23873,6 +23883,50 @@ async def shutdown_db_client():
         logger.warning(f"Error stopping retention scheduler: {e}")
     
     client.close()
+
+
+# ============== AUTOMATION ADMIN ENDPOINTS ==============
+
+@app.post("/api/admin/automations/trigger/daily-digest")
+async def trigger_daily_digest(credentials: HTTPBasicCredentials = Depends(verify_admin)):
+    """Manually trigger the WhatsApp daily digest — for testing."""
+    from scheduled_automations import run_daily_digest
+    result = await run_daily_digest()
+    return {"success": True, "result": result}
+
+
+@app.post("/api/admin/automations/trigger/birthday-reminders")
+async def trigger_birthday_reminders(credentials: HTTPBasicCredentials = Depends(verify_admin)):
+    """Manually trigger birthday reminders — for testing."""
+    from scheduled_automations import run_birthday_reminders
+    result = await run_birthday_reminders()
+    return {"success": True, "result": result}
+
+
+@app.post("/api/admin/automations/trigger/medication-reminders")
+async def trigger_medication_reminders_endpoint(credentials: HTTPBasicCredentials = Depends(verify_admin)):
+    """Manually trigger medication reminders — for testing."""
+    from scheduled_automations import run_medication_reminders
+    result = await run_medication_reminders()
+    return {"success": True, "result": result}
+
+
+@app.get("/api/admin/automations/status")
+async def get_automation_status(credentials: HTTPBasicCredentials = Depends(verify_admin)):
+    """Get status of all scheduled automations."""
+    today_str = datetime.now(timezone.utc).date().isoformat()
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    digest_sent = await db.whatsapp_digest_log.count_documents({"sent_at": {"$gte": today_start}})
+    birthday_sent = await db.birthday_reminder_log.count_documents({"sent_date": today_str})
+    med_sent = await db.medication_reminder_log.count_documents({"sent_date": today_str})
+    return {
+        "automations": {
+            "daily_digest": {"schedule": "8:00 AM IST daily", "sent_today": digest_sent},
+            "birthday_reminders": {"schedule": "7:00 AM IST daily", "sent_today": birthday_sent},
+            "medication_reminders": {"schedule": "9:00 AM IST daily", "sent_today": med_sent},
+        },
+        "date": today_str
+    }
 
 
 # ============== BULK ADD IMAGES TO PRODUCTS ==============
