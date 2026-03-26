@@ -396,6 +396,9 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 6. ✅ **Services tab** — Removed hardcoded `CARE_SERVICES` 2-column price grid. Services tab now shows only `CareConciergeSection` matching desktop Pic 3 exactly ("Care Concierge® Services" illustrated cards).
 7. ✅ **GuidedCarePaths modal** — Increased z-index from 300 → 9999. Modal now opens correctly on both desktop and mobile.
 
-### Pending Items
-- Wellness Profile score calibration: User wants visual verification that answering questions updates the live score percentage. (Component dispatches `soulScoreUpdated` event on save — mechanism exists.)
-- Remaining P0/P1 issues from handoff: Admin notification bell returning 0, Farewell DB service prices Rs.0, ProductCard `display_only` flag.
+### Pending Items (Updated after Session 16.2)
+- Admin notification bell returning 0 (P0)
+- ProductCard `display_only` flag — insurance items showing "Add to Cart" (P0)
+- Farewell service prices all Rs.0 (P1)
+- LearnNearMe, PaperworkNearMe, GoNearMe on mobile pages (P1)
+- Wellness Profile score calibration: visual verify (user request)
