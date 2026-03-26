@@ -339,24 +339,36 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
   
-  // Get valid image - PRIORITIZE image_url (clean curated URL), then Shopify CDN, then legacy fields
+  // Get valid image - PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image → images[0]
   const getValidImage = () => {
-    // 1. Shopify CDN images are always valid
-    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
-      return product.image;
+    // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
+    if (product.watercolor_image && product.watercolor_image.startsWith('http')) {
+      return product.watercolor_image;
     }
 
-    // 2. image_url is the clean, curated field — always prefer it over legacy `image`
+    // 2. cloudinary_url — direct Cloudinary upload
+    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
+      return product.cloudinary_url;
+    }
+
+    // 3. mockup_url — breed product mockup
+    if (product.mockup_url && product.mockup_url.startsWith('http')) {
+      return product.mockup_url;
+    }
+
+    // 4. primary_image
+    if (product.primary_image && product.primary_image.startsWith('http')) {
+      return product.primary_image;
+    }
+
+    // 5. image_url — clean curated URL
     if (product.image_url && product.image_url.startsWith('http')) {
       return product.image_url;
     }
 
-    // 2b. mockup_url / cloudinary_url — breed_products real mockup images
-    if (product.mockup_url && product.mockup_url.startsWith('http')) {
-      return product.mockup_url;
-    }
-    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
-      return product.cloudinary_url;
+    // 6. Shopify CDN images
+    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
+      return product.image;
     }
     
     // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
@@ -640,7 +652,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const petName = selectedPet?.name || 'your dog';
-  const productImage = product.image_url || product.cloudinary_url || product.mockup_url || product.image || product.images?.[0] || 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
+  const productImage = product.watercolor_image || product.cloudinary_url || product.mockup_url || product.primary_image || product.image_url || product.image || product.images?.[0] || 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
 
   const handleRequest = async () => {
     setSending(true);
@@ -749,25 +761,37 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // miraContext is now always passed (effectiveMiraContext from parent)
   // onAddToPicks - callback for Mira picks panel (instead of cart)
   
-  // Get valid product image - PRIORITIZE image_url (clean curated URL), then Shopify CDN, then legacy fields
+  // Get valid product image — PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image → images[0]
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
   const getValidProductImage = () => {
-    // 1. Shopify CDN images are always valid
-    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
-      return product.image;
+    // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
+    if (product.watercolor_image && product.watercolor_image.startsWith('http')) {
+      return product.watercolor_image;
     }
 
-    // 2. image_url is the clean, curated field — always prefer it over legacy `image`
+    // 2. cloudinary_url — direct Cloudinary upload
+    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
+      return product.cloudinary_url;
+    }
+
+    // 3. mockup_url — breed product mockup
+    if (product.mockup_url && product.mockup_url.startsWith('http')) {
+      return product.mockup_url;
+    }
+
+    // 4. primary_image
+    if (product.primary_image && product.primary_image.startsWith('http')) {
+      return product.primary_image;
+    }
+
+    // 5. image_url — clean curated URL
     if (product.image_url && product.image_url.startsWith('http')) {
       return product.image_url;
     }
 
-    // 2b. mockup_url / cloudinary_url — breed_products real mockup images
-    if (product.mockup_url && product.mockup_url.startsWith('http')) {
-      return product.mockup_url;
-    }
-    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
-      return product.cloudinary_url;
+    // 6. Shopify CDN images
+    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
+      return product.image;
     }
     
     // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration

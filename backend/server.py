@@ -21907,6 +21907,7 @@ async def generate_image_universal(
             "bundle": db.bundles,
             "breed_product": db.breed_products,
         }
+        col = collection_map.get(entity_type)
         if col is not None:
             update_fields = {
                 "ai_image_prompt": prompt,
@@ -21925,6 +21926,29 @@ async def generate_image_universal(
             )
 
     return {"url": url, "success": True}
+
+
+@api_router.post("/admin/sync-image-fields")
+async def sync_image_fields(username: str = Depends(verify_admin_auth)):
+    """Sync cloudinary_url → watercolor_image for breed_products, and cloudinary_url → image_url for products_master.
+    Run this after bulk image uploads to ensure all product cards read the correct image field."""
+    results = {}
+
+    # 1. breed_products: cloudinary_url → watercolor_image + image_url
+    bp_result = await db.breed_products.update_many(
+        {"cloudinary_url": {"$exists": True, "$ne": ""}},
+        [{"$set": {"watercolor_image": "$cloudinary_url", "image_url": "$cloudinary_url"}}]
+    )
+    results["breed_products_synced"] = bp_result.modified_count
+
+    # 2. products_master: cloudinary_url → image_url (don't overwrite watercolor_image)
+    pm_result = await db.products_master.update_many(
+        {"cloudinary_url": {"$exists": True, "$ne": ""}},
+        [{"$set": {"image_url": "$cloudinary_url"}}]
+    )
+    results["products_master_synced"] = pm_result.modified_count
+
+    return {"success": True, "synced": results}
 
 
 
