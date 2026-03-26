@@ -136,7 +136,7 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
       try {
         let allProducts = [];
 
-        // Primary: fetch AI-generated breed products
+        // Primary: fetch breed-matched products (ALWAYS include breed param — never show random breeds)
         if (petBreed) {
           const res = await fetch(`${API_BASE}/api/mockups/breed-products?breed=${encodeURIComponent(petBreed)}&limit=40`);
           if (res.ok) {
@@ -144,24 +144,8 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
             allProducts = data.products || data || [];
           }
         }
-        // Fallback to generic breed products (no breed filter)
-        if (allProducts.length === 0) {
-          const res = await fetch(`${API_BASE}/api/mockups/breed-products?limit=40`);
-          if (res.ok) {
-            const data = await res.json();
-            allProducts = data.products || data || [];
-          }
-        }
-        // Final fallback to regular products by category
-        if (allProducts.length === 0) {
-          for (const category of tab.categories) {
-            const res = await fetch(`${API_BASE}/api/products?category=${category}&limit=20`);
-            if (res.ok) {
-              const data = await res.json();
-              allProducts.push(...(data.products || data || []));
-            }
-          }
-        }
+        // No-breed fallback removed: never show random breed products.
+        // If petBreed has no match, allProducts stays empty — universal products from masterProducts below are shown instead.
 
         // Also fetch from products_master filtered by tab categories
         // This ensures we show the right sub_category products

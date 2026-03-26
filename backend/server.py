@@ -24491,3 +24491,7 @@ async def get_pawrent_progress(pet_id: str, current_user = Depends(get_current_u
     }
 
 app.include_router(pawrent_journey_router)  # Pawrent Journey — must be after definitions
+
+# Initialize Concierge Intent Detection (Claude-powered)
+from concierge_intent_routes import concierge_intent_router
+app.include_router(concierge_intent_router, prefix="/api")
