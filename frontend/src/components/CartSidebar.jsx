@@ -11,6 +11,7 @@ import { usePillarContext } from '../context/PillarContext';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
 import { tdc } from '../utils/tdc_intent';
+import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 
 // ── Allergen keyword map ───────────────────────────────────────────────────
 const ALLERGEN_MAP = {
@@ -23,48 +24,28 @@ const ALLERGEN_MAP = {
   eggs:     ["egg"],
 };
 
-// ── Smart cart recommendations fetch ────────────────────────────────────────
+// ── Smart cart recommendations fetch — uses v2 Mira engine ──────────────────
 async function fetchCartRecommendations(cartItems, selectedPet, token) {
   if (!selectedPet?.id || cartItems.length === 0) return [];
-  const petId    = selectedPet.id || selectedPet._id;
-  const breed    = (selectedPet.breed || "").toLowerCase();
-  const soul     = selectedPet.doggy_soul_answers || {};
-  const allergies = soul.food_allergies || [];
+  const petId     = selectedPet.id || selectedPet._id;
   const cartPillar = cartItems[0]?.pillar || "shop";
 
   try {
     const res = await fetch(
-      `${API_URL}/api/mira/claude-picks/${petId}?pillar=${cartPillar}&limit=8`,
+      `${API_URL}/api/mira/claude-picks/${petId}?pillar=${cartPillar}&limit=12`,
       { headers: token ? { Authorization: `Bearer ${token}` } : {} }
     );
     if (!res.ok) return [];
     const data = await res.json();
     const picks = data.picks || data.products || [];
 
-    return picks.filter(product => {
-      // Rule 1 — breed match
-      const productBreed = (product.breed || "").toLowerCase();
-      const breedOk =
-        !productBreed ||
-        productBreed === "all" ||
-        productBreed === "none" ||
-        breed.includes(productBreed) ||
-        productBreed.includes(breed.split(" ")[0]);
-      if (!breedOk) return false;
+    // v2: breed filter → full Mira ranking (allergen + size + life stage + loves)
+    const breedFiltered = filterBreedProducts(picks, selectedPet.breed);
+    const miraRanked    = applyMiraFilter(breedFiltered, selectedPet);
 
-      // Rule 2 — allergen filter
-      const combined = `${product.name || ""} ${product.description || ""} ${product.category || ""}`.toLowerCase();
-      for (const allergy of allergies) {
-        if (!allergy || allergy === "none" || allergy === "none known") continue;
-        const keywords = ALLERGEN_MAP[allergy] || [allergy];
-        if (keywords.some(kw => combined.includes(kw))) return false;
-      }
-
-      // Rule 3 — not already in cart
-      if (cartItems.some(ci => (ci.id || ci._id) === (product.id || product._id))) return false;
-
-      return true;
-    }).slice(0, 4);
+    // Exclude items already in cart
+    const cartIds = new Set(cartItems.map(ci => ci.id || ci._id));
+    return miraRanked.filter(p => !cartIds.has(p.id || p._id)).slice(0, 4);
   } catch {
     return [];
   }

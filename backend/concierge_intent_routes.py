@@ -91,7 +91,8 @@ PILLAR_MAP = {
 
 SYSTEM_PROMPT = """You are Mira, The Doggy Company's AI concierge intelligence system.
 
-Your task: Detect the most relevant pillar and service category from a pet owner's request.
+Your task: Detect the most relevant pillar(s) and service category from a pet owner's request.
+A single request may span multiple pillars (e.g. "grooming + vet checkup" → Care twice, or "birthday walk + cake" → Go + Celebrate).
 
 Available pillars and their purposes:
 - dine: Food, nutrition, treats, supplements, meal plans, diet
@@ -108,13 +109,16 @@ Available pillars and their purposes:
 
 Respond ONLY with a JSON object (no markdown, no explanation):
 {
-  "pillar": "<pillar_id>",
-  "service": "<short service name, max 4 words>",
-  "confidence": <number 0-100>,
-  "display_text": "<friendly suggestion e.g. 'This sounds like Grooming → Care'>"
+  "pillars": [
+    { "pillar": "<pillar_id>", "service": "<short service name, max 4 words>", "confidence": <0-100> },
+    { "pillar": "<pillar_id_2>", "service": "<service>", "confidence": <0-100> }
+  ],
+  "display_text": "<friendly suggestion e.g. '🛁 Grooming → Care + 🏥 Vet Checkup → Care'>",
+  "primary_pillar": "<most confident pillar_id>"
 }
 
-If confidence < 40, return: {"pillar": null, "service": null, "confidence": 0, "display_text": null}
+Return up to 3 pillars sorted by confidence descending.
+If no clear intent (all pillars < 40% confidence), return: {"pillars": [], "display_text": null, "primary_pillar": null}
 """
 
 
@@ -160,35 +164,54 @@ async def detect_concierge_intent(body: IntentRequest):
         import json
         import re
 
-        # Extract JSON from response
-        json_match = re.search(r'\{[^{}]+\}', raw_response, re.DOTALL)
+        json_match = re.search(r'\{.*\}', raw_response, re.DOTALL)
         if not json_match:
-            return {"pillar": None, "service": None, "confidence": 0, "display_text": None}
+            return {"pillars": [], "display_text": None, "primary_pillar": None}
 
         result = json.loads(json_match.group())
 
-        pillar = result.get("pillar")
-        service = result.get("service")
-        confidence = int(result.get("confidence", 0))
+        # Validate and clean pillars list
+        pillars_raw = result.get("pillars", [])
+        # Handle old single-pillar response format for backwards compat
+        if not pillars_raw and result.get("pillar"):
+            pillars_raw = [{"pillar": result["pillar"], "service": result.get("service", ""), "confidence": result.get("confidence", 0)}]
+
+        valid_pillars = []
+        for entry in pillars_raw:
+            pillar = entry.get("pillar")
+            confidence = int(entry.get("confidence", 0))
+            service = entry.get("service", "")
+            if pillar and pillar in PILLAR_MAP and confidence >= 40:
+                emoji = PILLAR_MAP[pillar].get("emoji", "")
+                valid_pillars.append({
+                    "pillar": pillar,
+                    "service": service,
+                    "confidence": confidence,
+                    "pillar_label": PILLAR_MAP[pillar]["label"],
+                    "emoji": emoji,
+                })
+
+        # Sort by confidence descending, cap at 3
+        valid_pillars.sort(key=lambda x: x["confidence"], reverse=True)
+        valid_pillars = valid_pillars[:3]
+
+        primary = valid_pillars[0]["pillar"] if valid_pillars else None
         display_text = result.get("display_text")
 
-        # Validate pillar
-        if pillar and pillar not in PILLAR_MAP:
-            pillar = None
-            confidence = 0
-
-        # Add pillar emoji to display text if we have a valid pillar
-        if pillar and display_text:
-            emoji = PILLAR_MAP.get(pillar, {}).get("emoji", "")
-            if emoji and emoji not in display_text:
-                display_text = f"{emoji} {display_text}"
+        # Build a smart display_text if not provided
+        if not display_text and valid_pillars:
+            parts = [f"{p['emoji']} {p['service']} → {p['pillar_label']}" for p in valid_pillars]
+            display_text = " + ".join(parts)
 
         return {
-            "pillar": pillar,
-            "service": service,
-            "confidence": confidence,
+            "pillars": valid_pillars,
+            "primary_pillar": primary,
+            # Legacy single-pillar fields for backwards compat
+            "pillar": primary,
+            "service": valid_pillars[0]["service"] if valid_pillars else None,
+            "confidence": valid_pillars[0]["confidence"] if valid_pillars else 0,
             "display_text": display_text,
-            "pillar_label": PILLAR_MAP.get(pillar, {}).get("label") if pillar else None,
+            "pillar_label": valid_pillars[0]["pillar_label"] if valid_pillars else None,
         }
 
     except Exception as e:

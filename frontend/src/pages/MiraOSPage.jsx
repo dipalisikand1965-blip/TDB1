@@ -1607,33 +1607,49 @@ const MiraOSPage = () => {
                 {intentSuggestion && !intentLoading && (
                   <div
                     data-testid="intent-suggestion-chip"
-                    className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer ${
-                      intentConfirmed
-                        ? 'bg-green-500/15 border-green-500/50'
-                        : 'bg-purple-500/15 border-purple-500/40 hover:bg-purple-500/20'
-                    }`}
-                    onClick={() => setIntentConfirmed(c => !c)}
+                    className={`space-y-1.5`}
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <Sparkles size={13} className={intentConfirmed ? 'text-green-400' : 'text-purple-400'} />
-                      <span className={`text-xs font-medium truncate ${intentConfirmed ? 'text-green-300' : 'text-purple-200'}`}>
-                        {intentSuggestion.display_text}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      {intentConfirmed ? (
-                        <span className="text-xs text-green-400 font-medium">✓ Added</span>
-                      ) : (
-                        <span className="text-xs text-purple-300">Tap to confirm</span>
-                      )}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setIntentSuggestion(null); setIntentConfirmed(false); }}
-                        className="ml-1 text-gray-500 hover:text-gray-300 transition"
-                        data-testid="intent-dismiss-btn"
+                    {/* Multiple pillar chips */}
+                    {(intentSuggestion.pillars || [{ pillar: intentSuggestion.pillar, service: intentSuggestion.service, pillar_label: intentSuggestion.pillar_label, emoji: '', confidence: intentSuggestion.confidence }]).map((p, idx) => (
+                      <div
+                        key={p.pillar}
+                        className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border transition-all ${
+                          intentConfirmed
+                            ? 'bg-green-500/15 border-green-500/50'
+                            : 'bg-purple-500/15 border-purple-500/40'
+                        }`}
                       >
-                        <X size={12} />
-                      </button>
-                    </div>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Sparkles size={12} className={intentConfirmed ? 'text-green-400' : 'text-purple-400'} />
+                          <span className={`text-xs font-medium truncate ${intentConfirmed ? 'text-green-300' : 'text-purple-200'}`}>
+                            {p.emoji || ''} {p.service} → {p.pillar_label}
+                          </span>
+                          <span className="text-[10px] text-gray-500">{p.confidence}%</span>
+                        </div>
+                        {idx === 0 && (
+                          <button
+                            onClick={() => setIntentConfirmed(c => !c)}
+                            className={`text-xs flex-shrink-0 px-2 py-0.5 rounded-full transition ${
+                              intentConfirmed
+                                ? 'bg-green-500/20 text-green-300'
+                                : 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
+                            }`}
+                            data-testid="intent-confirm-btn"
+                          >
+                            {intentConfirmed ? '✓ Added' : 'Confirm'}
+                          </button>
+                        )}
+                        {idx === 0 && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setIntentSuggestion(null); setIntentConfirmed(false); }}
+                            className="ml-0.5 text-gray-500 hover:text-gray-300 transition flex-shrink-0"
+                            data-testid="intent-dismiss-btn"
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
 
@@ -1646,9 +1662,10 @@ const MiraOSPage = () => {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
                         body: JSON.stringify({
-                          pillar: intentConfirmed && intentSuggestion?.pillar ? intentSuggestion.pillar : 'mira_os',
-                          detected_pillar: intentSuggestion?.pillar || null,
-                          detected_service: intentSuggestion?.service || null,
+                          pillar: intentConfirmed && intentSuggestion?.primary_pillar ? intentSuggestion.primary_pillar : (intentConfirmed && intentSuggestion?.pillar ? intentSuggestion.pillar : 'mira_os'),
+                          detected_pillars: intentSuggestion?.pillars || [],
+                          detected_pillar: intentSuggestion?.primary_pillar || intentSuggestion?.pillar || null,
+                          detected_service: intentSuggestion?.pillars?.[0]?.service || intentSuggestion?.service || null,
                           intent_confirmed: intentConfirmed,
                           request_label: conciergeRequest.trim().slice(0, 80),
                           request_type: 'freeform',
