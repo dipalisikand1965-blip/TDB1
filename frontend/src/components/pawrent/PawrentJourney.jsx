@@ -284,7 +284,9 @@ export default function PawrentJourney({ pet = null, token = null, initialMode =
     }
 
     setLoading(null);
-    navigate(step.route);
+    // For celebrate steps, navigate with ?plan=1 so CelebrateMobilePage auto-opens the intake
+    const dest = step.pillar === 'Celebrate' ? `${step.route}?plan=1` : step.route;
+    navigate(dest);
   }, [petId, petName, mode, token, navigate]);
 
   const handleWhatsapp = async () => {

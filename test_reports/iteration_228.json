@@ -1,0 +1,53 @@
+{
+  "summary": "Iteration 228 — Verified all 5 bug fixes + found and fixed 1 routing bug. (1) Admin ServiceBox null crash FIXED - Activate/Deactivate button only renders when selectedService is non-null, tested with real service edit dialog, no crash. (2) Shop mobile 7 category pills PASS - all 7 pills present at 390px: Mira's Picks, The Doggy Bakery, Breed Collection, Treats, Hampers & Gifts, Merch, Toys; default active tab is Mira's Picks. (3) Shop Bakery 'Browse all 200 products' toggle PASS - button shown, clicking it expands all products. (4) Celebrate Plan Day modal PASS - clicking 'Plan with Concierge®' opens ConciergeIntakeModal with 9 celebration types. (5) PawrentJourney ?plan=1 - Found routing bug: App.js redirected /celebrate → /celebrate-soul WITHOUT forwarding ?plan=1 query param, so ConciergeIntakeModal never auto-opened. FIXED in App.js with CelebrateSoulRedirect component. After fix: PawrentJourney 'Plan birthday' → /celebrate-soul?plan=1 → ConciergeIntakeModal auto-opens. Backend: 12/12 tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/service-box/services?is_active=true",
+        "issue": "Some seeded services have 'active: True' field but NO 'is_active' field - data inconsistency between seeded and created services. UI uses 'is_active !== false' so behavior is correct but inconsistent data schema."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "PawrentJourney → /celebrate?plan=1 → ConciergeIntakeModal auto-open",
+        "issue": "FIXED in this iteration: App.js Route '/celebrate' was using <Navigate to='/celebrate-soul' replace /> which stripped ?plan=1 query param. Fixed by adding CelebrateSoulRedirect component that preserves query params.",
+        "affected_selectors": ["CelebrateMobilePage useSearchParams hook"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration_228_fixes.py",
+    "/app/test_reports/pytest/iteration_228_results.xml"
+  ],
+  "action_items": [
+    "MINOR: Some seeded services in DB have 'active: True' but not 'is_active' field. Consider normalizing via a data migration to ensure all services have 'is_active' field consistently.",
+    "NOTE: CelebrateMobilePage.jsx has useEffect referencing setIntakeOpen BEFORE useState declaration (lines 248-260). Works due to JS closure behavior but unusual ordering - consider reordering for code clarity."
+  ],
+  "critical_code_review_comments": [
+    "App.js line 576: <Navigate to='/celebrate-soul' replace /> was stripping query params - FIXED in this iteration with CelebrateSoulRedirect component",
+    "CelebrateMobilePage.jsx lines 248-260: useEffect references setIntakeOpen before useState declaration - works due to closure semantics but unconventional ordering",
+    "Some seeded services use 'active' field instead of 'is_active' - backend should normalize this for consistency"
+  ],
+  "updated_files": [
+    "/app/frontend/src/App.js",
+    "/app/backend/tests/test_iteration_228_fixes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (12/12 passed)",
+    "frontend": "100% (all 5 features verified, 1 routing bug found and fixed)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123",
+    "admin": "aditya / lola4304 at /admin"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 5 fixes verified in this iteration. Key context: (1) Admin ServiceBox at /admin → Service Box tab - edit dialog opens with Activate/Deactivate toggle button (data-testid='service-activate-toggle-btn'), no crash. (2) Shop mobile /shop at 390px - 7 category pills with data-testid='shop-cat-{mira|bakery|breed|treats|hampers|merch|toys}'. Bakery tab has 'data-testid=bakery-see-all-btn' 'Browse all 200 products from The Doggy Bakery →' that toggles showAll state. (3) Celebrate /celebrate-soul - 'Plan with Concierge®' button (in CelebrateConciergeCard) opens ConciergeIntakeModal showing 9 celebration types. (4) PawrentJourney /pawrent-journey → Welcome Home tab → 'Welcome home day' step → 'Plan the day →' → navigates to /celebrate-soul?plan=1 → ConciergeIntakeModal auto-opens. Bug found and fixed in App.js: CelebrateSoulRedirect component now forwards query params. (5) Backend: GET /api/service-box/services returns is_active fields (total: 1048 services), toggle endpoint works.",
+  "rca_of_issue": "PawrentJourney ?plan=1 routing bug RCA: App.js had <Route path='/celebrate' element={<Navigate to='/celebrate-soul' replace />} />. React Router's Navigate component does NOT preserve query params when using a plain string path. When PawrentJourney called navigate('/celebrate?plan=1'), React Router matched the /celebrate route and redirected to /celebrate-soul without ?plan=1. CelebrateMobilePage's useSearchParams hook then found no 'plan' param so modal didn't auto-open. Fix: Added CelebrateSoulRedirect component that uses useSearchParams() to read and forward all query params: <Navigate to={`/celebrate-soul${search ? '?' + search : ''}`} replace />."
+}
