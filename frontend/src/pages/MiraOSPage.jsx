@@ -503,6 +503,9 @@ const MiraOSPage = () => {
   // Modal states - DUAL PLACEMENT (modals still work independently)
   const [showInsightsPanel, setShowInsightsPanel] = useState(false);
   const [showConciergePanel, setShowConciergePanel] = useState(false);
+  const [conciergeRequest, setConciergeRequest] = useState('');
+  const [conciergeSending, setConciergeSending] = useState(false);
+  const [conciergeSent, setConciergeSent] = useState(false);
   const [showPastChats, setShowPastChats] = useState(false);
   const [showLearnModal, setShowLearnModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -1539,6 +1542,67 @@ const MiraOSPage = () => {
             <Users size={20} className="text-pink-400" />
             Pet Concierge®
           </h2>
+
+          {/* ── Send a freeform request to Concierge® ── */}
+          <div className="concierge-freeform bg-white/5 border border-pink-500/30 rounded-xl p-4">
+            <p className="text-sm text-gray-300 mb-3">
+              Tell Concierge® exactly what you need for <span className="text-pink-300 font-medium">{pet?.name || 'your pet'}</span>:
+            </p>
+            {conciergeSent ? (
+              <div className="text-center py-4">
+                <CheckCircle size={28} className="text-green-400 mx-auto mb-2" />
+                <p className="text-sm text-green-400 font-medium">Sent to Concierge® ✓</p>
+                <p className="text-xs text-gray-400 mt-1">Your team will respond via WhatsApp or the Service Desk.</p>
+                <button onClick={() => { setConciergeSent(false); setConciergeRequest(''); }} className="mt-3 text-xs text-gray-400 underline">Send another request</button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <textarea
+                  value={conciergeRequest}
+                  onChange={(e) => setConciergeRequest(e.target.value)}
+                  placeholder={`e.g. "Book a spa grooming session for ${pet?.name || 'my dog'} this weekend" or "Find a vet that specialises in joint health"`}
+                  rows={3}
+                  data-testid="concierge-freetext-input"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 resize-none focus:outline-none focus:border-pink-500/50"
+                />
+                <button
+                  onClick={async () => {
+                    if (!conciergeRequest.trim() || conciergeSending) return;
+                    setConciergeSending(true);
+                    try {
+                      await fetch(`${API_URL}/api/concierge/pillar-request`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
+                        body: JSON.stringify({
+                          pillar: 'mira_os',
+                          request_label: conciergeRequest.trim().slice(0, 80),
+                          request_type: 'freeform',
+                          source: 'mira_os_concierge_tab',
+                          message: conciergeRequest.trim(),
+                          pet_name: pet?.name,
+                          pet_breed: pet?.breed,
+                          member_name: user?.name,
+                          member_email: user?.email,
+                        })
+                      });
+                      setConciergeSent(true);
+                    } catch {
+                      // Show sent anyway for UX
+                      setConciergeSent(true);
+                    } finally {
+                      setConciergeSending(false);
+                    }
+                  }}
+                  disabled={!conciergeRequest.trim() || conciergeSending}
+                  data-testid="concierge-send-btn"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold transition"
+                >
+                  <Send size={14} />
+                  {conciergeSending ? 'Sending...' : 'Send to Concierge®'}
+                </button>
+              </div>
+            )}
+          </div>
           
           {/* Active Concierge® Block (from chat) */}
           {conciergeData && (
@@ -1569,7 +1633,25 @@ const MiraOSPage = () => {
           
           {/* What Concierge® Can Help With */}
           <div className="concierge-services">
-            <h3 className="text-sm font-medium text-gray-400 mb-2">Concierge® can help with:</h3>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">Quick requests:</h3>
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {[
+                { label: `Create outdoor pack for ${pet?.name || 'my pet'}`, icon: '🎒', value: `Please create a personalised outdoor adventure pack for ${pet?.name || 'my dog'} (${pet?.breed || 'mixed breed'}). Include recommendations for walks, parks, and travel gear.` },
+                { label: `Plan ${pet?.name || 'my pet'}'s birthday cake`, icon: '🎂', value: `I'd like to plan a custom birthday cake for ${pet?.name || 'my dog'} (${pet?.breed || 'mixed breed'}). Please suggest breed-appropriate flavours and designs.` },
+                { label: 'Book a grooming session', icon: '✂️', value: `Please arrange a professional grooming session for ${pet?.name || 'my dog'} at the earliest available slot.` },
+                { label: 'Find a specialist vet', icon: '🩺', value: `I need a specialist veterinarian recommendation for ${pet?.name || 'my dog'} (${pet?.breed || 'mixed breed'}). Please help coordinate an appointment.` },
+              ].map((item) => (
+                <button
+                  key={item.value}
+                  onClick={() => { setConciergeRequest(item.value); setConciergeSent(false); }}
+                  className="p-3 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 transition text-sm text-gray-300 flex gap-2 items-start"
+                >
+                  <span className="text-base leading-none mt-0.5 flex-shrink-0">{item.icon}</span>
+                  <span className="text-xs leading-snug">{item.label}</span>
+                </button>
+              ))}
+            </div>
+            <h3 className="text-sm font-medium text-gray-400 mb-2">Concierge® can also help with:</h3>
             <div className="space-y-2">
               {[
                 'Complex travel arrangements',

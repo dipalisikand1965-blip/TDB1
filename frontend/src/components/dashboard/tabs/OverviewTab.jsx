@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { 
   ShoppingBag, PawPrint, Star, Package, Calendar, Sparkles, Crown,
-  ChevronRight, Gift, Cake, MessageCircle, Play, RefreshCw, Award
+  ChevronRight, Gift, Cake, MessageCircle, Play, RefreshCw, Award,
+  Bell, MessageSquare
 } from 'lucide-react';
 import { toast } from '../../../hooks/use-toast';
 
@@ -44,6 +45,34 @@ const OverviewTab = ({
 }) => {
   const navigate = useNavigate();
   const [badges, setBadges] = useState([]);
+  const [autoPrefs, setAutoPrefs] = useState({
+    whatsapp_daily_digest: true,
+    whatsapp_birthday_reminder: true,
+    whatsapp_medication_reminder: true,
+  });
+
+  const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+
+  // Fetch notification preferences
+  useEffect(() => {
+    if (!user?.email) return;
+    fetch(`${API}/api/mira/notifications/preferences/${encodeURIComponent(user.email)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setAutoPrefs({ whatsapp_daily_digest: d.whatsapp_daily_digest ?? true, whatsapp_birthday_reminder: d.whatsapp_birthday_reminder ?? true, whatsapp_medication_reminder: d.whatsapp_medication_reminder ?? true }); })
+      .catch(() => {});
+  }, [user?.email]);
+
+  const togglePref = useCallback(async (key) => {
+    const newVal = !autoPrefs[key];
+    setAutoPrefs(p => ({ ...p, [key]: newVal }));
+    try {
+      await fetch(`${API}/api/mira/notifications/preferences`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user?.email, ...autoPrefs, [key]: newVal })
+      });
+    } catch { /* revert */ setAutoPrefs(p => ({ ...p, [key]: !newVal })); }
+  }, [autoPrefs, user?.email]);
   
   // Get current pet (either selected or first)
   const currentPet = pets.find(p => p.id === selectedPetId) || pets[0];
@@ -759,6 +788,51 @@ const OverviewTab = ({
           </Card>
         );
       })()}
+
+      {/* ── Mira Automations — WhatsApp notification toggles ── */}
+      <div className="mt-8 mb-6">
+        <h3 className="text-xl font-bold mb-4 text-gray-900 flex items-center gap-2">
+          <Bell size={18} className="text-purple-500" />
+          Mira Automations
+        </h3>
+        <Card className="p-5 border border-purple-100 bg-gradient-to-br from-purple-50/50 to-pink-50/50">
+          <p className="text-sm text-gray-500 mb-4 flex items-center gap-1.5">
+            <MessageSquare size={13} className="text-green-500 flex-shrink-0" />
+            WhatsApp updates for {currentPet?.name || 'your pet'} — tap to toggle
+          </p>
+          <div className="space-y-3">
+            {[
+              { key: 'whatsapp_daily_digest', label: 'Daily Digest', desc: `A morning WhatsApp with ${currentPet?.name || 'your pet'}'s health summary & Mira's picks` },
+              { key: 'whatsapp_birthday_reminder', label: 'Birthday Reminders', desc: `Countdown alerts before ${currentPet?.name || 'your pet'}'s birthday with celebration ideas` },
+              { key: 'whatsapp_medication_reminder', label: 'Medication Reminders', desc: 'Timely alerts when it\'s time for medication or supplements' },
+            ].map(({ key, label, desc }) => (
+              <div key={key} className="flex items-center justify-between gap-4 py-2 border-b border-gray-100 last:border-0">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-800">{label}</p>
+                  <p className="text-xs text-gray-400 mt-0.5 leading-snug">{desc}</p>
+                </div>
+                <button
+                  data-testid={`automation-toggle-${key}`}
+                  onClick={() => togglePref(key)}
+                  aria-label={`${autoPrefs[key] ? 'Disable' : 'Enable'} ${label}`}
+                  style={{
+                    flexShrink: 0, width: 44, height: 24, borderRadius: 12, padding: 2,
+                    background: autoPrefs[key] ? '#9B59B6' : '#E5E7EB',
+                    border: 'none', cursor: 'pointer', transition: 'background 0.2s',
+                    display: 'flex', alignItems: 'center',
+                  }}
+                >
+                  <span style={{
+                    width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                    display: 'block', marginLeft: autoPrefs[key] ? 20 : 0,
+                    transition: 'margin 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                  }} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       <h3 className="text-xl font-bold mt-10 mb-4 text-gray-900">Recent Activity</h3>
       {orders.length > 0 ? (
