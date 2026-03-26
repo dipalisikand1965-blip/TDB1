@@ -17896,6 +17896,51 @@ class MemberLocationUpdate(BaseModel):
     country: Optional[str] = None
     source: str = "auto"  # "auto" = detected, "manual" = user entered
 
+
+# ── Notification Preferences ─────────────────────────────────────────────────
+
+@api_router.get("/member/notification-preferences")
+async def get_notification_preferences(authorization: str = Header(None)):
+    """Get per-pet notification preferences for the current member."""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = authorization.split(" ", 1)[1]
+    from auth_routes import get_current_user_from_token
+    try:
+        user = await get_current_user_from_token(token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    prefs = user.get("notification_preferences") or {}
+    return {"preferences": prefs}
+
+
+@api_router.put("/member/notification-preferences")
+async def update_notification_preferences(
+    body: dict,
+    authorization: str = Header(None)
+):
+    """Save per-pet notification preferences. Body: {preferences: {pet_id: {daily_digest:bool, ...}}}"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = authorization.split(" ", 1)[1]
+    from auth_routes import get_current_user_from_token
+    try:
+        user = await get_current_user_from_token(token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    prefs = body.get("preferences", {})
+    user_id = user.get("id") or user.get("email")
+
+    await db.users.update_one(
+        {"$or": [{"id": user_id}, {"email": user.get("email")}]},
+        {"$set": {"notification_preferences": prefs,
+                  "notification_prefs_updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "preferences": prefs}
+
+
 @api_router.post("/member/location")
 async def update_member_location(location: MemberLocationUpdate, authorization: str = Header(None)):
     """
