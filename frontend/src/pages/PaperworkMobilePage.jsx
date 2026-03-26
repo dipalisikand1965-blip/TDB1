@@ -243,11 +243,11 @@ export default function PaperworkMobilePage() {
 
         {/* Soul Pillar CTA */}
         {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(99,179,237,0.10),rgba(99,179,237,0.16))', border:'1px solid rgba(99,179,237,0.25)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#63B3ED' }}>{currentPet?.name || 'your dog'}</span> love to stay organised?
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(99,179,237,0.14),rgba(99,179,237,0.20))', border:'1px solid rgba(99,179,237,0.35)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#0284C7' }}>{currentPet?.name || 'your dog'}</span> love to stay organised?
             </div>
-            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Documents, insurance, vaccination — all handled by Concierge® for {currentPet?.name || 'your dog'}.
             </div>
           </div>

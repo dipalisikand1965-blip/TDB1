@@ -145,7 +145,33 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 
 ---
 
-## SESSION 13 — (2026-03-26) Notification Plumbing + Pet Flicker Fix + TODAY Tab
+## SESSION 14 — (2026-03-26) Mobile Text Fix + Rich Order Email + Admin Notifications + Notification History
+
+### Critical Fix: Mobile Page Text Rendering (ALL 11 pages)
+1. ✅ Root cause: Every mobile pillar page had CTA cards with `color:'#fff'` text on very light transparent backgrounds (10-16% opacity) outside the dark hero section. On the white `mobile-page-container` background, these were completely invisible/unreadable.
+2. ✅ Fixed: AdoptMobilePage, GoMobilePage, CareMobilePage, PlayMobilePage, LearnMobilePage, EmergencyMobilePage, FarewellMobilePage, PaperworkMobilePage, ShopMobilePage → all CTA card text changed to `#1A0A2E` (dark) + `#4B5563` (gray), border opacity increased for visibility
+3. ✅ Fixed: CelebrateMobilePage tab bar — "Celebrate | Near Me" tabs changed from `rgba(255,255,255,0.5)` (invisible on white) to `#6B7280` (readable)
+
+### Rich Order Confirmation Email
+4. ✅ Updated `send_order_confirmed_email` in `services/email_service.py` with full branded template:
+   - Itemized product list with prices
+   - GST breakdown (subtotal + tax + shipping + total)
+   - Download Invoice PDF button
+   - "What happens next" with Concierge promises
+   - From: `orders@thedoggycompany.com`, Reply-to: `concierge@thedoggycompany.com`
+   - `_send()` function updated to accept custom from_email and reply_to
+
+### Admin New Member Notifications
+5. ✅ `GET /api/admin/recent-signups?since_minutes=X` endpoint added to server.py
+6. ✅ Admin.jsx: polls every 60 seconds, shows purple/pink gradient banner + toast when new members join
+7. ✅ State: `newMemberAlerts[]`, dismissible banner with member name
+
+### Notification History Tab in Inbox
+8. ✅ `GET /api/member/comm-history` endpoint added — merges whatsapp_logs + email_logs by user email/phone
+9. ✅ NotificationsInbox.jsx: Added "Messages | Notifications" tab bar; Notifications tab renders comm history cards with type (WhatsApp/Email), status (delivered/failed), template name, timestamp
+10. ✅ Added `Bell` icon import to NotificationsInbox
+
+---
 
 ### WhatsApp Service (8 templates, freeform fallback)
 1. ✅ `/app/backend/services/whatsapp_service.py` — Central WA dispatcher with 8 template functions:

@@ -18,7 +18,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Search, X, RefreshCw, Filter, Inbox,
   ChevronDown, ChevronRight, Clock, MessageSquare, AlertTriangle,
-  CheckCircle2, Archive
+  CheckCircle2, Archive, Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import GlobalNav from '../components/Mira/GlobalNav';
@@ -252,6 +252,9 @@ const NotificationsInbox = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsedSections, setCollapsedSections] = useState({ resolved: true });
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
+  const [activeInboxTab, setActiveInboxTab] = useState('messages');
+  const [commHistory, setCommHistory] = useState([]);
+  const [loadingComms, setLoadingComms] = useState(false);
 
   const pollRef = useRef(null);
   const prevTicketCountRef = useRef(0);
@@ -331,6 +334,19 @@ const NotificationsInbox = () => {
     pollRef.current = setInterval(() => fetchData(true), POLL_MS);
     return () => clearInterval(pollRef.current);
   }, [fetchData]);
+
+  // Fetch comm history (WhatsApp + Email logs)
+  useEffect(() => {
+    if (!token || activeInboxTab !== 'notifications') return;
+    setLoadingComms(true);
+    fetch(`${API_URL}/api/member/comm-history`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.ok ? r.json() : { history: [] })
+      .then(d => setCommHistory(d.history || []))
+      .catch(() => {})
+      .finally(() => setLoadingComms(false));
+  }, [token, activeInboxTab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Listen for pet changes
   useEffect(() => {
@@ -470,7 +486,7 @@ const NotificationsInbox = () => {
         </div>
 
         {/* Search */}
-        {showSearch && (
+        {showSearch && activeInboxTab === 'messages' && (
           <div className="px-4 pb-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -491,9 +507,84 @@ const NotificationsInbox = () => {
             </div>
           </div>
         )}
+
+        {/* Tab Bar */}
+        <div className="flex border-b border-gray-200">
+          {[{ id: 'messages', label: 'Messages' }, { id: 'notifications', label: 'Notifications' }].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveInboxTab(tab.id)}
+              data-testid={`inbox-tab-${tab.id}`}
+              className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+                activeInboxTab === tab.id
+                  ? 'text-[#C96D9E] border-b-2 border-[#C96D9E]'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {tab.label}
+              {tab.id === 'messages' && unreadCount > 0 && (
+                <span className="ml-1.5 text-[10px] bg-[#E8507A] text-white rounded-full px-1.5 py-0.5">{unreadCount}</span>
+              )}
+            </button>
+          ))}
+        </div>
       </header>
 
-      {/* Content — Split View */}
+      {/* Content */}
+      {activeInboxTab === 'notifications' ? (
+        /* ── Notifications Tab ── */
+        <div className="flex-1 overflow-y-auto bg-[#F5F2EC] min-h-0 py-3 px-3">
+          {loadingComms ? (
+            <div className="flex items-center justify-center h-40">
+              <RefreshCw className="w-5 h-5 animate-spin text-[#C96D9E]" />
+            </div>
+          ) : commHistory.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+              <Bell className="w-12 h-12 mb-3 opacity-30" />
+              <p className="text-sm font-medium text-gray-500">No notifications yet</p>
+              <p className="text-xs mt-1">WhatsApp and email notifications will appear here</p>
+            </div>
+          ) : (
+            <div className="space-y-2" data-testid="comm-history-list">
+              {commHistory.map((item, i) => {
+                const isWA = item.type === 'whatsapp';
+                const label = item.template?.replace('freeform:', '').replace('tdc_', '').replace(/_/g, ' ') || '';
+                const preview = item.message_preview || item.subject || '';
+                const timeStr = item.sent_at ? new Date(item.sent_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+                return (
+                  <div key={item.id || i}
+                    className="bg-white rounded-lg px-3 py-3 shadow-sm border-l-4"
+                    style={{ borderLeftColor: isWA ? '#22C55E' : '#6366F1' }}
+                    data-testid={`comm-item-${i}`}
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${isWA ? 'bg-green-50' : 'bg-indigo-50'}`}>
+                        <span className="text-sm">{isWA ? '📱' : '📧'}</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="text-xs font-semibold capitalize text-gray-700">{label}</span>
+                          <span className="text-[10px] text-gray-400 flex-shrink-0">{timeStr}</span>
+                        </div>
+                        {preview && <p className="text-[12px] text-gray-500 line-clamp-2">{preview}</p>}
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${item.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+                            {item.success ? 'delivered' : 'failed'}
+                          </span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isWA ? 'bg-green-50 text-green-700' : 'bg-indigo-50 text-indigo-700'}`}>
+                            {isWA ? 'WhatsApp' : 'Email'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      ) : (
+      /* ── Messages Tab (original ticket list) ── */
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Left: Ticket List */}
         <div className={`
@@ -622,6 +713,7 @@ const NotificationsInbox = () => {
           </div>
         )}
       </div>
+      )} {/* end messages tab conditional */}
 
       {/* Mobile Nav */}
       <div className="lg:hidden">

@@ -259,7 +259,46 @@ const Admin = () => {
     }
   }, [isAuthenticated]);
 
-  // Seed All function - uses UPSERT so existing data is preserved
+  // ── New Member Live Notifications ──────────────────────────────────────────
+  const [newMemberAlerts, setNewMemberAlerts] = useState([]);
+  const lastCheckedRef = useRef(Date.now());
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const poll = async () => {
+      try {
+        const sinceMs = Date.now() - lastCheckedRef.current;
+        const sinceMin = Math.max(1, Math.ceil(sinceMs / 60000));
+        const resp = await fetch(`${API_URL}/api/admin/recent-signups?since_minutes=${sinceMin}`, {
+          headers: { Authorization: `Basic ${btoa(`${username}:${password}`)}` }
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.count > 0) {
+          setNewMemberAlerts(prev => {
+            const existingIds = new Set(prev.map(m => m.id));
+            const truly_new = data.members.filter(m => !existingIds.has(m.id));
+            if (truly_new.length > 0) {
+              truly_new.forEach(m => {
+                toast({
+                  title: `🎉 New member joined!`,
+                  description: `${m.name || m.email} just signed up`,
+                });
+              });
+              return [...truly_new, ...prev].slice(0, 20);
+            }
+            return prev;
+          });
+        }
+        lastCheckedRef.current = Date.now();
+      } catch (e) { /* silent */ }
+    };
+    poll(); // immediate check
+    const interval = setInterval(poll, 60000); // then every 60s
+    return () => clearInterval(interval);
+  }, [isAuthenticated, username, password]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
   const seedAllPillars = async () => {
     setSeedingAll(true);
     try {
@@ -2418,6 +2457,19 @@ const Admin = () => {
   // Admin Dashboard
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* New Member Notification Banner */}
+      {newMemberAlerts.length > 0 && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-4 py-2 text-sm flex items-center justify-between sticky top-0 z-[60]" data-testid="new-member-banner">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🎉</span>
+            <span>
+              <strong>{newMemberAlerts[0]?.name || newMemberAlerts[0]?.email}</strong> just joined!
+              {newMemberAlerts.length > 1 && <span className="ml-1 opacity-80">+ {newMemberAlerts.length - 1} more today</span>}
+            </span>
+          </div>
+          <button onClick={() => setNewMemberAlerts([])} className="opacity-70 hover:opacity-100 ml-4 text-lg leading-none">×</button>
+        </div>
+      )}
       {/* Top Nav */}
       <nav className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
