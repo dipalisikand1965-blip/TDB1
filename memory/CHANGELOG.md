@@ -238,3 +238,23 @@
 
 ### Testing
 - Iteration 228: 100% backend (12/12), 100% frontend (all 5 features verified + 1 routing bug found and fixed)
+
+## 2026-03-26 — Session 15: Critical Mira Intelligence Bug Fix
+
+### CRITICAL FIX: Mira Widget Loading Wrong Pet (Intelligence Gone)
+**Root Cause:** Event name mismatch between PillarContext and MiraChatWidget
+- `PillarContext.jsx` line 204 fires: `window.dispatchEvent(new CustomEvent('petChanged', { detail: pet }))`
+- `MiraChatWidget.jsx` was only listening to: `petSelectionChanged` — event name that was NEVER dispatched anywhere
+- Result: Widget ALWAYS used `pets[0]` (Mojo/Indie) regardless of which pet the user was viewing
+- Dipali has 8 pets, Mojo is first → Bruno (3rd pet) was never shown
+
+**Fix Applied (MiraChatWidget.jsx):**
+1. Added dual event listener: both `petChanged` (PillarContext) AND `petSelectionChanged` (legacy)
+2. Handler now accepts two formats: `e.detail` = full pet object (petChanged) OR `e.detail.petId` = string (legacy)
+3. Added localStorage re-sync on widget open: re-reads `selectedPetId` from localStorage when `isOpen` becomes true, updates selectedPet if different from current (handles case where PillarContext updated localStorage since widget mounted)
+
+**Testing:** Iteration 229 — 100% backend (10/10), 100% frontend (6/6)
+- "Bruno's Soul Mate" shown correctly when Bruno is active
+- "Mojo's Soul Mate" shown correctly when Mojo is default
+- All 8 pets visible in widget tabs
+- Backend stream correctly loads full soul data per pet_id
