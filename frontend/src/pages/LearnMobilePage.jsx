@@ -51,20 +51,8 @@ const LEARN_DIMS = [
   { id:"soul_made",   icon:"✦",  label:"Soul Made™",      dbCategory:null,                  ytQuery:null,                                             accent:"#7C3AED", bg:"#F3E5F5" },
 ];
 
-const LEARN_SERVICES = {
-  foundations: [
-    { id:"puppy_basics",  icon:"🐾", name:"Puppy Foundations (8 weeks)", price:"₹4,999", desc:"Complete puppy foundations — sit, stay, leave, loose leash, crate — certified trainer, 8 sessions." },
-    { id:"basic_ob",      icon:"🏆", name:"Basic Obedience Course",      price:"₹2,999", desc:"4-week course — sit, stay, come, heel — certified positive reinforcement trainer." },
-  ],
-  behaviour: [
-    { id:"behaviour_consult", icon:"🧠", name:"Behaviour Consultation",     price:"₹1,999", desc:"1-hour one-on-one with a certified behaviourist — identify root cause and build a correction plan." },
-    { id:"reactivity",        icon:"😤", name:"Reactivity & Aggression",    price:"₹3,499", desc:"6-session programme for reactive dogs — desensitisation and counter-conditioning." },
-  ],
-  training: [
-    { id:"adv_ob",   icon:"🏅", name:"Advanced Obedience",  price:"₹3,999", desc:"6-week advanced programme — off-leash recall, stay 60s+, heel with distractions." },
-    { id:"k9_sport", icon:"🏃", name:"K9 Sports Foundations", price:"₹5,999", desc:"Agility, nose work, dock diving foundations — for high-energy working breeds." },
-  ],
-};
+// Services are fetched from the Service Box API (/api/services?pillar=learn)
+// NEVER show prices — services go through Concierge®
 
 function VideoCard({ video, onPlay }) {
   return (
@@ -85,7 +73,7 @@ function VideoCard({ video, onPlay }) {
   );
 }
 
-function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
+function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook, allServices }) {
   const { request } = useConcierge({ pet, pillar:'learn' });
   const [dimTab, setDimTab] = useState('products');
   const [products, setProducts] = useState([]);
@@ -94,6 +82,16 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
   const [playing, setPlaying] = useState(null);
 
   useEffect(() => {
+    // Mira's Picks dim: use claude-picks API — EXACT same as desktop
+    if (dim.id === 'mira' && pet?.id) {
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn`, {
+        headers: token ? { Authorization:`Bearer ${token}` } : {}
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d?.products) setProducts(filterBreedProducts(d.products, pet?.breed)); })
+        .catch(() => {});
+      return;
+    }
     if (!dim.dbCategory) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&category=${encodeURIComponent(dim.dbCategory)}&limit=40&breed=${encodeURIComponent(pet?.breed||'')}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
@@ -101,7 +99,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), pet?.breed), pet)); })
       .catch(() => {});
-  }, [dim.id, dim.dbCategory, pet?.breed, token]);
+  }, [dim.id, dim.dbCategory, pet?.id, pet?.breed, token]);
 
   const fetchVideos = useCallback(async () => {
     if (!dim.ytQuery || videos.length > 0) return;
@@ -125,12 +123,22 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
   }, [dimTab, fetchVideos]);
 
   const petName = pet?.name || 'your dog';
+  const petLifeStage = (pet?.life_stage || pet?.doggy_soul_answers?.life_stage || '').toLowerCase();
+  const isPuppy = petLifeStage === 'puppy' || petLifeStage === 'pup';
+
+  // Services from Service Box — filtered by dim, puppy filter for adult dogs
+  const svcList = (allServices || []).filter(s => {
+    const dimMatch = !s.dim || s.dim === dim.id || s.category === dim.id;
+    const puppyFilter = isPuppy ? true : !(s.name || '').toLowerCase().includes('puppy');
+    return dimMatch && puppyFilter;
+  });
+
   const tabs = [
-    { id:'products', label:'📦 Products' },
+    { id:'products', label:'Products' },
     ...(dim.ytQuery ? [{ id:'videos', label:'🎬 Videos' }] : []),
     { id:'book', label:'📚 Book' },
   ];
-  const svcList = LEARN_SERVICES[dim.id] || LEARN_SERVICES.foundations;
+  const svcList_unused = null; // replaced by allServices prop
 
   return (
     <div style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, overflow:'hidden', marginTop:12 }}>
@@ -185,21 +193,29 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
 
         {/* Book */}
         {dimTab === 'book' && (
-          <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+            {svcList.length === 0 && (
+              <div style={{ textAlign:'center', padding:'20px', color:'#888', fontSize:14 }}>No services available for this category.</div>
+            )}
             {svcList.map(svc => (
-              <div key={svc.id} style={{ background:G.pale, borderRadius:14, padding:'12px 14px' }}>
-                <div style={{ display:'flex', gap:10, marginBottom:8 }}>
-                  <span style={{ fontSize:22 }}>{svc.icon}</span>
-                  <div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
-                    <div style={{ fontSize:14, color:G.mutedText }}>{svc.price}</div>
-                  </div>
+              <div key={svc.id} style={{ background:'#fff', borderRadius:16, overflow:'hidden', border:`1px solid ${G.border}`, boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
+                {/* Watercolour illustration from Service Box */}
+                {(svc.watercolor_image || svc.cloudinary_image_url || svc.image_url || svc.image) && (
+                  <img src={svc.watercolor_image || svc.cloudinary_image_url || svc.image_url || svc.image}
+                    alt={svc.name}
+                    style={{ width:'100%', height:130, objectFit:'cover', display:'block' }}
+                    onError={e => e.target.style.display='none'} />
+                )}
+                <div style={{ padding:'12px 14px' }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:4 }}>{svc.name}</div>
+                  {/* NEVER show price — services go through Concierge® */}
+                  <div style={{ fontSize:13, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.description || svc.desc}</div>
+                  <button onClick={() => { vibe('medium'); if (onBook) onBook(svc.name); }}
+                    data-testid={`book-service-${svc.id}`}
+                    style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.purple})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
+                    Book via Concierge® →
+                  </button>
                 </div>
-                <div style={{ fontSize:14, color:'#555', lineHeight:1.5, marginBottom:10 }}>{svc.desc}</div>
-                <button onClick={() => { vibe('medium'); tdc.book({ service:svc.name, pillar:'learn', pet, channel:'learn_dim_book' }); if (onBook) onBook(svc.name); }}
-                  style={{ width:'100%', minHeight:40, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.purple})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                  Book via Concierge® →
-                </button>
               </div>
             ))}
           </div>
@@ -223,6 +239,17 @@ export default function LearnMobilePage() {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
+  const [learnServices, setLearnServices] = useState([]);
+
+  // Fetch services from Service Box — used by all dim Book tabs
+  useEffect(() => {
+    fetch(`${API_URL}/api/services?pillar=learn&limit=50`, {
+      headers: token ? { Authorization:`Bearer ${token}` } : {}
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.services) setLearnServices(d.services); })
+      .catch(() => {});
+  }, [token]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -344,6 +371,7 @@ export default function LearnMobilePage() {
             pet={currentPet}
             token={token}
             addToCart={addToCart}
+            allServices={learnServices}
             onProductClick={p => { vibe(); setSelectedProduct(p); }}
             onBook={svcName => { setSvcBooking({ isOpen: true, serviceType: guessServiceType(svcName) }); }}
           />
