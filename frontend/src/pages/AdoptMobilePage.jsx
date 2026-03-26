@@ -12,7 +12,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
-import { applyMiraFilter } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedAdoptPaths from '../components/adopt/GuidedAdoptPaths';
@@ -55,11 +55,6 @@ const ADOPT_SERVICES = [
   { id:"multi_pet",       icon:"🐕", name:"Multi-Pet Integration",        tagline:"First introductions matter",  price:"₹999", desc:"Expert guidance on introducing a new dog to existing pets — step-by-step, safe, stress-free." },
 ];
 
-const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
-function filterBreedProducts(products, petBreed) {
-  const pl=(petBreed||"").toLowerCase();const pw=pl.split(/\s+/).filter(w=>w.length>2);
-  return products.filter(p=>{const n=(p.name||"").toLowerCase();for(const b of KNOWN_BREEDS){if(n.includes(b)){if(!pl)return false;if(n.includes(pl))return true;if(pw.some(w=>b.includes(w)))return true;return false;}}return true;});
-}
 
 export default function AdoptMobilePage() {
   const { token } = useAuth();
