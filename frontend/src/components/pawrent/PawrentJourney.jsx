@@ -62,6 +62,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // ── API base — uses existing TDC pattern ─────────────────────────────────────
 const API_URL =
@@ -336,6 +337,7 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
   const [completedSteps, setCompletedSteps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState({});
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
 
   const mode = detectJourneyMode(pet);
@@ -383,6 +385,10 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
       });
       setCompletedSteps((prev) => [...prev, step.id]);
       setBooked((prev) => ({ ...prev, [step.id]: true }));
+      toast.success(`Booked for ${petName}! Concierge® will be in touch 🐾`, {
+        duration: 4000,
+        description: step.title,
+      });
     } catch (e) {
       console.error("Step completion failed:", e);
     } finally {
@@ -404,15 +410,18 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
         overflow: "hidden",
       }}
     >
-      {/* Header */}
+      {/* Header — clickable to expand/collapse */}
       <div
+        onClick={() => setIsExpanded(e => !e)}
         style={{
           padding: "14px 18px",
-          borderBottom: `1px solid ${currentModeData.color}22`,
+          borderBottom: isExpanded ? `1px solid ${currentModeData.color}22` : "none",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           background: `${currentModeData.color}11`,
+          cursor: "pointer",
+          userSelect: "none",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -434,35 +443,44 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
             </div>
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div
-            style={{ fontSize: 11, color: T.muted }}
-          >{completedCount}/{totalSteps} done</div>
-          <div
-            style={{
-              marginTop: 4,
-              width: 60,
-              height: 4,
-              background: `${currentModeData.color}22`,
-              borderRadius: 4,
-              overflow: "hidden",
-            }}
-          >
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 11, color: T.muted }}>{completedCount}/{totalSteps} done</div>
             <div
               style={{
-                width: `${progressPct}%`,
-                height: "100%",
-                background: currentModeData.color,
+                marginTop: 4,
+                width: 60,
+                height: 4,
+                background: `${currentModeData.color}22`,
                 borderRadius: 4,
-                transition: "width 0.5s ease",
+                overflow: "hidden",
               }}
-            />
+            >
+              <div
+                style={{
+                  width: `${progressPct}%`,
+                  height: "100%",
+                  background: currentModeData.color,
+                  borderRadius: 4,
+                  transition: "width 0.5s ease",
+                }}
+              />
+            </div>
           </div>
+          {/* Chevron */}
+          <div style={{
+            fontSize: 12,
+            color: currentModeData.color,
+            transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 0.2s ease",
+            fontWeight: 700,
+          }}>▼</div>
         </div>
       </div>
 
-      {/* Steps */}
-      <div style={{ padding: "12px 18px 16px" }}>
+      {/* Steps — only visible when expanded */}
+      {isExpanded && (
+        <div style={{ padding: "12px 18px 16px" }}>
         {steps.map((step, idx) => {
           const isDone = completedSteps.includes(step.id);
           const isJustBooked = booked[step.id];
@@ -543,6 +561,7 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
