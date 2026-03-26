@@ -139,7 +139,7 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
               </div>
               <button onClick={() => onBook({ name:`${group.label} — All Services`, icon:group.icon, colour:group.colour })}
                 style={{ marginTop:12, width:'100%', minHeight:44, borderRadius:12, border:`1.5px solid ${group.colour}`, background:'#fff', fontSize:14, fontWeight:600, color:group.colour, cursor:'pointer' }}>
-                See all {group.label} services →
+                Explore all {group.label} via Concierge® →
               </button>
             </div>
           )}
@@ -254,16 +254,16 @@ export default function ServicesMobilePage() {
         {/* Service Group Cards */}
         <div style={{ padding:'0 16px 8px' }}>
           {/* Soul Pillar CTA — What would Mojo need? */}
-          <div style={{ background:'linear-gradient(135deg,rgba(91,127,212,0.10),rgba(91,127,212,0.16))', border:'1px solid rgba(91,127,212,0.25)', borderRadius:18, padding:'18px 16px', marginBottom:20 }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
-              What would <span style={{ color:'#7BA3E0' }}>{petName}</span> need?
+          <div style={{ background:'linear-gradient(135deg,rgba(91,127,212,0.08),rgba(91,127,212,0.14))', border:'1px solid rgba(91,127,212,0.25)', borderRadius:18, padding:'18px 16px', marginBottom:20 }}>
+            <div style={{ fontSize:20, fontWeight:700, color:G.dark, lineHeight:1.25, marginBottom:5 }}>
+              What would <span style={{ color:G.navyL }}>{petName}</span> need?
             </div>
-            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
-              Every service is personalised to {petName}'s soul profile and health needs.
+            <div style={{ fontSize:13, color:G.taupe, lineHeight:1.5 }}>
+              Every service personally arranged by Concierge®. Matched to {petName}'s soul profile and health needs.
             </div>
           </div>
-          <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Services for {petName}</div>
-          <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>Every service personally arranged by Concierge®. Matched to {petName}'s soul profile.</div>
+          <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Concierge® Services for {petName}</div>
+          <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>Mira's handpicked experts. One message and it's arranged.</div>
           {SERVICE_GROUPS.map(group => (
             <ServiceGroupCard
               key={group.id}

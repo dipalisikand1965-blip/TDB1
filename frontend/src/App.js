@@ -280,6 +280,7 @@ const MembershipPage = lazy(() => import("./pages/MembershipPage"));
 const MembershipOnboarding = lazy(() => import("./pages/MembershipOnboarding"));
 const MiraMeetsYourPet = lazy(() => import("./pages/MiraMeetsYourPet")); // New world-class onboarding
 const PetHomePage = lazy(() => import("./pages/PetHomePage")); // Pet-first landing page after onboarding
+const PawrentJourneyPage = lazy(() => import("./pages/PawrentJourneyPage")); // The Pawrent Journey
 const AddPetPage = lazy(() => import("./pages/AddPetPage")); // Add pet flow for existing users
 // Soul Builder - upgraded 10-step onboarding with pts flash (lazy loaded)
 const PetSoulOnboarding = lazy(() => import("./pages/PetSoulOnboarding"));
@@ -497,6 +498,9 @@ function MainLayout() {
           
           {/* Pet Home - Inside MainLayout for shared Navbar + MobileNavBar */}
           <Route path="/pet-home" element={<ProtectedRoute><PetHomePage /></ProtectedRoute>} />
+          
+          {/* The Pawrent Journey */}
+          <Route path="/pawrent-journey" element={<ProtectedRoute><PawrentJourneyPage /></ProtectedRoute>} />
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />

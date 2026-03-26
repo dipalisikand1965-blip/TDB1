@@ -26,6 +26,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -178,6 +179,7 @@ export default function PlayMobilePage() {
         )}
 
         {/* Tab Bar */}
+        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" />}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
           {[
             { id:'play',      label:'🎾 Play & Products' },
@@ -285,6 +287,8 @@ export default function PlayMobilePage() {
                   <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom bandanas, toys and play accessories.</div>
                   <button className="play-cta">Explore Soul Made →</button>
                 </div>
+                  </>
+                )}
               </div>
             )}
           </div>
