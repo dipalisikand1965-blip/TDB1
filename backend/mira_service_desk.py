@@ -714,7 +714,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "category":      request.pillar,
         "sub_category":  service_name.lower().replace(" ","_"),
         "subject":       subject,
-        "description":   f"{mira_briefing}\n\n{request.initial_message.text}" if mira_briefing else request.initial_message.text,
+        "description":   (f"{mira_briefing}\n\n{request.initial_message.text}" if mira_briefing else (request.initial_message.text if request.initial_message else "")) if request.initial_message else (mira_briefing or ""),
         "status":        "urgent" if request.urgency in ("emergency", "urgent") else "open",
         "priority":      request.urgency or "normal",
         "urgency":       request.urgency or "low",
@@ -756,22 +756,22 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
 
     logger.info(f"[SERVICE_DESK] Created enriched ticket: {ticket_id} — '{subject}' | briefing={'yes' if mira_briefing else 'no'}")
     
-    # Send WhatsApp confirmation to parent on new ticket
-    parent_phone = member_obj.get("phone") or member_obj.get("whatsapp")
-    if parent_phone:
-        try:
-            import asyncio
-            from whatsapp_notifications import send_whatsapp_message
-            clean_phone = parent_phone.replace('+', '').replace('-', '').replace(' ', '')
-            if not clean_phone.startswith('91'):
-                clean_phone = '91' + clean_phone
-            asyncio.get_event_loop().create_task(send_whatsapp_message(
-                to=clean_phone,
-                message=f"Concierge received your request for {pet_name}. We'll be in touch within 24 hours. — The Doggy Company",
-                log_context=f"new_ticket_{ticket_id}"
-            ))
-        except Exception as e:
-            logger.warning(f"[SERVICE_DESK] WhatsApp send failed for {ticket_id}: {e}")
+    # Send WhatsApp + Email confirmation to parent on new ticket
+    try:
+        import asyncio
+        from services.whatsapp_service import send_concierge_request
+        from services.email_service import send_concierge_request_email
+        ticket_for_notif = {"ticket_id": ticket_id, "subject": subject, "pillar": request.pillar, "id": ticket_id}
+        pet_for_notif = {"name": pet_name} if pet_name else None
+        asyncio.get_event_loop().create_task(
+            send_concierge_request(member_obj, pet_for_notif, ticket_for_notif)
+        )
+        if member_obj.get("email"):
+            asyncio.get_event_loop().create_task(
+                send_concierge_request_email(member_obj, pet_for_notif, ticket_for_notif)
+            )
+    except Exception as e:
+        logger.warning(f"[SERVICE_DESK] Notification send failed for {ticket_id}: {e}")
     
     return AttachOrCreateTicketResponse(
         ticket_id=ticket_id,
