@@ -668,19 +668,17 @@ const Navbar = () => {
                   <User className="w-5 h-5" style={{ pointerEvents: 'none' }} />
                 </div>
               ) : (
-                <Link 
-                  to="/login" 
-                  className="p-2 hover:bg-white/10 rounded-lg flex items-center justify-center"
-                  style={{ 
-                    WebkitTapHighlightColor: 'rgba(255,255,255,0.3)',
-                    touchAction: 'manipulation',
-                    minWidth: '44px',
-                    minHeight: '44px'
-                  }}
-                  data-testid="navbar-login-btn"
-                >
-                  <User className="w-5 h-5" style={{ pointerEvents: 'none' }} />
-                </Link>
+                <>
+                  {/* Sign in text link — plain gold, no border/bg, always visible for guests */}
+                  <Link
+                    to="/login"
+                    className="text-amber-400 text-sm font-medium px-1"
+                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+                    data-testid="navbar-signin-text-btn"
+                  >
+                    Sign in
+                  </Link>
+                </>
               )}
               <div
                 ref={cartBtnRef}
