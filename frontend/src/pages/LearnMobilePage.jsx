@@ -13,7 +13,7 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
-import { applyMiraFilter, filterBreedProducts} from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedLearnPaths from '../components/learn/GuidedLearnPaths';
@@ -96,7 +96,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(d.products, pet?.breed), pet)); })
+      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), pet?.breed), pet)); })
       .catch(() => {});
   }, [dim.id, dim.dbCategory, pet?.breed, token]);
 

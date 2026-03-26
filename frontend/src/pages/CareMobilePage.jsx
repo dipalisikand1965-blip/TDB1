@@ -25,7 +25,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { applyMiraFilter, filterBreedProducts} from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import '../styles/mobile-design-system.css';
 
@@ -121,7 +121,7 @@ export default function CareMobilePage() {
     if (!currentPet?.id) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setAllRaw(filterBreedProducts(d.products, currentPet?.breed)); })
+      .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
       .catch(() => {});
   }, [currentPet?.id, token]);
 

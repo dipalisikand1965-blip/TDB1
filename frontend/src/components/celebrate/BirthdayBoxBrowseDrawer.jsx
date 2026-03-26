@@ -149,11 +149,12 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
         // If petBreed has no match, allProducts stays empty — universal products from masterProducts below are shown instead.
 
         // Also fetch from products_master filtered by tab categories
-        // This ensures we show the right sub_category products
+        // This ensures we show the right category products
         const masterProducts = [];
         for (const cat of tab.categories) {
           try {
-            const r = await fetch(`${API_BASE}/api/admin/pillar-products?pillar=celebrate&sub_category=${encodeURIComponent(cat)}&limit=20`);
+            // Use 'category' param (not sub_category — the API doesn't read sub_category)
+            const r = await fetch(`${API_BASE}/api/admin/pillar-products?pillar=celebrate&category=${encodeURIComponent(cat)}&limit=20`);
             if (r.ok) {
               const d = await r.json();
               masterProducts.push(...(d.products || []));
@@ -161,10 +162,12 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
           } catch { /* skip */ }
         }
 
-        // Merge: prefer category-specific master products (breed-filtered), then breed products
-        // Apply breed filter to masterProducts to prevent Akita products showing for Indie, etc.
-        const breedFilteredMaster = petBreed ? filterBreedProducts(masterProducts, petBreed) : masterProducts;
-        const merged = [...breedFilteredMaster, ...allProducts];
+        // ALWAYS apply breed filter — even when petBreed is '' (empty breed still
+        // excludes products whose NAME contains a different breed, e.g. "Akita Wall Art")
+        const breedFilteredMaster = filterBreedProducts(masterProducts, petBreed);
+        // Also filter the breed-API results (safety net — data can have edge cases)
+        const breedFilteredAll = filterBreedProducts(allProducts, petBreed);
+        const merged = [...breedFilteredMaster, ...breedFilteredAll];
         // Deduplicate by id
         const seen = new Set();
         const deduped = merged.filter(p => {

@@ -12,7 +12,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
-import { applyMiraFilter, filterBreedProducts} from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedAdoptPaths from '../components/adopt/GuidedAdoptPaths';
@@ -82,7 +82,7 @@ export default function AdoptMobilePage() {
     if (!currentPet?.id) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(d.products, currentPet?.breed), currentPet)); })
+      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed), currentPet)); })
       .catch(() => {});
   }, [currentPet?.id, token]);
 
