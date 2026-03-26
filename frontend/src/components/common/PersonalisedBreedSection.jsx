@@ -98,9 +98,14 @@ export default function PersonalisedBreedSection({
         const breedFiltered = filterBreedProducts(raw, breed);
         // Step 2 — image: prefer watercolor_image (breed illustration), fallback to any image
         const withImages = breedFiltered.filter(p => {
-          return !!(p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url || p.primary_image || p.image);
+          const url = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url || p.primary_image || p.image || "";
+          if (!url) return false;
+          const filename = url.split("/").pop().split("?")[0];
+          // Show product if it has a breed-named image OR a watercolor illustration
+          return filename.startsWith("breed-") || url.includes("/breed_products/") ||
+                 filename.includes("watercolor") || (p.watercolor_image && p.watercolor_image.startsWith("http"));
         });
-        setProducts(withImages.length ? withImages : breedFiltered);
+        setProducts(withImages.length ? withImages : breedFiltered.slice(0, 6)); // fallback: show up to 6 even without ideal images
         setLoading(false);
       })
       .catch(() => setLoading(false));

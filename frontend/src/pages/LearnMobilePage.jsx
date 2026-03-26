@@ -54,6 +54,33 @@ const LEARN_DIMS = [
 // Services are fetched from the Service Box API (/api/services?pillar=learn)
 // NEVER show prices — services go through Concierge®
 
+function getLearnPlanCards(pet) {
+  const name = pet?.name || 'your dog';
+  const breed = pet?.breed || 'Indie';
+  const energy = (pet?.energy_level || pet?.doggy_soul_answers?.energy_level || 'medium').toLowerCase();
+  const lifeStage = (pet?.life_stage || pet?.doggy_soul_answers?.life_stage || 'adult').toLowerCase();
+  const isPuppy = lifeStage === 'puppy';
+  const isHighEnergy = energy === 'high' || energy === 'very high';
+  return [
+    {
+      id:'lp-1', emoji:'🎯', name:`${name}'s Foundation Skills`,
+      description:`${breed} dogs learn best with ${isHighEnergy ? 'short, high-energy sessions of 10–15 mins' : 'calm, focused sessions of 15–20 mins'}. Start with sit, stay, come, and loose-leash walking.`,
+    },
+    {
+      id:'lp-2', emoji:'🧠', name:'Breed-Specific Intelligence',
+      description:`${breed} dogs are naturally ${breed.toLowerCase().includes('indie') ? 'street-smart and independent — focus on recall and trust-building' : 'eager to please — structured training works well'}. Play-based learning accelerates recall.`,
+    },
+    {
+      id:'lp-3', emoji:'🎭', name:'Behaviour & Socialisation',
+      description:`${isPuppy ? `Puppy socialisation window is open — expose ${name} to 100 new experiences in the first 16 weeks.` : `Adult ${breed} socialisation — regular dog park visits, puppy classes, and new environment exposure monthly.`}`,
+    },
+    {
+      id:'lp-4', emoji:'🏅', name:'Advanced Skills Roadmap',
+      description:`Once foundation is solid, ${name} is ready for ${isHighEnergy ? 'agility, nose work, or K9 sports' : 'tricks, off-leash reliability, and therapy dog prep'}. Mira recommends a 6-month progressive plan.`,
+    },
+  ];
+}
+
 function VideoCard({ video, onPlay }) {
   return (
     <div onClick={() => onPlay(video)} style={{ cursor:'pointer', borderRadius:14, overflow:'hidden', border:`1px solid ${G.border}` }}>
@@ -240,6 +267,7 @@ export default function LearnMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
   const [learnServices, setLearnServices] = useState([]);
+  const [showLearnPlan, setShowLearnPlan] = useState(false);
 
   // Fetch services from Service Box — used by all dim Book tabs
   useEffect(() => {
@@ -341,7 +369,7 @@ export default function LearnMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "A well-trained dog is a happy dog. Choose a dimension to explore products, videos, and book sessions."
           </div>
-          <button className="learn-cta" onClick={() => { vibe('medium'); request('Learning plan', { channel:'learn_mira_cta' }); }}>
+          <button className="learn-cta" onClick={() => { vibe('medium'); setShowLearnPlan(true); }}>
             Build {petName}'s Learning Plan →
           </button>
         </div>
@@ -411,6 +439,39 @@ export default function LearnMobilePage() {
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
       />
+
+      {/* Mira Learn Plan Modal — same dark bottom-sheet pattern as Care Plan */}
+      {showLearnPlan && (() => {
+        const learnPlanCards = getLearnPlanCards(currentPet);
+        const petName = currentPet?.name || 'your dog';
+        return (
+          <div style={{ position:'fixed', inset:0, zIndex:999, background:'rgba(0,0,0,0.85)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}
+            onClick={e => { if(e.target===e.currentTarget) setShowLearnPlan(false); }}>
+            <div style={{ background:G.dark, borderRadius:'24px 24px 0 0', padding:'24px 16px 48px', maxHeight:'90vh', overflowY:'auto' }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
+                <div>
+                  <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:4 }}>✦ MIRA'S PERSONALISED LEARNING PLAN</div>
+                  <div style={{ fontSize:22, fontWeight:800, color:'#fff', lineHeight:1.2 }}>Curated for {petName}</div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.5)', marginTop:4 }}>{currentPet?.breed || 'Indie'} · {(currentPet?.life_stage || 'Adult')} · {(currentPet?.energy_level || 'Medium')} Energy</div>
+                </div>
+                <button onClick={() => setShowLearnPlan(false)} style={{ background:'rgba(255,255,255,0.1)', border:'none', borderRadius:'50%', width:32, height:32, color:'#fff', fontSize:20, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0 }}>×</button>
+              </div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', marginBottom:20, lineHeight:1.5 }}>
+                Mira has analysed {petName}'s breed intelligence, energy level, and soul profile to build this learning roadmap.
+              </div>
+              {learnPlanCards.map(item => (
+                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" />
+              ))}
+              <button
+                className="learn-cta"
+                style={{ width:'100%', marginTop:8 }}
+                onClick={() => { setShowLearnPlan(false); request(`Learning plan for ${petName}`, { channel:'learn_plan_book' }); }}>
+                Book via Concierge® →
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </PillarPageLayout>
   );
 }
