@@ -826,7 +826,7 @@ const MiraPage = () => {
                           className="w-full mt-2 text-xs text-purple-600"
                           onClick={() => navigate('/shop')}
                         >
-                          View all {message.products.length} products →
+                          See all picks →
                         </Button>
                       )}
                     </div>

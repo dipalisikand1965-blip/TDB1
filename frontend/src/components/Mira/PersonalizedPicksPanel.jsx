@@ -121,13 +121,13 @@ const PILLARS = [
   { id: 'celebrate', name: 'Celebrate', emoji: '🎂', icon: Cake, gradient: 'from-pink-500 to-purple-500' },
   { id: 'dine', name: 'Dine', emoji: '🍖', icon: Utensils, gradient: 'from-amber-500 to-orange-500' },
   { id: 'care', name: 'Care', emoji: '💊', icon: Stethoscope, gradient: 'from-rose-400 to-pink-500' },
-  { id: 'travel', name: 'Travel', emoji: '✈️', icon: Plane, gradient: 'from-teal-400 to-blue-500' },
-  { id: 'stay', name: 'Stay', emoji: '🏨', icon: Hotel, gradient: 'from-green-400 to-emerald-500' },
-  { id: 'enjoy', name: 'Enjoy', emoji: '🎾', icon: Heart, gradient: 'from-blue-400 to-cyan-500' },
-  { id: 'fit', name: 'Fit', emoji: '🏃', icon: HeartPulse, gradient: 'from-orange-400 to-red-500' },
+  { id: 'go', name: 'Go', emoji: '✈️', icon: Plane, gradient: 'from-teal-400 to-blue-500' },
+  { id: 'play', name: 'Play', emoji: '🎾', icon: Heart, gradient: 'from-blue-400 to-cyan-500' },
   { id: 'learn', name: 'Learn', emoji: '📚', icon: GraduationCap, gradient: 'from-indigo-400 to-purple-500' },
-  { id: 'advisory', name: 'Advisory', emoji: '🧠', icon: Info, gradient: 'from-violet-400 to-purple-500' },
-  { id: 'services', name: 'Services', emoji: '✂️', icon: Scissors, gradient: 'from-cyan-400 to-blue-500' },
+  { id: 'paperwork', name: 'Paperwork', emoji: '📋', icon: Info, gradient: 'from-violet-400 to-purple-500' },
+  { id: 'shop', name: 'Shop', emoji: '🛍️', icon: Scissors, gradient: 'from-cyan-400 to-blue-500' },
+  { id: 'services', name: 'Services', emoji: '✂️', icon: Scissors, gradient: 'from-emerald-400 to-green-500' },
+  { id: 'emergency', name: 'Emergency', emoji: '🚨', icon: HeartPulse, gradient: 'from-red-500 to-orange-500' },
 ];
 
 /**
