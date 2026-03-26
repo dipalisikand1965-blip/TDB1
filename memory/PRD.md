@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-26 (Session 15 — Mira Intelligence Fixes + Mobile Audit)
+## Last Updated: 2026-03-26 (Session 16 — PawrentJourney Wiring + Care Mobile Fixes)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -379,3 +379,23 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 - All mobile pages: now pass breed param to backend API
 - Admin generate-image: saves watercolor_image for breed_product entities
 - Test result: 21/21 PASS. Zero cross-breed contamination confirmed.
+
+
+---
+
+## SESSION 16 — (2026-03-26) PawrentJourney Wiring + Care Mobile Fixes
+
+### PawrentJourney — Fully Wired
+1. ✅ **New PawrentJourney.jsx** — User's uploaded file saved as-is (828 lines). Fixed React hooks violations (useNavigate/useEffect called conditionally → moved before early return). `bookViaConciergeDirect()` calls `/api/service_desk/attach_or_create_ticket`. `completeStep()` calls `/api/pawrent-journey/complete-step`. Fetches progress from `/api/pawrent-journey/progress/{pet_id}`.
+2. ✅ **PawrentFirstStepsTab** wired on: CareSoulPage.jsx (desktop), CareMobilePage.jsx, DineSoulPage.jsx (inline DineMobilePage), LearnMobilePage.jsx, AdoptMobilePage.jsx, PaperworkMobilePage.jsx. (Go, Play, Celebrate already had it).
+3. ✅ **PawrentJourneyPage.jsx** — Fixed to import default export `PawrentJourney` from PawrentJourney.jsx + pass pet/token from context.
+4. ✅ **Backend endpoints** — `POST /api/pawrent-journey/complete-step` and `GET /api/pawrent-journey/progress/{pet_id}` confirmed working.
+
+### Care Mobile Fixes
+5. ✅ **Tab bar centering** — Added `justify-content: center` to global `.ios-tab-bar` CSS class. All mobile pillar tab bars now centered.
+6. ✅ **Services tab** — Removed hardcoded `CARE_SERVICES` 2-column price grid. Services tab now shows only `CareConciergeSection` matching desktop Pic 3 exactly ("Care Concierge® Services" illustrated cards).
+7. ✅ **GuidedCarePaths modal** — Increased z-index from 300 → 9999. Modal now opens correctly on both desktop and mobile.
+
+### Pending Items
+- Wellness Profile score calibration: User wants visual verification that answering questions updates the live score percentage. (Component dispatches `soulScoreUpdated` event on save — mechanism exists.)
+- Remaining P0/P1 issues from handoff: Admin notification bell returning 0, Farewell DB service prices Rs.0, ProductCard `display_only` flag.

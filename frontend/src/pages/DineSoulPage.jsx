@@ -48,6 +48,7 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
 // ── Design tokens ──────────────────────────────────────────────
@@ -1034,6 +1035,11 @@ function DineMobilePage() {
         {/* ── Pillar Soul Profile (soul questions on page) ── */}
         <div style={{ padding:'0 16px 8px' }}>
           <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
+        </div>
+
+        {/* Pawrent Journey First Steps */}
+        <div style={{ padding:'0 16px 8px' }}>
+          <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="dine" />
         </div>
 
         {/* ── Category Strip ── */}

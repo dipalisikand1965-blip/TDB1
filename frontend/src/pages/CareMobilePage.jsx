@@ -214,26 +214,6 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 2: Services ══════════ */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
-            <div style={{ fontSize:20, fontWeight:800, marginBottom:4, color:G.darkText }}>Care Services for {petName}</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Vet, grooming, boarding — all arranged by Concierge®.</div>
-
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:24 }}>
-              {CARE_SERVICES.map(svc => (
-                <button key={svc.id}
-                  data-testid={`care-svc-${svc.id}`}
-                  onClick={() => { vibe('medium'); tdc.book({ service:svc, pillar:'care', pet:currentPet, channel:'care_service_card' }); setSvcBooking({ isOpen:true, serviceType:svc.id }); }}
-                  style={{ textAlign:'left', padding:'14px 12px', borderRadius:16, cursor:'pointer',
-                    border:`1.5px solid ${svc.urgent ? 'rgba(198,40,40,0.35)' : G.greenBorder}`,
-                    background: svc.urgent ? 'rgba(198,40,40,0.05)' : '#fff',
-                    boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
-                  <div style={{ fontSize:24, marginBottom:8 }}>{svc.icon}</div>
-                  <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:3 }}>{svc.name}</div>
-                  <div style={{ fontSize:12, color:G.mutedText, marginBottom:8, lineHeight:1.4 }}>{svc.tagline}</div>
-                  <div style={{ fontSize:13, fontWeight:700, color: svc.urgent ? '#C62828' : svc.accentColor }}>{svc.price}</div>
-                </button>
-              ))}
-            </div>
-
             <CareConciergeSection pet={currentPet} />
           </div>
         )}

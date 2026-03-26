@@ -21,6 +21,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -152,6 +153,13 @@ export default function AdoptMobilePage() {
             <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Resources and support for making {petName}'s new sibling feel at home.
             </div>
+          </div>
+        )}
+
+        {/* Pawrent Journey First Steps */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 8px' }}>
+            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="adopt" />
           </div>
         )}
 
