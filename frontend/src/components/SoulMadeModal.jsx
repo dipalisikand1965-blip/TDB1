@@ -147,7 +147,7 @@ export default function SoulMadeModal({
     setLoadingProds(true);
     const breedParam = breed ? `&breed=${encodeURIComponent(breed.toLowerCase().trim().replace(/\s+/g,'_').replace(/-/g,'_'))}` : '';
     fetch(
-      `${API_URL}/api/mockups/breed-products?pillar=${pillar}&limit=12${breedParam}`,
+      `${API_URL}/api/mockups/breed-products?limit=40${breedParam}`,
       { headers: token ? { Authorization: `Bearer ${token}` } : {} }
     )
       .then(r => r.ok ? r.json() : null)

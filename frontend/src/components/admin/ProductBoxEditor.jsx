@@ -1673,13 +1673,18 @@ const ProductBoxEditor = ({
                   currentImageUrl={getValue('image_url', '') || getValue('watercolor_image', '')}
                   onPromptChange={val => { updateField('ai_image_prompt', val); updateField('ai_prompt', val); }}
                   onImageGenerated={(url, usedPrompt) => {
-                    updateField('media.primary_image', url);
-                    updateField('image', url);
-                    updateField('image_url', url);
-                    updateField('thumbnail', url);
-                    updateField('watercolor_image', url);
-                    updateField('cloudinary_url', url);
-                    if (usedPrompt) { updateField('ai_prompt', usedPrompt); updateField('ai_image_prompt', usedPrompt); }
+                    // Single functional update — avoids race condition from multiple updateField calls
+                    setProduct(prev => ({
+                      ...prev,
+                      image:          url,
+                      image_url:      url,
+                      thumbnail:      url,
+                      watercolor_image: url,
+                      cloudinary_url: url,
+                      ai_prompt:      usedPrompt || prev.ai_prompt || '',
+                      ai_image_prompt: usedPrompt || prev.ai_image_prompt || '',
+                      media: { ...(prev.media || {}), primary_image: url, images: [url] },
+                    }));
                   }}
                 />
               </div>

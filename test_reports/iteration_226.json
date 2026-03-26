@@ -1,0 +1,52 @@
+{
+  "summary": "Iteration 226 — All 3 pre-launch sprint fixes verified: (1) PersonalisedBreedSection fetches ALL 39 Indie breed products (no pillar filter) and shows 2-column grid with 12 picks sorted by learn-pillar first, (2) Admin AIImagePromptField pre-fills with buildDefaultPrompt() based on product name/pillar and is fully editable, (3) onImageGenerated uses setProduct(prev=>{...}) functional update to atomically update all image URL fields. 13/13 backend tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_iteration_226_breed_grid_ai_prompt.py",
+    "/app/test_reports/pytest/iteration_226_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "SoulMadeModal uses /api/mockups/breed-products (different endpoint than /api/breed-catalogue/products) — both confirmed working",
+    "PersonalisedBreedSection.jsx line 217: gridTemplateColumns 'repeat(2, 1fr)' confirmed in DOM on 390px mobile viewport",
+    "ProductBoxEditor.jsx onImageGenerated callback (lines 1677-1688) uses setProduct(prev=>{...}) functional update — atomically updates image, image_url, thumbnail, watercolor_image, cloudinary_url, media.primary_image, media.images — Race condition fix confirmed",
+    "AIImagePromptField.jsx buildDefaultPrompt() correctly builds pillar-specific prompts: celebrate pillar → 'Festive product photo of [name], pet celebration item, pastel balloons...' — CONFIRMED via UI"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_iteration_226_breed_grid_ai_prompt.py"
+  ],
+  "success_rate": {
+    "backend": "100% (13/13 tests passed)",
+    "frontend": "100% (all 9 feature checks passed)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123",
+    "admin": "aditya / lola4304 (Basic Auth)",
+    "pets": "Mojo=Indie (pet-mojo-7327ad56), Bruno=Labrador (pet-bruno-7327ad58)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 3 iteration 226 sprint fixes verified: (1) /api/breed-catalogue/products?breed=Indie&limit=40 returns 39 products across all pillars (celebrate, play, dine, learn, go etc.) — NOT filtered by pillar. Frontend PersonalisedBreedSection shows repeat(2, 1fr) 2-column grid with 12 picks (header says '12 personalised picks by Mira'), learn-pillar products first (Indie Training Journal appears first). All products are Indie-specific (breed isolation works). (2) Admin Product Box → Edit → Media tab: AIImagePromptField pre-fills with pillar-based prompt e.g., 'Festive product photo of Akita · Designer Bandana · Birthday Edition, pet celebration item, pastel balloons, confetti, soft pink/gold tones'. Prompt is editable. Generate with AI button enabled. Warning 'This product already has an image. Generating will replace it.' shown when product has existing image. (3) setProduct(prev=>{...}) functional update confirmed in ProductBoxEditor.jsx lines 1677-1688. Navigate: /login with member creds → /learn → scroll down → click Soul Made™ tab → see 2-col grid. Admin: /admin → login → Product Box → edit icon on any product → Media tab → AI Image Prompt section.",
+  "verified_features": {
+    "personalised_breed_section_no_pillar_filter": "PASS — API URL: /api/breed-catalogue/products?breed=Indie&limit=40 (no pillar param), returns 39 products",
+    "personalised_breed_section_2col_grid": "PASS — gridTemplateColumns: 'repeat(2, 1fr)' confirmed on 390px mobile",
+    "personalised_breed_section_12_products": "PASS — header shows '12 personalised picks by Mira', sorted with learn-pillar (Indie Training Journal) first",
+    "personalised_breed_section_all_pillars": "PASS — Products include Indie Bandana (celebrate/play), Indie Mug (celebrate/dine), not just learn",
+    "soul_made_modal_limit40_no_pillar": "PASS — /api/mockups/breed-products?limit=40 (no pillar) — backend test passed",
+    "breed_isolation_indie_mojo": "PASS — Zero Labrador/Akita products in Indie feed",
+    "admin_ai_prompt_prefilled": "PASS — Prompt pre-filled: 'Festive product photo of [name], pet celebration item, pastel balloons, confetti, soft pink/gold tones' (celebrate pillar)",
+    "admin_ai_prompt_editable": "PASS — Typed ' test edit' successfully, field is not disabled",
+    "admin_generate_btn_present": "PASS — Generate with AI button found and enabled",
+    "admin_onimagegenerated_functional_update": "PASS — Code review: setProduct(prev=>({...prev, image: url, image_url: url, media.primary_image: url, ...})) confirmed at lines 1677-1688",
+    "primary_image_url_shows_current": "PASS — Primary Image URL input shows https://images.unsplash.com/photo-158730..., after generation will auto-update via functional state update"
+  }
+}

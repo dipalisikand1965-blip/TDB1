@@ -90,22 +90,31 @@ export default function PersonalisedBreedSection({
   useEffect(() => {
     if (!breed) { setLoading(false); return; }
     const breedEncoded = encodeURIComponent(breed);
-    fetch(`${API_URL}/api/breed-catalogue/products?pillar=${pillar}&breed=${breedEncoded}&limit=40`)
+    // Fetch ALL breed products (no pillar filter) so user always sees a full Soul Made collection.
+    // Sort current-pillar products first, then fill with cross-pillar picks.
+    fetch(`${API_URL}/api/breed-catalogue/products?breed=${breedEncoded}&limit=40`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const raw = data?.products || [];
         // Step 1 — strict breed filter: exclude products named for a different breed
         const breedFiltered = filterBreedProducts(raw, breed);
-        // Step 2 — image: prefer watercolor_image (breed illustration), fallback to any image
+        // Step 2 — prefer products with watercolor / breed images, skip blank-image products
         const withImages = breedFiltered.filter(p => {
           const url = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url || p.primary_image || p.image || "";
           if (!url) return false;
           const filename = url.split("/").pop().split("?")[0];
-          // Show product if it has a breed-named image OR a watercolor illustration
           return filename.startsWith("breed-") || url.includes("/breed_products/") ||
                  filename.includes("watercolor") || (p.watercolor_image && p.watercolor_image.startsWith("http"));
         });
-        setProducts(withImages.length ? withImages : breedFiltered.slice(0, 6)); // fallback: show up to 6 even without ideal images
+        const pool = withImages.length ? withImages : breedFiltered;
+        // Step 3 — sort: current pillar first, then others alphabetically
+        const sorted = [...pool].sort((a, b) => {
+          const aHasPillar = (a.pillars || []).includes(pillar) ? 0 : 1;
+          const bHasPillar = (b.pillars || []).includes(pillar) ? 0 : 1;
+          return aHasPillar - bHasPillar;
+        });
+        // Show up to 12 products in the grid
+        setProducts(sorted.slice(0, 12));
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -204,8 +213,8 @@ export default function PersonalisedBreedSection({
         <SoulChip bg={`${C.orange}20`} color={C.orange}>Soul Made</SoulChip>
       </div>
 
-      {/* Product grid */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(160px,100%),1fr))", gap:12 }}>
+      {/* Product grid — strict 2 columns on mobile */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:10 }}>
         {products.map((p, i) => {
           const imgUrl = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.primary_image || p.image_url || p.image || p.images?.[0];
           return (
