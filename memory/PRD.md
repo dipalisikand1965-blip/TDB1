@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-26 (Session 8 — Automations & Dashboard Fixes Complete)
+## Last Updated: 2026-03-26 (Session 9 — Pawrent Journey + JSX Fixes + Services Copy)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -200,3 +200,21 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 7. **Pillar IDs**: Use canonical lowercase IDs (celebrate, dine, go, care, play, learn, paperwork, emergency, farewell, adopt, shop, services)
 8. **Hot Reload**: Only restart supervisor for .env changes or new packages
 9. **Install packages**: Use `yarn add` for frontend, `pip install && pip freeze > requirements.txt` for backend
+
+
+---
+
+## 12. COMPLETED IN SESSION 9 (2026-03-26)
+1. ✅ JSX bug fix: GoMobilePage.jsx and PlayMobilePage.jsx — unclosed `<>` fragment crash fixed
+2. ✅ Services mobile copy: "Explore all X via Concierge®" button text, fixed white-on-white text bug
+3. ✅ The Pawrent Journey — full implementation from user's JSX file:
+   - /app/frontend/src/components/pawrent/PawrentJourney.jsx (main component, fixed hooks)
+   - /app/frontend/src/pages/PawrentJourneyPage.jsx (route wrapper)
+   - Route /pawrent-journey added to App.js
+   - PawrentJourneyCard on PetHomePage dashboard (below "See Picks" button)
+   - PawrentFirstStepsTab on Care, Go, Play, Celebrate mobile pages
+   - "Pawrent Journey" in MobileMenu (after Pet Life Pass)
+   - Backend via separate pawrent_journey_router: POST /api/pawrent-journey/complete-step + GET /api/pawrent-journey/progress/{pet_id}
+
+## CRITICAL RULE 10 (SESSION 9 DISCOVERY):
+**server.py has app.include_router(api_router) at line ~21921.** ANY @api_router routes added AFTER that line silently return 404. ALWAYS create a new router file or use separate include_router call at END of server.py.
