@@ -46,6 +46,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
 import '../styles/mobile-design-system.css';
 
@@ -783,6 +784,7 @@ function DineMobilePage() {
   const [prefillVenue, setPrefillVenue] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showDinePlan, setShowDinePlan] = useState(false);
 
   // Product state
   const [apiProducts, setApiProducts] = useState({});
@@ -1060,6 +1062,23 @@ function DineMobilePage() {
             {/* ── Mira Bar ── */}
             <DineMiraBar pet={currentPet} onOpen={() => setMiraOpen(true)} />
 
+            {/* ── Build Food Plan CTA ── */}
+            <div style={{ padding:'0 16px 8px 16px' }}>
+              <button
+                onClick={() => setShowDinePlan(true)}
+                style={{
+                  width:'100%', padding:'14px 20px', borderRadius:16,
+                  background:'linear-gradient(135deg,#C8873A,#E8A85A)',
+                  border:'none', color:'#fff', fontSize:15, fontWeight:700,
+                  cursor:'pointer', letterSpacing:'0.01em',
+                  boxShadow:'0 4px 20px rgba(200,135,58,0.4)',
+                }}
+                data-testid="dine-build-plan-btn"
+              >
+                Build {petName}'s Food Plan →
+              </button>
+            </div>
+
             {/* ── MealBoxCard ── */}
             <div style={{ padding:'0 16px 24px' }}>
               <MealBoxCard />
@@ -1161,6 +1180,16 @@ function DineMobilePage() {
         <DineConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
 
       </div>
+
+      {/* MiraPlanModal — Food Plan */}
+      <MiraPlanModal
+        isOpen={showDinePlan}
+        onClose={() => setShowDinePlan(false)}
+        pet={currentPet}
+        pillar="dine"
+        token={token}
+      />
+
     </PillarPageLayout>
   );
 }
