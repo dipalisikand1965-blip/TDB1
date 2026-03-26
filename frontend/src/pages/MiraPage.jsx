@@ -36,8 +36,8 @@ import {
 
 // Pillar Quick Actions
 const QUICK_ACTIONS = [
-  { id: 'travel', icon: Car, label: 'Travel', color: 'from-blue-500 to-cyan-500' },
-  { id: 'stay', icon: Home, label: 'Stay', color: 'from-purple-500 to-violet-500' },
+  { id: 'go', icon: Car, label: 'Go', color: 'from-blue-500 to-cyan-500' },
+  { id: 'play', icon: Home, label: 'Play', color: 'from-purple-500 to-violet-500' },
   { id: 'care', icon: Scissors, label: 'Care', color: 'from-green-500 to-emerald-500' },
   { id: 'dine', icon: UtensilsCrossed, label: 'Dine', color: 'from-orange-500 to-amber-500' },
   { id: 'celebrate', icon: PartyPopper, label: 'Celebrate', color: 'from-pink-500 to-rose-500' },
