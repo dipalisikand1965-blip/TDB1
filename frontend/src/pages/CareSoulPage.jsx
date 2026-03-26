@@ -140,7 +140,7 @@ function normalizePetForFlow(rawPet) {
 // ─────────────────────────────────────────────────────────────
 // CARE DIMENSION CONFIG — dynamic per pet
 // ─────────────────────────────────────────────────────────────
-function getCareDims(pet) {
+export function getCareDims(pet) {
   const coat      = getCoatType(pet);
   const comfort   = getGroomingComfort(pet);
   const allergies = getAllergies(pet);
@@ -220,7 +220,7 @@ function getCareDims(pet) {
 }
 
 // dim id → API category name
-const DIM_ID_TO_CATEGORY = {
+export const DIM_ID_TO_CATEGORY = {
   grooming:    "Grooming",
   dental:      "Dental & Paw",
   coat:        "Coat & Skin",
@@ -1113,7 +1113,7 @@ function matchesBreed(productName, breedRaw) {
   return breedRaw.split(/\s+/).filter(w => w.length > 3).some(w => nameLower.includes(w));
 }
 
-function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName = pet?.name || "your dog";
   const catName = DIM_ID_TO_CATEGORY[dim.id];
   const loadMoreRef = useRef(null);
@@ -2006,7 +2006,7 @@ function ServiceBookingModal({ service, pet, onClose }) {
 // ─────────────────────────────────────────────────────────────
 // CARE CONCIERGE SECTION
 // ─────────────────────────────────────────────────────────────
-function CareConcierge({ pet }) {
+export function CareConcierge({ pet }) {
   const [activeService, setActiveService] = useState(null);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   return (
