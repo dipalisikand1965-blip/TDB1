@@ -119,3 +119,33 @@
 - Fixed "? questions waiting" bug in PillarSoulProfile
 - Removed duplicate green Mira orb from dashboard
 - Updated global text to "World's first platform"
+
+## 2026-03-26 — Image Blocking + Admin Prompt + Mira Plan + Life-Stage Filter (Session 11)
+
+### Image Fixes (P0)
+- ProductCard.jsx: Added `isValidUrl()` helper — explicitly blocks `emergentagent.com` and `static.prod-images` URLs in ALL fallback paths
+- BirthdayBoxBrowseDrawer.jsx: Added same `validImg()` check — never uses broken staging URLs
+- DB Cleanup: `POST /api/admin/cleanup-broken-images` ran and removed 4,811+ broken `image` fields and 4,821+ broken `images[]` array entries from products_master
+- Also synced `cloudinary_url → watercolor_image` for 3,336 breed products via `/api/admin/sync-image-fields`
+
+### Admin AI Prompt — Full Fix (4 requests)
+- `AIImagePromptField.jsx` rewritten: (1) Pre-fills with smart `buildDefaultPrompt()` based on product name/pillar/category, (2) Fully editable textarea, (3) Shows existing `ai_prompt` if saved, (4) Saves custom prompt to `ai_prompt` field in MongoDB after generation
+- `ProductBoxEditor.jsx`: Passes `productName`, `pillar`, `category`, `currentImageUrl` to AIImagePromptField
+- `server.py generate-image`: Now saves `ai_prompt` + `ai_image_prompt` fields to entity record
+
+### /api/mira/plan — Claude Haiku (P0)
+- New endpoint: `POST /api/mira/plan` — Claude claude-haiku-4-5-20251001 generates 4 personalised pillar plan cards
+- System prompt uses pet name, breed, age, allergies, loves, health conditions
+- Returns: `{cards: [{icon, title, reason, action, concierge}]}`
+- MiraPlanModal now shows REAL AI cards (was showing static fallback before)
+
+### Life-Stage Filter (P0 recurring fix)
+- `useMiraFilter.js`: Added HARD filter (not just deprioritize) — any product with `puppy/puppies` in name/tags/life_stages is completely hidden from adult/senior dogs (age >= 1)
+- `mira_score_engine.py`: Added same filter in backend claude-picks response — fetches pet age and removes puppy products for adult dogs
+- Both frontend AND backend now enforce this rule
+
+### Service Prices — Remaining Pages
+- `EmergencyMobilePage.jsx`: Removed hardcoded prices (₹1,500, ₹1,999) from EMERG_SERVICES array
+- `FarewellMobilePage.jsx`: Removed hardcoded prices (₹2,999, ₹1,499, ₹3,999) + added Service Box API fetch for live services
+- FarewellMobilePage bug fixed: `svc.desc → (svc.desc || svc.description || '')` to prevent TypeError when API services are used
+
