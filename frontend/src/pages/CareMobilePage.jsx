@@ -63,11 +63,39 @@ function filterBreedProducts(products, petBreed) {
   return products.filter(p=>{const n=(p.name||'').toLowerCase();for(const b of KNOWN_BREEDS){if(n.includes(b)){if(!pl)return false;if(n.includes(pl))return true;if(pw.some(w=>b.includes(w)))return true;return false;}}return true;});
 }
 
+// Mira Imagines cards for personalised tab
 const CARE_IMAGINES = [
-  { id:'c-1', emoji:'🧴', name:'Grooming Essentials Kit', description:'Breed-appropriate shampoo, conditioner, and grooming tools — curated for your dog.' },
-  { id:'c-2', emoji:'🦷', name:'Dental Care Bundle', description:'Enzymatic toothpaste, finger brush, and dental chews — complete dental health at home.' },
-  { id:'c-3', emoji:'💊', name:'Supplement Stack', description:'Vet-recommended supplements — joint support, coat health, and immunity — for your breed.' },
+  { id:'ci-1', emoji:'🛁', name:'Grooming Kit for your breed', description:'Professional brush, enzymatic shampoo, nail clipper and ear cleaner — matched to your pet\'s coat type.' },
+  { id:'ci-2', emoji:'💊', name:'Supplement Bundle', description:'Omega-3s for coat, probiotics for gut health, joint support — curated for your breed\'s known health needs.' },
+  { id:'ci-3', emoji:'🦷', name:'Dental Wellness Set', description:'Enzymatic toothpaste, finger brush, dental chews — complete oral care routine for your pet.' },
+  { id:'ci-4', emoji:'🏥', name:'First Aid Essentials', description:'Pet first aid kit with bandages, antiseptic, tick remover, thermometer — ready for emergencies.' },
 ];
+
+function getCarePlanCards(pet) {
+  const name = pet?.name || 'your dog';
+  const coat = getCoatType(pet);
+  const condition = getHealthCondition(pet);
+  const breed = pet?.breed || 'Indie';
+  const allergies = getAllergies(pet);
+  return [
+    {
+      id:'cp-1', emoji:'✂️', name:`${name}'s Grooming Schedule`,
+      description:`${coat === 'long' ? 'Long coat needs professional groom every 6–8 weeks.' : coat === 'curly' ? 'Curly coat needs trim every 4–6 weeks.' : 'Short coat — brush twice weekly, bath monthly.'} Nail trim every 3–4 weeks. Ear clean monthly.`,
+    },
+    {
+      id:'cp-2', emoji:'🦷', name:'Dental Wellness Plan',
+      description:`Brush ${name}'s teeth 3× weekly with enzymatic paste. Add dental chews daily. Annual dental scaling recommended for ${breed}.`,
+    },
+    {
+      id:'cp-3', emoji:'💊', name:'Supplement Protocol',
+      description:`Omega-3s for ${coat} coat health. ${condition ? `Joint support for ${condition}. ` : ''}Probiotic for gut health. Monthly deworming.${allergies.length > 0 ? ` Safe for ${name}'s ${allergies.join(' & ')} sensitivities.` : ''}`,
+    },
+    {
+      id:'cp-4', emoji:'🏥', name:'Preventive Care Calendar',
+      description:`Annual vaccinations, 6-monthly vet check-ups, monthly heartworm prevention. Tick & flea treatment monthly. Diet review every 6 months.`,
+    },
+  ];
+}
 
 export default function CareMobilePage() {
   const { token } = useAuth();
@@ -85,6 +113,8 @@ export default function CareMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
+  const [showCarePlan, setShowCarePlan] = useState(false);
+  const [vaultData, setVaultData] = useState(null);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -98,6 +128,15 @@ export default function CareMobilePage() {
       .then(d => { if (d?.products) setAllRaw(filterBreedProducts(d.products, currentPet?.breed)); })
       .catch(() => {});
   }, [currentPet?.id, token]);
+
+  // Fetch vault data when vault tab opens
+  useEffect(() => {
+    if (activeTab !== 'health-vault' || !currentPet?.id || vaultData) return;
+    fetch(`${API_URL}/api/pet-vault/${currentPet.id}/summary`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setVaultData(d); })
+      .catch(() => {});
+  }, [activeTab, currentPet?.id, token, vaultData]);
 
   const handleAddToCart = useCallback(p => {
     addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'care', quantity:1 });
@@ -113,6 +152,8 @@ export default function CareMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const allergies = getAllergies(currentPet);
+  const coatType = getCoatType(currentPet);
+  const carePlanCards = getCarePlanCards(currentPet);
   const intelligent = applyMiraFilter(allRaw, currentPet);
   const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
   const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
@@ -152,6 +193,26 @@ export default function CareMobilePage() {
 
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="care" token={token} /></div>}
 
+        {/* Grooming Profile Card (Fix 2) */}
+        {currentPet && (
+          <div style={{ margin:'0 16px 10px', display:'flex', gap:8 }}>
+            <div style={{ flex:1, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(116,198,157,0.2)', borderRadius:14, padding:'12px 14px' }}>
+              <div style={{ fontSize:9, letterSpacing:'0.14em', fontWeight:700, color:G.light, marginBottom:4 }}>GROOMING PROFILE</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'#fff' }}>{petName} · {coatType} coat</div>
+              <div style={{ fontSize:12, color:'rgba(255,255,255,0.55)', marginTop:2 }}>Brush · Bath · Nail trim</div>
+            </div>
+            <div style={{ flex:1, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(116,198,157,0.2)', borderRadius:14, padding:'12px 14px' }}>
+              <div style={{ fontSize:9, letterSpacing:'0.14em', fontWeight:700, color:G.light, marginBottom:4 }}>HEALTH VAULT</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'#fff' }}>
+                {vaultData ? `${vaultData.vaccines_count || 0} vaccines` : 'Tap to view'}
+              </div>
+              <button onClick={() => setActiveTab('health-vault')} style={{ fontSize:12, color:G.light, background:'none', border:'none', cursor:'pointer', padding:0, marginTop:2 }}>
+                Open vault →
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Soul Pillar CTA */}
         {currentPet && (
           <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(116,198,157,0.10),rgba(116,198,157,0.16))', border:'1px solid rgba(116,198,157,0.25)', borderRadius:18, padding:'18px 16px' }}>
@@ -167,9 +228,10 @@ export default function CareMobilePage() {
         {/* Tab Bar */}
         <div className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[
-            { id:'care',      label:'🌿 Care & Products' },
-            { id:'services',  label:'✂️ Care Services' },
-            { id:'find-care', label:'📍 Find Care' },
+            { id:'care',         label:'🌿 Care & Products' },
+            { id:'services',     label:'✂️ Grooming & Services' },
+            { id:'health-vault', label:'🏥 Health Vault' },
+            { id:'find-care',    label:'📍 Find Care' },
           ].map(tab => (
             <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
               style={activeTab === tab.id ? { backgroundColor: G.dark, color: '#fff' } : {}}
@@ -191,7 +253,7 @@ export default function CareMobilePage() {
                   ? `"${petName} has ${allergies.join(' and ')} sensitivities. I've filtered all products to be safe."`
                   : `"Let me show you what ${petName} actually needs for optimal health — not just what sells."`}
               </div>
-              <button className="ios-btn-primary" style={{ background: `linear-gradient(135deg,${G.mid},${G.sage})` }} onClick={() => { vibe('medium'); request('Care recommendations', { channel:'care_mira_cta' }); }}>
+              <button className="ios-btn-primary" style={{ background: `linear-gradient(135deg,${G.mid},${G.sage})` }} onClick={() => { vibe('medium'); setShowCarePlan(true); }}>
                 Get {petName}'s Care Plan →
               </button>
             </div>
@@ -295,16 +357,125 @@ export default function CareMobilePage() {
           </div>
         )}
 
-        {/* TAB 2: Care Services */}
+        {/* TAB 2: Grooming & Care Services */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
+            {/* Grooming Profile Summary */}
+            <div style={{ background:G.dark, borderRadius:18, padding:'16px', marginBottom:16 }}>
+              <div style={{ fontSize:10, letterSpacing:'0.14em', fontWeight:700, color:G.light, marginBottom:6 }}>✦ {petName.toUpperCase()}'S GROOMING PROFILE</div>
+              <div style={{ fontSize:16, fontWeight:700, color:'#fff', marginBottom:4 }}>
+                {currentPet?.breed || 'Indie'} · {coatType} coat
+              </div>
+              <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', marginBottom:12 }}>
+                {coatType === 'long' ? 'Brush daily, professional groom every 6–8 weeks' :
+                 coatType === 'curly' ? 'Brush 3× weekly, trim every 4–6 weeks' :
+                 coatType === 'short' ? 'Brush twice weekly, bath when needed' :
+                 'Brush 2–3× weekly, bath monthly'}
+              </div>
+              <PersonalisedBreedSection pet={currentPet} pillar="care" token={token} entityType="service" heading={`Grooming services for ${petName}`} />
+            </div>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Care Services for {petName}</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Grooming, vet, dental, boarding — all arranged by Concierge®.</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Vet, dental, boarding — all arranged by Concierge®.</div>
             <CareConciergeSection pet={currentPet} />
           </div>
         )}
 
-        {/* TAB 3: Find Care */}
+        {/* TAB 3: Health Vault (Fix 1) */}
+        {activeTab === 'health-vault' && (
+          <div style={{ padding:'16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>{petName}'s Health Vault</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Medical records, vaccinations, vet visits.</div>
+
+            {!vaultData ? (
+              <div style={{ textAlign:'center', padding:'32px 0', color:G.mutedText }}>
+                <div style={{ fontSize:32, marginBottom:8 }}>🏥</div>
+                <div style={{ fontSize:15, fontWeight:600 }}>Loading vault…</div>
+              </div>
+            ) : (
+              <>
+                {/* Vaccines */}
+                <div style={{ background:'#fff', borderRadius:16, padding:16, marginBottom:12, border:`1px solid ${G.border}` }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:10, display:'flex', alignItems:'center', gap:6 }}>
+                    💉 Vaccinations
+                    <span style={{ marginLeft:'auto', fontSize:12, color:G.mutedText }}>{(vaultData.vaccines || []).length} logged</span>
+                  </div>
+                  {(vaultData.vaccines || []).length === 0 ? (
+                    <div style={{ fontSize:13, color:'#888' }}>No vaccines logged yet. Add via full vault.</div>
+                  ) : (
+                    (vaultData.vaccines || []).slice(0,4).map((v,i) => (
+                      <div key={i} style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', borderTop: i > 0 ? `1px solid ${G.border}` : 'none' }}>
+                        <span style={{ fontSize:14, fontWeight:600, color:G.darkText }}>{v.name || v.vaccine_name || 'Vaccine'}</span>
+                        <span style={{ fontSize:13, color:G.mutedText }}>
+                          {v.next_due ? `Due ${new Date(v.next_due).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}` : (v.date_given ? `Given ${new Date(v.date_given).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}` : '—')}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Medications */}
+                <div style={{ background:'#fff', borderRadius:16, padding:16, marginBottom:12, border:`1px solid ${G.border}` }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:10, display:'flex', alignItems:'center', gap:6 }}>
+                    💊 Medications
+                    <span style={{ marginLeft:'auto', fontSize:12, color:G.mutedText }}>{(vaultData.medications || []).length} logged</span>
+                  </div>
+                  {(vaultData.medications || []).length === 0 ? (
+                    <div style={{ fontSize:13, color:'#888' }}>No medications logged.</div>
+                  ) : (
+                    (vaultData.medications || []).slice(0,4).map((m,i) => (
+                      <div key={i} style={{ display:'flex', justifyContent:'space-between', padding:'8px 0', borderTop: i > 0 ? `1px solid ${G.border}` : 'none' }}>
+                        <span style={{ fontSize:14, fontWeight:600, color:G.darkText }}>{m.name || m.medication_name || 'Medication'}</span>
+                        <span style={{ fontSize:13, color:G.mutedText }}>{m.dosage || m.dose || '—'}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Allergies */}
+                {allergies.length > 0 && (
+                  <div style={{ background:'#FFF5F5', borderRadius:16, padding:16, marginBottom:12, border:'1px solid rgba(255,80,80,0.15)' }}>
+                    <div style={{ fontSize:13, fontWeight:700, color:'#C0392B', marginBottom:10 }}>⚠️ Known Allergies</div>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                      {allergies.map((a,i) => (
+                        <span key={i} style={{ fontSize:13, background:'rgba(255,80,80,0.1)', color:'#C0392B', padding:'4px 10px', borderRadius:999, fontWeight:600 }}>{a}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Vet Visits */}
+                <div style={{ background:'#fff', borderRadius:16, padding:16, marginBottom:12, border:`1px solid ${G.border}` }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:10, display:'flex', alignItems:'center', gap:6 }}>
+                    🏥 Vet Visits
+                    <span style={{ marginLeft:'auto', fontSize:12, color:G.mutedText }}>{(vaultData.vet_visits || []).length} logged</span>
+                  </div>
+                  {(vaultData.vet_visits || []).length === 0 ? (
+                    <div style={{ fontSize:13, color:'#888' }}>No vet visits logged.</div>
+                  ) : (
+                    (vaultData.vet_visits || []).slice(0,3).map((v,i) => (
+                      <div key={i} style={{ padding:'8px 0', borderTop: i > 0 ? `1px solid ${G.border}` : 'none' }}>
+                        <div style={{ display:'flex', justifyContent:'space-between' }}>
+                          <span style={{ fontSize:14, fontWeight:600, color:G.darkText }}>{v.reason || v.type || 'Check-up'}</span>
+                          <span style={{ fontSize:13, color:G.mutedText }}>{v.date ? new Date(v.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'}) : '—'}</span>
+                        </div>
+                        {v.vet_name && <div style={{ fontSize:12, color:'#888' }}>Dr. {v.vet_name}</div>}
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Open full vault CTA */}
+                <button
+                  onClick={() => navigate(`/pet-vault/${currentPet?.id}`)}
+                  className="ios-btn-primary" style={{ background:`linear-gradient(135deg,${G.mid},${G.sage})`, width:'100%', marginTop:8 }}>
+                  Open Full Vault →
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* TAB 4: Find Care */}
         {activeTab === 'find-care' && (
           <div style={{ padding:'16px' }}>
             <CareNearMe pet={currentPet} token={token} onBook={svc => {
@@ -322,6 +493,34 @@ export default function CareMobilePage() {
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
       />
+
+      {/* Mira Care Plan Modal (Fix 3) */}
+      {showCarePlan && (
+        <div style={{ position:'fixed', inset:0, zIndex:999, background:'rgba(0,0,0,0.85)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }} onClick={e => { if(e.target===e.currentTarget) setShowCarePlan(false); }}>
+          <div style={{ background:G.dark, borderRadius:'24px 24px 0 0', padding:'24px 16px 48px', maxHeight:'90vh', overflowY:'auto' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:4 }}>✦ MIRA'S PERSONALISED CARE PLAN</div>
+                <div style={{ fontSize:22, fontWeight:800, color:'#fff', lineHeight:1.2 }}>Curated for {petName}</div>
+                <div style={{ fontSize:13, color:'rgba(255,255,255,0.5)', marginTop:4 }}>{currentPet?.breed || 'Indie'} · {coatType} coat{allergies.length > 0 ? ` · no ${allergies.slice(0,2).join(', ')}` : ''}</div>
+              </div>
+              <button onClick={() => setShowCarePlan(false)} style={{ background:'rgba(255,255,255,0.1)', border:'none', borderRadius:'50%', width:32, height:32, color:'#fff', fontSize:20, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', flexShrink:0 }}>×</button>
+            </div>
+            <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', marginBottom:20, lineHeight:1.5 }}>
+              Mira has analysed {petName}'s breed, health history, allergies, and soul profile to create this care plan.
+            </div>
+            {carePlanCards.map(item => (
+              <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="care" />
+            ))}
+            <button
+              className="ios-btn-primary"
+              style={{ background:`linear-gradient(135deg,${G.mid},${G.sage})`, width:'100%', marginTop:8 }}
+              onClick={() => { setShowCarePlan(false); request(`Care plan for ${petName}`, { channel:'care_plan_book' }); }}>
+              Book via Concierge® →
+            </button>
+          </div>
+        </div>
+      )}
     </PillarPageLayout>
   );
 }

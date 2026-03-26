@@ -551,6 +551,67 @@ ACHIEVEMENT_POINTS = {
 }
 
 
+@paw_points_router.get("/leaderboard")
+async def get_leaderboard(authorization: str = Header(None), limit: int = 10):
+    """Get top members by Paw Points — privacy-safe (first name + city only)"""
+    await get_user_from_token(authorization)  # Ensure logged in
+    database = get_db()
+
+    top_users = await database.users.find(
+        {"loyalty_points": {"$gt": 0}},
+        {"_id": 0, "full_name": 1, "name": 1, "first_name": 1, "loyalty_points": 1, "lifetime_points_earned": 1, "city": 1, "loyalty_tier": 1}
+    ).sort("loyalty_points", -1).limit(limit).to_list(limit)
+
+    board = []
+    for i, u in enumerate(top_users):
+        raw_name = u.get("full_name") or u.get("name") or u.get("first_name") or "Member"
+        first = raw_name.split()[0] if raw_name else "Member"
+        points = u.get("loyalty_points", 0)
+        lifetime = u.get("lifetime_points_earned", points)
+        board.append({
+            "rank": i + 1,
+            "name": first,
+            "city": u.get("city", "India"),
+            "points": points,
+            "tier": get_user_tier(lifetime),
+        })
+
+    return {"leaderboard": board, "total_entries": len(board)}
+
+
+@paw_points_router.get("/my-badges")
+async def get_my_badges(authorization: str = Header(None)):
+    """Get all badges earned by the logged-in user"""
+    user = await get_user_from_token(authorization)
+    database = get_db()
+
+    credited = user.get("credited_achievements", [])
+    # Also check ledger for any achievements not yet in user doc
+    ledger_ach = await database.paw_points_ledger.find(
+        {"user_email": user["email"], "source": "achievement"},
+        {"_id": 0, "reference_id": 1, "created_at": 1}
+    ).to_list(100)
+    earned_ids = set(credited) | {e["reference_id"] for e in ledger_ach if e.get("reference_id")}
+
+    badges = []
+    for badge_id, badge in BADGE_DEFINITIONS.items():
+        earned_entry = next((e for e in ledger_ach if e.get("reference_id") == badge_id), None)
+        badges.append({
+            "id": badge_id,
+            "name": badge["name"],
+            "description": badge["description"],
+            "emoji": badge.get("emoji", "🏅"),
+            "points_reward": badge["points_reward"],
+            "type": badge["type"],
+            "earned": badge_id in earned_ids,
+            "earned_at": (earned_entry or {}).get("created_at"),
+        })
+
+    earned = [b for b in badges if b["earned"]]
+    locked = [b for b in badges if not b["earned"]]
+    return {"badges": badges, "earned": earned, "locked": locked, "total_earned": len(earned)}
+
+
 @paw_points_router.post("/sync-achievements")
 async def sync_achievement_points(authorization: str = Header(None)):
     """

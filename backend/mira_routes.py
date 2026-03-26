@@ -24118,8 +24118,13 @@ async def get_notifications(
                 "pet_id": reminder.get("pet_id") or reminder.get("pet", {}).get("id")
             })
         
-        # Sort by created_at descending
-        notifications.sort(key=lambda x: x.get("created_at") or "", reverse=True)
+        # Sort by created_at descending — handle mixed datetime/string types
+        def _sort_key(x):
+            val = x.get("created_at") or ""
+            if hasattr(val, 'isoformat'):
+                return val.isoformat()
+            return str(val) if val else ""
+        notifications.sort(key=_sort_key, reverse=True)
         
         # Limit results
         notifications = notifications[:limit]

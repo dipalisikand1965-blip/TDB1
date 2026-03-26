@@ -20,11 +20,11 @@ const MemberNotificationBell = ({ userEmail, onNotificationClick }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${API}/api/user/notifications?email=${encodeURIComponent(userEmail)}&limit=10`
+        `${API}/api/member/notifications/inbox/${encodeURIComponent(userEmail)}?limit=10`
       );
       const data = await response.json();
       setNotifications(data.notifications || []);
-      setUnreadCount(data.unread_count || 0);
+      setUnreadCount(data.unread_count || data.unread || 0);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     } finally {
