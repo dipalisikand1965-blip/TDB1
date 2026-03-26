@@ -39,13 +39,16 @@ function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'
 
 
 const LEARN_DIMS = [
-  { id:"foundations", icon:"🎓", label:"Foundations",    dbCategory:"training",     ytQuery:"puppy training basics",         accent:"#7C3AED", bg:"#EDE9FE" },
-  { id:"behaviour",   icon:"🧠", label:"Behaviour",      dbCategory:"behavior",     ytQuery:"dog behaviour training",        accent:"#F57C00", bg:"#FFF3E0" },
-  { id:"training",    icon:"🏆", label:"Training",       dbCategory:"training",     ytQuery:"dog obedience training",        accent:"#1565C0", bg:"#E3F2FD" },
-  { id:"tricks",      icon:"✨", label:"Tricks & Fun",   dbCategory:"tricks",       ytQuery:"fun dog tricks",                accent:"#C2185B", bg:"#FCE4EC" },
-  { id:"social",      icon:"🐕", label:"Socialisation",  dbCategory:"behavior",     ytQuery:"dog socialisation tips",        accent:"#2E7D32", bg:"#E8F5E9" },
-  { id:"soul",        icon:"🌟", label:"Soul Learn",     dbCategory:"accessories",  ytQuery:null,                            accent:"#7B1FA2", bg:"#F3E5F5" },
-  { id:"mira",        icon:"✦",  label:"Mira's Picks",   dbCategory:null,           ytQuery:"dog training tips",             accent:"#3949AB", bg:"#E8EAF6" },
+  { id:"foundations", icon:"🎓", label:"Foundations",      dbCategory:"training",            ytQuery:"puppy training basics",                          accent:"#7C3AED", bg:"#EDE9FE" },
+  { id:"behaviour",   icon:"🧠", label:"Behaviour",        dbCategory:"behavior",            ytQuery:"dog behaviour training",                         accent:"#F57C00", bg:"#FFF3E0" },
+  { id:"training",    icon:"🏆", label:"Training",         dbCategory:"training",            ytQuery:"dog obedience training",                         accent:"#1565C0", bg:"#E3F2FD" },
+  { id:"tricks",      icon:"✨", label:"Tricks & Fun",     dbCategory:"tricks",              ytQuery:"fun dog tricks",                                 accent:"#C2185B", bg:"#FCE4EC" },
+  { id:"enrichment",  icon:"🧩", label:"Enrichment",       dbCategory:"enrichment",          ytQuery:"dog mental enrichment puzzle snuffle nose work",  accent:"#1565C0", bg:"#E3F2FD" },
+  { id:"breed",       icon:"📚", label:"Know Your Breed",  dbCategory:"breed-training_logs", ytQuery:"dog breed specific training",                    accent:"#FF8F00", bg:"#FFF8E1" },
+  { id:"soul",        icon:"🌟", label:"Soul Learn",       dbCategory:"breed-treat_pouchs",  ytQuery:null,                                             accent:"#7B1FA2", bg:"#F3E5F5" },
+  { id:"bundles",     icon:"🎁", label:"Bundles",          dbCategory:"bundles",             ytQuery:"dog training bundle",                            accent:"#2E7D32", bg:"#E8F5E9" },
+  { id:"mira",        icon:"✦",  label:"Mira's Picks",    dbCategory:null,                  ytQuery:"dog training tips",                              accent:"#3949AB", bg:"#E8EAF6" },
+  { id:"soul_made",   icon:"✦",  label:"Soul Made™",      dbCategory:null,                  ytQuery:null,                                             accent:"#7C3AED", bg:"#F3E5F5" },
 ];
 
 const LEARN_SERVICES = {
@@ -92,7 +95,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook }) {
 
   useEffect(() => {
     if (!dim.dbCategory) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&sub_category=${encodeURIComponent(dim.dbCategory)}&limit=40`, {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&category=${encodeURIComponent(dim.dbCategory)}&limit=40`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.ok ? r.json() : null)

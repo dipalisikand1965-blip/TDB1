@@ -93,7 +93,36 @@ function getCarePlanCards(pet) {
   ];
 }
 
-export default function CareMobilePage() {
+// ─── CARE DIMENSIONS — EXACT COPY FROM CareSoulPage.jsx ──────────────────────
+// dim id → API category name (same as DIM_ID_TO_CATEGORY on desktop)
+const DIM_ID_TO_CATEGORY = {
+  grooming:    "Grooming",
+  dental:      "Dental & Paw",
+  coat:        "Coat & Skin",
+  wellness:    "Wellness Visits",
+  senior:      "Senior Care",
+  supplements: "Supplements",
+  soul:        "Soul Care Products",
+  mira:        "Mira's Care Picks",
+};
+
+function getCareDims(pet) {
+  const coat      = getCoatType(pet);
+  const condition = getHealthCondition(pet);
+  const allergies = getAllergies(pet);
+  const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
+  return [
+    { id:"grooming",    icon:"✂️", label:"Grooming",       sub: coat ? `${cap(coat)} coat match` : "Coat care, bath & salon",       mira:`Matched to ${pet?.name||'your dog'}'s ${coat} coat.` },
+    { id:"dental",      icon:"🦷", label:"Dental & Paw",   sub:"Oral care, paw & nail",                                              mira:"Dental health is the most overlooked part of care." },
+    { id:"coat",        icon:"🌿", label:"Coat & Skin",    sub: allergies.length ? `${allergies.slice(0,1)}-free options` : "Inside-out coat health", mira:"" },
+    { id:"wellness",    icon:"🏥", label:"Wellness",       sub:"Vet discovery & health records",                                     mira:"" },
+    { id:"senior",      icon:"🌸", label:"Senior Care",    sub: condition ? `${condition} support` : "Comfort & mobility",            mira:"" },
+    { id:"supplements", icon:"💊", label:"Supplements",    sub: condition ? `Safe for ${condition}` : "Vet-checked, personalised",   mira:"" },
+    { id:"soul",        icon:"✨", label:"Soul Care",      sub:`Breed collection for ${pet?.name||'your dog'}`,                      mira:"" },
+    { id:"mira",        icon:"🪄", label:"Mira's Picks",  sub:"Curated for WellnessProfile",                                         mira:"" },
+    { id:"soul_made",   icon:"✦",  label:"Soul Made™",    sub:"Custom-made for your dog",                                            mira:"" },
+  ];
+}
   const { token } = useAuth();
   const navigate = useNavigate();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -103,8 +132,9 @@ export default function CareMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('care');
-  const [dimTab, setDimTab] = useState('products');
-  const [subCat, setSubCat] = useState('All');
+  const [activeDim, setActiveDim] = useState('grooming');
+  const [dimProducts, setDimProducts] = useState({});
+  const [dimLoading, setDimLoading] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
@@ -117,13 +147,50 @@ export default function CareMobilePage() {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
   }, [contextPets, currentPet, setCurrentPet]);
 
+  // Per-dim fetch — same as desktop DIM_ID_TO_CATEGORY logic
   useEffect(() => {
     if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    const dims = getCareDims(currentPet);
+    const dim = dims.find(d => d.id === activeDim);
+    if (!dim) return;
+
+    // soul_made: use breed-products API
+    if (activeDim === 'soul_made') {
+      const breed = currentPet?.breed || '';
+      if (!breed) { setDimProducts(p => ({ ...p, soul_made: [] })); return; }
+      fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breed)}&pillar=care&limit=20`,
+        { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => setDimProducts(prev => ({ ...prev, soul_made: (d?.products || d || []).slice(0, 20) })))
+        .catch(() => {});
+      return;
+    }
+
+    // Already cached
+    if (dimProducts[activeDim]) return;
+
+    const catName = DIM_ID_TO_CATEGORY[activeDim];
+    if (!catName) return;
+
+    setDimLoading(true);
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&category=${encodeURIComponent(catName)}&limit=40`,
+      { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
-      .catch(() => {});
-  }, [currentPet?.id, token]);
+      .then(d => {
+        const prods = applyMiraFilter(filterBreedProducts(excludeCakeProducts(d?.products || []), currentPet?.breed), currentPet);
+        setDimProducts(prev => ({ ...prev, [activeDim]: prods }));
+        setAllRaw(prev => [...prev, ...prods]);
+      })
+      .catch(() => {})
+      .finally(() => setDimLoading(false));
+  // eslint-disable-next-line
+  }, [activeDim, currentPet?.id, token]);
+
+  // Reset dim cache when pet changes
+  useEffect(() => {
+    setDimProducts({});
+    setActiveDim('grooming');
+  }, [currentPet?.id]);
 
   // Fetch vault data when vault tab opens
   useEffect(() => {
@@ -150,9 +217,8 @@ export default function CareMobilePage() {
   const allergies = getAllergies(currentPet);
   const coatType = getCoatType(currentPet);
   const carePlanCards = getCarePlanCards(currentPet);
-  const intelligent = applyMiraFilter(allRaw, currentPet);
-  const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
-  const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
+  const careDims = getCareDims(currentPet);
+  const products = dimProducts[activeDim] || [];
   const miraPick = products.find(p => p.miraPick) || products[0] || null;
 
   return (
