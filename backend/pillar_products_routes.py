@@ -15,6 +15,73 @@ from datetime import datetime, timezone
 import uuid
 import logging
 
+# ── All known breed names for strict product filtering ──────────────────────
+KNOWN_BREED_NAMES = sorted([
+    "labrador", "golden retriever", "german shepherd", "indie", "indian pariah",
+    "beagle", "poodle", "bulldog", "english bulldog", "french bulldog",
+    "rottweiler", "boxer", "husky", "siberian husky", "doberman",
+    "pomeranian", "shih tzu", "maltese", "chihuahua", "yorkshire terrier",
+    "yorkshire", "pug", "cocker spaniel", "dachshund", "lhasa apso",
+    "cavalier king charles", "cavalier", "border collie", "schnauzer",
+    "great dane", "saint bernard", "st bernard", "samoyed", "akita",
+    "australian shepherd", "bernese mountain", "boston terrier",
+    "havanese", "scottish terrier", "vizsla", "weimaraner",
+    "dalmatian", "shetland sheepdog", "sheltie", "bichon frise",
+    "chow chow", "basenji", "whippet", "greyhound", "jack russell",
+    "west highland terrier", "westie",
+], key=len, reverse=True)  # Longest first so "golden retriever" beats "retriever"
+
+
+def _detect_product_breed(name: str) -> Optional[str]:
+    """Return the known breed found in this product name, or None."""
+    nl = (name or "").lower()
+    for b in KNOWN_BREED_NAMES:
+        if b in nl:
+            return b
+    return None
+
+
+def _should_show_for_breed(product: dict, req_breed: str) -> bool:
+    """
+    STRICT BREED FILTER — single rule, applied everywhere.
+    NAME TAKES PRIORITY OVER ALL TAGS (including all_breeds).
+    If a product name contains a known breed → it is ONLY for that breed. Period.
+    No amount of 'all_breeds' tagging overrides the name.
+    """
+    if not req_breed:
+        return True
+
+    req = req_breed.lower().strip().replace("_", " ")
+    name_lower = (product.get("name") or "").lower()
+    ptype = (product.get("product_type") or "").lower()
+    soul  = (product.get("soul_tier")    or "").lower()
+
+    # ── 1. NAME CHECK FIRST — overrides ALL breed_tags ────────────────────────
+    # "Bernese Mountain Dog Bandana" tagged all_breeds? → still Bernese-only.
+    detected_in_name = _detect_product_breed(name_lower)
+    if detected_in_name:
+        return req in detected_in_name or detected_in_name in req
+
+    # ── 2. Explicit breed_pick / soul_made (edge case: breed not in name) ─────
+    if ptype in ("breed_pick", "soul_made") or soul == "soul_made":
+        return req in name_lower
+
+    # ── 3. breed_tags present ────────────────────────────────────────────────
+    tags = product.get("breed_tags") or []
+    if tags:
+        # Universal?
+        if all((t or "").lower().replace("_", " ") in ("all breeds", "all", "all_breeds", "") for t in tags):
+            return True  # genuinely universal (name check passed above)
+        # Any tag is a known breed → strict match
+        for t in tags:
+            t_norm = (t or "").lower().replace("_", " ")
+            if any(b == t_norm or b in t_norm or t_norm in b for b in KNOWN_BREED_NAMES):
+                return req in t_norm or t_norm in req
+        return True  # tags present but no known breed → universal
+
+    # ── 4. No breed signal → universal ──────────────────────────────────────
+    return True
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/admin/pillar-products", tags=["Pillar Products Admin"])
@@ -71,16 +138,14 @@ async def get_pillar_products(
             ]})
         if category:
             conditions.append({"category": category})
-        if breed:
-            conditions.append({"$or": [
-                {"breed": {"$in": [breed, "all", "All", ""]}},
-                {"breed": {"$exists": False}},
-                {"breeds": breed},
-            ]})
+        # NOTE: breed filter is applied post-fetch in Python (see _should_show_for_breed)
+        # Do NOT add a MongoDB $or for breed here — it incorrectly includes wrong-breed products
 
         query = {"$and": conditions} if conditions else {}
 
-        total = await db.products_master.count_documents(query)
+        # Fetch more if breed filter is active (post-filter will reduce count)
+        fetch_limit = min(limit * 4, 400) if breed else limit
+        total_query = await db.products_master.count_documents(query)
         skip = (page - 1) * limit
 
         # Sort options
@@ -91,8 +156,17 @@ async def get_pillar_products(
         }
         sort_order = sort_map.get(sort_by, [("name", 1)])
 
-        cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(limit)
-        products = await cursor.to_list(length=limit)
+        cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(fetch_limit)
+        raw_products = await cursor.to_list(length=fetch_limit)
+
+        # ── STRICT BREED FILTER (Python level) ──────────────────────────────
+        if breed:
+            products = [p for p in raw_products if _should_show_for_breed(p, breed)]
+        else:
+            products = raw_products
+        # Trim to requested limit after breed filter
+        products = products[:limit]
+        total = len(products)  # approximate after breed filter
 
         # Get unique categories for filter
         cat_pipeline = [
@@ -106,10 +180,10 @@ async def get_pillar_products(
 
         return {
             "products": products,
-            "total": total,
+            "total": total_query,
             "page": page,
             "limit": limit,
-            "pages": max(1, -(-total // limit)),
+            "pages": max(1, -(-total_query // limit)),
             "pillar": pillar,
             "categories": categories
         }

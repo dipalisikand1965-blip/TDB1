@@ -96,13 +96,11 @@ export default function PersonalisedBreedSection({
         const raw = data?.products || [];
         // Step 1 — strict breed filter: exclude products named for a different breed
         const breedFiltered = filterBreedProducts(raw, breed);
-        // Step 2 — image safety net: only show products with proper mockup images
-        const clean = breedFiltered.filter(p => {
-          const url = p.cloudinary_url || p.mockup_url || p.image_url || "";
-          if (!url) return false;
-          return url.split("/").pop().startsWith("breed-");
+        // Step 2 — image: prefer watercolor_image (breed illustration), fallback to any image
+        const withImages = breedFiltered.filter(p => {
+          return !!(p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url || p.primary_image || p.image);
         });
-        if (clean.length) setProducts(clean);
+        setProducts(withImages.length ? withImages : breedFiltered);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -204,7 +202,7 @@ export default function PersonalisedBreedSection({
       {/* Product grid */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(160px,100%),1fr))", gap:12 }}>
         {products.map((p, i) => {
-          const imgUrl = p.mockup_url || p.primary_image || p.image || p.images?.[0];
+          const imgUrl = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.primary_image || p.image_url || p.image || p.images?.[0];
           return (
             <div key={p.id || i}
               onClick={() => {

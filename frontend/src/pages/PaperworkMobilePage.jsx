@@ -77,7 +77,7 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
       return;
     }
     if (!dim.dbCategory) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(dim.dbCategory)}&limit=30`, {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(dim.dbCategory)}&limit=30&breed=${encodeURIComponent(pet?.breed||'')}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.ok ? r.json() : null)

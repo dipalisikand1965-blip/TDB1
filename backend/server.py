@@ -21907,18 +21907,21 @@ async def generate_image_universal(
             "bundle": db.bundles,
             "breed_product": db.breed_products,
         }
-        col = collection_map.get(entity_type)
         if col is not None:
+            update_fields = {
+                "ai_image_prompt": prompt,
+                "image_url": url,
+                "cloudinary_url": url,
+                "image": url,
+                "ai_image_generated": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            # For breed_products (Soul Made), always save to watercolor_image too
+            if entity_type == "breed_product":
+                update_fields["watercolor_image"] = url
             await col.update_one(
                 {"$or": [{"id": entity_id}, {"_id": entity_id}]},
-                {"$set": {
-                    "ai_image_prompt": prompt,
-                    "image_url": url,
-                    "cloudinary_url": url,
-                    "image": url,
-                    "ai_image_generated": True,
-                    "image_updated_at": datetime.now(timezone.utc).isoformat(),
-                }}
+                {"$set": update_fields}
             )
 
     return {"url": url, "success": True}

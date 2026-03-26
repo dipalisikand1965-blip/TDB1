@@ -571,19 +571,44 @@ export function filterBreedProducts(products, petBreed) {
     ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey])
     : (pl ? [pl] : []);
 
-  return products.filter(p => {
-    const breedTags = Array.isArray(p.breed_tags) ? p.breed_tags : [];
+  // Sort by length desc so "golden retriever" beats "retriever"
+  const sortedBreeds = [...KNOWN_BREEDS].sort((a, b) => b.length - a.length);
 
-    // ── breed_tags field takes priority ──────────────────────────────────────
+  function detectBreedInName(nameText) {
+    for (const b of sortedBreeds) {
+      if (nameText.includes(b)) return b;
+    }
+    return null;
+  }
+
+  function breedMatchesPet(detectedBreed) {
+    if (!pl) return false;
+    if (pl === detectedBreed || pl.includes(detectedBreed) || detectedBreed.includes(pl)) return true;
+    return synonyms.some(s => s === detectedBreed || s.includes(detectedBreed) || detectedBreed.includes(s));
+  }
+
+  return products.filter(p => {
+    const nameText = ((p.name || '') + ' ' + (p.who_for || '')).toLowerCase();
+
+    // ── NAME CHECK FIRST (overrides all_breeds tags) ─────────────────────────
+    const detectedInName = detectBreedInName(nameText);
+    if (detectedInName) {
+      // Product name contains a known breed → STRICT: only show for that breed
+      if (!pl) return false;
+      return breedMatchesPet(detectedInName);
+    }
+
+    // ── breed_tags check (only if no breed in name) ───────────────────────────
+    const breedTags = Array.isArray(p.breed_tags) ? p.breed_tags : [];
     if (breedTags.length > 0) {
-      // 1. All tags are "all_breeds" / universal → show for everyone
+      // All tags are universal?
       const isUniversal = breedTags.every(t => {
         const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
         return norm === 'all breeds' || norm === 'all' || norm === 'all_breeds' || norm.startsWith('all breed');
       });
-      if (isUniversal) return true;
+      if (isUniversal) return true; // genuinely universal (name check passed)
 
-      // 2. Check if ANY tag maps to a known breed
+      // Has known breed tags → strict match
       const knownTagBreeds = breedTags.reduce((acc, t) => {
         const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
         const matched = KNOWN_BREEDS.find(b => norm === b || norm.includes(b) || b.includes(norm));
@@ -591,32 +616,18 @@ export function filterBreedProducts(products, petBreed) {
         return acc;
       }, []);
 
-      // 3. No recognised breed in tags → unrecognised, treat as universal (safe fallback)
-      if (knownTagBreeds.length === 0) return true;
-
-      // 4. Has known specific breed tags → ONLY show if pet's breed matches
-      if (!pl) return false; // pet has no breed → hide breed-specific products
+      if (knownTagBreeds.length === 0) return true; // no known breed in tags → universal
+      if (!pl) return false;
 
       return breedTags.some(t => {
         const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
-        // Direct match against pet breed string
         if (pl && (norm === pl || norm.includes(pl) || pl.includes(norm))) return true;
-        // Synonym match
         return synonyms.some(s => norm === s || norm.includes(s) || s.includes(norm));
       });
     }
 
-    // ── No breed_tags → fall back to product name / who_for check ────────────
-    const nameText = ((p.name || '') + ' ' + (p.who_for || '')).toLowerCase();
-    for (const b of KNOWN_BREEDS) {
-      if (nameText.includes(b)) {
-        if (!pl) return false; // no pet breed → hide all breed-named items
-        if (nameText.includes(pl)) return true; // product name includes THIS breed → keep
-        if (synonyms.some(s => b.includes(s) || s.includes(b))) return true; // synonym match
-        return false; // product is for a DIFFERENT breed → strict exclude
-      }
-    }
-    return true; // no known breed in name → universal product
+    // ── No breed signal → universal ──────────────────────────────────────────
+    return true;
   });
 }
 
