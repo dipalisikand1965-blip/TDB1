@@ -152,10 +152,10 @@ const MiraFloatingButton = () => {
 
   return (
     <>
-      {/* Floating Mira Button - Fixed top right - HIDE when Pulse is open */}
+      {/* Floating Pulse Button - Fixed top right - Desktop ONLY (mobile uses MobileNavBar) - HIDE when Pulse is open */}
       {!isOpen && (
         <div 
-          className="fixed top-20 right-4 z-[9998] flex flex-col items-end"
+          className="hidden md:flex fixed top-20 right-4 z-[9998] flex-col items-end"
           data-testid="mira-floating-btn"
         >
           {/* Tooltip */}

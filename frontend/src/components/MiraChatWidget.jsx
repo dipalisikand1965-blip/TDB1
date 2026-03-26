@@ -1511,18 +1511,17 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
-  // Floating Button (when closed) - Uses the beautiful MiraOrb!
-  // HIDE on mobile since MobileNavBar has its own Mira FAB
-  // P2 fix: Reduced size from md to sm to make it less visually overpowering
+  // Floating Button (when closed)
+  // On mobile: show orb so user can directly tap Mira without relying solely on MobileNavBar
+  // MiraFloatingButton (Pulse) is now hidden md:flex, so this orb is the main Mira entry on mobile
   if (!isOpen) {
-    const showMobileOrbOnDine = isMobile && pillar === 'dine';
     return (
-      <div className={`${showMobileOrbOnDine ? 'flex' : 'hidden md:flex'} fixed ${showMobileOrbOnDine ? 'bottom-6 left-1/2 -translate-x-1/2' : 'bottom-4 right-4 sm:bottom-6 sm:right-6'} z-[9999] flex-col items-end gap-3 ${className}`}>
+      <div className={`flex fixed ${isMobile ? 'bottom-[76px] right-3' : 'bottom-4 right-4 sm:bottom-6 sm:right-6'} z-[9999] flex-col items-end gap-3 ${className}`}>
         <MiraOrb 
           state={getOrbState()}
           pillar={pillar}
-          size={showMobileOrbOnDine ? 'md' : 'sm'}
-          showLabel={true}
+          size={isMobile ? 'sm' : 'sm'}
+          showLabel={!isMobile}
           onClick={() => setIsOpen(true)}
         />
       </div>
