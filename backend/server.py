@@ -24433,3 +24433,30 @@ async def build_birthday_box(pet_id: str, payload: dict):
     allergies = pet.get("allergies", [])
     allergy1, allergy2 = pet.get("allergy1", ""), pet.get("allergy2", "")
     all_allergies
+
+
+# ── Pawrent Journey Endpoints (separate router to ensure registration) ────────
+
+pawrent_journey_router = APIRouter(prefix="/api")
+
+@pawrent_journey_router.post("/pawrent-journey/complete-step")
+async def complete_pawrent_step(body: dict, current_user = Depends(get_current_user)):
+    """Mark a Pawrent Journey step as completed for a pet."""
+    user_email = current_user.get("email") if isinstance(current_user, dict) else str(current_user)
+    await db.pawrent_journey_progress.update_one(
+        {"pet_id": body.get("pet_id"), "user": user_email},
+        {"$addToSet": {"completed_steps": body.get("step_id")},
+         "$set": {"updated_at": datetime.now(timezone.utc)}},
+        upsert=True
+    )
+    return {"ok": True}
+
+
+@pawrent_journey_router.get("/pawrent-journey/progress/{pet_id}")
+async def get_pawrent_progress(pet_id: str, current_user = Depends(get_current_user)):
+    """Get completed steps for a pet's Pawrent Journey."""
+    user_email = current_user.get("email") if isinstance(current_user, dict) else str(current_user)
+    doc = await db.pawrent_journey_progress.find_one({"pet_id": pet_id, "user": user_email})
+    return {"completed_steps": doc.get("completed_steps", []) if doc else []}
+
+app.include_router(pawrent_journey_router)  # Pawrent Journey — must be after definitions

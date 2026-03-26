@@ -400,6 +400,11 @@ export default function MobileMenu({
               <span>Pet Life Pass</span>
             </div>
 
+            <div className="tdc-nav-link" onClick={() => go("/pawrent-journey")} data-testid="menu-pawrent-journey">
+              <div style={{ width:32, height:32, borderRadius:10, background:"linear-gradient(135deg,#FFF8F0,#FFE8CC)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🐾</div>
+              <span>Pawrent Journey</span>
+            </div>
+
             <div className="tdc-nav-link" onClick={() => go("/paw-points")}>
               <div style={{ width:32, height:32, borderRadius:10, background:"#FFFBF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🏆</div>
               <span>Paw Points</span>

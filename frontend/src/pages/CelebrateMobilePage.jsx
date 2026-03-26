@@ -26,6 +26,7 @@ import CelebrateCategoryStrip from '../components/celebrate/CelebrateCategoryStr
 import CelebrateContentModal from '../components/celebrate/CelebrateContentModal';
 import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
 import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
 import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths';
@@ -397,6 +398,7 @@ export default function CelebrateMobilePage() {
         </div>
 
         {/* ── Main Tab Bar: Celebrate | Near Me ── */}
+        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="celebrate" />}
         <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.2)', marginBottom:0 }}>
           {[{ id:'celebrate', label:'Celebrate' }, { id:'nearme', label:'Near Me' }].map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
