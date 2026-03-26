@@ -11,24 +11,22 @@ import DrawerBottomBar from './DrawerBottomBar';
 import ProductCard from '../ProductCard';
 
 /* ── Shared concierge-request helper ─────────────────────────────────────── */
+import { bookViaConcierge } from '../../utils/MiraCardActions';
+
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
-const sendToConcierge = async ({ requestType, label, message, petName }) => {
+// ── canonical concierge — replaces the old /api/concierge/pillar-request call ──
+const sendToConcierge = async ({ requestType, label, message, petName, pet, token }) => {
   try {
-    const resp = await fetch(`${API_BASE}/api/concierge/pillar-request`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pillar: 'celebrate',
-        request_type: requestType,
-        request_label: label,
-        pet_name: petName,
-        message,
-        source: 'soul_pillar_expanded',
-      }),
+    await bookViaConcierge({
+      service: label || requestType || 'Celebrate request',
+      pillar: 'celebrate',
+      pet,
+      token,
+      channel: `celebrate_${requestType || 'pillar_request'}`,
+      notes: message,
     });
-    const data = await resp.json();
-    return { success: true, ticketId: data.ticket_id, requestId: data.request_id };
+    return { success: true };
   } catch {
     return { success: false };
   }
@@ -208,7 +206,7 @@ const FeastMenuCard = ({ pet }) => {
       requestType: 'feast_item',
       label: `Request ${item.name} for ${petName}`,
       message: `Please prepare ${item.name} (${item.desc}) for ${petName}'s birthday feast`,
-      petName,
+      petName, pet, token: null,
     });
     setSending(prev => ({ ...prev, [item.name]: false }));
     if (result.success) {
@@ -312,7 +310,7 @@ const PawtyPlannerCard = ({ pet }) => {
       requestType: step.requestType,
       label: step.label,
       message: step.message,
-      petName,
+      petName, pet, token: null,
     });
     setSendingSteps(prev => ({ ...prev, [step.num]: false }));
     if (result.success) {
@@ -452,7 +450,7 @@ const MemoryInvitationCard = ({ pet }) => {
       requestType: option.requestType,
       label: option.label.replace('{petName}', petName),
       message: option.message.replace(/{petName}/g, petName),
-      petName,
+      petName, pet, token: null,
     });
     setSendingOptions(prev => ({ ...prev, [option.id]: false }));
     if (result.success) {

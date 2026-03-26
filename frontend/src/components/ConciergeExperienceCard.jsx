@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { bookViaConcierge } from '../utils/MiraCardActions';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -130,25 +131,19 @@ const ConciergeExperienceCard = ({
         source: 'concierge_experience_card'
       };
 
-      const response = await fetch(`${API_URL}/api/concierge/experience-request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify(payload)
+      await bookViaConcierge({
+        service: title,
+        pillar,
+        pet: { name: formData.pet_name || petName || 'your pet' },
+        token,
+        channel: `concierge_experience_${title.toLowerCase().replace(/\s+/g, '_')}`,
+        notes: `Name: ${formData.name || user?.name}. Email: ${formData.email || user?.email}. WhatsApp: ${formData.whatsapp || user?.phone}. Pet: ${formData.pet_name || petName}. Message: ${formData.message}`,
       });
-
-      if (response.ok) {
-        const result = await response.json();
-        setSubmitted(true);
-        toast({
-          title: "Request Received! 🐾",
-          description: "Our concierge will reach out within 24 hours."
-        });
-      } else {
-        throw new Error('Failed to submit');
-      }
+      setSubmitted(true);
+      toast({
+        title: "Request Received!",
+        description: "Our concierge will reach out within 24 hours."
+      });
     } catch (error) {
       console.error('Error submitting concierge request:', error);
       toast({

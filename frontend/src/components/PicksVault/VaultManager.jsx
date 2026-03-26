@@ -28,6 +28,7 @@ import EmergencyVault from './EmergencyVault';
 import MemorialVault from './MemorialVault';
 import AdoptionVault from './AdoptionVault';
 import { VAULT_TYPES, detectVaultType, getVaultConfig } from './vaultConfig';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 /**
  * Detect vault type from Mira's response data
@@ -208,37 +209,21 @@ const VaultManager = ({
     }
   }, [isOpen, miraResponse, userMessage, pillar]);
 
-  // Send to Concierge® via unified endpoint
+  // Send to Concierge® — canonical via bookViaConcierge → /api/service_desk/attach_or_create_ticket
   const sendToConcierge = useCallback(async (vaultData) => {
     try {
-      const response = await fetch(`${API_URL}/api/mira/vault/send-to-concierge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vault_type: activeVault,
-          session_id: sessionId,
-          member_id: member?.id,
-          member_email: member?.email,
-          member_phone: member?.phone,
-          member_name: member?.name,
-          pet: pet,
-          pillar: pillar,
-          data: vaultData
-        })
+      const label = vaultData?.picks?.[0]?.name || vaultData?.items?.[0]?.name || vaultData?.place_name || 'Mira Pick';
+      await bookViaConcierge({
+        service: label,
+        pillar: pillar || 'general',
+        pet,
+        token: member?.token,
+        channel: `mira_vault_${activeVault || 'picks'}`,
+        notes: JSON.stringify({ vault_type: activeVault, session_id: sessionId, data: vaultData }),
       });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        // Play concierge bell sound on successful send
-        notificationSounds.concierge();
-        
-        if (onVaultSent) {
-          onVaultSent(result);
-        }
-      }
-      
-      return result;
+      notificationSounds.concierge();
+      if (onVaultSent) onVaultSent({ success: true });
+      return { success: true };
     } catch (error) {
       console.error('[VAULT] Failed to send to Concierge®:', error);
       throw error;
