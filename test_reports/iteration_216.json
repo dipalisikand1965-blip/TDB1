@@ -1,0 +1,80 @@
+{
+  "summary": "Iteration 216: Tested Mira Automations toggles (fixed critical bug), Notification Preferences API, CelebrateMobilePage, ProductCard MIRA'S PICK, BirthdayBoxBrowseDrawer, and MiraOSPage Concierge tab routing issue.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/mira-os page load", "issue": "HTTP 500 on /mira-os page load (icon_state_routes API call fails for some ticket IDs - pre-existing issue, warnings not errors)"}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "OverviewTab.jsx (Mira Automations card)",
+        "issue": "CRITICAL BUG FIXED: `ReferenceError: pet is not defined` — lines 804 and 806-808 used `pet?.name` but variable `pet` does not exist in scope. Should be `currentPet?.name`. This caused the entire Overview tab to crash with error boundary. Fixed by replacing `pet?.name` with `currentPet?.name` in 3 places.",
+        "selector": "[data-testid='automation-toggle-whatsapp_daily_digest']",
+        "priority": "CRITICAL - FIXED"
+      },
+      {
+        "component": "MiraOSPage.jsx (Concierge Tab freeform features)",
+        "issue": "MiraOSPage.jsx is imported in App.js (line 311) but NOT assigned to any route. The new 'Send to Concierge®' freeform textarea (line 506: conciergeRequest state) and quick action buttons (lines 1537-1600) are INACCESSIBLE via any URL. Route /mira-os still points to MiraDemoPage, not MiraOSPage.",
+        "selector": "[data-testid='concierge-freetext-input'], [data-testid='concierge-send-btn']",
+        "priority": "HIGH - needs route wiring"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Mira Automations toggle → API",
+        "issue": "After bug fix, all 3 toggles (Daily Digest, Birthday Reminders, Medication Reminders) render and toggle correctly. State persists via /api/mira/notifications/preferences API.",
+        "affected_selectors": ["[data-testid='automation-toggle-whatsapp_daily_digest']", "[data-testid='automation-toggle-whatsapp_birthday_reminder']", "[data-testid='automation-toggle-whatsapp_medication_reminder']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_notifications_216.py",
+    "/app/test_reports/pytest/notifications_216.xml"
+  ],
+  "action_items": [
+    "CRITICAL: Wire MiraOSPage to a route in App.js. Add: `<Route path='/mira-os-new' element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />` OR change existing /mira-os route from MiraDemoPage to MiraOSPage — otherwise all concierge freeform tab changes are dead code and inaccessible to users.",
+    "Optional: Remove duplicate /mira-os route entry at line 431 in App.js (same as line 413 - redundant)."
+  ],
+  "critical_code_review_comments": [
+    "OverviewTab.jsx lines 804-808: `pet` variable used but never declared — fixed to `currentPet` (was `pets.find(p => p.id === selectedPetId) || pets[0]`).",
+    "App.js line 311: `MiraOSPage` imported with lazy() but never referenced in any `<Route>` — dead import. All new Concierge tab features (freeform textarea, send button, quick action preset buttons) are unreachable.",
+    "App.js lines 413 and 431: Duplicate identical Route for `/mira-os` — second entry is unreachable and should be removed."
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/dashboard/tabs/OverviewTab.jsx (fixed pet?.name → currentPet?.name in Mira Automations section)"
+  ],
+  "success_rate": {
+    "backend": "100% (10/10 tests pass: GET + POST /api/mira/notifications/preferences, concierge pillar-request)",
+    "frontend": "75% (3/4 features working after bug fix; MiraOSPage concierge tab not accessible via any route)"
+  },
+  "feature_results": {
+    "dashboard_mira_automations": "PASS (after bug fix) - All 3 toggles visible and functional",
+    "api_get_preferences": "PASS - Returns whatsapp_daily_digest, whatsapp_birthday_reminder, whatsapp_medication_reminder",
+    "api_post_preferences": "PASS - Saves and persists WhatsApp preferences correctly",
+    "celebrate_mobile_page": "PASS - /celebrate-soul loads without crash, BirthdayCountdown + MiraSoulNudge + CelebrationMemoryWall present",
+    "product_card_mira_pick": "PASS - ✦ MIRA'S PICK expandable row visible and functional on products with mira_hint",
+    "mira_os_concierge_freeform": "FAIL - MiraOSPage.jsx not routed; features unreachable at any URL",
+    "mira_os_quick_actions": "FAIL - Same routing issue; quick action buttons in MiraOSPage.jsx not accessible",
+    "birthday_box_breed_cake": "PASS - Featured breed cake row shows at top of Cakes tab for pet with breed (Indie Birthday Cake)"
+  },
+  "seed_data_creation": "Test notification preferences saved for test_iter216_prefs@test.example.com",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Bug fixed: OverviewTab.jsx `pet?.name` → `currentPet?.name`. Main open issue: MiraOSPage.jsx not routed in App.js. Once E1 adds a route, test: /api/concierge/pillar-request POST (returns 404 currently, graceful handling), concierge-freetext-input textarea, concierge-send-btn, quick action preset buttons (Create outdoor pack, Birthday cake, grooming, vet). All backend notification preference tests pass. BirthdayBoxBrowseDrawer featured breed cake row and ProductCard Mira's Pick both confirmed working.",
+  "rca_of_issues": {
+    "bug_1_pet_not_defined": {
+      "component": "OverviewTab.jsx Mira Automations section",
+      "root_cause": "E1 added the Mira Automations card and used `pet?.name` in UI text and template literals (lines ~804-808) for the toggle descriptions. However, the component does not have a `pet` variable in scope — the correct variable is `currentPet` (defined as `const currentPet = pets.find(p => p.id === selectedPetId) || pets[0];` on line ~78). In JavaScript, `pet?.name` where `pet` is undeclared throws `ReferenceError: pet is not defined` — optional chaining does NOT protect against undeclared variables.",
+      "fix_applied": "Replaced `pet?.name` with `currentPet?.name` in 3 places in Mira Automations section",
+      "reproduction_steps": "Visit /dashboard after login — Overview tab crashes with 'Oops! Something went wrong' error boundary"
+    },
+    "bug_2_mira_os_page_not_routed": {
+      "component": "App.js routing, MiraOSPage.jsx",
+      "root_cause": "E1 created/edited MiraOSPage.jsx with new concierge freeform features and imported it in App.js (`const MiraOSPage = lazy(() => import('./pages/MiraOSPage'))`) but forgot to add a Route element that uses `<MiraOSPage />`. The existing `/mira-os` route still uses `<MiraDemoPage />`. Result: all new Concierge tab features (freeform textarea, send button, quick action presets) are dead code.",
+      "fix_needed": "Add route in App.js: `<Route path='/mira-os' element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />` replacing or alongside existing MiraDemoPage route"
+    }
+  }
+}

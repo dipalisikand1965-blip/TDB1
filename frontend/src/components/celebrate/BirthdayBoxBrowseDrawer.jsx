@@ -219,6 +219,44 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
 
   return (
     <div>
+      {/* ── Featured Breed Cake row (cakes tab only) ── */}
+      {tab.id === 'cakes' && petBreed && (
+        <div
+          className="flex items-center gap-3 rounded-xl px-4 py-3 mb-3"
+          style={{
+            background: 'linear-gradient(135deg, rgba(155,89,182,0.18), rgba(196,77,255,0.12))',
+            border: '1px solid rgba(196,77,255,0.35)',
+          }}
+          data-testid="featured-breed-cake-row"
+        >
+          <span style={{ fontSize: 24 }}>🎂</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold" style={{ color: '#E0AAFF' }}>
+              The Doggy Bakery™ — Made for {pet?.name || 'your dog'}
+            </p>
+            <p className="text-sm font-semibold text-white truncate">
+              {petBreed} Birthday Cake
+            </p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.50)', marginTop: 2 }}>
+              Custom breed cake · Ingredients cleared for dogs
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('openDoggyBakeryCakeModal', {
+                detail: { petBreed, petName: pet?.name || 'your dog', pet }
+              }));
+            }}
+            style={{
+              flexShrink: 0, background: 'linear-gradient(135deg, #9B59B6, #C44DFF)',
+              border: 'none', borderRadius: 20, padding: '6px 14px',
+              fontSize: 11, fontWeight: 700, color: '#fff', cursor: 'pointer', whiteSpace: 'nowrap',
+            }}
+          >
+            Choose Cake →
+          </button>
+        </div>
+      )}
       {/* Mira's pick slot banner */}
       {miraPickSlot && (
         <div
@@ -300,6 +338,94 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
             );
           })}
         </div>
+      )}
+
+      {/* ── All Breed Cakes — shown at bottom of Cakes tab only ── */}
+      {tab.id === 'cakes' && (
+        <AllBreedCakesSection
+          petBreed={petBreed}
+          petName={pet?.name}
+          apiBase={API_BASE}
+          onSelect={(product) => {
+            onSwap(tab.id, {
+              slotNumber: tab.slotNumber,
+              originalItem: miraPickSlot,
+              newProduct: product,
+            });
+          }}
+          onEdit={onEditProduct}
+        />
+      )}
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   ALL BREED CAKES SECTION — shows AFTER main cakes grid
+   ───────────────────────────────────────────────────────────────── */
+const AllBreedCakesSection = ({ apiBase, onSelect, onEdit }) => {
+  const [breedCakes, setBreedCakes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchCakes = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${apiBase}/api/mockups/breed-products?category=breed-cakes&limit=60`);
+        if (res.ok) {
+          const d = await res.json();
+          if (!cancelled) setBreedCakes(d.products || d || []);
+        }
+      } catch { /* skip */ } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetchCakes();
+    return () => { cancelled = true; };
+  }, [apiBase]);
+
+  if (!loading && !breedCakes.length) return null;
+  const cakesToShow = expanded ? breedCakes : breedCakes.slice(0, 4);
+
+  return (
+    <div className="mt-5" data-testid="all-breed-cakes-section">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          All Breed Cakes{breedCakes.length > 0 ? ` · ${breedCakes.length}` : ''}
+        </p>
+      </div>
+      {loading ? (
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-xl animate-pulse" style={{ aspectRatio: '1/1', background: 'rgba(255,255,255,0.06)' }} />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            {cakesToShow.map((product) => (
+              <SoulCard
+                key={product.id || product._id}
+                product={product}
+                isMiraPick={false}
+                isCurrentSwap={false}
+                onEdit={onEdit}
+                onSelect={() => onSelect(product)}
+              />
+            ))}
+          </div>
+          {breedCakes.length > 4 && (
+            <button
+              onClick={() => setExpanded(x => !x)}
+              className="w-full mt-3 py-2 rounded-xl text-sm font-medium"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.60)' }}
+            >
+              {expanded ? 'Show less' : `Show all ${breedCakes.length} breed cakes`}
+            </button>
+          )}
+        </>
       )}
     </div>
   );

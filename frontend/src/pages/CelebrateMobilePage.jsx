@@ -34,6 +34,9 @@ import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
 import CelebrateServiceGrid from '../components/celebrate/CelebrateServiceGrid';
 import { SoulCelebrationPillars } from '../components/celebrate';
+import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
+import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
+import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
 import '../styles/mobile-design-system.css';
 
 const C = {
@@ -397,6 +400,13 @@ export default function CelebrateMobilePage() {
           <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
         </div>
 
+        {/* Mira Soul Nudge — celebrate-context soul questions */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 12px' }}>
+            <MiraSoulNudge pet={currentPet} token={token} context="celebrate" limit={3} />
+          </div>
+        )}
+
         {/* ── Main Tab Bar: Celebrate | Near Me ── */}
         {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="celebrate" />}
         <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.2)', marginBottom:0 }}>
@@ -416,6 +426,18 @@ export default function CelebrateMobilePage() {
 
         {/* ── CELEBRATE TAB ── */}
         {activeTab === 'celebrate' && (<>
+        
+        {/* Birthday Countdown — emotional anticipation */}
+        {currentPet && (
+          <div style={{ padding:'12px 16px 0' }}>
+            <BirthdayCountdown
+              pet={currentPet}
+              onPlanParty={() => setIntakeOpen(true)}
+              onViewCakes={() => setCakeModalOpen(true)}
+            />
+          </div>
+        )}
+
         {/* Category strip */}
         <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
@@ -486,6 +508,11 @@ export default function CelebrateMobilePage() {
         {/* Guided paths */}
         <div style={{ padding:'0 16px 24px' }}>
           <GuidedCelebratePaths pet={currentPet} />
+        </div>
+
+        {/* Celebration Memory Wall — community moments */}
+        <div style={{ padding:'0 0 24px' }}>
+          <CelebrationMemoryWall pet={currentPet} />
         </div>
 
         {/* Celebrate Personally — Service Grid */}
