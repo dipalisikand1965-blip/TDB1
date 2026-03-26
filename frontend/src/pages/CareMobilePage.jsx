@@ -152,6 +152,18 @@ export default function CareMobilePage() {
 
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="care" token={token} /></div>}
 
+        {/* Soul Pillar CTA */}
+        {currentPet && (
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(116,198,157,0.10),rgba(116,198,157,0.16))', border:'1px solid rgba(116,198,157,0.25)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#74C69D' }}>{petName}</span> love to be cared for?
+            </div>
+            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+              Every recommendation is personalised to {petName}'s health, breed and allergies.
+            </div>
+          </div>
+        )}
+
         {/* Tab Bar */}
         <div className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[

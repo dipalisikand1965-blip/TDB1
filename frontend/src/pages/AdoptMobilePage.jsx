@@ -148,6 +148,18 @@ export default function AdoptMobilePage() {
         {/* Soul Profile */}
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="adopt" token={token} /></div>}
 
+        {/* Soul Pillar CTA */}
+        {currentPet && (
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(251,113,133,0.10),rgba(251,113,133,0.16))', border:'1px solid rgba(251,113,133,0.25)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#FB7185' }}>{petName}</span> welcome a new friend?
+            </div>
+            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+              Resources and support for making {petName}'s new sibling feel at home.
+            </div>
+          </div>
+        )}
+
         {/* Tab Bar */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
           {[

@@ -253,6 +253,15 @@ export default function ServicesMobilePage() {
 
         {/* Service Group Cards */}
         <div style={{ padding:'0 16px 8px' }}>
+          {/* Soul Pillar CTA — What would Mojo need? */}
+          <div style={{ background:'linear-gradient(135deg,rgba(91,127,212,0.10),rgba(91,127,212,0.16))', border:'1px solid rgba(91,127,212,0.25)', borderRadius:18, padding:'18px 16px', marginBottom:20 }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
+              What would <span style={{ color:'#7BA3E0' }}>{petName}</span> need?
+            </div>
+            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+              Every service is personalised to {petName}'s soul profile and health needs.
+            </div>
+          </div>
           <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Services for {petName}</div>
           <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>1,025 services across 7 categories. All arranged by Concierge®.</div>
           {SERVICE_GROUPS.map(group => (
@@ -267,7 +276,7 @@ export default function ServicesMobilePage() {
         </div>
 
         <div style={{ padding:'0 16px 24px' }}>
-          <PersonalisedBreedSection pet={currentPet} pillar="services" token={token} />
+          <PersonalisedBreedSection pet={currentPet} pillar="services" token={token} entityType="service" />
         </div>
 
         {/* Concierge® CTA */}

@@ -501,6 +501,16 @@ export default function ShopMobilePage() {
           <PillarSoulProfile pet={currentPet} pillar="shop" token={token} />
         </div>
 
+        {/* Soul Pillar CTA */}
+        <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(232,184,75,0.10),rgba(232,184,75,0.16))', border:'1px solid rgba(232,184,75,0.25)', borderRadius:18, padding:'18px 16px' }}>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
+            What would <span style={{ color:'#E8B84B' }}>{petName}</span> love?
+          </div>
+          <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+            Every product is filtered to {petName}'s breed, size and allergen profile.
+          </div>
+        </div>
+
         {/* Category Strip */}
         <div className="no-sb" style={{ padding: '12px 16px 4px', display: 'flex', gap: 8, paddingBottom: 8 }}>
           {SHOP_CATS.map(cat => {

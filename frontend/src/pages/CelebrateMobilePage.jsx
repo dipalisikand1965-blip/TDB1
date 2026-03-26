@@ -32,6 +32,7 @@ import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
 import CelebrateServiceGrid from '../components/celebrate/CelebrateServiceGrid';
+import { SoulCelebrationPillars } from '../components/celebrate';
 import '../styles/mobile-design-system.css';
 
 const C = {
@@ -251,6 +252,7 @@ export default function CelebrateMobilePage() {
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
   const [cakeModalOpen, setCakeModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('celebrate');
 
   // Handle build box from Mira's curated box — open BirthdayBoxBuilder modal
   const handleBuildBox = useCallback((boxPreview) => {
@@ -394,14 +396,29 @@ export default function CelebrateMobilePage() {
           <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
         </div>
 
+        {/* ── Main Tab Bar: Celebrate | Near Me ── */}
+        <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.2)', marginBottom:0 }}>
+          {[{ id:'celebrate', label:'Celebrate' }, { id:'nearme', label:'Near Me' }].map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)}
+              data-testid={`celebrate-tab-${t.id}`}
+              style={{ flex:1, padding:'10px 4px', borderRadius:'12px 12px 0 0', border:'none',
+                background: activeTab===t.id ? 'rgba(155,89,182,0.22)' : 'transparent',
+                color: activeTab===t.id ? '#E040D0' : 'rgba(255,255,255,0.5)',
+                fontSize:14, fontWeight: activeTab===t.id ? 700 : 500, cursor:'pointer',
+                fontFamily:'inherit', borderBottom: activeTab===t.id ? '2px solid #E040D0' : '2px solid transparent',
+                transition:'all 0.15s' }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── CELEBRATE TAB ── */}
+        {activeTab === 'celebrate' && (<>
         {/* Category strip */}
         <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
-        {/* Section heading */}
-        <div style={{ padding:'0 16px 16px' }}>
-          <div style={{ fontSize:26, fontWeight:700, lineHeight:1.1, marginBottom:6 }}>How would {petName} love to celebrate?</div>
-          <div style={{ fontSize:15, color:C.taupe, lineHeight:1.5 }}>Birthdays, milestones, and every moment worth marking.</div>
-        </div>
+        {/* Soul Celebration Pillars — "How would Mojo love to celebrate?" */}
+        <SoulCelebrationPillars pet={currentPet} />
 
         {/* Mira bar */}
         <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
@@ -416,8 +433,12 @@ export default function CelebrateMobilePage() {
             />
           </div>
         )}
+        </>)}
 
-        {/* ── Mira Picks Modal (opens from Mira bar) ── */}
+        {/* ── NEAR ME TAB ── */}
+        {activeTab === 'nearme' && (
+          <CelebrateNearMe pet={currentPet} />
+        )}
         {miraPicksOpen && miraProducts.length > 0 && (
           <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end' }} onClick={() => setMiraPicksOpen(false)}>
             <div style={{ background:'#1a1028', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'85vh', overflow:'auto', padding:'24px 16px 40px' }} onClick={e => e.stopPropagation()}>
@@ -450,6 +471,9 @@ export default function CelebrateMobilePage() {
           </div>
         )}
 
+        {/* ── CELEBRATE TAB CONTENT (below birthday box) ── */}
+        {activeTab === 'celebrate' && (<>
+
         {/* MiraImaginesBreed */}
         <div style={{ padding:'0 16px 24px' }}>
           <MiraImaginesBreed pet={currentPet} pillar="celebrate" token={token} />
@@ -469,19 +493,12 @@ export default function CelebrateMobilePage() {
           <CelebrateServiceGrid pet={currentPet} />
         </div>
 
-        {/* NearMe */}
-        <div style={{ padding:'0 16px 24px' }}>
-          <CelebrateNearMe pet={currentPet} onBook={venue => {
-            tdc.request(`Book celebration venue for ${petName}: ${venue}`, { pillar:'celebrate', channel:'celebrate_nearme', pet:currentPet });
-            setIntakeOpen(true);
-          }} />
-        </div>
-
         {/* Soul Made */}
         <CelebrateSoulMadeCard pet={currentPet} onOpen={() => setSoulMadeOpen(true)} />
 
         {/* Concierge® CTA */}
         <CelebrateConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
+        </>)}
 
         {/* Category content modal — same as desktop */}
         {celebrateCatModal && (
