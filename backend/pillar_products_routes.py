@@ -29,6 +29,17 @@ KNOWN_BREED_NAMES = sorted([
     "dalmatian", "shetland sheepdog", "sheltie", "bichon frise",
     "chow chow", "basenji", "whippet", "greyhound", "jack russell",
     "west highland terrier", "westie",
+    # Additional breeds REQUIRED for product name detection
+    "corgi", "pembroke corgi", "cardigan corgi",
+    "spitz", "indian spitz", "german spitz",
+    "irish setter", "english setter", "gordon setter",
+    "irish terrier", "irish wolfhound",
+    "basset hound", "bloodhound",
+    "tibetan mastiff", "bull mastiff", "english mastiff",
+    "staffordshire bull terrier", "bull terrier", "pit bull",
+    "flat coated retriever", "nova scotia duck tolling retriever",
+    "coton de tulear", "rhodesian ridgeback",
+    "leonberger", "newfoundland",
 ], key=len, reverse=True)  # Longest first so "golden retriever" beats "retriever"
 
 

@@ -545,6 +545,14 @@ export const KNOWN_BREEDS = [
   'samoyed','springer spaniel','vizsla','weimaraner',
   'scottish terrier','bernese mountain','havanese','boston terrier',
   'chow chow',
+  // Additional breeds found in product catalog — MUST be here to block cross-breed contamination
+  'corgi','pembroke corgi','cardigan corgi','welsh corgi',
+  'spitz','indian spitz','german spitz',
+  'irish setter','english setter','gordon setter',
+  'irish terrier','irish wolfhound',
+  'bloodhound','rhodesian ridgeback',
+  'tibetan mastiff','bull mastiff','staffordshire bull terrier','bull terrier','pit bull',
+  'leonberger','newfoundland','coton de tulear','nova scotia',
 ];
 
 /**
