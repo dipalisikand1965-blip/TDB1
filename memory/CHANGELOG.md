@@ -149,3 +149,21 @@
 - `FarewellMobilePage.jsx`: Removed hardcoded prices (₹2,999, ₹1,499, ₹3,999) + added Service Box API fetch for live services
 - FarewellMobilePage bug fixed: `svc.desc → (svc.desc || svc.description || '')` to prevent TypeError when API services are used
 
+
+## 2026-03-26 — 2×2 Grid + Soul Made All-Pillar + Admin Image URL Fix (Session 12)
+
+### Soul Made Products — All Breed Products Shown (6+ fix)
+- `PersonalisedBreedSection.jsx`: Removed strict pillar filter from API call (`/api/breed-catalogue/products?breed=${breed}&limit=40` — no pillar param)
+- Now fetches ALL 38-40 breed products across all pillars (Indie: 38, Labrador: 40)
+- Sorts current-pillar products FIRST, then fills with cross-pillar picks
+- Shows up to 12 products in the grid (was limited to 3 for Indie on Learn)
+
+### 2×2 Grid Layout on Mobile
+- `PersonalisedBreedSection.jsx` line 217: `gridTemplateColumns: 'repeat(2, 1fr)'` — explicit 2-column grid on all screens (was `auto-fill` which gave 1 column on narrow containers)
+- `SoulMadeModal.jsx`: Increased limit from 12 to 40, removed pillar filter — shows full breed collection
+
+### Admin Primary Image URL Fix
+- `ProductBoxEditor.jsx` `onImageGenerated` callback: Replaced 6 sequential `updateField()` calls with ONE `setProduct(prev => ({...}))` functional update
+- This atomically updates: `image`, `image_url`, `thumbnail`, `watercolor_image`, `cloudinary_url`, `media.primary_image`, `media.images`, `ai_prompt`, `ai_image_prompt` in a single React render
+- Fixes: Primary Image URL at top now auto-updates immediately after AI generation completes
+
