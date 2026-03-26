@@ -2062,10 +2062,11 @@ const MembershipOnboarding = () => {
                           setLoading(false);
                         }
                       }}
-                      className="text-sm text-slate-400 hover:text-pink-400 underline disabled:opacity-50"
+                      className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-bold text-sm"
+                      style={{ background: 'linear-gradient(135deg, #FF6B9D, #C44DFF)', border: 'none', cursor: 'pointer' }}
                       data-testid="skip-payment-btn"
                     >
-                      {loading ? 'Creating account...' : 'Skip Payment (Demo Mode)'}
+                      {loading ? 'Creating account...' : '✦ Start Free Trial — 30 days, no card needed'}
                     </button>
                   </div>
                   

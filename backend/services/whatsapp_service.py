@@ -527,3 +527,122 @@ With love for the tiniest paws,
         idempotency_key=f"pawrent_welcome:{pet.get('id', pet_name)}",
         context="pawrent"
     )
+
+
+
+# ── Trial Lifecycle WhatsApp Notifications ─────────────────────────────────
+
+async def send_trial_ending_5days(user: Dict[str, Any]) -> Dict[str, Any]:
+    """tdc_trial_ending_5days — Day 25: 5 days left warning."""
+    phone = user.get("phone") or user.get("mobile") or user.get("whatsapp", "")
+    if not phone:
+        return {"success": False, "reason": "No phone"}
+
+    name = user.get("name") or "there"
+
+    fallback = f"""✦ Hi {name}, your free trial ends in 5 days.
+
+After that, your access will switch to read-only mode.
+
+Upgrade now to keep all features:
+👉 thedoggycompany.com/upgrade
+
+Your pet's data, soul profile, and history are always safe with us — no matter what.
+
+— The Doggy Company 🐕"""
+
+    return await send_whatsapp(
+        phone=phone,
+        template_name="tdc_trial_ending_5days",
+        template_params=[name],
+        fallback_message=fallback,
+        idempotency_key=f"trial_ending_5days:{user.get('id') or user.get('email')}",
+        context="trial"
+    )
+
+
+async def send_trial_expired(user: Dict[str, Any]) -> Dict[str, Any]:
+    """tdc_trial_expired — Day 30: trial has ended, now read-only."""
+    phone = user.get("phone") or user.get("mobile") or user.get("whatsapp", "")
+    if not phone:
+        return {"success": False, "reason": "No phone"}
+
+    name = user.get("name") or "there"
+
+    fallback = f"""✦ Hi {name}, your 30-day free trial has ended.
+
+Your account is now in read-only mode. You can still browse and view your pet's data, but booking and purchasing require an active plan.
+
+Upgrade to unlock everything:
+👉 thedoggycompany.com/upgrade
+
+All your data is safe and waiting for you.
+
+— The Doggy Company 🐕"""
+
+    return await send_whatsapp(
+        phone=phone,
+        template_name="tdc_trial_expired",
+        template_params=[name],
+        fallback_message=fallback,
+        idempotency_key=f"trial_expired:{user.get('id') or user.get('email')}",
+        context="trial"
+    )
+
+
+async def send_grace_period_warning(user: Dict[str, Any]) -> Dict[str, Any]:
+    """tdc_grace_period_warning — Day 37: account will be paused in 7 days."""
+    phone = user.get("phone") or user.get("mobile") or user.get("whatsapp", "")
+    if not phone:
+        return {"success": False, "reason": "No phone"}
+
+    name = user.get("name") or "there"
+
+    fallback = f"""⚠️ Hi {name}, your account will be paused in 7 days.
+
+After that, you'll need to upgrade to access your pet's dashboard.
+
+Don't worry — your pet's data, soul profile, and all memories are safe. We never delete anything.
+
+Upgrade now to avoid interruption:
+👉 thedoggycompany.com/upgrade
+
+— The Doggy Company 🐕"""
+
+    return await send_whatsapp(
+        phone=phone,
+        template_name="tdc_grace_period_warning",
+        template_params=[name],
+        fallback_message=fallback,
+        idempotency_key=f"grace_period_warning:{user.get('id') or user.get('email')}",
+        context="trial"
+    )
+
+
+async def send_account_paused(user: Dict[str, Any]) -> Dict[str, Any]:
+    """tdc_account_paused — Day 44: account is now paused."""
+    phone = user.get("phone") or user.get("mobile") or user.get("whatsapp", "")
+    if not phone:
+        return {"success": False, "reason": "No phone"}
+
+    name = user.get("name") or "there"
+
+    fallback = f"""🔒 Hi {name}, your account has been paused.
+
+Your pet's complete soul profile, health vault, and all memories are preserved — safe and waiting for you.
+
+To reactivate, simply choose a plan:
+👉 thedoggycompany.com/upgrade
+
+We're here whenever you're ready.
+
+— The Doggy Company 🐕"""
+
+    return await send_whatsapp(
+        phone=phone,
+        template_name="tdc_account_paused",
+        template_params=[name],
+        fallback_message=fallback,
+        idempotency_key=f"account_paused:{user.get('id') or user.get('email')}",
+        context="trial"
+    )

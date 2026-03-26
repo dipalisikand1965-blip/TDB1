@@ -14,6 +14,7 @@ import MiraFloatingButton from "./components/MiraFloatingButton";
 import MobileNavBar from "./components/MobileNavBar";
 import MemberMobileNav from "./components/MemberMobileNav";
 import UniversalServiceButton from "./components/UniversalServiceButton";
+import TrialStatusBanner from "./components/TrialStatusBanner";
 import { useAppBadge } from "./hooks/useAppBadge";
 import { API_URL } from "./utils/api";
 
@@ -693,6 +694,8 @@ function MainLayout() {
       <MiraAI />
       {/* Pulse removed - voice capabilities now inside MiraAI */}
       <ConditionalFloatingButton />
+      {/* Trial / Account Status Banner — shown globally for trial users */}
+      <TrialStatusBanner />
       {/* Mobile Bottom Navigation - Only shows on mobile */}
       <ConditionalMobileNav />
       <Toaster />

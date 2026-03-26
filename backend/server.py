@@ -20323,6 +20323,18 @@ async def get_members_directory():
             # Calculate lifetime value
             orders = await db.orders.find({"email": user_email}, {"total": 1}).to_list(100)
             user["lifetime_value"] = sum(o.get("total", 0) for o in orders)
+
+            # ── Trial status badge ─────────────────────────────────────────
+            try:
+                from auth_routes import compute_trial_status
+                ts = compute_trial_status(user)
+                user["trial_badge"] = ts.get("tier", "active")
+                user["trial_label"] = ts.get("status_label", "Active")
+                user["trial_days_remaining"] = ts.get("days_remaining")
+            except Exception:
+                user["trial_badge"] = user.get("account_tier", "active")
+                user["trial_label"] = "Active"
+                user["trial_days_remaining"] = None
             
             members.append(user)
         
