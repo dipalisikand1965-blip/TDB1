@@ -246,6 +246,18 @@ export default function PaperworkMobilePage() {
 
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="paperwork" token={token} /></div>}
 
+        {/* Soul Pillar CTA */}
+        {currentPet && (
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(99,179,237,0.10),rgba(99,179,237,0.16))', border:'1px solid rgba(99,179,237,0.25)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#63B3ED' }}>{currentPet?.name || 'your dog'}</span> love to stay organised?
+            </div>
+            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+              Documents, insurance, vaccination — all handled by Concierge® for {currentPet?.name || 'your dog'}.
+            </div>
+          </div>
+        )}
+
         {/* Main Tab Bar: Paperwork | Near Me */}
         <div style={{ display:'flex', margin:'8px 16px 0', background:'#F0FDFA', borderRadius:12, padding:4 }}>
           {[{id:'paperwork',label:'📋 Paperwork'},{id:'nearme',label:'📍 Near Me'}].map(t => (
