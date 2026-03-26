@@ -292,7 +292,7 @@ export default function EmergencyMobilePage() {
                       <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
                       <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || ''}</div>
                     </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.crimson, flexShrink:0 }}>{svc.price || 'Free'}</div>
+                    <div style={{ fontSize:14, fontWeight:700, color:G.crimson, flexShrink:0 }}></div>
                   </div>
                   <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc || svc.description || ''}</div>
                   <button onClick={() => handleBookService(svc)} data-testid={`emergency-svc-book-${svc.id || i}`}
