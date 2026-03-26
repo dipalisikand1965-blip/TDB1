@@ -238,3 +238,12 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 5. ✅ ShopSoulPage.jsx — added missing filterBreedProducts import (pre-existing bug, picks were silently failing)
 6. ✅ Streak counter — backend tracks streak_days in pawrent_journey_progress, PawrentJourneyCard shows 🔥 Xd streak badge
 
+## SESSION 11 — (2026-03-26) Breed Filter Fixes + AI Intent Detection
+1. ✅ Fix 1: BirthdayBoxBrowseDrawer.jsx — removed no-breed fallback; added filterBreedProducts to masterProducts before merge. Akita products no longer appear for Indie dog.
+2. ✅ Fix 2: useMiraFilter.js — Breed synonym mapping expanded (siberian husky→husky, yorkshire terrier→yorkshire, saint bernard, jack russell, cavalier king charles). Added UNIVERSAL_FALLBACK_BREEDS set (vizsla, weimaraner, scottish terrier, etc.) — show all products for unsupported breeds.
+3. ✅ Fix 3: DineSoulPage.jsx — Inline DineMobilePage now uses filterBreedProducts + applyMiraFilter from useMiraFilter.js (replaced old applyMiraIntelligence that had zero breed awareness). 0 Akita mentions verified.
+4. ✅ Fix 4: AI Intent Detection on Concierge textarea — Backend: /api/mira/detect-intent endpoint using Claude claude-4-sonnet-20250514 via Emergent LLM key. Frontend: 1-second debounce in MiraOSPage.jsx Concierge tab shows '🛁 This sounds like Spa Grooming → Care' suggestion chip. User can tap to confirm (pre-fills pillar in ticket) or dismiss.
+
+## CRITICAL RULE 11 (SESSION 11 DISCOVERY):
+**DineSoulPage.jsx contains an inline DineMobilePage function** (all other pillars have separate *MobilePage.jsx files). Any changes to Dine mobile must edit DineSoulPage.jsx lines 767+. The desktop path (DineSoulPageDesktopLegacy) is strictly locked.
+

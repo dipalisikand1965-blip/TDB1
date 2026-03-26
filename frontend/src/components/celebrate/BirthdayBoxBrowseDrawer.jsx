@@ -19,6 +19,7 @@ import { X, ChevronRight, RotateCcw, ShieldCheck, Sparkles, Edit2, Image } from 
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import { filterBreedProducts } from '../../hooks/useMiraFilter';
 import ProductBoxEditor from '../admin/ProductBoxEditor';
 import MiraEmptyRequest from '../common/MiraEmptyRequest';
 
@@ -160,8 +161,10 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
           } catch { /* skip */ }
         }
 
-        // Merge: prefer category-specific master products, then breed products
-        const merged = [...masterProducts, ...allProducts];
+        // Merge: prefer category-specific master products (breed-filtered), then breed products
+        // Apply breed filter to masterProducts to prevent Akita products showing for Indie, etc.
+        const breedFilteredMaster = petBreed ? filterBreedProducts(masterProducts, petBreed) : masterProducts;
+        const merged = [...breedFilteredMaster, ...allProducts];
         // Deduplicate by id
         const seen = new Set();
         const deduped = merged.filter(p => {
