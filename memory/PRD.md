@@ -238,7 +238,37 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 5. ✅ ShopSoulPage.jsx — added missing filterBreedProducts import (pre-existing bug, picks were silently failing)
 6. ✅ Streak counter — backend tracks streak_days in pawrent_journey_progress, PawrentJourneyCard shows 🔥 Xd streak badge
 
-## SESSION 11 — (2026-03-26) Breed Filter Fixes + AI Intent Detection
+## SESSION 12 — (2026-03-26) Mira Intelligence Expansion + Persistent Memory
+
+### Mira Intelligence Fixes (Fix 1-3)
+1. ✅ GoSoulPage.jsx + PlaySoulPage.jsx — replaced old `applyMiraIntelligence` with `filterBreedProducts + applyMiraFilter` v2 (breed + allergen + size + life stage). Desktop Go and Play now fully Mira-intelligent.
+2. ✅ ShopMobilePage.jsx — added `applyMiraFilter` ranking pass (was only `filterBreedProducts`). Now full v2 pipeline.
+3. ✅ CartSidebar.jsx + Checkout.jsx — replaced basic string-match allergen/breed filter with full v2 `applyMiraFilter + filterBreedProducts`. "Mira Also Recommends" now shows breed-safe, allergen-filtered products.
+
+### DB Backfill (Fix 4)
+4. 🔄 `/app/backend/scripts/backfill_mira_fields.py` — AI-powered script backfills `size_tags`, `life_stages`, `mira_can_suggest: True` on all 5,426 products in `products_master`. Runs rule-based first, then Claude for ambiguous products. Running in background.
+
+### Mira Persistent Memory (Fix 5)
+5. ✅ `/app/backend/mira_memory_routes.py` — New endpoints:
+   - `GET /api/mira/memory/{pet_id}` — fetch last N messages + preferences + service interests
+   - `POST /api/mira/memory/save` — append messages (capped at 100, $slice)
+   - `POST /api/mira/memory/log-concierge-request` — log Concierge request to memory
+   - `DELETE /api/mira/memory/{pet_id}` — clear history
+6. ✅ `MiraChatWidget.jsx` — fetches persistent memory on widget open, saves after each exchange. Pillar switches add "Now on [Pillar]" marker pill instead of clearing messages.
+7. ✅ `mira_routes.py MiraChatRequest` — added `persistent_preferences` + `persistent_service_interests` fields; system prompt injected with cross-session memory context.
+
+### Multiple Pillar Intent Detection
+8. ✅ `concierge_intent_routes.py` — upgraded to return `pillars[]` array (up to 3) sorted by confidence. "Birthday walk AND grooming" → [{celebrate, 85%}, {care, 85%}]
+9. ✅ `MiraOSPage.jsx` Concierge tab — shows stacked pillar chips, each showing emoji + service + pillar + confidence%. Send button passes `detected_pillars[]` to ticket.
+
+### Mira OS Route Restored
+10. ✅ `App.js` — `/mira-os` → `MiraDemoPage` (original). `/mira-os-shell` → `MiraOSPage` (experimental).
+
+## CRITICAL RULE 12 (SESSION 12 DISCOVERY):
+**PyMongo Database objects throw `NotImplementedError` on truthiness checks** (`if db:` or `db or fallback`). ALWAYS use `if db is None:` and `db_a if db_a is not None else db_b`.
+
+## CRITICAL RULE 13 (SESSION 12):
+**DineSoulPage.jsx mobile section uses `applyMiraIntelligence` (OLD, no breed awareness)**. Now FIXED — uses `filterBreedProducts + applyMiraFilter`. GoSoulPage.jsx and PlaySoulPage.jsx also FIXED.
 1. ✅ Fix 1: BirthdayBoxBrowseDrawer.jsx — removed no-breed fallback; added filterBreedProducts to masterProducts before merge. Akita products no longer appear for Indie dog.
 2. ✅ Fix 2: useMiraFilter.js — Breed synonym mapping expanded (siberian husky→husky, yorkshire terrier→yorkshire, saint bernard, jack russell, cavalier king charles). Added UNIVERSAL_FALLBACK_BREEDS set (vizsla, weimaraner, scottish terrier, etc.) — show all products for unsupported breeds.
 3. ✅ Fix 3: DineSoulPage.jsx — Inline DineMobilePage now uses filterBreedProducts + applyMiraFilter from useMiraFilter.js (replaced old applyMiraIntelligence that had zero breed awareness). 0 Akita mentions verified.
