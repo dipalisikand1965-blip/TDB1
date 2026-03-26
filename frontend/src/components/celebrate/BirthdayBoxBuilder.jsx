@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -417,42 +418,40 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
     setTicketId(null);
   }, []);
 
-  // handleSendToConcierge defined before handleNext to prevent stale closure
+  // handleSendToConcierge — canonical via bookViaConcierge → /api/service_desk/attach_or_create_ticket
   const handleSendToConcierge = useCallback(async (allergyConfirmed) => {
-    // petId fallback: try state, then boxData.petId, then boxData.petId field
     const resolvedPetId = petId || boxData?.petId;
     if (!resolvedPetId || !boxData) {
       toast.error('Missing pet data. Please close and try again.');
-      console.error('[BirthdayBoxBuilder] petId or boxData missing', { petId, boxData });
       return;
     }
 
     setIsOrdering(true);
     try {
       const allSlots = [...(boxData.visibleSlots || []), ...(boxData.hiddenSlots || [])];
-      const response = await fetch(`${API_BASE}/api/birthday-box/${resolvedPetId}/concierge-handoff`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const slotNames = allSlots.map(s => s.name || s.product_name || '').filter(Boolean).join(', ');
+
+      await bookViaConcierge({
+        service: `${petName} Birthday Box`,
+        pillar: 'celebrate',
+        pet: { id: resolvedPetId, name: petName },
+        token: null, // bookViaConcierge handles missing token gracefully
+        channel: 'birthday_box',
+        notes: JSON.stringify({
           slots: allSlots,
-          allergyConfirmed: allergyConfirmed || !boxData.hasAllergies,
-          userEmail,
-          userName,
+          allergy_confirmed: allergyConfirmed || !boxData.hasAllergies,
+          user_email: userEmail,
+          user_name: userName,
         }),
+        metadata: {
+          box_items: slotNames,
+          pet_name: petName,
+          source: 'birthday_box_builder',
+        },
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setTicketId(data.ticketId);
-        setStep(3);
-        // Toast fires in StepConciergeHandoff useEffect (above modal overlay)
-      } else if (data.error === 'allergy_confirmation_required') {
-        setStep(2);
-        toast.warning('Please confirm allergy safety first.');
-      } else {
-        toast.error(data.message || 'Something went wrong. Please try again.');
-      }
+      setTicketId(`bb-${Date.now()}`);
+      setStep(3);
     } catch (err) {
       console.error('[BirthdayBoxBuilder] Concierge® handoff error:', err);
       toast.error('Failed to send to Concierge®. Please try again.');

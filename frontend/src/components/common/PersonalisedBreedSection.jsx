@@ -242,9 +242,8 @@ export default function PersonalisedBreedSection({
                   <button
                     onClick={e => {
                       e.stopPropagation();
-                      if (isConciergeMode) {
-                        handleRequestProduct(p);
-                      }
+                      // Always route through canonical concierge — personalised items need custom fulfillment
+                      handleRequestProduct(p);
                     }}
                     data-testid={`personalised-product-action-${p.id}`}
                     style={{ background:C.orange, color:"#fff", border:"none", borderRadius:8, padding:"4px 10px", fontSize:10, fontWeight:700, cursor:"pointer" }}
