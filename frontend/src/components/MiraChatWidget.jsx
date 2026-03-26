@@ -393,6 +393,8 @@ const MiraChatWidget = ({
           const data = await response.json();
           setPets(data.pets || []);
           if (data.pets?.length > 0) {
+            // Priority: 1. localStorage selectedPetId (set by PillarContext when user switches pet)
+            //           2. First pet as fallback
             const savedPetId = localStorage.getItem('selectedPetId');
             const savedPet = savedPetId ? data.pets.find(p => p.id === savedPetId) : null;
             setSelectedPet(savedPet || data.pets[0]);
@@ -407,25 +409,27 @@ const MiraChatWidget = ({
     return () => { cancelled = true; };
   }, [user, token]);
   
-  // Listen for pet selection changes from navbar
+  // Listen for pet selection changes from navbar / PillarContext
   useEffect(() => {
     const handlePetChange = (e) => {
-      const newPetId = e.detail?.petId;
+      // Accept petChanged (PillarContext — full pet in detail) OR petSelectionChanged (legacy — { petId } in detail)
+      const newPet = e.type === 'petChanged' ? e.detail : null;
+      const newPetId = newPet?.id || e.detail?.petId;
+      
       if (newPetId && pets.length > 0) {
-        const newPet = pets.find(p => p.id === newPetId);
-        if (newPet) {
-          setSelectedPet(newPet);
-          setAllPetsMode(false); // Exit all pets mode when specific pet selected
-          // Add a warm, conversational note about the pet switch
-          const petBreed = newPet.breed || newPet.identity?.breed || '';
-          const petAge = newPet.age || newPet.identity?.age_years || '';
-          let switchMessage = `Of course! Switching to **${newPet.name}** now. 🐾`;
+        const resolvedPet = newPet || pets.find(p => p.id === newPetId);
+        if (resolvedPet) {
+          setSelectedPet(resolvedPet);
+          setAllPetsMode(false);
+          const petBreed = resolvedPet.breed || resolvedPet.identity?.breed || '';
+          const petAge = resolvedPet.age || resolvedPet.identity?.age_years || '';
+          let switchMessage = `Of course! Switching to **${resolvedPet.name}** now. 🐾`;
           if (petBreed) {
             switchMessage += ` Your lovely ${petBreed}`;
             if (petAge) switchMessage += ` (${petAge}y)`;
             switchMessage += '.';
           }
-          switchMessage += ` How can I help ${newPet.name} today?`;
+          switchMessage += ` How can I help ${resolvedPet.name} today?`;
           
           setMessages(prev => [...prev, {
             id: `pet-change-${Date.now()}`,
@@ -436,8 +440,13 @@ const MiraChatWidget = ({
       }
     };
     
+    // Listen to BOTH event names — petChanged from PillarContext, petSelectionChanged from legacy code
+    window.addEventListener('petChanged', handlePetChange);
     window.addEventListener('petSelectionChanged', handlePetChange);
-    return () => window.removeEventListener('petSelectionChanged', handlePetChange);
+    return () => {
+      window.removeEventListener('petChanged', handlePetChange);
+      window.removeEventListener('petSelectionChanged', handlePetChange);
+    };
   }, [pets]);
   
   // Handle pet switch within the widget (local click)
@@ -558,6 +567,16 @@ const MiraChatWidget = ({
   // Add welcome message when widget opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
+      // Re-sync active pet from localStorage (PillarContext may have changed it since widget mounted)
+      const livePetId = localStorage.getItem('selectedPetId');
+      if (livePetId && pets.length > 0) {
+        const livePet = pets.find(p => p.id === livePetId);
+        if (livePet && livePet.id !== selectedPet?.id) {
+          setSelectedPet(livePet);
+          return; // selectedPet will update → useEffect re-runs with correct pet
+        }
+      }
+
       const welcomeMsg = generateWelcomeMessage();
       
       // Speak welcome greeting when widget opens (if voice is enabled)
