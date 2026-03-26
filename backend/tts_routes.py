@@ -24,57 +24,55 @@ tts_router = APIRouter(prefix="/tts", tags=["tts"])
 # ElevenLabs configuration
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
 
-# Voice IDs - using Charlotte (British English female) for Mira
-# User requested: British English voice like Eloise
-MIRA_VOICE_ID = os.environ.get("MIRA_VOICE_ID", "XB0fDUnXU5powFXDhCwa")  # Charlotte - British female voice
+# Voice IDs - using Eloise (premade ElevenLabs voice) — confirmed working AZnzlk1XvdvUeBnXmlld
+MIRA_VOICE_ID = os.environ.get("MIRA_VOICE_ID", "AZnzlk1XvdvUeBnXmlld")  # Eloise — user-confirmed
 
-# E024: Voice Personality Profiles - Different voices for different contexts
-# Updated to use British English voice
+# E024: Voice Personality Profiles — all using Eloise for consistent Mira voice
 VOICE_PERSONALITIES = {
     "default": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British English
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",  # Eloise
         "name": "Mira (Default)",
-        "description": "Warm and caring British voice",
-        "stability": 0.7,
+        "description": "Warm and engaging",
+        "stability": 0.5,
         "similarity_boost": 0.75
     },
     "celebration": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",
         "name": "Mira (Joyful)",
         "description": "Excited and celebratory tone for birthdays and milestones",
-        "stability": 0.5,  # More expressive
+        "stability": 0.5,
         "similarity_boost": 0.8
     },
     "health": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",
         "name": "Mira (Caring)",
         "description": "Calm and reassuring voice for health reminders",
-        "stability": 0.85,  # More stable
+        "stability": 0.85,
         "similarity_boost": 0.7
     },
     "comfort": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",
         "name": "Mira (Gentle)",
         "description": "Soft and empathetic voice for emotional moments",
-        "stability": 0.9,  # Very stable, calm
+        "stability": 0.9,
         "similarity_boost": 0.65
     },
     "urgent": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",
         "name": "Mira (Alert)",
         "description": "Clear and attention-grabbing for urgent matters",
         "stability": 0.6,
         "similarity_boost": 0.85
     },
     "adventure": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",
         "name": "Mira (Adventurous)",
         "description": "Upbeat and encouraging for travel and exploration",
-        "stability": 0.55,  # More dynamic
+        "stability": 0.55,
         "similarity_boost": 0.8
     },
     "caring": {
-        "voice_id": "XB0fDUnXU5powFXDhCwa",  # Charlotte - British
+        "voice_id": "AZnzlk1XvdvUeBnXmlld",
         "name": "Mira (Professional)",
         "description": "Warm and professional for grooming and care",
         "stability": 0.75,
