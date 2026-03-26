@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
@@ -242,6 +242,14 @@ function CelebrateSoulMadeCard({ pet, onOpen }) {
 export default function CelebrateMobilePage() {
   const { token, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Auto-open Concierge intake if navigated from PawrentJourney with ?plan=1
+  useEffect(() => {
+    if (searchParams.get('plan') === '1') {
+      setIntakeOpen(true);
+    }
+  }, [searchParams]);
   const { addToCart } = useCart();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar:'celebrate', pet:currentPet });
@@ -347,7 +355,15 @@ export default function CelebrateMobilePage() {
       <div className="cp mobile-page-container" data-testid="celebrate-mobile">
         <style>{CSS}</style>
 
-        {intakeOpen && <CelebrateIntakeSheet pet={currentPet} onClose={() => setIntakeOpen(false)} onSend={handleConciergeRequest} />}
+        {intakeOpen && (
+          <ConciergeIntakeModal
+            isOpen={intakeOpen}
+            onClose={() => setIntakeOpen(false)}
+            petName={currentPet?.name || 'your dog'}
+            petId={currentPet?.id || currentPet?._id}
+            data-testid="celebrate-concierge-modal"
+          />
+        )}
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="celebrate" pillarColor="#9B59B6" pillarLabel="Celebrate" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={C.purpleL} />}
 

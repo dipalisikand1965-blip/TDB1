@@ -1433,16 +1433,17 @@ const ServiceBox = () => {
           
           <DialogFooter className="gap-2">
             {/* Fix 6 — Activate / Deactivate toggle */}
+            {selectedService && (
             <Button
               type="button"
               variant="outline"
-              className={selectedService.is_active
+              className={selectedService?.is_active
                 ? "border-red-400 text-red-600 hover:bg-red-50"
                 : "border-green-500 text-green-700 hover:bg-green-50"}
               onClick={async () => {
-                const newState = !selectedService.is_active;
+                const newState = !selectedService?.is_active;
                 handleInputChange('is_active', newState);
-                if (!selectedService.id?.startsWith('NEW-')) {
+                if (!selectedService?.id?.startsWith('NEW-')) {
                   try {
                     await fetch(`${API_URL}/api/service-box/services/${selectedService.id}/toggle-active`, {
                       method: 'PATCH',
@@ -1454,8 +1455,9 @@ const ServiceBox = () => {
               }}
               data-testid="service-activate-toggle-btn"
             >
-              {selectedService.is_active ? 'Deactivate' : 'Activate'}
+              {selectedService?.is_active ? 'Deactivate' : 'Activate'}
             </Button>
+            )}
             <Button variant="outline" onClick={() => setShowEditor(false)} data-testid="cancel-service-btn">
               Cancel
             </Button>
