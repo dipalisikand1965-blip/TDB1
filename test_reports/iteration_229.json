@@ -1,0 +1,57 @@
+{
+  "summary": "Iteration 229 — Verified critical Mira widget pet fix. The bug where widget always showed Mojo (pets[0]) instead of active pet is FIXED. Both dual event listeners (petChanged + petSelectionChanged) confirmed in code at lines 444-448 of MiraChatWidget.jsx. localStorage re-sync on widget open confirmed at line 571. Backend stream endpoint correctly returns pet-specific context for both Bruno and Mojo. UI shows correct pet name (Bruno's Soul Mate / Mojo's Soul Mate) based on active pet selection. All 8 pets visible in widget tabs.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Mira widget chat history persistence",
+        "issue": "When switching pets multiple times in a session, historical 'Switching to X' messages accumulate in chat. Not a bug per se, but could confuse users seeing old Mojo messages when Bruno is active. Chatbot AI response still uses backend-loaded pet context (Bruno) correctly.",
+        "affected_selectors": ["[data-testid='mira-chat-widget']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_mira_widget_pet_fix_229.py",
+    "/app/test_reports/pytest/iteration_229_results.xml"
+  ],
+  "action_items": [
+    "MINOR: Consider clearing chat message history on pet switch within widget to avoid showing stale 'Switching to X' messages from previous switches. This would give a cleaner experience when switching between pets multiple times."
+  ],
+  "critical_code_review_comments": [
+    "MiraChatWidget.jsx line 444-448: Both event listeners (petChanged from PillarContext + petSelectionChanged legacy) are correctly present — fix verified",
+    "MiraChatWidget.jsx line 571: localStorage re-sync on widget open correctly checks livePetId vs selectedPet.id — fix verified",
+    "PillarContext.jsx line 204: dispatches 'petChanged' with full pet object as e.detail — correctly consumed by MiraChatWidget handlePetChange at line 416 (e.type === 'petChanged' ? e.detail : null)"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_mira_widget_pet_fix_229.py"
+  ],
+  "success_rate": {
+    "backend": "100% (10/10 tests passed)",
+    "frontend": "100% (all 6 features verified)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123",
+    "pet_ids": {
+      "Mojo (Indie)": "pet-mojo-7327ad56",
+      "Bruno (Labrador)": "pet-bruno-7327ad58"
+    }
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Bug fix iteration 229. Critical fix: MiraChatWidget now listens to both 'petChanged' (PillarContext) and 'petSelectionChanged' (legacy). Widget header subtitle dynamically shows '<PetName>'s Soul Mate' based on active pet. Pet tabs in widget show all 8 pets for dipali. Quick chips personalize to active pet name. Backend /api/mira/os/stream correctly loads full pet soul from DB when pet_id is provided.",
+  "verification_summary": {
+    "dual_event_listeners": "VERIFIED at MiraChatWidget.jsx lines 444-448",
+    "localstorage_resync_on_open": "VERIFIED at MiraChatWidget.jsx line 571",
+    "widget_shows_bruno_header": "VERIFIED — 'Bruno's Soul Mate' shown when Bruno is active",
+    "widget_shows_mojo_header": "VERIFIED — 'Mojo's Soul Mate' shown when Mojo is default",
+    "stream_bruno_pet_id": "VERIFIED — returns Bruno/Labrador context",
+    "stream_mojo_pet_id": "VERIFIED — returns Mojo/Indie context",
+    "8_pets_in_widget_tabs": "VERIFIED — Mojo, Mystique, Bruno, Buddy, Lola, Meister, Luna, Coco all visible"
+  }
+}
