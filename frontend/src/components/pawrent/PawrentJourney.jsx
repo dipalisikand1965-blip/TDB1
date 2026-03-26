@@ -622,6 +622,19 @@ export function PawrentJourneyCard({ pet, token, onClick }) {
   const mode = pet ? detectJourneyMode(pet) : "CONSIDERING";
   const cm = MODES[mode];
   const petName = pet?.name || "your dog";
+  const petId = pet?.id || pet?._id;
+
+  const [streakDays, setStreakDays] = useState(0);
+
+  useEffect(() => {
+    if (!petId) return;
+    fetch(`${API_URL}/api/pawrent-journey/progress/${petId}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(r => r.json())
+      .then(data => setStreakDays(data.streak_days || 0))
+      .catch(() => {});
+  }, [petId, token]);
 
   return (
     <div onClick={onClick} role="button" tabIndex={0}
@@ -650,13 +663,27 @@ export function PawrentJourneyCard({ pet, token, onClick }) {
             {cm.label}
           </div>
         </div>
-        {mode === "WELCOME_HOME" && (
-          <div style={{
-            marginLeft: "auto", width: "10px", height: "10px",
-            borderRadius: "50%", background: T.rose,
-            boxShadow: `0 0 8px ${T.rose}`,
-          }} />
-        )}
+        {/* Streak counter — Duolingo-style */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "4px" }}>
+          {streakDays > 0 ? (
+            <div style={{
+              display: "flex", alignItems: "center", gap: "4px",
+              background: "#FFF3E0", borderRadius: "20px", padding: "4px 10px",
+              border: "1px solid #FFB74D",
+            }}>
+              <span style={{ fontSize: "14px" }}>🔥</span>
+              <span style={{ fontSize: "11px", fontWeight: "700", color: "#E65100", fontFamily: "'Helvetica Neue', sans-serif" }}>
+                {streakDays}d streak
+              </span>
+            </div>
+          ) : mode === "WELCOME_HOME" ? (
+            <div style={{
+              width: "10px", height: "10px",
+              borderRadius: "50%", background: T.rose,
+              boxShadow: `0 0 8px ${T.rose}`,
+            }} />
+          ) : null}
+        </div>
       </div>
 
       <p style={{ margin: "0 0 14px", fontSize: "12px", color: T.muted, fontFamily: "'Helvetica Neue', sans-serif", lineHeight: "1.5", fontStyle: "italic" }}>

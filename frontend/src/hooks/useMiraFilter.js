@@ -303,6 +303,37 @@ export function applyMiraFilter(products, pet) {
       if (!allergies.length) return true;
       return !allergies.some(allergen => productContainsAllergen(product, allergen));
     })
+    // Step 1b — remove products with specific breed tags that don't match this pet
+    .filter(product => {
+      const tags = [
+        ...(Array.isArray(product.breed_tags) ? product.breed_tags : []),
+        ...(product.breed_metadata?.breeds || []),
+      ];
+      if (!tags.length) return true; // no breed tags → universal, keep
+
+      // All tags are "all_breeds" → universal, keep
+      const isUniversal = tags.every(t => {
+        const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
+        return norm === 'all breeds' || norm === 'all' || norm === 'all_breeds' || norm.startsWith('all breed');
+      });
+      if (isUniversal) return true;
+
+      // Check if any tag maps to a KNOWN breed (otherwise treat as universal)
+      const synonymsForPet = petBreedKey ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey]) : [];
+      const hasKnownBreedTag = tags.some(t => {
+        const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
+        return KNOWN_BREEDS.some(b => norm === b || norm.includes(b) || b.includes(norm));
+      });
+      if (!hasKnownBreedTag) return true; // unrecognised breed tags → universal fallback, keep
+
+      // Has known specific breed tags → only keep if matches pet's breed
+      if (!petBreedKey) return false; // no pet breed → hide all breed-specific products
+      return tags.some(t => {
+        const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
+        const syns = BREED_SYNONYMS[petBreedKey] || [petBreedKey];
+        return syns.some(s => norm === s || norm.includes(s) || s.includes(norm));
+      });
+    })
     // Step 2 — enrich with Mira flags + ranking
     .map(product => {
       // Skip products Mira is explicitly told not to suggest
@@ -381,6 +412,9 @@ export function applyMiraFilter(products, pet) {
           mira_hint = `Matches ${petName}'s dietary preferences`;
         } else if (sensMatches) {
           mira_hint = `Gentle on ${petName}'s sensitivities`;
+        } else if (breedScore === 'mismatch') {
+          // Deprioritised breed mismatch — do NOT label as "Chosen for X"
+          mira_hint = `For specific breeds`;
         } else if (product.mira_tag) {
           mira_hint = product.mira_tag;
         } else if (allergies.length > 0) {
@@ -438,27 +472,69 @@ export const KNOWN_BREEDS = [
 ];
 
 /**
- * filterBreedProducts — strict breed filter
- * Excludes products whose name/who_for mentions a different breed.
- * Universal products (no known breed name present) are always shown.
+ * filterBreedProducts — strict breed filter (v2)
+ *
+ * Rules:
+ * 1. Product has breed_tags: ["all_breeds"] or no breed_tags → show for ALL pets
+ * 2. Product has specific breed tags (e.g. ["akita"]) → ONLY show for that breed
+ * 3. Product has unrecognised breed tags (not in KNOWN_BREEDS) → show for everyone (safe fallback)
+ * 4. No breed_tags → fall back to product name / who_for check (legacy)
+ *
  * @param {Array}  products  – raw product list
  * @param {string} petBreed  – pet's breed string (from pet.breed)
  * @returns {Array}
  */
 export function filterBreedProducts(products, petBreed) {
   const pl = (petBreed || '').toLowerCase().trim();
-  const pw = pl.split(/\s+/).filter(w => w.length > 2);
+  const petBreedKey = pl ? extractBreedKey({ breed: petBreed }) : null;
+  const synonyms = petBreedKey ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey]) : (pl ? [pl] : []);
+
   return products.filter(p => {
+    const breedTags = Array.isArray(p.breed_tags) ? p.breed_tags : [];
+
+    // ── breed_tags field takes priority ──────────────────────────────────────
+    if (breedTags.length > 0) {
+      // 1. All tags are "all_breeds" / universal → show for everyone
+      const isUniversal = breedTags.every(t => {
+        const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
+        return norm === 'all breeds' || norm === 'all' || norm === 'all_breeds' || norm.startsWith('all breed');
+      });
+      if (isUniversal) return true;
+
+      // 2. Check if ANY tag maps to a known breed
+      const knownTagBreeds = breedTags.reduce((acc, t) => {
+        const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
+        const matched = KNOWN_BREEDS.find(b => norm === b || norm.includes(b) || b.includes(norm));
+        if (matched) acc.push(norm);
+        return acc;
+      }, []);
+
+      // 3. No recognised breed in tags → unrecognised, treat as universal (safe fallback)
+      if (knownTagBreeds.length === 0) return true;
+
+      // 4. Has known specific breed tags → ONLY show if pet's breed matches
+      if (!pl) return false; // pet has no breed → hide breed-specific products
+
+      return breedTags.some(t => {
+        const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
+        // Direct match against pet breed string
+        if (pl && (norm === pl || norm.includes(pl) || pl.includes(norm))) return true;
+        // Synonym match
+        return synonyms.some(s => norm === s || norm.includes(s) || s.includes(norm));
+      });
+    }
+
+    // ── No breed_tags → fall back to product name / who_for check ────────────
     const nameText = ((p.name || '') + ' ' + (p.who_for || '')).toLowerCase();
     for (const b of KNOWN_BREEDS) {
       if (nameText.includes(b)) {
-        if (!pl) return false;                        // no pet breed → hide all breed-named items
-        if (nameText.includes(pl)) return true;       // product name has THIS breed → keep
-        if (pw.some(w => b.includes(w) || w.includes(b))) return true; // word match
-        return false;                                 // product is for a DIFFERENT breed → strict exclude
+        if (!pl) return false; // no pet breed → hide all breed-named items
+        if (nameText.includes(pl)) return true; // product name includes THIS breed → keep
+        if (synonyms.some(s => b.includes(s) || s.includes(b))) return true; // synonym match
+        return false; // product is for a DIFFERENT breed → strict exclude
       }
     }
-    return true;                                      // no known breed in name → universal product
+    return true; // no known breed in name → universal product
   });
 }
 

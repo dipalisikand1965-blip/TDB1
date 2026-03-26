@@ -30,6 +30,7 @@ import PillarSoulProfile from "../components/PillarSoulProfile";
 
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import EmergencyMobilePage from './EmergencyMobilePage';
+import { filterBreedProducts } from '../hooks/useMiraFilter';
 
 const G = {
   deep:"#7F1D1D", mid:"#991B1B", crimson:"#DC2626", light:"#FCA5A5",
@@ -64,11 +65,6 @@ function getMissingItems(pet) {
   return m;
 }
 
-const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
-function filterBreedProducts(products, petBreed) {
-  const petLower=(petBreed||"").toLowerCase(); const petWords=petLower.split(/\s+/).filter(w=>w.length>2);
-  return products.filter(p=>{const nm=(p.name||"").toLowerCase();for(const b of KNOWN_BREEDS){if(nm.includes(b)){if(!petLower)return false;if(nm.includes(petLower))return true;if(petWords.some(w=>b.includes(w)))return true;return false;}}return true;});
-}
 
 function SoulChip({ icon, label, value }) {
   return <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"rgba(252,165,165,0.20)",border:"1px solid rgba(252,165,165,0.35)",borderRadius:9999,padding:"4px 12px",fontSize:11,fontWeight:600,color:"rgba(255,255,255,0.90)"}}>{icon&&<span>{icon}</span>}{label&&<span style={{opacity:0.75}}>{label}:</span>}{value}</span>;

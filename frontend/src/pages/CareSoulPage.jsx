@@ -45,6 +45,7 @@ import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
 import { useConcierge } from "../hooks/useConcierge";
 import CareMobilePage from './CareMobilePage';
+import { filterBreedProducts } from '../hooks/useMiraFilter';
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
 // ─────────────────────────────────────────────────────────────
@@ -1099,36 +1100,8 @@ function WellnessProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 
 // ─── Known breed names — applied globally across all dimensions ──────────────
-const KNOWN_BREEDS = [
-  'american bully','beagle','border collie','boxer','cavalier','chihuahua',
-  'chow chow','cocker spaniel','dachshund','dalmatian','doberman',
-  'english bulldog','french bulldog','german shepherd','golden retriever',
-  'great dane','husky','indie','irish setter','italian greyhound',
-  'jack russell','labrador','lhasa apso','maltese','pomeranian',
-  'poodle','pug','rottweiler','schnoodle','scottish terrier',
-  'shih tzu','st bernard','saint bernard','yorkshire',
-  // Extended — breeds with grooming kits in DB
-  'akita','australian shepherd','corgi','samoyed','spitz',
-  'bernese mountain dog','bulldog','shiba inu','weimaraner',
-];
 
 // Keeps only products without a breed name OR that match this pet's breed.
-function filterBreedProducts(products, petBreed) {
-  const petLower = (petBreed || '').trim().toLowerCase();
-  const petWords = petLower.split(/\s+/).filter(w => w.length > 2);
-  return products.filter(p => {
-    const nameLower = (p.name || '').toLowerCase();
-    for (const breed of KNOWN_BREEDS) {
-      if (nameLower.includes(breed)) {
-        if (!petLower) return false;
-        if (nameLower.includes(petLower)) return true;
-        if (petWords.some(w => breed.includes(w) || breed.startsWith(w))) return true;
-        return false;
-      }
-    }
-    return true; // no breed mention → visible for all pets
-  });
-}
 
 // Helper: robust breed matching (handles multi-word breeds, "Labrador Retriever" → "Labrador")
 function matchesBreed(productName, breedRaw) {
