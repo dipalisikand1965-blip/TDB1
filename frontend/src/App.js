@@ -11,6 +11,7 @@ import { useEffect, useCallback, Suspense, lazy } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FloatingContactButton from "./components/FloatingContactButton";
 import MiraFloatingButton from "./components/MiraFloatingButton";
+import MiraChatWidget from "./components/MiraChatWidget";
 import MobileNavBar from "./components/MobileNavBar";
 import MemberMobileNav from "./components/MemberMobileNav";
 import UniversalServiceButton from "./components/UniversalServiceButton";
@@ -505,6 +506,9 @@ function MainLayout() {
       <ScrollToTop />
       <AppBadgeManager />
       {!hideNavbar && <Navbar />}
+      {/* Global MiraChatWidget — available on ALL pages including Dashboard, non-pillar pages */}
+      {/* PillarPageLayout also renders its own, but this covers Dashboard/search/etc */}
+      <MiraChatWidget pillar={null} hideMiraChatOnPillarPages={true} />
       {/* MemberMobileNav moved to AppRouter level for global availability */}
       <Suspense fallback={<PageLoader />}>
         <Routes>
