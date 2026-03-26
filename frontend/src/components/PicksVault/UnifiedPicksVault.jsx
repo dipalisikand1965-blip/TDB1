@@ -26,6 +26,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useDragControls } from 'framer-motion';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 import {
   X, Gift, Lightbulb, Sparkles, ChevronRight, Send, Heart,
   ShoppingBag, Calendar, TrendingUp, RefreshCw, Star, Clock,
@@ -847,32 +848,18 @@ const ConciergeArrangeCard = ({ arrange, pet, onCreateTicket, token, user }) => 
           hapticFeedback.success();
         }
       } else {
-        // Direct API call as fallback - MUST include auth for ownership
-        const response = await fetch(`${API_URL}/api/mira/picks/concierge-arrange`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            ...(token && { 'Authorization': `Bearer ${token}` })
-          },
-          body: JSON.stringify({
-            pet_id: pet?.id,
-            pet_name: petName,
-            pillar: arrange.pillar || 'care',
-            intent: arrange.intent,
-            original_request: arrange.original_request || arrange.intent,
-            member_email: user?.email,
-            member_name: user?.name,
-            member_id: user?.id,
-            pet_constraints: arrange.pet_constraints || [],
-            source: 'picks_concierge_fallback'
-          })
+        // Direct canonical fallback via bookViaConcierge — /api/service_desk/attach_or_create_ticket
+        await bookViaConcierge({
+          service: arrange.intent || 'Mira Picks request',
+          pillar: arrange.pillar || 'care',
+          pet,
+          token,
+          channel: 'mira_picks_vault',
+          notes: arrange.original_request || arrange.intent,
+          metadata: { pet_constraints: arrange.pet_constraints || [], source: 'picks_vault_fallback' },
         });
-        
-        if (response.ok) {
-          const result = await response.json();
-          setTicketCreated(result.ticket_id);
-          hapticFeedback.success();
-        }
+        setTicketCreated(`picks-${Date.now()}`);
+        hapticFeedback.success();
       }
     } catch (err) {
       console.error('[CONCIERGE ARRANGE] Failed to create ticket:', err);

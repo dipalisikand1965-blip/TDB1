@@ -14,23 +14,18 @@ import { useResizeMobile } from '../../hooks/useResizeMobile';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
-/* ── Send to Concierge® helper ─────────────────────────────────────────────── */
-const sendToConcierge = async ({ requestType, label, message, petName }) => {
+/* ── Send to Concierge® helper — canonical via bookViaConcierge ───────────── */
+const sendToConcierge = async ({ requestType, label, message, petName, pet, token }) => {
   try {
-    const resp = await fetch(`${API_BASE}/api/concierge/pillar-request`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pillar: 'celebrate',
-        request_type: requestType,
-        request_label: label,
-        pet_name: petName,
-        message,
-        source: 'product_detail_modal',
-      }),
+    await bookViaConcierge({
+      service: label || requestType || 'Product request',
+      pillar: 'celebrate',
+      pet,
+      token,
+      channel: `celebrate_${requestType || 'product_detail'}`,
+      notes: message,
     });
-    const data = await resp.json();
-    return { success: true, ticketId: data.ticket_id, requestId: data.request_id };
+    return { success: true };
   } catch {
     return { success: false };
   }
@@ -112,7 +107,7 @@ const ProductDetailModal = ({
       requestType: product.category || 'service_request',
       label: `Request: ${product.name} for ${petName}`,
       message: `Please arrange "${product.name}" for ${petName}. ${product.description || ''}`,
-      petName
+      petName, pet, token: null,
     });
     
     setIsAdding(false);

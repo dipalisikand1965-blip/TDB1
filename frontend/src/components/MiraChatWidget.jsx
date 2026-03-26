@@ -1807,24 +1807,25 @@ const MiraChatWidget = ({
                                 )}
                               </div>
                               
-                              {/* CTA Button - Send to Concierge® for reservation */}
+                              {/* CTA Button - Send to Concierge® for reservation — canonical endpoint */}
                               <button
                                 onClick={async () => {
                                   try {
-                                    const response = await fetch(`${getApiUrl()}/api/service-desk/create`, {
+                                    const placeType = msg.nearbyPlaces.type;
+                                    const response = await fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
                                       method: 'POST',
                                       headers: {
                                         'Content-Type': 'application/json',
                                         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                                       },
                                       body: JSON.stringify({
-                                        type: msg.nearbyPlaces.type === 'restaurants' ? 'restaurant_reservation' : 
-                                              msg.nearbyPlaces.type === 'vet_clinics' ? 'vet_appointment' : 
-                                              msg.nearbyPlaces.type === 'stays' ? 'stay_booking' : 'place_inquiry',
-                                        pillar: msg.nearbyPlaces.type === 'restaurants' ? 'dine' : 
-                                               msg.nearbyPlaces.type === 'vet_clinics' ? 'care' : 
-                                               msg.nearbyPlaces.type === 'stays' ? 'stay' : 'enjoy',
-                                        title: `${msg.nearbyPlaces.type === 'restaurants' ? 'Reserve' : 'Inquiry'}: ${place.name}`,
+                                        type: placeType === 'restaurants' ? 'restaurant_reservation' :
+                                              placeType === 'vet_clinics' ? 'vet_appointment' :
+                                              placeType === 'stays' ? 'stay_booking' : 'place_inquiry',
+                                        pillar: placeType === 'restaurants' ? 'dine' :
+                                                placeType === 'vet_clinics' ? 'care' :
+                                                placeType === 'stays' ? 'go' : 'general',
+                                        title: `${placeType === 'restaurants' ? 'Reserve' : 'Inquiry'}: ${place.name}`,
                                         description: `Request for ${place.name} in ${place.area || msg.nearbyPlaces.city}${selectedPet ? ` for ${selectedPet.name}` : ''}`,
                                         place_data: place,
                                         pet_id: selectedPet?.id,
@@ -1837,13 +1838,12 @@ const MiraChatWidget = ({
                                     if (response.ok) {
                                       const data = await response.json();
                                       toast.success(`Sent to Concierge®! Ticket #${data.ticket_id || 'created'}`, {
-                                        description: `We'll confirm your ${msg.nearbyPlaces.type === 'restaurants' ? 'reservation' : 'request'} shortly`
+                                        description: `We'll confirm your ${placeType === 'restaurants' ? 'reservation' : 'request'} shortly`
                                       });
-                                      // Add confirmation message
                                       setMessages(prev => [...prev, {
                                         id: `place-confirm-${Date.now()}`,
                                         role: 'assistant',
-                                        content: `✅ Perfect! I've sent your ${msg.nearbyPlaces.type === 'restaurants' ? 'reservation request' : 'inquiry'} for **${place.name}** to our Concierge® team. They'll confirm availability and get back to you shortly!`
+                                        content: `✅ Perfect! I've sent your ${placeType === 'restaurants' ? 'reservation request' : 'inquiry'} for **${place.name}** to our Concierge® team. They'll confirm availability and get back to you shortly!`
                                       }]);
                                     }
                                   } catch (err) {
