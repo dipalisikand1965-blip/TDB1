@@ -506,6 +506,10 @@ const MiraOSPage = () => {
   const [conciergeRequest, setConciergeRequest] = useState('');
   const [conciergeSending, setConciergeSending] = useState(false);
   const [conciergeSent, setConciergeSent] = useState(false);
+  const [intentSuggestion, setIntentSuggestion] = useState(null); // { pillar, service, display_text, pillar_label }
+  const [intentLoading, setIntentLoading] = useState(false);
+  const [intentConfirmed, setIntentConfirmed] = useState(false); // user tapped to confirm
+  const intentTimerRef = useRef(null);
   const [showPastChats, setShowPastChats] = useState(false);
   const [showLearnModal, setShowLearnModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -1553,18 +1557,86 @@ const MiraOSPage = () => {
                 <CheckCircle size={28} className="text-green-400 mx-auto mb-2" />
                 <p className="text-sm text-green-400 font-medium">Sent to Concierge® ✓</p>
                 <p className="text-xs text-gray-400 mt-1">Your team will respond via WhatsApp or the Service Desk.</p>
-                <button onClick={() => { setConciergeSent(false); setConciergeRequest(''); }} className="mt-3 text-xs text-gray-400 underline">Send another request</button>
+                <button onClick={() => { setConciergeSent(false); setConciergeRequest(''); setIntentSuggestion(null); setIntentConfirmed(false); }} className="mt-3 text-xs text-gray-400 underline">Send another request</button>
               </div>
             ) : (
               <div className="space-y-3">
                 <textarea
                   value={conciergeRequest}
-                  onChange={(e) => setConciergeRequest(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setConciergeRequest(val);
+                    setIntentSuggestion(null);
+                    setIntentConfirmed(false);
+                    // Debounced intent detection — fires 1s after user stops typing
+                    if (intentTimerRef.current) clearTimeout(intentTimerRef.current);
+                    if (val.trim().length >= 8) {
+                      intentTimerRef.current = setTimeout(async () => {
+                        setIntentLoading(true);
+                        try {
+                          const res = await fetch(`${API_URL}/api/mira/detect-intent`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
+                            body: JSON.stringify({ message: val.trim(), pet_name: pet?.name, pet_breed: pet?.breed }),
+                          });
+                          if (res.ok) {
+                            const data = await res.json();
+                            if (data.pillar && data.confidence >= 40) {
+                              setIntentSuggestion(data);
+                            }
+                          }
+                        } catch { /* silent */ } finally {
+                          setIntentLoading(false);
+                        }
+                      }, 1000);
+                    }
+                  }}
                   placeholder={`e.g. "Book a spa grooming session for ${pet?.name || 'my dog'} this weekend" or "Find a vet that specialises in joint health"`}
                   rows={3}
                   data-testid="concierge-freetext-input"
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 resize-none focus:outline-none focus:border-pink-500/50"
                 />
+
+                {/* ── Mira Intent Suggestion Chip ── */}
+                {intentLoading && (
+                  <div className="flex items-center gap-2 text-xs text-gray-400 py-1">
+                    <div className="w-3 h-3 rounded-full border-2 border-pink-400 border-t-transparent animate-spin" />
+                    Mira is reading your request…
+                  </div>
+                )}
+                {intentSuggestion && !intentLoading && (
+                  <div
+                    data-testid="intent-suggestion-chip"
+                    className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border transition-all cursor-pointer ${
+                      intentConfirmed
+                        ? 'bg-green-500/15 border-green-500/50'
+                        : 'bg-purple-500/15 border-purple-500/40 hover:bg-purple-500/20'
+                    }`}
+                    onClick={() => setIntentConfirmed(c => !c)}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Sparkles size={13} className={intentConfirmed ? 'text-green-400' : 'text-purple-400'} />
+                      <span className={`text-xs font-medium truncate ${intentConfirmed ? 'text-green-300' : 'text-purple-200'}`}>
+                        {intentSuggestion.display_text}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {intentConfirmed ? (
+                        <span className="text-xs text-green-400 font-medium">✓ Added</span>
+                      ) : (
+                        <span className="text-xs text-purple-300">Tap to confirm</span>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setIntentSuggestion(null); setIntentConfirmed(false); }}
+                        className="ml-1 text-gray-500 hover:text-gray-300 transition"
+                        data-testid="intent-dismiss-btn"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   onClick={async () => {
                     if (!conciergeRequest.trim() || conciergeSending) return;
@@ -1574,7 +1646,10 @@ const MiraOSPage = () => {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', ...(token && { Authorization: `Bearer ${token}` }) },
                         body: JSON.stringify({
-                          pillar: 'mira_os',
+                          pillar: intentConfirmed && intentSuggestion?.pillar ? intentSuggestion.pillar : 'mira_os',
+                          detected_pillar: intentSuggestion?.pillar || null,
+                          detected_service: intentSuggestion?.service || null,
+                          intent_confirmed: intentConfirmed,
                           request_label: conciergeRequest.trim().slice(0, 80),
                           request_type: 'freeform',
                           source: 'mira_os_concierge_tab',
@@ -1587,7 +1662,6 @@ const MiraOSPage = () => {
                       });
                       setConciergeSent(true);
                     } catch {
-                      // Show sent anyway for UX
                       setConciergeSent(true);
                     } finally {
                       setConciergeSending(false);

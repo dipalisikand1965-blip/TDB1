@@ -1,0 +1,65 @@
+{
+  "summary": "Iteration 217: Tested 4 specific fixes: Fix 1 (BirthdayBoxBrowseDrawer fallback removal) - FAILING with 43 Akita mentions still showing for Indie dog. Fix 2 (Breed synonyms) - PASSING. Fix 3 (Dine mobile breed filtering) - PASSING. Fix 4 (AI Intent Detection backend + frontend) - FULLY PASSING.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "/api/admin/pillar-products?pillar=celebrate&sub_category=cakes",
+        "issue": "Returns Akita-tagged products in first 10 results — these leak into BirthdayBoxBrowseDrawer without breed filtering when merged as masterProducts",
+        "priority": "HIGH"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "BirthdayBoxBrowseDrawer.jsx TabContent",
+        "issue": "Fix 1 INCOMPLETE: Akita products still appear for Indie dog. Root cause: TabContent fetches masterProducts from /api/admin/pillar-products?pillar=celebrate&sub_category=cakes (no breed filter), then merges them FIRST: [...masterProducts, ...allProducts]. filterBreedProducts() is NOT applied to masterProducts. 43 Akita mentions found in drawer for Mojo (Indie). The removed fallback only eliminated the no-breed general fetch; the masterProducts fetch still brings in Akita products.",
+        "selector": "[data-testid='birthday-box-browse-drawer']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_4fixes_iteration217.py",
+    "/app/test_reports/pytest/4fixes_iteration217.xml"
+  ],
+  "action_items": [
+    "CRITICAL Fix 1: In BirthdayBoxBrowseDrawer.jsx TabContent, apply filterBreedProducts to masterProducts before merging. Change line ~163 from: const merged = [...masterProducts, ...allProducts] to: const breedFilteredMaster = filterBreedProducts(masterProducts, petBreed); const merged = [...breedFilteredMaster, ...allProducts]. Import filterBreedProducts from hooks/useMiraFilter.js at the top of the file.",
+    "Alternatively, add breed param to pillar-products API call: /api/admin/pillar-products?pillar=celebrate&sub_category=${cat}&breed=${petBreed} to filter on backend side."
+  ],
+  "critical_code_review_comments": [
+    "BirthdayBoxBrowseDrawer.jsx (TabContent, lines 152-172): masterProducts from /api/admin/pillar-products are merged without breed filtering. The fix correctly removed the no-breed fallback but missed that masterProducts (priority position in merge array) still contain Akita-specific products. filterBreedProducts import is not used in this file — it needs to be added.",
+    "BirthdayBoxBrowseDrawer.jsx line 163: const merged = [...masterProducts, ...allProducts] — masterProducts come first without any filterBreedProducts() call, so breed-specific products (Akita) are shown prominently for an Indie dog.",
+    "useMiraFilter.js BREED_SYNONYMS is comprehensive and correct (husky → siberian husky, yorkshire → yorkshire terrier). All 16 backend tests pass.",
+    "DineSoulPage.jsx DineMobilePage correctly uses filterBreedProducts + applyMiraFilter (lines 834-856). Fix 3 works."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_4fixes_iteration217.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 tests pass: breed synonyms, intent detection all scenarios)",
+    "frontend": "75% (Fix 1 failing, Fix 2/3/4 passing)"
+  },
+  "fix_results": {
+    "fix1_birthday_box_fallback_removal": "FAIL - 43 Akita products visible in drawer for Mojo (Indie). masterProducts from pillar-products API not breed-filtered.",
+    "fix2_breed_synonyms": "PASS - siberian husky returns products, yorkshire terrier returns products, all backend tests pass",
+    "fix3_dine_mobile_breed_filter": "PASS - 0 Akita mentions on /dine mobile for Indie dog (Mojo). filterBreedProducts + applyMiraFilter correctly applied.",
+    "fix4_backend_intent_detection": "PASS - /api/mira/detect-intent returns care/celebrate/learn correctly with confidence>=40",
+    "fix4_frontend_intent_chip": "PASS - concierge-freetext-input found, concierge-send-btn found, intent-suggestion-chip appears with '🛁 This sounds like Spa Grooming → Care | Tap to confirm'"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Fix 1 is still broken: BirthdayBoxBrowseDrawer.jsx TabContent fetches masterProducts from /api/admin/pillar-products without breed filtering, and these are placed FIRST in the merge array. For Mojo (Indie), 43 Akita products appear in the Birthday Box drawer. The fix needs to apply filterBreedProducts(masterProducts, petBreed) before merging. Fix 2 (breed synonyms), Fix 3 (Dine mobile breed filter), and Fix 4 (AI intent detection backend+frontend) all work correctly.",
+  "rca_of_issue": {
+    "fix1_root_cause": {
+      "component": "BirthdayBoxBrowseDrawer.jsx TabContent (lines 152-172)",
+      "root_cause": "The fix removed the fallback fetch that occurred when petBreed was empty. However, TabContent also fetches from /api/admin/pillar-products?pillar=celebrate&sub_category=cakes which returns ALL celebrate/cakes products regardless of breed (first 10 results are all Akita products). These masterProducts are merged FIRST: const merged = [...masterProducts, ...allProducts]. No filterBreedProducts() call is applied to masterProducts. Result: 43 Akita mentions appear in the drawer for Mojo (Indie dog).",
+      "fix_needed": "Add `import { filterBreedProducts } from '../../hooks/useMiraFilter';` to BirthdayBoxBrowseDrawer.jsx and apply it: const breedFilteredMaster = filterBreedProducts(masterProducts, petBreed); const merged = [...breedFilteredMaster, ...allProducts];",
+      "reproduction_steps": "1. Login as dipali@clubconcierge.in. 2. Navigate to /celebrate-soul. 3. Open Birthday Box browser (dispatch openBirthdayBoxBrowse event with breed='Indie'). 4. Wait 4 seconds for products to load. 5. Check drawer for 'Akita' - will find 43 mentions."
+    }
+  }
+}
