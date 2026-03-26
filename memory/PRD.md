@@ -229,18 +229,18 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 3. Refactor server.py (24k lines)
 4. Build Love pillar
 
-### Completed in Session 13 (P0/P1 Bug Sprint)
-1. ✅ Dine mobile profile card tap → opens DineProfileSheet (P0)
-2. ✅ Admin AI image auto-switches to Media tab on generation (P0)
-3. ✅ MiraPlanModal "↻ Regenerate Plan" button added (P1)
-4. ✅ "Mira explains why" expandable row verified working in ProductCard.jsx (P0 - was already done)
-5. ✅ Adopt + Paperwork DIM_TABS parity verified (P0 - already correct)
-6. ✅ Near Me tabs verified on all major mobile pages (P1 - already correct)
-7. ✅ Added watercolor_image, cloudinary_url, ai_prompt to Admin save allowedFields
+### Completed in Session 14 (SOS + Shop Parity + Celebrate Plan Day)
+1. ✅ SOS: Admin ServiceBox null crash fixed (selectedService?.is_active guard)
+2. ✅ Shop mobile SHOP_CATS: 7 pills matching desktop exactly (mira, bakery, breed, treats, hampers, merch, toys)
+3. ✅ Shop "See all X products on thedoggybakery.com" → internal "Browse all X" toggle button
+4. ✅ Celebrate "Plan Day" CTA → ConciergeIntakeModal (9-step celebration type picker)
+5. ✅ PawrentJourney "Plan the day" → /celebrate?plan=1 → auto-opens ConciergeIntakeModal
+6. ✅ App.js routing bug fixed: CelebrateSoulRedirect preserves ?plan=1 query param
 
----
-
-## 10. COMPLETED IN SESSION 8 (2026-03-26)
+### P0 — Next Session (Full Audit)
+1. Full audit of all 12 pillars — user will provide checklist
+2. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
+3. Generate Full Migration Package Report
 1. ✅ Audit 1 (Dashboard) + Audit 2 (Communications) delivered to user
 2. ✅ Fix a: Mira Notifications datetime bug resolved — now returns success:True with 20 notifications
 3. ✅ Fix b: Paw Points Leaderboard endpoint added (`/api/paw-points/leaderboard`)
