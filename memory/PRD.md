@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-26 (Session 10 — Image Fix + Build Plan Modals + Breed Isolation)
+## Last Updated: 2026-03-26 (Session 15 — Mira Intelligence Fixes + Mobile Audit)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -348,7 +348,25 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 **DineSoulPage.jsx contains an inline DineMobilePage function** (all other pillars have separate *MobilePage.jsx files). Any changes to Dine mobile must edit DineSoulPage.jsx lines 767+. The desktop path (DineSoulPageDesktopLegacy) is strictly locked.
 
 
-## CHANGELOG — March 26, 2026 (Breed Fix Session)
+## SESSION 15 — (2026-03-26) Mira Intelligence Fixes + Mobile Audit
+
+### 3 Critical Mira Intelligence Bugs Fixed
+1. ✅ **Pillar context gap**: `/api/mira/os/stream` now reads `current_pillar` from request body. 12 pillar-specific focus prompts injected into system. Mira no longer answers off-topic (e.g., nutrition on Paperwork pillar redirects correctly).
+2. ✅ **Allergy source gap**: `get_pet_allergies()` updated to include `vault.allergies` (vet-confirmed) and `health.allergies` — Mojo now correctly shows beef + chicken allergies (was only showing chicken from dsa.food_allergies).
+3. ✅ **Duplicate pet-switch messages**: `MiraChatWidget.jsx` now listens ONLY to `petChanged` event (removed `petSelectionChanged` listener) — PillarContext converts all pet switches to `petChanged`, preventing 2-3x duplicate "Switching to X" messages.
+4. ✅ **describe_3_words crash**: Fixed `can only concatenate list (not str) to list` error in stream endpoint — describe_3_words is a string, now safely split on comma.
+5. ✅ **Inline fallback pet data**: MiraChatWidget now sends `pet_name`, `pet_breed`, `soul_answers` inline to stream call so pet context available even without DB lookup.
+6. ✅ **No-duplicate Mira orb**: `hideMiraChatOnPillarPages` prop now handled AFTER all hooks in MiraChatWidget — global widget hides on pillar paths, pillar-specific widget shows instead.
+
+### Mobile Audit (12 Pillars — All PASS)
+7. ✅ All 12 mobile pillar pages pass 390px audit (Dine, Care, Celebrate, Go, Play, Learn, Paperwork, Shop, Services, Adopt, Emergency, Farewell)
+8. ✅ Dashboard Mira widget opens from hamburger menu "Ask Mira" via `openMiraAI` event
+9. ✅ Service booking modal (Step 1 of 4) opens from Services, Care, Go, Play, Learn mobile pages
+10. ✅ ConciergeIntakeModal opens from Dine, Celebrate "Plan Day" CTAs
+
+---
+
+
 ### CRITICAL BUG FIX: Breed Cross-Contamination (Zero Tolerance)
 - Fixed: Bernese Mountain Dog products showing for Shih Tzu Meister in Play
 - Root cause: Products tagged `all_breeds` but with breed names in names were treated as universal
