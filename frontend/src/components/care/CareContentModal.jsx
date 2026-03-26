@@ -467,10 +467,10 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Tab filtering
+  // Tab filtering — soul_made products use product_type (no sub_category)
   const displayed = activeTab === 'All'
     ? products
-    : products.filter(p => p.sub_category === activeTab);
+    : products.filter(p => p.sub_category === activeTab || p.product_type === activeTab);
 
   if (!isOpen) return null;
 
