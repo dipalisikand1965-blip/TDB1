@@ -24,6 +24,7 @@ import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
@@ -87,6 +88,7 @@ export default function PlayMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
+  const [showPlayPlan, setShowPlayPlan] = useState(false);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -198,7 +200,7 @@ export default function PlayMobilePage() {
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
                 "Play isn't optional — it's essential for {petName}'s mental health and happiness."
               </div>
-              <button className="play-cta" onClick={() => { vibe('medium'); request('Play and enrichment ideas', { channel:'play_mira_cta' }); }}>
+              <button className="play-cta" onClick={() => { vibe('medium'); setShowPlayPlan(true); }}>
                 Build {petName}'s Play Plan →
               </button>
             </div>
@@ -319,6 +321,14 @@ export default function PlayMobilePage() {
         onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+      />
+
+      <MiraPlanModal
+        isOpen={showPlayPlan}
+        onClose={() => setShowPlayPlan(false)}
+        pet={currentPet}
+        pillar="play"
+        token={token}
       />
     </PillarPageLayout>
   );

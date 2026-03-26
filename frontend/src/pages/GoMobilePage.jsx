@@ -25,6 +25,7 @@ import GuidedGoPaths from '../components/go/GuidedGoPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
@@ -89,6 +90,7 @@ export default function GoMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
+  const [showGoPlan, setShowGoPlan] = useState(false);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -195,7 +197,7 @@ export default function GoMobilePage() {
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
                 "Every journey with {petName} needs the right gear and the right plan. I'll handle both."
               </div>
-              <button className="go-cta" onClick={() => { vibe('medium'); request('Travel planning', { channel:'go_mira_cta' }); }}>
+              <button className="go-cta" onClick={() => { vibe('medium'); setShowGoPlan(true); }}>
                 Plan {petName}'s Next Trip →
               </button>
             </div>
@@ -314,6 +316,14 @@ export default function GoMobilePage() {
         onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
+      />
+
+      <MiraPlanModal
+        isOpen={showGoPlan}
+        onClose={() => setShowGoPlan(false)}
+        pet={currentPet}
+        pillar="go"
+        token={token}
       />
     </PillarPageLayout>
   );

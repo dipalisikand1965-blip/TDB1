@@ -368,9 +368,9 @@ export default function SoulMadeModal({
                           display:'flex', alignItems:'center',
                           justifyContent:'center',
                         }}>
-                          {p.cloudinary_url || p.mockup_url || p.image_url ? (
+                          {p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url ? (
                             <img
-                              src={p.cloudinary_url || p.mockup_url || p.image_url}
+                              src={p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url}
                               alt={name}
                               style={{ width:'100%', height:'100%', objectFit:'cover' }}
                             />
