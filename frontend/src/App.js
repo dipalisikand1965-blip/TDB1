@@ -409,10 +409,13 @@ function AppRouter() {
         <Route path="/mira" element={<MiraPage />} />
         <Route path="/ask-mira" element={<MiraPage />} />
         
-        {/* MIRA OS - Protected behind login + membership */}
-        <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
+        {/* MIRA OS - Original MiraDemo (restored) */}
+        <Route path="/mira-os" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
         
-        {/* MIRA OS CLASSIC - Legacy MiraDemo for fallback */}
+        {/* MIRA OS SHELL - New header shell navigation (experimental) */}
+        <Route path="/mira-os-shell" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
+        
+        {/* MIRA OS CLASSIC - Legacy alias, same as /mira-os */}
         <Route path="/mira-os-classic" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
         
         {/* Redirect old /mira-demo to /mira-os */}
