@@ -187,6 +187,10 @@ const MiraChatWidget = ({
   const [pets, setPets] = useState([]);
   const [currentPillar, setCurrentPillar] = useState(pillar);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
+  // Persistent memory (MongoDB-backed)
+  const [persistentPreferences, setPersistentPreferences] = useState([]);
+  const [persistentServiceInterests, setPersistentServiceInterests] = useState([]);
+  const memoryFetchedRef = useRef(false); // prevent double-fetch
   
   // Pet-specific recommendations & soul intelligence
   const [petRecommendations, setPetRecommendations] = useState([]);
@@ -614,25 +618,41 @@ const MiraChatWidget = ({
   }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled, generateWelcomeMessage]);
   
   // Load messages for current pillar on mount and pillar change
+  // With persistent memory: keep messages across pillar switches, add pillar marker
   useEffect(() => {
-    const storedMessages = getStoredMessages(pillar);
-    if (storedMessages.length > 0) {
-      // Check if stored welcome message matches current pillar
-      const welcomeMsg = storedMessages.find(m => m.id === 'welcome');
-      const pillarName = config.name.toLowerCase();
-      
-      if (welcomeMsg && welcomeMsg.content.toLowerCase().includes(pillarName)) {
-        // Messages are for this pillar, use them
+    if (!messagesLoaded) {
+      // First load: restore from sessionStorage
+      const storedMessages = getStoredMessages(pillar);
+      if (storedMessages.length > 0) {
         setMessages(storedMessages);
       } else {
-        // Messages are from a different pillar, start fresh
         setMessages([]);
       }
-    } else {
-      setMessages([]);
+      setMessagesLoaded(true);
+      setCurrentPillar(pillar);
+    } else if (pillar !== currentPillar) {
+      // Pillar changed: keep existing messages, add a context pill (not a full clear)
+      setCurrentPillar(pillar);
+      setMessages(prev => {
+        const pillarNames = {
+          dine: 'Dine', care: 'Care', go: 'Go', play: 'Play',
+          learn: 'Learn', celebrate: 'Celebrate', shop: 'Shop',
+          paperwork: 'Paperwork', emergency: 'Emergency',
+          farewell: 'Farewell', adopt: 'Adopt', general: 'Home',
+        };
+        const label = pillarNames[pillar] || pillar;
+        // Only add marker if there are existing messages (not empty/welcome-only)
+        const hasRealMessages = prev.some(m => m.role === 'user');
+        if (!hasRealMessages) return prev;
+        return [...prev, {
+          id: `pillar_switch_${Date.now()}`,
+          role: 'system_marker',
+          content: `Now on ${label} page`,
+          isPillarSwitch: true,
+          timestamp: new Date().toISOString(),
+        }];
+      });
     }
-    setMessagesLoaded(true);
-    setCurrentPillar(pillar);
   }, [pillar, config.name]);
   
   // Store messages when they change - PERSIST per pillar
@@ -641,6 +661,45 @@ const MiraChatWidget = ({
       storeMessages(messages, pillar);
     }
   }, [messages, pillar, messagesLoaded]);
+
+  // Fetch persistent memory from MongoDB when widget opens + pet selected
+  useEffect(() => {
+    const petId = selectedPet?.id || selectedPet?._id;
+    if (!isOpen || !petId || !token || memoryFetchedRef.current) return;
+    memoryFetchedRef.current = true;
+
+    fetch(`${getApiUrl()}/api/mira/memory/${petId}?limit=20`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data) return;
+        if (data.preferences?.length) setPersistentPreferences(data.preferences);
+        if (data.service_interests?.length) setPersistentServiceInterests(data.service_interests);
+        // Prepend last 10 historical messages if widget is fresh
+        if (data.messages?.length && messages.filter(m => m.role === 'user').length === 0) {
+          const historical = data.messages.slice(-10).map(m => ({
+            id: `hist_${m.timestamp}_${m.role}`,
+            role: m.role,
+            content: m.content,
+            pillar: m.pillar,
+            isHistorical: true,
+            timestamp: m.timestamp,
+          }));
+          setMessages(prev => {
+            // Only prepend if there are no real user messages yet
+            const hasRealMessages = prev.some(m => m.role === 'user' && !m.isHistorical);
+            return hasRealMessages ? prev : [...historical, ...prev];
+          });
+        }
+      })
+      .catch(() => { /* silent — memory is optional */ });
+  }, [isOpen, selectedPet?.id, token]);
+
+  // Reset memory fetch flag when pet changes
+  useEffect(() => {
+    memoryFetchedRef.current = false;
+  }, [selectedPet?.id]);
   
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -964,7 +1023,10 @@ const MiraChatWidget = ({
         source: 'chat_widget',
         current_pillar: pillar,
         selected_pet_id: selectedPet?.id || null,
-        history: historyMessages.slice(-10) // Ensure max 10 messages
+        history: historyMessages.slice(-10), // last 10 messages from this session
+        // Persistent memory context (from MongoDB — cross-session)
+        persistent_preferences: persistentPreferences.slice(0, 10),
+        persistent_service_interests: persistentServiceInterests.slice(0, 10),
       };
       
       // Safely serialize the request body - prevent circular reference errors
@@ -1049,6 +1111,23 @@ const MiraChatWidget = ({
           setMessages(prev => prev.map(m =>
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText } : m
           ));
+
+          // Save to MongoDB persistent memory (fire-and-forget)
+          const petId = selectedPet?.id || selectedPet?._id;
+          if (petId && token && fullText) {
+            fetch(`${getApiUrl()}/api/mira/memory/save`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({
+                pet_id: petId,
+                pet_name: selectedPet?.name,
+                messages: [
+                  { role: 'user', content: messageToSend, pillar },
+                  { role: 'assistant', content: fullText, pillar },
+                ],
+              }),
+            }).catch(() => {});
+          }
 
           // ── ElevenLabs / TTS — speak the FULL completed text once ──
           if (voiceEnabled && fullText) {
@@ -1210,6 +1289,23 @@ const MiraChatWidget = ({
           pet: selectedPet,
           channel: 'mira_chat_widget',
         });
+
+        // Save to MongoDB persistent memory (fire-and-forget)
+        const petId = selectedPet?.id || selectedPet?._id;
+        if (petId && token && displayContent) {
+          fetch(`${getApiUrl()}/api/mira/memory/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({
+              pet_id: petId,
+              pet_name: selectedPet?.name,
+              messages: [
+                { role: 'user', content: messageToSend, pillar },
+                { role: 'assistant', content: displayContent.slice(0, 2000), pillar },
+              ],
+            }),
+          }).catch(() => {});
+        }
         
         // Schedule product card reveal — 800ms after response renders, only if safe
         if (shouldShowProducts(displayContent)) {
@@ -1551,6 +1647,17 @@ const MiraChatWidget = ({
           >
               {(messages || []).map((msg) => {
                 if (!msg || !msg.id) return null;
+                // Render pillar-switch markers as centered pills
+                if (msg.isPillarSwitch || msg.role === 'system_marker') {
+                  return (
+                    <div key={msg.id} className="flex justify-center my-2">
+                      <span className="text-[10px] text-gray-400 bg-white/5 border border-white/10 rounded-full px-3 py-0.5">
+                        {msg.content}
+                      </span>
+                    </div>
+                  );
+                }
+                // Render historical messages with a subtle marker
                 return (
                 <div
                   key={msg.id}

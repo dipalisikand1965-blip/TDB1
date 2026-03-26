@@ -42,6 +42,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { bookViaConcierge } from "../utils/MiraCardActions";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import { applyMiraFilter, filterBreedProducts } from "../hooks/useMiraFilter";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
@@ -916,10 +917,8 @@ function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   // apiProducts keyed by dim.id now
   const rawByTab  = apiProducts[dim.id] || {};
   const allRaw    = Object.values(rawByTab).flat();
-  const allergies = getAllergies(pet);
-  const size      = getPetSize(pet);
-  const condition = getHealthCondition(pet);
-  const intelligent = applyMiraIntelligence(allRaw, allergies, size, condition, pet);
+  // Use centralized v2 Mira filter (breed + allergen + size + life stage scoring)
+  const intelligent = applyMiraFilter(filterBreedProducts(allRaw, pet?.breed), pet);
   const tabList   = ["All", ...Object.keys(rawByTab)];
   const [activeTab, setActiveTab] = useState("All");
   const [dimTab, setDimTab] = useState("products");
@@ -1877,12 +1876,10 @@ const GoSoulPage = () => {
       .then(r => r.ok ? r.json() : null)
       .then(async data => {
         if (!data?.products?.length) return;
+        // Apply v2 breed filter before grouping (synonym-aware)
+        const breedFiltered = filterBreedProducts(data.products, petData?.breed);
         const grouped = {};
-        data.products.forEach(p => {
-          // Skip soul/breed products for other breeds
-          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
-
+        breedFiltered.forEach(p => {
           const catLower = (p.category || "").toLowerCase();
           let matched = false;
           Object.entries(DIM_ID_TO_KEYWORDS).forEach(([dimId, keywords]) => {
