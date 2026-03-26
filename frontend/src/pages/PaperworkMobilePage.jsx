@@ -40,13 +40,14 @@ function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'
 
 
 const PW_DIMS = [
-  { id:"identity",  icon:"🪪", label:"Identity & Safety",      dbCategory:"identity",       accent:"#5B21B6", bg:"#EDE9FE" },
-  { id:"health",    icon:"🏥", label:"Health Records",         dbCategory:"health",         accent:"#0369A1", bg:"#E0F2FE" },
-  { id:"travel",    icon:"✈️",  label:"Travel Documents",       dbCategory:"travel",         accent:"#15803D", bg:"#DCFCE7" },
-  { id:"insurance", icon:"🛡️", label:"Insurance & Finance",    dbCategory:"insurance",      accent:"#B45309", bg:"#FEF3C7" },
-  { id:"breeds",    icon:"📚", label:"Breed & Care Guides",    dbCategory:"breed",          accent:"#B91C1C", bg:"#FEE2E2" },
-  { id:"advisory",  icon:"💡", label:"Expert Advisory",        dbCategory:"advisory",       accent:"#0D9488", bg:"#CCFBF1" },
-  { id:"soul",      icon:"🌟", label:"Soul Documents",         dbCategory:"soul_documents", accent:"#6D28D9", bg:"#F3E5F5" },
+  { id:"identity",  icon:"🪪", label:"Identity & Safety",      dbCategory:"Identity & Safety",    accent:"#5B21B6", bg:"#EDE9FE" },
+  { id:"health",    icon:"🏥", label:"Health Records",         dbCategory:"Health Records",       accent:"#0369A1", bg:"#E0F2FE" },
+  { id:"travel",    icon:"✈️",  label:"Travel Documents",       dbCategory:"Travel Documents",     accent:"#15803D", bg:"#DCFCE7" },
+  { id:"insurance", icon:"🛡️", label:"Insurance & Finance",    dbCategory:"Insurance & Finance",  accent:"#B45309", bg:"#FEF3C7" },
+  { id:"breeds",    icon:"📚", label:"Breed & Care Guides",    dbCategory:"Breed & Advisory",     accent:"#B91C1C", bg:"#FEE2E2" },
+  { id:"advisory",  icon:"💡", label:"Expert Advisory",        dbCategory:"Expert Advisory",      accent:"#0D9488", bg:"#CCFBF1" },
+  { id:"soul",      icon:"🌟", label:"Soul Documents",         dbCategory:"Soul Documents",       accent:"#6D28D9", bg:"#F3E5F5" },
+  { id:"soul_made", icon:"✦",  label:"Soul Made™",             dbCategory:null,                   accent:"#7C3AED", bg:"#EDE9FE" },
 ];
 
 const ADVISORY_SERVICES = [
@@ -63,8 +64,20 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
   const [advisory, setAdvisory] = useState([]);
 
   useEffect(() => {
+    // soul_made dim: use breed-products API (same as desktop)
+    if (dim.id === 'soul_made') {
+      const breed = pet?.breed || '';
+      if (!breed) return;
+      fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breed)}&pillar=paperwork&limit=20`, {
+        headers: token ? { Authorization:`Bearer ${token}` } : {}
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { setProducts((d?.products || d || []).slice(0, 20)); })
+        .catch(() => {});
+      return;
+    }
     if (!dim.dbCategory) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&sub_category=${encodeURIComponent(dim.dbCategory)}&limit=30`, {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(dim.dbCategory)}&limit=30`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
       .then(r => r.ok ? r.json() : null)
