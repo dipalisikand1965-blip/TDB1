@@ -214,6 +214,8 @@ def get_pet_allergies(pet: dict) -> List[str]:
         (pet.get("doggy_soul_answers") or {}).get("allergies"),
         (pet.get("doggy_soul_answers") or {}).get("food_allergies"),
         (pet.get("health_vault") or {}).get("allergies"),
+        (pet.get("vault") or {}).get("allergies"),         # vault.allergies — vet-confirmed
+        (pet.get("health") or {}).get("allergies"),        # health.allergies — health records
         pet.get("insights", {}).get("key_flags", {}).get("allergy_list")
     ]
     
@@ -18721,11 +18723,12 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid body")
 
-    message     = body.get("message", "")
-    pet_id      = body.get("pet_id") or body.get("selected_pet_id")
-    pet_name    = body.get("pet_name", "your dog")
+    message      = body.get("message", "")
+    pet_id       = body.get("pet_id") or body.get("selected_pet_id")
+    pet_name     = body.get("pet_name", "your dog")
     soul_answers = body.get("soul_answers", {})
-    history     = body.get("history", [])
+    history      = body.get("history", [])
+    current_pillar = body.get("current_pillar") or body.get("pillar") or "general"
 
     if not message:
         raise HTTPException(status_code=400, detail="Message required")
@@ -18734,6 +18737,23 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
     api_key = os.environ.get("EMERGENT_LLM_KEY")
     if not api_key:
         raise HTTPException(status_code=500, detail="LLM key not configured")
+
+    # Pillar-specific focus instructions so Mira stays on-topic
+    PILLAR_FOCUS = {
+        "celebrate": "You are on the Celebrate pillar. Focus on birthday celebrations, cakes, treats, party planning and special occasions for the pet.",
+        "dine":      "You are on the Dine pillar. Focus on food, meals, treats, restaurants, nutrition, fresh food and dietary advice for the pet.",
+        "care":      "You are on the Care pillar. Focus on grooming, vet visits, health, wellness, spa treatments and preventive care for the pet.",
+        "go":        "You are on the Go pillar. Focus on travel, boarding, transport, pet-friendly hotels, staycations and adventures for the pet.",
+        "play":      "You are on the Play pillar. Focus on activities, fitness, exercise, events, dog parks, socialisation and fun for the pet.",
+        "learn":     "You are on the Learn pillar. Focus on training, behaviour, obedience, courses, books and skill development for the pet.",
+        "paperwork": "You are on the Paperwork pillar. Focus ONLY on documentation, registration, pet passports, insurance, licences, vaccination records and legal paperwork for the pet. Do NOT answer food or nutrition questions here.",
+        "emergency": "You are on the Emergency pillar. This is urgent. Focus on immediate safety, emergency vets, first aid, poison helplines and crisis support.",
+        "farewell":  "You are on the Farewell pillar. This is sensitive. Focus on end-of-life care, cremation, memorials, grief support and celebrating the pet's life.",
+        "adopt":     "You are on the Adopt pillar. Focus on adoption, rescue, fostering, breed matching and bringing a new pet home.",
+        "shop":      "You are on the Shop pillar. Focus on products, merchandise, accessories and gift recommendations for the pet.",
+        "services":  "You are on the Services pillar. Focus on booking services, concierge requests, grooming, training, vet visits and all service categories.",
+    }
+    pillar_focus = PILLAR_FOCUS.get(current_pillar, "")
 
     # Build pet context
     pet_context = f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company. Be warm, personal and specific. Always use their name."
@@ -18744,35 +18764,52 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
             if pet:
                 pet_name = pet.get("name", pet_name)
                 soul = pet.get("doggy_soul_answers") or soul_answers or {}
-                vault = pet.get("vault", {})
-                health = pet.get("health", {})
-                # Vault allergies take priority (vet-confirmed)
-                vault_allergies = vault.get("allergies", [])
-                allergy_names = [a.get("name","") if isinstance(a, dict) else str(a) for a in vault_allergies]
-                if not allergy_names:
-                    raw = soul.get("food_allergies", health.get("allergies", []))
-                    if isinstance(raw, str):
-                        allergy_names = [raw] if raw not in ["none","none known","no_allergies",""] else []
-                    elif isinstance(raw, list):
-                        allergy_names = [a for a in raw if a not in ["none","none known","no_allergies",""]]
-                allergy_str = ", ".join(allergy_names) if allergy_names else "none known"
-                fav_treat = soul.get("favourite_treat", soul.get("favorite_treat", ""))
+                # Use get_pet_allergies() — merges ALL 6 sources (vault, preferences, known_allergies, dsa, health)
+                allergy_list = get_pet_allergies(pet)
+                allergy_str = ", ".join(allergy_list) if allergy_list else "none known"
+                # Favourite treat — check all locations
+                fav_treat = (
+                    soul.get("favourite_treat")
+                    or soul.get("favorite_treat")
+                    or (pet.get("preferences") or {}).get("favoriteFoods")
+                    or (pet.get("preferences") or {}).get("favorite_foods")
+                    or ""
+                )
+                if isinstance(fav_treat, list):
+                    fav_treat = ", ".join(fav_treat)
                 personality = soul.get("personality_tags", [])
-                personality_str = ", ".join(personality[:5]) if personality else ""
+                describe_words = soul.get("describe_3_words", [])
+                if isinstance(personality, str):
+                    personality = [x.strip() for x in personality.split(',') if x.strip()]
+                if isinstance(describe_words, str):
+                    describe_words = [x.strip() for x in describe_words.split(',') if x.strip()]
+                personality_all = (personality or []) + (describe_words or [])
+                personality_str = ", ".join(personality_all[:5]) if personality_all else ""
+                # Life stage
+                age = pet.get("age") or (pet.get("identity") or {}).get("age_years") or 0
+                try:
+                    age = float(age)
+                except (ValueError, TypeError):
+                    age = 0
+                life_stage = "puppy" if age < 1 else ("senior" if age >= 8 else "adult")
                 pet_context = (
                     f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
-                    f"About {pet_name}: Breed={pet.get('breed','unknown')}, "
-                    f"Gender={pet.get('gender','unknown')}, "
-                    f"Soul score={pet.get('overall_score',0)}%, "
-                    f"Allergies={allergy_str} — NEVER suggest these foods.\n"
+                    f"Pet profile: Name={pet_name}, Breed={pet.get('breed','unknown')}, "
+                    f"Gender={pet.get('gender','unknown')}, Age={age}y ({life_stage}), "
+                    f"Soul score={pet.get('overall_score',0)}%.\n"
+                    f"ALLERGIES: {allergy_str} — NEVER EVER suggest or recommend these foods or ingredients.\n"
                 )
                 if fav_treat:
-                    pet_context += f"Favourite treat: {fav_treat}. "
+                    pet_context += f"Favourite treat: {fav_treat}.\n"
                 if personality_str:
-                    pet_context += f"Personality: {personality_str}. "
-                pet_context += f"\nBe warm, personal and specific. Always use {pet_name}'s name. You KNOW this dog deeply."
-        except Exception:
-            pass
+                    pet_context += f"Personality: {personality_str}.\n"
+                pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
+        except Exception as e:
+            logger.warning(f"[Mira Stream] Pet lookup failed for {pet_id}: {e}")
+
+    # Add pillar focus AFTER pet context (so it's the last instruction)
+    if pillar_focus:
+        pet_context += f"\n\nCURRENT PAGE CONTEXT: {pillar_focus}"
 
     # Build messages
     messages = [{"role": "system", "content": pet_context}]
