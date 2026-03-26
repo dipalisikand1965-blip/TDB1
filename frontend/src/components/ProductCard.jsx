@@ -213,6 +213,7 @@ const PILLAR_CROSS_SELL_TITLES = {
 
 const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
+  const [miraExpanded, setMiraExpanded] = useState(false);
   const { user, token } = useAuth();
   const isServiceProduct = (product.product_type === 'service') || (product.category === 'service');
   const effectiveSelectedPet = selectedPet || pet;
@@ -569,6 +570,37 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             </p>
           )}
           
+          {/* CTA — opens modal; modal handles Concierge® for services */}
+          {/* Mira explains why — expandable soul profile reasoning */}
+          {product.mira_hint && product.mira_hint !== 'For specific breeds' && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setMiraExpanded(x => !x); }}
+                data-testid={`mira-explains-${product.id}`}
+                style={{
+                  display:'flex', alignItems:'center', gap:4,
+                  background:'none', border:'none', cursor:'pointer',
+                  padding:'3px 0', width:'100%', textAlign:'left',
+                }}
+              >
+                <span style={{ fontSize:9, fontWeight:800, color:'#9B59B6', letterSpacing:'0.08em', lineHeight:1 }}>✦ MIRA'S PICK</span>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ flexShrink:0, transition:'transform 0.2s', transform: miraExpanded ? 'rotate(180deg)' : 'none', color:'#9B59B6' }}>
+                  <path d="M2 3.5L5 6.5L8 3.5" stroke="#9B59B6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              {miraExpanded && (
+                <div style={{
+                  fontSize:11, color:'#555', lineHeight:1.55,
+                  padding:'6px 8px', borderRadius:6, marginTop:2,
+                  background:'rgba(155,89,182,0.07)',
+                  borderLeft:'2px solid #9B59B6',
+                  animation:'fadeIn 0.18s ease',
+                }}>
+                  {product.mira_hint}
+                </div>
+              )}
+            </div>
+          )}
           {/* CTA — opens modal; modal handles Concierge® for services */}
           <button
             onClick={(e) => { e.stopPropagation(); openDetails(); }}

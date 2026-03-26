@@ -60,6 +60,10 @@ class NotificationPreferences(BaseModel):
     reorder_suggestions: bool = True
     quiet_hours_start: Optional[int] = 22  # 10 PM
     quiet_hours_end: Optional[int] = 8     # 8 AM
+    # WhatsApp Automation toggles
+    whatsapp_daily_digest: bool = True
+    whatsapp_birthday_reminder: bool = True
+    whatsapp_medication_reminder: bool = True
 
 
 class NotificationPayload(BaseModel):
@@ -148,7 +152,10 @@ async def get_notification_preferences(user_email: str):
             "grooming_reminders": True,
             "reorder_suggestions": True,
             "quiet_hours_start": 22,
-            "quiet_hours_end": 8
+            "quiet_hours_end": 8,
+            "whatsapp_daily_digest": True,
+            "whatsapp_birthday_reminder": True,
+            "whatsapp_medication_reminder": True,
         }
     
     return prefs
