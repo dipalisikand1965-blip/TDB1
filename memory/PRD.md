@@ -223,6 +223,17 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 1. ✅ filterBreedProducts v2 in useMiraFilter.js — checks breed_tags field first, then falls back to name-based check
 2. ✅ applyMiraFilter Step 1b — filters out breed-specific products that don't match the pet
 3. ✅ mira_hint fixed — wrong-breed products now show "For specific breeds" instead of "Chosen for X by Mira"
+
+## SESSION 10 — (2026-03-26) Celebrate Parity + Mira Explains Why + Concierge + Automations
+1. ✅ Step 3: Side menu already correct (Ask Mira = widget, Pet Soul → /my-pets)
+2. ✅ Step 4: Celebrate mobile parity — BirthdayCountdown, CelebrationMemoryWall, MiraSoulNudge added
+3. ✅ Step 5: "Mira explains why" expandable row on ALL ProductCard instances (✦ MIRA'S PICK → one-tap expansion)
+4. ✅ Mira OS: Added freeform "Send to Concierge®" text area + 4 quick-action preset buttons
+5. ✅ Mira OS: Route /mira-os now points to MiraOSPage (was MiraDemoPage); classic at /mira-os-classic
+6. ✅ Dashboard automation toggles: WhatsApp Daily Digest, Birthday, Medication toggles in OverviewTab
+7. ✅ Birthday Builder: Featured breed cake row at top of Cakes tab + AllBreedCakesSection at bottom
+8. ✅ WhatsApp test message sent to +91 97399 08844 (status 202 = delivered)
+
 4. ✅ 14 pages updated — all local copies of filterBreedProducts replaced with import from useMiraFilter.js
 5. ✅ ShopSoulPage.jsx — added missing filterBreedProducts import (pre-existing bug, picks were silently failing)
 6. ✅ Streak counter — backend tracks streak_days in pawrent_journey_progress, PawrentJourneyCard shows 🔥 Xd streak badge
