@@ -204,3 +204,37 @@
 
 ### Testing
 - Testing iteration 227: 100% frontend pass, 93% backend (1 timeout on AI endpoint, not real bug)
+
+## 2026-03-26 — Session 14 Bug Fixes (SOS + Shop Parity + Celebrate Plan Day)
+
+### SOS Fix: Admin ServiceBox Null Crash
+- `ServiceBox.jsx`: Wrapped Activate/Deactivate button in `{selectedService && (...)}` guard
+- Prevents `Cannot read properties of null (reading 'is_active')` when dialog opens before a service is selected
+
+### Shop Mobile Category Pills — Full Desktop Parity
+- `ShopMobilePage.jsx` SHOP_CATS updated from 6 pills to 7, matching desktop exactly:
+  - Old: for_pet, bakery (Bakery), breed (Breed), browse, hampers, merch
+  - New: mira (Mira's Picks), bakery (The Doggy Bakery), breed (Breed Collection), treats, hampers (Hampers & Gifts), merch, toys
+- Default active tab: 'mira' (was 'for_pet')
+- Added `treats` tab → DoggyBakerySection with presetFilter='treats'
+- Added `toys` tab → BreedCollectionSection
+- handleSeePicks: now sets mainTab to 'mira' (was 'for_pet')
+
+### Shop "See All" → Internal Browse Toggle
+- Replaced `<a href="https://thedoggybakery.com">See all X products on thedoggybakery.com →</a>` with internal button
+- New button: `Browse all {items.length} products from The Doggy Bakery →`  
+- `data-testid="bakery-see-all-btn"` — clicking sets `showAll=true`, reveals ALL items (not just 20)
+- DoggyBakerySection: accepts `presetFilter` prop for treats/hampers/etc filtering
+
+### Celebrate "Plan Day" → ConciergeIntakeModal
+- `CelebrateMobilePage.jsx`: Replaced `CelebrateIntakeSheet` with `ConciergeIntakeModal`
+- `ConciergeIntakeModal` was already imported but unused — now properly wired
+- Shows beautiful 9-step celebration type picker matching Pic 2 design
+- URL param detection: `useSearchParams`, `?plan=1` → auto-opens modal
+
+### PawrentJourney "Plan the day" → Auto-opens ConciergeIntakeModal
+- `PawrentJourney.jsx`: Celebrate step navigates to `/celebrate?plan=1` (was plain `/celebrate`)
+- `App.js` routing bug found+fixed by testing agent: Added `CelebrateSoulRedirect` component to preserve query params when redirecting `/celebrate` → `/celebrate-soul?plan=1`
+
+### Testing
+- Iteration 228: 100% backend (12/12), 100% frontend (all 5 features verified + 1 routing bug found and fixed)
