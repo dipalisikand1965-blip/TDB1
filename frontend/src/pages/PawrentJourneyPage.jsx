@@ -1,10 +1,13 @@
 /**
  * PawrentJourneyPage.jsx
  * Route wrapper for /pawrent-journey
- * Renders the full Pawrent Journey experience
  */
-import { PawrentJourneyPage as PawrentJourneyContent } from '../components/pawrent/PawrentJourney';
+import PawrentJourney from '../components/pawrent/PawrentJourney';
+import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
 
 export default function PawrentJourneyPage() {
-  return <PawrentJourneyContent />;
+  const { token } = useAuth();
+  const { currentPet } = usePillarContext();
+  return <PawrentJourney pet={currentPet} token={token} />;
 }
