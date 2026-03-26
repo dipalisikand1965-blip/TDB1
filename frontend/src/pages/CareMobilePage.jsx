@@ -123,6 +123,8 @@ function getCareDims(pet) {
     { id:"soul_made",   icon:"✦",  label:"Soul Made™",    sub:"Custom-made for your dog",                                            mira:"" },
   ];
 }
+
+export default function CareMobilePage() {
   const { token } = useAuth();
   const navigate = useNavigate();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
@@ -141,6 +143,8 @@ function getCareDims(pet) {
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
   const [showCarePlan, setShowCarePlan] = useState(false);
   const [vaultData, setVaultData] = useState(null);
+  const [dimTab, setDimTab] = useState('products');
+  const [subCat, setSubCat] = useState('All');
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -173,7 +177,7 @@ function getCareDims(pet) {
     if (!catName) return;
 
     setDimLoading(true);
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&category=${encodeURIComponent(catName)}&limit=40`,
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&category=${encodeURIComponent(catName)}&limit=40&breed=${encodeURIComponent(currentPet?.breed||'')}`,
       { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
@@ -220,6 +224,8 @@ function getCareDims(pet) {
   const careDims = getCareDims(currentPet);
   const products = dimProducts[activeDim] || [];
   const miraPick = products.find(p => p.miraPick) || products[0] || null;
+  const intelligent = products;
+  const subCats = [];
 
   return (
     <PillarPageLayout pillar="care" hideHero hideNavigation>
@@ -339,28 +345,29 @@ function getCareDims(pet) {
               </div>
             ) : (
               <div style={{ padding:'16px' }}>
-                {/* Sub-category pills */}
-                {subCats.length > 1 && (
-                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
-                    {subCats.map(cat => (
-                      <button key={cat} onClick={() => setSubCat(cat)}
-                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid ${subCat===cat?G.sage:G.border}`,
-                          background:subCat===cat?G.sage:'#fff',
-                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
-                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                {/* Dim Pills — EXACT PARITY WITH DESKTOP */}
+                <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:14, paddingBottom:4, WebkitOverflowScrolling:'touch' }}>
+                  {careDims.map(d => (
+                    <button key={d.id} onClick={() => { vibe(); setActiveDim(d.id); }}
+                      data-testid={`care-dim-${d.id}`}
+                      style={{
+                        flexShrink:0, padding:'8px 14px', borderRadius:20, fontSize:13, fontWeight:600,
+                        cursor:'pointer', border:'none', whiteSpace:'nowrap',
+                        background: activeDim===d.id ? G.sage : 'rgba(64,145,108,0.12)',
+                        color: activeDim===d.id ? '#fff' : G.darkText,
+                        transition:'all 0.15s',
+                      }}>
+                      {d.icon} {d.label}
+                    </button>
+                  ))}
+                </div>
+                {dimLoading && <div style={{ textAlign:'center', padding:'8px 0', fontSize:12, color:'#888' }}>Loading…</div>}
 
-                {/* Mira Intelligence stats */}
-                {allRaw.length > 0 && (
-                  <div style={{ display:'flex', gap:12, marginBottom:12, fontSize:14, color:'#888' }}>
-                    <span style={{ color:'#27AE60', fontWeight:700 }}>✓ {intelligent.length} safe for {petName}</span>
-                    {allRaw.length - intelligent.length > 0 && (
-                      <span style={{ color:'#E87722' }}>✗ {allRaw.length - intelligent.length} filtered (allergens)</span>
-                    )}
+                {/* Product count */}
+                {products.length > 0 && (
+                  <div style={{ marginBottom:12, fontSize:13, color:'#888' }}>
+                    <span style={{ color:G.sage, fontWeight:600 }}>✓ {products.length} products for {petName}</span>
+                    {allergies.length > 0 && <span> · {allergies[0]}-free filter on</span>}
                   </div>
                 )}
 

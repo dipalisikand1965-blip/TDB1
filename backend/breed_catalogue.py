@@ -296,37 +296,53 @@ async def get_breed_products(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0)
 ):
-    """Get breed-aware products with filtering"""
+    """Get breed-aware products with filtering.
+    STRICT RULE: breed_products are ALWAYS breed-specific.
+    A Labrador only sees Labrador products. NEVER cross-breed.
+    """
     query = {"is_active": True}
     
     if category:
         query["category"] = category
     if pillar:
         query["pillars"] = pillar
+
+    # STRICT BREED FILTER: when breed is specified, only return that breed's products
+    # We do this via the `breed` field (now correctly set by the fix script)
     if breed:
         normalized_breed = normalize_breed(breed)
-        # Check breed_tags, breed_tags_full, who_for, AND direct breed field
-        query["$or"] = [
-            {"breed_tags": {"$size": 0}},                         # Universal products
-            {"breed_tags": normalized_breed},                      # Simple list match
-            {"breed_tags_full.breeds": normalized_breed},          # Full structure match
-            {"who_for": {"$regex": breed, "$options": "i"}},       # who_for field
-            {"breed": normalized_breed},                           # Direct breed field (flat art + new products)
+        # Normalised form for tag matching (e.g. "shih_tzu" or "shih tzu")
+        breed_tag_forms = [
+            normalized_breed,
+            normalized_breed.lower(),
+            normalized_breed.replace("_", " "),
+            breed.lower(),
+            breed.lower().replace(" ", "_"),
         ]
-    if size:
         query["$or"] = [
-            {"breed_tags_full.sizes": {"$size": 0}},
-            {"breed_tags_full.sizes": size}
+            {"breed": {"$in": breed_tag_forms}},
+            {"breed_tags": {"$elemMatch": {"$in": breed_tag_forms}}},
+            {"breed_tags_full.breeds": {"$in": breed_tag_forms}},
+            {"who_for": {"$regex": normalized_breed.replace("_", " "), "$options": "i"}},
         ]
-    if age_group:
-        query["$or"] = [
-            {"breed_tags_full.age_groups": {"$size": 0}},
-            {"breed_tags_full.age_groups": age_group}
-        ]
-    
+
     total = await db.breed_products.count_documents(query)
-    products = await db.breed_products.find(query, {"_id": 0}).skip(offset).limit(limit).to_list(limit)
-    
+    raw_products = await db.breed_products.find(query, {"_id": 0}).skip(offset).limit(limit).to_list(limit)
+
+    # Post-fetch safety: remove products whose name belongs to a DIFFERENT breed
+    if breed:
+        req = (breed or "").lower().strip().replace("_", " ")
+        from pillar_products_routes import KNOWN_BREED_NAMES, _detect_product_breed
+        def is_correct_breed(p):
+            name_lower = (p.get("name") or "").lower()
+            detected = _detect_product_breed(name_lower)
+            if detected:
+                return req in detected or detected in req
+            return True  # no breed in name → keep
+        products = [p for p in raw_products if is_correct_breed(p)]
+    else:
+        products = raw_products
+
     return {
         "products": products,
         "total": total,
