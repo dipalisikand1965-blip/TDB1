@@ -21891,6 +21891,7 @@ async def generate_image_universal(
     prompt = data.get("prompt", "").strip()
     entity_type = data.get("entity_type", "")
     entity_id = data.get("entity_id", "")
+    save_prompt_flag = data.get("save_prompt", False)
 
     if not prompt:
         raise HTTPException(status_code=400, detail="prompt is required")
@@ -21911,6 +21912,7 @@ async def generate_image_universal(
         if col is not None:
             update_fields = {
                 "ai_image_prompt": prompt,
+                "ai_prompt": prompt,  # save the prompt for future reference
                 "image_url": url,
                 "cloudinary_url": url,
                 "image": url,
@@ -21949,6 +21951,42 @@ async def sync_image_fields(username: str = Depends(verify_admin_auth)):
     results["products_master_synced"] = pm_result.modified_count
 
     return {"success": True, "synced": results}
+
+
+@api_router.post("/admin/cleanup-broken-images")
+async def cleanup_broken_images(username: str = Depends(verify_admin_auth)):
+    """Remove broken emergentagent.com staging URLs from image fields in all collections."""
+    results = {}
+
+    # 1. products_master — unset `image` field with broken staging URLs
+    r1 = await db.products_master.update_many(
+        {"image": {"$regex": "emergentagent.com", "$options": "i"}},
+        {"$unset": {"image": ""}}
+    )
+    results["products_master_image_cleaned"] = r1.modified_count
+
+    # 2. products_master — pull broken URLs from images[] array
+    r2 = await db.products_master.update_many(
+        {"images": {"$elemMatch": {"$regex": "emergentagent.com", "$options": "i"}}},
+        {"$pull": {"images": {"$regex": "emergentagent.com", "$options": "i"}}}
+    )
+    results["products_master_images_array_cleaned"] = r2.modified_count
+
+    # 3. breed_products — clean image field
+    r3 = await db.breed_products.update_many(
+        {"image": {"$regex": "emergentagent.com", "$options": "i"}},
+        {"$unset": {"image": ""}}
+    )
+    results["breed_products_image_cleaned"] = r3.modified_count
+
+    # 4. bundles
+    r4 = await db.bundles.update_many(
+        {"image": {"$regex": "emergentagent.com", "$options": "i"}},
+        {"$unset": {"image": ""}}
+    )
+    results["bundles_image_cleaned"] = r4.modified_count
+
+    return {"success": True, "cleaned": results}
 
 
 

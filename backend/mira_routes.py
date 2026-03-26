@@ -27233,3 +27233,73 @@ async def create_ticket_from_concierge_pick(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# /api/mira/plan — Claude-powered personalised pillar plan for a pet
+# ─────────────────────────────────────────────────────────────────────────────
+@router.post("/plan")
+async def get_mira_plan(
+    request: Request,
+):
+    """
+    Returns 4 AI-personalised plan cards for a pet's specific pillar.
+    Uses claude-haiku-4-5 for fast, cost-effective generation.
+    """
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        from server import db as _db_plan
+        import json
+        import re
+        import uuid
+
+        body = await request.json()
+        pet_id = body.get("pet_id", "")
+        pillar = body.get("pillar", "learn")
+
+        # Fetch pet profile
+        pet = None
+        if pet_id and _db_plan is not None:
+            pet = await _db_plan.pets.find_one(
+                {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+                {"_id": 0}
+            )
+
+        pet_name = (pet or {}).get("name", "your dog")
+        breed    = (pet or {}).get("breed", "Indie")
+        age      = (pet or {}).get("age", "adult")
+        allergies = (pet or {}).get("allergies", []) or []
+        loves    = (pet or {}).get("favorite_foods", []) or (pet or {}).get("likes", []) or []
+        health   = (pet or {}).get("health_conditions", []) or []
+
+        system_msg = f"""You are Mira, the soul-connected AI companion of The Doggy Company.
+Generate 4 personalised {pillar} recommendations for {pet_name}, a {breed} aged {age}.
+Soul profile: allergies={allergies or 'none'}, loves={loves or 'unknown'}, health={health or 'healthy'}.
+Return ONLY a valid JSON object with this exact shape:
+{{"cards": [{{"icon": "single emoji", "title": "short title", "reason": "1-2 sentence personalised reason", "action": "CTA text", "concierge": true or false}}]}}
+concierge=true means it needs to be arranged via The Doggy Company Concierge. No other text or explanation."""
+
+        llm_key = os.environ.get("EMERGENT_LLM_KEY") or os.environ.get("OPENAI_API_KEY", "")
+        if not llm_key:
+            raise ValueError("No LLM key configured")
+
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=f"mira_plan_{uuid.uuid4().hex[:8]}",
+            system_message=system_msg,
+        ).with_model("anthropic", "claude-haiku-4-5-20251001")
+
+        resp = await chat.send_message(UserMessage(text=f"Generate the {pillar} plan now."))
+
+        # Parse the JSON from Claude's response
+        json_match = re.search(r'\{.*\}', resp, re.DOTALL)
+        if json_match:
+            plan_data = json.loads(json_match.group())
+            return {"cards": plan_data.get("cards", []), "pet": pet_name, "pillar": pillar}
+
+        raise ValueError("Could not parse plan JSON from Claude response")
+
+    except Exception as e:
+        logger.warning(f"[MIRA_PLAN] Claude plan failed: {e} — returning empty for frontend fallback")
+        return {"cards": [], "pet": "", "pillar": pillar}
+

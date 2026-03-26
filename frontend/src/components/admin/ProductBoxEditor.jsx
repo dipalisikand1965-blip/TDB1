@@ -1661,18 +1661,25 @@ const ProductBoxEditor = ({
                 </div>
               </div>
 
-              {/* Custom AI Prompt */}
+              {/* Custom AI Prompt — pre-filled, editable, saves to ai_prompt */}
               <div className="mt-4">
                 <AIImagePromptField
                   entityType="product"
                   entityId={product?.id}
-                  currentPrompt={getValue('ai_image_prompt', '')}
-                  onPromptChange={val => updateField('ai_image_prompt', val)}
-                  onImageGenerated={(url) => {
+                  currentPrompt={getValue('ai_image_prompt', '') || getValue('ai_prompt', '')}
+                  productName={getValue('name', '')}
+                  pillar={getValue('pillar', '') || getValue('category', '')}
+                  category={getValue('category', '')}
+                  currentImageUrl={getValue('image_url', '') || getValue('watercolor_image', '')}
+                  onPromptChange={val => { updateField('ai_image_prompt', val); updateField('ai_prompt', val); }}
+                  onImageGenerated={(url, usedPrompt) => {
                     updateField('media.primary_image', url);
                     updateField('image', url);
                     updateField('image_url', url);
                     updateField('thumbnail', url);
+                    updateField('watercolor_image', url);
+                    updateField('cloudinary_url', url);
+                    if (usedPrompt) { updateField('ai_prompt', usedPrompt); updateField('ai_image_prompt', usedPrompt); }
                   }}
                 />
               </div>
