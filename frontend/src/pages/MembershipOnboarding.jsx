@@ -2064,7 +2064,7 @@ const MembershipOnboarding = () => {
                       }}
                       className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-white font-bold text-sm"
                       style={{ background: 'linear-gradient(135deg, #FF6B9D, #C44DFF)', border: 'none', cursor: 'pointer' }}
-                      data-testid="skip-payment-btn"
+                      data-testid="start-trial-btn"
                     >
                       {loading ? 'Creating account...' : '✦ Start Free Trial — 30 days, no card needed'}
                     </button>

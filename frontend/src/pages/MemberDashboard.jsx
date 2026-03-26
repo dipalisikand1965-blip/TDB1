@@ -1538,6 +1538,7 @@ const MemberDashboard = () => {
                 setSettings={setSettings}
                 setShowVoiceActions={setShowVoiceActions}
                 toast={toast}
+                token={token}
               />
             </Suspense>
           </TabsContent>
