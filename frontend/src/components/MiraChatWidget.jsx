@@ -755,57 +755,81 @@ const MiraChatWidget = ({
     }
   };
   
-  // ElevenLabs TTS - Premium voice for Mira
+  // ElevenLabs Eloise — direct frontend call, key rotation, all devices
+  const ELOISE_VOICE_ID = 'AZnzlk1XvdvUeBnXmlld';
+  const ELEVEN_KEYS = [
+    process.env.REACT_APP_ELEVEN_LABS_KEY_1,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_2,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_3,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_4,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_5,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_6,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_7,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_8,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_9,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_10,
+    process.env.REACT_APP_ELEVEN_LABS_KEY_11,
+  ].filter(Boolean); // remove undefined slots
+
+  const elevenKeyRef = useRef(0);
+  const getNextElevenKey = () => {
+    if (!ELEVEN_KEYS.length) return null;
+    const key = ELEVEN_KEYS[elevenKeyRef.current % ELEVEN_KEYS.length];
+    elevenKeyRef.current++;
+    return key;
+  };
+
   const speakWithElevenLabs = useCallback(async (text) => {
     if (!voiceEnabled) return false;
-    
+    const apiKey = getNextElevenKey();
+    if (!apiKey) return false;
+
     try {
       setIsSpeaking(true);
-      console.log('[Mira Voice] Attempting ElevenLabs TTS...');
-      
-      // Clean text for speech
+      // Clean text: strip emojis, markdown, limit to 500 chars
       let cleanText = text
-        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁]/g, '')
+        .replace(/[\u{1F300}-\u{1FAD6}]/gu, '')
         .replace(/\*\*/g, '')
         .replace(/[*#_~`]/g, '')
         .replace(/\[.*?\]/g, '')
-        .replace(/\n/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
         .substring(0, 500);
-      
-      const response = await fetch(`${getApiUrl()}/api/tts/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cleanText })
-      });
-      
-      if (!response.ok) {
-        throw new Error('ElevenLabs TTS failed');
-      }
-      
-      const data = await response.json();
-      console.log('[Mira Voice] ✓ ElevenLabs audio received, playing...');
-      
-      // Play audio
-      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${ELOISE_VOICE_ID}/stream`,
+        {
+          method: 'POST',
+          headers: {
+            'xi-api-key': apiKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: cleanText,
+            model_id: 'eleven_turbo_v2',
+            voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error(`ElevenLabs ${response.status}`);
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
-      
-      audio.onended = () => {
-        console.log('[Mira Voice] ✓ ElevenLabs audio playback complete');
-        setIsSpeaking(false);
-      };
-      audio.onerror = (e) => {
-        console.log('[Mira Voice] Audio playback error:', e);
-        setIsSpeaking(false);
-      };
-      
+
+      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(audioUrl); };
+      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(audioUrl); };
+
       await audio.play();
       return true;
     } catch (error) {
-      console.log('[Mira Voice] ElevenLabs unavailable, using Web Speech:', error.message);
-      setUseElevenLabs(false);
+      console.log('[Mira Voice] ElevenLabs failed, fallback WebSpeech:', error.message);
       setIsSpeaking(false);
       return false;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voiceEnabled]);
   
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN

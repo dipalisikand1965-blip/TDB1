@@ -291,13 +291,14 @@ export default function LandingPage() {
             Membership
           </button>
           {!isAuthenticated && (
-            <button onClick={() => navigate("/login")} style={{
-              background: "none", border: "none",
-              color: C.muted, fontSize: 14, cursor: "pointer",
+            <a href="/login" style={{
+              color: C.amber, fontSize: 14, fontWeight: 500,
               fontFamily: "DM Sans, sans-serif",
+              textDecoration: "none",
+              cursor: "pointer",
             }}>
               Sign in
-            </button>
+            </a>
           )}
           <button onClick={handleJoin} style={{
             padding: "9px 22px", borderRadius: 999,
