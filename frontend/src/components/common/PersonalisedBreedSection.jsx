@@ -50,6 +50,7 @@ export default function PersonalisedBreedSection({
   conciergeMode = false,
   onRequestProduct = null,
   onViewProduct = null,
+  entityType = "product",  // "product" | "service" — controls all user-facing text
 }) {
   const [products, setProducts] = useState([]);
   const [loading,  setLoading]  = useState(true);
@@ -132,7 +133,7 @@ export default function PersonalisedBreedSection({
           <div style={{ position:'absolute', top:-20, right:-10, width:100, height:100, borderRadius:'50%', background:'radial-gradient(circle,rgba(233,30,140,0.15) 0%,transparent 70%)' }} />
           <div style={{ fontSize:10, letterSpacing:'0.14em', color:'rgba(233,30,140,0.9)', fontWeight:700, marginBottom:10 }}>✦ PERSONALISED FOR {breed?.toUpperCase()}S</div>
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', lineHeight:1.3, marginBottom:8 }}>
-            We're curating breed-specific products for {petName}.
+            We're curating breed-specific {entityType}s for {petName}.
           </div>
           <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.6, marginBottom:16 }}>
             Mira is working on {breed}-matched picks. Check back soon.
@@ -152,7 +153,7 @@ export default function PersonalisedBreedSection({
           >
             Request {breed} Collection →
           </button>
-          <div
+          <button
             data-testid="soul-made-trigger"
             onClick={() => setSoulMadeOpen(true)}
             style={{
@@ -173,7 +174,7 @@ export default function PersonalisedBreedSection({
               </div>
             </div>
             <div style={{ fontSize:20, color:'rgba(255,255,255,0.4)', flexShrink:0, marginLeft:8 }}>›</div>
-          </div>
+          </button>
         </div>
         {soulMadeOpen && (
           <SoulMadeModal
@@ -246,14 +247,14 @@ export default function PersonalisedBreedSection({
       </div>
 
       {/* ── Soul Made™ Trigger — inside Soul Picks ── */}
-      <div
+      <button
         data-testid="soul-made-trigger"
         onClick={() => setSoulMadeOpen(true)}
         style={{
           margin:'16px 0 12px', padding:'14px 16px',
           background:`${C.orange}08`, border:`1px solid ${C.orange}20`,
-          borderRadius:14, display:'flex', alignItems:'center',
-          justifyContent:'space-between', cursor:'pointer',
+          borderRadius:14, display:'flex', alignItems:'center', width:'100%',
+          justifyContent:'space-between', cursor:'pointer', textAlign:'left', fontFamily:'inherit',
         }}
       >
         <div>
@@ -267,7 +268,7 @@ export default function PersonalisedBreedSection({
           </div>
         </div>
         <div style={{ fontSize:20, color:`${C.orange}60`, flexShrink:0, marginLeft:8 }}>›</div>
-      </div>
+      </button>
       {soulMadeOpen && (
         <SoulMadeModal
           pet={pet}
