@@ -1,5 +1,4 @@
 /**
- * CelebrateNearMe.jsx — /celebrate pillar
  * The Doggy Company
  *
  * Find pet photographers, dog-friendly venues, groomers, party planners
@@ -27,6 +26,7 @@ import { API_URL } from "../../utils/api";
 import SharedProductCard from "../ProductCard";
 import { tdc } from "../../utils/tdc_intent";
 import NearMeConciergeModal from "../common/NearMeConciergeModal";
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const G = {
   deep:"#2D1B69", mid:"#4A2C8F", purple:"#9B59B6", gold:"#C9973A",

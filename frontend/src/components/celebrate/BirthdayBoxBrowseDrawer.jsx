@@ -80,10 +80,10 @@ const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
             <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>✓</span>
           </div>
         )}
-        {/* Edit icon overlay */}
+        {/* Swap icon overlay — tap to change this item */}
         <div style={{ position: 'absolute', bottom: 6, right: 6, background: 'rgba(0,0,0,0.55)', borderRadius: 6, padding: '3px 6px', display: 'flex', alignItems: 'center', gap: 3 }}>
           <Edit2 style={{ width: 10, height: 10, color: 'rgba(255,255,255,0.70)' }} />
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.70)', fontWeight: 600 }}>Edit</span>
+          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.70)', fontWeight: 600 }}>Swap</span>
         </div>
       </div>
 
