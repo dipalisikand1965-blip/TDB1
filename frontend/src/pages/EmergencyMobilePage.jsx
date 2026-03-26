@@ -181,11 +181,11 @@ export default function EmergencyMobilePage() {
 
         {/* Soul Pillar CTA */}
         {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(239,68,68,0.10),rgba(239,68,68,0.16))', border:'1px solid rgba(239,68,68,0.25)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#F87171' }}>{currentPet?.name || 'your dog'}</span> stay safe?
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(239,68,68,0.14),rgba(239,68,68,0.20))', border:'1px solid rgba(239,68,68,0.35)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#DC2626' }}>{currentPet?.name || 'your dog'}</span> stay safe?
             </div>
-            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Emergency resources, kits and vet contacts — always ready for {currentPet?.name || 'your dog'}.
             </div>
           </div>

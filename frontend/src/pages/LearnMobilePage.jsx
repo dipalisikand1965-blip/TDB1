@@ -274,11 +274,11 @@ export default function LearnMobilePage() {
 
         {/* Soul Pillar CTA */}
         {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(167,139,250,0.10),rgba(167,139,250,0.16))', border:'1px solid rgba(167,139,250,0.25)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#A78BFA' }}>{currentPet?.name || 'your dog'}</span> love to learn?
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(167,139,250,0.14),rgba(167,139,250,0.20))', border:'1px solid rgba(167,139,250,0.35)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#7C3AED' }}>{currentPet?.name || 'your dog'}</span> love to learn?
             </div>
-            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Training, skills and enrichment tailored to {currentPet?.name || 'your dog'}'s intelligence and soul profile.
             </div>
           </div>
