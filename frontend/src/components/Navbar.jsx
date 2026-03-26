@@ -547,8 +547,10 @@ const Navbar = () => {
   };
 
   const openMiraAI = () => {
-    // Navigate to Mira OS sandbox for full experience
-    window.location.href = '/mira-os';
+    // Dispatch openMiraAI event to open MiraChatWidget (globally mounted in App.js MainLayout)
+    window.dispatchEvent(new CustomEvent('openMiraAI', {
+      detail: { source: 'navbar', pillar: null }
+    }));
   };
 
   const handleMouseEnter = (pillarId) => {
