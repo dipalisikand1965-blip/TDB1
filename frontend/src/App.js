@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -134,6 +134,13 @@ function MiraDemoRedirect() {
 function CelebrateRedirect() {
   const { category } = useParams();
   return <Navigate to={`/celebrate?category=${category}`} replace />;
+}
+
+// Redirect /celebrate to /celebrate-soul while preserving query params (e.g. ?plan=1)
+function CelebrateSoulRedirect() {
+  const [searchParams] = useSearchParams();
+  const search = searchParams.toString();
+  return <Navigate to={`/celebrate-soul${search ? '?' + search : ''}`} replace />;
 }
 
 // App Badge Manager - Updates PWA icon badge with unread notification count
@@ -573,7 +580,7 @@ function MainLayout() {
         
         {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
         {/* Celebrate Pillar - Single consolidated page */}
-        <Route path="/celebrate" element={<Navigate to="/celebrate-soul" replace />} />
+        <Route path="/celebrate" element={<CelebrateSoulRedirect />} />
         {/* GOLD STANDARD Celebrate - Sandbox for new design */}
         <Route path="/celebrate-new" element={<CelebrateNewPage />} />
         {/* SOUL-FIRST Celebrate - New Architecture March 2026 */}

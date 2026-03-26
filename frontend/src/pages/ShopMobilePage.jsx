@@ -34,14 +34,15 @@ function vibe(t = 'light') { if (navigator?.vibrate) navigator.vibrate(t === 'su
 
 function getBreed(pet) { return (pet?.breed || pet?.doggy_soul_answers?.breed || '').toLowerCase().trim(); }
 
-// ── Shop Category Strip ────────────────────────────────────────
+// ── Shop Category Strip — exact parity with desktop ShopSoulPage.jsx ──────────
 const SHOP_CATS = [
-  { id: 'for_pet', icon: '⭐', label: 'For {name}' },
-  { id: 'bakery',  icon: '🎂', label: 'Bakery' },
-  { id: 'breed',   icon: '🐾', label: 'Breed' },
-  { id: 'browse',  icon: '🛍️', label: 'Browse All' },
-  { id: 'hampers', icon: '🎁', label: 'Hampers' },
+  { id: 'mira',    icon: '✦',  label: "Mira's Picks" },
+  { id: 'bakery',  icon: '🎂', label: 'The Doggy Bakery' },
+  { id: 'breed',   icon: '🐾', label: 'Breed Collection' },
+  { id: 'treats',  icon: '🍖', label: 'Treats' },
+  { id: 'hampers', icon: '🎁', label: 'Hampers & Gifts' },
   { id: 'merch',   icon: '👕', label: 'Merch' },
+  { id: 'toys',    icon: '🧸', label: 'Toys' },
 ];
 
 // ── Mira Picks Section ────────────────────────────────────────
@@ -256,10 +257,11 @@ const BAKERY_FILTERS = [
   { id: 'treats', label: '🍖 Treats' }, { id: 'hampers', label: '🎁 Hampers' },
   { id: 'seasonal', label: '🎃 Seasonal' },
 ];
-function DoggyBakerySection({ pet, token }) {
+function DoggyBakerySection({ pet, token, presetFilter }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(presetFilter || 'all');
+  const [showAll, setShowAll] = useState(false);
   useEffect(() => {
     fetch(`${API_URL}/api/service-box/services?pillar=shop&limit=200`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null).then(d => { setItems(d?.services || []); setLoading(false); }).catch(() => setLoading(false));
@@ -310,12 +312,16 @@ function DoggyBakerySection({ pet, token }) {
       ) : (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {filtered.slice(0, 20).map(item => <SharedProductCard key={item.id || item._id} product={item} pillar="shop" selectedPet={pet} />)}
+            {(showAll ? filtered : filtered.slice(0, 20)).map(item => <SharedProductCard key={item.id || item._id} product={item} pillar="shop" selectedPet={pet} />)}
           </div>
-          <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer"
-            style={{ display: 'block', textAlign: 'center', marginTop: 12, padding: '12px', borderRadius: 10, background: G.pale, border: `1px solid ${G.border}`, color: G.mid, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
-            See all {items.length} products on thedoggybakery.com →
-          </a>
+          {!showAll && filtered.length > 20 && (
+            <button
+              onClick={() => setShowAll(true)}
+              data-testid="bakery-see-all-btn"
+              style={{ display: 'block', width: '100%', textAlign: 'center', marginTop: 12, padding: '12px', borderRadius: 10, background: G.pale, border: `1px solid ${G.border}`, color: G.mid, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              Browse all {items.length} products from The Doggy Bakery →
+            </button>
+          )}
         </>
       )}
     </div>
@@ -419,7 +425,7 @@ export default function ShopMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
-  const [mainTab, setMainTab] = useState('for_pet');
+  const [mainTab, setMainTab] = useState('mira');
   const [showMiraPicks, setShowMiraPicks] = useState(false);
   const miraPicksRef = useRef(null);
 
@@ -430,7 +436,7 @@ export default function ShopMobilePage() {
 
   const handleSeePicks = useCallback(() => {
     vibe('medium');
-    setMainTab('for_pet');
+    setMainTab('mira');
     setShowMiraPicks(true);
     setTimeout(() => miraPicksRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   }, []);
@@ -547,8 +553,8 @@ export default function ShopMobilePage() {
 
         {/* Main Content — tab-switched */}
         <div style={{ padding: '20px 16px 24px' }}>
-          {/* FOR PET TAB */}
-          {(mainTab === 'for_pet') && (
+          {/* MIRA PICKS TAB (was for_pet) */}
+          {(mainTab === 'mira') && (
             <div ref={miraPicksRef}>
               <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: G.darkText, fontFamily: 'Georgia,serif' }}>
                 Made for {petName}
@@ -595,20 +601,30 @@ export default function ShopMobilePage() {
             </div>
           )}
 
-          {/* BROWSE TAB */}
-          {mainTab === 'browse' && (
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, color: G.darkText, fontFamily: 'Georgia,serif' }}>Browse All Products</div>
-              <div style={{ fontSize: 13, color: G.mutedText, marginBottom: 14 }}>Search, filter, and discover 5,000+ products.</div>
-              <ShopBrowseSection pet={currentPet} token={token} />
-            </div>
-          )}
 
           {/* HAMPERS TAB */}
           {mainTab === 'hampers' && (
             <div>
               <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 14, color: G.darkText, fontFamily: 'Georgia,serif' }}>Hampers & Gifts</div>
-              <DoggyBakerySection pet={currentPet} token={token} />
+              <DoggyBakerySection pet={currentPet} token={token} presetFilter="hampers" />
+            </div>
+          )}
+
+          {/* TREATS TAB */}
+          {mainTab === 'treats' && (
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, color: G.darkText, fontFamily: 'Georgia,serif' }}>Treats</div>
+              <div style={{ fontSize: 13, color: G.mutedText, marginBottom: 14 }}>Dog-safe treats, cookies, and snacks from The Doggy Bakery.</div>
+              <DoggyBakerySection pet={currentPet} token={token} presetFilter="treats" />
+            </div>
+          )}
+
+          {/* TOYS TAB */}
+          {mainTab === 'toys' && (
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 4, color: G.darkText, fontFamily: 'Georgia,serif' }}>Toys</div>
+              <div style={{ fontSize: 13, color: G.mutedText, marginBottom: 14 }}>Toys and enrichment for {petName}'s breed.</div>
+              <BreedCollectionSection pet={currentPet} token={token} />
             </div>
           )}
 
