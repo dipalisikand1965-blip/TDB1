@@ -23,6 +23,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import LearnNearMe from '../components/learn/LearnNearMe';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -339,6 +340,13 @@ export default function LearnMobilePage() {
             <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Training, skills and enrichment tailored to {currentPet?.name || 'your dog'}'s intelligence and soul profile.
             </div>
+          </div>
+        )}
+
+        {/* Pawrent Journey First Steps */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 8px' }}>
+            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="learn" />
           </div>
         )}
 

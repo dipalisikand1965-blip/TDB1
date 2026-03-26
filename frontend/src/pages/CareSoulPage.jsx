@@ -46,6 +46,7 @@ import SoulMadeModal from "../components/SoulMadeModal";
 import { useConcierge } from "../hooks/useConcierge";
 import CareMobilePage from './CareMobilePage';
 import { filterBreedProducts } from '../hooks/useMiraFilter';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
 // ─────────────────────────────────────────────────────────────
@@ -2396,6 +2397,7 @@ export default function CareSoulPage() {
               )}
 
               <div style={{ marginTop:32 }}>
+                <PawrentFirstStepsTab pet={petData} token={token} currentPillar="care" />
                 <GuidedCarePaths pet={flowPet} />
               </div>
               <CareConciergeSection pet={flowPet} />

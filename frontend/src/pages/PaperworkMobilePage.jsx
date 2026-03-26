@@ -24,6 +24,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PaperworkNearMe from '../components/paperwork/PaperworkNearMe';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -263,6 +264,13 @@ export default function PaperworkMobilePage() {
             <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Documents, insurance, vaccination — all handled by Concierge® for {currentPet?.name || 'your dog'}.
             </div>
+          </div>
+        )}
+
+        {/* Pawrent Journey First Steps */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 8px' }}>
+            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="paperwork" />
           </div>
         )}
 
