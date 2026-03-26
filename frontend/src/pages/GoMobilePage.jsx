@@ -159,11 +159,11 @@ export default function GoMobilePage() {
 
         {/* Soul Pillar CTA */}
         {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(45,212,191,0.10),rgba(45,212,191,0.16))', border:'1px solid rgba(45,212,191,0.25)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#2DD4BF' }}>{currentPet?.name || 'your dog'}</span> love to travel?
+          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(45,212,191,0.14),rgba(45,212,191,0.20))', border:'1px solid rgba(45,212,191,0.35)', borderRadius:18, padding:'18px 16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
+              How would <span style={{ color:'#0F766E' }}>{currentPet?.name || 'your dog'}</span> love to travel?
             </div>
-            <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.5 }}>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
               Adventures, transport, hotels and activities — filtered to {currentPet?.name || 'your dog'}'s soul profile.
             </div>
           </div>

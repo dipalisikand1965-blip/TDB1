@@ -88,7 +88,9 @@ async def _send(
     subject: str,
     html: str,
     idempotency_key: str,
-    template: str
+    template: str,
+    from_email: str = None,
+    reply_to: str = None
 ) -> Dict[str, Any]:
     if not to:
         return {"success": False, "reason": "No email"}
@@ -104,13 +106,18 @@ async def _send(
     if not resend:
         return {"success": False, "reason": "Resend import failed"}
 
+    sender = from_email or f"The Doggy Company <{FROM_EMAIL}>"
+    payload = {
+        "from": sender,
+        "to": to,
+        "subject": subject,
+        "html": html,
+    }
+    if reply_to:
+        payload["reply_to"] = reply_to
+
     try:
-        result = resend.Emails.send({
-            "from": f"The Doggy Company <{FROM_EMAIL}>",
-            "to": to,
-            "subject": subject,
-            "html": html,
-        })
+        result = resend.Emails.send(payload)
         email_id = result.get("id") if isinstance(result, dict) else str(result)
         logger.info(f"[EMAIL-{template.upper()}] ✅ Sent to {to} | ID: {email_id}")
         r = {"success": True, "email_id": email_id}
@@ -260,34 +267,108 @@ async def send_order_confirmed_email(
     name = user.get("name") or "there"
     first = name.split()[0] if name and name != "there" else name
     pet_name = pet.get("name", "your pet") if pet else "your pet"
+    breed = pet.get("breed", "Dog") if pet else "Dog"
     order_id = order.get("orderId") or order.get("id") or order.get("razorpay_order_id", "")
-    amount = order.get("total") or order.get("amount", 0)
+    amount = float(order.get("total") or order.get("amount", 0))
+    order_date = order.get("order_date") or datetime.now(timezone.utc).strftime("%d %b %Y")
+    items = order.get("items") or []
     items_summary = order.get("items_summary") or order.get("plan_name") or "your order"
 
+    # Financial breakdown
+    subtotal = float(order.get("subtotal") or amount / 1.18)
+    gst_rate = float(order.get("gst_rate") or 18)
+    gst_amount = float(order.get("gst_amount") or (amount - subtotal))
+    shipping = float(order.get("shipping") or 0)
+    total_paid = float(order.get("total_paid") or amount)
+    invoice_url = order.get("invoice_pdf_url") or f"{SITE_URL}/orders/{order_id}/invoice"
+    tracking_url = order.get("order_tracking_url") or f"{SITE_URL}/orders/{order_id}"
+
+    # Build items rows
+    if items:
+        items_html = ""
+        for item in items:
+            n = item.get("item_name") or item.get("name") or item.get("product_name", "Item")
+            desc = item.get("item_description") or item.get("description") or ""
+            price = float(item.get("item_price") or item.get("price") or 0)
+            items_html += f"""
+            <div style="padding:12px 0;border-bottom:1px solid #E8D9B0;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                <div style="flex:1;">
+                  <div style="color:#2C1810;font-size:14px;font-weight:600;margin-bottom:2px;">{n}</div>
+                  {f'<div style="color:#9D8BA3;font-size:12px;">{desc}</div>' if desc else ''}
+                </div>
+                <div style="color:#1A0A2E;font-size:14px;font-weight:700;margin-left:16px;">₹{price:,.0f}</div>
+              </div>
+            </div>"""
+    else:
+        items_html = f"""
+        <div style="padding:12px 0;border-bottom:1px solid #E8D9B0;">
+          <div style="display:flex;justify-content:space-between;">
+            <div style="color:#2C1810;font-size:14px;font-weight:600;">{items_summary}</div>
+            <div style="color:#1A0A2E;font-size:14px;font-weight:700;">₹{subtotal:,.0f}</div>
+          </div>
+        </div>"""
+
     body = f"""
-    <p style="color:#2C1810;font-size:16px;text-align:center;margin:0 0 24px;">
-      ✦ Order confirmed for <strong>{pet_name}</strong>
-    </p>
-    <p style="color:#2C1810;font-size:14px;line-height:1.8;margin:0 0 16px;">Hi {first},</p>
-    <p style="color:#2C1810;font-size:14px;line-height:1.8;margin:0 0 24px;">Thank you for your order! We're preparing it for {pet_name} right now.</p>
-    <div style="background:#1A0A2E;border-radius:8px;padding:20px 24px;margin:0 0 24px;">
-      <p style="color:#D4A840;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Order Details</p>
-      <p style="color:#E8D9B0;font-size:13px;margin:4px 0;">📦 Order ID: <strong style="color:#fff;">{order_id}</strong></p>
-      <p style="color:#E8D9B0;font-size:13px;margin:4px 0;">🛍️ Items: <strong style="color:#fff;">{items_summary}</strong></p>
-      <p style="color:#E8D9B0;font-size:13px;margin:4px 0;">💰 Total: <strong style="color:#D4A840;">₹{amount:,.0f}</strong></p>
-    </div>
-    <p style="color:#2C1810;font-size:13px;line-height:1.8;margin:0 0 24px;">We'll send you a tracking update once your order is on its way.</p>
-    {_btn("Track your order →", f"{SITE_URL}/shop")}
+    <p style="color:#2C1810;font-size:20px;font-weight:700;text-align:center;font-family:Georgia,serif;margin:0 0 8px;">Order Confirmed! 🎉</p>
+    <p style="color:#9D8BA3;font-size:14px;text-align:center;margin:0 0 24px;">Everything is in hand, {first}. Your Concierge® is on it.</p>
     {_divider()}
-    <p style="color:#9D8BA3;font-size:12px;text-align:center;">Questions? Reply to this email or message us on WhatsApp.</p>
+    <p style="color:#1A0A2E;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin:0 0 12px;">Order Summary</p>
+    <div style="background:#1A0A2E;border-radius:8px;padding:16px 20px;margin:0 0 24px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div><p style="color:#9D8BA3;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">Order ID</p><p style="color:#D4A840;font-size:13px;font-weight:700;margin:0;">{order_id}</p></div>
+        <div><p style="color:#9D8BA3;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">For</p><p style="color:#fff;font-size:13px;font-weight:600;margin:0;">{pet_name} · {breed}</p></div>
+        <div><p style="color:#9D8BA3;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">Date</p><p style="color:#fff;font-size:13px;margin:0;">{order_date}</p></div>
+        <div><p style="color:#9D8BA3;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 2px;">Status</p><p style="color:#22C55E;font-size:13px;font-weight:700;margin:0;">Payment via Razorpay ✓</p></div>
+      </div>
+    </div>
+    {_divider()}
+    <p style="color:#1A0A2E;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin:0 0 12px;">What you ordered</p>
+    {items_html}
+    {_divider()}
+    <p style="color:#1A0A2E;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin:0 0 12px;">Invoice</p>
+    <div style="margin:0 0 24px;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#6B7280;font-size:13px;">Subtotal</span><span style="color:#2C1810;font-size:13px;">₹{subtotal:,.0f}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#6B7280;font-size:13px;">GST ({gst_rate:.0f}%)</span><span style="color:#2C1810;font-size:13px;">₹{gst_amount:,.0f}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#6B7280;font-size:13px;">Shipping</span><span style="color:#2C1810;font-size:13px;">{f'₹{shipping:,.0f}' if shipping else 'Free'}</span></div>
+      <div style="height:1px;background:#D4A840;margin:8px 0;"></div>
+      <div style="display:flex;justify-content:space-between;padding:8px 0;"><span style="color:#1A0A2E;font-size:15px;font-weight:700;">Total Paid</span><span style="color:#D4A840;font-size:16px;font-weight:700;">₹{total_paid:,.0f}</span></div>
+    </div>
+    {_btn("Download Invoice PDF →", invoice_url)}
+    {_divider()}
+    <p style="color:#1A0A2E;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin:0 0 12px;">What happens next</p>
+    <div style="margin:0 0 8px;display:flex;gap:12px;align-items:flex-start;">
+      <span style="font-size:20px;">🎩</span>
+      <div><p style="color:#2C1810;font-size:13px;font-weight:600;margin:0 0 2px;">Your Concierge® will confirm delivery details within 24 hours</p></div>
+    </div>
+    <div style="margin:0 0 8px;display:flex;gap:12px;align-items:flex-start;">
+      <span style="font-size:20px;">📦</span>
+      <div><p style="color:#2C1810;font-size:13px;font-weight:600;margin:0 0 2px;">Freshly prepared for {pet_name}</p></div>
+    </div>
+    <div style="margin:0 0 24px;display:flex;gap:12px;align-items:flex-start;">
+      <span style="font-size:20px;">🚚</span>
+      <div><p style="color:#2C1810;font-size:13px;font-weight:600;margin:0 0 2px;">Delivered with love</p></div>
+    </div>
+    {_btn("Track your order →", tracking_url)}
+    <div style="text-align:center;margin:8px 0 24px;">
+      <a href="{SITE_URL}/concierge" style="color:#D4A840;text-decoration:none;font-size:13px;margin:0 12px;">Contact Concierge® →</a>
+      <a href="{SITE_URL}/my-orders" style="color:#6B7280;text-decoration:none;font-size:13px;margin:0 12px;">View My Orders →</a>
+    </div>
+    {_divider()}
+    <p style="color:#9D8BA3;font-size:13px;font-style:italic;text-align:center;line-height:1.8;">
+      "This was made for {pet_name}.<br>Every detail checked by Mira."<br>
+      <strong style="color:#D4A840;">— The Doggy Company Concierge®</strong>
+    </p>
     """
 
     return await _send(
         to=email,
-        subject=f"✦ Order confirmed for {pet_name}",
+        subject=f"✦ Order confirmed for {pet_name} · #{order_id}",
         html=_wrap(body),
         idempotency_key=f"order_email:{order_id}",
-        template="order_confirmed"
+        template="order_confirmed",
+        from_email=f"The Doggy Company Orders <orders@thedoggycompany.com>",
+        reply_to="concierge@thedoggycompany.com"
     )
 
 

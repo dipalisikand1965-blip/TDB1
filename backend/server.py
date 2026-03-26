@@ -17616,6 +17616,66 @@ async def mark_member_notification_read(
     return {"success": True, "message": "Notification marked as read"}
 
 
+@api_router.get("/member/comm-history")
+async def get_member_comm_history(
+    current_user: dict = Depends(get_current_user),
+    limit: int = Query(50, le=100)
+):
+    """Get WhatsApp and email notification history for the logged-in member.
+    Pulls from whatsapp_logs and email_logs, merged and sorted by sent_at."""
+    user_email = current_user.get("email", "")
+    user_phone = current_user.get("phone") or current_user.get("mobile") or ""
+    # Normalize phone for lookup
+    phone_digits = "".join(c for c in str(user_phone) if c.isdigit())
+    if len(phone_digits) == 10:
+        phone_digits = "91" + phone_digits
+
+    # Fetch WhatsApp logs
+    wa_query: dict = {}
+    if phone_digits:
+        wa_query = {"phone": {"$regex": phone_digits[-9:]}}  # match last 9 digits
+    wa_logs = []
+    if wa_query:
+        cursor = db.whatsapp_logs.find(wa_query, {"_id": 0}).sort("sent_at", -1).limit(limit)
+        wa_logs = await cursor.to_list(length=limit)
+
+    # Fetch Email logs
+    email_logs = []
+    if user_email:
+        cursor = db.email_logs.find({"to": user_email}, {"_id": 0}).sort("sent_at", -1).limit(limit)
+        email_logs = await cursor.to_list(length=limit)
+
+    # Merge and normalize
+    items = []
+    for log in wa_logs:
+        items.append({
+            "id": log.get("idempotency_key", ""),
+            "type": "whatsapp",
+            "template": log.get("template", ""),
+            "message_preview": log.get("message_preview", ""),
+            "success": log.get("success", False),
+            "sent_at": log.get("sent_at", ""),
+            "message_id": log.get("message_id"),
+            "error": log.get("error"),
+        })
+    for log in email_logs:
+        items.append({
+            "id": log.get("idempotency_key", ""),
+            "type": "email",
+            "template": log.get("template", ""),
+            "subject": log.get("subject", ""),
+            "success": log.get("success", False),
+            "sent_at": log.get("sent_at", ""),
+            "email_id": log.get("email_id"),
+            "error": log.get("error"),
+        })
+
+    # Sort by sent_at desc
+    items.sort(key=lambda x: x.get("sent_at", ""), reverse=True)
+
+    return {"history": items[:limit], "total": len(items)}
+
+
 # Public endpoints for notification polling (used by NotificationBell)
 @api_router.get("/member/notifications/inbox/{user_email}")
 async def get_member_notifications_by_email(
@@ -22712,6 +22772,30 @@ async def get_password_info(credentials: HTTPBasicCredentials = Depends(security
         "using_database_password": admin_config is not None,
         "last_updated": admin_config.get("updated_at") if admin_config else None,
         "username": credentials.username
+    }
+
+
+@app.get("/api/admin/recent-signups")
+async def get_recent_signups(
+    since_minutes: int = 60,
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Get members who signed up recently — used by admin panel for live new-member notifications."""
+    verify_admin(credentials)
+    cutoff = datetime.now(timezone.utc) - timedelta(minutes=since_minutes)
+    cutoff_iso = cutoff.isoformat()
+    
+    # Query users registered after cutoff
+    cursor = db.users.find(
+        {"created_at": {"$gte": cutoff_iso}},
+        {"_id": 0, "id": 1, "name": 1, "email": 1, "phone": 1, "created_at": 1, "membership_tier": 1}
+    ).sort("created_at", -1).limit(20)
+    users = await cursor.to_list(length=20)
+    
+    return {
+        "since_minutes": since_minutes,
+        "count": len(users),
+        "members": users
     }
 
 
