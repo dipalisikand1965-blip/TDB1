@@ -39,7 +39,7 @@ function capitalisedList(arr) {
 // ─────────────────────────────────────────────────────────────
 // PATH DATA
 // ─────────────────────────────────────────────────────────────
-function buildPaths(pet) {
+export function buildPaths(pet) {
   if (!pet) return [];
   const name      = pet.name;
   // Use both snake_case (from API) and camelCase (legacy) for coat type
@@ -486,7 +486,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 // ─────────────────────────────────────────────────────────────
 // PATH FLOW MODAL
 // ─────────────────────────────────────────────────────────────
-function PathFlowModal({ path, pet, onClose }) {
+export function PathFlowModal({ path, pet, onClose }) {
   const { fire } = useConcierge({ pet, pillar: 'care' });
   const [currentStep,    setCurrentStep]    = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);

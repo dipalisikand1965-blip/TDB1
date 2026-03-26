@@ -1464,7 +1464,7 @@ function BookingConfirmed({ service, pet, onClose }) {
 // ─────────────────────────────────────────────────────────────
 // CARE SERVICES CONFIG
 // ─────────────────────────────────────────────────────────────
-const CARE_SERVICES = [
+export const CARE_SERVICES = [
   { id:"grooming", icon:"✂️", illustrationUrl:null, illustrationBg:`linear-gradient(135deg,${G.pale},${G.light})`, free:false, name:"Grooming", tagline:"Hygiene, coat care, bath, nail trim", desc:"We find the right groomer for {petName}'s coat type, book, and follow up.", accentColor:"#C2185B", steps:5 },
   { id:"vet", icon:"🏥", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)", free:false, name:"Vet Visits", tagline:"Clinic discovery, booking & follow-up", desc:"Trusted vets near you — clinic or home visit. Bookings confirmed, records collected.", accentColor:"#1565C0", steps:4 },
   { id:"boarding", icon:"🏡", illustrationUrl:null, illustrationBg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)", free:false, name:"Boarding & Daycare", tagline:"Overnight boarding & daytime supervision", desc:"We find the right boarding for {petName} — vetted, reviewed, and booked by your Concierge®.", accentColor:"#2D6A4F", steps:4 },
@@ -1972,7 +1972,7 @@ function EmergencyFlow({ pet, service, onClose, sendToConcierge }) {
 }
 
 // ── SERVICE BOOKING MODAL ROUTER ─────────────────────────────
-function ServiceBookingModal({ service, pet, onClose }) {
+export function CareServiceFlowModal({ service, pet, onClose }) {
   const { fire } = useConcierge({ pet, pillar: 'care' });
   const sendToConcierge = useCallback(async (flowData) => {
     const petName = pet?.name || 'your dog';
@@ -2012,7 +2012,7 @@ export function CareConcierge({ pet }) {
   return (
     <div style={{ background:`linear-gradient(135deg,${G.cream},#E8F5EE)`, borderRadius:20, border:`1px solid ${G.border}`, padding:24, marginBottom:32 }} data-testid="care-concierge">
       {activeService && (
-        <ServiceBookingModal service={CARE_SERVICES.find(s=>s.id===activeService)} pet={pet} onClose={()=>setActiveService(null)} />
+        <CareServiceFlowModal service={CARE_SERVICES.find(s=>s.id===activeService)} pet={pet} onClose={()=>setActiveService(null)} />
       )}
       {conciergeOpen && (
         <CareConciergeModal

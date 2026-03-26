@@ -33,7 +33,7 @@ import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded } from './CareSoulPage';
+import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
 import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -57,9 +57,10 @@ export default function CareMobilePage() {
   const [activeTab, setActiveTab]   = useState('care');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [svcBooking, setSvcBooking] = useState({ isOpen:false, serviceType:'grooming' });
-  const [openDim, setOpenDim]       = useState(null);
-  const [apiProducts, setApiProducts] = useState({});
-  const dimExpandedRef               = useRef(null);
+  const [openDim, setOpenDim]             = useState(null);
+  const [apiProducts, setApiProducts]     = useState({});
+  const [activeServicePath, setActiveSvcPath] = useState(null); // CareServiceFlowModal
+  const dimExpandedRef                    = useRef(null);
 
   // Auto-scroll into expanded dim panel whenever a dim is opened
   useEffect(() => {
@@ -369,9 +370,9 @@ export default function CareMobilePage() {
                 </div>
                 <button
                   onClick={() => {
-                    vibe('medium');
-                    tdc.book({ service:svc.name, pillar:'care', pet:currentPet, channel:'care_services_tab' });
-                    setSvcBooking({ isOpen:true, serviceType:svc.id });
+                    const svcObj = CARE_SERVICES.find(s => s.id === svc.id);
+                    if (svcObj) setActiveSvcPath(svcObj);
+                    else setSvcBooking({ isOpen:true, serviceType:svc.id });
                   }}
                   style={{ flexShrink:0, padding:'9px 14px', borderRadius:12, border:'none', fontSize:13, fontWeight:700, cursor:'pointer',
                     background: svc.urgent ? '#C62828' : G.deepMid, color:'#fff', whiteSpace:'nowrap' }}>
@@ -400,6 +401,15 @@ export default function CareMobilePage() {
       </div>
 
       {/* Service Booking Modal */}
+      {/* CareServiceFlowModal — exact same Mira-powered modal as desktop (GroomingFlow/VetFlow etc.) */}
+      {activeServicePath && currentPet && (
+        <CareServiceFlowModal
+          service={activeServicePath}
+          pet={currentPet}
+          onClose={() => setActiveSvcPath(null)}
+        />
+      )}
+
       <ServiceBookingModal
         isOpen={svcBooking.isOpen}
         onClose={() => setSvcBooking(p => ({ ...p, isOpen:false }))}
