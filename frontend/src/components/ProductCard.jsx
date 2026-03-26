@@ -947,6 +947,14 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
   const [selectedOptions, setSelectedOptions] = useState(initializeSelectedOptions);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [dateError, setDateError] = useState(false); // Bug fix: track missing required date
+
+  // Determine if this product REQUIRES a delivery/pickup date before checkout
+  const isCakeProduct = (product.category || '').toLowerCase().includes('cake') ||
+                        (product.name || '').toLowerCase().includes('cake') ||
+                        (product.product_type || '').toLowerCase().includes('cake') ||
+                        (product.sub_category || '').toLowerCase().includes('cake');
+  const requiresDate = isCakeProduct || !!product.requires_date;
   
   const [cartInput, setCartInput] = useState({
     petName: '',
@@ -1196,6 +1204,15 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   };
 
   const handleAddToCart = async () => {
+    // Bug fix: Block checkout if product requires a date and none is selected
+    if (requiresDate && !cartInput.date) {
+      setDateError(true);
+      // Scroll calendar into view / open it
+      setCalendarOpen(true);
+      return; // Hard stop — no order placed without date
+    }
+    setDateError(false);
+
     // Build variant string from selected options
     const variantDescription = Object.entries(selectedOptions)
       .map(([key, value]) => value)
@@ -1645,20 +1662,22 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                   <PopoverTrigger asChild>
                     <Button 
                       variant="outline" 
-                      className="w-full justify-start text-left font-normal text-sm h-10"
+                      className={`w-full justify-start text-left font-normal text-sm h-10 ${dateError && !cartInput.date ? 'border-red-400 border-2' : ''}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         setCalendarOpen(true);
                       }}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {cartInput.date ? format(cartInput.date, 'PP') : <span className="text-gray-500">Date</span>}
+                      {cartInput.date ? format(cartInput.date, 'PP') : <span className={dateError ? 'text-red-400 font-medium' : 'text-gray-500'}>Pick delivery date *</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent 
-                    className="w-auto p-0 z-[10000]" 
+                    className="w-auto p-0 z-[99999]" 
                     align="start"
-                    onInteractOutside={(e) => e.preventDefault()}
+                    style={{ zIndex: 99999 }}
+                    sideOffset={4}
+                    avoidCollisions={false}
                   >
                     <Calendar
                       mode="single"
@@ -1666,6 +1685,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                       onSelect={(date) => {
                         setCartInput({...cartInput, date});
                         setCalendarOpen(false);
+                        setDateError(false); // Clear error when date is selected
                       }}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       initialFocus
@@ -1673,6 +1693,12 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                   </PopoverContent>
                 </Popover>
               </div>
+              {/* Bug fix: Date required error message */}
+              {dateError && (
+                <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
+                  <span>⚠</span> Please select a delivery date before proceeding
+                </p>
+              )}
               <select 
                 className="w-full px-3 py-2 border rounded-lg text-sm"
                 value={cartInput.time}
@@ -1813,11 +1839,19 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               ) : (
                 <Button
                   onClick={handleAddToCart}
-                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-6"
+                  disabled={requiresDate && !cartInput.date}
+                  className={`px-6 transition-all ${
+                    requiresDate && !cartInput.date
+                      ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+                      : 'bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700'
+                  }`}
                   data-testid={`add-to-cart-${product.id}`}
+                  title={requiresDate && !cartInput.date ? 'Select a delivery date to continue' : ''}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  {miraContext?.includeText || 'Add to Cart'}
+                  {requiresDate && !cartInput.date
+                    ? 'Select a date to continue'
+                    : (miraContext?.includeText || 'Add to Cart')}
                 </Button>
               )}
             </div>
