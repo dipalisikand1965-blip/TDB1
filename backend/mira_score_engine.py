@@ -638,6 +638,26 @@ async def get_top_picks(
             p["is_fallback"]  = True
         return {"picks": fallback, "count": len(fallback), "scoring_pending": True}
 
+    # ── Life-stage filter: HIDE puppy products from adult/senior dogs ──────────
+    # Fetch pet age to determine life stage
+    pet_doc = await _db.pets.find_one(
+        {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+        {"_id": 0, "age": 1, "age_years": 1}
+    )
+    if pet_doc:
+        pet_age = float(pet_doc.get("age") or pet_doc.get("age_years") or 0)
+        if pet_age >= 1:  # adult or senior → hide puppy products
+            import re as re_mod
+            def _is_puppy_product(item):
+                check_fields = [
+                    item.get("name",""), item.get("category",""), item.get("sub_category",""),
+                    item.get("mira_tag",""), " ".join(item.get("tags",[]) if isinstance(item.get("tags"), list) else []),
+                    " ".join(item.get("life_stages",[]) if isinstance(item.get("life_stages"), list) else []),
+                ]
+                text = " ".join(check_fields).lower()
+                return bool(re_mod.search(r'\bpuppy\b|\bpuppies\b', text))
+            results = [r for r in results if not _is_puppy_product(r)]
+
     return {"picks": results[:limit], "count": len(results[:limit]), "layers": {"soul": len(soul_products), "services": len(results) - len(soul_products) - layer3_count if "layer3_count" in dir() else 0, "scored": layer3_count if "layer3_count" in dir() else 0}}
     if service_ids:
         async for doc in _db.services_master.find({"id": {"$in": service_ids}}, {"_id": 0}):

@@ -1,0 +1,69 @@
+{
+  "summary": "Iteration 225 — Critical pre-launch sprint: all 27 backend tests passed. Fixed FarewellMobilePage svc.desc TypeError bug. Verified: emergentagent.com URL blocking, admin AI prompt pre-fill+editable, /api/mira/plan Claude Haiku (4 cards), life-stage puppy filter, breed isolation, service price removal, farewell services API fetch.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "mira_score_engine.py line 662-680",
+        "issue": "Dead code after return statement at line 661 (service/bundle enrichment never runs). Also 'layer3_count' in dir() should be 'layer3_count' in locals() — cosmetic, works in practice."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "bugs_found_and_fixed": [
+    {
+      "file": "/app/frontend/src/pages/FarewellMobilePage.jsx",
+      "line": 264,
+      "issue": "svc.desc.replace(/{name}/g, petName) — TypeError when API services loaded (API uses 'description' not 'desc'), causing 'Oops! Something went wrong' React error boundary on Get Support tab",
+      "fix": "Changed to (svc.desc || svc.description || '').replace(/{name}/g, petName)",
+      "status": "FIXED"
+    }
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_iteration_225_sprint_fixes.py",
+    "/app/test_reports/pytest/iteration_225_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "mira_score_engine.py lines 662-680: Dead code after return on line 661 (service/bundle enrichment block never executes). This may mean claude-picks picks are returned without enrichment data — check if picks need enrichment.",
+    "isValidUrl() in ProductCard.jsx also blocks 'static.prod-images' CDN — confirmed intentional"
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/FarewellMobilePage.jsx",
+    "/app/backend/tests/test_iteration_225_sprint_fixes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (27/27 tests passed)",
+    "frontend": "100% (all UI checks passed after FarewellMobilePage fix)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123",
+    "admin": "aditya / lola4304 (Basic Auth)",
+    "pets": "Mojo=Indie (pet-mojo-7327ad56), Mystique=Shih Tzu (pet-mystique-7327ad57), Bruno=Labrador (pet-bruno-7327ad58)"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All iteration 225 features verified: (1) POST /api/admin/cleanup-broken-images returns {success:true, cleaned:{products_master_image_cleaned:N,...}} - PASS. (2) POST /api/admin/sync-image-fields returns {success:true, synced:{breed_products_synced:N, products_master_synced:N}} - PASS. (3) POST /api/mira/plan with pet_id=pet-mojo-7327ad56 & pillar=play returns 4 Claude cards with {icon,title,reason,action,concierge} shape - PASS. (4) Life-stage puppy filter: Mojo (adult Indie) claude-picks contain ZERO puppy products - PASS. (5) Breed isolation: Mojo claude-picks contain ZERO Labrador/Akita/Corgi products - PASS. (6) Service box APIs: /api/service-box/services?pillar=emergency and ?pillar=farewell both return 200 with services array (20 farewell services found). (7) EMERG_SERVICES and FAREWELL_SERVICES hardcoded arrays have no prices - PASS. (8) AIImagePromptField shows pre-filled prompt 'Festive product photo of [ProductName], pet celebration item, pastel balloons...' based on product name/pillar - PASS (tested on Akita · Designer Bandana product in Media tab). (9) Prompt field is editable - PASS. (10) Generate with AI button visible and enabled - PASS. (11) Reset button visible - PASS. (12) Warning 'This product already has an image' shown when currentImageUrl exists - PASS. BUG FIXED: FarewellMobilePage.jsx line 264 svc.desc → (svc.desc || svc.description || '') to prevent TypeError when API services used. EmergencyMobilePage already handled this correctly (uses svc.desc || svc.description || ''). Note: /api/mira/plan previously returned 404 (fallback) - now returns real Claude Haiku responses with 4 cards.",
+  "verified_features": {
+    "emergentagent_url_blocking_code": "PASS — isValidUrl() in ProductCard.jsx line 346 blocks emergentagent.com URLs",
+    "cleanup_broken_images_api": "PASS — Returns success with 4 cleaned count fields",
+    "sync_image_fields_api": "PASS — Returns success with breed_products_synced + products_master_synced",
+    "mira_plan_claude_haiku": "PASS — Returns 4 cards with icon/title/reason/action/concierge fields",
+    "life_stage_puppy_filter_frontend": "PASS — useMiraFilter.js filters puppy products for adult/senior pets (code verified + API test)",
+    "life_stage_puppy_filter_backend": "PASS — mira_score_engine.py filters puppy products for age >= 1",
+    "emergency_services_no_prices": "PASS — EMERG_SERVICES array has no price field",
+    "farewell_services_no_prices": "PASS — FAREWELL_SERVICES array has no price field",
+    "farewell_services_api_fetch": "PASS — FarewellMobilePage fetches from /api/service-box/services?pillar=farewell",
+    "ai_prompt_prefilled": "PASS — AIImagePromptField pre-fills from buildDefaultPrompt() based on product name/pillar",
+    "ai_prompt_editable": "PASS — Textarea is editable, whatever admin writes is sent",
+    "ai_prompt_shows_existing": "PASS — Uses currentPrompt || defaultPrompt as initialPrompt",
+    "generate_image_saves_ai_prompt": "PASS — server.py line 21915 sets ai_prompt field in update_fields",
+    "breed_isolation_mojo_indie": "PASS — ZERO Labrador/Akita/Corgi products in claude-picks for Mojo",
+    "learn_desktop_ytquery": "PASS — foundations ytQuery='puppy training basics dog commands', behaviour ytQuery='dog behaviour modification...', training ytQuery='dog obedience training...'"
+  }
+}

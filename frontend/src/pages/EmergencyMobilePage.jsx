@@ -39,12 +39,12 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='urgent'?[50,30,50,30,50]:t==='medium'?[12]:[6]); }
 
 const EMERG_SERVICES = [
-  { id:"emerg_vet",     icon:"🏥", name:"Emergency Vet Finder",        tagline:"Nearest 24hr vet — now",      price:"Free",   desc:"Mira finds the nearest 24-hour emergency vet right now — no searching, no panic." },
-  { id:"afterhours",    icon:"📞", name:"After-Hours Care Guidance",   tagline:"Out-of-hours guidance",       price:"Free",   desc:"Out-of-hours guidance — what to do, whether to go to emergency or wait." },
-  { id:"accident",      icon:"🩺", name:"Accident & Poison Response",  tagline:"Act in the first 10 minutes", price:"Free",   desc:"Step-by-step response for accidents, poisoning, or sudden illness." },
-  { id:"lostpet",       icon:"📍", name:"Lost Pet Response",           tagline:"Start immediately",           price:"Free",   desc:"Immediate lost pet protocol — posts, alerts, microchip tracing, local network." },
-  { id:"transport",     icon:"🚐", name:"Emergency Transport",         tagline:"Safe, fast, arranged now",    price:"₹1,500", desc:"Emergency pet transport to the nearest 24-hour vet — immediate dispatch." },
-  { id:"firstaidcourse",icon:"📚", name:"Pet First Aid Course",        tagline:"Be ready before it happens",  price:"₹1,999", desc:"Certified course — CPR, wound care, choking, poisoning response." },
+  { id:"emerg_vet",     icon:"🏥", name:"Emergency Vet Finder",        tagline:"Nearest 24hr vet — now",      desc:"Mira finds the nearest 24-hour emergency vet right now — no searching, no panic." },
+  { id:"afterhours",    icon:"📞", name:"After-Hours Care Guidance",   tagline:"Out-of-hours guidance",       desc:"Out-of-hours guidance — what to do, whether to go to emergency or wait." },
+  { id:"accident",      icon:"🩺", name:"Accident & Poison Response",  tagline:"Act in the first 10 minutes", desc:"Step-by-step response for accidents, poisoning, or sudden illness." },
+  { id:"lostpet",       icon:"📍", name:"Lost Pet Response",           tagline:"Start immediately",           desc:"Immediate lost pet protocol — posts, alerts, microchip tracing, local network." },
+  { id:"transport",     icon:"🚐", name:"Emergency Transport",         tagline:"Safe, fast, arranged now",    desc:"Emergency pet transport to the nearest 24-hour vet — immediate dispatch." },
+  { id:"firstaidcourse",icon:"📚", name:"Pet First Aid Course",        tagline:"Be ready before it happens",  desc:"Certified course — CPR, wound care, choking, poisoning response." },
 ];
 
 

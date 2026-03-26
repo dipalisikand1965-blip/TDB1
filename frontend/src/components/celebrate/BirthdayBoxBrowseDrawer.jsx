@@ -42,7 +42,13 @@ const SLOT_LABELS = ['Hero', 'Joy', 'Style', 'Memory', 'Health', 'Surprise'];
    SOUL PRODUCT CARD — admin-style grid card with AI mockup image
    ───────────────────────────────────────────────────────────────── */
 const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
-  const image = product.watercolor_image || product.cloudinary_url || product.mockup_url || product.primary_image || product.image_url || product.image || product.images?.[0];
+  const validImg = (url) => url && url.startsWith('http') && !url.includes('emergentagent.com');
+  const image = validImg(product.watercolor_image) ? product.watercolor_image
+    : validImg(product.cloudinary_url) ? product.cloudinary_url
+    : validImg(product.mockup_url) ? product.mockup_url
+    : validImg(product.primary_image) ? product.primary_image
+    : validImg(product.image_url) ? product.image_url
+    : null;
   const productType = product.product_type || product.sub_category || product.type || 'Soul Made';
   const price = product.price || 0;
 
