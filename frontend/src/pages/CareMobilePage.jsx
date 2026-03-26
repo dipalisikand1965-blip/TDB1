@@ -87,12 +87,24 @@ export default function CareMobilePage() {
         data.products.forEach(p => {
           const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
           if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
-          const dim = p.dimension || '';
+          // Map dimension → category name that DimExpanded expects
+          const DIM_TO_CAT = {
+            grooming:    "Grooming",
+            dental:      "Dental & Paw",
+            coat:        "Coat & Skin",
+            wellness:    "Wellness Visits",
+            senior:      "Senior Care",
+            supplements: "Supplements",
+            soul:        "Soul Care Products",
+            mira:        "Mira's Care Picks",
+          };
+          const dimRaw = (p.dimension || p.pillar_category || p.sub_category || '').toLowerCase().trim();
+          const categoryKey = DIM_TO_CAT[dimRaw] || p.dimension || '';
           const sub = p.sub_category || 'Other';
-          if (!dim) return;
-          if (!grouped[dim]) grouped[dim] = {};
-          if (!grouped[dim][sub]) grouped[dim][sub] = [];
-          grouped[dim][sub].push(p);
+          if (!categoryKey) return;
+          if (!grouped[categoryKey]) grouped[categoryKey] = {};
+          if (!grouped[categoryKey][sub]) grouped[categoryKey][sub] = [];
+          grouped[categoryKey][sub].push(p);
         });
         try {
           const breedRes = await fetch(`${API_URL}/api/breed-catalogue/products?pillar=care&breed=${encodeURIComponent(currentPet.breed)}&limit=30`);
