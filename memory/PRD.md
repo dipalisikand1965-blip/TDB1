@@ -145,22 +145,56 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 
 ---
 
+## SESSION 13 — (2026-03-26) Notification Plumbing + Pet Flicker Fix + TODAY Tab
+
+### WhatsApp Service (8 templates, freeform fallback)
+1. ✅ `/app/backend/services/whatsapp_service.py` — Central WA dispatcher with 8 template functions:
+   - `send_welcome_member` → triggered on new user signup (auth_routes.py)
+   - `send_order_confirmed` → triggered on Razorpay payment success (server.py)
+   - `send_concierge_request` → triggered on attach_or_create_ticket (mira_service_desk.py)
+   - `send_daily_digest` → triggered by daily 8am cron (scheduled_automations.py)
+   - `send_birthday_reminder` → triggered 7 days before birthday cron
+   - `send_birthday_today` → triggered day-of birthday cron
+   - `send_medication_reminder` → triggered daily medication cron
+   - `send_pawrent_welcome` → triggered when new pet age < 6 months (server.py)
+2. ✅ Template toggle: `WHATSAPP_TEMPLATES_APPROVED=false` in .env → set to `true` when Gupshup approves
+3. ✅ Idempotency: every send keyed by event (order_id/ticket_id/user_id/date) → whatsapp_logs MongoDB
+4. ✅ Confirmed working: WA freeform sends to 9739908844 in testing
+
+### Email Service (5 templates via Resend)
+5. ✅ `/app/backend/services/email_service.py` — 5 branded HTML email templates:
+   - Welcome (dark purple #1A0A2E, gold #D4A840, cream #FDF6EE)
+   - Order Confirmed
+   - Concierge Request
+   - Birthday Reminder
+   - Soul Profile Complete
+6. ✅ All 5 emails wired to their triggers
+7. ✅ Idempotency via email_logs MongoDB collection
+8. ✅ Confirmed working: emails sent to dipali@clubconcierge.in in testing
+
+### Bug Fixes
+9. ✅ Pet flickering in MiraOSPage — `loadUserPets()` now called on mount (was showing demo Buddy/Luna)
+10. ✅ TODAY tab proactive alerts — URL fixed from `/api/mira/proactive/{id}` to `/api/mira/proactive/alerts/{id}`
+11. ✅ attach_or_create_ticket 500 error — null-safe access for `request.initial_message.text`
+
+### DB Backfill Status
+12. ✅ COMPLETE — 5426 products updated with size_tags, life_stages, mira_can_suggest. Zero errors.
+
+---
+
+## CRITICAL RULE 14 (SESSION 13):
+**WHATSAPP_TEMPLATES_APPROVED=false** → All WA sends use freeform session messages.
+Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_confirmed, tdc_concierge_request, tdc_daily_digest, tdc_birthday_reminder, tdc_birthday_today, tdc_medication_reminder, tdc_pawrent_welcome
+
 ## 9. PENDING TASKS (Priority for next session)
 
-### P0 — Audit Actions (User-approved)
-1. Count language removal — audit complete, user approved removal across all mobile pages
-2. Services Mobile page copy — remove "1,025 services across 7 categories" + premium copy
-3. Side menu: Clarify "Pet Soul™" route (currently duplicates Pet Home) + Ask Mira → widget or page?
-
 ### P0 — Next Session
-1. Celebrate mobile parity: BirthdayCountdown, SoulCelebrationPillars, CelebrationMemoryWall, MiraSoulNudge
-2. "Mira explains why" expandable row on product cards (user-approved)
-3. Watch & Learn YouTube sections (Care + Go)
+1. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
+2. Generate Full Migration Package Report (no code changes, just text report)
 
-### P1 — Post-mobile parity
-1. Services import: 143 old services → services_master (await user confirmation)
-2. Admin "Add New" for Soul Products (Breed Products + Breed Cakes with AI)
-3. Full mobile-desktop parity audit for Love, Fit, Groom pillars
+### P1 — Post-notification
+1. Watch & Learn YouTube sections (Care + Go)
+2. Add LearnNearMe, PaperworkNearMe, GoNearMe components to mobile pages
 
 ### P2 — Future
 1. Production DB (Atlas IP whitelist)

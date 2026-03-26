@@ -14302,7 +14302,7 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
             if bday and (today - bday).days < 183:  # < 6 months
                 import asyncio
                 from services.whatsapp_service import send_pawrent_welcome
-                asyncio.get_event_loop().create_task(
+                asyncio.ensure_future(
                     send_pawrent_welcome(current_user, pet_data)
                 )
     except Exception as _pw_err:
@@ -20039,8 +20039,8 @@ async def verify_payment(request: VerifyPaymentRequest):
                 "items_summary": order.get("plan_name") or order.get("tier", "Pet Pass"),
             }
             import asyncio
-            asyncio.get_event_loop().create_task(send_order_confirmed(user_for_notif, None, order_for_notif))
-            asyncio.get_event_loop().create_task(send_order_confirmed_email(user_for_notif, None, order_for_notif))
+            asyncio.ensure_future(send_order_confirmed(user_for_notif, None, order_for_notif))
+            asyncio.ensure_future(send_order_confirmed_email(user_for_notif, None, order_for_notif))
         except Exception as _notif_err:
             logger.warning(f"Payment notification failed: {_notif_err}")
 
