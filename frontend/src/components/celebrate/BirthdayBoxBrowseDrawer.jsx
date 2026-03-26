@@ -15,12 +15,11 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { X, ChevronRight, RotateCcw, ShieldCheck, Sparkles, Edit2, Image } from 'lucide-react';
+import { X, ChevronRight, RotateCcw, ShieldCheck, Sparkles, Image } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
 import { filterBreedProducts } from '../../hooks/useMiraFilter';
-import ProductBoxEditor from '../admin/ProductBoxEditor';
 import MiraEmptyRequest from '../common/MiraEmptyRequest';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
@@ -41,7 +40,7 @@ const SLOT_LABELS = ['Hero', 'Joy', 'Style', 'Memory', 'Health', 'Surprise'];
 /* ─────────────────────────────────────────────────────────────────
    SOUL PRODUCT CARD — admin-style grid card with AI mockup image
    ───────────────────────────────────────────────────────────────── */
-const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
+const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect }) => {
   const validImg = (url) => url && url.startsWith('http') && !url.includes('emergentagent.com');
   const image = validImg(product.watercolor_image) ? product.watercolor_image
     : validImg(product.cloudinary_url) ? product.cloudinary_url
@@ -64,10 +63,9 @@ const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
       }}
       data-testid={`soul-card-${product.id || product._id}`}
     >
-      {/* Square image — click to open ProductBoxEditor */}
+      {/* Square image */}
       <div
-        style={{ aspectRatio: '1/1', background: 'rgba(255,255,255,0.04)', position: 'relative', cursor: 'pointer' }}
-        onClick={() => onEdit && onEdit(product)}
+        style={{ aspectRatio: '1/1', background: 'rgba(255,255,255,0.04)', position: 'relative' }}
       >
         {image ? (
           <img src={image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -87,11 +85,6 @@ const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
             <span style={{ color: '#fff', fontSize: 11, fontWeight: 700 }}>✓</span>
           </div>
         )}
-        {/* Swap icon overlay — tap to change this item */}
-        <div style={{ position: 'absolute', bottom: 6, right: 6, background: 'rgba(0,0,0,0.55)', borderRadius: 6, padding: '3px 6px', display: 'flex', alignItems: 'center', gap: 3 }}>
-          <Edit2 style={{ width: 10, height: 10, color: 'rgba(255,255,255,0.70)' }} />
-          <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.70)', fontWeight: 600 }}>Swap</span>
-        </div>
       </div>
 
       {/* Card info */}
@@ -132,7 +125,7 @@ const SoulCard = ({ product, isMiraPick, isCurrentSwap, onSelect, onEdit }) => {
 /* ─────────────────────────────────────────────────────────────────
    TAB CONTENT — 2-col grid with admin-style soul product cards
    ───────────────────────────────────────────────────────────────── */
-const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, onEditProduct, onConciergeRequest }) => {
+const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, onConciergeRequest }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -318,7 +311,6 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
                 product={product}
                 isMiraPick={isMiraPick}
                 isCurrentSwap={isCurrentSwap}
-                onEdit={onEditProduct}
                 onSelect={() => {
                   if (isCurrentSwap) {
                     onSwap(tab.id, null);
@@ -349,7 +341,6 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
               newProduct: product,
             });
           }}
-          onEdit={onEditProduct}
         />
       )}
     </div>
@@ -359,7 +350,7 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
 /* ─────────────────────────────────────────────────────────────────
    ALL BREED CAKES SECTION — shows AFTER main cakes grid
    ───────────────────────────────────────────────────────────────── */
-const AllBreedCakesSection = ({ apiBase, onSelect, onEdit }) => {
+const AllBreedCakesSection = ({ apiBase, onSelect }) => {
   const [breedCakes, setBreedCakes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -407,7 +398,6 @@ const AllBreedCakesSection = ({ apiBase, onSelect, onEdit }) => {
                 product={product}
                 isMiraPick={false}
                 isCurrentSwap={false}
-                onEdit={onEdit}
                 onSelect={() => onSelect(product)}
               />
             ))}
@@ -514,8 +504,8 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
   const [pet, setPet] = useState(null);
   const [activeTab, setActiveTab] = useState('cakes');
   const [swaps, setSwaps] = useState({}); // { tabId: { slotNumber, originalItem, newProduct } }
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null); // kept for state compat but unused
+  const [editModalOpen, setEditModalOpen] = useState(false);  // kept for state compat but unused
 
   // Platform-standard mobile detection — ResizeObserver on document.body
   const isMobile = useResizeMobile();
@@ -607,10 +597,7 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
   const swapCount = Object.keys(swaps).length;
   const allergies = boxPreview?.allergies || [];
 
-  const handleEditProduct = useCallback((product) => {
-    setEditingProduct({ ...product, id: product.id || product._id, collection: 'breed_products' });
-    setEditModalOpen(true);
-  }, []);
+  // Admin edit removed — ProductBoxEditor must never be accessible to customers
 
   const drawerContent = (
     <>
@@ -771,7 +758,6 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
                         allergies={allergies}
                         petBreed={petBreed}
                         pet={pet}
-                        onEditProduct={handleEditProduct}
                         onConciergeRequest={onConciergeRequest}
                       />
                     </motion.div>
@@ -804,15 +790,6 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
   return (
     <>
       {typeof document !== 'undefined' && createPortal(drawerContent, document.body)}
-      {/* ProductBoxEditor — full-tabbed product editor with Media + AI generation */}
-      {editModalOpen && editingProduct && (
-        <ProductBoxEditor
-          product={editingProduct}
-          open={editModalOpen}
-          onClose={() => { setEditModalOpen(false); setEditingProduct(null); }}
-          onSave={() => { setEditModalOpen(false); setEditingProduct(null); toast.success('Product saved!'); }}
-        />
-      )}
     </>
   );
 };
