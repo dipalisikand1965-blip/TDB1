@@ -138,6 +138,7 @@ export default function MiraPlanModal({ isOpen = false, onClose, pet = null, pil
   const [cards, setCards] = useState(null);
   const [loading, setLoading] = useState(false);
   const [bookedCards, setBookedCards] = useState([]);
+  const [regenerateCount, setRegenerateCount] = useState(0);
 
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.learn;
   const petName = pet?.name || 'your dog';
@@ -153,7 +154,11 @@ export default function MiraPlanModal({ isOpen = false, onClose, pet = null, pil
       setCards(fetchedCards || FALLBACK_CARDS[pillar] || FALLBACK_CARDS.learn);
       setLoading(false);
     });
-  }, [isOpen, petId, pillar, token]);
+  }, [isOpen, petId, pillar, token, regenerateCount]);
+
+  const handleRegenerate = () => {
+    setRegenerateCount(c => c + 1);
+  };
 
   const handleBook = async (card, idx) => {
     setBookedCards((prev) => [...prev, idx]);
@@ -252,7 +257,33 @@ export default function MiraPlanModal({ isOpen = false, onClose, pet = null, pil
           </div>
         )}
 
-        <div style={{ textAlign: 'center', marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+        {/* Regenerate button */}
+        {!loading && cards && (
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <button
+              onClick={handleRegenerate}
+              data-testid="mira-plan-regenerate-btn"
+              style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: `1px solid ${config.colorSoft}44`,
+                borderRadius: 20,
+                padding: '10px 24px',
+                color: config.colorSoft,
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                transition: 'background 0.2s',
+              }}
+            >
+              ↻ Regenerate Plan
+            </button>
+          </div>
+        )}
+
+        <div style={{ textAlign: 'center', marginTop: 16, fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
           ♥ Built in memory of Mystique · The Doggy Company
         </div>
       </div>
