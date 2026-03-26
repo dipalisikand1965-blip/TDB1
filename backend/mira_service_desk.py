@@ -763,11 +763,11 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         from services.email_service import send_concierge_request_email
         ticket_for_notif = {"ticket_id": ticket_id, "subject": subject, "pillar": request.pillar, "id": ticket_id}
         pet_for_notif = {"name": pet_name} if pet_name else None
-        asyncio.get_event_loop().create_task(
+        asyncio.ensure_future(
             send_concierge_request(member_obj, pet_for_notif, ticket_for_notif)
         )
         if member_obj.get("email"):
-            asyncio.get_event_loop().create_task(
+            asyncio.ensure_future(
                 send_concierge_request_email(member_obj, pet_for_notif, ticket_for_notif)
             )
     except Exception as e:
