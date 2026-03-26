@@ -356,7 +356,7 @@ function MiraImagineCard({ item, pet, token }) {
 }
 
 
-function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet }) {
   const [picks, setPicks]               = useState([]);
   const [scoringPending, setScoringPending] = useState(false);
   const [loading, setLoading]           = useState(true);
@@ -792,7 +792,7 @@ function generateWellnessImagines(pet) {
 // WELLNESS PROFILE — compact bar + soul questions modal
 // Fetches real questions from /api/pet-soul/profile/{id}/quick-questions
 // ─────────────────────────────────────────────────────────────
-function WellnessProfile({ pet, token }) {
+export function WellnessProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [liveScore, setLiveScore]   = useState(null);
   const [questions, setQuestions]   = useState([]);
