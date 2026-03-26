@@ -226,15 +226,18 @@ const ProductBoxEditor = ({
           if (statusData.status === 'complete' && statusData.image_url) {
             clearInterval(pollInterval);
             setGeneratingImage(false);
-            const newProduct = JSON.parse(JSON.stringify(product));
-            newProduct.image_url = statusData.image_url;
-            newProduct.image = statusData.image_url;
-            newProduct.images = [statusData.image_url];
-            newProduct.thumbnail = statusData.image_url;
-            newProduct.media = newProduct.media || {};
-            newProduct.media.primary_image = statusData.image_url;
-            newProduct.media.images = [statusData.image_url];
-            setProduct(newProduct);
+            setProduct(prev => ({
+              ...prev,
+              image_url: statusData.image_url,
+              image: statusData.image_url,
+              images: [statusData.image_url],
+              thumbnail: statusData.image_url,
+              watercolor_image: statusData.image_url,
+              cloudinary_url: statusData.image_url,
+              media: { ...(prev.media || {}), primary_image: statusData.image_url, images: [statusData.image_url] },
+            }));
+            // Switch to Media tab so user can see the updated image instantly
+            setActiveTab('media');
             alert(`✅ AI image generated for "${product.name}"`);
           } else if (statusData.status === 'error') {
             clearInterval(pollInterval);
@@ -1685,6 +1688,8 @@ const ProductBoxEditor = ({
                       ai_image_prompt: usedPrompt || prev.ai_image_prompt || '',
                       media: { ...(prev.media || {}), primary_image: url, images: [url] },
                     }));
+                    // Auto-switch to Media tab so the updated image is immediately visible
+                    setActiveTab('media');
                   }}
                 />
               </div>

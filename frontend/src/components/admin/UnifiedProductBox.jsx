@@ -231,7 +231,7 @@ const UnifiedProductBox = () => {
         // Nested metadata structures
         'basics', 'commerce', 'soul_tier', 'soul_level',
         // Active toggle & misc fields
-        'is_active', 'ai_image_prompt', 'categories', 'inventory',
+        'is_active', 'ai_image_prompt', 'ai_prompt', 'watercolor_image', 'cloudinary_url', 'categories', 'inventory',
         'mira_ai', 'mrp', 'shape', 'suitability',
       ];
       

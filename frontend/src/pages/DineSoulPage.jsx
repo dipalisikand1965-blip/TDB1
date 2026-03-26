@@ -1008,12 +1008,16 @@ function DineMobilePage() {
           </div>
 
           <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-            <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
+            <div
+              onClick={() => { vibe('light'); setProfileOpen(true); }}
+              style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', cursor:'pointer' }}
+              data-testid="dine-mobile-profile-avatar"
+            >
               {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <span style={{ fontSize:22 }}>🐾</span>}
             </div>
-            <div>
+            <div onClick={() => { vibe('light'); setProfileOpen(true); }} style={{ cursor:'pointer' }}>
               <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Food & Nourishment</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName}</div>
+              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName} · <span style={{ fontSize:13, color:'rgba(255,208,128,0.8)' }}>View Profile →</span></div>
             </div>
           </div>
 
