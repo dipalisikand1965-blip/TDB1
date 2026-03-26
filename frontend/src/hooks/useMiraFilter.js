@@ -424,6 +424,44 @@ export function useMiraFilter(products, pet) {
   return applyMiraFilter(products, pet);
 }
 
+// ── Breed exclusion filter (strict mode) ─────────────────────────────────────
+// All known breed names that could appear in product names/who_for fields
+export const KNOWN_BREEDS = [
+  'akita','american bully','american staffordshire','australian shepherd',
+  'basenji','basset hound','beagle','bichon frise','border collie','boxer',
+  'cavalier','chihuahua','chow chow','cocker spaniel','dachshund','dalmatian',
+  'doberman','english bulldog','french bulldog','german shepherd','golden retriever',
+  'great dane','greyhound','husky','indie','jack russell','labrador',
+  'lhasa apso','maltese','maltipoo','mastiff','pekingese','pomeranian','poodle',
+  'pug','rottweiler','saint bernard','samoyed','shih tzu','siberian husky',
+  'springer spaniel','vizsla','weimaraner','yorkshire',
+];
+
+/**
+ * filterBreedProducts — strict breed filter
+ * Excludes products whose name/who_for mentions a different breed.
+ * Universal products (no known breed name present) are always shown.
+ * @param {Array}  products  – raw product list
+ * @param {string} petBreed  – pet's breed string (from pet.breed)
+ * @returns {Array}
+ */
+export function filterBreedProducts(products, petBreed) {
+  const pl = (petBreed || '').toLowerCase().trim();
+  const pw = pl.split(/\s+/).filter(w => w.length > 2);
+  return products.filter(p => {
+    const nameText = ((p.name || '') + ' ' + (p.who_for || '')).toLowerCase();
+    for (const b of KNOWN_BREEDS) {
+      if (nameText.includes(b)) {
+        if (!pl) return false;                        // no pet breed → hide all breed-named items
+        if (nameText.includes(pl)) return true;       // product name has THIS breed → keep
+        if (pw.some(w => b.includes(w) || w.includes(b))) return true; // word match
+        return false;                                 // product is for a DIFFERENT breed → strict exclude
+      }
+    }
+    return true;                                      // no known breed in name → universal product
+  });
+}
+
 // ── Helper exports ────────────────────────────────────────────────────────────
 const CLEAN_NONE_EXPORT = /^(no|none|none_confirmed|no_allergies|no allergies|nil|n\/a|unknown|na)$/i;
 

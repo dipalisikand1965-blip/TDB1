@@ -11,7 +11,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
-import { applyMiraFilter } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, KNOWN_BREEDS } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -33,23 +33,6 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 function vibe(t = 'light') { if (navigator?.vibrate) navigator.vibrate(t === 'success' ? [8, 40, 10] : t === 'medium' ? [12] : [6]); }
 
 function getBreed(pet) { return (pet?.breed || pet?.doggy_soul_answers?.breed || '').toLowerCase().trim(); }
-const KNOWN_BREEDS = ['american bully','beagle','border collie','boxer','cavalier','chihuahua','chow chow','dachshund','dalmatian','doberman','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','jack russell','labrador','lhasa apso','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire'];
-function filterBreedProducts(products, petBreed) {
-  const pl = (petBreed || '').toLowerCase();
-  const pw = pl.split(/\s+/).filter(w => w.length > 2);
-  return products.filter(p => {
-    const n = (p.name || '').toLowerCase();
-    for (const b of KNOWN_BREEDS) {
-      if (n.includes(b)) {
-        if (!pl) return false;
-        if (n.includes(pl)) return true;
-        if (pw.some(w => b.includes(w))) return true;
-        return false;
-      }
-    }
-    return true;
-  });
-}
 
 // ── Shop Category Strip ────────────────────────────────────────
 const SHOP_CATS = [

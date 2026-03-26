@@ -112,29 +112,23 @@ const getQuickReplies = (activePillar, petName, lastResponse, actions) => {
         { text: 'Need a dog walker', icon: Dog },
         { text: 'Vet checkup', icon: Stethoscope },
       ];
-    case 'travel':
+    case 'go':
       return [
         { text: 'Plan a trip together', icon: Plane },
         { text: 'Pet-friendly hotels', icon: Hotel },
         { text: 'Travel checklist', icon: Package },
       ];
-    case 'stay':
+    case 'shop':
       return [
-        { text: 'Pet boarding options', icon: Hotel },
-        { text: 'Pet sitter needed', icon: Home },
-        { text: 'Daycare for a day', icon: Sun },
+        { text: 'Browse pet products', icon: Briefcase },
+        { text: 'Breed-specific picks', icon: Star },
+        { text: 'Soul Made™ gifting', icon: Gift },
       ];
-    case 'enjoy':
+    case 'play':
       return [
         { text: 'Dog parks nearby', icon: MapPin },
         { text: 'Pet-friendly cafes', icon: Coffee },
         { text: 'Playdate ideas', icon: Dog },
-      ];
-    case 'fit':
-      return [
-        { text: 'Exercise routine', icon: Dumbbell },
-        { text: 'Weight management', icon: Heart },
-        { text: 'Activity tracking', icon: Clock },
       ];
     case 'learn':
       return [
@@ -180,31 +174,44 @@ const getPillarPicks = (pillar, petName, allergies = []) => {
       { id: 'care4', name: 'Pet Sitting', desc: 'In-home pet care', price: 'Price on request', icon: '🏠', type: 'service' },
       { id: 'care5', name: 'Vaccination', desc: 'Keep vaccinations up to date', price: 'Price on request', icon: '💉', type: 'service' },
     ],
-    travel: [
+    go: [
       { id: 't1', name: 'Pet-Friendly Hotels', desc: 'Curated accommodations', price: 'Price on request', icon: '🏨', type: 'service' },
       { id: 't2', name: 'Travel Kit', desc: 'Everything for the journey', price: '₹2,200', icon: '🧳', type: 'product' },
       { id: 't3', name: 'Pet Taxi', desc: 'Safe pet transport', price: 'Price on request', icon: '🚗', type: 'service' },
       { id: 't4', name: 'Travel Documents', desc: 'Health certificates & more', price: 'Concierge® handles', icon: '📄', type: 'concierge' },
     ],
-    stay: [
-      { id: 's1', name: 'Premium Boarding', desc: 'Luxury pet hotel stay', price: 'Price on request', icon: '🏨', type: 'service' },
-      { id: 's2', name: 'Home Pet Sitter', desc: 'Sitter stays at your home', price: 'Price on request', icon: '🏠', type: 'service' },
-      { id: 's3', name: 'Daycare', desc: 'Supervised play all day', price: 'Price on request', icon: '☀️', type: 'service' },
-    ],
-    enjoy: [
+    play: [
       { id: 'e1', name: 'Dog Park Visit', desc: 'Find the best parks nearby', price: 'Free', icon: '🌳', type: 'info' },
       { id: 'e2', name: 'Pet Cafe Booking', desc: 'Reserve at pet-friendly spots', price: 'Price on request', icon: '☕', type: 'service' },
       { id: 'e3', name: 'Playdate Matching', desc: 'Find friends for your pet', price: 'Free', icon: '🐕', type: 'service' },
+      { id: 'e4', name: 'Interactive Toys', desc: 'Mental stimulation picks', price: '₹850', icon: '🎾', type: 'product' },
     ],
-    fit: [
-      { id: 'f1', name: 'Fitness Assessment', desc: 'Check your pet\'s fitness level', price: 'Price on request', icon: '💪', type: 'service' },
-      { id: 'f2', name: 'Exercise Plan', desc: 'Custom workout routine', price: 'Concierge® creates', icon: '📋', type: 'concierge' },
-      { id: 'f3', name: 'Swimming Session', desc: 'Low-impact exercise', price: 'Price on request', icon: '🏊', type: 'service' },
+    shop: [
+      { id: 'sh1', name: 'Breed Collection', desc: 'Soul-made products for your breed', price: 'Concierge® creates', icon: '🐾', type: 'concierge' },
+      { id: 'sh2', name: 'Hamper Gift Box', desc: 'Curated gift set for your dog', price: '₹2,500+', icon: '🎁', type: 'product' },
+      { id: 'sh3', name: 'Custom Bandana', desc: 'Personalised with your pet\'s name', price: 'Concierge® creates', icon: '🎀', type: 'concierge' },
+      { id: 'sh4', name: 'Merch & Keepsakes', desc: 'Print-on-demand pet merchandise', price: 'Price on request', icon: '👕', type: 'service' },
+    ],
+    emergency: [
+      { id: 'em1', name: 'Emergency Vet', desc: '24/7 emergency vet support', price: 'Price on request', icon: '🚨', type: 'service' },
+      { id: 'em2', name: 'First Aid Guide', desc: 'Immediate care instructions', price: 'Free', icon: '🩺', type: 'info' },
+      { id: 'em3', name: 'Emergency Kit', desc: 'Essential supplies for any situation', price: '₹1,800', icon: '🏥', type: 'product' },
+    ],
+    farewell: [
+      { id: 'f1', name: 'Rainbow Bridge Memorial', desc: 'A tribute to your beloved', price: 'Concierge® creates', icon: '🌈', type: 'concierge' },
+      { id: 'f2', name: 'Memorial Canvas Print', desc: 'Beautiful portrait print', price: '₹3,500', icon: '🖼️', type: 'product' },
+      { id: 'f3', name: 'Pawprint Keepsake', desc: 'Precious memory keepsake', price: '₹2,200', icon: '🐾', type: 'product' },
     ],
     learn: [
       { id: 'l1', name: 'Basic Training', desc: 'Obedience fundamentals', price: 'Price on request', icon: '📚', type: 'service' },
       { id: 'l2', name: 'Behavior Consultation', desc: 'Address specific issues', price: 'Price on request', icon: '🧠', type: 'service' },
       { id: 'l3', name: 'Puppy School', desc: 'Socialization & basics', price: 'Price on request', icon: '🎓', type: 'service' },
+    ],
+    paperwork: [
+      { id: 'pw1', name: 'Pet Passport', desc: 'Travel documents arranged', price: 'Concierge® handles', icon: '🛂', type: 'concierge' },
+      { id: 'pw2', name: 'Vaccination Certificate', desc: 'Official health certificate', price: 'Concierge® handles', icon: '💉', type: 'concierge' },
+      { id: 'pw3', name: 'Microchip Registration', desc: 'Permanent ID registration', price: 'Price on request', icon: '📡', type: 'service' },
+      { id: 'pw4', name: 'Insurance Documentation', desc: 'Pet insurance paperwork', price: 'Price on request', icon: '📋', type: 'service' },
     ],
     advisory: [
       { id: 'a1', name: 'Nutrition Advice', desc: 'Diet planning help', price: 'Free', icon: '🥗', type: 'info' },
