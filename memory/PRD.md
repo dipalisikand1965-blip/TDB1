@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-26 (Session 7 Complete)
+## Last Updated: 2026-03-26 (Session 8 — Automations & Dashboard Fixes Complete)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -147,6 +147,11 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 
 ## 9. PENDING TASKS (Priority for next session)
 
+### P0 — Audit Actions (User-approved)
+1. Count language removal — audit complete, user approved removal across all mobile pages
+2. Services Mobile page copy — remove "1,025 services across 7 categories" + premium copy
+3. Side menu: Clarify "Pet Soul™" route (currently duplicates Pet Home) + Ask Mira → widget or page?
+
 ### P0 — Next Session
 1. Celebrate mobile parity: BirthdayCountdown, SoulCelebrationPillars, CelebrationMemoryWall, MiraSoulNudge
 2. "Mira explains why" expandable row on product cards (user-approved)
@@ -158,16 +163,33 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 3. Full mobile-desktop parity audit for Love, Fit, Groom pillars
 
 ### P2 — Future
-1. WhatsApp Daily Digest cron
-2. Medication refill reminders
-3. Production DB (Atlas IP whitelist)
-4. Refactor Admin.jsx (7k lines)
-5. Refactor server.py (24k lines)
-6. Build Love pillar
+1. Production DB (Atlas IP whitelist)
+2. Refactor Admin.jsx (7k lines)
+3. Refactor server.py (24k lines)
+4. Build Love pillar
 
 ---
 
-## 10. CRITICAL RULES (NEXT AGENT MUST READ)
+## 10. COMPLETED IN SESSION 8 (2026-03-26)
+1. ✅ Audit 1 (Dashboard) + Audit 2 (Communications) delivered to user
+2. ✅ Fix a: Mira Notifications datetime bug resolved — now returns success:True with 20 notifications
+3. ✅ Fix b: Paw Points Leaderboard endpoint added (`/api/paw-points/leaderboard`)
+4. ✅ Fix c: Badges endpoint added (`/api/paw-points/my-badges`) — returns 6 earned badges
+5. ✅ Fix d: WhatsApp Daily Digest — sends to 14/15 members via Gupshup
+6. ✅ Fix e: Birthday Reminders — 7-day + day-of triggers via WhatsApp + Resend
+7. ✅ Fix f: Medication Reminders — daily WhatsApp if meds logged in vault
+8. ✅ Dashboard Fix 1: Tier mismatch resolved — Gold Crown shows for 2583 pts (threshold 1500)
+9. ✅ Dashboard Fix 2: Badges section added below Pet Life Pass card
+10. ✅ Dashboard Fix 3: Notification bell fixed to use correct API endpoint
+11. ✅ Dashboard Fix 4: Full card view improved with QR code + tier progress bar
+12. ✅ Care Mobile Fix 1: Health Vault tab added (4th tab with vaccines, meds, allergies, vet visits)
+13. ✅ Care Mobile Fix 2: Grooming Profile card added
+14. ✅ Care Mobile Fix 3: "Get Care Plan" opens Mira Imagines modal with 4 personalised cards
+15. ✅ Admin automation trigger endpoints added (`/api/admin/automations/*`)
+
+---
+
+## 11. CRITICAL RULES (NEXT AGENT MUST READ)
 
 1. **Desktop `*SoulPage.jsx` files are STRICTLY LOCKED** — never modify them
 2. **Never modify server.py directly** — only add new route files
