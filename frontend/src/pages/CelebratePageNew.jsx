@@ -434,9 +434,13 @@ const CelebratePageNew = () => {
       pet: selectedPet,
       channel: "celebrate_category_strip",
     });
-    // Breed Cakes → open Doggy Bakery cake modal
-    if (categoryId === 'breed-cakes') {
-      setCakeModalOpen(true);
+    // birthday-cakes + breed-cakes → open new DoggyBakeryCakeModal via event
+    if (categoryId === 'birthday-cakes' || categoryId === 'breed-cakes') {
+      window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
+        pet: selectedPet,
+        petName: selectedPet?.name || '',
+        petBreed: selectedPet?.breed || '',
+      } }));
       return;
     }
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
@@ -587,8 +591,8 @@ const CelebratePageNew = () => {
         onOpenBrowseDrawer={() => handleOpenBrowseDrawer(null)}
       />
 
-      {/* BIRTHDAY BOX BROWSE DRAWER — listens to openBirthdayBoxBrowse event */}
-      <BirthdayBoxBrowseDrawer />
+      {/* BIRTHDAY BOX BROWSE DRAWER — replaced by DoggyBakeryCakeModal (event-driven) */}
+      <DoggyBakeryCakeModal />
 
       {/* CATEGORY STRIP MODAL — rendered here (outside Framer Motion tree) to fix fixed positioning */}
       {celebrateCatModal && (
@@ -610,13 +614,7 @@ const CelebratePageNew = () => {
         token={token}
       />
 
-      {/* DOGGY BAKERY BREED CAKE MODAL */}
-      {cakeModalOpen && (
-        <DoggyBakeryCakeModal
-          pet={selectedPet}
-          onClose={() => setCakeModalOpen(false)}
-        />
-      )}
+      {/* DOGGY BAKERY BREED CAKE MODAL — removed, handled by DoggyBakeryCakeModal above */}
 
     </PillarPageLayout>
   );
