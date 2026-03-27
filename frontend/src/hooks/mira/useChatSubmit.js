@@ -627,6 +627,14 @@ const useChatSubmit = (config) => {
         }
       }
       
+      // ── Mira Ticket Intelligence — fire on concern detection ──
+      import('./useMiraTicket').then(({ detectConcernType, fireMiraTicket }) => {
+        const concernType = detectConcernType(inputQuery);
+        if (concernType) {
+          fireMiraTicket({ pet, pillar, userMessage: inputQuery, miraResponse: miraResponseText, concernType, token });
+        }
+      });
+
       // Extract contextual quick replies - handle both response formats
       const quickReplies = extractQuickReplies(data);
       
