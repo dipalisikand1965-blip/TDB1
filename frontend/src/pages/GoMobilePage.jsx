@@ -20,6 +20,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GoConciergeSection from '../components/go/GoConciergeSection';
 import GoCategoryStrip from '../components/go/GoCategoryStrip';
+import { getGoDims, DimExpanded } from './GoSoulPage';
 import GoNearMe from '../components/go/GoNearMe';
 import PetFriendlyStays from '../components/go/PetFriendlyStays';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
@@ -92,6 +93,7 @@ export default function GoMobilePage() {
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
   const [showGoPlan, setShowGoPlan] = useState(false);
+  const [openDim, setOpenDim] = useState(null);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -217,6 +219,40 @@ export default function GoMobilePage() {
               </div>
             ) : (
               <div style={{ padding:'16px' }}>
+                {/* ── 6 Go Dimensions — matches desktop exactly ── */}
+                {(() => {
+                  const goDims = getGoDims(currentPet);
+                  return (
+                    <>
+                      <div style={{ fontSize:13, color:G.mutedText, marginBottom:10 }}>
+                        6 dimensions, matched to {petName}'s travel profile
+                      </div>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+                        {goDims.map(dim => (
+                          <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)}
+                            style={{ background: dim.glow ? G.pale : '#fff', border:`1.5px solid ${openDim===dim.id ? G.teal : G.border}`, borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center', boxShadow: dim.glow ? `0 4px 16px rgba(26,188,156,0.15)` : 'none', position:'relative' }}>
+                            {dim.glow && <div style={{ position:'absolute', top:8, right:8, width:7, height:7, borderRadius:'50%', background:G.teal, boxShadow:`0 0 6px ${G.teal}` }} />}
+                            <div style={{ fontSize:26, marginBottom:6 }}>{dim.icon}</div>
+                            <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:3 }}>{dim.label}</div>
+                            <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.3 }}>{typeof dim.sub==='string' ? dim.sub.replace(/{name}/g, petName) : ''}</div>
+                            {dim.badge && <div style={{ display:'inline-flex', marginTop:6, background:dim.badgeBg, color:'#fff', borderRadius:20, padding:'2px 8px', fontSize:9, fontWeight:700 }}>{dim.badge}</div>}
+                          </div>
+                        ))}
+                      </div>
+                      {openDim && (() => {
+                        const activeDim = goDims.find(d => d.id === openDim);
+                        return activeDim ? (
+                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
+                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+                    </>
+                  );
+                })()}
+
                 {/* Sub-category pills */}
                 {subCats.length > 1 && (
                   <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
