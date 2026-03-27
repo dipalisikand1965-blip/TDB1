@@ -39,6 +39,44 @@ import {
   createErrorMessage
 } from './useChat';
 
+// ─── Mira Conversational Memory — signal detection ────────────────────────
+const MEMORY_TRIGGERS = {
+  health:     ['infection', 'bacteria', 'itch', 'scratch', 'bite', 'vet',
+               'medication', 'sick', 'fever', 'vomit', 'diarrhea', 'wound',
+               'surgery', 'allergy', 'reaction', 'pain', 'limp'],
+  milestone:  ['birthday', 'gotcha day', 'first', 'learned', 'achievement',
+               'graduated', 'weight', 'vaccine', 'neutered', 'spayed'],
+  grief:      ['passed', 'died', 'loss', 'rainbow bridge', 'miss', 'cremation'],
+  behaviour:  ['anxiety', 'aggressive', 'fearful', 'training', 'progress'],
+  nutrition:  ['new food', 'changed diet', 'stopped eating', 'weight gain',
+               'weight loss', 'supplement started'],
+};
+
+const detectMemoryType = (msg) => {
+  const lower = (msg || '').toLowerCase();
+  for (const [type, keywords] of Object.entries(MEMORY_TRIGGERS)) {
+    if (keywords.some(k => lower.includes(k))) return type;
+  }
+  return null;
+};
+
+const generateFollowUp = (type, petName) => {
+  const followUps = {
+    health:    `How is ${petName} doing? Did the health concern we discussed get resolved?`,
+    milestone: `Has ${petName} hit any new milestones since we last spoke?`,
+    grief:     `How are you doing? Thinking of you and ${petName}.`,
+    behaviour: `How is ${petName}'s behaviour coming along?`,
+    nutrition: `How is ${petName} getting on with the diet change?`,
+  };
+  return followUps[type] || `How is ${petName} doing since we last spoke?`;
+};
+
+const RESOLVE_SIGNALS = [
+  'better', 'recovered', 'fine now', 'all good', 'cleared up',
+  'healed', 'fixed', 'resolved', 'thank you', 'doing well',
+];
+// ────────────────────────────────────────────────────────────────────────────
+
 /**
  * Main chat submission hook
  * @param {Object} config - Configuration object with all required state and setters
@@ -162,6 +200,10 @@ const useChatSubmit = (config) => {
     // Haptic & Sound
     hapticFeedback,
     notificationSounds,
+    
+    // Follow-up memory tracking
+    activeFollowUpMemoryId,
+    setActiveFollowUpMemoryId,
     
     // Helper Functions (passed from useChat)
     fetchConversationMemory,
@@ -777,6 +819,45 @@ const useChatSubmit = (config) => {
           advice: miraResponseText.substring(0, 200)
         });
       }
+
+      // ── MIRA CONVERSATIONAL MEMORY (auto-detect + save) ─────────────────
+      const memoryType = detectMemoryType(inputQuery);
+      if (memoryType && pet?.id) {
+        try {
+          await fetch(`${API_URL}/api/mira/memory/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({
+              pet_id: pet.id,
+              memory_type: memoryType,
+              content: inputQuery,
+              mira_response: miraResponseText,
+              follow_up: true,
+              follow_up_message: generateFollowUp(memoryType, pet.name || 'your pet'),
+              created_at: new Date().toISOString(),
+            }),
+          });
+          console.log('[MIRA MEMORY] Saved memory type:', memoryType);
+        } catch (e) {
+          console.log('[MIRA MEMORY] Save failed (non-critical):', e.message);
+        }
+      }
+
+      // ── AUTO-RESOLVE follow-up if user signals all is well ───────────────
+      if (activeFollowUpMemoryId &&
+          RESOLVE_SIGNALS.some(s => inputQuery.toLowerCase().includes(s))) {
+        try {
+          await fetch(`${API_URL}/api/mira/memory/${activeFollowUpMemoryId}/resolved`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          if (setActiveFollowUpMemoryId) setActiveFollowUpMemoryId(null);
+          console.log('[MIRA MEMORY] Follow-up resolved:', activeFollowUpMemoryId);
+        } catch (e) {
+          console.log('[MIRA MEMORY] Resolve failed (non-critical):', e.message);
+        }
+      }
+      // ────────────────────────────────────────────────────────────────────
       
       // MODE SYSTEM
       const miraMode = data.mode || 'GENERAL';

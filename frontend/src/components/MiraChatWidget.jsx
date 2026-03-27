@@ -34,6 +34,35 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+// ─── Mira Conversational Memory helpers (mirrored from useChatSubmit) ───────
+const MEMORY_TRIGGERS = {
+  health:     ['infection', 'bacteria', 'itch', 'scratch', 'bite', 'vet',
+               'medication', 'sick', 'fever', 'vomit', 'diarrhea', 'wound',
+               'surgery', 'allergy', 'reaction', 'pain', 'limp'],
+  milestone:  ['birthday', 'gotcha day', 'first', 'learned', 'achievement',
+               'graduated', 'weight', 'vaccine', 'neutered', 'spayed'],
+  grief:      ['passed', 'died', 'loss', 'rainbow bridge', 'miss', 'cremation'],
+  behaviour:  ['anxiety', 'aggressive', 'fearful', 'training', 'progress'],
+  nutrition:  ['new food', 'changed diet', 'stopped eating', 'weight gain',
+               'weight loss', 'supplement started'],
+};
+const detectMemoryType = (msg) => {
+  const lower = (msg || '').toLowerCase();
+  for (const [type, keywords] of Object.entries(MEMORY_TRIGGERS)) {
+    if (keywords.some(k => lower.includes(k))) return type;
+  }
+  return null;
+};
+const generateFollowUp = (type, petName) => ({
+  health:    `How is ${petName} doing? Did the health concern we discussed get resolved?`,
+  milestone: `Has ${petName} hit any new milestones since we last spoke?`,
+  grief:     `How are you doing? Thinking of you and ${petName}.`,
+  behaviour: `How is ${petName}'s behaviour coming along?`,
+  nutrition: `How is ${petName} getting on with the diet change?`,
+}[type] || `How is ${petName} doing since we last spoke?`);
+const RESOLVE_SIGNALS = ['better','recovered','fine now','all good','cleared up','healed','fixed','resolved','thank you','doing well'];
+// ────────────────────────────────────────────────────────────────────────────
+
 // Error boundary for safe markdown rendering
 class SafeMarkdownRenderer extends Component {
   state = { hasError: false };
@@ -177,6 +206,7 @@ const MiraChatWidget = ({
   
   // Widget state
   const [isOpen, setIsOpen] = useState(false);
+  const [activeFollowUpMemoryId, setActiveFollowUpMemoryId] = useState(null);
   const [isMinimized, setIsMinimized] = useState(false);
   
   // Cinematic Kit Assembly state
@@ -571,7 +601,7 @@ const MiraChatWidget = ({
     return `${greeting}! I'm here to help with all your ${(pillarConfig[pillar]?.name || 'pet').toLowerCase()} needs. What can I do for you? 🐾`;
   }, [selectedPet?.name, selectedPet?.breed, pillar, miraContext?.pillar_note]);
 
-  // Add welcome message when widget opens
+  // Add welcome message (or proactive follow-up) when widget opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       // Re-sync active pet from localStorage (PillarContext may have changed it since widget mounted)
@@ -584,7 +614,43 @@ const MiraChatWidget = ({
         }
       }
 
-      const welcomeMsg = generateWelcomeMessage();
+      const showWelcome = (overrideContent) => {
+        const content = overrideContent || `Hi, I'm Mira, ${selectedPet?.name || 'your pet'}'s Soul Mate! ${generateWelcomeMessage()}`;
+        setMessages([{ id: overrideContent ? 'follow-up' : 'welcome', role: 'assistant', content }]);
+      };
+
+      // Check for pending proactive follow-up BEFORE showing welcome
+      const checkAndShow = async () => {
+        if (selectedPet?.id && token) {
+          try {
+            const API_URL = process.env.REACT_APP_BACKEND_URL;
+            const res = await fetch(
+              `${API_URL}/api/mira/memory/${selectedPet.id}?follow_up=true&limit=1`,
+              { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+            if (res.ok) {
+              const data = await res.json();
+              const pending = data.memories?.[0];
+              if (pending && pending.follow_up_message) {
+                // Show follow-up instead of generic welcome
+                showWelcome(pending.follow_up_message);
+                setActiveFollowUpMemoryId(pending._id);
+                // Mark as shown
+                await fetch(`${API_URL}/api/mira/memory/${pending._id}/shown`, {
+                  method: 'PATCH',
+                  headers: { 'Authorization': `Bearer ${token}` },
+                }).catch(() => {});
+                return;
+              }
+            }
+          } catch (e) {
+            // Non-critical — fall through to normal welcome
+          }
+        }
+        showWelcome();
+      };
+
+      checkAndShow();
       
       // Speak welcome greeting when widget opens (if voice is enabled)
       if (synthRef.current && voiceEnabled) {
@@ -634,14 +700,8 @@ const MiraChatWidget = ({
           synth.speak(utterance);
         }, 600);
       }
-      
-      setMessages([{
-        id: 'welcome',
-        role: 'assistant',
-        content: `Hi, I'm Mira, ${selectedPet?.name || 'your pet'}'s Soul Mate! ${welcomeMsg}`
-      }]);
     }
-  }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled, generateWelcomeMessage]);
+  }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled, generateWelcomeMessage, token]);
   
   // Load messages for current pillar on mount and pillar change
   // With persistent memory: keep messages across pillar switches, add pillar marker
@@ -1181,6 +1241,31 @@ const MiraChatWidget = ({
                 ],
               }),
             }).catch(() => {});
+
+            // ── Proactive follow-up memory (auto-detect trigger type) ──────
+            const memType = detectMemoryType(messageToSend);
+            if (memType) {
+              fetch(`${getApiUrl()}/api/mira/memory/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                  pet_id: petId,
+                  memory_type: memType,
+                  content: messageToSend,
+                  mira_response: fullText.substring(0, 500),
+                  follow_up: true,
+                  follow_up_message: generateFollowUp(memType, selectedPet?.name || 'your pet'),
+                  created_at: new Date().toISOString(),
+                }),
+              }).catch(() => {});
+            }
+            // Auto-resolve active follow-up
+            if (activeFollowUpMemoryId && RESOLVE_SIGNALS.some(s => messageToSend.toLowerCase().includes(s))) {
+              fetch(`${getApiUrl()}/api/mira/memory/${activeFollowUpMemoryId}/resolved`, {
+                method: 'PATCH',
+                headers: { Authorization: `Bearer ${token}` },
+              }).then(() => setActiveFollowUpMemoryId(null)).catch(() => {});
+            }
           }
 
           // ── ElevenLabs / TTS — speak the FULL completed text once ──
@@ -1359,6 +1444,31 @@ const MiraChatWidget = ({
               ],
             }),
           }).catch(() => {});
+
+          // ── Proactive follow-up memory (auto-detect trigger type) ──────
+          const memType = detectMemoryType(messageToSend);
+          if (memType) {
+            fetch(`${getApiUrl()}/api/mira/memory/save`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({
+                pet_id: petId,
+                memory_type: memType,
+                content: messageToSend,
+                mira_response: displayContent.substring(0, 500),
+                follow_up: true,
+                follow_up_message: generateFollowUp(memType, selectedPet?.name || 'your pet'),
+                created_at: new Date().toISOString(),
+              }),
+            }).catch(() => {});
+          }
+          // Auto-resolve active follow-up
+          if (activeFollowUpMemoryId && RESOLVE_SIGNALS.some(s => messageToSend.toLowerCase().includes(s))) {
+            fetch(`${getApiUrl()}/api/mira/memory/${activeFollowUpMemoryId}/resolved`, {
+              method: 'PATCH',
+              headers: { Authorization: `Bearer ${token}` },
+            }).then(() => setActiveFollowUpMemoryId(null)).catch(() => {});
+          }
         }
         
         // Schedule product card reveal — 800ms after response renders, only if safe
