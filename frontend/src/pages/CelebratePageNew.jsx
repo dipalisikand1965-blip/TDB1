@@ -387,7 +387,6 @@ const CelebratePageNew = () => {
   // Handle talk to concierge — fires canonical flow + opens intake modal
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [celebrateServiceType, setCelebrateServiceType] = useState('');
-  const [cakeModalOpen, setCakeModalOpen] = useState(false);
   const handleTalkToConcierge = useCallback(async () => {
     // Fire tdc tracking immediately
     tdc.book({ service: 'Celebration Concierge®', pillar: 'celebrate', pet: selectedPet, channel: 'celebrate_concierge_btn' });
@@ -514,7 +513,7 @@ const CelebratePageNew = () => {
         {/* DOGGY BAKERY — Breed Cake standalone banner */}
         <div
           data-testid="breed-cake-banner"
-          onClick={() => setCakeModalOpen(true)}
+          onClick={() => setBreedCakeOpen(true)}
           style={{
             margin: '8px 0 24px',
             padding: '18px 20px',
