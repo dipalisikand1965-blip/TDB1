@@ -7,8 +7,8 @@
  */
 
 import React, { useState } from 'react';
-import { tdc } from '../utils/tdc_intent';
-import { bookViaConcierge } from '../utils/MiraCardActions';
+import { tdc } from '../../utils/tdc_intent';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star, Palette, Loader2 } from 'lucide-react';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
 

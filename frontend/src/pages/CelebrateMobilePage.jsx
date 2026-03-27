@@ -28,7 +28,6 @@ import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
-import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
 import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths';
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
@@ -290,8 +289,13 @@ export default function CelebrateMobilePage() {
 
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
-    if (categoryId === 'breed-cakes') {
-      setCakeModalOpen(true);
+    // birthday-cakes AND breed-cakes both open the new DoggyBakeryCakeModal
+    if (categoryId === 'birthday-cakes' || categoryId === 'breed-cakes') {
+      window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
+        pet: currentPet,
+        petName: currentPet?.name || '',
+        petBreed: currentPet?.breed || '',
+      } }));
       return;
     }
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
@@ -561,25 +565,8 @@ export default function CelebrateMobilePage() {
           />
         )}
 
-        {/* Breed Cake builder modal */}
-        {cakeModalOpen && (
-          <DoggyBakeryCakeModal
-            pet={currentPet}
-            onClose={() => setCakeModalOpen(false)}
-          />
-        )}
-
-        {/* Birthday Box Builder — listens to openOccasionBoxBuilder event */}
-        <BirthdayBoxBuilder
-          onOpenBrowseDrawer={() => handleOpenBrowseDrawer()}
-        />
-
-        {/* Birthday Box Browse Drawer — listens to openBirthdayBoxBrowse event */}
-        <BirthdayBoxBrowseDrawer
-          onConciergeRequest={async (msg) => {
-            await request(msg, { channel: 'celebrate_browse_empty', metadata: { pet: currentPet } });
-          }}
-        />
+        {/* Birthday Cakes + Breed Cakes — DoggyBakeryCakeModal listens to openBirthdayBoxBrowse */}
+        <DoggyBakeryCakeModal />
 
       </div>
     </PillarPageLayout>
