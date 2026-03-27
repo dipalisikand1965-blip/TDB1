@@ -154,7 +154,7 @@ export default function ServiceBox() {
       const serviceId = editProduct._serviceId || editProduct.id;
       const payload = productToServicePatch(editProduct);
       const res = await fetch(`${API_URL}/api/admin/services/${serviceId}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: getAdminHeaders(),
         body: JSON.stringify(payload),
       });
