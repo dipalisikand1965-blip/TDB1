@@ -208,7 +208,7 @@ const ProductBoxEditor = ({
       const startRes = await fetch(`${imageGenBasePath}/${encodeURIComponent(product.id)}/generate-image`, {
         method: 'POST',
         headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: product.ai_image_prompt || product.ai_prompt || product.basics?.description || '' })
+        body: JSON.stringify({ prompt: product.ai_image_prompt || product.ai_prompt || '' })
       });
       if (startRes.status === 404) { setGeneratingImage(false); alert(`${entityLabel} not found. Please save first.`); return; }
       if (startRes.status === 401) { setGeneratingImage(false); alert('Session expired. Please log back in.'); return; }
@@ -1748,7 +1748,7 @@ const ProductBoxEditor = ({
               {/* Custom AI Prompt — pre-filled, editable, saves to ai_prompt */}
               <div className="mt-4">
                 <AIImagePromptField
-                  entityType="product"
+                  entityType={product?.product_type || 'product'}
                   entityId={product?.id}
                   currentPrompt={getValue('ai_image_prompt', '') || getValue('ai_prompt', '')}
                   productName={getValue('name', '')}
