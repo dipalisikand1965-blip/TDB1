@@ -176,10 +176,12 @@ const ProductBoxEditor = ({
   onGenerateMiraHint,
   entityConfig
 }) => {
-  // entityConfig: { prefix: 'products'|'services'|'bundles', uploadPrefix: 'product'|'service'|'bundle', entityLabel: 'Product'|'Service'|'Bundle' }
+  // entityConfig: { prefix, uploadPrefix, entityLabel, generateImageBasePath? }
   const entityPrefix = entityConfig?.prefix || 'products';
   const uploadEntityPrefix = entityConfig?.uploadPrefix || 'product';
   const entityLabel = entityConfig?.entityLabel || 'Product';
+  // generateImageBasePath overrides the base URL for AI image generation (no /api/admin/ prefix)
+  const imageGenBasePath = entityConfig?.generateImageBasePath || `${API_URL}/api/admin/${entityPrefix}`;
   const [activeTab, setActiveTab] = useState('basics');
   const [dogBreeds, setDogBreeds] = useState([]);
   const [loadingBreeds, setLoadingBreeds] = useState(false);
@@ -203,7 +205,7 @@ const ProductBoxEditor = ({
     setGeneratingImage(true);
     try {
       // Step 1: Start background job — returns immediately
-      const startRes = await fetch(`${API_URL}/api/admin/${entityPrefix}/${encodeURIComponent(product.id)}/generate-image`, {
+      const startRes = await fetch(`${imageGenBasePath}/${encodeURIComponent(product.id)}/generate-image`, {
         method: 'POST',
         headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' }
       });
@@ -239,7 +241,7 @@ const ProductBoxEditor = ({
       const pollInterval = setInterval(async () => {
         attempts++;
         try {
-          const statusRes = await fetch(`${API_URL}/api/admin/${entityPrefix}/${encodeURIComponent(product.id)}/image-status`, {
+          const statusRes = await fetch(`${imageGenBasePath}/${encodeURIComponent(product.id)}/image-status`, {
             headers: { 'Authorization': `Basic ${adminAuth}` }
           });
           const statusData = await statusRes.json();

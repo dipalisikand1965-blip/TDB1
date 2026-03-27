@@ -97,6 +97,8 @@ const SERVICE_ENTITY_CONFIG = {
   prefix: 'services',
   uploadPrefix: 'service',
   entityLabel: 'Service',
+  // Points to the dedicated service-box generate-image endpoint (synchronous, returns image_url directly)
+  generateImageBasePath: `${API_URL}/api/service-box/services`,
 };
 
 export default function ServiceBox() {
