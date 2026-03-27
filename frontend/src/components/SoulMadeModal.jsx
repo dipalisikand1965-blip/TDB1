@@ -249,7 +249,7 @@ export default function SoulMadeModal({
       style={{
         position:'fixed', inset:0,
         background:'rgba(0,0,0,0.72)',
-        zIndex:2000,
+        zIndex:9600,
         display:'flex', alignItems:'center',
         justifyContent:'center',
         animation:'sm-fade 0.2s ease',
