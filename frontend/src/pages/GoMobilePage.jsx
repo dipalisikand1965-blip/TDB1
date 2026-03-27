@@ -184,7 +184,24 @@ export default function GoMobilePage() {
           </div>
         </div>
 
-        {/* ══ 1. DIM MODAL TRIGGER ══ */}
+        {/* ── 1. Category Strip (right after hero — matches Dine) ── */}
+        <GoCategoryStrip pet={currentPet} />
+
+        {/* ── 2. QUICK ACTION STRIP — centered ── */}
+        <div style={{ display:'flex', gap:8, padding:'0 16px 20px', justifyContent:'center' }}>
+          {[
+            { label:'✈ Go Essentials', tab:'go' },
+            { label:'🏡 Find a Stay',  tab:'stay' },
+            { label:'📋 Book a Service', tab:'services' },
+          ].map(btn => (
+            <button key={btn.tab} onClick={() => { vibe(); setActiveTab(btn.tab); }}
+              style={{ flex:1, padding:'10px 8px', borderRadius:12, border:`1.5px solid ${G.border}`, background:'#fff', fontSize:13, fontWeight:700, color:'#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', textAlign:'center' }}>
+              {btn.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── 3. TRIPS & ADVENTURES CARD (after selector) ── */}
         <div onClick={() => { vibe('medium'); setShowGoPlan(true); }}
           style={{ margin:'0 16px 20px', cursor:'pointer', background:'#fff', border:`1.5px solid ${G.border}`, borderRadius:20, padding:16, display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, boxShadow:'0 4px 20px rgba(6,78,59,0.08)' }}>
           <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, minWidth:0 }}>
@@ -204,23 +221,6 @@ export default function GoMobilePage() {
             <div style={{ fontSize:11, color:'#9CA3AF', letterSpacing:'0.08em' }}>SOUL</div>
             <div style={{ fontSize:13, color:G.teal, marginTop:2 }}>Tap →</div>
           </div>
-        </div>
-
-        {/* ── 2. Category Strip (after DIM, before action strip — matches Dine) ── */}
-        <GoCategoryStrip pet={currentPet} />
-
-        {/* ══ 3. QUICK ACTION STRIP — Go Essentials / Find a Stay / Book a Service ══ */}
-        <div style={{ display:'flex', gap:8, padding:'0 16px 20px', overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
-          {[
-            { label:'✈ Go Essentials', tab:'go',       icon:'✈' },
-            { label:'🏡 Find a Stay',  tab:'stay',     icon:'🏡' },
-            { label:'📋 Book a Service',tab:'services', icon:'📋' },
-          ].map(btn => (
-            <button key={btn.tab} onClick={() => { vibe(); setActiveTab(btn.tab); }}
-              style={{ flexShrink:0, padding:'10px 16px', borderRadius:12, border:`1.5px solid ${G.border}`, background:'#fff', fontSize:14, fontWeight:700, color:'#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow:'0 2px 8px rgba(0,0,0,0.06)' }}>
-              {btn.label}
-            </button>
-          ))}
         </div>
 
         {/* ══ 3. TRAVEL PROFILE ══ */}
