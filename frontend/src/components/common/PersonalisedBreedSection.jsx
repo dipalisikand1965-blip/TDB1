@@ -57,6 +57,7 @@ export default function PersonalisedBreedSection({
   const [loading,  setLoading]  = useState(true);
   const [selected, setSelected] = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
 
   const breed    = pet?.doggy_soul_answers?.breed || pet?.breed || "Indie";
   const petName  = pet?.name || "your dog";
@@ -123,15 +124,9 @@ export default function PersonalisedBreedSection({
 
   if (loading) {
     return (
-      <div style={{ padding:"24px 0", textAlign:"center" }}>
-        <div style={{
-          background:'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)',
-          borderRadius:20, padding:'28px 20px',
-        }}>
-          <div style={{ width:28, height:28, border:'3px solid rgba(255,255,255,0.1)', borderTop:'3px solid rgba(233,30,140,0.8)', borderRadius:"50%", margin:"0 auto 12px", animation:"spin 0.8s linear infinite" }} />
-          <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>Finding personalised picks for {petName}…</div>
-          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-        </div>
+      <div style={{ padding:"20px 0", display:"flex", justifyContent:"center" }}>
+        <div style={{ width:6, height:6, borderRadius:"50%", background:C.orange, opacity:0.5, animation:"pulseDot 1.2s ease-in-out infinite" }} />
+        <style>{`@keyframes pulseDot{0%,100%{opacity:0.2;transform:scale(0.8)}50%{opacity:0.8;transform:scale(1.2)}}`}</style>
       </div>
     );
   }
@@ -207,16 +202,15 @@ export default function PersonalisedBreedSection({
       {/* Header */}
       <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:16, paddingBottom:10, borderBottom:`1px solid ${C.pale}` }}>
         <div style={{ width:22, height:22, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, color:"#fff", flexShrink:0 }}>✦</div>
-        <div>
-          <div style={{ fontSize:13, fontWeight:700, color:C.deep }}>Made for {breed}s</div>
-          <div style={{ fontSize:11, color:"#888" }}>{products.length} personalised picks by Mira</div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:14, fontWeight:700, color:C.deep }}>Made for {petName}</div>
         </div>
         <SoulChip bg={`${C.orange}20`} color={C.orange}>Soul Made</SoulChip>
       </div>
 
-      {/* Product grid — strict 2 columns on mobile */}
+      {/* Product grid — 4 at a time */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:10 }}>
-        {products.map((p, i) => {
+        {products.slice(0, visibleCount).map((p, i) => {
           const imgUrl = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.primary_image || p.image_url || p.image || p.images?.[0];
           return (
             <div key={p.id || i}
@@ -264,7 +258,18 @@ export default function PersonalisedBreedSection({
         })}
       </div>
 
-      {/* ── Soul Made™ Trigger — inside Soul Picks ── */}
+      {/* Quiet load-more — no counts */}
+      {visibleCount < products.length && (
+        <div style={{ textAlign:"center", marginTop:14, marginBottom:4 }}>
+          <button
+            onClick={() => setVisibleCount(c => c + 4)}
+            data-testid="personalised-load-more"
+            style={{ background:"none", border:`1px solid ${C.orange}40`, borderRadius:999, padding:"6px 22px", fontSize:12, fontWeight:600, color:C.orange, cursor:"pointer", letterSpacing:"0.03em" }}
+          >
+            see more
+          </button>
+        </div>
+      )}
       <button
         data-testid="soul-made-trigger"
         onClick={() => setSoulMadeOpen(true)}
