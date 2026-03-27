@@ -1964,13 +1964,25 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                     )}
 
                     {filteredProducts.length > 0 ? (
-                      <div className="ccm-swipe-row">
-                        {filteredProducts.map((product, idx) => (
-                          <div key={product.id || idx} className="ccm-swipe-card">
-                            <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                      <>
+                        <div className="ccm-swipe-row">
+                          {pagedProducts.map((product, idx) => (
+                            <div key={product.id || idx} className="ccm-swipe-card">
+                              <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                            </div>
+                          ))}
+                        </div>
+                        {hasMoreCakes && (
+                          <div style={{ display:'flex', justifyContent:'center', marginTop:16 }}>
+                            <button
+                              onClick={() => setCakePage(p => p + 1)}
+                              style={{ padding:'10px 28px', borderRadius:999, border:'1.5px solid #9B59B6', background:'#F5EEF8', color:'#9B59B6', fontSize:14, fontWeight:700, cursor:'pointer', transition:'all 0.15s' }}
+                            >
+                              Load more cakes ({filteredProducts.length - pagedProducts.length} more)
+                            </button>
                           </div>
-                        ))}
-                      </div>
+                        )}
+                      </>
                     ) : (
                       <EmptyState config={config} pet={pet} onConciergeRequest={onConciergeRequest} categoryName={config?.title || category} onAskMira={() => {
                         window.dispatchEvent(new CustomEvent('openMiraAI', {

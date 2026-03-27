@@ -226,11 +226,12 @@ async function bookViaConciergeDirect({ pet, step, token }) {
 // PawrentFirstStepsTab — shows on every pillar page, for ALL modes except CONSIDERING
 // NEVER hides for ALWAYS mode — every pet parent sees their journey steps forever
 // ══════════════════════════════════════════════════════════════════════════════
-export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNavigate }) {
+export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNavigate, defaultCollapsed = false }) {
   const [completedSteps, setCompletedSteps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState({});
   const [dismissed, setDismissed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const navigate = useNavigate();
 
   const mode = detectJourneyMode(pet);
@@ -299,13 +300,16 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
     >
       {/* Header */}
       <div
+        onClick={() => setIsCollapsed(c => !c)}
         style={{
           padding: "14px 18px",
-          borderBottom: `1px solid ${currentModeData.color}22`,
+          borderBottom: isCollapsed ? "none" : `1px solid ${currentModeData.color}22`,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           background: `${currentModeData.color}11`,
+          cursor: "pointer",
+          userSelect: "none",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -353,7 +357,7 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
           </div>
           {completedCount === totalSteps && (
             <button
-              onClick={() => setDismissed(true)}
+              onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
               aria-label="Dismiss"
               data-testid="pawrent-journey-dismiss"
               style={{
@@ -377,11 +381,13 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
               ✕
             </button>
           )}
+          {/* Collapse chevron */}
+          <span style={{ fontSize: 14, color: T.muted, transition: "transform 0.2s", display: "inline-block", transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)" }}>▾</span>
         </div>
       </div>
 
-      {/* Steps */}
-      <div style={{ padding: "12px 18px 16px" }}>
+      {/* Steps — hidden when collapsed */}
+      {!isCollapsed && <div style={{ padding: "12px 18px 16px" }}>
         {steps.map((step, idx) => {
           const isDone = completedSteps.includes(step.id);
           const isJustBooked = booked[step.id];
@@ -461,7 +467,7 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
             Will be arranged by your Concierge®
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
