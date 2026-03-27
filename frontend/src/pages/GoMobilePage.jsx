@@ -133,55 +133,29 @@ export default function GoMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="go" pillarColor={G.teal} pillarLabel="Go" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.teal} />}
 
-        {/* ── 1. Hero (matches Dine pattern exactly) ── */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:`radial-gradient(circle,rgba(26,188,156,0.2) 0%,transparent 70%)`, borderRadius:'50%', pointerEvents:'none' }} />
-
-          {/* Row 1: Brand label + title + pet switcher */}
+        {/* ── Hero — simple, matches Care pattern ── */}
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'40px 20px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>✈️ Go</div>
+              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.55)', letterSpacing:'0.14em', marginBottom:4 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>✈️ Go</div>
             </div>
             {contextPets?.length > 1 && (
               <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer',
                       border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s', fontFamily:'inherit' }}>
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                      color:'#fff', fontFamily:'inherit' }}>
                     {p.name}
                   </button>
                 ))}
               </div>
             )}
           </div>
-
-          {/* Row 2: Pet avatar + title + profile link (matches Dine) */}
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-            <div
-              onClick={() => { vibe('medium'); setShowGoPlan(true); }}
-              style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', cursor:'pointer' }}
-              data-testid="go-mobile-profile-avatar"
-            >
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <span style={{ fontSize:22 }}>✈️</span>}
-            </div>
-            <div onClick={() => { vibe('medium'); setShowGoPlan(true); }} style={{ cursor:'pointer' }}>
-              <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Travel & Go</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName} · <span style={{ fontSize:13, color:`rgba(167,243,208,0.9)` }}>View Profile →</span></div>
-            </div>
-          </div>
-
-          {/* Row 3: Allergy + travel profile tags (matches Dine) */}
-          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-            {allergies.map(a => (
-              <div key={a} style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFB3B0', fontWeight:500 }}>⚠️ No {a}</div>
-            ))}
-            {currentPet?.breed && (
-              <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(26,188,156,0.12)', border:'1px solid rgba(26,188,156,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:G.light, fontWeight:500 }}>✈️ {currentPet.breed}</div>
-            )}
-          </div>
+          <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Flights, road trips, boarding, pet-friendly stays.</div>
         </div>
 
         {/* ══ 2. GoCategoryStrip ══ */}
