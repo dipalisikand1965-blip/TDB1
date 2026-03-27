@@ -412,12 +412,10 @@ export default function CelebrateMobilePage() {
         </div>
 
 
-        {/* Mira Soul Nudge — celebrate-context soul questions */}
-        {currentPet && (
-          <div style={{ padding:'0 16px 12px' }}>
-            <MiraSoulNudge pet={currentPet} token={token} context="celebrate" limit={3} />
-          </div>
-        )}
+        {/* Soul profile — Mojo's Celebration Profile card */}
+        <div style={{ padding:'0 16px 8px' }}>
+          <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
+        </div>
 
         {/* ── Main Tab Bar: Celebrate | Near Me ── */}
         {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="celebrate" />}
