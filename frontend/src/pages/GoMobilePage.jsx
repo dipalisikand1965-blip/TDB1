@@ -187,20 +187,26 @@ export default function GoMobilePage() {
         {/* ══ 2. GoCategoryStrip ══ */}
         <GoCategoryStrip pet={currentPet} />
 
-        {/* ══ 3. Tab Bar ══ */}
-        <div className="ios-tab-bar" style={{ borderColor: G.border, zIndex: 10 }}>
+        {/* ══ 3. Tab Bar — matches desktop GoTabBar exactly ══ */}
+        <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'16px 16px 0', display:'flex', justifyContent:'center', gap:10, flexWrap:'wrap' }}>
           {[
-            { id:'go',       label:'✈️ Go & Products' },
-            { id:'services', label:'🛎️ Services' },
-            { id:'stay',     label:'🏨 Stay' },
-            { id:'nearme',   label:'📍 Find Near Me' },
-          ].map(tab => (
-            <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
-              data-testid={`go-tab-${tab.id}`}
-              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
-              {tab.label}
-            </button>
-          ))}
+            { id:'go',       label:'✈️ Go Essentials' },
+            { id:'stay',     label:'🏡 Find a Stay' },
+            { id:'services', label:'🗺️ Book a Service' },
+          ].map(tab => {
+            const sel = activeTab === tab.id;
+            return (
+              <button key={tab.id} onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}
+                data-testid={`go-tab-${tab.id}`}
+                style={{ padding:'10px 24px', borderRadius:9999, border:'none',
+                  background: sel ? `linear-gradient(135deg,${G.teal},${G.mid})` : `rgba(26,188,156,0.08)`,
+                  color: sel ? '#fff' : G.mutedText,
+                  fontSize:14, fontWeight: sel ? 700 : 400,
+                  cursor:'pointer', transition:'all 0.15s', marginBottom:16, fontFamily:'inherit' }}>
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* TAB 1: Go & Products */}
@@ -318,16 +324,7 @@ export default function GoMobilePage() {
           </div>
         )}
 
-        {/* TAB 2: Services */}
-        {activeTab === 'services' && (
-          <div style={{ padding:'16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Go Services for {petName}</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Flights, road trips, boarding, vet certificates — all arranged.</div>
-            <GoConciergeSection pet={currentPet} />
-          </div>
-        )}
-
-        {/* TAB 3: Stay */}
+        {/* TAB 2: Find a Stay */}
         {activeTab === 'stay' && (
           <div style={{ padding:'16px' }}>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Pet-Friendly Stays</div>
@@ -339,9 +336,16 @@ export default function GoMobilePage() {
           </div>
         )}
 
-        {/* TAB 4: Near Me */}
-        {activeTab === 'nearme' && (
-          <GoNearMe currentPet={currentPet} />
+        {/* TAB 3: Book a Service — Services + Near Me */}
+        {activeTab === 'services' && (
+          <div style={{ padding:'16px' }}>
+            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Go Services for {petName}</div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Flights, road trips, boarding, vet certificates — all arranged.</div>
+            <GoConciergeSection pet={currentPet} />
+            <div style={{ marginTop:24 }}>
+              <GoNearMe currentPet={currentPet} />
+            </div>
+          </div>
         )}
       </div>
 
