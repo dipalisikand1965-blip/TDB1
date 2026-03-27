@@ -513,10 +513,7 @@ export default function CelebrateMobilePage() {
         {/* ── CELEBRATE TAB CONTENT (below birthday box) ── */}
         {activeTab === 'celebrate' && (<>
 
-        {/* MiraImaginesBreed */}
-        <div style={{ padding:'0 16px 24px' }}>
-          <MiraImaginesBreed pet={currentPet} pillar="celebrate" token={token} />
-        </div>
+        {/* MiraImaginesBreed — desktop only, not shown on mobile */}
 
         <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="celebrate" /></div>
 
