@@ -14477,12 +14477,8 @@ async def get_pet_soul(pet_id: str):
         "total_questions": 51,
         "soul_percentage": min(round((answered / 51) * 100), 100),
         "chapters": {
-            "identity":   len([k for k in answers if k.startswith("q1")]),
-            "behaviour":  len([k for k in answers if k.startswith("q2")]),
-            "health":     len([k for k in answers if k.startswith("q3")]),
-            "social":     len([k for k in answers if k.startswith("q4")]),
-            "nutrition":  len([k for k in answers if k.startswith("q5")]),
-            "learning":   len([k for k in answers if k.startswith("q6")]),
+            cat: round(data.get("percentage", 0))
+            for cat, data in calculate_pet_soul_score(answers).get("category_scores", {}).items()
         }
     }
 
