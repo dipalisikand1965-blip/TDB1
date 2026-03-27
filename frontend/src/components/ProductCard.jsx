@@ -838,6 +838,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   
   // ── Service detection & concierge flow ─────────────────────────────────────
   const isService = (product.product_type === 'service') || (product.category === 'service');
+  const isDisplayOnly = !!(product.display_only || product.is_display_only);
   const [serviceSent, setServiceSent] = useState(false);
   const [serviceSending, setServiceSending] = useState(false);
   
@@ -1856,6 +1857,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
+            {!isDisplayOnly && (
             <div className="flex items-center justify-between pt-3 border-t">
               <div>
                 <p className="text-xs text-gray-500">{isService ? 'Service' : 'Total Price'}</p>
@@ -1903,6 +1905,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                 </Button>
               )}
             </div>
+            )}
           </div>
         {/* NPS Testimonials Section - Happy Customers */}
         {testimonials.length > 0 && (
