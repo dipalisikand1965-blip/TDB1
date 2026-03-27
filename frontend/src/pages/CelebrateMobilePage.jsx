@@ -291,7 +291,7 @@ export default function CelebrateMobilePage() {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
     // birthday-cakes AND breed-cakes both open the new DoggyBakeryCakeModal
     if (categoryId === 'breed-cakes') {
-      window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
+      window.dispatchEvent(new CustomEvent('openDoggyBakeryCakes', { detail: {
         pet: currentPet,
         petName: currentPet?.name || '',
         petBreed: currentPet?.breed || '',
