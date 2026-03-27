@@ -1125,9 +1125,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
   const [miraImagines, setMiraImagines] = useState([]); // imaginary cards for non-existent flavours
   const [liveSoulScore, setLiveSoulScore] = useState(null); // live soul score updated by inline questions
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [shapeFilter, setShapeFilter] = useState('all');  // for birthday-cakes shape chips
+  const [cakePage, setCakePage] = useState(1);             // for birthday-cakes load more
 
-  // Reset on new category open
-  useEffect(() => {
+  // Reset shape filter + page on category change
+  useEffect(() => { setShapeFilter('all'); setCakePage(1); }, [category]);
     if (isOpen) {
       setAddedCount(0);
       setMiraImagines([]);
@@ -1446,17 +1448,28 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
       (p.life_stage || '').includes(activeFilter) ||
       (p.dietary || '').includes(activeFilter)
     );
+    // For birthday-cakes: apply shape chip filter
+    const shaped = (category === 'birthday-cakes' && shapeFilter !== 'all')
+      ? base.filter(p => (p.tags || []).some(t => String(t).toLowerCase() === shapeFilter.toLowerCase()))
+      : base;
     // For cake categories AND party accessories, sort pet's breed to the top
     if (['birthday-cakes', 'breed-cakes', 'party', 'party_accessories'].includes(category) && pet?.breed) {
       const petBreed = (pet.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
-      return [...base].sort((a, b) => {
+      return [...shaped].sort((a, b) => {
         const aMatch = ((a.name || '') + ' ' + (a.title || '') + ' ' + (a.breed_tags || []).join(' ')).toLowerCase().includes(petBreed) ? 0 : 1;
         const bMatch = ((b.name || '') + ' ' + (b.title || '') + ' ' + (b.breed_tags || []).join(' ')).toLowerCase().includes(petBreed) ? 0 : 1;
         return aMatch - bMatch;
       });
     }
-    return base;
+    return shaped;
   })();
+
+  // For birthday-cakes: paginate 12 at a time
+  const CAKE_PAGE_SIZE = 12;
+  const pagedProducts = category === 'birthday-cakes'
+    ? filteredProducts.slice(0, cakePage * CAKE_PAGE_SIZE)
+    : filteredProducts;
+  const hasMoreCakes = category === 'birthday-cakes' && pagedProducts.length < filteredProducts.length;
 
   if (!isOpen) return null;
 
@@ -1806,6 +1819,25 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
             {/* ── NORMAL CATEGORIES layout ────────────────────────────── */}
             {category !== 'bundles' && category !== 'soul-picks' && category !== 'soul_made' && category !== 'miras-picks' && (
               <>
+                {/* ── Shape chips for birthday-cakes ────────────────── */}
+                {category === 'birthday-cakes' && (
+                  <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14, alignItems:'center' }}>
+                    {['all','Circle','Bone','Heart','Square','Star','Paw'].map(s => (
+                      <button key={s}
+                        onClick={() => { setShapeFilter(s); setCakePage(1); }}
+                        style={{
+                          padding:'5px 13px', borderRadius:999, fontSize:11, fontWeight:700,
+                          cursor:'pointer', transition:'all 0.15s',
+                          background: shapeFilter===s ? '#9B59B6' : '#F5EEF8',
+                          color: shapeFilter===s ? '#fff' : '#9B59B6',
+                          border:`1.5px solid ${shapeFilter===s ? '#9B59B6' : '#D4B8F0'}`,
+                        }}>
+                        {s === 'all' ? 'All' : s}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {/* Pet's breed items first — own row for cake categories */}
                 {['birthday-cakes', 'breed-cakes'].includes(category) && pet?.breed && (() => {
                   const petBreed = (pet.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
