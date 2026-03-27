@@ -230,6 +230,7 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
   const [completedSteps, setCompletedSteps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState({});
+  const [dismissed, setDismissed] = useState(false);
   const navigate = useNavigate();
 
   const mode = detectJourneyMode(pet);
@@ -250,6 +251,7 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
 
   // Only hide for CONSIDERING (no pet) or no steps defined for this pillar
   if (mode === "CONSIDERING" || steps.length === 0) return null;
+  if (dismissed) return null;
 
   const completeStep = async (step) => {
     if (!pet?.id || !token) return;
@@ -325,28 +327,56 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
             </div>
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 11, color: T.muted }}>{completedCount}/{totalSteps} done</div>
-          <div
-            style={{
-              marginTop: 4,
-              width: 60,
-              height: 4,
-              background: `${currentModeData.color}22`,
-              borderRadius: 4,
-              overflow: "hidden",
-            }}
-          >
+        <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: 10 }}>
+          <div>
+            <div style={{ fontSize: 11, color: T.muted }}>{completedCount}/{totalSteps} done</div>
             <div
               style={{
-                width: `${progressPct}%`,
-                height: "100%",
-                background: currentModeData.color,
+                marginTop: 4,
+                width: 60,
+                height: 4,
+                background: `${currentModeData.color}22`,
                 borderRadius: 4,
-                transition: "width 0.5s ease",
+                overflow: "hidden",
               }}
-            />
+            >
+              <div
+                style={{
+                  width: `${progressPct}%`,
+                  height: "100%",
+                  background: currentModeData.color,
+                  borderRadius: 4,
+                  transition: "width 0.5s ease",
+                }}
+              />
+            </div>
           </div>
+          {completedCount === totalSteps && (
+            <button
+              onClick={() => setDismissed(true)}
+              aria-label="Dismiss"
+              data-testid="pawrent-journey-dismiss"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 4,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: T.muted,
+                fontSize: 16,
+                lineHeight: 1,
+                opacity: 0.7,
+                transition: "opacity 0.15s",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+              onMouseLeave={e => (e.currentTarget.style.opacity = "0.7")}
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
