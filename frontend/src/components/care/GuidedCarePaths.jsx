@@ -23,7 +23,7 @@
  *   body: { petId, pathId, selections }
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 import { tdc } from "../../utils/tdc_intent";
 import { useConcierge } from "../../hooks/useConcierge";
@@ -487,6 +487,11 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 // PATH FLOW MODAL
 // ─────────────────────────────────────────────────────────────
 export function PathFlowModal({ path, pet, onClose }) {
+  // Guard: if path is undefined (allPaths.find returned nothing), close immediately
+  // Without this, the modal crashes mid-render, activePath stays truthy, backdrop persists
+  useEffect(() => { if (!path) onClose(); }, [path, onClose]);
+  if (!path) return null;
+
   const { fire } = useConcierge({ pet, pillar: 'care' });
   const [currentStep,    setCurrentStep]    = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);
@@ -703,6 +708,14 @@ function ModalShell({ onClose, children, noPadding }) {
   // ── MAIN EXPORT ──────────────────────────────────────────────
 export default function GuidedCarePaths({ pet }) {
   const [activePath, setActivePath] = useState(null);
+
+  // Escape key always closes the modal — belt-and-suspenders guarantee
+  useEffect(() => {
+    if (!activePath) return;
+    const onKey = (e) => { if (e.key === 'Escape') setActivePath(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activePath]);
 
   const allPaths = buildPaths(pet);
   const petName  = pet?.name || "your pet";
