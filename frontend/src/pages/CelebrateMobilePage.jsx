@@ -527,11 +527,6 @@ export default function CelebrateMobilePage() {
           <GuidedCelebratePaths pet={currentPet} />
         </div>
 
-        {/* Celebration Memory Wall — community moments */}
-        <div style={{ padding:'0 0 24px' }}>
-          <CelebrationMemoryWall pet={currentPet} />
-        </div>
-
         {/* Celebrate Personally — Service Grid */}
         <div style={{ padding:'0 16px 24px' }}>
           <CelebrateServiceGrid pet={currentPet} />
@@ -539,6 +534,11 @@ export default function CelebrateMobilePage() {
 
         {/* Concierge® CTA */}
         <CelebrateConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
+
+        {/* Celebration Memory Wall — bottom of page */}
+        <div style={{ padding:'0 0 24px' }}>
+          <CelebrationMemoryWall pet={currentPet} />
+        </div>
         </>)}
 
         {/* Category content modal — same as desktop */}
