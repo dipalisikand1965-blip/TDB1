@@ -134,7 +134,7 @@ export default function GoMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.teal} />}
 
         {/* ── 1. Hero (matches Dine pattern exactly) ── */}
-        <div style={{ background:`linear-gradient(160deg,\${G.dark} 0%,\${G.deep} 55%,\${G.mid} 100%)`, padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
           <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:`radial-gradient(circle,rgba(26,188,156,0.2) 0%,transparent 70%)`, borderRadius:'50%', pointerEvents:'none' }} />
 
           {/* Row 1: Brand label + title + pet switcher */}
@@ -195,8 +195,8 @@ export default function GoMobilePage() {
             { id:'stay',     label:'🏨 Stay' },
             { id:'nearme',   label:'📍 Find Near Me' },
           ].map(tab => (
-            <button key={tab.id} className={`ios-tab\${activeTab===tab.id?' active':''}`}
-              data-testid={`go-tab-\${tab.id}`}
+            <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
+              data-testid={`go-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
               {tab.label}
             </button>
@@ -214,8 +214,8 @@ export default function GoMobilePage() {
               <div style={{ fontSize:13, fontWeight:700, color:`rgba(167,243,208,0.9)`, letterSpacing:'0.1em', marginBottom:6 }}>✦ MIRA ON {petName.toUpperCase()}'S TRAVEL</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, fontStyle:'italic' }}>
                 {allergies.length > 0
-                  ? `"I've already removed everything containing \${allergies.join(' and ')} from \${petName}'s travel picks."`
-                  : `"Every journey with \${petName} needs the right gear and the right plan. I'll handle both."`}
+                  ? `"I've already removed everything containing ${allergies.join(' and ')} from ${petName}'s travel picks."`
+                  : `"Every journey with ${petName} needs the right gear and the right plan. I'll handle both."`}
               </div>
             </div>
 
@@ -243,7 +243,7 @@ export default function GoMobilePage() {
                     {subCats.map(cat => (
                       <button key={cat} onClick={() => setSubCat(cat)}
                         style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid \${subCat===cat?G.teal:G.border}`,
+                          border:`1.5px solid ${subCat===cat?G.teal:G.border}`,
                           background:subCat===cat?G.teal:'#fff',
                           color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
                         {cat.replace(/_/g,' ').replace(/\\b\\w/g,c=>c.toUpperCase())}
@@ -284,8 +284,8 @@ export default function GoMobilePage() {
                         </div>
                       ))}
                     </div>
-                    <div style={{ borderTop:`1px solid \${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      Filtered for {petName}{allergies.length > 0 ? ` · \${allergies.slice(0,2).join(' & ')}-free` : ''}
+                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
+                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
                     </div>
                     <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
 
@@ -333,7 +333,7 @@ export default function GoMobilePage() {
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Pet-Friendly Stays</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Hotels, resorts, and homestays that welcome {petName}.</div>
             <PetFriendlyStays pet={currentPet} token={token} onBook={stay => {
-              tdc.book({ service:`Stay: \${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
+              tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
               setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
           </div>
