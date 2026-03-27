@@ -481,7 +481,9 @@ export default function CelebrateMobilePage() {
 
         {/* ── NEAR ME TAB ── */}
         {activeTab === 'nearme' && (
-          <CelebrateNearMe pet={currentPet} />
+          <div style={{ padding:'12px 16px 0' }}>
+            <CelebrateNearMe pet={currentPet} />
+          </div>
         )}
         {miraPicksOpen && miraProducts.length > 0 && (
           <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end' }} onClick={() => setMiraPicksOpen(false)}>
