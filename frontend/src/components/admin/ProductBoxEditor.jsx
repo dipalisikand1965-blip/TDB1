@@ -173,8 +173,13 @@ const ProductBoxEditor = ({
   onClose, 
   onSave, 
   saving,
-  onGenerateMiraHint 
+  onGenerateMiraHint,
+  entityConfig
 }) => {
+  // entityConfig: { prefix: 'products'|'services'|'bundles', uploadPrefix: 'product'|'service'|'bundle', entityLabel: 'Product'|'Service'|'Bundle' }
+  const entityPrefix = entityConfig?.prefix || 'products';
+  const uploadEntityPrefix = entityConfig?.uploadPrefix || 'product';
+  const entityLabel = entityConfig?.entityLabel || 'Product';
   const [activeTab, setActiveTab] = useState('basics');
   const [dogBreeds, setDogBreeds] = useState([]);
   const [loadingBreeds, setLoadingBreeds] = useState(false);
@@ -198,14 +203,30 @@ const ProductBoxEditor = ({
     setGeneratingImage(true);
     try {
       // Step 1: Start background job — returns immediately
-      const startRes = await fetch(`${API_URL}/api/admin/products/${encodeURIComponent(product.id)}/generate-image`, {
+      const startRes = await fetch(`${API_URL}/api/admin/${entityPrefix}/${encodeURIComponent(product.id)}/generate-image`, {
         method: 'POST',
         headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' }
       });
-      if (startRes.status === 404) { setGeneratingImage(false); alert('Product not found. Please save first.'); return; }
+      if (startRes.status === 404) { setGeneratingImage(false); alert(`${entityLabel} not found. Please save first.`); return; }
       if (startRes.status === 401) { setGeneratingImage(false); alert('Session expired. Please log back in.'); return; }
 
       const startData = await startRes.json();
+
+      // Handle synchronous response (some entity types return image directly)
+      if (startData.image_url && (startData.success || startData.image_url)) {
+        setGeneratingImage(false);
+        const newUrl = startData.image_url;
+        setProduct(prev => ({
+          ...prev,
+          image_url: newUrl, image: newUrl, images: [newUrl],
+          thumbnail: newUrl, watercolor_image: newUrl, cloudinary_url: newUrl,
+          media: { ...(prev.media || {}), primary_image: newUrl, images: [newUrl] },
+        }));
+        setActiveTab('media');
+        alert(`✅ AI image generated for "${product.name || product.basics?.name}"`);
+        return;
+      }
+
       if (startData.status !== 'generating') {
         setGeneratingImage(false);
         alert('Failed to start image generation: ' + (startData.detail || JSON.stringify(startData)));
@@ -218,7 +239,7 @@ const ProductBoxEditor = ({
       const pollInterval = setInterval(async () => {
         attempts++;
         try {
-          const statusRes = await fetch(`${API_URL}/api/admin/products/${encodeURIComponent(product.id)}/image-status`, {
+          const statusRes = await fetch(`${API_URL}/api/admin/${entityPrefix}/${encodeURIComponent(product.id)}/image-status`, {
             headers: { 'Authorization': `Basic ${adminAuth}` }
           });
           const statusData = await statusRes.json();
@@ -279,7 +300,7 @@ const ProductBoxEditor = ({
       
       const isExistingProduct = product?.id && !product.id.startsWith('NEW-');
       const uploadUrl = isExistingProduct
-        ? `${API_URL}/api/admin/product/${product.id}/upload-image`
+        ? `${API_URL}/api/admin/${uploadEntityPrefix}/${product.id}/upload-image`
         : `${API_URL}/api/upload/product-image`;
 
       const response = await fetch(uploadUrl, {
@@ -395,9 +416,9 @@ const ProductBoxEditor = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="w-5 h-5 text-purple-600" />
-            {isNew ? 'Create New Product' : 'Edit Product'}
-            {product.basics?.name && (
-              <Badge variant="outline" className="ml-2">{product.basics.name}</Badge>
+            {isNew ? `Create New ${entityLabel}` : `Edit ${entityLabel}`}
+            {(product.basics?.name || product.name) && (
+              <Badge variant="outline" className="ml-2">{product.basics?.name || product.name}</Badge>
             )}
           </DialogTitle>
         </DialogHeader>

@@ -793,6 +793,9 @@ FULFILMENT_TYPES = ["shipping", "store_pickup", "both"]
 
 # In-memory job store for single-product image generation (background tasks)
 _single_image_jobs: dict = {}
+# Separate job stores for services and bundles
+_single_service_image_jobs: dict = {}
+_single_bundle_image_jobs: dict = {}
 
 
 async def _run_single_product_image(product_id: str, product: dict):
@@ -25206,3 +25209,219 @@ async def debug_bundles(current_user: dict = Depends(verify_admin)):
     cb_count = await db.care_bundles.count_documents({})
     pb_count = await db.product_bundles.count_documents({})
     return {"bundles": b_count, "care_bundles": cb_count, "product_bundles": pb_count, "db_name": db.name}
+
+
+
+# ─── ASYNC SERVICE IMAGE GENERATION (with polling) ───────────────────────────
+
+async def _run_single_service_image(service_id: str, service: dict):
+    """Background task: generate AI image for a service and save to DB."""
+    import os, base64, cloudinary, cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    try:
+        emergent_api_key = (
+            os.environ.get("EMERGENT_LLM_KEY")
+            or os.environ.get("EMERGENT_API_KEY")
+            or os.environ.get("EMERGENT_MODEL_API_KEY")
+        )
+        if not emergent_api_key:
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "API key not configured", "service_id": service_id}
+            return
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        )
+
+        service_name = service.get("name", "Dog Service")
+        pillar = service.get("pillar", "care")
+        category = service.get("category", "")
+        prompt = service.get("ai_image_prompt") or (
+            f"Soulful watercolor illustration of a premium dog service: '{service_name}', "
+            f"pillar: {pillar}, category: {category or 'general'}. "
+            "Elegant brushwork, soft layered watercolor pigments, warm emotional palette, "
+            "premium editorial composition, no text, white background, "
+            "suitable for a luxury pet concierge service card."
+        )
+
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+
+        if not images:
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "No image returned", "service_id": service_id}
+            return
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder=f"doggy/services/{pillar}",
+            public_id=f"service-{service_id}-ai",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "Cloudinary upload failed", "service_id": service_id}
+            return
+
+        await db.services_master.update_one(
+            {"$or": [{"id": service_id}, {"_id": service_id}]},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "watercolor_image": image_url,
+                "ai_image_generated": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        _single_service_image_jobs[service_id] = {"status": "complete", "image_url": image_url, "service_id": service_id, "success": True}
+        logger.info(f"Service image done for '{service_name}': {image_url}")
+
+    except Exception as e:
+        logger.error(f"Service image generation failed for {service_id}: {e}")
+        _single_service_image_jobs[service_id] = {"status": "error", "error": str(e), "service_id": service_id}
+
+
+@api_router.post("/admin/services/{service_id}/generate-image")
+async def generate_service_image_async(
+    service_id: str,
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Start async AI image generation for a service. Returns immediately — poll /image-status."""
+    service = await db.services_master.find_one(
+        {"$or": [{"id": service_id}, {"_id": service_id}]}, {"_id": 0}
+    )
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    _single_service_image_jobs[service_id] = {
+        "status": "generating", "service_id": service_id,
+        "started_at": datetime.now(timezone.utc).isoformat()
+    }
+    background_tasks.add_task(_run_single_service_image, service_id, service)
+    return {"status": "generating", "service_id": service_id, "poll_url": f"/api/admin/services/{service_id}/image-status"}
+
+
+@api_router.get("/admin/services/{service_id}/image-status")
+async def get_service_image_status(
+    service_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Poll for the result of a background service image generation job."""
+    job = _single_service_image_jobs.get(service_id)
+    if not job:
+        service = await db.services_master.find_one(
+            {"$or": [{"id": service_id}, {"_id": service_id}]}, {"_id": 0, "image_url": 1}
+        )
+        if service and service.get("image_url", "").startswith("https://res.cloudinary.com"):
+            return {"status": "complete", "image_url": service["image_url"], "service_id": service_id}
+        return {"status": "not_started", "service_id": service_id}
+    return job
+
+
+# ─── ASYNC BUNDLE IMAGE GENERATION (with polling) ────────────────────────────
+
+async def _run_single_bundle_image(bundle_id: str, bundle: dict):
+    """Background task: generate AI image for a bundle and save to DB."""
+    import os, base64, cloudinary, cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    try:
+        emergent_api_key = (
+            os.environ.get("EMERGENT_LLM_KEY")
+            or os.environ.get("EMERGENT_API_KEY")
+            or os.environ.get("EMERGENT_MODEL_API_KEY")
+        )
+        if not emergent_api_key:
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "API key not configured", "bundle_id": bundle_id}
+            return
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        )
+
+        bundle_name = bundle.get("name", "Dog Bundle")
+        pillar = bundle.get("pillar", "care")
+        items = bundle.get("items", "")
+        prompt = bundle.get("ai_image_prompt") or (
+            f"Soulful watercolor illustration of a premium dog bundle called '{bundle_name}', "
+            f"pillar: {pillar}, items: {items[:80] if items else 'treats, accessories, and toys'}. "
+            "Beautifully arranged, warm painterly brushstrokes, soft layered watercolor pigments, "
+            "premium editorial composition, elegant and emotive, white background."
+        )
+
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+
+        if not images:
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "No image returned", "bundle_id": bundle_id}
+            return
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="doggy/bundles/ai-generated",
+            public_id=f"bundle-{bundle_id}-ai",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "Cloudinary upload failed", "bundle_id": bundle_id}
+            return
+
+        await db.bundles.update_one(
+            {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "watercolor_image": image_url,
+                "ai_image_generated": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        _single_bundle_image_jobs[bundle_id] = {"status": "complete", "image_url": image_url, "bundle_id": bundle_id, "success": True}
+        logger.info(f"Bundle image done for '{bundle_name}': {image_url}")
+
+    except Exception as e:
+        logger.error(f"Bundle image generation failed for {bundle_id}: {e}")
+        _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": str(e), "bundle_id": bundle_id}
+
+
+@api_router.post("/admin/bundles/{bundle_id}/generate-image-async")
+async def generate_bundle_image_async_poll(
+    bundle_id: str,
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Start async AI image generation for a bundle. Returns immediately — poll /image-status."""
+    bundle = await db.bundles.find_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0}
+    )
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+
+    _single_bundle_image_jobs[bundle_id] = {
+        "status": "generating", "bundle_id": bundle_id,
+        "started_at": datetime.now(timezone.utc).isoformat()
+    }
+    background_tasks.add_task(_run_single_bundle_image, bundle_id, bundle)
+    return {"status": "generating", "bundle_id": bundle_id, "poll_url": f"/api/admin/bundles/{bundle_id}/image-status"}
+
+
+@api_router.get("/admin/bundles/{bundle_id}/image-status")
+async def get_bundle_image_status(
+    bundle_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Poll for the result of a background bundle image generation job."""
+    job = _single_bundle_image_jobs.get(bundle_id)
+    if not job:
+        bundle = await db.bundles.find_one(
+            {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "image_url": 1}
+        )
+        if bundle and bundle.get("image_url", "").startswith("https://res.cloudinary.com"):
+            return {"status": "complete", "image_url": bundle["image_url"], "bundle_id": bundle_id}
+        return {"status": "not_started", "bundle_id": bundle_id}
+    return job
