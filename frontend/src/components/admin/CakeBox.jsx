@@ -521,6 +521,7 @@ function CatalogueTab() {
         <ProductBoxEditor
           open={true}
           product={editProduct}
+          setProduct={setEditProduct}
           onClose={() => { setEditProduct(null); fetchCakes(); }}
           onSave={() => { setEditProduct(null); fetchCakes(); setToast('✅ Cake saved'); }}
         />
@@ -722,6 +723,7 @@ function TDBProductsTab() {
         <ProductBoxEditor
           open={true}
           product={editProduct}
+          setProduct={setEditProduct}
           onClose={() => { setEditProduct(null); fetchProducts(); }}
           onSave={() => { setEditProduct(null); fetchProducts(); setToast('✅ Saved'); }}
         />
