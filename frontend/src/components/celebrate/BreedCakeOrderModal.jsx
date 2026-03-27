@@ -152,11 +152,15 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
   const petName      = pet?.name  || 'your dog';
   const defaultBreed = (pet?.breed || 'indie').toLowerCase().replace(/\s+/g,'_');
 
-  // Compute these BEFORE any useState so the initializer can reference them
-  const safeFlavours = ALL_FLAVOURS.filter(f =>
-    !f.allergens.some(a => allergies.includes(a))
-  );
-  const sortedFlavours = safeFlavours.slice().sort((a, b) => {
+  // Check if a flavour triggers an allergy for this pet
+  const isFlavourAllergen = (f) => f.allergens.some(a => allergies.includes(a));
+
+  // Show ALL flavours — allergen ones get a warning badge, but are not hidden
+  // Safe ones first, then allergen ones; favourites bubble up within each group
+  const sortedFlavours = ALL_FLAVOURS.slice().sort((a, b) => {
+    const aAllergen = isFlavourAllergen(a) ? 1 : 0;
+    const bAllergen = isFlavourAllergen(b) ? 1 : 0;
+    if (aAllergen !== bAllergen) return aAllergen - bAllergen; // safe first
     const aFav = petFavIds.has(a.id) ? -1 : 0;
     const bFav = petFavIds.has(b.id) ? -1 : 0;
     return aFav - bFav;
@@ -172,9 +176,10 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
   const [loading,    setLoading]    = useState(false);
   const [base,       setBase]       = useState('oats');
   const [flavour,    setFlavour]    = useState(() => {
-    // Default to the pet's top favourite flavour if safe
-    const fav = sortedFlavours[0]?.id || 'banana';
-    return fav;
+    // Default to top favourite that is safe; fallback to any favourite; then banana
+    const safeFavFirst = sortedFlavours.find(f => petFavIds.has(f.id) && !isFlavourAllergen(f));
+    const anyFavFirst  = sortedFlavours.find(f => petFavIds.has(f.id));
+    return (safeFavFirst || anyFavFirst || sortedFlavours[0])?.id || 'banana';
   });
   const [message,    setMessage]    = useState('');
   const [sending,    setSending]    = useState(false);
@@ -211,14 +216,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
     if (illus.length > 0 && !selIllus) setSelIllus(illus[0]);
   }, [illus]);
 
-  // Keep flavour safe when breed/allergies change
-  useEffect(() => {
-    if (!safeFlavours.find(f => f.id === flavour)) {
-      setFlavour(safeFlavours[0]?.id || 'banana');
-    }
-  }, [breed, allergies.join(',')]);
-
-  const selectedFlavour = safeFlavours.find(f => f.id === flavour);
+  const selectedFlavour = ALL_FLAVOURS.find(f => f.id === flavour);
   const selectedBase    = BASE_OPTIONS.find(b => b.id === base);
   const price           = selectedFlavour ? `₹${selectedFlavour.price.toLocaleString('en-IN')}` : '₹950';
 
@@ -489,7 +487,8 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:4 }}>
                 {sortedFlavours.map(f => {
-                  const isFav = petFavIds.has(f.id);
+                  const isFav      = petFavIds.has(f.id);
+                  const isAllergen = isFlavourAllergen(f);
                   return (
                     <button
                       key={f.id}
@@ -497,10 +496,21 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                       onClick={() => setFlavour(f.id)}
                       data-testid={`flavour-btn-${f.id}`}
                       title={`₹${f.price.toLocaleString('en-IN')}`}
-                      style={isFav ? { borderColor:'rgba(201,151,58,0.6)', color:'#C9973A', background:'rgba(201,151,58,0.10)' } : {}}
+                      style={
+                        isAllergen
+                          ? { borderColor:'rgba(239,68,68,0.5)', color:'rgba(252,165,165,0.9)', background:'rgba(239,68,68,0.08)' }
+                          : isFav
+                          ? { borderColor:'rgba(201,151,58,0.6)', color:'#C9973A', background:'rgba(201,151,58,0.10)' }
+                          : {}
+                      }
                     >
                       {f.label}
-                      {isFav && (
+                      {isAllergen && (
+                        <span style={{ marginLeft:5, fontSize:10, background:'rgba(239,68,68,0.20)', borderRadius:4, padding:'1px 5px', color:'#FCA5A5', fontWeight:700 }}>
+                          ⚠ {petName}
+                        </span>
+                      )}
+                      {!isAllergen && isFav && (
                         <span style={{ marginLeft:5, fontSize:10, background:'rgba(201,151,58,0.20)', borderRadius:4, padding:'1px 5px', color:'#C9973A', fontWeight:700 }}>
                           {petName}'s fave
                         </span>
@@ -513,16 +523,17 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                 })}
               </div>
 
-              {/* Fish note — as specified */}
-              <div style={{ fontSize:11, color:'rgba(245,240,232,0.35)', marginTop:6, marginBottom: allergies.length > 0 ? 8 : 20 }}>
-                🐟 Fish = Salmon · Safe for most dogs · Not suitable if fish-allergic
-              </div>
-
-              {allergies.length > 0 && (
-                <div style={{ fontSize:11, color:'rgba(245,240,232,0.3)', marginBottom:20, paddingLeft:4 }}>
-                  ⚠️ Showing allergen-safe options only — no {allergies.join(', ')} for {petName}
+              {/* Allergen warning — only shown if selected flavour is an allergen */}
+              {isFlavourAllergen(ALL_FLAVOURS.find(f => f.id === flavour) || {}) && (
+                <div style={{ fontSize:12, color:'rgba(252,165,165,0.85)', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:8, padding:'8px 12px', marginTop:6, marginBottom:8 }}>
+                  ⚠ {selectedFlavour?.label?.split(' ').slice(1).join(' ') || flavour} contains an allergen for {petName} — only order if this cake is for another dog.
                 </div>
               )}
+
+              {/* Fish note — as specified */}
+              <div style={{ fontSize:11, color:'rgba(245,240,232,0.35)', marginTop:6, marginBottom:20 }}>
+                🐟 Fish = Salmon · Safe for most dogs · Not suitable if fish-allergic
+              </div>
 
               {/* Price summary pill */}
               <div style={{
