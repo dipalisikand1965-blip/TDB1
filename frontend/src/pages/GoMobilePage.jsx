@@ -140,7 +140,7 @@ export default function GoMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>✈️ Go</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', justifyContent:'flex-end', WebkitOverflowScrolling:'touch' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
                     style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
@@ -271,6 +271,23 @@ export default function GoMobilePage() {
                       Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
                     </div>
                 <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
+
+                {/* Concierge Banner — Travel Concierge® (Phase 8 fix) */}
+                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
+                  <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(20,184,166,0.18)', border:'1px solid rgba(20,184,166,0.4)', borderRadius:999, padding:'5px 14px', fontSize:12, fontWeight:700, color:'#5EEAD4', letterSpacing:'0.08em', marginBottom:12 }}>
+                    ✈ TRAVEL CONCIERGE®
+                  </div>
+                  <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:8, fontFamily:"Georgia,'Times New Roman',serif" }}>
+                    Want us to plan {petName}'s whole trip?
+                  </div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>
+                    We check routes, book stays, arrange transport, and confirm everything is pet-safe before you leave.
+                  </div>
+                  <button onClick={() => { vibe('medium'); setShowGoPlan(true); }}
+                    style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#0F766E,#14B8A6)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                    ✈ Talk to your Concierge®
+                  </button>
+                </div>
 
                 <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
                   <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · TRAVEL GEAR FOR {petName.toUpperCase()}</div>
