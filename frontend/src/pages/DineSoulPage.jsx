@@ -985,7 +985,7 @@ function DineMobilePage() {
           </div>
         )}
 
-        {/* ── HERO ── */}
+        {/* ── 1. Dim Modal — dark hero (always above tabs) ── */}
         <div style={{ background:'linear-gradient(160deg,#3d1200 0%,#7a2800 50%,#c44400 100%)', padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
           <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(255,140,66,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
@@ -1032,21 +1032,23 @@ function DineMobilePage() {
           </div>
         </div>
 
-        {/* ── Pillar Soul Profile (soul questions on page) ── */}
-        <div style={{ padding:'0 16px 8px' }}>
-          <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
-        </div>
-
-        {/* Pawrent Journey First Steps */}
-        <div style={{ padding:'0 16px 8px' }}>
-          <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="dine" />
-        </div>
-
-        {/* ── Category Strip ── */}
+        {/* ── 2. Category Strip (outside tabs) ── */}
         <DineCategoryStrip pet={currentPet} />
 
-        {/* ── Segmented Switch ── */}
+        {/* ── 3. Tab Bar / Segmented Switch ── */}
         <DineSegmentedSwitch mode={mode} onChange={setMode} />
+
+        {/* ── 4. Food Profile + Pawrent Journey inside Eat tab ── */}
+        {mode === 'eat' && (
+          <>
+            <div style={{ padding:'12px 16px 0' }}>
+              <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
+            </div>
+            <div style={{ padding:'8px 16px 0' }}>
+              <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="dine" defaultCollapsed={true} />
+            </div>
+          </>
+        )}
 
         {/* ════════════════════════════════════
             EAT & NOURISH
