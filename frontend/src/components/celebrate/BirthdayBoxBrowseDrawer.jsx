@@ -523,8 +523,8 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
       setIsOpen(true);
     };
 
-    window.addEventListener('openBirthdayBoxBrowseDrawer', handleOpen);
-    return () => window.removeEventListener('openBirthdayBoxBrowseDrawer', handleOpen);
+    window.addEventListener('openBirthdayBoxBrowse', handleOpen);
+    return () => window.removeEventListener('openBirthdayBoxBrowse', handleOpen);
   }, []);
 
   const handleClose = useCallback(() => setIsOpen(false), []);

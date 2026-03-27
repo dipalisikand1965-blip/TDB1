@@ -373,7 +373,7 @@ const CelebratePageNew = () => {
 
   // Handle open browse drawer from Birthday Box secondary button
   const handleOpenBrowseDrawer = useCallback((boxPreview) => {
-    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowseDrawer', {
+    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', {
       detail: {
         boxPreview,
         petName: selectedPet?.name,
@@ -436,9 +436,9 @@ const CelebratePageNew = () => {
       channel: "celebrate_category_strip",
     });
     // birthday-cakes → CelebrateContentModal (with breed+shape+loadmore inside)
-    // breed-cakes → open new DoggyBakeryCakeModal via event
+    // breed-cakes → open DoggyBakeryCakeModal via its dedicated event
     if (categoryId === 'breed-cakes') {
-      window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
+      window.dispatchEvent(new CustomEvent('openDoggyBakeryCakes', { detail: {
         pet: selectedPet,
         petName: selectedPet?.name || '',
         petBreed: selectedPet?.breed || '',

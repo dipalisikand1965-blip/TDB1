@@ -67,8 +67,8 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
       setPage(1);
       setIsOpen(true);
     };
-    window.addEventListener('openBirthdayBoxBrowse', handler);
-    return () => window.removeEventListener('openBirthdayBoxBrowse', handler);
+    window.addEventListener('openDoggyBakeryCakes', handler);
+    return () => window.removeEventListener('openDoggyBakeryCakes', handler);
   }, []);
 
   // ── Fetch cakes on open ───────────────────────────────────────────────────
