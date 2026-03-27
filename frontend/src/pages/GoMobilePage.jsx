@@ -184,10 +184,7 @@ export default function GoMobilePage() {
           </div>
         </div>
 
-        {/* ── 2. Category Strip (outside tabs, matches Dine) ── */}
-        <GoCategoryStrip pet={currentPet} />
-
-        {/* ══ 1. DIM MODAL TRIGGER — matches Celebrate pattern ══ */}
+        {/* ══ 1. DIM MODAL TRIGGER ══ */}
         <div onClick={() => { vibe('medium'); setShowGoPlan(true); }}
           style={{ margin:'0 16px 20px', cursor:'pointer', background:'#fff', border:`1.5px solid ${G.border}`, borderRadius:20, padding:16, display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, boxShadow:'0 4px 20px rgba(6,78,59,0.08)' }}>
           <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, minWidth:0 }}>
@@ -209,7 +206,10 @@ export default function GoMobilePage() {
           </div>
         </div>
 
-        {/* ══ 2. QUICK ACTION STRIP — Go Essentials / Find a Stay / Book a Service ══ */}
+        {/* ── 2. Category Strip (after DIM, before action strip — matches Dine) ── */}
+        <GoCategoryStrip pet={currentPet} />
+
+        {/* ══ 3. QUICK ACTION STRIP — Go Essentials / Find a Stay / Book a Service ══ */}
         <div style={{ display:'flex', gap:8, padding:'0 16px 20px', overflowX:'auto', WebkitOverflowScrolling:'touch' }}>
           {[
             { label:'✈ Go Essentials', tab:'go',       icon:'✈' },
