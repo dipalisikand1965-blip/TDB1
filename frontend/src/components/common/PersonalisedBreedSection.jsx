@@ -270,28 +270,42 @@ export default function PersonalisedBreedSection({
           </button>
         </div>
       )}
-      <button
+      {/* ── Soul Made™ Trigger — bold dark card ── */}
+      <div
         data-testid="soul-made-trigger"
         onClick={() => setSoulMadeOpen(true)}
         style={{
-          margin:'16px 0 12px', padding:'14px 16px',
-          background:`${C.orange}08`, border:`1px solid ${C.orange}20`,
-          borderRadius:14, display:'flex', alignItems:'center', width:'100%',
-          justifyContent:'space-between', cursor:'pointer', textAlign:'left', fontFamily:'inherit',
+          margin:'20px 0 12px',
+          background:'linear-gradient(135deg,#1A0A2E 0%,#3D0B7A 60%,#6B21A8 100%)',
+          borderRadius:18, padding:'22px 20px 18px', cursor:'pointer',
+          position:'relative', overflow:'hidden',
         }}
       >
-        <div>
-          <div style={{ fontSize:13, fontWeight:700, color:C.orange, marginBottom:3 }}>
-            {pillar === 'farewell'
-              ? `✦ In memory of ${petName} — create something meaningful`
-              : '✦ Soul Made™ — Make it personal'}
-          </div>
-          <div style={{ fontSize:12, color:'#888', lineHeight:1.4 }}>
-            Upload {petName}'s photo · Concierge® creates it · Price on WhatsApp
-          </div>
+        {/* label */}
+        <div style={{ fontSize:10, fontWeight:800, color:'#E91E8C', letterSpacing:'0.12em', textTransform:'uppercase', marginBottom:12 }}>
+          ✦ Soul Made™ · Made only for {petName}
         </div>
-        <div style={{ fontSize:20, color:`${C.orange}60`, flexShrink:0, marginLeft:8 }}>›</div>
-      </button>
+        {/* headline */}
+        <div style={{ fontSize:20, fontWeight:800, color:'#fff', lineHeight:1.25, marginBottom:10 }}>
+          {pillar === 'farewell'
+            ? `${petName}'s memory. In frames, candles and more.`
+            : `${petName}'s face. On cake toppers, bandanas, frames and more.`}
+        </div>
+        {/* sub */}
+        <div style={{ fontSize:13, color:'rgba(255,255,255,0.5)', marginBottom:18, lineHeight:1.5 }}>
+          {pillar === 'farewell'
+            ? `One-of-one memorial pieces made just for ${petName}.`
+            : `One-of-one celebration pieces made just for ${petName}.`}
+        </div>
+        {/* CTA */}
+        <div style={{
+          background:'linear-gradient(90deg,#7B2FBE,#9B59B6)',
+          borderRadius:12, padding:'13px 0', textAlign:'center',
+          fontSize:14, fontWeight:700, color:'#fff', letterSpacing:'0.02em',
+        }}>
+          Make something only {petName} has →
+        </div>
+      </div>
       {soulMadeOpen && (
         <SoulMadeModal
           pet={pet}
