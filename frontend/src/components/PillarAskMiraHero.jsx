@@ -3,6 +3,11 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Loader2, Search, Sparkles } from 'lucide-react';
+// useMiraTicket is wired here for when onResponse prop is provided by callers.
+// PillarAskMiraHero dispatches to MiraChatWidget (openMiraAI event) which handles
+// concern detection directly via its own wiring. Direct response callers should pass:
+//   onResponse={(userMsg, miraMsg) => { const ct = detectConcernType(userMsg); if (ct) fireMiraTicket({...}) }}
+import { detectConcernType, fireMiraTicket } from '../hooks/mira/useMiraTicket';
 
 export const PillarAskMiraHero = ({
   title,
@@ -10,6 +15,7 @@ export const PillarAskMiraHero = ({
   value,
   onChange,
   onSubmit,
+  onResponse,        // optional: (userMsg, miraMsg, pet, token) => void
   loading = false,
   placeholder,
   badgeText = 'Ask Mira First',

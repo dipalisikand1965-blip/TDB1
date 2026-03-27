@@ -1252,6 +1252,13 @@ const MiraChatWidget = ({
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText } : m
           ));
 
+          // ── Mira Ticket Intelligence — fire on concern detection ──
+          const { detectConcernType: detectCT, fireMiraTicket } = await import('../hooks/mira/useMiraTicket');
+          const concernType = detectCT(messageToSend);
+          if (concernType) {
+            fireMiraTicket({ pet: selectedPet, pillar, userMessage: messageToSend, miraResponse: fullText, concernType, token });
+          }
+
           // Save to MongoDB persistent memory (fire-and-forget)
           const petId = selectedPet?.id || selectedPet?._id;
           if (petId && token && fullText) {
