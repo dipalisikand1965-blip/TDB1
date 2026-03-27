@@ -4,67 +4,12 @@
  *
  * A living, always-on companion for every stage of pet parenthood.
  * Four modes: CONSIDERING → WELCOME_HOME → GROWING → ALWAYS
- *
- * ─────────────────────────────────────────────────────────────────────────────
- * INSTALLATION — 7 steps
- * ─────────────────────────────────────────────────────────────────────────────
- * 1. Save this file to:
- *    /app/frontend/src/components/pawrent/PawrentJourney.jsx
- *
- * 2. Create /app/frontend/src/pages/PawrentJourneyPage.jsx:
- *    import PawrentJourney from '../components/pawrent/PawrentJourney';
- *    export default function PawrentJourneyPage() {
- *      return <PawrentJourney />;
- *    }
- *    Add route in App.jsx: <Route path="/pawrent-journey" element={<PawrentJourneyPage />} />
- *
- * 3. Add PawrentJourneyCard to Dashboard (Dashboard.jsx):
- *    import { PawrentJourneyCard } from '../components/pawrent/PawrentJourney';
- *    Place AFTER Pet Life Pass card, BEFORE Orders card:
- *    <PawrentJourneyCard pet={activePet} token={token} onClick={() => navigate('/pawrent-journey')} />
- *
- * 4. Add PawrentFirstStepsTab to these pillar pages:
- *    CareMobilePage.jsx, DineSoulPage.jsx, LearnPage.jsx, PaperworkPage.jsx,
- *    GoMobilePage.jsx, CelebrateMobilePage.jsx, PlayMobilePage.jsx, AdoptPage.jsx
- *    Import: import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
- *    Place BELOW the hero section, ABOVE the product tabs:
- *    <PawrentFirstStepsTab pet={activePet} token={token} currentPillar="care" />
- *    Only renders if pet is in WELCOME_HOME or GROWING mode — hidden otherwise.
- *
- * 5. Add to side menu (MobileMenu.jsx or SideNav.jsx):
- *    { label: "Pawrent Journey", icon: "🐾", route: "/pawrent-journey" }
- *    Show a pulsing green dot if mode === "WELCOME_HOME"
- *
- * 6. Backend endpoints needed in server.py:
- *
- *    @api_router.post("/pawrent-journey/complete-step")
- *    async def complete_pawrent_step(body: dict, username=Depends(verify_token)):
- *        await db.pawrent_journey_progress.update_one(
- *            {"pet_id": body["pet_id"], "user": username},
- *            {"$addToSet": {"completed_steps": body["step_id"]},
- *             "$set": {"updated_at": datetime.now(timezone.utc)}},
- *            upsert=True
- *        )
- *        return {"ok": True}
- *
- *    @api_router.get("/pawrent-journey/progress/{pet_id}")
- *    async def get_pawrent_progress(pet_id: str, username=Depends(verify_token)):
- *        doc = await db.pawrent_journey_progress.find_one(
- *            {"pet_id": pet_id, "user": username}
- *        )
- *        return {"completed_steps": doc.get("completed_steps", []) if doc else []}
- *
- * 7. APIs already exist — no new ones except step 6 above:
- *    GET  /api/pets/my-pets
- *    POST /api/service_desk/attach_or_create_ticket
- * ─────────────────────────────────────────────────────────────────────────────
  */
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
-// ── API base — uses existing TDC pattern ─────────────────────────────────────
+// ── API base ─────────────────────────────────────────────────────────────────
 const API_URL =
   typeof window !== "undefined"
     ? window.__API_URL__ ||
@@ -145,182 +90,102 @@ const MODES = {
   },
 };
 
-// ── First steps per pillar ────────────────────────────────────────────────────
+// ── First steps per pillar — EVERGREEN (relevant every year, for every dog) ──
 const FIRST_STEPS = {
   care: [
-    {
-      id: "care-first-vet",
-      icon: "🏥",
-      title: "First vet visit",
-      desc: "Register with a vet within the first week.",
-      cta: "Book via Concierge®",
-      pillar: "care",
-      intent: "vet_visit_first",
-    },
-    {
-      id: "care-vaccine-schedule",
-      icon: "💉",
-      title: "Vaccine schedule",
-      desc: "Log and track every vaccination in Health Vault.",
-      cta: "Open Health Vault →",
-      pillar: "care",
-      intent: "vaccine_schedule",
-      route: true,
-    },
-    {
-      id: "care-first-groom",
-      icon: "✂️",
-      title: "First grooming session",
-      desc: "Introduce grooming gently in the first month.",
-      cta: "Book via Concierge®",
-      pillar: "care",
-      intent: "grooming_booking",
-    },
-    {
-      id: "care-microchip",
-      icon: "📡",
-      title: "Microchip & registration",
-      desc: "Legally required in most states. We handle the paperwork.",
-      cta: "Arrange via Concierge®",
-      pillar: "paperwork",
-      intent: "microchip_registration",
-    },
+    { id:"care-vet-visit", icon:"🏥", title:"Vet visit",
+      desc:"Regular vet check-ups keep your dog healthy year-round.",
+      cta:"Book via Concierge®", pillar:"care", intent:"vet_visit" },
+    { id:"care-vaccine-schedule", icon:"💉", title:"Vaccine schedule",
+      desc:"Log and track every vaccination in Health Vault.",
+      cta:"Open Health Vault →", pillar:"care", intent:"vaccine_schedule", route:true },
+    { id:"care-grooming", icon:"✂️", title:"Grooming session",
+      desc:"Regular grooming keeps coat and skin healthy all year.",
+      cta:"Book via Concierge®", pillar:"care", intent:"grooming_booking" },
+    { id:"care-wellness-check", icon:"🌿", title:"Annual wellness check",
+      desc:"Mira reviews health, supplements, and care routine every year.",
+      cta:"Review with Concierge®", pillar:"care", intent:"wellness_visit" },
   ],
   dine: [
-    {
-      id: "dine-first-meal",
-      icon: "🍽️",
-      title: "First meal plan",
-      desc: "Set up a breed-appropriate meal schedule with Mira.",
-      cta: "Build with Mira",
-      pillar: "dine",
-      intent: "meal_plan_setup",
-    },
-    {
-      id: "dine-allergy-check",
-      icon: "⚠️",
-      title: "Allergy check",
-      desc: "Log any known food sensitivities in Health Vault.",
-      cta: "Open Health Vault →",
-      pillar: "dine",
-      intent: "allergy_log",
-      route: true,
-    },
+    { id:"dine-meal-plan", icon:"🍽️", title:"Meal plan",
+      desc:"Breed-appropriate nutrition — updated as your dog grows.",
+      cta:"Build with Mira", pillar:"dine", intent:"meal_plan_setup" },
+    { id:"dine-allergy-check", icon:"⚠️", title:"Allergy check",
+      desc:"Keep food sensitivities updated — allergies can change.",
+      cta:"Open Health Vault →", pillar:"dine", intent:"allergy_log", route:true },
+    { id:"dine-fresh-food", icon:"🥗", title:"Fresh food trial",
+      desc:"Mira recommends seasonal fresh meals for your dog's breed.",
+      cta:"See recommendations →", pillar:"dine", intent:"fresh_meal_recommendation" },
   ],
   learn: [
-    {
-      id: "learn-name",
-      icon: "📢",
-      title: "Name recognition",
-      desc: "First 48 hours — say their name, reward every response.",
-      cta: "Get training guide",
-      pillar: "learn",
-      intent: "name_recognition_guide",
-    },
-    {
-      id: "learn-basic-commands",
-      icon: "🎓",
-      title: "Basic commands",
-      desc: "Sit, stay, come — start in week 2.",
-      cta: "Book training session",
-      pillar: "learn",
-      intent: "training_booking",
-    },
+    { id:"learn-training-session", icon:"🎓", title:"Training session",
+      desc:"Regular training strengthens your bond all year.",
+      cta:"Book training session", pillar:"learn", intent:"training_booking" },
+    { id:"learn-behaviour-check", icon:"🧠", title:"Behaviour check",
+      desc:"Annual behaviour review — catch issues early.",
+      cta:"Book with Concierge®", pillar:"learn", intent:"behaviour_consult" },
+    { id:"learn-enrichment", icon:"🎯", title:"Mental enrichment",
+      desc:"Puzzle toys and new skills keep your dog sharp.",
+      cta:"Get Mira's picks →", pillar:"learn", intent:"enrichment_recommendation" },
   ],
   paperwork: [
-    {
-      id: "paperwork-insurance",
-      icon: "📋",
-      title: "Pet insurance",
-      desc: "Get covered before the first vet visit.",
-      cta: "Get a quote via Concierge®",
-      pillar: "paperwork",
-      intent: "insurance_enquiry",
-    },
-    {
-      id: "paperwork-id-tag",
-      icon: "🏷️",
-      title: "Identity tag",
-      desc: "Name, your number, and address on their collar from day 1.",
-      cta: "Order via Concierge®",
-      pillar: "paperwork",
-      intent: "id_tag_order",
-    },
+    { id:"paperwork-insurance", icon:"📋", title:"Insurance review",
+      desc:"Annual insurance check — make sure you are always covered.",
+      cta:"Review via Concierge®", pillar:"paperwork", intent:"insurance_enquiry" },
+    { id:"paperwork-id-tag", icon:"🏷️", title:"Identity & tags",
+      desc:"Check collar tags and microchip details are up to date.",
+      cta:"Update via Concierge®", pillar:"paperwork", intent:"id_tag_order" },
+    { id:"paperwork-health-records", icon:"📁", title:"Health records",
+      desc:"Keep vaccines, vet visits and medications documented.",
+      cta:"Open Health Vault →", pillar:"paperwork", intent:"health_records", route:true },
   ],
   go: [
-    {
-      id: "go-first-walk",
-      icon: "🦮",
-      title: "First walk outside",
-      desc: "After full vaccination — short, calm, positive.",
-      cta: "Mira's walk guide",
-      pillar: "go",
-      intent: "first_walk_guide",
-    },
+    { id:"go-walk-explore", icon:"🦮", title:"Walk & explore",
+      desc:"New routes, new smells — keep walks exciting year-round.",
+      cta:"Find routes with Mira", pillar:"go", intent:"walk_guide" },
+    { id:"go-boarding", icon:"🏠", title:"Boarding & daycare",
+      desc:"Trusted care when you travel — Concierge arranges everything.",
+      cta:"Book via Concierge®", pillar:"go", intent:"boarding_booking" },
+    { id:"go-travel-plan", icon:"✈️", title:"Travel plan",
+      desc:"Taking your dog on a trip? Mira handles all the logistics.",
+      cta:"Plan with Concierge®", pillar:"go", intent:"travel_planning" },
   ],
   celebrate: [
-    {
-      id: "celebrate-gotcha-day",
-      icon: "🎉",
-      title: "Gotcha Day",
-      desc: "The day they came home. Mark it every year.",
-      cta: "Set reminder via Concierge®",
-      pillar: "celebrate",
-      intent: "gotcha_day_setup",
-    },
-    {
-      id: "celebrate-first-birthday",
-      icon: "🎂",
-      title: "Plan first birthday",
-      desc: "Mira builds the perfect birthday box for their breed.",
-      cta: "Plan via Concierge®",
-      pillar: "celebrate",
-      intent: "birthday_planning",
-    },
-    {
-      id: "celebrate-breed-cake",
-      icon: "🍰",
-      title: "Order a breed cake",
-      desc: "A cake made just for their breed — from The Doggy Bakery.",
-      cta: "Order via Concierge®",
-      pillar: "celebrate",
-      intent: "cake_order",
-    },
-    {
-      id: "celebrate-memory-photo",
-      icon: "📸",
-      title: "First memory photo",
-      desc: "Capture this moment. Mira will remind you every year.",
-      cta: "Book photography →",
-      pillar: "celebrate",
-      intent: "photography_booking",
-    },
+    { id:"celebrate-birthday", icon:"🎂", title:"Plan birthday",
+      desc:"Mira builds the perfect birthday box — every year.",
+      cta:"Plan via Concierge®", pillar:"celebrate", intent:"birthday_planning" },
+    { id:"celebrate-gotcha-day", icon:"🎉", title:"Gotcha Day",
+      desc:"The day they came home. Celebrated every year.",
+      cta:"Set reminder via Concierge®", pillar:"celebrate", intent:"gotcha_day_setup" },
+    { id:"celebrate-breed-cake", icon:"🍰", title:"Order a breed cake",
+      desc:"A cake made just for their breed — from The Doggy Bakery.",
+      cta:"Order via Concierge®", pillar:"celebrate", intent:"cake_order" },
+    { id:"celebrate-memory-photo", icon:"📸", title:"Memory photo",
+      desc:"Capture this year. Mira reminds you every anniversary.",
+      cta:"Book photography →", pillar:"celebrate", intent:"photography_booking" },
   ],
   play: [
-    {
-      id: "play-safe-toys",
-      icon: "🧸",
-      title: "First safe toys",
-      desc: "Age and breed appropriate — Mira will pick.",
-      cta: "Mira's toy picks",
-      pillar: "play",
-      intent: "toy_recommendation",
-    },
+    { id:"play-toys", icon:"🧸", title:"Toy refresh",
+      desc:"Breed and age-appropriate toys — Mira updates picks every season.",
+      cta:"See Mira's picks →", pillar:"play", intent:"toy_recommendation" },
+    { id:"play-playdate", icon:"🐕", title:"Playdate",
+      desc:"Social time with other dogs — essential for wellbeing.",
+      cta:"Arrange via Concierge®", pillar:"play", intent:"playdate" },
+    { id:"play-activity", icon:"🏃", title:"Activity plan",
+      desc:"Mira builds a seasonal activity plan for your dog's energy level.",
+      cta:"Build with Mira →", pillar:"play", intent:"activity_plan" },
   ],
   adopt: [
-    {
-      id: "adopt-safe-space",
-      icon: "🏡",
-      title: "Create a safe space",
-      desc: "Their crate or corner — quiet, warm, theirs.",
-      cta: "Get setup guide",
-      pillar: "adopt",
-      intent: "safe_space_guide",
-    },
+    { id:"adopt-home-check", icon:"🏡", title:"Home comfort check",
+      desc:"Is the home set up right for your dog's current life stage?",
+      cta:"Review with Mira →", pillar:"adopt", intent:"home_readiness" },
+    { id:"adopt-soul-consult", icon:"💜", title:"Soul Adoption Consult",
+      desc:"Thinking of adding another dog? Mira helps you find the right match.",
+      cta:"Book Soul Consult →", pillar:"adopt", intent:"soul_adoption" },
   ],
 };
 
-// ── detectJourneyMode — export and use everywhere ─────────────────────────────
+// ── detectJourneyMode — GROWING extended to 365 days ─────────────────────────
 export function detectJourneyMode(pet) {
   if (!pet) return "CONSIDERING";
   const createdAt = pet.created_at || pet.createdAt;
@@ -329,7 +194,7 @@ export function detectJourneyMode(pet) {
     (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24)
   );
   if (daysSince <= 3) return "WELCOME_HOME";
-  if (daysSince <= 90) return "GROWING";
+  if (daysSince <= 365) return "GROWING";
   return "ALWAYS";
 }
 
@@ -358,13 +223,13 @@ async function bookViaConciergeDirect({ pet, step, token }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// PawrentFirstStepsTab — the component for each pillar page
+// PawrentFirstStepsTab — shows on every pillar page, for ALL modes except CONSIDERING
+// NEVER hides for ALWAYS mode — every pet parent sees their journey steps forever
 // ══════════════════════════════════════════════════════════════════════════════
 export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNavigate }) {
   const [completedSteps, setCompletedSteps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState({});
-  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate();
 
   const mode = detectJourneyMode(pet);
@@ -372,32 +237,29 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
   const petName = pet?.name || "your dog";
   const currentModeData = MODES[mode];
 
-  // Fetch progress — always run hook, guard inside
+  // Fetch progress — hooks must always run before any early return
   useEffect(() => {
-    if (!pet?.id || !token || mode === "ALWAYS" || mode === "CONSIDERING") return;
+    if (!pet?.id || !token) return;
     fetch(`${API_URL}/api/pawrent-journey/progress/${pet.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((d) => setCompletedSteps(d.completed_steps || []))
       .catch(() => {});
-  }, [pet?.id, token, mode]);
+  }, [pet?.id, token]);
 
-  // Only show for WELCOME_HOME and GROWING
-  if (mode === "ALWAYS" || mode === "CONSIDERING" || steps.length === 0) return null;
+  // Only hide for CONSIDERING (no pet) or no steps defined for this pillar
+  if (mode === "CONSIDERING" || steps.length === 0) return null;
 
   const completeStep = async (step) => {
     if (!pet?.id || !token) return;
     setLoading(true);
     try {
       if (step.route) {
-        // Route to Health Vault
-        if (navigate) navigate(`/pet-vault/${pet.id}`);
+        navigate(`/pet-vault/${pet.id}`);
         return;
       }
-      // Book via Concierge
       await bookViaConciergeDirect({ pet, step, token });
-      // Mark as complete
       await fetch(`${API_URL}/api/pawrent-journey/complete-step`, {
         method: "POST",
         headers: {
@@ -412,10 +274,6 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
       });
       setCompletedSteps((prev) => [...prev, step.id]);
       setBooked((prev) => ({ ...prev, [step.id]: true }));
-      toast.success(`Booked for ${petName}! Concierge® will be in touch 🐾`, {
-        duration: 4000,
-        description: step.title,
-      });
     } catch (e) {
       console.error("Step completion failed:", e);
     } finally {
@@ -437,18 +295,15 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
         overflow: "hidden",
       }}
     >
-      {/* Header — clickable to expand/collapse */}
+      {/* Header */}
       <div
-        onClick={() => setIsExpanded(e => !e)}
         style={{
           padding: "14px 18px",
-          borderBottom: isExpanded ? `1px solid ${currentModeData.color}22` : "none",
+          borderBottom: `1px solid ${currentModeData.color}22`,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           background: `${currentModeData.color}11`,
-          cursor: "pointer",
-          userSelect: "none",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -470,44 +325,33 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 11, color: T.muted }}>{completedCount}/{totalSteps} done</div>
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 11, color: T.muted }}>{completedCount}/{totalSteps} done</div>
+          <div
+            style={{
+              marginTop: 4,
+              width: 60,
+              height: 4,
+              background: `${currentModeData.color}22`,
+              borderRadius: 4,
+              overflow: "hidden",
+            }}
+          >
             <div
               style={{
-                marginTop: 4,
-                width: 60,
-                height: 4,
-                background: `${currentModeData.color}22`,
+                width: `${progressPct}%`,
+                height: "100%",
+                background: currentModeData.color,
                 borderRadius: 4,
-                overflow: "hidden",
+                transition: "width 0.5s ease",
               }}
-            >
-              <div
-                style={{
-                  width: `${progressPct}%`,
-                  height: "100%",
-                  background: currentModeData.color,
-                  borderRadius: 4,
-                  transition: "width 0.5s ease",
-                }}
-              />
-            </div>
+            />
           </div>
-          {/* Chevron */}
-          <div style={{
-            fontSize: 12,
-            color: currentModeData.color,
-            transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s ease",
-            fontWeight: 700,
-          }}>▼</div>
         </div>
       </div>
 
-      {/* Steps — only visible when expanded */}
-      {isExpanded && (
-        <div style={{ padding: "12px 18px 16px" }}>
+      {/* Steps */}
+      <div style={{ padding: "12px 18px 16px" }}>
         {steps.map((step, idx) => {
           const isDone = completedSteps.includes(step.id);
           const isJustBooked = booked[step.id];
@@ -588,7 +432,6 @@ export function PawrentFirstStepsTab({ pet, token, currentPillar = "care", onNav
           </div>
         </div>
       </div>
-      )}
     </div>
   );
 }
@@ -602,7 +445,6 @@ export function PawrentJourneyCard({ pet, token, onClick }) {
   const modeData = MODES[mode];
   const petName = pet?.name || "your dog";
 
-  // Count all steps across all pillars
   const allSteps = Object.values(FIRST_STEPS).flat();
   const totalSteps = allSteps.length;
 
@@ -862,7 +704,6 @@ export default function PawrentJourney({ pet, token }) {
           })}
         </div>
 
-        {/* Active pillar steps */}
         <PawrentFirstStepsTab
           pet={pet}
           token={token}
