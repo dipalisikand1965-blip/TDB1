@@ -113,6 +113,7 @@ const NotificationBell = ({ credentials, onNavigate }) => {
   };
 
   const fetchNotifications = useCallback(async () => {
+    if (!credentials?.username || !credentials?.password) return;
     try {
       const res = await fetch(
         `${API_URL}/api/admin/notifications?limit=50&unread_only=${filter === 'unread'}`,

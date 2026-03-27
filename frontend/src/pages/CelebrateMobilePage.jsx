@@ -378,19 +378,19 @@ export default function CelebrateMobilePage() {
           </div>
         )}
 
-        {/* HERO */}
-        <div style={{ background:'linear-gradient(160deg,#1A0A2E 0%,#4A1B6D 50%,#9B59B6 100%)', padding:'32px 16px 24px', position:'relative', overflow:'hidden' }}>
+        {/* ── 1. Dim Modal — dark hero (always visible, above tabs) ── */}
+        <div style={{ background:'linear-gradient(160deg,#1A0A2E 0%,#4A1B6D 50%,#9B59B6 100%)', padding:'32px 16px 20px', position:'relative', overflow:'hidden' }}>
           <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(233,30,140,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
             <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎉 Celebrate</div>
             </div>
             {contextPets?.length > 1 && (
               <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                    style={{ padding:'6px 14px', borderRadius:999, fontSize:12, fontWeight:700,
                       border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
                       background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
                       color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
@@ -400,30 +400,26 @@ export default function CelebrateMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
-            <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
+            <div style={{ width:48, height:48, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
               {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : <span style={{ fontSize:22 }}>🐾</span>}
             </div>
             <div>
-              <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Birthdays & Milestones</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName}</div>
+              <div style={{ fontSize:18, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Birthdays & Milestones</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName}</div>
             </div>
           </div>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {getAllergies(currentPet).map(a => (
-              <div key={a} style={{ background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'4px 10px', fontSize:14, color:'#FFB3B0' }}>⚠️ No {a}</div>
+              <div key={a} style={{ background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'3px 10px', fontSize:13, color:'#FFB3B0' }}>⚠️ No {a}</div>
             ))}
           </div>
         </div>
 
+        {/* ── 2. Category Strip (outside tabs, always visible) ── */}
+        <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
-        {/* Soul profile — Mojo's Celebration Profile card */}
-        <div style={{ padding:'0 16px 8px' }}>
-          <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
-        </div>
-
-        {/* ── Main Tab Bar: Celebrate | Near Me ── */}
-        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="celebrate" />}
+        {/* ── 3. Tab Bar: Celebrate | Near Me ── */}
         <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.25)', marginBottom:0 }}>
           {[{ id:'celebrate', label:'Celebrate' }, { id:'nearme', label:'Near Me' }].map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
@@ -441,7 +437,19 @@ export default function CelebrateMobilePage() {
 
         {/* ── CELEBRATE TAB ── */}
         {activeTab === 'celebrate' && (<>
-        
+
+        {/* ── 4a. Celebrate Profile ── */}
+        <div style={{ padding:'12px 16px 0' }}>
+          <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
+        </div>
+
+        {/* ── 4b. Pawrent Journey — collapsible, starts CLOSED ── */}
+        {currentPet && (
+          <div style={{ padding:'8px 16px 0' }}>
+            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="celebrate" defaultCollapsed={true} />
+          </div>
+        )}
+
         {/* Birthday Countdown — emotional anticipation */}
         {currentPet && (
           <div style={{ padding:'12px 16px 0' }}>
@@ -452,9 +460,6 @@ export default function CelebrateMobilePage() {
             />
           </div>
         )}
-
-        {/* Category strip */}
-        <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
         {/* Soul Celebration Pillars — "How would Mojo love to celebrate?" */}
         <SoulCelebrationPillars pet={currentPet} />
