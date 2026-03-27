@@ -534,8 +534,6 @@ export default function CelebrateMobilePage() {
 
         {/* Celebrate Personally — Service Grid */}
         <div style={{ padding:'0 16px 24px' }}>
-          <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Celebrate Personally</div>
-          <div style={{ fontSize:14, color:C.taupe, marginBottom:16 }}>Real services, arranged by Concierge®</div>
           <CelebrateServiceGrid pet={currentPet} />
         </div>
 
