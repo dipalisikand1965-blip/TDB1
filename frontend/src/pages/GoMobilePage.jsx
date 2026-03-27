@@ -237,7 +237,23 @@ export default function GoMobilePage() {
                         return activeDim ? (
                           <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
                             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
-                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={{}} />
+                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={Object.fromEntries(
+                                ['safety','calming','carriers','feeding','health','stay'].map(dimId => [
+                                  dimId,
+                                  allRaw.filter(p => {
+                                    const keywords = {
+                                      safety:   ['safety'],
+                                      calming:  ['calm'],
+                                      carriers: ['carrier'],
+                                      feeding:  ['feed'],
+                                      health:   ['health'],
+                                      stay:     ['boarding','stay'],
+                                    }[dimId] || [];
+                                    const txt = `${p.name} ${p.category} ${p.sub_category} ${p.description || ''}`.toLowerCase();
+                                    return keywords.some(k => txt.includes(k));
+                                  })
+                                ])
+                              )} />
                             </div>
                           </div>
                         ) : null;
