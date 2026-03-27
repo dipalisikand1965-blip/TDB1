@@ -19042,7 +19042,112 @@ async def get_mira_memories(
         "count": len(memories)
     }
 
-@router.get("/quick-prompts/{pillar}")
+# ─────────────────────────────────────────────────────────────────────────────
+# MIRA CONVERSATIONAL MEMORY — auto-detect & proactive follow-ups
+# ─────────────────────────────────────────────────────────────────────────────
+
+@router.post("/memory/save")
+async def save_mira_memory(request: Request, authorization: Optional[str] = Header(None)):
+    """Save a new Mira memory with optional proactive follow-up."""
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"status": "unauthenticated"}
+
+    body = await request.json()
+    pet_id = body.get("pet_id")
+    if not pet_id:
+        return {"status": "missing_pet_id"}
+
+    db = get_db()
+    memory_doc = {
+        "pet_id": pet_id,
+        "user_id": str(user.get("id") or user.get("_id", "")),
+        "member_id": str(user.get("id") or user.get("_id", "")),
+        "memory_type": body.get("memory_type"),
+        "content": body.get("content"),
+        "mira_response": body.get("mira_response"),
+        "follow_up": body.get("follow_up", False),
+        "follow_up_message": body.get("follow_up_message"),
+        "follow_up_shown": False,
+        "created_at": body.get("created_at", datetime.now(timezone.utc).isoformat()),
+        "resolved": False,
+    }
+
+    result = await db.mira_memories.insert_one(memory_doc)
+    return {"status": "saved", "memory_id": str(result.inserted_id)}
+
+
+@router.get("/memory/{pet_id}")
+async def get_pet_memories(
+    pet_id: str,
+    follow_up: bool = False,
+    limit: int = 10,
+    authorization: Optional[str] = Header(None)
+):
+    """Fetch memories for a pet. If follow_up=true, only unshown pending follow-ups."""
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"memories": []}
+
+    db = get_db()
+    query = {
+        "pet_id": pet_id,
+        "user_id": str(user.get("id") or user.get("_id", "")),
+    }
+    if follow_up:
+        query["follow_up"] = True
+        query["follow_up_shown"] = False
+        query["resolved"] = False
+
+    memories = await db.mira_memories.find(
+        query,
+        {"memory_type": 1, "content": 1, "follow_up_message": 1,
+         "created_at": 1, "follow_up_shown": 1, "resolved": 1}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+
+    # Serialize ObjectId
+    for m in memories:
+        m["_id"] = str(m["_id"])
+
+    return {"memories": memories}
+
+
+@router.patch("/memory/{memory_id}/shown")
+async def mark_memory_shown(memory_id: str, authorization: Optional[str] = Header(None)):
+    """Mark a follow-up memory as shown so it doesn't surface again."""
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"status": "unauthenticated"}
+
+    db = get_db()
+    try:
+        await db.mira_memories.update_one(
+            {"_id": ObjectId(memory_id)},
+            {"$set": {"follow_up_shown": True, "shown_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"status": "updated"}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+
+@router.patch("/memory/{memory_id}/resolved")
+async def resolve_mira_memory(memory_id: str, authorization: Optional[str] = Header(None)):
+    """Mark a memory as resolved when user confirms the issue is sorted."""
+    user = await get_user_from_token(authorization)
+    if not user:
+        return {"status": "unauthenticated"}
+
+    db = get_db()
+    try:
+        await db.mira_memories.update_one(
+            {"_id": ObjectId(memory_id)},
+            {"$set": {"resolved": True, "resolved_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        return {"status": "resolved"}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+
 async def get_quick_prompts(pillar: str):
     """
     Get pillar-specific quick action prompts.
