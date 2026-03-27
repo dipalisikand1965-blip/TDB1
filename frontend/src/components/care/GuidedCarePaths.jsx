@@ -24,6 +24,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 import { tdc } from "../../utils/tdc_intent";
 import { useConcierge } from "../../hooks/useConcierge";
@@ -683,9 +684,9 @@ export function PathFlowModal({ path, pet, onClose }) {
 // MODAL SHELL
 // ─────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children, noPadding }) {
-  return (
+  return createPortal(
     <>
-      {/* Backdrop — standalone so its backdropFilter never bleeds into modal content */}
+      {/* Backdrop — portaled to body so no ancestor transform can contain it */}
       <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.55)" }} />
       {/* Modal content — sibling at higher z-index, centered independently */}
       <div
@@ -701,7 +702,8 @@ function ModalShell({ onClose, children, noPadding }) {
       >
         {children}
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 
