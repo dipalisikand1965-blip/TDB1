@@ -36,15 +36,29 @@ const getAllergies = (pet) => {
   add(pet?.allergies);
   return [...s];
 };
-const isAllergen = (flavour, pet) => {
-  const allergies = getAllergies(pet);
-  return allergies.some(a => flavour.toLowerCase().includes(a));
+const isAllergen = (flavourName, pet) => {
+  const allergies = getAllergies(pet).map(a => a.toLowerCase());
+  const fl = (flavourName || '').toLowerCase();
+  return allergies.some(a =>
+    fl.includes(a) ||
+    // Fish & Salmon cover each other
+    (a === 'fish'   && fl.includes('salmon')) ||
+    (a === 'salmon' && fl.includes('fish'))
+  );
 };
 
-/* ── Flavours ───────────────────────────────────────────────────────────── */
+/* ── Flavours (TDB actual range) ────────────────────────────────────────── */
 const FLAVOURS = [
-  'Peanut Butter', 'Carrot & Honey', 'Banana & Oat',
-  'Chicken', 'Salmon', 'Beef', 'Pumpkin', 'Blueberry',
+  { name: 'Banana',        emoji: '🍌' },
+  { name: 'Carrot',        emoji: '🥕' },
+  { name: 'Chicken',       emoji: '🍗' },
+  { name: 'Mutton',        emoji: '🥩' },
+  { name: 'Peanut Butter', emoji: '🥜' },
+  { name: 'Blueberry',     emoji: '🫐' },
+  { name: 'Coconut Cream', emoji: '🥥' },
+  { name: 'Strawberry',    emoji: '🍓' },
+  { name: 'Fish & Salmon', emoji: '🐟' },
+  { name: 'Pumpkin',       emoji: '🎃' },
 ];
 const SIZES = [
   { label: 'Mini',    desc: 'Feeds 2–4',   price: 450  },
@@ -140,7 +154,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   const openOrderForm = useCallback((product) => {
     setOrderProduct(product);
     setSelectedFlavour(
-      FLAVOURS.find(f => !isAllergen(f, pet)) || FLAVOURS[0]
+      (FLAVOURS.find(f => !isAllergen(f.name, pet)) || FLAVOURS[0]).name
     );
     setSelectedSize(SIZES[0].label);
     setPetNameOnCake(pet?.name || '');
@@ -150,41 +164,44 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
     setOrderDone(false);
   }, [pet]);
 
-  // Confirm order: addToCart event + service desk ticket
+  // Confirm order: POST to /api/celebrate/cake-order → saves to cake_orders + service desk ticket
   const handleOrder = useCallback(async () => {
     if (!orderProduct) return;
     setOrderSending(true);
-    // 1. Add to cart
-    window.dispatchEvent(new CustomEvent('addToCart', {
-      detail: { ...orderProduct, selectedFlavour, selectedSize, petNameOnCake, quantity: 1 },
-    }));
-    // 2. Fire service desk ticket
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+      const res = await fetch(`${API_URL}/api/celebrate/cake-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          parent_id:      user?.id || user?.email || 'guest',
-          pet_id:         pet?.id,
-          pillar:         'celebrate',
-          intent_primary: 'cake_order',
-          channel:        'doggy_bakery_cake_modal',
-          initial_message: {
-            sender: 'parent',
-            text: `🎂 Cake Order for ${petName}\nProduct: ${orderProduct.name}\nFlavor: ${selectedFlavour}\nSize: ${selectedSize}\nPet name on cake: ${petNameOnCake || petName}\nDelivery date: ${deliveryDate || 'Flexible'}\nDelivery time: ${deliveryTime || 'Flexible'}\nMessage on cake: ${cakeMessage || 'None'}\nAllergies: ${allergies.join(', ') || 'None'}\nTotal: ₹${totalPrice}${isAllergen(selectedFlavour, pet) ? '\n⚠️ ALLERGY NOTE: Selected flavour may contain an allergen — please confirm with parent.' : ''}`,
-          },
+          pet_id:           pet?.id,
+          pet_name:         petName,
+          pet_breed:        pet?.breed || '',
+          pet_allergies:    allergies,
+          product_name:     orderProduct.name,
+          product_id:       orderProduct.id,
+          flavour:          selectedFlavour,
+          base:             'Oats',
+          size:             selectedSize,
+          shape:            orderProduct.tags?.find(t => ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)) || '',
+          pet_name_on_cake: petNameOnCake || petName,
+          message_on_cake:  cakeMessage,
+          delivery_date:    deliveryDate,
+          delivery_time:    deliveryTime,
+          delivery_type:    'delivery',
+          total_price:      totalPrice,
         }),
       });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Order failed');
     } catch (e) {
-      console.error('[DoggyBakeryCakeModal] ticket failed', e);
+      console.error('[DoggyBakeryCakeModal] order failed', e);
     }
     setOrderSending(false);
     setOrderDone(true);
-    setTimeout(() => { setOrderProduct(null); setOrderDone(false); }, 2200);
+    setTimeout(() => { setOrderProduct(null); setOrderDone(false); }, 2500);
   }, [orderProduct, selectedFlavour, selectedSize, petNameOnCake, deliveryDate, deliveryTime, cakeMessage, allergies, totalPrice, pet, petName, token]);
 
   // ── Breed match row ───────────────────────────────────────────────────────
@@ -255,26 +272,26 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
             {/* Flavour */}
             <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10 }}>CAKE FLAVOUR</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:6 }}>
-              {FLAVOURS.map(flavour => {
-                const unsafe = isAllergen(flavour, pet);
+              {FLAVOURS.map(f => {
+                const unsafe = isAllergen(f.name, pet);
                 return (
                   <button
-                    key={flavour}
-                    onClick={() => setSelectedFlavour(flavour)}
-                    data-testid={`cake-flavour-${flavour.replace(/\s+/g,'-').toLowerCase()}`}
+                    key={f.name}
+                    onClick={() => setSelectedFlavour(f.name)}
+                    data-testid={`cake-flavour-${f.name.replace(/\s+/g,'-').toLowerCase()}`}
                     style={{
                       padding:'10px 18px', borderRadius:999, fontSize:14, fontWeight:600,
                       cursor:'pointer', position:'relative', transition:'all 0.15s',
-                      border: selectedFlavour === flavour ? '2px solid #9B59B6'
+                      border: selectedFlavour === f.name ? '2px solid #9B59B6'
                               : unsafe ? '2px solid #EF4444'
                               : '2px solid #E8D5F5',
-                      background: selectedFlavour === flavour ? '#9B59B6'
+                      background: selectedFlavour === f.name ? '#9B59B6'
                                 : unsafe ? 'rgba(239,68,68,0.08)' : '#F5EEFF',
-                      color: selectedFlavour === flavour ? '#fff'
+                      color: selectedFlavour === f.name ? '#fff'
                            : unsafe ? '#EF4444' : '#7B2D8B',
                     }}
                   >
-                    {flavour}
+                    {f.emoji} {f.name}
                     {unsafe && (
                       <span style={{ position:'absolute', top:-6, right:-6, background:'#EF4444', color:'#fff', fontSize:9, fontWeight:700, borderRadius:999, padding:'2px 5px', lineHeight:1 }}>
                         ⚠ {petName}

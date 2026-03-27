@@ -22127,7 +22127,153 @@ async def generate_generic_bundle_image(
         return {"success": True, "image_url": image_url, "bundle_id": bundle_id}
     except Exception as e:
         logger.error(f"Generic bundle image generation failed for {bundle_id}: {e}")
-        raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
+
+# ── CAKE ORDERS ────────────────────────────────────────────────────────────────
+
+@api_router.post("/celebrate/cake-order")
+async def submit_cake_order(order: dict, current_user: dict = Depends(get_current_user)):
+    """Receives full cake order from DoggyBakeryCakeModal. Saves to cake_orders + service desk ticket + admin notification."""
+    from datetime import datetime, timezone
+    import secrets as _secrets
+
+    pet_id   = order.get("pet_id", "")
+    pet_name = order.get("pet_name", "your dog")
+    ts       = datetime.now(timezone.utc)
+    order_id  = f"cake-{ts.strftime('%Y%m%d%H%M%S')}-{str(pet_id)[:8] if pet_id else 'guest'}"
+    ticket_id = f"TDB-{ts.strftime('%Y%m%d-%H%M')}-{_secrets.token_hex(2).upper()}"
+
+    cake_order = {
+        "id": order_id,
+        "user_id": str(current_user.get("_id", "")),
+        "user_email": current_user.get("email", ""),
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "pet_breed": order.get("pet_breed", ""),
+        "pet_allergies": order.get("pet_allergies", []),
+        "product_name": order.get("product_name", ""),
+        "product_id": order.get("product_id", ""),
+        "flavour": order.get("flavour", ""),
+        "base": order.get("base", ""),
+        "size": order.get("size", ""),
+        "shape": order.get("shape", ""),
+        "pet_name_on_cake": order.get("pet_name_on_cake", pet_name),
+        "message_on_cake": order.get("message_on_cake", ""),
+        "delivery_date": order.get("delivery_date", ""),
+        "delivery_time": order.get("delivery_time", ""),
+        "delivery_type": order.get("delivery_type", "delivery"),
+        "total_price": order.get("total_price", 0),
+        "status": "pending",
+        "created_at": ts.isoformat(),
+        "source": "doggy_bakery_cake_modal",
+    }
+    await db.cake_orders.insert_one(cake_order)
+
+    allergies_str = ", ".join(cake_order["pet_allergies"]) if cake_order["pet_allergies"] else "None"
+    ticket_text = (
+        "\U0001f382 CAKE ORDER \u2014 " + pet_name + "\n\n"
+        "Product: " + cake_order["product_name"] + "\n"
+        "Flavour: " + cake_order["flavour"] + "\n"
+        "Base: " + cake_order["base"] + "\n"
+        "Size: " + cake_order["size"] + "\n"
+        "Shape: " + cake_order["shape"] + "\n"
+        "Name on cake: " + cake_order["pet_name_on_cake"] + "\n"
+        "Message: " + (cake_order["message_on_cake"] or "None") + "\n"
+        "Delivery date: " + cake_order["delivery_date"] + "\n"
+        "Delivery time: " + cake_order["delivery_time"] + "\n"
+        "Delivery type: " + cake_order["delivery_type"] + "\n"
+        "Total: \u20b9" + str(cake_order["total_price"]) + "\n\n"
+        "Pet: " + pet_name + " (" + cake_order["pet_breed"] + ")\n"
+        "Allergies: " + allergies_str + "\n"
+        "Customer: " + current_user.get("email", "")
+    )
+
+    ticket = {
+        "id": ticket_id,
+        "parent_id": current_user.get("email", "guest"),
+        "pet_id": pet_id,
+        "pillar": "celebrate",
+        "intent_primary": "cake_order",
+        "urgency": "normal",
+        "status": "open",
+        "channel": "doggy_bakery_cake_modal",
+        "cake_order_id": order_id,
+        "initial_message": {"sender": "parent", "text": ticket_text},
+        "created_at": ts.isoformat(),
+    }
+    await db.service_desk_tickets.insert_one(ticket)
+
+    await db.admin_notifications.insert_one({
+        "id": f"NOTIF-{_secrets.token_hex(4).upper()}",
+        "type": "cake_order",
+        "title": "\U0001f382 New cake order \u2014 " + pet_name,
+        "message": cake_order["flavour"] + " " + cake_order["shape"] + " cake for " + pet_name + " \u00b7 \u20b9" + str(cake_order["total_price"]) + " \u00b7 " + cake_order["delivery_date"],
+        "ticket_id": ticket_id,
+        "cake_order_id": order_id,
+        "read": False,
+        "created_at": ts.isoformat(),
+    })
+
+    return {
+        "success": True,
+        "cake_order_id": order_id,
+        "ticket_id": ticket_id,
+        "message": "Cake order placed for " + pet_name + ". Concierge\u00ae will confirm within 2 hours.",
+    }
+
+
+@api_router.get("/admin/cake-orders")
+async def get_cake_orders(
+    status: Optional[str] = None,
+    date: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0,
+    current_user: dict = Depends(get_current_user),
+):
+    """Get all cake orders for admin view."""
+    query: dict = {}
+    if status:
+        query["status"] = status
+    if date:
+        query["delivery_date"] = date
+
+    orders = await db.cake_orders.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total   = await db.cake_orders.count_documents(query)
+
+    return {
+        "orders": orders,
+        "total": total,
+        "pending":   await db.cake_orders.count_documents({"status": "pending"}),
+        "confirmed": await db.cake_orders.count_documents({"status": "confirmed"}),
+        "delivered": await db.cake_orders.count_documents({"status": "delivered"}),
+    }
+
+
+@api_router.patch("/admin/cake-orders/{order_id}/status")
+async def update_cake_order_status(
+    order_id: str,
+    update: dict,
+    current_user: dict = Depends(get_current_user),
+):
+    """Update cake order status: pending → confirmed → baking → out_for_delivery → delivered."""
+    from datetime import datetime, timezone
+
+    VALID = ["pending", "confirmed", "baking", "out_for_delivery", "delivered", "cancelled"]
+    new_status = update.get("status")
+    if new_status not in VALID:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {VALID}")
+
+    result = await db.cake_orders.update_one(
+        {"id": order_id},
+        {"$set": {
+            "status": new_status,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_by": current_user.get("email", "admin"),
+        }},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Cake order not found")
+
+    return {"success": True, "status": new_status}
 
 
 # Include routers
