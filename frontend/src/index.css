@@ -567,7 +567,7 @@ body {
 }
 
 .nav-label {
-  font-size: 0.625rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-muted);
   text-transform: uppercase;

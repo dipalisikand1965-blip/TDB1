@@ -178,14 +178,14 @@ export default function PetFriendlySpots({ pet, onReserve }) {
 
       {/* ── Big heading ── */}
       <div style={{ marginBottom:24 }}>
-        <h2 style={{ fontFamily:"Georgia,serif", fontSize:"clamp(22px,4vw,36px)", fontWeight:700, color:"#1A0A00", margin:"0 0 8px", lineHeight:1.2 }}>
-          How would{" "}
+        <h2 style={{ margin:"0 0 8px", fontSize:18, fontWeight:800, color:"#2B170B" }}>
+          Where would{" "}
           <span style={{ color:"#C44400" }}>{petName}</span>
-          {" "}love to eat?
+          {" "}love to dine out?
         </h2>
         <p style={{ margin:0, fontSize:14, color:"#888", lineHeight:1.6 }}>
-          Choose a dimension — everything inside is personalised to {petName}'s food profile.{" "}
-          <span style={{ color:"#C44400", fontWeight:600 }}>Glowing ones match what {petName} loves.</span>
+          Find pet-friendly restaurants, cafés and outdoor spots near you.{" "}
+          <span style={{ color:"#C44400", fontWeight:600 }}>Starred spots are Mira-verified for {petName}.</span>
         </p>
       </div>
 

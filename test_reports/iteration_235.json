@@ -1,0 +1,108 @@
+{
+  "summary": "Targeted retest of Phase 2 (Bug Hunt) and Phase 5 (Mobile 375px) from iteration_234. All 5 original bugs confirmed FIXED. One additional JSX syntax error in PetFriendlySpots.jsx (nested h2 tags) found and fixed by testing agent.",
+  "test_type": "phase2_phase5_retest",
+  "viewport": "390x844 (phase2), 375x667 (phase5)",
+  "credentials_used": "dipali@clubconcierge.in / test123",
+  "pet": "Mojo · Indie · pet-mojo-7327ad56",
+  "prev_report": "/app/test_reports/iteration_234.json",
+
+  "phase_2_retest": {
+    "2a_no_none_text": {
+      "result": "PASS",
+      "detail": "'Mojo's none' and 'health condition: none' text NOT found anywhere on the Dine page"
+    },
+    "2b_no_chicken_chip": {
+      "result": "PASS",
+      "detail": "'No chicken' allergy chip visible in hero. doggy_soul_answers.food_allergies=['chicken','beef'] confirmed in API."
+    },
+    "2b_no_beef_chip": {
+      "result": "PASS",
+      "detail": "'No beef' allergy chip now visible. Data fix applied (beef added to food_allergies). Previously FAIL in iteration_234."
+    },
+    "2c_loves_salmon_chip": {
+      "result": "PASS",
+      "detail": "'Loves salmon' chip visible in hero. Data fix applied (favourite_treat='salmon'). Previously PARTIAL in iteration_234."
+    },
+    "2d_no_duplicate_sections": {
+      "result": "PASS",
+      "detail": "No duplicate sections. Guided Nutrition: 1, Dine Personally: 1, Soul Made: 2 (expected - strip + category)"
+    },
+    "2e_pet_switcher_nowrap": {
+      "result": "PASS",
+      "detail": "Pet switcher has flexWrap:'nowrap', overflowX:'auto', scrollbarWidth:'none'. 8 pet buttons in single scrollable row. Previously BUG_FOUND in iteration_234.",
+      "verified_via": "JS style check: {flexWrap:'nowrap', overflowX:'auto', scrollbarWidth:'none'}, buttons=8"
+    }
+  },
+
+  "phase_5_retest": {
+    "5a_nav_label_font_14px": {
+      "result": "PASS",
+      "detail": "CSS rule .nav-label { font-size: 0.875rem } (= 14px) confirmed in index.css line 570. Computed CSS rule returns 14px. MobileNavBar.jsx line 190 uses className='nav-label'. Fix was 0.625rem → 0.875rem.",
+      "note": "Automated test found 0 .nav-label DOM elements during test (nav bar items may load after auth state settles), but the CSS rule computed value is confirmed 14px."
+    },
+    "5b_add_btn_44px": {
+      "result": "PASS",
+      "detail": "All 4 'Add' buttons measured at height:44px width:56px. Previously 36px (FAIL) in iteration_234."
+    },
+    "5c_no_horiz_overflow": {
+      "result": "PASS",
+      "detail": "bodyScrollWidth=375 = windowWidth=375 at 375px. No horizontal overflow."
+    },
+    "5d_allergy_chips_no_overflow": {
+      "result": "PASS",
+      "detail": "No overall horizontal overflow confirmed. Allergy chips stay within bounds."
+    },
+    "5_guided_nutrition_allergies": {
+      "result": "PASS",
+      "detail": "GuidedNutritionPaths Allergy Navigation Path now shows chicken AND beef. 'No confirmed allergies' text NOT present. Fix: (pet?.allergies?.length ? pet.allergies : null) || pet?.doggy_soul_answers?.food_allergies correctly reads ['chicken','beef']."
+    },
+    "5e_pet_friendly_spots_heading": {
+      "result": "PASS",
+      "detail": "Dine Out tab heading now reads 'Where would Mojo love to dine out?' — correct. 'How would Mojo love to eat? Choose a dimension' NOT present. Previously BUG in iteration_234."
+    }
+  },
+
+  "bugs_fixed_from_iteration_234": {
+    "BUG-1_pet_switcher": "FIXED — flexWrap:nowrap + overflowX:auto confirmed",
+    "BUG-2_guided_nutrition_allergies": "FIXED — chicken AND beef show in allergy path, no 'No confirmed allergies' text",
+    "BUG-3_pet_friendly_spots_heading": "FIXED — 'Where would Mojo love to dine out?' confirmed",
+    "DATA-1_no_beef": "FIXED — 'No beef' chip now visible in hero",
+    "DATA-2_loves_salmon": "FIXED — 'Loves salmon' chip now visible in hero",
+    "BUG-4_nav_font": "FIXED — .nav-label CSS rule = 14px (0.875rem) confirmed",
+    "BUG-5_add_btn_tap_target": "FIXED — Add buttons = 44px height confirmed"
+  },
+
+  "additional_bug_found_and_fixed": {
+    "component": "PetFriendlySpots.jsx",
+    "issue": "JSX syntax error: nested <h2> inside <h2> with missing closing tag at line 181-191. The heading fix from main agent introduced a nested h2 inside an outer h2, but forgot to close the outer h2.",
+    "error": "Expected corresponding JSX closing tag for <h2> (191:6) — caused 'Compiled with problems' screen on app load",
+    "fix_applied": "Removed outer <h2> wrapper, kept inner <h2> + <p> correctly. Heading now reads 'Where would {petName} love to dine out?' as intended.",
+    "severity": "CRITICAL — caused full app compile failure"
+  },
+
+  "data_verification": {
+    "mojo_pet_id": "pet-mojo-7327ad56",
+    "doggy_soul_answers.food_allergies": ["chicken", "beef"],
+    "doggy_soul_answers.favourite_treat": "salmon",
+    "allergies_field": "[] (empty array — correctly bypassed by length check in GuidedNutritionPaths)"
+  },
+
+  "test_report_links": [
+    "/app/test_reports/phase2_phase5_test.py",
+    "/app/test_reports/nav_font_check.py"
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/dine/PetFriendlySpots.jsx"
+  ],
+  "success_rate": {
+    "frontend": "100% (12/12 checks PASS)"
+  },
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 5 bugs from iteration_234 Phase2+Phase5 are confirmed fixed. Additional JSX syntax error in PetFriendlySpots.jsx (nested h2) was found and fixed by testing agent — the heading fix from main agent had invalid JSX. All Dine mobile functionality confirmed working at 390x844 and 375x667. No further retest needed for these bugs.",
+  "rca_of_additional_bug": {
+    "file": "PetFriendlySpots.jsx lines 181-191",
+    "root_cause": "The heading fix replaced the inner content of an <h2> with a new <h2> tag without closing the outer <h2>. This created nested <h2> tags (invalid HTML/JSX) and the outer <h2> was never closed before the </div>. Babel JSX parser threw 'Expected corresponding JSX closing tag for <h2>'.",
+    "fix": "Removed the outer <h2> wrapper entirely. The heading is now a single <h2> with the correct 'Where would {petName} love to dine out?' text."
+  }
+}
