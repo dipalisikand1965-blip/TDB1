@@ -1128,8 +1128,10 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
   const [shapeFilter, setShapeFilter] = useState('all');  // for birthday-cakes shape chips
   const [cakePage, setCakePage] = useState(1);             // for birthday-cakes load more
 
-  // Reset shape filter + page on category change
-  useEffect(() => { setShapeFilter('all'); setCakePage(1); }, [category]);
+  // Reset shape filter + page on category/open change
+  useEffect(() => {
+    setShapeFilter('all');
+    setCakePage(1);
     if (isOpen) {
       setAddedCount(0);
       setMiraImagines([]);
