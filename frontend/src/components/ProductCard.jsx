@@ -1118,9 +1118,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // For celebrate pillar: fetch breed-specific soul made products (bandanas, mugs, etc.)
   React.useEffect(() => {
     if (pillar !== 'celebrate') return;
-    const pet = effectiveSelectedPet;
-    if (!pet?.breed) return;
-    const breedKey = (pet.breed || '').toLowerCase().replace(/\s+/g, '_').replace(/[()]/g, '');
+    if (!selectedPet?.breed) return;
+    const breedKey = (selectedPet.breed || '').toLowerCase().replace(/\s+/g, '_').replace(/[()]/g, '');
     const fetchBreedSoul = async () => {
       try {
         const res = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=8`);
@@ -1134,7 +1133,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       } catch (e) { /* silent */ }
     };
     fetchBreedSoul();
-  }, [pillar, effectiveSelectedPet?.breed]);
+  }, [pillar, selectedPet?.breed]);
 
   // Fetch bundle products (cakes and toys) for hamper products
   React.useEffect(() => {
@@ -2067,10 +2066,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-5 h-5 text-purple-600" />
               <h3 className="font-bold text-gray-900">{PILLAR_CROSS_SELL_TITLES[pillar] || PILLAR_CROSS_SELL_TITLES.default}</h3>
-              {celebrateSoulProducts.length > 0 && effectiveSelectedPet?.breed && (
+              {celebrateSoulProducts.length > 0 && selectedPet?.breed && (
                 <span className="text-xs rounded-full px-2 py-0.5 font-bold text-white"
                   style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-                  Made for {effectiveSelectedPet.name || effectiveSelectedPet.breed}
+                  Made for {selectedPet.name || selectedPet.breed}
                 </span>
               )}
             </div>
