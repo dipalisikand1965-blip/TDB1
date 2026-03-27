@@ -28,6 +28,7 @@ import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
+import BirthdayBoxBrowseDrawer from '../components/celebrate/BirthdayBoxBrowseDrawer';
 import GuidedCelebratePaths from '../components/celebrate/GuidedCelebrationPaths';
 import CelebrateNearMe from '../components/celebrate/CelebrateNearMe';
 import ConciergeIntakeModal from '../components/celebrate/ConciergeIntakeModal';
@@ -565,8 +566,18 @@ export default function CelebrateMobilePage() {
           />
         )}
 
-        {/* Birthday Cakes + Breed Cakes — DoggyBakeryCakeModal listens to openBirthdayBoxBrowse */}
+        {/* Birthday Cakes + Breed Cakes */}
         <DoggyBakeryCakeModal />
+
+        {/* Birthday Box Builder — listens to openOccasionBoxBuilder */}
+        <BirthdayBoxBuilder onOpenBrowseDrawer={() =>
+          window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: { petName: currentPet?.name, petBreed: currentPet?.breed || '', pet: currentPet } }))
+        } />
+
+        {/* Birthday Box Browse Drawer — listens to openBirthdayBoxBrowse */}
+        <BirthdayBoxBrowseDrawer onOpenBuilder={(box) =>
+          window.dispatchEvent(new CustomEvent('openOccasionBoxBuilder', { detail: { preset: box, petName: currentPet?.name, petId: currentPet?.id, occasion: 'birthday' } }))
+        } />
 
       </div>
     </PillarPageLayout>
