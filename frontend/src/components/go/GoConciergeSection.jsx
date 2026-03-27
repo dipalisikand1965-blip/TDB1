@@ -127,7 +127,7 @@ export default function GoConciergeSection({ pet }) {
         {/* Section heading */}
         <div style={{ textAlign:"center", marginBottom:24 }}>
           <h2 style={{ fontSize:"clamp(1.3rem,4vw,2rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6 }}>
-            Go, Personally
+            Ask {petName}'s Concierge®
           </h2>
           <p style={{ fontSize:13, color:G.mutedText, maxWidth:540, margin:"0 auto", lineHeight:1.6 }}>
             Tell us what you want {petName}'s journey to feel like. We'll handle everything else.
