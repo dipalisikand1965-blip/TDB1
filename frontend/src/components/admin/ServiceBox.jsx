@@ -44,11 +44,16 @@ function Toast({ msg, onClose }) {
 
 // Transform service DB record → ProductBoxEditor schema
 function serviceToProduct(s) {
+  const name = s.name || '';
+  const pillar = s.pillar || 'care';
+  // Pre-populate ai_image_prompt so it shows as real editable value (not greyed placeholder)
+  const aiPrompt = s.ai_image_prompt || s.ai_prompt ||
+    `Soulful watercolor illustration of "${name}" pet service, caring handler with a golden retriever dog, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
   return {
     id: s.id || s._id,
-    name: s.name || '',
+    name,
     basics: {
-      name: s.name || '',
+      name,
       description: s.description || s.long_description || '',
       brand: s.brand || '',
     },
@@ -60,8 +65,8 @@ function serviceToProduct(s) {
       },
     },
     original_price: Number(s.price) || 0,
-    primary_pillar: s.pillar || '',
-    pillar: s.pillar || '',
+    primary_pillar: pillar,
+    pillar,
     category: s.category || '',
     sub_category: s.sub_category || '',
     visibility: { is_active: s.is_active !== false, status: s.is_active !== false ? 'active' : 'inactive' },
@@ -71,6 +76,8 @@ function serviceToProduct(s) {
     product_type: 'service',
     tags: s.tags || [],
     description: s.description || '',
+    ai_image_prompt: aiPrompt,
+    ai_prompt: aiPrompt,
     _serviceId: s.id || s._id,
   };
 }

@@ -30,11 +30,15 @@ function Toast({ msg, onClose }) {
 
 // Transform bundle DB record → ProductBoxEditor schema
 function bundleToProduct(b) {
+  const name = b.name || '';
+  const pillar = b.pillar || 'care';
+  const aiPrompt = b.ai_image_prompt || b.ai_prompt ||
+    `Soulful watercolor illustration of "${name}" dog bundle, beautifully curated pet items arranged together, warm painterly brushstrokes, soft layered watercolor pigments, premium editorial composition, ivory background, no text`;
   return {
     id: b.id || b._id,
-    name: b.name || '',
+    name,
     basics: {
-      name: b.name || '',
+      name,
       description: b.description || '',
       brand: '',
     },
@@ -46,8 +50,8 @@ function bundleToProduct(b) {
       },
     },
     original_price: Number(b.price) || 0,
-    primary_pillar: b.pillar || '',
-    pillar: b.pillar || '',
+    primary_pillar: pillar,
+    pillar,
     category: b.category || '',
     sub_category: '',
     soul_tier: b.is_soul_made ? 'soul_made' : '',
@@ -58,6 +62,8 @@ function bundleToProduct(b) {
     product_type: 'bundle',
     tags: b.tags || [],
     items: b.items || '',
+    ai_image_prompt: aiPrompt,
+    ai_prompt: aiPrompt,
     _bundleId: b.id || b._id,
   };
 }
