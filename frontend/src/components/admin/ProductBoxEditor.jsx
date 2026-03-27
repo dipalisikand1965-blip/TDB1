@@ -403,26 +403,36 @@ const ProductBoxEditor = ({
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-          <TabsList className="grid grid-cols-6 w-full">
-            <TabsTrigger value="basics" className="text-xs">
-              <Package className="w-3 h-3 mr-1" /> Basics
-            </TabsTrigger>
-            <TabsTrigger value="suitability" className="text-xs">
-              <Shield className="w-3 h-3 mr-1" /> Suitability
-            </TabsTrigger>
-            <TabsTrigger value="pillars" className="text-xs">
-              <Tag className="w-3 h-3 mr-1" /> Pillars
-            </TabsTrigger>
-            <TabsTrigger value="commerce" className="text-xs">
-              <DollarSign className="w-3 h-3 mr-1" /> Commerce
-            </TabsTrigger>
-            <TabsTrigger value="media" className="text-xs">
-              <ImagePlus className="w-3 h-3 mr-1" /> Media
-            </TabsTrigger>
-            <TabsTrigger value="mira" className="text-xs">
-              <Bot className="w-3 h-3 mr-1" /> Mira AI
-            </TabsTrigger>
-          </TabsList>
+          {(() => {
+            const isCake = product?.product_type === 'birthday_cake' || product?.category === 'cakes' || product?.category === 'breed-cakes';
+            return (
+              <TabsList className={`grid ${isCake ? 'grid-cols-7' : 'grid-cols-6'} w-full`}>
+                <TabsTrigger value="basics" className="text-xs">
+                  <Package className="w-3 h-3 mr-1" /> Basics
+                </TabsTrigger>
+                <TabsTrigger value="suitability" className="text-xs">
+                  <Shield className="w-3 h-3 mr-1" /> Suitability
+                </TabsTrigger>
+                <TabsTrigger value="pillars" className="text-xs">
+                  <Tag className="w-3 h-3 mr-1" /> Pillars
+                </TabsTrigger>
+                <TabsTrigger value="commerce" className="text-xs">
+                  <DollarSign className="w-3 h-3 mr-1" /> Commerce
+                </TabsTrigger>
+                <TabsTrigger value="media" className="text-xs">
+                  <ImagePlus className="w-3 h-3 mr-1" /> Media
+                </TabsTrigger>
+                <TabsTrigger value="mira" className="text-xs">
+                  <Bot className="w-3 h-3 mr-1" /> Mira AI
+                </TabsTrigger>
+                {isCake && (
+                  <TabsTrigger value="cake" className="text-xs bg-purple-50 data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+                    🎂 Cake Details
+                  </TabsTrigger>
+                )}
+              </TabsList>
+            );
+          })()}
           
           {/* TAB 1: BASICS */}
           <TabsContent value="basics" className="space-y-4 mt-4">
@@ -1876,6 +1886,159 @@ const ProductBoxEditor = ({
               </Card>
             )}
           </TabsContent>
+
+          {/* TAB 7: CAKE DETAILS — only for birthday/breed cake products */}
+          {(product?.product_type === 'birthday_cake' || product?.category === 'cakes' || product?.category === 'breed-cakes') && (
+            <TabsContent value="cake" className="space-y-6 mt-4">
+              <SectionHeader icon="🎂" title="Cake Details" subtitle="Doggy Bakery specific fields" />
+
+              {/* Shape */}
+              <div>
+                <Label className="mb-2 block">Shape</Label>
+                <select
+                  value={getValue('shape', '') ||
+                    (getValue('tags', []) || []).find(t =>
+                      ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)
+                    ) || ''}
+                  onChange={e => {
+                    const SHAPES = ['Circle','Bone','Heart','Square','Star','Paw'];
+                    const currentTags = getValue('tags', []) || [];
+                    const withoutShape = currentTags.filter(t => !SHAPES.includes(t));
+                    const newTags = e.target.value ? [...withoutShape, e.target.value] : withoutShape;
+                    updateField('tags', newTags);
+                    updateField('shape', e.target.value);
+                  }}
+                  className="w-full border rounded p-2 text-sm"
+                >
+                  <option value="">— Select shape —</option>
+                  <option value="Circle">Circle</option>
+                  <option value="Bone">Bone</option>
+                  <option value="Heart">Heart</option>
+                  <option value="Square">Square</option>
+                  <option value="Star">Star</option>
+                  <option value="Paw">Paw</option>
+                </select>
+              </div>
+
+              {/* Available Flavours */}
+              <div>
+                <Label className="mb-2 block">Available Flavours for this cake</Label>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  {['Banana','Carrot','Chicken','Mutton','Peanut Butter',
+                    'Blueberry','Coconut Cream','Strawberry','Fish & Salmon','Pumpkin',
+                  ].map(f => {
+                    const selected = (getValue('available_flavours', []) || []).includes(f);
+                    return (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('available_flavours', []) || [];
+                          updateField('available_flavours', selected ? current.filter(x => x !== f) : [...current, f]);
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border transition-all ${
+                          selected ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">Select which flavours are available for this specific cake</p>
+              </div>
+
+              {/* Available Bases */}
+              <div>
+                <Label className="mb-2 block">Available Bases</Label>
+                <div style={{ display:'flex', gap:8 }}>
+                  {['Oats','Ragi'].map(b => {
+                    const selected = (getValue('available_bases', ['Oats','Ragi']) || []).includes(b);
+                    return (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('available_bases', ['Oats','Ragi']) || [];
+                          updateField('available_bases', selected ? current.filter(x => x !== b) : [...current, b]);
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm border ${
+                          selected ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        {b}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Allergen Flags */}
+              <div>
+                <Label className="mb-2 block">Contains Allergens</Label>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  {['Chicken','Beef','Fish','Dairy','Gluten','Egg','Nuts'].map(a => {
+                    const selected = (getValue('allergens', []) || []).includes(a);
+                    return (
+                      <button
+                        key={a}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('allergens', []) || [];
+                          updateField('allergens', selected ? current.filter(x => x !== a) : [...current, a]);
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border ${
+                          selected ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        ⚠ {a}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">These will trigger allergen warnings for pets with sensitivities</p>
+              </div>
+
+              {/* Doggy Bakery Flag */}
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  checked={!!getValue('is_doggy_bakery', false)}
+                  onChange={e => updateField('is_doggy_bakery', e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <div>
+                  <div className="text-sm font-semibold">Doggy Bakery Product</div>
+                  <div className="text-xs text-gray-500">Made fresh daily · No preservatives · FSSAI approved</div>
+                </div>
+              </div>
+
+              {/* Same Day Delivery Cities */}
+              <div>
+                <Label className="mb-2 block">Same Day Delivery Cities</Label>
+                <div style={{ display:'flex', gap:8 }}>
+                  {['Bangalore','Mumbai','Gurgaon'].map(city => {
+                    const selected = (getValue('same_day_cities', []) || []).includes(city);
+                    return (
+                      <button
+                        key={city}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('same_day_cities', []) || [];
+                          updateField('same_day_cities', selected ? current.filter(x => x !== city) : [...current, city]);
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border ${
+                          selected ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        📍 {city}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
         
         <DialogFooter className="mt-6 pt-4 border-t">

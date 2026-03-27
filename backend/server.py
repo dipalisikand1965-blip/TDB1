@@ -11525,7 +11525,10 @@ async def update_admin_product(product_id: str, updates: dict):
         "bundle_type", "bundle_includes", "options", "available",
         "is_pan_india_shippable", "tags", "minPrice", "autoship_enabled",
         "collection_ids", "image", "status", "sizes", "flavors", "variants",
-        "mira_hint", "breed_metadata", "is_active", "image_url", "images", "thumbnail"
+        "mira_hint", "breed_metadata", "is_active", "image_url", "images", "thumbnail",
+        # Cake-specific fields
+        "shape", "available_flavours", "available_bases",
+        "allergens", "is_doggy_bakery", "same_day_cities",
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -12420,7 +12423,10 @@ async def full_product_update(
         "bundle_type", "bundle_includes", "options", "variants",
         "search_keywords", "seo_title", "seo_description",
         "cross_sell_products", "upsell_products", "frequently_bought_together",
-        "allergy_warnings", "suitable_for_breeds", "not_suitable_for"
+        "allergy_warnings", "suitable_for_breeds", "not_suitable_for",
+        # Cake-specific fields
+        "shape", "available_flavours", "available_bases",
+        "allergens", "is_doggy_bakery", "same_day_cities",
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
