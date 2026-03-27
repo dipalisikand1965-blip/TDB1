@@ -39,6 +39,10 @@ const CONCERN_TRIGGERS = {
   // SHOP pillar
   shop:        ['buy','order','purchase','product','shop','delivery','stock',
                  'available','price','cost','recommend'],
+  // SERVICES pillar
+  services:    ['book','appointment','booking','reservation','schedule',
+                 'concierge','arrange','service','groomer','trainer',
+                 'vet appointment','session','slot','availability','provider'],
 };
 
 const CONCERN_TO_PILLAR = {
@@ -53,19 +57,19 @@ const CONCERN_TO_PILLAR = {
   emergency:   'emergency',
   adopt:       'adopt',
   shop:        'shop',
+  services:    'services',
 };
 
 // Priority order — emergency always wins
 const PRIORITY_ORDER = [
   'emergency','grief','health','behaviour',
   'nutrition','celebration','travel','play',
-  'paperwork','adopt','shop'
+  'paperwork','adopt','shop','services',
 ];
 
 export function detectConcernType(message) {
   if (!message) return null;
   const msg = message.toLowerCase();
-  // Check in priority order so emergency always wins
   for (const type of PRIORITY_ORDER) {
     const keywords = CONCERN_TRIGGERS[type] || [];
     if (keywords.some(k => msg.includes(k))) return type;
@@ -78,7 +82,6 @@ export async function fireMiraTicket({ pet, pillar, userMessage, miraResponse, c
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const urgency = concernType === 'emergency' ? 'critical' : 'normal';
-    // Use the concern's canonical pillar, fall back to the active pillar context
     const resolvedPillar = CONCERN_TO_PILLAR[concernType] || pillar || 'care';
 
     await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
