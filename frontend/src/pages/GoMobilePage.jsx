@@ -4,7 +4,7 @@
  * Products tab: dimTab (Products/Personalised) + sub-category pills
  * Colour: Teal #1ABC9C
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -92,7 +92,6 @@ export default function GoMobilePage() {
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
   const [showGoPlan, setShowGoPlan] = useState(false);
-  const tabBarRef = useRef(null);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -101,7 +100,7 @@ export default function GoMobilePage() {
 
   useEffect(() => {
     if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:\`Bearer \${token}\` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
       .catch(() => {});
@@ -135,8 +134,8 @@ export default function GoMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.teal} />}
 
         {/* ── 1. Hero (matches Dine pattern exactly) ── */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:`radial-gradient(circle,rgba(26,188,156,0.2) 0%,transparent 70%)`, borderRadius:'50%', pointerEvents:'none' }} />
+        <div style={{ background:\`linear-gradient(160deg,\${G.dark} 0%,\${G.deep} 55%,\${G.mid} 100%)\`, padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:\`radial-gradient(circle,rgba(26,188,156,0.2) 0%,transparent 70%)\`, borderRadius:'50%', pointerEvents:'none' }} />
 
           {/* Row 1: Brand label + title + pet switcher */}
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
@@ -170,7 +169,7 @@ export default function GoMobilePage() {
             </div>
             <div onClick={() => { vibe('medium'); setShowGoPlan(true); }} style={{ cursor:'pointer' }}>
               <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Travel & Go</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName} · <span style={{ fontSize:13, color:`rgba(167,243,208,0.9)` }}>View Profile →</span></div>
+              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName} · <span style={{ fontSize:13, color:\`rgba(167,243,208,0.9)\` }}>View Profile →</span></div>
             </div>
           </div>
 
@@ -185,63 +184,19 @@ export default function GoMobilePage() {
           </div>
         </div>
 
-        {/* ── 1. Category Strip (right after hero — matches Dine) ── */}
+        {/* ══ 2. GoCategoryStrip ══ */}
         <GoCategoryStrip pet={currentPet} />
 
-        {/* ── 2. QUICK ACTION STRIP — centered ── */}
-        <div style={{ display:'flex', gap:8, padding:'12px 16px 20px', justifyContent:'center', position:'relative', zIndex:5, background:G.cream }}>
-          {[
-            { label:'✈ Go Essentials', tab:'go' },
-            { label:'🏡 Find a Stay',  tab:'stay' },
-            { label:'📋 Book a Service', tab:'services' },
-          ].map(btn => {
-            const isActive = activeTab === btn.tab;
-            return (
-              <button key={btn.tab}
-                onClick={() => { vibe(); setActiveTab(btn.tab); setTimeout(() => tabBarRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 50); }}
-                style={{ flex:1, padding:'10px 8px', borderRadius:12, border:`2px solid ${isActive ? G.teal : G.border}`, background: isActive ? G.teal : '#fff', fontSize:13, fontWeight:700, color: isActive ? '#fff' : '#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow: isActive ? `0 4px 12px rgba(26,188,156,0.3)` : '0 2px 8px rgba(0,0,0,0.06)', textAlign:'center', position:'relative', zIndex:5, transition:'all 0.15s' }}>
-                {btn.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* ── 3. TRIPS & ADVENTURES CARD (after selector) ── */}
-        <div onClick={() => { vibe('medium'); setShowGoPlan(true); }}
-          style={{ margin:'0 16px 20px', cursor:'pointer', background:'#fff', border:`1.5px solid ${G.border}`, borderRadius:20, padding:16, display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, boxShadow:'0 4px 20px rgba(6,78,59,0.08)' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12, flex:1, minWidth:0 }}>
-            <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:`linear-gradient(135deg,${G.dark},${G.teal})`, display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : <span style={{ fontSize:22 }}>✈️</span>}
-            </div>
-            <div style={{ minWidth:0 }}>
-              <div style={{ fontSize:17, fontWeight:700, color:'#1A0A2E', marginBottom:4 }}>{petName}'s Trips & Adventures</div>
-              <div style={{ display:'inline-flex', background:'rgba(20,184,166,0.1)', borderRadius:999, padding:'3px 10px', marginBottom:4 }}>
-                <span style={{ fontSize:13, color:G.teal, fontWeight:600 }}>{currentPet?.breed || 'Indie'} · Travel Profile</span>
-              </div>
-              <div style={{ fontSize:13, color:'#6B7280' }}>Flights, stays, boarding & activities</div>
-            </div>
-          </div>
-          <div style={{ textAlign:'right', flexShrink:0 }}>
-            <div style={{ fontSize:22, fontWeight:700, color:G.teal }}>100%</div>
-            <div style={{ fontSize:11, color:'#9CA3AF', letterSpacing:'0.08em' }}>SOUL</div>
-            <div style={{ fontSize:13, color:G.teal, marginTop:2 }}>Tap →</div>
-          </div>
-        </div>
-
-        {/* ══ 3. TRAVEL PROFILE ══ */}
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
-
-        {/* ══ 4. PAWRENT JOURNEY ══ */}
-        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" />}
-        <div ref={tabBarRef} className="ios-tab-bar" style={{ borderColor: G.border }}>
+        {/* ══ 3. Tab Bar ══ */}
+        <div className="ios-tab-bar" style={{ borderColor: G.border, zIndex: 10 }}>
           {[
             { id:'go',       label:'✈️ Go & Products' },
             { id:'services', label:'🛎️ Services' },
             { id:'stay',     label:'🏨 Stay' },
             { id:'nearme',   label:'📍 Find Near Me' },
           ].map(tab => (
-            <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
-              data-testid={`go-tab-${tab.id}`}
+            <button key={tab.id} className={\`ios-tab\${activeTab===tab.id?' active':''}\`}
+              data-testid={\`go-tab-\${tab.id}\`}
               onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
               {tab.label}
             </button>
@@ -251,13 +206,16 @@ export default function GoMobilePage() {
         {/* TAB 1: Go & Products */}
         {activeTab === 'go' && (
           <div>
+            {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
+            {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
+
             {/* ══ 5. GO FOR MOJO — Mira intelligence bar ══ */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:13, fontWeight:700, color:`rgba(167,243,208,0.9)`, letterSpacing:'0.1em', marginBottom:6 }}>✦ MIRA ON {petName.toUpperCase()}'S TRAVEL</div>
+              <div style={{ fontSize:13, fontWeight:700, color:\`rgba(167,243,208,0.9)\`, letterSpacing:'0.1em', marginBottom:6 }}>✦ MIRA ON {petName.toUpperCase()}'S TRAVEL</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, fontStyle:'italic' }}>
                 {allergies.length > 0
-                  ? `"I've already removed everything containing ${allergies.join(' and ')} from ${petName}'s travel picks."`
-                  : `"Every journey with ${petName} needs the right gear and the right plan. I'll handle both."`}
+                  ? \`"I've already removed everything containing \${allergies.join(' and ')} from \${petName}'s travel picks."\`
+                  : \`"Every journey with \${petName} needs the right gear and the right plan. I'll handle both."\`}
               </div>
             </div>
 
@@ -285,10 +243,10 @@ export default function GoMobilePage() {
                     {subCats.map(cat => (
                       <button key={cat} onClick={() => setSubCat(cat)}
                         style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid ${subCat===cat?G.teal:G.border}`,
+                          border:\`1.5px solid \${subCat===cat?G.teal:G.border}\`,
                           background:subCat===cat?G.teal:'#fff',
                           color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
-                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
+                        {cat.replace(/_/g,' ').replace(/\\b\\w/g,c=>c.toUpperCase())}
                       </button>
                     ))}
                   </div>
@@ -309,7 +267,7 @@ export default function GoMobilePage() {
                   <MiraEmptyRequest
                     pet={currentPet}
                     pillar="go"
-                    categoryName={`Go${subCat !== 'All' ? ` — ${subCat}` : ''} Products`}
+                    categoryName={\`Go\${subCat !== 'All' ? \` — \${subCat}\` : ''} Products\`}
                     accentColor={G.teal}
                     onRequest={async (msg) => {
                       await request(msg, { channel:'go_empty_products', metadata:{ subCat, petName } });
@@ -326,33 +284,33 @@ export default function GoMobilePage() {
                         </div>
                       ))}
                     </div>
-                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
+                    <div style={{ borderTop:\`1px solid \${G.border}\`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
+                      Filtered for {petName}{allergies.length > 0 ? \` · \${allergies.slice(0,2).join(' & ')}-free\` : ''}
                     </div>
-                <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
+                    <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
 
-                {/* Concierge Banner — Travel Concierge® (Phase 8 fix) */}
-                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
-                  <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(20,184,166,0.18)', border:'1px solid rgba(20,184,166,0.4)', borderRadius:999, padding:'5px 14px', fontSize:12, fontWeight:700, color:'#5EEAD4', letterSpacing:'0.08em', marginBottom:12 }}>
-                    ✈ TRAVEL CONCIERGE®
-                  </div>
-                  <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:8, fontFamily:"Georgia,'Times New Roman',serif" }}>
-                    Want us to plan {petName}'s whole trip?
-                  </div>
-                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>
-                    We check routes, book stays, arrange transport, and confirm everything is pet-safe before you leave.
-                  </div>
-                  <button onClick={() => { vibe('medium'); setShowGoPlan(true); }}
-                    style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#0F766E,#14B8A6)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
-                    ✈ Talk to your Concierge®
-                  </button>
-                </div>
+                    {/* Concierge Banner — Travel Concierge® (Phase 8 fix) */}
+                    <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
+                      <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(20,184,166,0.18)', border:'1px solid rgba(20,184,166,0.4)', borderRadius:999, padding:'5px 14px', fontSize:12, fontWeight:700, color:'#5EEAD4', letterSpacing:'0.08em', marginBottom:12 }}>
+                        ✈ TRAVEL CONCIERGE®
+                      </div>
+                      <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:8, fontFamily:"Georgia,'Times New Roman',serif" }}>
+                        Want us to plan {petName}'s whole trip?
+                      </div>
+                      <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>
+                        We check routes, book stays, arrange transport, and confirm everything is pet-safe before you leave.
+                      </div>
+                      <button onClick={() => { vibe('medium'); setShowGoPlan(true); }}
+                        style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#0F766E,#14B8A6)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                        ✈ Talk to your Concierge®
+                      </button>
+                    </div>
 
-                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-                  <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · TRAVEL GEAR FOR {petName.toUpperCase()}</div>
-                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom travel tags, bags and accessories.</div>
-                  <button className="go-cta">Explore Soul Made →</button>
-                </div>
+                    <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
+                      <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · TRAVEL GEAR FOR {petName.toUpperCase()}</div>
+                      <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom travel tags, bags and accessories.</div>
+                      <button className="go-cta">Explore Soul Made →</button>
+                    </div>
                   </>
                 )}
               </div>
@@ -375,7 +333,7 @@ export default function GoMobilePage() {
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Pet-Friendly Stays</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Hotels, resorts, and homestays that welcome {petName}.</div>
             <PetFriendlyStays pet={currentPet} token={token} onBook={stay => {
-              tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
+              tdc.book({ service:\`Stay: \${stay}\`, pillar:'go', pet:currentPet, channel:'go_stays' });
               setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
           </div>
