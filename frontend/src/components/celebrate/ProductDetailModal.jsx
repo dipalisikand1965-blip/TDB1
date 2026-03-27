@@ -374,7 +374,7 @@ const ProductDetailModal = ({
       {/* Universal Concierge® Modal for Custom Orders */}
       {showConciergeModal && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.50)",
-                      zIndex:1100, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
+                      zIndex:9500, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
              onClick={e => e.target===e.currentTarget && !conciergeSent && setShowConciergeModal(false)}
              data-testid="custom-concierge-modal-overlay">
           <div style={{ background:"#fff", borderRadius:20, padding:32,
