@@ -21,18 +21,32 @@ export const ALL_PILLARS = [
 
 // PILLAR → SUB-CATEGORIES (used in all edit modals)
 export const PILLAR_SUBCATEGORIES = {
-  celebrate: ['Cakes', 'Toys & Joy', 'Style', 'Memory', 'Wellness', 'Party Decor', 'Birthday Bundles'],
-  dine:      ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes', 'Feeding Accessories', 'Meal Toppers'],
-  go:        ['Carriers', 'Travel Gear', 'Boarding', 'Safety', 'Feeding & Hydration', 'Car Accessories', 'Navigation'],
-  care:      ['Grooming', 'Vet & Health', 'Dental', 'Spa', 'Senior Care', 'Skin & Coat', 'Eye & Ear'],
-  play:      ['Training', 'Enrichment', 'Outdoor', 'Interactive', 'Fetch & Tug', 'Puzzle Toys', 'Socialising'],
-  learn:     ['Training Books', 'Online Courses', 'Workshops', 'Behaviour', 'Puppy School', 'Tricks & Skills'],
-  paperwork: ['Documents', 'Insurance', 'Microchip', 'Health Certificates', 'Vaccination Records', 'ID & Tags'],
-  emergency: ['First Aid', 'Emergency Kits', 'Poison Response', 'Crisis Care', 'Critical Meds', 'Rescue Gear'],
-  farewell:  ['Memorial', 'Cremation', 'Keepsakes', 'Rainbow Bridge', 'End-of-Life Care', 'Tribute Items'],
-  adopt:     ['Rescue Kits', 'New Pet Starter', 'Foster Care', 'Microchip & Docs', 'Socialisation', 'Rehoming'],
-  shop:      ['Accessories', 'Apparel', 'Home & Decor', 'Seasonal', 'Gifting', 'Eco & Organic', 'Luxury'],
-  services:  ['Grooming Services', 'Vet Services', 'Training Services', 'Boarding Services', 'Walking', 'Sitting & Daycare'],
+  celebrate: ['cakes','breed-cakes','pupcakes','bandana','mug','keychain','frame','tote_bag','party_hat','cake_topper','pupcake_set','birthday_card','party_banner','return_gift_pack','hampers','celebration_addons','accessories'],
+  dine:      ['Daily Meals','Treats & Rewards','Supplements','Frozen & Fresh','Homemade & Recipes','bowl','treat_jar','feeding_mat','food_container','placemat','lick_mat','Feeding Accessories'],
+  go:        ['safety','calming','carriers','feeding','health','stay','welcome_mat','blanket','passport_holder','carrier_tag','travel_bowl','luggage_tag','travel-gear','car-accessories','accessories','adventure-gear'],
+  care:      ['grooming','healthcare','dental','senior-care','skin-coat','collar_tag','pet_towel','pet_robe','grooming_apron','cushion_cover','crate_mat','room_sign','eye-ear'],
+  play:      ['training','enrichment','outdoor','interactive','fetch-tug','play_bandana','playdate_card','id_tag','puzzle-toys','socialising'],
+  learn:     ['training-books','online-courses','workshops','behaviour','treat_pouch','training_log','training_kit','puppy-school'],
+  paperwork: ['documents','insurance','microchip','health-certificates','vaccination-records','id-tags','legal','identification'],
+  emergency: ['first-aid','emergency-kits','poison-response','critical-meds','emergency_card','medical_alert_tag','rescue-gear'],
+  farewell:  ['memorial','cremation','keepsakes','rainbow-bridge','memorial_ornament','paw_print_frame','Memory Box','memorial_candle','end-of-life-care'],
+  adopt:     ['rescue-kits','new-pet-starter','foster-care','microchip-docs','socialisation','rehoming'],
+  shop:      ['accessories','apparel','home-decor','seasonal','gifting','Phone Case','Framed Wall Art','Breed Keychain','pet_journal','cushion_cover','memorial_candle','luxury'],
+  services:  ['grooming-services','vet-services','training-services','boarding-services','walking','sitting-daycare','photography'],
+};
+
+export const SOUL_MADE_TYPES = {
+  care:      ['collar_tag','pet_towel','pet_robe','grooming_apron','cushion_cover','crate_mat','room_sign'],
+  dine:      ['bowl','treat_jar','feeding_mat','food_container','placemat','lick_mat'],
+  celebrate: ['bandana','mug','keychain','frame','tote_bag','party_hat','cake_topper','pupcake_set','birthday_card','party_banner','return_gift_pack'],
+  go:        ['welcome_mat','blanket','passport_holder','carrier_tag','travel_bowl','luggage_tag'],
+  play:      ['play_bandana','playdate_card','id_tag'],
+  learn:     ['treat_pouch','training_log','training_kit'],
+  emergency: ['emergency_card','medical_alert_tag'],
+  farewell:  ['memorial_ornament','paw_print_frame','Memory Box'],
+  shop:      ['Phone Case','Framed Wall Art','Breed Keychain'],
+  paperwork: [],
+  adopt:     [],
 };
 
 // ALL 35 BREEDS
