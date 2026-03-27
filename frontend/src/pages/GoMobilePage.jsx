@@ -188,14 +188,14 @@ export default function GoMobilePage() {
         <GoCategoryStrip pet={currentPet} />
 
         {/* ── 2. QUICK ACTION STRIP — centered ── */}
-        <div style={{ display:'flex', gap:8, padding:'0 16px 20px', justifyContent:'center' }}>
+        <div style={{ display:'flex', gap:8, padding:'12px 16px 20px', justifyContent:'center', position:'relative', zIndex:5, background:G.cream }}>
           {[
             { label:'✈ Go Essentials', tab:'go' },
             { label:'🏡 Find a Stay',  tab:'stay' },
             { label:'📋 Book a Service', tab:'services' },
           ].map(btn => (
             <button key={btn.tab} onClick={() => { vibe(); setActiveTab(btn.tab); }}
-              style={{ flex:1, padding:'10px 8px', borderRadius:12, border:`1.5px solid ${G.border}`, background:'#fff', fontSize:13, fontWeight:700, color:'#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', textAlign:'center' }}>
+              style={{ flex:1, padding:'10px 8px', borderRadius:12, border:`1.5px solid ${G.border}`, background:'#fff', fontSize:13, fontWeight:700, color:'#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', textAlign:'center', position:'relative', zIndex:5 }}>
               {btn.label}
             </button>
           ))}
