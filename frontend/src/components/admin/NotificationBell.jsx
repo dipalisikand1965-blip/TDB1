@@ -108,12 +108,11 @@ const NotificationBell = ({ credentials, onNavigate }) => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all');
 
-  const authHeaders = {
-    'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
-  };
-
   const fetchNotifications = useCallback(async () => {
     if (!credentials?.username || !credentials?.password) return;
+    const authHeaders = {
+      'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
+    };
     try {
       const res = await fetch(
         `${API_URL}/api/admin/notifications?limit=50&unread_only=${filter === 'unread'}`,

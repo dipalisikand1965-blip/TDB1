@@ -58,6 +58,7 @@ const CONCERN_TO_PILLAR = {
   adopt:       'adopt',
   shop:        'shop',
   services:    'services',
+  general:     null,   // resolved to active pillar context at call site
 };
 
 // Priority order — emergency always wins

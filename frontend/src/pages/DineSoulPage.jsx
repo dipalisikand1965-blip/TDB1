@@ -86,7 +86,7 @@ const CSS = `
   .dp-cta:active { transform:scale(0.97); }
   .dp-chip { display:inline-flex; align-items:center; padding:7px 16px; border-radius:999px;
               background:${C.chipBg}; color:${C.chipTxt}; font-size:14px; font-weight:500;
-              white-space:nowrap; flex-shrink:0; border:none; cursor:pointer; min-height:36px; }
+              white-space:nowrap; flex-shrink:0; border:none; cursor:pointer; min-height:44px; }
   .dp-chip.on { background:${C.amber}; color:#fff; }
   .dp-seg { flex:1; padding:12px; text-align:center; font-size:15px; font-weight:600;
              cursor:pointer; border-radius:11px; transition:all 0.2s;
@@ -462,7 +462,7 @@ function DineProductCard({ product, onAdd, onTap }) {
           <div style={{ fontSize:15, fontWeight:700, color:C.amber }}>{product.price}</div>
           <button
             onClick={e => { e.stopPropagation(); vibe('success'); setAdded(true); onAdd?.(product); }}
-            style={{ padding:'7px 14px', borderRadius:999, border:'none', background:added ? '#E8F5E9' : CTAGrad, color:added ? '#27AE60' : '#fff', fontSize:14, fontWeight:700, cursor:'pointer', minHeight:36 }}
+            style={{ padding:'7px 14px', borderRadius:999, border:'none', background:added ? '#E8F5E9' : CTAGrad, color:added ? '#27AE60' : '#fff', fontSize:14, fontWeight:700, cursor:'pointer', minHeight:44 }}
           >
             {added ? '✓ Added' : 'Add'}
           </button>
@@ -996,7 +996,7 @@ function DineMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🍽️ Dine</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', scrollbarWidth:'none' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe('light'); setCurrentPet(p); }}
                     style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
