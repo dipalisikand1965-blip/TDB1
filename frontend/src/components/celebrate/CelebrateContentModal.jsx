@@ -1491,12 +1491,21 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
         padding-bottom: 8px;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        align-items: stretch;
       }
       .ccm-swipe-row::-webkit-scrollbar { display: none; }
       .ccm-swipe-card {
         flex: 0 0 155px;
         scroll-snap-align: start;
         min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .ccm-swipe-card > * {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
       }
       @media (min-width: 768px) {
         .ccm-swipe-row {
@@ -1505,9 +1514,16 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
           scroll-snap-type: none;
           grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
           gap: 12px;
+          align-items: unset;
         }
         .ccm-swipe-card {
           flex: unset;
+          display: block;
+        }
+        .ccm-swipe-card > * {
+          flex: unset;
+          display: block;
+          height: auto;
         }
       }
     `}</style>
