@@ -169,7 +169,7 @@ export default function GoMobilePage() {
         <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'16px 16px 0', display:'flex', justifyContent:'center', gap:10, flexWrap:'wrap' }}>
           {[
             { id:'go',       label:'✈️ Go Essentials' },
-            { id:'stay',     label:'🏡 Find a Stay' },
+            { id:'nearme',   label:'📍 Near Me' },
             { id:'services', label:'🗺️ Book a Service' },
           ].map(tab => {
             const sel = activeTab === tab.id;
@@ -305,32 +305,44 @@ export default function GoMobilePage() {
           </div>
         )}
 
-        {/* TAB 2: Find a Stay */}
-        {activeTab === 'stay' && (
+        {/* TAB 2: Near Me — unified Stay + GoNearMe */}
+        {activeTab === 'nearme' && (
           <div style={{ padding:'16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Pet-Friendly Stays</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Hotels, resorts, and homestays that welcome {petName}.</div>
+            <div style={{ fontSize:20, fontWeight:700, color:G.darkText, marginBottom:4 }}>
+              Find &amp; Stay with {petName}
+            </div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>
+              Pet-friendly stays, boarding, daycare and more — all bookable via Concierge®
+            </div>
+
+            {/* Pet-Friendly Stays — Goa, Coorg, Manali etc */}
             <PetFriendlyStays pet={currentPet} token={token} onBook={(stay, query) => {
               if (!stay) {
-                // "Ask our Concierge®" CTA — open NearMeConciergeModal with synthetic venue
                 setNearMeConc({ open: true, venue: { name: `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' } });
                 return;
               }
               tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
               setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
+
+            {/* Divider */}
+            <div style={{ margin:'24px 0 16px', display:'flex', alignItems:'center', gap:12 }}>
+              <div style={{ flex:1, height:1, background:G.border }} />
+              <div style={{ fontSize:12, fontWeight:700, color:G.mutedText, letterSpacing:'0.08em' }}>FIND NEAR YOU</div>
+              <div style={{ flex:1, height:1, background:G.border }} />
+            </div>
+
+            {/* GoNearMe — Pet Hotels, Boarding, Taxi, Travel Vet, Day Care, Dog Parks */}
+            <GoNearMe currentPet={currentPet} />
           </div>
         )}
 
-        {/* TAB 3: Book a Service — Services + Near Me */}
+        {/* TAB 3: Book a Service */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Go Services for {petName}</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Flights, road trips, boarding, vet certificates — all arranged.</div>
             <GoConciergeSection pet={currentPet} />
-            <div style={{ marginTop:24 }}>
-              <GoNearMe currentPet={currentPet} />
-            </div>
           </div>
         )}
       </div>
