@@ -22147,6 +22147,7 @@ async def generate_bundle_image_sync(
 @api_router.post("/admin/bundles/{bundle_id}/generate-image")
 async def generate_generic_bundle_image(
     bundle_id: str,
+    request: Request,
     username: str = Depends(verify_admin_auth),
 ):
     """Generate AI watercolor image for any bundle in the bundles collection."""
@@ -22181,7 +22182,12 @@ async def generate_generic_bundle_image(
     bundle_name = bundle.get("name", "Play Bundle")
     pillar = bundle.get("pillar", "play")
     items = bundle.get("items", "")
-    prompt = (
+    try:
+        req_body = await request.json()
+        custom_prompt = req_body.get("prompt", "")
+    except Exception:
+        custom_prompt = ""
+    prompt = custom_prompt if custom_prompt else (
         f"Soulful watercolor illustration of a dog {pillar} bundle called '{bundle_name}', "
         f"containing {items[:80] if items else 'toys, accessories, and treats'}, "
         "beautifully arranged, warm painterly brushstrokes, soft layered watercolor pigments, "
