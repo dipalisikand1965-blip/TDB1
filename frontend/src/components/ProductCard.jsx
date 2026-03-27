@@ -530,7 +530,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
           )}
         </div>
 
-        <div className="p-2 sm:p-4 flex flex-col gap-1 sm:gap-2 flex-1">
+        <div className="p-2 sm:p-4 space-y-1 sm:space-y-2">
           {/* PawMeter Score Display - shown on all screens */}
           {(product.paw_score || product.rating) ? (
             <div className="flex items-center gap-1 flex-wrap">
@@ -615,7 +615,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
           {/* CTA — opens modal; modal handles Concierge® for services */}
           <button
             onClick={(e) => { e.stopPropagation(); openDetails(); }}
-            className={`w-full mt-auto py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct || isConciergeOnly ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
+            className={`w-full mt-2 py-2 text-xs font-semibold rounded-lg transition-colors ${isServiceProduct || isConciergeOnly ? 'bg-orange-100 hover:bg-orange-200 text-orange-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
             data-testid={`view-product-${product.id}`}
           >
             {isServiceProduct || isConciergeOnly ? 'Talk to Concierge® →' : 'View Details'}
