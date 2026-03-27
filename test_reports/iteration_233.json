@@ -1,0 +1,73 @@
+{
+  "summary": "Targeted retest of 3 previously broken CTAs on Celebrate pillar (iteration 232 bugs). All 3 CTAs now pass. Dead code removal confirmed. BirthdayCountdown timing issue discovered and documented.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "BirthdayCountdown.jsx",
+        "issue": "Timing bug: component returns null on actual birthday day after midnight (UTC). Logic: new Date(year, month, day) creates local midnight; if new Date() > that (already past midnight), it jumps to next year's birthday (365 days → >30 → return null). Today March 27, 2026 (7:09 AM UTC) = Mojo's birthday but BirthdayCountdown returned null without clock mocking. Tested with Playwright page.clock.set_fixed_time('2026-03-27T00:00:00.000Z') to simulate midnight. Fix: check isBirthdayToday using calendar date comparison, not just timestamp < comparison.",
+        "selector": "BirthdayCountdown.jsx lines 23-37 (calculateDaysUntil logic)",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "cta_retest_results": {
+    "CTA_A_mobile_birthday_countdown_view_cakes": {
+      "status": "PASS",
+      "detail": "BirthdayCountdown 'Order Birthday Cake' button opens DoggyBakeryCakeModal (BreedCakeOrderModal) with: 'A cake that looks like Mojo.', BREED section (Mojo Indie, Labrador, Golden retriever...), coat variant picker (Ginger, Black, Fawn, Brindle, Patchy), CAKE BASE (Oats/Ragi), CAKE FLAVOUR (Peanut Butter Mojo's fave, Banana, Fish Salmon, Carrot, Apple & Cinnamon, Cheese, Lamb — chicken excluded for Mojo's allergy).",
+      "method": "Playwright clock mocked to 2026-03-27T00:00:00.000Z (midnight) to trigger daysUntil=0 card, then clicked 'Order Birthday Cake'"
+    },
+    "CTA_B_desktop_breed_cake_banner": {
+      "status": "PASS",
+      "detail": "Desktop standalone breed-cake-banner (data-testid='breed-cake-banner') onClick={setBreedCakeOpen(true)} opens DoggyBakeryCakeModal correctly. Banner shows 'DOGGY BAKERY™ · EXCLUSIVE' and 'A cake that looks like Mojo 🎂'. Modal shows full breed/coat/base/flavour pickers. Fix confirmed working.",
+      "method": "Desktop viewport 1440x900, scrolled to banner, clicked, modal opened"
+    },
+    "CTA_C_mobile_birthday_countdown_plan_party": {
+      "status": "PASS",
+      "ticket_created": "TDB-2026-1186",
+      "ticket_details": "2026-03-27T07:17 | celebrate | booking_intent | celebrate_concierge_intake_modal",
+      "detail": "BirthdayCountdown 'Celebrate Now!' button (maps to onPlanParty → setIntakeOpen(true)) opens ConciergeIntakeModal. Selected Birthday occasion, Not sure yet for date, submitted. Success screen: 'Mojo's celebration is in good hands. Your Concierge® has everything they need. Expect a message within 48 hours.'",
+      "method": "Playwright clock mocked to midnight, clicked 'Celebrate Now!', filled form, submitted"
+    }
+  },
+  "dead_code_verification": {
+    "cakeModalOpen_removed": "CONFIRMED — grep for 'cakeModalOpen' in CelebratePageNew.jsx and CelebrateMobilePage.jsx returns no matches",
+    "SoulMadeModal_import_removed": "CONFIRMED — No 'SoulMadeModal' in CelebrateMobilePage.jsx imports (lines 1-39 verified)"
+  },
+  "code_fix_verification": {
+    "CelebratePageNew_line_516": "CONFIRMED — onClick={() => setBreedCakeOpen(true)} on breed-cake-banner",
+    "CelebrateMobilePage_line_452": "CONFIRMED — onViewCakes={() => setBreedCakeOpen(true)} on BirthdayCountdown",
+    "breedCakeOpen_renders_modal_mobile": "CONFIRMED — {breedCakeOpen && <DoggyBakeryCakeModal pet={currentPet} onClose={() => setBreedCakeOpen(false)} />} at line 562-564",
+    "breedCakeOpen_renders_modal_desktop": "CONFIRMED — {breedCakeOpen && <DoggyBakeryCakeModal pet={selectedPet} onClose={() => setBreedCakeOpen(false)} />} at line 598-600"
+  },
+  "test_report_links": [],
+  "action_items": [
+    "MEDIUM: Fix BirthdayCountdown.jsx timing bug — component returns null on birthday day after midnight because it compares timestamps instead of calendar dates. Fix: add isBirthdayToday check using getDate()/getMonth() comparison before jumping to next year. Without this fix, BirthdayCountdown will never render the 'Birthday Today' card in production (all users will always be past midnight when they open the app on their pet's birthday)"
+  ],
+  "critical_code_review_comments": [
+    "BUG MEDIUM: BirthdayCountdown.jsx lines 31-33 — `if (nextBirthday < today)` compares midnight timestamp with current time. Since nextBirthday is always midnight, any time after midnight on birthday day triggers jump to next year (365 days → >30 → return null). Real-world impact: BirthdayCountdown will NEVER show 'Birthday Today' card in production. Fix: add `const isBirthdayToday = today.getDate() === birthDate.getDate() && today.getMonth() === birthDate.getMonth(); if (!isBirthdayToday && nextBirthdayDate < today) {`"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A",
+    "frontend": "100% (3/3 CTAs pass, 2 dead code checks pass)"
+  },
+  "test_credentials": "dipali@clubconcierge.in / test123",
+  "seed_data_creation": "No new seed data. Ticket TDB-2026-1186 created during CTA-C test (celebrate | booking_intent | celebrate_concierge_intake_modal).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 3 iteration 232 bugs fixed and retested. CTA-A (mobile BirthdayCountdown View Cakes → BreedCakeOrderModal): PASS. CTA-B (desktop breed-cake-banner → BreedCakeOrderModal): PASS. CTA-C (mobile BirthdayCountdown Plan Party → ConciergeIntakeModal → ticket TDB-2026-1186): PASS. Dead code: cakeModalOpen and SoulMadeModal both confirmed removed. New finding: BirthdayCountdown.jsx has timing bug where it returns null on birthday day itself (after midnight) — requires clock mocking in tests or calendar-date comparison fix in code. Testing used Playwright page.clock.set_fixed_time('2026-03-27T00:00:00.000Z') to trigger daysUntil=0.",
+  "rca_of_issues": {
+    "BirthdayCountdown_timing_bug": {
+      "root_cause": "BirthdayCountdown.jsx calculateDaysUntil: `let nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate())` creates local midnight. Then `if (nextBirthday < today)` — since nextBirthday is midnight and today is any time after midnight, condition is always true on birthday day → jumps to next year → daysUntil=365 → >30 → return null.",
+      "reproduction": "Set pet birth_date to today's date (March 27). Load /celebrate page after midnight UTC. BirthdayCountdown renders nothing.",
+      "fix": "Change line 31 condition to: const isBirthdayToday = (today.getDate() === birthDate.getDate() && today.getMonth() === birthDate.getMonth()); if (!isBirthdayToday && nextBirthdayDate < today) { nextBirthday = new Date(today.getFullYear() + 1, ...); }",
+      "workaround_used_in_test": "Playwright page.clock.set_fixed_time('2026-03-27T00:00:00.000Z') to simulate exactly midnight when daysUntil=0 and birthday today card renders"
+    }
+  }
+}

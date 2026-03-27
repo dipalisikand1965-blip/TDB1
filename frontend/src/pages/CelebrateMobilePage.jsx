@@ -17,7 +17,6 @@ import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
-import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
@@ -263,7 +262,6 @@ export default function CelebrateMobilePage() {
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
   const [breedCakeOpen, setBreedCakeOpen] = useState(false);
-  const [cakeModalOpen, setCakeModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('celebrate');
 
   // Handle build box from Mira's curated box — open BirthdayBoxBuilder modal
@@ -451,7 +449,7 @@ export default function CelebrateMobilePage() {
             <BirthdayCountdown
               pet={currentPet}
               onPlanParty={() => setIntakeOpen(true)}
-              onViewCakes={() => setCakeModalOpen(true)}
+              onViewCakes={() => setBreedCakeOpen(true)}
             />
           </div>
         )}
