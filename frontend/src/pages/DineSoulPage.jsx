@@ -785,7 +785,7 @@ function DineMobilePage() {
   const [prefillVenue, setPrefillVenue] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showDinePlan, setShowDinePlan] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
 
   // Product state
   const [apiProducts, setApiProducts] = useState({});
@@ -837,6 +837,7 @@ function DineMobilePage() {
       const breedFiltered = filterBreedProducts(rawFlat, pet.breed);
       const miraRanked = applyMiraFilter(breedFiltered, pet).map(p => normCard(p, pet.name));
       setFlatProducts(miraRanked);
+      setVisibleCount(4);
     } catch {
       setApiProducts({});
       setFlatProducts([]);
@@ -1096,7 +1097,7 @@ function DineMobilePage() {
               <MealBoxCard />
             </div>
 
-            {/* ── All products (intelligence sorted) ── */}
+            {/* ── All products (intelligence sorted, 4 at a time) ── */}
             {flatProducts.length > 0 ? (
               <div style={{ padding:'0 16px 24px' }}>
                 <div style={{ fontSize:18, fontWeight:700, marginBottom:14 }}>
@@ -1112,11 +1113,29 @@ function DineMobilePage() {
                     getHealthCondition(currentPet),
                     getNutritionGoal(currentPet),
                     currentPet
-                  ).slice(0, 8).map(p => {
+                  ).slice(0, visibleCount).map(p => {
                     const card = normCard(p, petName);
                     return <DineProductCard key={card.id} product={card} onAdd={handleAddToCart} onTap={() => setSelectedProduct(p)} />;
                   })}
                 </div>
+
+                {/* Quiet load more — no numbers */}
+                {visibleCount < flatProducts.length && (
+                  <div style={{ textAlign:'center', marginTop:18 }}>
+                    <button
+                      onClick={() => setVisibleCount(c => c + 4)}
+                      data-testid="dine-load-more"
+                      style={{
+                        background:'none', border:'1.5px solid #D9770640',
+                        borderRadius:999, padding:'8px 28px',
+                        fontSize:13, fontWeight:600, color:'#D97706',
+                        cursor:'pointer', letterSpacing:'0.03em',
+                      }}
+                    >
+                      see more
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div style={{ padding:'0 16px 24px' }}>
