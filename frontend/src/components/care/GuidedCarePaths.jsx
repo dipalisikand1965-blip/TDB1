@@ -487,16 +487,16 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 // PATH FLOW MODAL
 // ─────────────────────────────────────────────────────────────
 export function PathFlowModal({ path, pet, onClose }) {
-  // Guard: if path is undefined (allPaths.find returned nothing), close immediately
-  // Without this, the modal crashes mid-render, activePath stays truthy, backdrop persists
-  useEffect(() => { if (!path) onClose(); }, [path, onClose]);
-  if (!path) return null;
-
+  // All hooks must be called unconditionally before any early return
   const { fire } = useConcierge({ pet, pillar: 'care' });
   const [currentStep,    setCurrentStep]    = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [selections,     setSelections]     = useState({ step1:[], step2:null, step3:[], step4:null });
   const [submitted,      setSubmitted]      = useState(false);
+
+  // Guard: if path is undefined (allPaths.find returned nothing), close immediately
+  useEffect(() => { if (!path) onClose(); }, [path, onClose]);
+  if (!path) return null;
 
   const totalSteps = 4;
 
