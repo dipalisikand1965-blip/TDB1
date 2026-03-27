@@ -382,7 +382,7 @@ export default function CelebrateMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎉 Celebrate</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', paddingBottom:2 }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
                     style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
