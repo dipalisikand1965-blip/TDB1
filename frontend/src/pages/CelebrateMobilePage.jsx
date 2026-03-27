@@ -258,7 +258,6 @@ export default function CelebrateMobilePage() {
   const [loading, setLoading] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
   const [intakeOpen, setIntakeOpen] = useState(false);
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
@@ -369,7 +368,6 @@ export default function CelebrateMobilePage() {
             data-testid="celebrate-concierge-modal"
           />
         )}
-        {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="celebrate" pillarColor="#9B59B6" pillarLabel="Celebrate" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={C.purpleL} />}
 
         {toastMsg && (
@@ -540,9 +538,6 @@ export default function CelebrateMobilePage() {
           <div style={{ fontSize:14, color:C.taupe, marginBottom:16 }}>Real services, arranged by Concierge®</div>
           <CelebrateServiceGrid pet={currentPet} />
         </div>
-
-        {/* Soul Made */}
-        <CelebrateSoulMadeCard pet={currentPet} onOpen={() => setSoulMadeOpen(true)} />
 
         {/* Concierge® CTA */}
         <CelebrateConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
