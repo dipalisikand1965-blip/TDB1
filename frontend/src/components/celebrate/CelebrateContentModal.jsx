@@ -1473,15 +1473,44 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
     : filteredProducts;
   const hasMoreCakes = category === 'birthday-cakes' && pagedProducts.length < filteredProducts.length;
 
-  // ── Swipeable row styles (mobile = horizontal scroll, desktop = grid) ───
-  const swipeRowStyle = isDesktop
-    ? { display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }
-    : { display: 'flex', gap: 10, overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', paddingBottom: 6, scrollbarWidth: 'none', msOverflowStyle: 'none' };
-  const swipeCardStyle = isDesktop ? {} : { flex: '0 0 152px', scrollSnapAlign: 'start', minWidth: 0 };
+  // ── Swipeable row styles (CSS class-based, media query controlled) ───
+  const swipeRowStyle = {};   // handled by CSS class below
+  const swipeCardStyle = {}; // handled by CSS class below
 
   if (!isOpen) return null;
 
   const ModalContent = (
+    <>
+    <style>{`
+      .ccm-swipe-row {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .ccm-swipe-row::-webkit-scrollbar { display: none; }
+      .ccm-swipe-card {
+        flex: 0 0 155px;
+        scroll-snap-align: start;
+        min-width: 0;
+      }
+      @media (min-width: 768px) {
+        .ccm-swipe-row {
+          display: grid;
+          overflow-x: visible;
+          scroll-snap-type: none;
+          grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+          gap: 12px;
+        }
+        .ccm-swipe-card {
+          flex: unset;
+        }
+      }
+    `}</style>
     <motion.div
       initial={{ opacity: 0, y: isDesktop ? 0 : 60, scale: isDesktop ? 0.97 : 1 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1564,9 +1593,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                       ✦ Complete Celebration Packages
                     </p>
                   </div>
-                  <div style={swipeRowStyle}>
+                  <div className="ccm-swipe-row">
                     {bundles.map((bundle, idx) => (
-                      <div key={bundle.id || idx} style={swipeCardStyle}>
+                      <div key={bundle.id || idx} className="ccm-swipe-card">
                         <BundleCard bundle={bundle} pet={pet} />
                       </div>
                     ))}
@@ -1597,9 +1626,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                         Made for {petName}
                       </span>
                     </div>
-                    <div style={swipeRowStyle}>
+                    <div className="ccm-swipe-row">
                       {breedProducts.map((p, idx) => (
-                        <div key={p.id || idx} style={swipeCardStyle}>
+                        <div key={p.id || idx} className="ccm-swipe-card">
                           <SoulPickCard product={p} pet={pet} />
                         </div>
                       ))}
@@ -1682,9 +1711,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
 
                 {breedProducts.length > 0 ? (
                   artStyle === 'flat_art' ? (
-                  <div style={swipeRowStyle}>
+                  <div className="ccm-swipe-row">
                       {breedProducts.map((p, idx) => (
-                        <div key={p.id || p.name || idx} style={swipeCardStyle}>
+                        <div key={p.id || p.name || idx} className="ccm-swipe-card">
                           <FlatArtPickerCard product={p} illustrations={yappyIllustrations} pet={pet} pillar="celebrate" />
                         </div>
                       ))}
@@ -1701,9 +1730,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                         Made for {petName}
                       </span>
                     </div>
-                    <div style={swipeRowStyle}>
+                    <div className="ccm-swipe-row">
                       {breedProducts.map((p, idx) => (
-                        <div key={p.id || idx} style={swipeCardStyle}>
+                        <div key={p.id || idx} className="ccm-swipe-card">
                           <SoulPickCard product={p} pet={pet} />
                         </div>
                       ))}
@@ -1778,9 +1807,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                     <p className="text-xs mb-3" style={{ color: '#888' }}>
                       Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
                     </p>
-                    <div style={swipeRowStyle}>
+                    <div className="ccm-swipe-row">
                       {miraImagines.map((flavor, idx) => (
-                        <div key={idx} style={swipeCardStyle}>
+                        <div key={idx} className="ccm-swipe-card">
                           <MiraImaginesCard flavor={flavor} pet={pet} />
                         </div>
                       ))}
@@ -1809,9 +1838,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                       style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
                       🌟 Mira's picks — cakes {petName} would love
                     </p>
-                    <div style={swipeRowStyle}>
+                    <div className="ccm-swipe-row">
                       {products.map((p, idx) => (
-                        <div key={p.id || idx} style={swipeCardStyle}>
+                        <div key={p.id || idx} className="ccm-swipe-card">
                           <ProductCard product={p} pillar="celebrate" selectedPet={pet} size="small" />
                         </div>
                       ))}
@@ -1875,9 +1904,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                             Mira's picks
                           </span>
                         </div>
-                        <div style={swipeRowStyle}>
+                        <div className="ccm-swipe-row">
                           {myBreedItems.map((product, idx) => (
-                            <div key={product.id || idx} style={swipeCardStyle}>
+                            <div key={product.id || idx} className="ccm-swipe-card">
                               <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
                             </div>
                           ))}
@@ -1890,9 +1919,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                             style={{ color: '#888', letterSpacing: '0.06em' }}>
                             All {config.label}
                           </p>
-                          <div style={swipeRowStyle}>
+                          <div className="ccm-swipe-row">
                             {otherItems.map((product, idx) => (
-                              <div key={product.id || idx} style={swipeCardStyle}>
+                              <div key={product.id || idx} className="ccm-swipe-card">
                                 <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
                               </div>
                             ))}
@@ -1919,9 +1948,9 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                     )}
 
                     {filteredProducts.length > 0 ? (
-                      <div style={swipeRowStyle}>
+                      <div className="ccm-swipe-row">
                         {filteredProducts.map((product, idx) => (
-                          <div key={product.id || idx} style={swipeCardStyle}>
+                          <div key={product.id || idx} className="ccm-swipe-card">
                             <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
                           </div>
                         ))}
@@ -2085,6 +2114,7 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
         )}
       </div>
     </motion.div>
+    </>
   );
 
   return ReactDOM.createPortal(
