@@ -280,7 +280,7 @@ export default function MyRequestsPage() {
 
         {/* Reply input — fixed at bottom */}
         {activeTicket.status !== 'resolved' && activeTicket.status !== 'closed' && (
-          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '12px 16px', background: 'rgba(13,10,26,0.97)', borderTop: '1px solid rgba(244,239,230,0.08)', backdropFilter: 'blur(12px)', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+          <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '12px 16px', background: 'rgba(13,10,26,0.97)', borderTop: '1px solid rgba(244,239,230,0.08)', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
             <textarea
               value={replyText}
               onChange={e => setReplyText(e.target.value)}
