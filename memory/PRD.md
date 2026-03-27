@@ -396,7 +396,13 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 6. ✅ **Services tab** — Removed hardcoded `CARE_SERVICES` 2-column price grid. Services tab now shows only `CareConciergeSection` matching desktop Pic 3 exactly ("Care Concierge® Services" illustrated cards).
 7. ✅ **GuidedCarePaths modal** — Increased z-index from 300 → 9999. Modal now opens correctly on both desktop and mobile.
 
-### Pending Items (Updated after Session 16.2)
+### SESSION 17 — (2026-03-27) Conversational Mira E2E Fix
+
+1. ✅ **Conversational Mira follow-up bug fixed** — `MiraChatWidget.jsx` was gating `checkAndShow()` on `messages.length === 0`. Session-restored messages prevented the follow-up from ever showing. Fixed by using `followUpCheckedRef` (runs once per open cycle, regardless of message count) and `setMessages(prev => ...)` functional update to safely append follow-up even when conversation history exists.
+2. ✅ **Duplicate "Switching to pet" messages fixed** — Added `lastPetSwitchRef` 2-second debounce + `isOpen` guard on `handlePetChange`. Pet-switch messages now only appear when the widget is already open (not on page load) and only once per 2 seconds per pet.
+3. ✅ **Full E2E verified**: memory created → widget opens → follow-up shown as sole message → marked shown → next open no follow-up (clean welcome) → resolve PATCH clears pending.
+
+### Pending Items (Updated after Session 17)
 - Admin notification bell returning 0 (P0)
 - ProductCard `display_only` flag — insurance items showing "Add to Cart" (P0)
 - Farewell service prices all Rs.0 (P1)
