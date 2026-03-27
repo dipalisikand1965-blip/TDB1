@@ -57,6 +57,7 @@ import SiteStatusReport from '../components/admin/SiteStatusReport';
 import AdvancedAnalyticsDashboard from '../components/admin/AdvancedAnalyticsDashboard';
 import UnifiedProductBox from '../components/admin/UnifiedProductBox';
 import ServiceBox from '../components/admin/ServiceBox';
+import BundleBox from '../components/admin/BundleBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
 import EnjoyExperiencesAdmin from '../components/admin/EnjoyExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
@@ -3130,6 +3131,7 @@ const Admin = () => {
                       {[
                         { id: 'product-box', label: 'Product Box', icon: Package },
                         { id: 'service-box', label: 'Service Box', icon: Store },
+                        { id: 'bundle-box', label: 'Bundle Box', icon: Gift },
                         { id: 'pricing', label: 'Pricing', icon: DollarSign },
                         { id: 'experiences', label: 'Experiences', icon: Calendar },
                         { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
@@ -3267,6 +3269,7 @@ const Admin = () => {
               { id: 'fulfilment', label: 'Fulfilment', icon: Truck },
               { id: 'product-box', label: 'Product Box', icon: Package },
               { id: 'service-box', label: 'Service Box', icon: Briefcase },
+              { id: 'bundle-box', label: 'Bundle Box', icon: Gift },
               { id: 'topic-products', label: 'Topic Products', icon: GraduationCap },
               { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
               { id: 'cake-box',     label: '🎂 Cake Box',  icon: Sparkles },
@@ -4155,6 +4158,11 @@ const Admin = () => {
         {/* Service Box Tab */}
         {activeTab === 'service-box' && (
           <ServiceBox />
+        )}
+
+        {/* Bundle Box Tab */}
+        {activeTab === 'bundle-box' && (
+          <BundleBox />
         )}
 
         {/* Enjoy Experiences Admin Tab - Events & Experiences */}
