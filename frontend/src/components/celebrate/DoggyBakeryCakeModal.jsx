@@ -60,6 +60,39 @@ const FLAVOURS = [
   { name: 'Fish & Salmon', emoji: '🐟' },
   { name: 'Pumpkin',       emoji: '🎃' },
 ];
+
+/* ── Favourite flavour detection (maps pet soul answers → FLAVOUR names) ── */
+const FLAVOUR_KEYWORDS = {
+  'Banana':        ['banana'],
+  'Carrot':        ['carrot', 'vegetable', 'veggie'],
+  'Chicken':       ['chicken', 'poultry'],
+  'Mutton':        ['mutton', 'lamb'],
+  'Peanut Butter': ['peanut', 'peanut butter'],
+  'Blueberry':     ['blueberry', 'berry'],
+  'Coconut Cream': ['coconut'],
+  'Strawberry':    ['strawberry'],
+  'Fish & Salmon': ['fish', 'salmon', 'seafood'],
+  'Pumpkin':       ['pumpkin'],
+};
+
+function getPetFavFlavourName(pet) {
+  const soul = pet?.doggy_soul_answers || {};
+  const sources = [
+    soul.favorite_protein,
+    soul.petFavouriteFood1,
+    soul.petFavouriteFood2,
+    soul.favourite_protein,
+    soul.taste_banana === true ? 'banana' : null,
+    ...(Array.isArray(soul.favorite_treats) ? soul.favorite_treats : [soul.favorite_treats]),
+  ].filter(Boolean).map(s => String(s).toLowerCase());
+
+  for (const [flavName, keywords] of Object.entries(FLAVOUR_KEYWORDS)) {
+    if (sources.some(src => keywords.some(kw => src.includes(kw)))) {
+      return flavName;
+    }
+  }
+  return null;
+}
 const SIZES = [
   { label: 'Mini',    desc: 'Feeds 2–4',   price: 450  },
   { label: 'Regular', desc: 'Feeds 6–8',   price: 750  },
@@ -98,14 +131,19 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
 
   // Order form state
   const [orderProduct, setOrderProduct]   = useState(null); // product selected for ordering
-  const [selectedFlavour, setSelectedFlavour] = useState(FLAVOURS[0]);
-  const [selectedSize, setSelectedSize]   = useState(SIZES[0].label);
-  const [petNameOnCake, setPetNameOnCake] = useState('');
-  const [deliveryDate, setDeliveryDate]   = useState('');
-  const [deliveryTime, setDeliveryTime]   = useState('');
-  const [cakeMessage, setCakeMessage]     = useState('');
-  const [orderSending, setOrderSending]   = useState(false);
-  const [orderDone, setOrderDone]         = useState(false);
+  const [selectedFlavour, setSelectedFlavour] = useState('');
+  const [selectedBase,   setSelectedBase]   = useState('Oats');
+  const [selectedSize,   setSelectedSize]   = useState(SIZES[0].label);
+  const [petNameOnCake,  setPetNameOnCake]  = useState('');
+  const [deliveryDate,   setDeliveryDate]   = useState('');
+  const [deliveryTime,   setDeliveryTime]   = useState('');
+  const [deliveryType,   setDeliveryType]   = useState('');
+  const [cakeMessage,    setCakeMessage]    = useState('');
+  const [errors,         setErrors]         = useState({});
+  const [orderSending,   setOrderSending]   = useState(false);
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [orderId,        setOrderId]        = useState('');
+  const [ticketId,       setTicketId]       = useState('');
 
   // Modals
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -153,20 +191,41 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   // Open order form for a selected cake
   const openOrderForm = useCallback((product) => {
     setOrderProduct(product);
-    setSelectedFlavour(
-      (FLAVOURS.find(f => !isAllergen(f.name, pet)) || FLAVOURS[0]).name
-    );
+    // Pre-select: safe favourite > any safe > first flavour
+    const favName = getPetFavFlavourName(pet);
+    const safeFav = favName ? FLAVOURS.find(f => f.name === favName && !isAllergen(f.name, pet)) : null;
+    const anySafe = FLAVOURS.find(f => !isAllergen(f.name, pet));
+    setSelectedFlavour((safeFav || anySafe || FLAVOURS[0]).name);
+    setSelectedBase('Oats');
     setSelectedSize(SIZES[0].label);
     setPetNameOnCake(pet?.name || '');
     setDeliveryDate('');
     setDeliveryTime('');
+    setDeliveryType('');
     setCakeMessage('');
-    setOrderDone(false);
+    setErrors({});
+    setOrderConfirmed(false);
+    setOrderId('');
+    setTicketId('');
   }, [pet]);
 
-  // Confirm order: POST to /api/celebrate/cake-order → saves to cake_orders + service desk ticket
-  const handleOrder = useCallback(async () => {
-    if (!orderProduct) return;
+  // Validate — every field compulsory
+  const validate = useCallback(() => {
+    const e = {};
+    if (!selectedFlavour)  e.flavour      = 'Please select a flavour';
+    if (!selectedBase)     e.base         = 'Please select a base';
+    if (!selectedSize)     e.size         = 'Please select a size';
+    if (!petNameOnCake)    e.petName      = 'Please enter the name for the cake';
+    if (!deliveryDate)     e.date         = 'Please select a delivery date';
+    if (!deliveryTime)     e.time         = 'Please select a delivery time slot';
+    if (!deliveryType)     e.deliveryType = 'Please select delivery or pickup';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  }, [selectedFlavour, selectedBase, selectedSize, petNameOnCake, deliveryDate, deliveryTime, deliveryType]);
+
+  // Confirm order: POST to /api/celebrate/cake-order
+  const handleConfirmOrder = useCallback(async () => {
+    if (!validate()) return;
     setOrderSending(true);
     try {
       const res = await fetch(`${API_URL}/api/celebrate/cake-order`, {
@@ -176,33 +235,46 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          pet_id:           pet?.id,
-          pet_name:         petName,
-          pet_breed:        pet?.breed || '',
-          pet_allergies:    allergies,
-          product_name:     orderProduct.name,
-          product_id:       orderProduct.id,
-          flavour:          selectedFlavour,
-          base:             'Oats',
-          size:             selectedSize,
-          shape:            orderProduct.tags?.find(t => ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)) || '',
-          pet_name_on_cake: petNameOnCake || petName,
-          message_on_cake:  cakeMessage,
-          delivery_date:    deliveryDate,
-          delivery_time:    deliveryTime,
-          delivery_type:    'delivery',
-          total_price:      totalPrice,
+          // Pet details
+          pet_id:            pet?.id,
+          pet_name:          petName,
+          pet_breed:         pet?.breed || '',
+          pet_allergies:     allergies,
+          // Product
+          product_name:      orderProduct?.name,
+          product_id:        orderProduct?.id,
+          product_image:     orderProduct?.image_url,
+          product_price:     orderProduct?.original_price,
+          // Customisation — ALL compulsory
+          flavour:           selectedFlavour,
+          base:              selectedBase,
+          size:              selectedSize,
+          shape:             orderProduct?.tags?.find(t => ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)) || '',
+          pet_name_on_cake:  petNameOnCake,
+          message_on_cake:   cakeMessage || '',
+          // Delivery — ALL compulsory
+          delivery_date:     deliveryDate,
+          delivery_time:     deliveryTime,
+          delivery_type:     deliveryType,
+          // Pricing
+          total_price:       totalPrice,
+          // Source
+          source:            'doggy_bakery_cake_modal',
         }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || 'Order failed');
+      if (data.success) {
+        setOrderConfirmed(true);
+        setOrderId(data.cake_order_id || '');
+        setTicketId(data.ticket_id || '');
+      } else {
+        throw new Error(data.message || 'Order failed');
+      }
     } catch (e) {
       console.error('[DoggyBakeryCakeModal] order failed', e);
     }
     setOrderSending(false);
-    setOrderDone(true);
-    setTimeout(() => { setOrderProduct(null); setOrderDone(false); }, 2500);
-  }, [orderProduct, selectedFlavour, selectedSize, petNameOnCake, deliveryDate, deliveryTime, cakeMessage, allergies, totalPrice, pet, petName, token]);
+  }, [validate, orderProduct, selectedFlavour, selectedBase, selectedSize, petNameOnCake, deliveryDate, deliveryTime, deliveryType, cakeMessage, allergies, totalPrice, pet, petName, token]);
 
   // ── Breed match row ───────────────────────────────────────────────────────
   const matchedBreedCakes = breedCakes.filter(p => {
@@ -246,10 +318,17 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   if (!isOpen) return null;
 
   /* ── Order form panel (slides over the browse list) ─────────────────── */
+  const BASES = [
+    { name: 'Oats', desc: 'Light & wholesome' },
+    { name: 'Ragi', desc: 'Nutrient-rich' },
+  ];
+  const TIME_SLOTS = ['10am – 12pm', '12pm – 2pm', '2pm – 4pm', '4pm – 6pm', '6pm – 8pm'];
+
   const orderPanel = orderProduct && (
     <div style={{ position:'fixed', inset:0, zIndex:9300, display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
       <div onClick={() => setOrderProduct(null)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.5)' }} />
       <div style={{ position:'relative', width:'100%', maxWidth:560, background:'#FFFBFF', borderRadius:'20px 20px 0 0', padding:'24px 20px 40px', maxHeight:'90vh', overflowY:'auto', boxShadow:'0 -16px 60px rgba(155,89,182,0.2)' }}>
+
         {/* Header */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>
           <div>
@@ -261,57 +340,74 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
           </button>
         </div>
 
-        {orderDone ? (
-          <div style={{ textAlign:'center', padding:'32px 0' }}>
-            <div style={{ fontSize:36, marginBottom:12 }}>🎉</div>
-            <div style={{ fontSize:18, fontWeight:700, color:'#6C3483', marginBottom:6 }}>Order placed!</div>
-            <div style={{ fontSize:14, color:'#9B59B6' }}>Added to cart · Concierge® will confirm delivery details on WhatsApp.</div>
+        {/* ── Confirmation screen ───────────────────────────────────────── */}
+        {orderConfirmed ? (
+          <div style={{ textAlign:'center', padding:'40px 24px', background:'linear-gradient(135deg,#1A0A2E,#4A1B6D)', borderRadius:20, color:'#fff' }}>
+            <div style={{ fontSize:56, marginBottom:16 }}>🎂</div>
+            <div style={{ fontSize:22, fontWeight:800, marginBottom:8 }}>Order placed for {petName}!</div>
+            <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginBottom:8 }}>Order ID: {orderId}</div>
+            <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginBottom:20, lineHeight:1.6 }}>
+              {selectedFlavour} · {selectedBase} base · {selectedSize}<br/>
+              Delivery: {deliveryDate} · {deliveryTime}<br/>
+              Name on cake: {petNameOnCake}
+            </div>
+            <div style={{ background:'rgba(255,255,255,0.1)', borderRadius:12, padding:'12px 16px', fontSize:13, color:'rgba(255,255,255,0.8)', marginBottom:20 }}>
+              ✦ Your Concierge® will confirm within 2 hours.<br/>
+              Reference: {ticketId}
+            </div>
+            <button onClick={() => setOrderProduct(null)} style={{ background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.3)', color:'#fff', borderRadius:20, padding:'10px 28px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+              Done
+            </button>
           </div>
         ) : (
           <>
-            {/* Flavour */}
-            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10 }}>CAKE FLAVOUR</div>
-            <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:6 }}>
+            {/* ── CAKE FLAVOUR ─────────────────────────────────────────── */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10 }}>CAKE FLAVOUR *</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:4 }}>
               {FLAVOURS.map(f => {
                 const unsafe = isAllergen(f.name, pet);
                 return (
-                  <button
-                    key={f.name}
-                    onClick={() => setSelectedFlavour(f.name)}
+                  <button key={f.name} onClick={() => { setSelectedFlavour(f.name); setErrors(p => ({...p, flavour:undefined})); }}
                     data-testid={`cake-flavour-${f.name.replace(/\s+/g,'-').toLowerCase()}`}
-                    style={{
-                      padding:'10px 18px', borderRadius:999, fontSize:14, fontWeight:600,
-                      cursor:'pointer', position:'relative', transition:'all 0.15s',
-                      border: selectedFlavour === f.name ? '2px solid #9B59B6'
-                              : unsafe ? '2px solid #EF4444'
-                              : '2px solid #E8D5F5',
-                      background: selectedFlavour === f.name ? '#9B59B6'
-                                : unsafe ? 'rgba(239,68,68,0.08)' : '#F5EEFF',
-                      color: selectedFlavour === f.name ? '#fff'
-                           : unsafe ? '#EF4444' : '#7B2D8B',
-                    }}
-                  >
+                    style={{ padding:'10px 18px', borderRadius:999, fontSize:14, fontWeight:600, cursor:'pointer', position:'relative', transition:'all 0.15s',
+                      border: selectedFlavour===f.name ? '2px solid #9B59B6' : unsafe ? '2px solid #EF4444' : '2px solid #E8D5F5',
+                      background: selectedFlavour===f.name ? '#9B59B6' : unsafe ? 'rgba(239,68,68,0.08)' : '#F5EEFF',
+                      color: selectedFlavour===f.name ? '#fff' : unsafe ? '#EF4444' : '#7B2D8B' }}>
                     {f.emoji} {f.name}
-                    {unsafe && (
-                      <span style={{ position:'absolute', top:-6, right:-6, background:'#EF4444', color:'#fff', fontSize:9, fontWeight:700, borderRadius:999, padding:'2px 5px', lineHeight:1 }}>
-                        ⚠ {petName}
-                      </span>
-                    )}
+                    {unsafe && <span style={{ position:'absolute', top:-6, right:-6, background:'#EF4444', color:'#fff', fontSize:9, fontWeight:700, borderRadius:999, padding:'2px 5px', lineHeight:1 }}>⚠ {petName}</span>}
                   </button>
                 );
               })}
             </div>
             {isAllergen(selectedFlavour, pet) && (
-              <div style={{ marginBottom:14, padding:'8px 14px', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:10, fontSize:13, color:'#EF4444' }}>
+              <div style={{ marginBottom:8, padding:'8px 14px', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:10, fontSize:13, color:'#EF4444' }}>
                 ⚠ {petName} is allergic to {selectedFlavour.toLowerCase()}. Are you ordering for a different dog?
               </div>
             )}
+            {errors.flavour && <div style={{ color:'#EF4444', fontSize:12, marginTop:4, marginBottom:6 }}>⚠ {errors.flavour}</div>}
 
-            {/* Size */}
-            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10, marginTop:16 }}>CAKE SIZE</div>
-            <div style={{ display:'flex', gap:8, marginBottom:16 }}>
+            {/* ── CAKE BASE ────────────────────────────────────────────── */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10, marginTop:18 }}>CAKE BASE *</div>
+            <div style={{ display:'flex', gap:10, marginBottom:4 }}>
+              {BASES.map(b => (
+                <button key={b.name} onClick={() => { setSelectedBase(b.name); setErrors(p => ({...p, base:undefined})); }}
+                  style={{ flex:1, padding:'12px 8px', borderRadius:12, fontSize:14, fontWeight:600, cursor:'pointer', textAlign:'center', transition:'all 0.15s',
+                    border: selectedBase===b.name ? '2px solid #9B59B6' : '2px solid #E8D5F5',
+                    background: selectedBase===b.name ? '#9B59B6' : '#F5EEFF',
+                    color: selectedBase===b.name ? '#fff' : '#7B2D8B' }}>
+                  <div>{b.name}</div>
+                  <div style={{ fontSize:11, opacity:0.75, marginTop:2 }}>{b.desc}</div>
+                </button>
+              ))}
+            </div>
+            {errors.base && <div style={{ color:'#EF4444', fontSize:12, marginTop:4, marginBottom:6 }}>⚠ {errors.base}</div>}
+
+            {/* ── CAKE SIZE ────────────────────────────────────────────── */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10, marginTop:18 }}>CAKE SIZE *</div>
+            <div style={{ display:'flex', gap:8, marginBottom:4 }}>
               {SIZES.map(s => (
-                <button key={s.label} onClick={() => setSelectedSize(s.label)} data-testid={`cake-size-${s.label.toLowerCase()}`}
+                <button key={s.label} onClick={() => { setSelectedSize(s.label); setErrors(p => ({...p, size:undefined})); }}
+                  data-testid={`cake-size-${s.label.toLowerCase()}`}
                   style={{ flex:1, padding:'10px 8px', borderRadius:12, fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s', textAlign:'center',
                     border: selectedSize===s.label ? '2px solid #9B59B6' : '2px solid #E8D5F5',
                     background: selectedSize===s.label ? '#9B59B6' : '#F5EEFF',
@@ -322,39 +418,71 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
                 </button>
               ))}
             </div>
+            {errors.size && <div style={{ color:'#EF4444', fontSize:12, marginTop:4, marginBottom:6 }}>⚠ {errors.size}</div>}
 
-            {/* Pet name on cake */}
-            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8 }}>PET NAME ON CAKE</div>
-            <input value={petNameOnCake} onChange={e => setPetNameOnCake(e.target.value)} placeholder={petName}
-              style={{ width:'100%', padding:'10px 14px', borderRadius:10, border:'1.5px solid #E8D5F5', fontSize:14, marginBottom:14, boxSizing:'border-box', color:'#1A1208', background:'#FFFBFF' }} />
+            {/* ── PET NAME ON CAKE ─────────────────────────────────────── */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8, marginTop:18 }}>PET NAME ON CAKE *</div>
+            <input value={petNameOnCake} onChange={e => { setPetNameOnCake(e.target.value); setErrors(p => ({...p, petName:undefined})); }}
+              placeholder={petName}
+              style={{ width:'100%', padding:'10px 14px', borderRadius:10, border:`1.5px solid ${errors.petName ? '#EF4444' : '#E8D5F5'}`, fontSize:14, marginBottom:4, boxSizing:'border-box', color:'#1A1208', background:'#FFFBFF' }} />
+            {errors.petName && <div style={{ color:'#EF4444', fontSize:12, marginTop:2, marginBottom:6 }}>⚠ {errors.petName}</div>}
 
-            {/* Delivery */}
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:14 }}>
+            {/* ── DELIVERY DATE & TIME SLOT ────────────────────────────── */}
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginTop:14 }}>
               <div>
-                <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8 }}>DELIVERY DATE</div>
-                <input type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} min={new Date().toISOString().split('T')[0]}
-                  style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:'1.5px solid #E8D5F5', fontSize:13, boxSizing:'border-box', color:'#1A1208', background:'#FFFBFF' }} />
+                <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8 }}>DELIVERY DATE *</div>
+                <input type="date" value={deliveryDate} onChange={e => { setDeliveryDate(e.target.value); setErrors(p => ({...p, date:undefined})); }}
+                  min={new Date().toISOString().split('T')[0]}
+                  style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:`1.5px solid ${errors.date ? '#EF4444' : '#E8D5F5'}`, fontSize:13, boxSizing:'border-box', color:'#1A1208', background:'#FFFBFF' }} />
+                {errors.date && <div style={{ color:'#EF4444', fontSize:12, marginTop:4 }}>⚠ {errors.date}</div>}
               </div>
               <div>
-                <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8 }}>DELIVERY TIME</div>
-                <input type="time" value={deliveryTime} onChange={e => setDeliveryTime(e.target.value)}
-                  style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:'1.5px solid #E8D5F5', fontSize:13, boxSizing:'border-box', color:'#1A1208', background:'#FFFBFF' }} />
+                <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8 }}>TIME SLOT *</div>
+                <select value={deliveryTime} onChange={e => { setDeliveryTime(e.target.value); setErrors(p => ({...p, time:undefined})); }}
+                  style={{ width:'100%', padding:'10px 12px', borderRadius:10, border:`1.5px solid ${errors.time ? '#EF4444' : '#E8D5F5'}`, fontSize:13, boxSizing:'border-box', color: deliveryTime ? '#1A1208' : '#9B8FAA', background:'#FFFBFF' }}>
+                  <option value="">Pick a slot</option>
+                  {TIME_SLOTS.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                {errors.time && <div style={{ color:'#EF4444', fontSize:12, marginTop:4 }}>⚠ {errors.time}</div>}
               </div>
             </div>
 
-            {/* Message */}
-            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8 }}>MESSAGE ON CAKE <span style={{ fontWeight:400, color:'#B8A0CC' }}>(optional)</span></div>
-            <textarea value={cakeMessage} onChange={e => setCakeMessage(e.target.value)} rows={2} placeholder="Happy Birthday Mojo!"
+            {/* ── DELIVERY TYPE ────────────────────────────────────────── */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10, marginTop:18 }}>DELIVERY TYPE *</div>
+            <div style={{ display:'flex', gap:10, marginBottom:4 }}>
+              {['Delivery', 'Pickup'].map(t => (
+                <button key={t} onClick={() => { setDeliveryType(t); setErrors(p => ({...p, deliveryType:undefined})); }}
+                  style={{ flex:1, padding:'12px', borderRadius:12, fontSize:14, fontWeight:600, cursor:'pointer', textAlign:'center', transition:'all 0.15s',
+                    border: deliveryType===t ? '2px solid #9B59B6' : '2px solid #E8D5F5',
+                    background: deliveryType===t ? '#9B59B6' : '#F5EEFF',
+                    color: deliveryType===t ? '#fff' : '#7B2D8B' }}>
+                  {t === 'Delivery' ? '🚚 Delivery' : '🏠 Pickup'}
+                </button>
+              ))}
+            </div>
+            {errors.deliveryType && <div style={{ color:'#EF4444', fontSize:12, marginTop:4, marginBottom:6 }}>⚠ {errors.deliveryType}</div>}
+
+            {/* ── MESSAGE ON CAKE (optional) ───────────────────────────── */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:8, marginTop:18 }}>
+              MESSAGE ON CAKE <span style={{ fontWeight:400, color:'#B8A0CC' }}>(optional)</span>
+            </div>
+            <textarea value={cakeMessage} onChange={e => setCakeMessage(e.target.value)} rows={2}
+              placeholder={`Happy Birthday ${petName}!`}
               style={{ width:'100%', padding:'10px 14px', borderRadius:10, border:'1.5px solid #E8D5F5', fontSize:14, resize:'none', marginBottom:20, boxSizing:'border-box', color:'#1A1208', background:'#FFFBFF', fontFamily:'inherit' }} />
 
-            {/* Price + Confirm */}
+            {/* ── Price summary + Confirm ──────────────────────────────── */}
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', background:'rgba(155,89,182,0.07)', borderRadius:12, padding:'12px 16px', marginBottom:16 }}>
-              <span style={{ fontSize:13, color:'#9B59B6' }}>{selectedSize} · {selectedFlavour}</span>
+              <span style={{ fontSize:13, color:'#9B59B6' }}>{selectedSize}{selectedFlavour ? ` · ${selectedFlavour}` : ''}{selectedBase ? ` · ${selectedBase}` : ''}</span>
               <span style={{ fontSize:18, fontWeight:800, color:'#6C3483' }}>₹{totalPrice}</span>
             </div>
-            <button onClick={handleOrder} disabled={orderSending} data-testid="confirm-cake-order"
-              style={{ width:'100%', padding:'15px', borderRadius:14, border:'none', background:'linear-gradient(135deg,#9B59B6,#6C3483)', color:'#fff', fontSize:16, fontWeight:700, cursor:'pointer', opacity: orderSending ? 0.7 : 1 }}>
-              {orderSending ? 'Placing order…' : '✦ Confirm Cake Order →'}
+
+            <button
+              onClick={() => { if (!validate()) return; handleConfirmOrder(); }}
+              disabled={orderSending}
+              data-testid="confirm-cake-order"
+              style={{ width:'100%', background:'linear-gradient(135deg,#4A1B6D,#9B59B6)', color:'#fff', border:'none', borderRadius:14, padding:'14px', fontSize:15, fontWeight:700, cursor:'pointer', opacity: orderSending ? 0.7 : 1 }}
+            >
+              {orderSending ? 'Placing order…' : 'Confirm Order →'}
             </button>
           </>
         )}

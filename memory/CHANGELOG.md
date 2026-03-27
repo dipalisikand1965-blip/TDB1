@@ -294,3 +294,23 @@
 
 **Testing:** Manual API audit (26 tickets created), code-level 8-phase review, 2 fixes deployed
 
+
+## 2026-03-27 — Celebrate Sprint (Fork 2)
+
+### DoggyBakeryCakeModal - Full Overhaul
+- **Fix 1**: Favourite flavour pre-selection — added `FLAVOUR_KEYWORDS` map + `getPetFavFlavourName()` helper; `openOrderForm` now picks pet's safe favourite → any safe → first
+- **Fix 2**: Breed chip text in `BreedCakeOrderModal.jsx` → now shows `🐾 Made for {petName}`
+- **Fix 3**: Wired `DoggyBakeryCakeModal.jsx` to `birthday-cakes` category in `CelebrateMobilePage.jsx` (was opening `CelebrateContentModal`)
+- **Validation**: Every field compulsory — flavour, base, size, petName, delivery date, time slot, delivery type; inline red errors shown under each empty field
+- **New fields**: Added CAKE BASE (Oats/Ragi picker) + DELIVERY TYPE (Delivery/Pickup toggle) + TIME SLOTS dropdown (10am–12pm etc.)
+- **Confirmation screen**: Full dark purple screen with Order ID, ticket reference, all customisation details
+- **Backend**: `cake-order` endpoint now stores `product_image`, `product_price`, `source`; generates complete readable service desk ticket with every field
+
+### CakeBox.jsx — New Admin Component
+- Built 4-tab admin panel following `UnifiedProductBox.jsx` architecture
+- Tab 1: Cake Orders — stats cards (pending/confirmed/delivered/total), sortable table, inline status update with save button
+- Tab 2: Birthday Catalogue — 185 Shopify cake products with shape-tag inline editing
+- Tab 3: Flavours & Config — add/edit/delete flavours, bases, shapes; stored in `cake_config` DB collection
+- Tab 4: Breed Illustrations — embeds existing `BreedCakeManager` component
+- Wired into Admin.jsx under COMMERCE section (replaced `breed-cakes` tab)
+- Auth fixed: all admin cake endpoints now use `verify_admin` (Basic Auth) not `get_current_user`
