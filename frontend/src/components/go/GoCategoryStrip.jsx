@@ -60,7 +60,7 @@ export default function GoCategoryStrip({ pet }) {
     <>
       <div
         data-testid="go-category-strip"
-        style={{ width:"100%", background:"#fff", position:"relative", borderBottom:`1px solid ${G.border}` }}
+        style={{ width:"100%", background:"#fff", position:"relative", borderBottom:`1px solid ${G.border}`, overflow:"hidden", zIndex:1 }}
       >
         {canScrollLeft && (
           <button onClick={() => scrollBy(-240)}
