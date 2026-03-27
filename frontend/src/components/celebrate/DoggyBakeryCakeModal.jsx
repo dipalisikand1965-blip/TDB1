@@ -15,13 +15,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import ProductDetailModal from './ProductDetailModal';
+import ProductCard from '../ProductCard';
 import SoulMadeModal from '../SoulMadeModal';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const PAGE_SIZE = 12;
 
-// Shape chips config — matches DB tags
 const SHAPE_CHIPS = [
   { id: 'all',    label: 'All' },
   { id: 'Circle', label: 'Circle' },
@@ -34,54 +33,6 @@ const SHAPE_CHIPS = [
 
 function validImg(url) {
   return url && typeof url === 'string' && url.startsWith('http');
-}
-
-function CakeCard({ product, onView }) {
-  const img = product.cloudinary_url || product.image_url || product.image || product.images?.[0];
-  const price = product.original_price || product.price || 0;
-  return (
-    <div
-      data-testid={`cake-card-${product.id}`}
-      style={{
-        background: '#fff',
-        borderRadius: 12,
-        border: '1px solid #F0EAF8',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        transition: 'box-shadow 0.15s',
-      }}
-      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 16px rgba(155,89,182,0.15)'}
-      onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-    >
-      <div style={{ aspectRatio: '1/1', background: '#FAF6FF', overflow: 'hidden', position: 'relative' }}>
-        {validImg(img)
-          ? <img src={img} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36 }}>🎂</div>
-        }
-        {product._breedMatch && (
-          <div style={{ position: 'absolute', top: 6, left: 6, background: 'linear-gradient(135deg,#9B59B6,#6C3483)', color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>
-            Made for {product._breedLabel}
-          </div>
-        )}
-      </div>
-      <div style={{ padding: '10px 12px' }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1208', marginBottom: 4, lineHeight: 1.3 }}>{product.name}</div>
-        {price > 0 && <div style={{ fontSize: 13, fontWeight: 700, color: '#6C3483', marginBottom: 8 }}>From ₹{price.toLocaleString('en-IN')}</div>}
-        <button
-          onClick={() => onView(product)}
-          data-testid={`view-details-${product.id}`}
-          style={{
-            width: '100%', padding: '7px 0', borderRadius: 999,
-            background: 'linear-gradient(135deg,#E8D5F5,#F0E6FF)',
-            color: '#6C3483', fontSize: 12, fontWeight: 700,
-            border: '1px solid #D4B8F0', cursor: 'pointer',
-          }}
-        >
-          View Details
-        </button>
-      </div>
-    </div>
-  );
 }
 
 export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onCloseProp }) {
@@ -101,7 +52,6 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   const [page, setPage] = useState(1);
 
   // Modals
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
 
   const petName = pet?.name || 'your dog';
@@ -273,7 +223,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}>
                   {matchedBreedCakes.slice(0, 4).map(p => (
-                    <CakeCard key={p.id} product={p} onView={setSelectedProduct} />
+                    <ProductCard key={p.id} product={p} pillar="celebrate" selectedPet={pet} size="small" />
                   ))}
                 </div>
               </div>
@@ -361,7 +311,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
               <>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}>
                   {visibleCakes.map(p => (
-                    <CakeCard key={p.id} product={p} onView={setSelectedProduct} />
+                    <ProductCard key={p.id} product={p} pillar="celebrate" selectedPet={pet} size="small" />
                   ))}
                 </div>
 
@@ -391,18 +341,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
         </div>
       </div>
 
-      {/* ProductDetailModal — existing order flow */}
-      {selectedProduct && (
-        <ProductDetailModal
-          product={selectedProduct}
-          isOpen={!!selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          petName={petName}
-          pillarColor="#9B59B6"
-        />
-      )}
-
-      {/* SoulMadeModal — via createPortal to escape any stacking context */}
+      {/* ProductDetailModal — own portal at body level to avoid any z-index trap */}
       {soulMadeOpen && createPortal(
         <SoulMadeModal
           pet={pet}
@@ -416,5 +355,9 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
     </>
   );
 
-  return createPortal(modalContent, document.body);
+  return (
+    <>
+      {createPortal(modalContent, document.body)}
+    </>
+  );
 }
