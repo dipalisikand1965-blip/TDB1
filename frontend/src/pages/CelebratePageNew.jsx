@@ -509,6 +509,7 @@ const CelebratePageNew = () => {
 
         {/* 4. MIRA'S BIRTHDAY BOX */}
         <MiraBirthdayBox 
+          key={selectedPet?.id}
           pet={selectedPet}
           onBuildBox={handleBuildBox}
           onBrowseProducts={(boxPreview) => handleOpenBrowseDrawer(boxPreview)}

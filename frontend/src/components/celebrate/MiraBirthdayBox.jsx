@@ -161,6 +161,13 @@ const MiraBirthdayBox = ({ pet, onBuildBox, onBrowseProducts }) => {
   const petName = pet?.name || 'your pet';
   const petId = pet?.id;
 
+  // Reset revealed state when pet changes
+  useEffect(() => {
+    setRevealedSlots([]);
+    setIsRevealing(false);
+    setBoxPreview(null);
+  }, [petId]);
+
   // Fetch box preview from backend
   useEffect(() => {
     if (!petId) {
@@ -188,22 +195,23 @@ const MiraBirthdayBox = ({ pet, onBuildBox, onBrowseProducts }) => {
 
   // Handle "Build Box" click — trigger reveal animation
   const handleBuildClick = () => {
-    if (!boxPreview) return;
+    if (!boxPreview || isRevealing) return;
 
     // Fire concierge ticket
     request({ service: `${petName}'s Birthday Box — started`, channel: 'celebrate_birthday_box_start' });
 
-    // Start reveal animation
+    // Reset any previously revealed slots, then start animation
+    setRevealedSlots([]);
     setIsRevealing(true);
 
     // Reveal slot 5 after 0.3s
     setTimeout(() => {
-      setRevealedSlots(prev => [...prev, boxPreview.hiddenSlots?.[0]]);
+      setRevealedSlots([boxPreview.hiddenSlots?.[0]].filter(Boolean));
     }, 300);
 
     // Reveal slot 6 after 0.9s
     setTimeout(() => {
-      setRevealedSlots(prev => [...prev, boxPreview.hiddenSlots?.[1]]);
+      setRevealedSlots([boxPreview.hiddenSlots?.[0], boxPreview.hiddenSlots?.[1]].filter(Boolean));
     }, 900);
 
     // Open builder after 1.5s total
