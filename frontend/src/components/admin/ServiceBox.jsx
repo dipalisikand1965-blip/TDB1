@@ -166,6 +166,29 @@ export default function ServiceBox() {
     a.click();
   };
 
+  const handleImportCSV = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split('\n').filter(Boolean);
+    const hdrs = lines[0].split(',');
+    const rows = lines.slice(1).map(line => {
+      const vals = line.split(',');
+      const obj = {};
+      hdrs.forEach((h,i) => { obj[h.trim()] = (vals[i]||'').trim().replace(/^"|"$/g,''); });
+      return { name:obj.Name||obj.name, category:obj.Category||obj.category||'', price:parseFloat(obj.Price||obj.price)||0, pillar:obj.Pillar||obj.pillar||activePillar, is_active:true };
+    }).filter(r => r.name);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/services/import-csv`, {
+        method:'POST', headers:getAdminHeaders(), body:JSON.stringify(rows)
+      });
+      const d = res.ok ? await res.json() : {};
+      setToast(`✅ Imported ${d.imported||rows.length} services`);
+      fetchServices();
+    } catch { setToast('❌ Import failed'); }
+    e.target.value = '';
+  };
+
   return (
     <div style={{ fontFamily:'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif', color:P.dark }}>
       <Toast msg={toast} onClose={() => setToast('')} />
@@ -197,6 +220,10 @@ export default function ServiceBox() {
         <button onClick={exportCSV} style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:600, marginLeft:'auto' }}>
           ↓ Export CSV
         </button>
+        <label style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:600 }}>
+          ↑ Import CSV
+          <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} />
+        </label>
         <button onClick={fetchServices} style={{ padding:'7px 12px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12 }}>↻</button>
       </div>
 

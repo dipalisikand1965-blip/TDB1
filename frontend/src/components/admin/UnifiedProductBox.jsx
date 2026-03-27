@@ -882,6 +882,30 @@ const UnifiedProductBox = () => {
             )}
             Export CSV
           </Button>
+          <label style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, border:'1px solid #86efac', color:'#166534', background:'#f0fdf4', cursor:'pointer', fontSize:13, fontWeight:600 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import CSV
+            <input type="file" accept=".csv" style={{ display:'none' }} onChange={async (e) => {
+              const file = e.target.files[0]; if (!file) return;
+              const text = await file.text();
+              const lines = text.split('\n').filter(Boolean);
+              const hdrs = lines[0].split(',');
+              const rows = lines.slice(1).map(line => {
+                const vals = line.split(',');
+                const obj = {};
+                hdrs.forEach((h,i) => { obj[h.trim()] = (vals[i]||'').trim().replace(/^"|"$/g,''); });
+                return { name:obj.Name||obj.name, pillar:obj.Pillar||obj.pillar, category:obj.Category||obj.category||'', original_price:parseFloat(obj.Price||obj.original_price)||0 };
+              }).filter(r => r.name);
+              try {
+                const auth = localStorage.getItem('adminAuth') || btoa('aditya:lola4304');
+                const res = await fetch(`${API_URL}/api/product-box/import`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Basic ${auth}`}, body:JSON.stringify({products:rows}) });
+                const d = res.ok ? await res.json() : {};
+                alert(`Imported ${d.imported||rows.length} products`);
+                fetchProducts(currentPage, activeFilters);
+              } catch { alert('Import failed'); }
+              e.target.value='';
+            }} />
+          </label>
           <Button onClick={createNewProduct} className="bg-purple-600 hover:bg-purple-700" data-testid="add-product-btn">
             <Plus className="w-4 h-4 mr-2" /> Add Product
           </Button>

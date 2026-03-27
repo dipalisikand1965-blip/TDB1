@@ -347,7 +347,7 @@ function CatalogueTab() {
     try {
       const [masterRes, physicalRes] = await Promise.all([
         fetch(`${API_URL}/api/product-box/products?category=cakes&limit=300`, { headers: getAdminHeaders() }),
-        fetch(`${API_URL}/api/admin/products?category=breed-cakes&limit=100`, { headers: getAdminHeaders() }),
+        fetch(`${API_URL}/api/product-box/products?category=breed-cakes&limit=100`, { headers: getAdminHeaders() }),
       ]);
       const masterData   = masterRes.ok   ? await masterRes.json()   : {};
       const physicalData = physicalRes.ok ? await physicalRes.json() : {};

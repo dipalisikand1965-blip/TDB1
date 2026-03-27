@@ -7056,10 +7056,88 @@ async def admin_bulk_import_services(services: List[dict], username: str = Depen
     for service in services:
         if "id" not in service:
             service["id"] = f"svc-{uuid.uuid4().hex[:12]}"
+
+# ─── ADMIN BUNDLES — ALL PILLARS ─────────────────────────────────────────────
+@admin_router.get("/bundles/all")
+async def admin_get_all_bundles(pillar: str = None, limit: int = 200, username: str = Depends(verify_admin)):
+    """Get all bundles from master bundles collection."""
+    query = {} if not pillar or pillar == "all" else {"pillar": pillar}
+    raw = await db.bundles.find(query).to_list(length=limit)
+    bundles = []
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id", ""))
+        b.pop("_id", None)
+        bundles.append(b)
+    total = await db.bundles.count_documents(query)
+    return {"bundles": bundles, "total": total}
+
+@admin_router.patch("/bundles/all/{bundle_id}")
+async def admin_update_bundle(bundle_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a bundle in master bundles collection."""
+    from datetime import datetime, timezone
+    allowed = ["name","price","pillar","description","is_active","is_soul_made","discount_percent","items","tags"]
+    clean = {k: v for k, v in updates.items() if k in allowed}
+    clean["updated_at"] = datetime.now(timezone.utc).isoformat()
+    clean["updated_by"] = username
+    if "price" in clean:
+        clean["price"] = float(clean["price"])
+    result = await db.bundles.update_one({"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"$set": clean})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"success": True, "updated": clean}
+
+@admin_router.post("/bundles/all/import-csv")
+async def admin_import_bundles(bundles: list, username: str = Depends(verify_admin)):
+    """Import bundles into master bundles collection."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    for b in bundles:
+        if "id" not in b or not b["id"]:
+            b["id"] = f"bun-{uuid.uuid4().hex[:8]}"
+        b["updated_at"] = now
+        await db.bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
+    return {"imported": len(bundles)}
+
+@admin_router.get("/bundles/all/export-csv")
+async def admin_export_bundles_csv(username: str = Depends(verify_admin)):
+    """Export all bundles as CSV."""
+    import csv, io
+    raw = await db.bundles.find({}).to_list(length=500)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"])
+    writer.writeheader()
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id",""))
+        writer.writerow({k: b.get(k,"") for k in ["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"]})
+    from fastapi.responses import Response
+    return Response(content=output.getvalue(), media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=bundles_export.csv"})
+
+# ─── ADMIN SERVICES IMPORT CSV ────────────────────────────────────────────────
+@admin_router.post("/services/import-csv")
+async def admin_import_services_csv(services: list, username: str = Depends(verify_admin)):
+    """Import services into services_master."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    for s in services:
+        if "id" not in s or not s["id"]:
+            s["id"] = f"svc-{uuid.uuid4().hex[:8]}"
+        s["updated_at"] = now
+        s["updated_by"] = username
+        await db.services_master.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
+    return {"imported": len(services)}
+
+
+@admin_router.post("/services/bulk-import")
+async def admin_bulk_import_services(services: List[dict], username: str = Depends(verify_admin)):
+    """Bulk import services"""
+    for service in services:
+        if "id" not in service:
+            service["id"] = f"svc-{uuid.uuid4().hex[:12]}"
         service["created_at"] = get_utc_timestamp()
         service["updated_at"] = get_utc_timestamp()
         service["created_by"] = username
-    
+
     if services:
         await db.services_master.insert_many(services)
     
@@ -25024,3 +25102,107 @@ async def update_admin_service(
     
     return {"success": True, "updated": clean}
 
+
+# ─── ADMIN BUNDLES — ALL COLLECTIONS ─────────────────────────────────────────
+@api_router.get("/admin/bundles/all")
+async def get_all_admin_bundles(
+    pillar: str = None,
+    limit: int = 200,
+    current_user: dict = Depends(verify_admin)
+):
+    """Get all bundles from master bundles collection (96 docs, all pillars)."""
+    query = {}
+    if pillar and pillar != "all":
+        query["pillar"] = pillar
+    raw = await db.bundles.find(query).to_list(length=limit)
+    bundles = []
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id", ""))
+        b.pop("_id", None)
+        bundles.append(b)
+    total = await db.bundles.count_documents(query)
+    return {"bundles": bundles, "total": total}
+
+@api_router.patch("/admin/bundles/all/{bundle_id}")
+async def update_admin_bundle_all(
+    bundle_id: str,
+    updates: dict,
+    current_user: dict = Depends(verify_admin)
+):
+    """Update a bundle in master bundles collection."""
+    from datetime import datetime, timezone
+    allowed = ["name","price","pillar","description","is_active","is_soul_made","discount_percent","items","tags"]
+    clean = {k: v for k, v in updates.items() if k in allowed}
+    clean["updated_at"] = datetime.now(timezone.utc).isoformat()
+    clean["updated_by"] = current_user.get("username","admin")
+    if "price" in clean:
+        clean["price"] = float(clean["price"])
+    result = await db.bundles.update_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+        {"$set": clean}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"success": True, "updated": clean}
+
+@api_router.get("/admin/bundles/all/export-csv")
+async def export_all_bundles_csv(current_user: dict = Depends(verify_admin)):
+    """Export all bundles as CSV."""
+    import csv, io
+    raw = await db.bundles.find({}).to_list(length=500)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"])
+    writer.writeheader()
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id",""))
+        writer.writerow({k: b.get(k,"") for k in ["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"]})
+    from fastapi.responses import Response
+    return Response(content=output.getvalue(), media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=bundles_export.csv"})
+
+@api_router.post("/admin/bundles/all/import-csv")
+async def import_all_bundles_csv(
+    bundles: list,
+    current_user: dict = Depends(verify_admin)
+):
+    """Bulk import bundles into master bundles collection."""
+    from datetime import datetime, timezone
+    import uuid
+    now = datetime.now(timezone.utc).isoformat()
+    imported = 0
+    for b in bundles:
+        if "id" not in b or not b["id"]:
+            b["id"] = f"bun-{uuid.uuid4().hex[:8]}"
+        b["created_at"] = now
+        b["updated_at"] = now
+        await db.bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
+        imported += 1
+    return {"imported": imported}
+
+# ─── ADMIN SERVICES CSV IMPORT ────────────────────────────────────────────────
+@api_router.post("/admin/services/import-csv")
+async def import_services_csv(
+    services: list,
+    current_user: dict = Depends(verify_admin)
+):
+    """Import services into services_master."""
+    from datetime import datetime, timezone
+    import uuid
+    now = datetime.now(timezone.utc).isoformat()
+    imported = 0
+    for s in services:
+        if "id" not in s:
+            s["id"] = f"svc-{uuid.uuid4().hex[:8]}"
+        s["updated_at"] = now
+        s["updated_by"] = current_user.get("username","admin")
+        await db.services_master.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
+        imported += 1
+    return {"imported": imported}
+
+
+@api_router.get("/admin/bundles/debug")
+async def debug_bundles(current_user: dict = Depends(verify_admin)):
+    b_count = await db.bundles.count_documents({})
+    cb_count = await db.care_bundles.count_documents({})
+    pb_count = await db.product_bundles.count_documents({})
+    return {"bundles": b_count, "care_bundles": cb_count, "product_bundles": pb_count, "db_name": db.name}

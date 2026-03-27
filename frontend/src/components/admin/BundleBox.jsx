@@ -33,7 +33,7 @@ function EditBundleModal({ bundle, onClose, onSave }) {
   const save = async () => {
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/bundles/${form.id || form._id}`, {
+      const res = await fetch(`${API_URL}/api/admin/bundles/all/${form.id || form._id}`, {
         method: 'PUT',
         headers: getAdminHeaders(),
         body: JSON.stringify({
@@ -115,14 +115,53 @@ export default function BundleBox() {
   const fetchBundles = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/bundles?limit=100`, { headers: getAdminHeaders() });
+      const url = pillarFilter && pillarFilter !== 'all'
+        ? `${API_URL}/api/admin/bundles/all?pillar=${pillarFilter}&limit=200`
+        : `${API_URL}/api/admin/bundles/all?limit=200`;      const res = await fetch(url, { headers: getAdminHeaders() });
       const data = res.ok ? await res.json() : {};
-      setBundles(data.bundles || data.items || []);
+      setBundles(data.bundles || []);
     } catch { setBundles([]); }
     setLoading(false);
-  }, []);
+  }, [pillarFilter]);
 
   useEffect(() => { fetchBundles(); }, [fetchBundles]);
+
+  const exportCSV = () => {
+    const headers = ['ID','Name','Pillar','Price','Discount %','Soul Made','Status'];
+    const rows = bundles.map(b => [
+      b.id||'', `"${b.name||''}"`, b.pillar||'', b.price||0,
+      b.discount_percent||0, b.is_soul_made?'Yes':'No',
+      b.is_active!==false?'Active':'Inactive'
+    ]);
+    const csv = [headers,...rows].map(r=>r.join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+    a.download = `bundles-${pillarFilter}.csv`;
+    a.click();
+  };
+
+  const handleImportCSV = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split('\n').filter(Boolean);
+    const hdrs = lines[0].split(',');
+    const rows = lines.slice(1).map(line => {
+      const vals = line.split(',');
+      const obj = {};
+      hdrs.forEach((h,i) => { obj[h.trim()] = (vals[i]||'').trim().replace(/^"|"$/g,''); });
+      return { name:obj.Name||obj.name, pillar:obj.Pillar||obj.pillar, price:parseFloat(obj.Price||obj.price)||0, id:obj.ID||obj.id||undefined };
+    }).filter(r => r.name);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/bundles/all/import-csv`, {
+        method:'POST', headers:getAdminHeaders(), body:JSON.stringify(rows)
+      });
+      const d = res.ok ? await res.json() : {};
+      setToast(`✅ Imported ${d.imported||rows.length} bundles`);
+      fetchBundles();
+    } catch { setToast('❌ Import failed'); }
+    e.target.value = '';
+  };
 
   const filtered = bundles.filter(b => {
     const matchSearch = !search || b.name?.toLowerCase().includes(search.toLowerCase());
@@ -168,6 +207,11 @@ export default function BundleBox() {
           {PILLARS.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
         <button onClick={fetchBundles} style={{ padding:'7px 12px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12 }}>↻</button>
+        <button onClick={exportCSV} style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:600 }}>↓ Export CSV</button>
+        <label style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:600 }}>
+          ↑ Import CSV
+          <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} />
+        </label>
       </div>
 
       {loading ? (
