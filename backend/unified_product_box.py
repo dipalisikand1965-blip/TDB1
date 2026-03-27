@@ -913,8 +913,13 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
             logger.info(f"Updated Soul Made product: {product_id}")
             return {"message": "Soul Made product updated", "product": updated}
         
-        # Regular product update (products_master)
+        # Regular product update (try products_master first, then products collection)
         existing = await db.products_master.find_one({"id": product_id})
+        collection_name = "products_master"
+        if not existing:
+            # Fallback: check the Shopify `products` collection (birthday cakes, etc.)
+            existing = await db.products.find_one({"id": product_id})
+            collection_name = "products"
         if not existing:
             raise HTTPException(status_code=404, detail="Product not found")
         
@@ -961,13 +966,13 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
             updates["pricing"]["selling_price"] = manual_price
             updates["price"] = manual_price
         
-        await db.products_master.update_one(
+        await db[collection_name].update_one(
             {"id": product_id},
             {"$set": updates}
         )
         
         # Get updated product
-        updated = await db.products_master.find_one({"id": product_id}, {"_id": 0})
+        updated = await db[collection_name].find_one({"id": product_id}, {"_id": 0})
         
         logger.info(f"Updated product: {product_id}")
         return {"message": "Product updated", "product": updated}
