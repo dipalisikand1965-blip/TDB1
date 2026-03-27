@@ -17,11 +17,12 @@ import { Badge } from '../ui/badge';
 import { Label } from '../ui/label';
 import { toast } from 'sonner';
 import {
-  Search, RefreshCw, ChevronDown, Loader2, Package,
-  ClipboardList, Settings, Image, Check, X, Plus, Trash2,
-  Calendar, Tag, ShoppingBag,
+  Search, RefreshCw, Loader2, Package, Check, X, Plus, Trash2,
+  ClipboardList, Settings, Image, Edit, ChevronDown, BarChart3,
+  ShoppingBag, Eye, EyeOff,
 } from 'lucide-react';
 import BreedCakeManager from './BreedCakeManager';
+import ProductBoxEditor from './ProductBoxEditor';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 const ADMIN_AUTH = `Basic ${btoa('aditya:lola4304')}`;
@@ -193,14 +194,18 @@ function CakeOrdersTab() {
   );
 }
 
-// ── Tab 2: Birthday Catalogue ──────────────────────────────────────────────────
+// ── Tab 2: Birthday Catalogue (full UnifiedProductBox architecture) ────────────
 function BirthdayCatalogueTab() {
-  const [products, setProducts]   = useState([]);
-  const [loading,  setLoading]    = useState(false);
-  const [search,   setSearch]     = useState('');
+  const [products, setProducts]       = useState([]);
+  const [loading,  setLoading]        = useState(false);
+  const [search,   setSearch]         = useState('');
   const [shapeFilter, setShapeFilter] = useState('all');
-  const [editTag,  setEditTag]    = useState({}); // { [pid]: shape }
-  const [saving,   setSaving]     = useState(null);
+  const [editProduct, setEditProduct] = useState(null);
+  const [saving,   setSaving]         = useState(false);
+  const [deleting, setDeleting]       = useState(null);
+  const [stats,    setStats]          = useState({});
+  const [page,     setPage]           = useState(0);
+  const LIMIT = 50;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -208,8 +213,17 @@ function BirthdayCatalogueTab() {
       const res = await fetch(`${API_URL}/api/products?category=cakes&limit=200`);
       if (!res.ok) throw new Error('Failed');
       const data = await res.json();
-      setProducts(data.products || data || []);
-    } catch { toast.error('Failed to load products'); }
+      const all = data.products || data || [];
+      setProducts(all);
+      // Compute shape stats
+      const shapeCounts = {};
+      all.forEach(p => {
+        const s = getShapeTag(p);
+        if (s) shapeCounts[s] = (shapeCounts[s] || 0) + 1;
+        else shapeCounts['none'] = (shapeCounts['none'] || 0) + 1;
+      });
+      setStats({ total: all.length, ...shapeCounts });
+    } catch { toast.error('Failed to load cake catalogue'); }
     setLoading(false);
   }, []);
 
@@ -217,7 +231,7 @@ function BirthdayCatalogueTab() {
 
   const getShapeTag = (p) => {
     const tags = (p.tags || []).map(t => String(t).toLowerCase());
-    return SHAPE_OPTS.find(s => tags.includes(s)) || '';
+    return SHAPE_OPTS.slice(1).find(s => tags.includes(s)) || '';
   };
 
   const filtered = products.filter(p => {
@@ -226,25 +240,70 @@ function BirthdayCatalogueTab() {
     return matchSearch && matchShape;
   });
 
-  const saveShapeTag = async (productId) => {
-    const shape = editTag[productId] ?? '';
-    setSaving(productId);
+  const paged = filtered.slice(page * LIMIT, (page + 1) * LIMIT);
+
+  // Save via unified product-box endpoint (now also handles products collection)
+  const saveProduct = async (productToSave) => {
+    const p = productToSave || editProduct;
+    if (!p) return;
+    setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/products/${productId}/shape-tag`, {
-        method: 'PATCH',
+      const res = await fetch(`${API_URL}/api/product-box/products/${p.id}`, {
+        method: 'PUT',
         headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ shape_tag: shape }),
+        body: JSON.stringify(p),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || 'Save failed');
+      }
+      toast.success('Product saved');
+      setEditProduct(null);
+      fetchProducts();
+    } catch (e) { toast.error(e.message || 'Save failed'); }
+    setSaving(false);
+  };
+
+  const handleDelete = async (product) => {
+    if (!window.confirm(`Archive "${product.name}"?`)) return;
+    setDeleting(product.id);
+    try {
+      const res = await fetch(`${API_URL}/api/product-box/products/${product.id}`, {
+        method: 'DELETE',
+        headers: ADMIN_HEADERS,
       });
       if (!res.ok) throw new Error('Failed');
-      toast.success('Shape tag updated');
-      setEditTag(p => { const n = { ...p }; delete n[productId]; return n; });
+      toast.success('Product archived');
       fetchProducts();
-    } catch { toast.error('Update failed'); }
-    setSaving(null);
+    } catch { toast.error('Delete failed'); }
+    setDeleting(null);
+  };
+
+  const SHAPE_BADGE_COLOR = {
+    circle: 'bg-blue-100 text-blue-800',
+    bone:   'bg-amber-100 text-amber-800',
+    heart:  'bg-pink-100 text-pink-800',
+    square: 'bg-gray-100 text-gray-800',
+    star:   'bg-yellow-100 text-yellow-800',
+    paw:    'bg-purple-100 text-purple-800',
   };
 
   return (
     <div className="space-y-4">
+      {/* Stats row */}
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        <Card className="p-3 border bg-purple-50">
+          <div className="text-2xl font-bold text-purple-700">{stats.total || 0}</div>
+          <div className="text-xs text-gray-500">Total Cakes</div>
+        </Card>
+        {['circle','bone','heart','square','star','paw'].map(s => (
+          <Card key={s} className="p-3 border">
+            <div className="text-xl font-bold text-gray-700 capitalize">{stats[s] || 0}</div>
+            <div className="text-xs text-gray-500 capitalize">{s}</div>
+          </Card>
+        ))}
+      </div>
+
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative">
@@ -252,16 +311,17 @@ function BirthdayCatalogueTab() {
           <Input
             placeholder="Search cakes..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(0); }}
             className="pl-9 w-56"
           />
         </div>
+        {/* Shape filter chips */}
         <div className="flex gap-1.5 flex-wrap">
           {SHAPE_OPTS.map(s => (
             <button
               key={s}
-              onClick={() => setShapeFilter(s)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+              onClick={() => { setShapeFilter(s); setPage(0); }}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors capitalize ${
                 shapeFilter === s ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300 hover:border-purple-400'
               }`}
             >
@@ -275,58 +335,114 @@ function BirthdayCatalogueTab() {
         <span className="text-sm text-gray-500 ml-auto">{filtered.length} / {products.length} cakes</span>
       </div>
 
+      {/* Table */}
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="animate-spin h-6 w-6 text-purple-500" /></div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-          {filtered.map(p => {
-            const currentShape = getShapeTag(p);
-            const pendingShape = editTag[p.id];
-            const displayShape = pendingShape !== undefined ? pendingShape : currentShape;
-            return (
-              <Card key={p.id} className="overflow-hidden flex flex-col border hover:border-purple-300 transition-colors">
-                <div className="aspect-square bg-gray-100 relative">
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">🎂</div>
-                  )}
-                  {currentShape && (
-                    <span className="absolute top-1.5 right-1.5 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded font-medium capitalize">
-                      {currentShape}
-                    </span>
-                  )}
-                </div>
-                <div className="p-2 flex flex-col gap-1.5 flex-1">
-                  <div className="text-xs font-semibold leading-tight line-clamp-2">{p.name}</div>
-                  {p.original_price > 0 && (
-                    <div className="text-xs text-purple-700 font-bold">{fmt(p.original_price)}</div>
-                  )}
-                  {/* Shape tag editor */}
-                  <div className="flex items-center gap-1 mt-auto">
-                    <select
-                      value={displayShape}
-                      onChange={e => setEditTag(prev => ({ ...prev, [p.id]: e.target.value }))}
-                      className="border rounded text-xs px-1.5 py-1 flex-1 bg-white"
-                    >
-                      <option value="">No shape</option>
-                      {SHAPE_OPTS.slice(1).map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                    {pendingShape !== undefined && pendingShape !== currentShape && (
-                      <button
-                        onClick={() => saveShapeTag(p.id)}
-                        disabled={saving === p.id}
-                        className="bg-purple-600 text-white rounded p-1 hover:bg-purple-700"
-                      >
-                        {saving === p.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+        <>
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-sm">
+              <thead className="bg-purple-50">
+                <tr>
+                  {['Product', 'Shape', 'Price', 'Status', 'Actions'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left font-semibold text-purple-900 whitespace-nowrap">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {paged.map((p, i) => {
+                  const shape = getShapeTag(p);
+                  const isActive = p.is_active !== false && p.available !== false;
+                  return (
+                    <tr key={p.id} className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-purple-50 transition-colors`}>
+                      {/* Product */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                            {p.image_url ? (
+                              <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-2xl">🎂</div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 line-clamp-1 max-w-[240px]">{p.name}</div>
+                            <div className="text-xs text-gray-400 font-mono mt-0.5">{String(p.id || '').slice(-10)}</div>
+                          </div>
+                        </div>
+                      </td>
+                      {/* Shape */}
+                      <td className="px-4 py-3">
+                        {shape ? (
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${SHAPE_BADGE_COLOR[shape] || 'bg-gray-100 text-gray-700'}`}>
+                            {shape}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-xs">—</span>
+                        )}
+                      </td>
+                      {/* Price */}
+                      <td className="px-4 py-3 font-semibold text-gray-800">
+                        {p.original_price > 0 ? fmt(p.original_price) : <span className="text-gray-400 text-xs">—</span>}
+                      </td>
+                      {/* Status */}
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                          {isActive ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
+                          {isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      {/* Actions */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditProduct({ ...p })}
+                            className="h-8 px-3 text-xs"
+                          >
+                            <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDelete(p)}
+                            disabled={deleting === p.id}
+                            className="h-8 px-3 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                          >
+                            {deleting === p.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {filtered.length > LIMIT && (
+            <div className="flex justify-center gap-2">
+              <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Prev</Button>
+              <span className="px-3 py-1 text-sm">Page {page + 1} / {Math.ceil(filtered.length / LIMIT)}</span>
+              <Button size="sm" variant="outline" disabled={(page + 1) * LIMIT >= filtered.length} onClick={() => setPage(p => p + 1)}>Next</Button>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ProductBoxEditor modal */}
+      {editProduct && (
+        <ProductBoxEditor
+          product={editProduct}
+          setProduct={setEditProduct}
+          open={!!editProduct}
+          onClose={() => { setEditProduct(null); setSaving(false); }}
+          onSave={() => saveProduct(editProduct)}
+          saving={saving}
+          onGenerateMiraHint={() => {}}
+        />
       )}
     </div>
   );
