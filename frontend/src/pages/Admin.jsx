@@ -65,6 +65,7 @@ import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
 import SoulProductsManager from '../components/admin/SoulProductsManager';
 import BreedCakeManager from '../components/admin/BreedCakeManager';
+import CakeBox from '../components/admin/CakeBox';
 import BundlesManager from '../components/admin/BundlesManager';
 import TopicProductsManager from '../components/admin/TopicProductsManager';
 import LearnPageCMS from '../components/admin/LearnPageCMS';
@@ -3132,7 +3133,7 @@ const Admin = () => {
                         { id: 'pricing', label: 'Pricing', icon: DollarSign },
                         { id: 'experiences', label: 'Experiences', icon: Calendar },
                         { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
-                        { id: 'breed-cakes',   label: '🎂 Breed Cakes', icon: Sparkles },
+                        { id: 'cake-box',     label: '🎂 Cake Box',  icon: Sparkles },
                         { id: 'bundles', label: 'Bundles', icon: Package },
                       ].map(tab => (
                         <button
@@ -3268,7 +3269,7 @@ const Admin = () => {
               { id: 'service-box', label: 'Service Box', icon: Briefcase },
               { id: 'topic-products', label: 'Topic Products', icon: GraduationCap },
               { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
-              { id: 'breed-cakes',   label: '🎂 Breed Cakes', icon: Sparkles },
+              { id: 'cake-box',     label: '🎂 Cake Box',  icon: Sparkles },
               { id: 'bundles', label: 'Bundles', icon: Gift },
               { id: 'collections', label: 'Collections', icon: Layers },
               { id: 'pricing', label: 'Pricing', icon: Tag },
@@ -4110,7 +4111,12 @@ const Admin = () => {
           <SoulProductsManager />
         )}
 
-        {/* Breed Cake Illustrations Manager Tab */}
+        {/* Cake Box Tab — Orders, Catalogue, Config, Breed Illustrations */}
+        {activeTab === 'cake-box' && (
+          <CakeBox />
+        )}
+
+        {/* Breed Cake Illustrations Manager Tab (standalone - kept for legacy) */}
         {activeTab === 'breed-cakes' && (
           <BreedCakeManager />
         )}

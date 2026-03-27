@@ -22152,6 +22152,8 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "pet_allergies": order.get("pet_allergies", []),
         "product_name": order.get("product_name", ""),
         "product_id": order.get("product_id", ""),
+        "product_image": order.get("product_image", ""),
+        "product_price": order.get("product_price", 0),
         "flavour": order.get("flavour", ""),
         "base": order.get("base", ""),
         "size": order.get("size", ""),
@@ -22160,29 +22162,30 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "message_on_cake": order.get("message_on_cake", ""),
         "delivery_date": order.get("delivery_date", ""),
         "delivery_time": order.get("delivery_time", ""),
-        "delivery_type": order.get("delivery_type", "delivery"),
+        "delivery_type": order.get("delivery_type", "Delivery"),
         "total_price": order.get("total_price", 0),
         "status": "pending",
         "created_at": ts.isoformat(),
-        "source": "doggy_bakery_cake_modal",
+        "source": order.get("source", "doggy_bakery_cake_modal"),
     }
     await db.cake_orders.insert_one(cake_order)
 
     allergies_str = ", ".join(cake_order["pet_allergies"]) if cake_order["pet_allergies"] else "None"
+    price_str = "\u20b9" + str(int(cake_order["total_price"])) if cake_order["total_price"] else "Price on request"
     ticket_text = (
         "\U0001f382 CAKE ORDER \u2014 " + pet_name + "\n\n"
-        "Product: " + cake_order["product_name"] + "\n"
-        "Flavour: " + cake_order["flavour"] + "\n"
-        "Base: " + cake_order["base"] + "\n"
-        "Size: " + cake_order["size"] + "\n"
-        "Shape: " + cake_order["shape"] + "\n"
-        "Name on cake: " + cake_order["pet_name_on_cake"] + "\n"
+        "Product: " + (cake_order["product_name"] or "—") + "\n"
+        "Flavour: " + (cake_order["flavour"] or "—") + "\n"
+        "Base: " + (cake_order["base"] or "—") + "\n"
+        "Size: " + (cake_order["size"] or "—") + "\n"
+        "Shape: " + (cake_order["shape"] or "—") + "\n"
+        "Name on cake: " + (cake_order["pet_name_on_cake"] or "—") + "\n"
         "Message: " + (cake_order["message_on_cake"] or "None") + "\n"
-        "Delivery date: " + cake_order["delivery_date"] + "\n"
-        "Delivery time: " + cake_order["delivery_time"] + "\n"
-        "Delivery type: " + cake_order["delivery_type"] + "\n"
-        "Total: \u20b9" + str(cake_order["total_price"]) + "\n\n"
-        "Pet: " + pet_name + " (" + cake_order["pet_breed"] + ")\n"
+        "Delivery date: " + (cake_order["delivery_date"] or "—") + "\n"
+        "Delivery time: " + (cake_order["delivery_time"] or "—") + "\n"
+        "Delivery type: " + (cake_order["delivery_type"] or "—") + "\n"
+        "Total: " + price_str + "\n\n"
+        "Pet: " + pet_name + " (" + (cake_order["pet_breed"] or "Unknown") + ")\n"
         "Allergies: " + allergies_str + "\n"
         "Customer: " + current_user.get("email", "")
     )
@@ -22227,7 +22230,7 @@ async def get_cake_orders(
     date: Optional[str] = None,
     limit: int = 50,
     skip: int = 0,
-    current_user: dict = Depends(get_current_user),
+    username: str = Depends(verify_admin),
 ):
     """Get all cake orders for admin view."""
     query: dict = {}
@@ -22252,7 +22255,7 @@ async def get_cake_orders(
 async def update_cake_order_status(
     order_id: str,
     update: dict,
-    current_user: dict = Depends(get_current_user),
+    username: str = Depends(verify_admin),
 ):
     """Update cake order status: pending → confirmed → baking → out_for_delivery → delivered."""
     from datetime import datetime, timezone
@@ -22267,13 +22270,83 @@ async def update_cake_order_status(
         {"$set": {
             "status": new_status,
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "updated_by": current_user.get("email", "admin"),
+            "updated_by": username,
         }},
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Cake order not found")
 
     return {"success": True, "status": new_status}
+
+
+# ── Cake Config (Flavours, Bases, Shapes) ──────────────────────────────────────
+
+DEFAULT_CAKE_CONFIG = {
+    "flavours": [
+        {"name": "Banana",        "emoji": "🍌", "is_allergen": False},
+        {"name": "Carrot",        "emoji": "🥕", "is_allergen": False},
+        {"name": "Chicken",       "emoji": "🍗", "is_allergen": True},
+        {"name": "Mutton",        "emoji": "🥩", "is_allergen": True},
+        {"name": "Peanut Butter", "emoji": "🥜", "is_allergen": False},
+        {"name": "Blueberry",     "emoji": "🫐", "is_allergen": False},
+        {"name": "Coconut Cream", "emoji": "🥥", "is_allergen": False},
+        {"name": "Strawberry",    "emoji": "🍓", "is_allergen": False},
+        {"name": "Fish & Salmon", "emoji": "🐟", "is_allergen": True},
+        {"name": "Pumpkin",       "emoji": "🎃", "is_allergen": False},
+    ],
+    "bases": [
+        {"name": "Oats",  "description": "Light & wholesome"},
+        {"name": "Ragi",  "description": "Nutrient-rich"},
+    ],
+    "shapes": ["All", "Circle", "Bone", "Heart", "Square", "Star", "Paw"],
+}
+
+
+@api_router.get("/admin/cake-config")
+async def get_cake_config(username: str = Depends(verify_admin)):
+    """Get active cake configuration (flavours, bases, shapes)."""
+    cfg = await db.cake_config.find_one({"_id": "active"}, {"_id": 0})
+    if cfg is None:
+        return DEFAULT_CAKE_CONFIG
+    return cfg
+
+
+@api_router.put("/admin/cake-config")
+async def update_cake_config(config: dict, username: str = Depends(verify_admin)):
+    """Save cake configuration to DB."""
+    from datetime import datetime, timezone
+    config["updated_at"] = datetime.now(timezone.utc).isoformat()
+    config["updated_by"] = username
+    await db.cake_config.update_one(
+        {"_id": "active"},
+        {"$set": config},
+        upsert=True,
+    )
+    return {"success": True}
+
+
+@api_router.patch("/admin/products/{product_id}/shape-tag")
+async def update_product_shape_tag(
+    product_id: str,
+    update: dict,
+    username: str = Depends(verify_admin),
+):
+    """Update the shape tag on a birthday cake product."""
+    shape = update.get("shape_tag", "").lower()
+    # Remove old shape tags and add new one
+    shape_tags = ["circle", "bone", "heart", "square", "star", "paw"]
+    result = await db.products.update_one(
+        {"id": product_id},
+        {
+            "$pull": {"tags": {"$in": shape_tags}},
+        },
+    )
+    if shape and shape != "all":
+        await db.products.update_one(
+            {"id": product_id},
+            {"$addToSet": {"tags": shape}},
+        )
+    return {"success": True, "shape_tag": shape}
 
 
 # Include routers
