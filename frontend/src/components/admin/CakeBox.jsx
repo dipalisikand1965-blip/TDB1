@@ -336,6 +336,7 @@ function CatalogueTab() {
   const [search, setSearch]             = useState('');
   const [page, setPage]                 = useState(1);
   const [editProduct, setEditProduct]   = useState(null);
+  const [saving, setSaving]             = useState(false);
   const [toast, setToast]               = useState('');
   const [stats, setStats]               = useState({});
   const [showAddModal, setShowAddModal] = useState(false);
@@ -344,9 +345,6 @@ function CatalogueTab() {
   const fetchCakes = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch both sources in parallel
-      // source 1: products_master where category=cakes (185 physical cakes)
-      // source 2: products collection where category=breed-cakes (40 Shopify breed cakes)
       const [masterRes, physicalRes] = await Promise.all([
         fetch(`${API_URL}/api/product-box/products?category=cakes&limit=300`, { headers: getAdminHeaders() }),
         fetch(`${API_URL}/api/admin/products?category=breed-cakes&limit=100`, { headers: getAdminHeaders() }),
@@ -359,7 +357,6 @@ function CatalogueTab() {
       const all = [...masterCakes, ...physicalCakes];
       setCakes(all);
 
-      // Build shape stats
       const shapeCounts = {};
       all.forEach(c => {
         const shape = c.shape || (c.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
@@ -372,29 +369,136 @@ function CatalogueTab() {
 
   useEffect(() => { fetchCakes(); }, [fetchCakes]);
 
-  const deleteProduct = async (product) => {
-    if (!window.confirm(`Archive "${product.name}"?`)) return;
+  // Fix 1: Archive — PATCH to set archived, not DELETE
+  const archiveProduct = async (product) => {
+    if (!window.confirm(`Archive "${product.name}"? It will be hidden from the catalogue.`)) return;
     try {
       await fetch(`${API_URL}/api/product-box/products/${product.id}`, {
-        method: 'DELETE',
-        headers: getAdminHeaders(),
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...getAdminHeaders() },
+        body: JSON.stringify({ is_active: false, visibility: { status: 'archived' } }),
       });
       setToast(`✅ "${product.name}" archived`);
       fetchCakes();
-    } catch { setToast('❌ Delete failed'); }
+    } catch { setToast('❌ Archive failed'); }
   };
 
+  // Fix 2: Proper save — PUT to product-box endpoint with full product data
+  const saveProduct = async () => {
+    if (!editProduct) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${API_URL}/api/product-box/products/${editProduct.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editProduct),
+      });
+      if (res.ok) {
+        setToast('✅ Cake saved');
+        setEditProduct(null);
+        fetchCakes();
+      } else {
+        setToast('❌ Save failed');
+      }
+    } catch { setToast('❌ Save failed'); }
+    setSaving(false);
+  };
+
+  // Fix 8: CSV export
+  const exportCSV = () => {
+    const headers = ['Name', 'Shape', 'Price', 'Status', 'Category', 'Allergens', 'Cities'];
+    const rows = cakes.map(c => [
+      `"${c.name || ''}"`,
+      c.shape || '',
+      c.price || c.original_price || '',
+      (c.is_active || c.active) ? 'Active' : 'Archived',
+      c.category || '',
+      `"${(c.allergens || []).join(';')}"`,
+      `"${(c.same_day_cities || []).join(';')}"`,
+    ]);
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'cake-catalogue.csv'; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Fix 8: CSV import
+  const handleImportCSV = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.split('\n').slice(1).filter(Boolean);
+    let added = 0;
+    for (const line of lines) {
+      const [name, shape, price, , category] = line.split(',').map(s => s.replace(/^"|"$/g, '').trim());
+      if (!name) continue;
+      await fetch(`${API_URL}/api/product-box/products`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, shape, price: Number(price) || 0, category: category || 'cakes', is_active: true }),
+      });
+      added++;
+    }
+    setToast(`✅ Imported ${added} cakes`);
+    fetchCakes();
+    e.target.value = '';
+  };
+
+  // Fix 6: Search — all conditions combined correctly
   const filtered = cakes.filter(c => {
-    const shape  = c.shape || (c.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
-    const tagStr = (c.tags || []).join(' ').toLowerCase();
-    if (shapeFilter !== 'all' && shape.toLowerCase() !== shapeFilter.toLowerCase()) return false;
-    if (seasonFilter !== 'all' && !tagStr.includes(seasonFilter.toLowerCase())) return false;
-    if (search && !c.name?.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
+    const shape   = c.shape || (c.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
+    const tagStr  = (c.tags || []).join(' ').toLowerCase();
+    const nameMatch   = !search || c.name?.toLowerCase().includes(search.toLowerCase());
+    const shapeMatch  = shapeFilter === 'all' || shape.toLowerCase() === shapeFilter.toLowerCase();
+    const seasonMatch = seasonFilter === 'all' || tagStr.includes(seasonFilter.toLowerCase());
+    return nameMatch && shapeMatch && seasonMatch;
   });
+
+  // Fix 4: Split into two sections by source
+  const tdbCakes        = filtered.filter(c => c.shopify_id || c.source === 'shopify' || c.source === 'production_csv_import' || c._source === 'physical');
+  const collectionCakes = filtered.filter(c => !c.shopify_id && c.source !== 'shopify' && c.source !== 'production_csv_import' && c._source !== 'physical');
 
   const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+  const CakeRow = ({ cake, i, total }) => {
+    const shape = cake.shape || (cake.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
+    const img   = cake.image_url || cake.image || cake.mockup_url || '';
+    return (
+      <div key={cake.id} style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 100px 80px 110px', gap: 12, padding: '10px 16px', borderBottom: i < total - 1 ? `1px solid ${P.border}` : 'none', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: P.cream }}>
+            {img ? <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🎂</div>}
+          </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: P.dark }}>{cake.name}</div>
+            <div style={{ fontSize: 10, color: P.muted, marginTop: 2 }}>{cake.id}</div>
+          </div>
+        </div>
+        <div><ShapeBadge shape={shape} /></div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: P.purple }}>
+          {cake.price || cake.original_price ? `₹${cake.price || cake.original_price}` : '—'}
+        </div>
+        <div>
+          <span style={{ fontSize: 11, fontWeight: 700, color: (cake.is_active || cake.active) ? P.green : P.red }}>
+            {(cake.is_active || cake.active) ? '✓ Active' : '✗ Off'}
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: 5 }}>
+          <button onClick={() => setEditProduct(cake)} style={{ padding: '5px 9px', borderRadius: 6, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>✏ Edit</button>
+          <button onClick={() => archiveProduct(cake)} style={{ padding: '5px 8px', borderRadius: 6, border: '1px solid #FECACA', background: '#FFF5F5', color: P.red, cursor: 'pointer', fontSize: 11 }}>⌫</button>
+        </div>
+      </div>
+    );
+  };
+
+  const TableHeader = () => (
+    <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 100px 80px 110px', gap: 12, padding: '10px 16px', background: P.cream, borderBottom: `1px solid ${P.border}`, fontSize: 11, fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <div>Product</div><div>Shape</div><div>Price</div><div>Status</div><div>Actions</div>
+    </div>
+  );
 
   return (
     <div>
@@ -408,7 +512,7 @@ function CatalogueTab() {
         ))}
       </div>
 
-      {/* Filters + Add */}
+      {/* Filters + Add + CSV */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         <input
           value={search}
@@ -416,114 +520,87 @@ function CatalogueTab() {
           placeholder="Search cakes…"
           style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13, minWidth: 180 }}
         />
-        {/* Shape chips */}
         {['all', ...SHAPES].map(s => (
-          <button
-            key={s}
-            onClick={() => { setShapeFilter(s); setPage(1); }}
-            style={{
-              padding: '6px 14px', borderRadius: 20, border: `1.5px solid ${shapeFilter === s ? P.purple : P.border}`,
-              background: shapeFilter === s ? P.purple : '#fff',
-              color: shapeFilter === s ? '#fff' : P.muted,
-              fontSize: 12, fontWeight: 700, cursor: 'pointer', textTransform: 'capitalize',
-            }}
-          >
+          <button key={s} onClick={() => { setShapeFilter(s); setPage(1); }}
+            style={{ padding: '6px 14px', borderRadius: 20, border: `1.5px solid ${shapeFilter === s ? P.purple : P.border}`, background: shapeFilter === s ? P.purple : '#fff', color: shapeFilter === s ? '#fff' : P.muted, fontSize: 12, fontWeight: 700, cursor: 'pointer', textTransform: 'capitalize' }}>
             {s === 'all' ? 'All' : s}
           </button>
         ))}
-        {/* Season filter */}
-        <select
-          value={seasonFilter}
-          onChange={e => { setSeasonFilter(e.target.value); setPage(1); }}
-          style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 12 }}
-        >
+        <select value={seasonFilter} onChange={e => { setSeasonFilter(e.target.value); setPage(1); }}
+          style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 12 }}>
           <option value="all">All Seasons</option>
           {SEASONS.map(s => <option key={s} value={s.toLowerCase()}>{s}</option>)}
         </select>
-        <button
-          onClick={() => setShowAddModal(true)}
-          style={{ marginLeft: 'auto', padding: '8px 16px', borderRadius: 8, background: P.purple, color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
-        >
+        {/* Fix 8: CSV buttons */}
+        <button onClick={exportCSV} title="Export CSV" style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>↓ CSV</button>
+        <label title="Import CSV" style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+          ↑ CSV
+          <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display: 'none' }} />
+        </label>
+        <button onClick={() => setShowAddModal(true)}
+          style={{ padding: '8px 16px', borderRadius: 8, background: P.purple, color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           + Add Cake
         </button>
         <button onClick={fetchCakes} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>↻</button>
         <span style={{ fontSize: 12, color: P.muted }}>{filtered.length} / {cakes.length} cakes</span>
       </div>
 
-      {/* Table */}
+      {/* Fix 4: Two sections */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: 40, color: P.muted }}>Loading catalogue…</div>
       ) : (
         <>
-          <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 100px 80px 100px', gap: 12, padding: '10px 16px', background: P.cream, borderBottom: `1px solid ${P.border}`, fontSize: 11, fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              <div>Product</div><div>Shape</div><div>Price</div><div>Status</div><div>Actions</div>
-            </div>
-
-            {paginated.map((cake, i) => {
-              const shape = cake.shape || (cake.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
-              const img   = cake.image_url || cake.image || cake.mockup_url || '';
-              return (
-                <div key={cake.id} style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 100px 80px 100px', gap: 12, padding: '10px 16px', borderBottom: i < paginated.length - 1 ? `1px solid ${P.border}` : 'none', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: P.cream }}>
-                      {img ? <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🎂</div>}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: P.dark }}>{cake.name}</div>
-                      <div style={{ fontSize: 10, color: P.muted, marginTop: 2 }}>{cake.id}</div>
-                      {cake._source === 'physical' && (
-                        <span style={{ fontSize: 9, background: '#E8F5E9', color: '#2E7D32', borderRadius: 20, padding: '1px 6px', fontWeight: 700 }}>TDB Physical</span>
-                      )}
-                    </div>
-                  </div>
-                  <div><ShapeBadge shape={shape} /></div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: P.purple }}>
-                    {cake.price || cake.original_price ? `₹${cake.price || cake.original_price}` : '—'}
-                  </div>
-                  <div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: (cake.is_active || cake.active) ? P.green : P.red }}>
-                      {(cake.is_active || cake.active) ? '✓ Active' : '✗ Off'}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button
-                      onClick={() => setEditProduct(cake)}
-                      style={{ padding: '5px 10px', borderRadius: 6, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
-                    >
-                      ✏ Edit
-                    </button>
-                    <button
-                      onClick={() => deleteProduct(cake)}
-                      style={{ padding: '5px 8px', borderRadius: 6, border: `1px solid #FECACA`, background: '#FFF5F5', color: P.red, cursor: 'pointer', fontSize: 11 }}
-                    >
-                      ⌫
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+          {/* Section 1: TDB Birthday Cakes */}
+          <div style={{ fontSize: 14, fontWeight: 800, color: P.dark, marginBottom: 10, marginTop: 4 }}>
+            🎂 TDB Birthday Cakes ({tdbCakes.length})
           </div>
+          {tdbCakes.length > 0 ? (
+            <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden', marginBottom: 28 }}>
+              <TableHeader />
+              {tdbCakes.map((cake, i) => <CakeRow key={cake.id} cake={cake} i={i} total={tdbCakes.length} />)}
+            </div>
+          ) : (
+            <div style={{ padding: '20px 16px', color: P.muted, fontSize: 13, background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, marginBottom: 28 }}>
+              No TDB physical cakes found (check Shopify sync)
+            </div>
+          )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: page === 1 ? '#f5f5f5' : '#fff', cursor: page === 1 ? 'default' : 'pointer', fontSize: 12 }}>← Prev</button>
-              <span style={{ padding: '6px 12px', fontSize: 12, color: P.muted }}>Page {page} of {totalPages} · {filtered.length} cakes</span>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: page === totalPages ? '#f5f5f5' : '#fff', cursor: page === totalPages ? 'default' : 'pointer', fontSize: 12 }}>Next →</button>
+          {/* Section 2: Birthday Cake Collection */}
+          <div style={{ fontSize: 14, fontWeight: 800, color: P.dark, marginBottom: 10 }}>
+            🎨 Birthday Cake Collection ({collectionCakes.length})
+          </div>
+          {collectionCakes.length > 0 ? (
+            <>
+              <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden' }}>
+                <TableHeader />
+                {paginated.filter(c => !c.shopify_id && c.source !== 'shopify' && c.source !== 'production_csv_import' && c._source !== 'physical')
+                  .map((cake, i, arr) => <CakeRow key={cake.id} cake={cake} i={i} total={arr.length} />)}
+              </div>
+              {totalPages > 1 && (
+                <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>
+                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>← Prev</button>
+                  <span style={{ padding: '6px 12px', fontSize: 12, color: P.muted }}>Page {page} of {totalPages}</span>
+                  <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>Next →</button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ padding: '20px 16px', color: P.muted, fontSize: 13, background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12 }}>
+              No collection cakes found matching filters
             </div>
           )}
         </>
       )}
 
-      {/* Product Editor Modal */}
+      {/* Product Editor Modal — Fix 2: passes saving + proper onSave */}
       {editProduct && (
         <ProductBoxEditor
           open={true}
           product={editProduct}
           setProduct={setEditProduct}
-          onClose={() => { setEditProduct(null); fetchCakes(); }}
-          onSave={() => { setEditProduct(null); fetchCakes(); setToast('✅ Cake saved'); }}
+          saving={saving}
+          onClose={() => { setEditProduct(null); }}
+          onSave={saveProduct}
         />
       )}
 
@@ -538,24 +615,58 @@ function CatalogueTab() {
   );
 }
 
-// ── Add Cake Modal ────────────────────────────────────────────────────────────
+// ── Add Cake Modal — Fix 3: image upload, description, X button ───────────────
 function AddCakeModal({ onClose, onSave }) {
   const [form, setForm] = useState({
-    name: '', description: '', price: '', shape: '', category: 'cakes',
-    product_type: 'birthday_cake', pillar: 'celebrate',
-    is_doggy_bakery: true, available_bases: ['Oats', 'Ragi'],
-    same_day_cities: ['Bangalore', 'Mumbai'], is_active: true,
+    name: '', description: '', long_description: '',
+    price: '', shape: '', season: '',
+    category: 'cakes', product_type: 'birthday_cake',
+    pillar: 'celebrate', is_doggy_bakery: true,
+    available_bases: ['Oats', 'Ragi'],
+    same_day_cities: ['Bangalore', 'Mumbai'],
+    is_active: true, available_flavours: [], allergens: [],
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [saving, setSaving] = useState(false);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const uploadImage = async () => {
+    if (!imageFile) return '';
+    const formData = new FormData();
+    formData.append('file', imageFile);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/upload-image`, {
+        method: 'POST',
+        headers: { Authorization: getAdminHeaders().Authorization },
+        body: formData,
+      });
+      const data = await res.json();
+      return data.url || data.image_url || '';
+    } catch { return ''; }
+  };
 
   const save = async () => {
     if (!form.name) return alert('Name is required');
     setSaving(true);
     try {
+      const imageUrl = await uploadImage();
       await fetch(`${API_URL}/api/product-box/products`, {
         method: 'POST',
-        headers: getAdminHeaders(),
-        body: JSON.stringify({ ...form, price: Number(form.price) || 0 }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          price: Number(form.price) || 0,
+          image_url: imageUrl,
+          image: imageUrl,
+          images: imageUrl ? [imageUrl] : [],
+        }),
       });
       onSave();
     } catch { alert('Save failed'); }
@@ -563,36 +674,72 @@ function AddCakeModal({ onClose, onSave }) {
   };
 
   return (
-    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, padding: 28, width: 480, maxHeight: '90vh', overflowY: 'auto' }}>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, padding: 28, width: 560, maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+        {/* X button */}
+        <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: '#999', lineHeight: 1 }}>✕</button>
+
         <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>🎂 Add New Cake</div>
+
+        {/* Image upload */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 6, color: P.muted }}>Cake Image</label>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            {imagePreview && (
+              <img src={imagePreview} alt="" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, border: `1px solid ${P.border}` }} />
+            )}
+            <label style={{ padding: '10px 16px', borderRadius: 8, border: `2px dashed ${P.border}`, cursor: 'pointer', fontSize: 13, color: P.muted, background: P.cream }}>
+              📷 Upload image
+              <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+            </label>
+          </div>
+        </div>
+
         {[
-          ['Name', 'name', 'text'],
-          ['Price (₹)', 'price', 'number'],
-          ['Description', 'description', 'text'],
+          ['Name *', 'name', 'input'],
+          ['Price (₹)', 'price', 'input-number'],
+          ['Short Description (for cards)', 'description', 'input'],
         ].map(([label, key, type]) => (
           <div key={key} style={{ marginBottom: 14 }}>
             <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4, color: P.muted }}>{label}</label>
             <input
-              type={type}
+              type={type === 'input-number' ? 'number' : 'text'}
               value={form[key]}
               onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-              style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13, boxSizing: 'border-box' }}
             />
           </div>
         ))}
+
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4, color: P.muted }}>Full Description</label>
+          <textarea value={form.long_description} onChange={e => setForm(f => ({ ...f, long_description: e.target.value }))}
+            rows={4} placeholder="Full product description..."
+            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13, resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+        </div>
+
         <div style={{ marginBottom: 14 }}>
           <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4, color: P.muted }}>Shape</label>
           <select value={form.shape} onChange={e => setForm(f => ({ ...f, shape: e.target.value }))}
             style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}>
-            <option value="">— Select —</option>
+            <option value="">— Select shape —</option>
             {SHAPES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
-        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4, color: P.muted }}>Season / Occasion</label>
+          <select value={form.season} onChange={e => setForm(f => ({ ...f, season: e.target.value }))}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}>
+            <option value="">— All year —</option>
+            {SEASONS.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={onClose} style={{ flex: 1, padding: '10px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 13 }}>Cancel</button>
-          <button onClick={save} disabled={saving} style={{ flex: 2, padding: '10px', borderRadius: 8, background: P.purple, color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
-            {saving ? 'Saving…' : 'Add Cake'}
+          <button onClick={save} disabled={saving} style={{ flex: 2, padding: '10px', borderRadius: 8, background: `linear-gradient(135deg,${P.purple},${P.purpleL})`, color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
+            {saving ? 'Saving…' : '🎂 Add Cake'}
           </button>
         </div>
       </div>
@@ -601,19 +748,21 @@ function AddCakeModal({ onClose, onSave }) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
-// TAB 3 — TDB PRODUCTS (Pupcakes, Treats, Hampers, Frozen)
+// TAB 3 — TDB PRODUCTS (Dognuts, Mini Cakes, Treats, Hampers, Frozen)
 // ══════════════════════════════════════════════════════════════════════════════
+// Category IDs verified against DB — all live in products_master
 const TDB_CATEGORIES = [
-  { id: 'pupcakes',    label: 'Pupcakes',      icon: '🧁', type: 'pupcake_set' },
-  { id: 'desi-treats', label: 'Desi Treats',   icon: '🍖', type: 'desi_treat' },
-  { id: 'frozen',      label: 'Frozen Treats', icon: '🧊', type: 'frozen_treat' },
-  { id: 'hampers',     label: 'Hampers',        icon: '🎁', type: 'hamper' },
-  { id: 'addons',      label: 'Party Add-Ons', icon: '🎉', type: 'celebration_addon' },
-  { id: 'breed-cakes', label: 'Breed Cakes',   icon: '🐾', type: 'breed_cake' },
+  { id: 'dognuts',            label: 'Dognuts / Pupcakes', icon: '🧁' },
+  { id: 'mini-cakes',         label: 'Mini Cakes',          icon: '🎂' },
+  { id: 'desi-treats',        label: 'Desi Treats',         icon: '🍖' },
+  { id: 'frozen-treats',      label: 'Frozen Treats',       icon: '🧊' },
+  { id: 'hampers',            label: 'Hampers',             icon: '🎁' },
+  { id: 'celebration_addons', label: 'Party Add-Ons',       icon: '🎉' },
+  { id: 'breed-cakes',        label: 'Breed Cakes',         icon: '🐾' },
 ];
 
 function TDBProductsTab() {
-  const [activeCategory, setActiveCategory] = useState('pupcakes');
+  const [activeCategory, setActiveCategory] = useState('dognuts');
   const [products, setProducts]             = useState([]);
   const [loading, setLoading]               = useState(true);
   const [editProduct, setEditProduct]       = useState(null);
@@ -625,8 +774,9 @@ function TDBProductsTab() {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
+      // TDB products live in products_master — use product-box API
       const res = await fetch(
-        `${API_URL}/api/admin/products?category=${activeCategory}&limit=200`,
+        `${API_URL}/api/product-box/products?category=${activeCategory}&limit=200`,
         { headers: getAdminHeaders() }
       );
       const data = res.ok ? await res.json() : {};
@@ -896,6 +1046,60 @@ function ConfigTab() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// FIX 7 — Illustrations wrapper: Add Breed input above BreedCakeManager
+// ══════════════════════════════════════════════════════════════════════════════
+function IllustrationsWrapper() {
+  const [newBreed, setNewBreed] = useState('');
+  const [adding, setAdding]     = useState(false);
+  const [toast, setToast]       = useState('');
+
+  const addBreed = async () => {
+    const name = newBreed.trim();
+    if (!name) return;
+    setAdding(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/breed-tags/add`, {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: JSON.stringify({ breed: name }),
+      });
+      if (res.ok) {
+        setToast(`✅ "${name}" added — now click Generate All Breeds in the Generation tab below`);
+        setNewBreed('');
+      } else {
+        setToast('❌ Failed to add breed');
+      }
+    } catch { setToast('❌ Error adding breed'); }
+    setAdding(false);
+  };
+
+  return (
+    <div>
+      <Toast msg={toast} onClose={() => setToast('')} />
+      {/* Quick Add Breed row */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, padding: '12px 16px', background: P.cream, borderRadius: 10, border: `1px solid ${P.border}`, alignItems: 'center' }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: P.muted, whiteSpace: 'nowrap' }}>+ Add New Breed:</span>
+        <input
+          value={newBreed}
+          onChange={e => setNewBreed(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && addBreed()}
+          placeholder="e.g. Alsatian, Cockapoo, Sheepadoodle…"
+          style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}
+        />
+        <button
+          onClick={addBreed}
+          disabled={adding || !newBreed.trim()}
+          style={{ padding: '8px 16px', borderRadius: 8, background: P.purple, color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, opacity: (adding || !newBreed.trim()) ? 0.6 : 1 }}
+        >
+          {adding ? 'Adding…' : '+ Generate Breed'}
+        </button>
+      </div>
+      <BreedCakeManager />
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // MAIN — CakeBox
 // ══════════════════════════════════════════════════════════════════════════════
 const TABS = [
@@ -946,7 +1150,7 @@ export default function CakeBox() {
       {activeTab === 'catalogue'     && <CatalogueTab />}
       {activeTab === 'tdb'           && <TDBProductsTab />}
       {activeTab === 'config'        && <ConfigTab />}
-      {activeTab === 'illustrations' && <BreedCakeManager />}
+      {activeTab === 'illustrations' && <IllustrationsWrapper />}
     </div>
   );
 }
