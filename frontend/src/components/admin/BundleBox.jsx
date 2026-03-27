@@ -1,8 +1,10 @@
 /**
  * BundleBox.jsx — TDC Admin
- * Manage all 27 care bundles
+ * Manage all bundles across pillars
+ * Uses ProductBoxEditor for rich multi-tab editing (Cloudinary, AI images, tabs)
  */
 import { useState, useEffect, useCallback } from 'react';
+import ProductBoxEditor from './ProductBoxEditor';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 function getAdminHeaders() {
@@ -26,98 +28,82 @@ function Toast({ msg, onClose }) {
   );
 }
 
-function EditBundleModal({ bundle, onClose, onSave }) {
-  const [form, setForm] = useState({ ...bundle });
-  const [saving, setSaving] = useState(false);
-
-  const save = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`${API_URL}/api/admin/bundles/all/${form.id || form._id}`, {
-        method: 'PUT',
-        headers: getAdminHeaders(),
-        body: JSON.stringify({
-          name: form.name,
-          price: Number(form.price) || 0,
-          pillar: form.pillar,
-          description: form.description,
-          is_active: form.is_active,
-          is_soul_made: form.is_soul_made,
-          discount_percent: Number(form.discount_percent) || 0,
-        }),
-      });
-      if (res.ok) onSave();
-      else alert('Save failed');
-    } catch { alert('Save failed'); }
-    setSaving(false);
+// Transform bundle DB record → ProductBoxEditor schema
+function bundleToProduct(b) {
+  return {
+    id: b.id || b._id,
+    name: b.name || '',
+    basics: {
+      name: b.name || '',
+      description: b.description || '',
+      brand: '',
+    },
+    commerce_ops: {
+      pricing: {
+        selling_price: Number(b.price) || 0,
+        original_price: Number(b.price) || 0,
+        discount_percent: Number(b.discount_percent) || 0,
+      },
+    },
+    original_price: Number(b.price) || 0,
+    primary_pillar: b.pillar || '',
+    pillar: b.pillar || '',
+    category: b.category || '',
+    sub_category: '',
+    soul_tier: b.is_soul_made ? 'soul_made' : '',
+    visibility: { is_active: b.is_active !== false, status: b.is_active !== false ? 'active' : 'inactive' },
+    image_url: b.image_url || b.image || b.watercolor_image || '',
+    image: b.image_url || b.image || '',
+    media: { primary_image: b.image_url || b.image || b.watercolor_image || '' },
+    product_type: 'bundle',
+    tags: b.tags || [],
+    items: b.items || '',
+    _bundleId: b.id || b._id,
   };
-
-  const PILLARS = ['care','dine','celebrate','go','play','learn','paperwork','emergency','farewell','adopt','shop'];
-
-  return (
-    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:16, padding:28, width:500, maxHeight:'90vh', overflowY:'auto', position:'relative' }}>
-        <button onClick={onClose} style={{ position:'absolute', top:16, right:16, background:'none', border:'none', fontSize:22, cursor:'pointer', color:'#999' }}>✕</button>
-        <div style={{ fontSize:18, fontWeight:800, marginBottom:20 }}>📦 Edit Bundle</div>
-
-        {[['Bundle Name','name','text'],['Price (₹)','price','number'],['Discount %','discount_percent','number']].map(([label,key,type]) => (
-          <div key={key} style={{ marginBottom:14 }}>
-            <label style={{ fontSize:12, fontWeight:700, display:'block', marginBottom:4, color:P.muted }}>{label}</label>
-            <input type={type} value={form[key]||''} onChange={e => setForm(f=>({...f,[key]:e.target.value}))}
-              style={{ width:'100%', padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13 }} />
-          </div>
-        ))}
-
-        <div style={{ marginBottom:14 }}>
-          <label style={{ fontSize:12, fontWeight:700, display:'block', marginBottom:4, color:P.muted }}>Pillar</label>
-          <select value={form.pillar||''} onChange={e => setForm(f=>({...f,pillar:e.target.value}))}
-            style={{ width:'100%', padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13 }}>
-            {PILLARS.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-        </div>
-
-        <div style={{ marginBottom:14 }}>
-          <label style={{ fontSize:12, fontWeight:700, display:'block', marginBottom:4, color:P.muted }}>Description</label>
-          <textarea value={form.description||''} onChange={e => setForm(f=>({...f,description:e.target.value}))}
-            rows={3} style={{ width:'100%', padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13, resize:'vertical', fontFamily:'inherit' }} />
-        </div>
-
-        <div style={{ display:'flex', gap:20, marginBottom:20 }}>
-          <label style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, fontWeight:600, cursor:'pointer' }}>
-            <input type="checkbox" checked={form.is_active!==false} onChange={e => setForm(f=>({...f,is_active:e.target.checked}))} />
-            Active
-          </label>
-          <label style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, fontWeight:600, cursor:'pointer' }}>
-            <input type="checkbox" checked={!!form.is_soul_made} onChange={e => setForm(f=>({...f,is_soul_made:e.target.checked}))} />
-            ✦ Soul Made™
-          </label>
-        </div>
-
-        <div style={{ display:'flex', gap:10 }}>
-          <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:13 }}>Cancel</button>
-          <button onClick={save} disabled={saving} style={{ flex:2, padding:'10px', borderRadius:8, background:`linear-gradient(135deg,${P.purple},${P.purpleL})`, color:'#fff', border:'none', fontSize:13, fontWeight:700, cursor:'pointer', opacity:saving?0.7:1 }}>
-            {saving ? 'Saving…' : '💾 Save Bundle'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
+
+// Extract bundle-relevant fields from ProductBoxEditor state
+function productToBundlePatch(p) {
+  return {
+    name: p.basics?.name || p.name || '',
+    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
+    pillar: p.primary_pillar || p.pillar || '',
+    description: p.basics?.description || p.description || '',
+    is_active: p.visibility?.is_active !== false,
+    is_soul_made: p.soul_tier === 'soul_made',
+    discount_percent: Number(p.commerce_ops?.pricing?.discount_percent || 0),
+    tags: p.tags || [],
+    image_url: p.image_url || p.media?.primary_image || '',
+    image: p.image_url || p.media?.primary_image || '',
+    watercolor_image: p.image_url || p.media?.primary_image || '',
+  };
+}
+
+const BUNDLE_ENTITY_CONFIG = {
+  prefix: 'bundles',
+  uploadPrefix: 'bundle',
+  entityLabel: 'Bundle',
+};
 
 export default function BundleBox() {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [pillarFilter, setPillarFilter] = useState('all');
-  const [editBundle, setEditBundle] = useState(null);
   const [toast, setToast] = useState('');
+
+  // ProductBoxEditor state
+  const [editProduct, setEditProduct] = useState(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const fetchBundles = useCallback(async () => {
     setLoading(true);
     try {
       const url = pillarFilter && pillarFilter !== 'all'
         ? `${API_URL}/api/admin/bundles/all?pillar=${pillarFilter}&limit=200`
-        : `${API_URL}/api/admin/bundles/all?limit=200`;      const res = await fetch(url, { headers: getAdminHeaders() });
+        : `${API_URL}/api/admin/bundles/all?limit=200`;
+      const res = await fetch(url, { headers: getAdminHeaders() });
       const data = res.ok ? await res.json() : {};
       setBundles(data.bundles || []);
     } catch { setBundles([]); }
@@ -125,6 +111,37 @@ export default function BundleBox() {
   }, [pillarFilter]);
 
   useEffect(() => { fetchBundles(); }, [fetchBundles]);
+
+  // Open editor for a bundle
+  const openEditor = (b) => {
+    setEditProduct(bundleToProduct(b));
+    setShowEditor(true);
+  };
+
+  // Save via ProductBoxEditor onSave callback
+  const saveBundle = async () => {
+    if (!editProduct) return;
+    setSaving(true);
+    try {
+      const bundleId = editProduct._bundleId || editProduct.id;
+      const payload = productToBundlePatch(editProduct);
+      const res = await fetch(`${API_URL}/api/admin/bundles/all/${bundleId}`, {
+        method: 'PATCH',
+        headers: getAdminHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setShowEditor(false);
+        setEditProduct(null);
+        fetchBundles();
+        setToast('✅ Bundle saved');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert('Save failed: ' + (err.detail || res.status));
+      }
+    } catch (e) { alert('Save failed: ' + e.message); }
+    setSaving(false);
+  };
 
   const exportCSV = () => {
     const headers = ['ID','Name','Pillar','Price','Discount %','Soul Made','Status'];
@@ -191,9 +208,10 @@ export default function BundleBox() {
           <div style={{ fontSize:11, color:P.muted }}>Total Bundles</div>
         </div>
         {Object.entries(pillarCounts).map(([p,c]) => (
-          <div key={p} style={{ background:'#fff', border:`1px solid ${P.border}`, borderRadius:12, padding:'14px 16px', cursor:'pointer' }} onClick={() => setPillarFilter(p)}>
-            <div style={{ fontSize:22, fontWeight:800, color:P.purpleL }}>{c}</div>
-            <div style={{ fontSize:11, color:P.muted }}>{p}</div>
+          <div key={p} style={{ background:pillarFilter===p?P.purple:'#fff', border:`1px solid ${pillarFilter===p?P.purple:P.border}`, borderRadius:12, padding:'14px 16px', cursor:'pointer' }}
+            onClick={() => setPillarFilter(pillarFilter===p?'all':p)}>
+            <div style={{ fontSize:22, fontWeight:800, color:pillarFilter===p?'#fff':P.purpleL }}>{c}</div>
+            <div style={{ fontSize:11, color:pillarFilter===p?'rgba(255,255,255,0.8)':P.muted }}>{p}</div>
           </div>
         ))}
       </div>
@@ -223,9 +241,15 @@ export default function BundleBox() {
           </div>
           {filtered.map((b, i) => (
             <div key={b.id||b._id||i} style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 80px 80px 80px 80px', gap:12, padding:'10px 16px', borderBottom:i<filtered.length-1?`1px solid ${P.border}`:'none', alignItems:'center' }}>
-              <div>
-                <div style={{ fontSize:13, fontWeight:700 }}>{b.name}</div>
-                <div style={{ fontSize:11, color:P.muted }}>{b.description?.slice(0,60) || '—'}</div>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                {(b.image_url || b.image || b.watercolor_image) && (
+                  <img src={b.image_url || b.image || b.watercolor_image} alt={b.name}
+                    style={{ width:32, height:32, borderRadius:6, objectFit:'cover', flexShrink:0, border:`1px solid ${P.border}` }} />
+                )}
+                <div>
+                  <div style={{ fontSize:13, fontWeight:700 }}>{b.name}</div>
+                  <div style={{ fontSize:11, color:P.muted }}>{b.description?.slice(0,60) || '—'}</div>
+                </div>
               </div>
               <div style={{ fontSize:12, fontWeight:600, color:P.purpleL }}>{b.pillar || '—'}</div>
               <div style={{ fontSize:13, fontWeight:700, color:P.purple }}>
@@ -237,8 +261,10 @@ export default function BundleBox() {
               <div style={{ fontSize:11, fontWeight:700, color:b.is_active!==false?P.green:P.red }}>
                 {b.is_active!==false ? '✓ Active' : '✗ Off'}
               </div>
-              <button onClick={() => setEditBundle(b)}
-                style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
+              <button
+                data-testid={`edit-bundle-${b.id||i}`}
+                onClick={() => openEditor(b)}
+                style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
                 ✏ Edit
               </button>
             </div>
@@ -246,13 +272,16 @@ export default function BundleBox() {
         </div>
       )}
 
-      {editBundle && (
-        <EditBundleModal
-          bundle={editBundle}
-          onClose={() => setEditBundle(null)}
-          onSave={() => { setEditBundle(null); fetchBundles(); setToast('✅ Bundle saved'); }}
-        />
-      )}
+      {/* Rich 6-Tab Editor for bundles */}
+      <ProductBoxEditor
+        product={editProduct}
+        setProduct={setEditProduct}
+        open={showEditor}
+        onClose={() => { setShowEditor(false); setEditProduct(null); }}
+        onSave={saveBundle}
+        saving={saving}
+        entityConfig={BUNDLE_ENTITY_CONFIG}
+      />
     </div>
   );
 }

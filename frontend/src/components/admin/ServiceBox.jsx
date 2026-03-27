@@ -1,9 +1,10 @@
 /**
  * ServiceBox.jsx — TDC Admin
  * Manage all 1,025 services across 11 pillars
- * Edit name, price, category, pillar, status
+ * Uses ProductBoxEditor for rich multi-tab editing (Cloudinary, AI images, tabs)
  */
 import { useState, useEffect, useCallback } from 'react';
+import ProductBoxEditor from './ProductBoxEditor';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 function getAdminHeaders() {
@@ -41,80 +42,62 @@ function Toast({ msg, onClose }) {
   );
 }
 
-function EditServiceModal({ service, onClose, onSave }) {
-  const [form, setForm] = useState({ ...service });
-  const [saving, setSaving] = useState(false);
-
-  const save = async () => {
-    setSaving(true);
-    try {
-      const res = await fetch(`${API_URL}/api/admin/services/${form.id || form._id}`, {
-        method: 'PATCH',
-        headers: getAdminHeaders(),
-        body: JSON.stringify({
-          name: form.name,
-          price: Number(form.price) || 0,
-          category: form.category,
-          sub_category: form.sub_category,
-          pillar: form.pillar,
-          description: form.description,
-          is_active: form.is_active,
-        }),
-      });
-      if (res.ok) onSave();
-      else alert('Save failed');
-    } catch { alert('Save failed'); }
-    setSaving(false);
+// Transform service DB record → ProductBoxEditor schema
+function serviceToProduct(s) {
+  return {
+    id: s.id || s._id,
+    name: s.name || '',
+    basics: {
+      name: s.name || '',
+      description: s.description || s.long_description || '',
+      brand: s.brand || '',
+    },
+    commerce_ops: {
+      pricing: {
+        selling_price: Number(s.price) || 0,
+        original_price: Number(s.price) || 0,
+        discount_percent: 0,
+      },
+    },
+    original_price: Number(s.price) || 0,
+    primary_pillar: s.pillar || '',
+    pillar: s.pillar || '',
+    category: s.category || '',
+    sub_category: s.sub_category || '',
+    visibility: { is_active: s.is_active !== false, status: s.is_active !== false ? 'active' : 'inactive' },
+    image_url: s.image_url || s.image || s.watercolor_image || '',
+    image: s.image_url || s.image || '',
+    media: { primary_image: s.image_url || s.image || s.watercolor_image || '' },
+    product_type: 'service',
+    tags: s.tags || [],
+    description: s.description || '',
+    _serviceId: s.id || s._id,
   };
-
-  return (
-    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:16, padding:28, width:520, maxHeight:'90vh', overflowY:'auto', position:'relative' }}>
-        <button onClick={onClose} style={{ position:'absolute', top:16, right:16, background:'none', border:'none', fontSize:22, cursor:'pointer', color:'#999' }}>✕</button>
-        <div style={{ fontSize:18, fontWeight:800, marginBottom:20 }}>🛎️ Edit Service</div>
-
-        {[
-          ['Service Name', 'name', 'text'],
-          ['Price (₹)', 'price', 'number'],
-          ['Category', 'category', 'text'],
-          ['Sub-Category', 'sub_category', 'text'],
-        ].map(([label, key, type]) => (
-          <div key={key} style={{ marginBottom:14 }}>
-            <label style={{ fontSize:12, fontWeight:700, display:'block', marginBottom:4, color:P.muted }}>{label}</label>
-            <input type={type} value={form[key] || ''} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-              style={{ width:'100%', padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13 }} />
-          </div>
-        ))}
-
-        <div style={{ marginBottom:14 }}>
-          <label style={{ fontSize:12, fontWeight:700, display:'block', marginBottom:4, color:P.muted }}>Pillar</label>
-          <select value={form.pillar || ''} onChange={e => setForm(f => ({ ...f, pillar: e.target.value }))}
-            style={{ width:'100%', padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13 }}>
-            {PILLARS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
-          </select>
-        </div>
-
-        <div style={{ marginBottom:14 }}>
-          <label style={{ fontSize:12, fontWeight:700, display:'block', marginBottom:4, color:P.muted }}>Description</label>
-          <textarea value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-            rows={3} style={{ width:'100%', padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13, resize:'vertical', fontFamily:'inherit' }} />
-        </div>
-
-        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
-          <input type="checkbox" checked={form.is_active !== false} onChange={e => setForm(f => ({ ...f, is_active: e.target.checked }))} />
-          <label style={{ fontSize:13, fontWeight:600 }}>Active (visible on front end)</label>
-        </div>
-
-        <div style={{ display:'flex', gap:10 }}>
-          <button onClick={onClose} style={{ flex:1, padding:'10px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:13 }}>Cancel</button>
-          <button onClick={save} disabled={saving} style={{ flex:2, padding:'10px', borderRadius:8, background:`linear-gradient(135deg,${P.purple},${P.purpleL})`, color:'#fff', border:'none', fontSize:13, fontWeight:700, cursor:'pointer', opacity:saving?0.7:1 }}>
-            {saving ? 'Saving…' : '💾 Save Service'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 }
+
+// Extract service-relevant fields from ProductBoxEditor state
+function productToServicePatch(p) {
+  return {
+    name: p.basics?.name || p.name || '',
+    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
+    category: p.category || '',
+    sub_category: p.sub_category || '',
+    pillar: p.primary_pillar || p.pillar || '',
+    description: p.basics?.description || p.description || '',
+    long_description: p.basics?.description || p.description || '',
+    is_active: p.visibility?.is_active !== false,
+    tags: p.tags || [],
+    image_url: p.image_url || p.media?.primary_image || '',
+    image: p.image_url || p.media?.primary_image || '',
+    watercolor_image: p.image_url || p.media?.primary_image || '',
+  };
+}
+
+const SERVICE_ENTITY_CONFIG = {
+  prefix: 'services',
+  uploadPrefix: 'service',
+  entityLabel: 'Service',
+};
 
 export default function ServiceBox() {
   const [activePillar, setActivePillar] = useState('care');
@@ -122,9 +105,14 @@ export default function ServiceBox() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [editService, setEditService] = useState(null);
   const [toast, setToast] = useState('');
   const [totals, setTotals] = useState({});
+
+  // ProductBoxEditor state
+  const [editProduct, setEditProduct] = useState(null);
+  const [showEditor, setShowEditor] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   const PER_PAGE = 20;
 
   const fetchServices = useCallback(async () => {
@@ -151,6 +139,37 @@ export default function ServiceBox() {
   );
   const paginated = filtered.slice((page-1)*PER_PAGE, page*PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
+  // Open editor for a service
+  const openEditor = (s) => {
+    setEditProduct(serviceToProduct(s));
+    setShowEditor(true);
+  };
+
+  // Save via ProductBoxEditor onSave callback
+  const saveService = async () => {
+    if (!editProduct) return;
+    setSaving(true);
+    try {
+      const serviceId = editProduct._serviceId || editProduct.id;
+      const payload = productToServicePatch(editProduct);
+      const res = await fetch(`${API_URL}/api/admin/services/${serviceId}`, {
+        method: 'PATCH',
+        headers: getAdminHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setShowEditor(false);
+        setEditProduct(null);
+        fetchServices();
+        setToast('✅ Service saved');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert('Save failed: ' + (err.detail || res.status));
+      }
+    } catch (e) { alert('Save failed: ' + e.message); }
+    setSaving(false);
+  };
 
   const exportCSV = () => {
     const headers = ['Name','Category','Sub-Category','Price','Pillar','Status'];
@@ -242,9 +261,15 @@ export default function ServiceBox() {
             </div>
             {paginated.map((s, i) => (
               <div key={s.id||s._id||i} style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 80px', gap:12, padding:'10px 16px', borderBottom:i<paginated.length-1?`1px solid ${P.border}`:'none', alignItems:'center' }}>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:700, color:P.dark }}>{s.name}</div>
-                  <div style={{ fontSize:11, color:P.muted }}>{s.sub_category || ''}</div>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  {(s.image_url || s.image) && (
+                    <img src={s.image_url || s.image} alt={s.name}
+                      style={{ width:32, height:32, borderRadius:6, objectFit:'cover', flexShrink:0, border:`1px solid ${P.border}` }} />
+                  )}
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:700, color:P.dark }}>{s.name}</div>
+                    <div style={{ fontSize:11, color:P.muted }}>{s.sub_category || ''}</div>
+                  </div>
                 </div>
                 <div style={{ fontSize:12, color:P.muted }}>{s.category || '—'}</div>
                 <div style={{ fontSize:11, fontWeight:600, color:P.purpleL }}>{s.pillar || activePillar}</div>
@@ -254,8 +279,10 @@ export default function ServiceBox() {
                 <div style={{ fontSize:11, fontWeight:700, color:s.is_active!==false?P.green:P.red }}>
                   {s.is_active!==false ? '✓ Active' : '✗ Off'}
                 </div>
-                <button onClick={() => setEditService(s)}
-                  style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
+                <button
+                  data-testid={`edit-service-${s.id||i}`}
+                  onClick={() => openEditor(s)}
+                  style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
                   ✏ Edit
                 </button>
               </div>
@@ -272,13 +299,16 @@ export default function ServiceBox() {
         </>
       )}
 
-      {editService && (
-        <EditServiceModal
-          service={editService}
-          onClose={() => setEditService(null)}
-          onSave={() => { setEditService(null); fetchServices(); setToast('✅ Service saved'); }}
-        />
-      )}
+      {/* Rich 6-Tab Editor for services */}
+      <ProductBoxEditor
+        product={editProduct}
+        setProduct={setEditProduct}
+        open={showEditor}
+        onClose={() => { setShowEditor(false); setEditProduct(null); }}
+        onSave={saveService}
+        saving={saving}
+        entityConfig={SERVICE_ENTITY_CONFIG}
+      />
     </div>
   );
 }

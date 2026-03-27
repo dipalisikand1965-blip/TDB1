@@ -60,6 +60,8 @@ PillarSoulPage.jsx (parent)
 | `frontend/src/hooks/useMiraFilter.js` | AI product ranking | ✅ Breed/size/life-stage |
 | `frontend/src/components/admin/PillarManager.jsx` | Go+Play admin base | ✅ 7 tabs + Quick Add |
 | `frontend/src/components/admin/UnifiedProductBox.jsx` | Product CRUD | ✅ Save fix applied |
+| `frontend/src/components/admin/ServiceBox.jsx` | Service CRUD | ✅ ProductBoxEditor integrated (2026-03-27) |
+| `frontend/src/components/admin/BundleBox.jsx` | Bundle CRUD | ✅ ProductBoxEditor integrated + Admin nav wired (2026-03-27) |
 | `frontend/src/components/admin/PillarProductsTab.jsx` | Products tab | ✅ 20/page + createTrigger |
 | `frontend/src/components/admin/PillarServicesTab.jsx` | Services tab | ✅ Add Service modal |
 | `frontend/src/components/admin/PillarBundlesTab.jsx` | Bundles tab | ✅ createTrigger prop |
