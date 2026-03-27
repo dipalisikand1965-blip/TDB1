@@ -208,6 +208,8 @@ const MiraChatWidget = ({
   const [isOpen, setIsOpen] = useState(false);
   const [activeFollowUpMemoryId, setActiveFollowUpMemoryId] = useState(null);
   const [isMinimized, setIsMinimized] = useState(false);
+  const followUpCheckedRef = useRef(false); // prevents re-running follow-up check on each dep change
+  const lastPetSwitchRef = useRef({ id: null, ts: 0 }); // deduplicate rapid petChanged events
   
   // Cinematic Kit Assembly state
   const [showCinematicKit, setShowCinematicKit] = useState(false);
@@ -455,25 +457,33 @@ const MiraChatWidget = ({
       const newPetId = newPet?.id || e.detail?.petId;
       
       if (newPetId && pets.length > 0) {
+        // Deduplicate: ignore if same pet switched within last 2 seconds
+        const now = Date.now();
+        if (lastPetSwitchRef.current.id === newPetId && now - lastPetSwitchRef.current.ts < 2000) return;
+        lastPetSwitchRef.current = { id: newPetId, ts: now };
+
         const resolvedPet = newPet || pets.find(p => p.id === newPetId);
         if (resolvedPet) {
           setSelectedPet(resolvedPet);
           setAllPetsMode(false);
-          const petBreed = resolvedPet.breed || resolvedPet.identity?.breed || '';
-          const petAge = resolvedPet.age || resolvedPet.identity?.age_years || '';
-          let switchMessage = `Of course! Switching to **${resolvedPet.name}** now. 🐾`;
-          if (petBreed) {
-            switchMessage += ` Your lovely ${petBreed}`;
-            if (petAge) switchMessage += ` (${petAge}y)`;
-            switchMessage += '.';
+          // Only show switch message when widget is already open (not on page load)
+          if (isOpen) {
+            const petBreed = resolvedPet.breed || resolvedPet.identity?.breed || '';
+            const petAge = resolvedPet.age || resolvedPet.identity?.age_years || '';
+            let switchMessage = `Of course! Switching to **${resolvedPet.name}** now. 🐾`;
+            if (petBreed) {
+              switchMessage += ` Your lovely ${petBreed}`;
+              if (petAge) switchMessage += ` (${petAge}y)`;
+              switchMessage += '.';
+            }
+            switchMessage += ` How can I help ${resolvedPet.name} today?`;
+            
+            setMessages(prev => [...prev, {
+              id: `pet-change-${Date.now()}`,
+              role: 'assistant',
+              content: switchMessage
+            }]);
           }
-          switchMessage += ` How can I help ${resolvedPet.name} today?`;
-          
-          setMessages(prev => [...prev, {
-            id: `pet-change-${Date.now()}`,
-            role: 'assistant',
-            content: switchMessage
-          }]);
         }
       }
     };
@@ -484,7 +494,7 @@ const MiraChatWidget = ({
     return () => {
       window.removeEventListener('petChanged', handlePetChange);
     };
-  }, [pets]);
+  }, [pets, isOpen]);
   
   // Handle pet switch within the widget (local click)
   const handlePetSwitch = (pet) => {
@@ -603,54 +613,70 @@ const MiraChatWidget = ({
 
   // Add welcome message (or proactive follow-up) when widget opens
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    // Reset follow-up check flag when widget closes so it reruns on next open
+    if (!isOpen) {
+      followUpCheckedRef.current = false;
+      return;
+    }
+
+    if (isOpen && !followUpCheckedRef.current) {
+      followUpCheckedRef.current = true;
+
       // Re-sync active pet from localStorage (PillarContext may have changed it since widget mounted)
       const livePetId = localStorage.getItem('selectedPetId');
       if (livePetId && pets.length > 0) {
         const livePet = pets.find(p => p.id === livePetId);
         if (livePet && livePet.id !== selectedPet?.id) {
           setSelectedPet(livePet);
-          return; // selectedPet will update → useEffect re-runs with correct pet
+          followUpCheckedRef.current = false; // reset so it re-runs with correct pet
+          return;
         }
       }
 
-      const showWelcome = (overrideContent) => {
-        const content = overrideContent || `Hi, I'm Mira, ${selectedPet?.name || 'your pet'}'s Soul Mate! ${generateWelcomeMessage()}`;
-        setMessages([{ id: overrideContent ? 'follow-up' : 'welcome', role: 'assistant', content }]);
-      };
-
-      // Check for pending proactive follow-up BEFORE showing welcome
-      const checkAndShow = async () => {
+      // Check for pending proactive follow-up on EVERY open (not just empty sessions)
+      // Uses setMessages(prev => ...) so it works safely regardless of existing messages
+      const addFollowUpOrWelcome = async () => {
         if (selectedPet?.id && token) {
           try {
-            const API_URL = process.env.REACT_APP_BACKEND_URL;
+            const API_BASE = process.env.REACT_APP_BACKEND_URL;
             const res = await fetch(
-              `${API_URL}/api/mira/memory/${selectedPet.id}?follow_up=true&limit=1`,
+              `${API_BASE}/api/mira/memory/${selectedPet.id}?follow_up=true&limit=1`,
               { headers: { 'Authorization': `Bearer ${token}` } }
             );
             if (res.ok) {
               const data = await res.json();
               const pending = data.memories?.[0];
-              if (pending && pending.follow_up_message) {
-                // Show follow-up instead of generic welcome
-                showWelcome(pending.follow_up_message);
+              if (pending?.follow_up_message) {
+                // Add follow-up to conversation:
+                // • If no history → it becomes the sole first message (replaces generic welcome)
+                // • If history exists → appended so Mira proactively checks in
+                setMessages(prev => {
+                  const msg = { id: `follow-up-${Date.now()}`, role: 'assistant', content: pending.follow_up_message };
+                  return prev.length === 0 ? [msg] : [...prev, msg];
+                });
                 setActiveFollowUpMemoryId(pending._id);
-                // Mark as shown
-                await fetch(`${API_URL}/api/mira/memory/${pending._id}/shown`, {
+                await fetch(`${API_BASE}/api/mira/memory/${pending._id}/shown`, {
                   method: 'PATCH',
                   headers: { 'Authorization': `Bearer ${token}` },
                 }).catch(() => {});
-                return;
+                return; // skip generic welcome
               }
             }
           } catch (e) {
-            // Non-critical — fall through to normal welcome
+            // Non-critical — fall through to welcome
           }
         }
-        showWelcome();
+        // No follow-up found — show welcome only if conversation is empty
+        setMessages(prev => {
+          if (prev.length === 0) {
+            const content = `Hi, I'm Mira, ${selectedPet?.name || 'your pet'}'s Soul Mate! ${generateWelcomeMessage()}`;
+            return [{ id: 'welcome', role: 'assistant', content }];
+          }
+          return prev;
+        });
       };
 
-      checkAndShow();
+      addFollowUpOrWelcome();
       
       // Speak welcome greeting when widget opens (if voice is enabled)
       if (synthRef.current && voiceEnabled) {
