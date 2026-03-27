@@ -121,20 +121,35 @@ export default function AIImagePromptField({
     setResult(null);
 
     try {
-      const res = await fetch(`${API_URL}/api/admin/generate-image`, {
-        method: 'POST',
-        credentials: 'omit',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': getAdminAuthHeader(),
-        },
-        body: JSON.stringify({
-          prompt:      trimmed,
-          entity_type: entityType,
-          entity_id:   entityId || '',
-          save_prompt: true,  // tells backend to save prompt to ai_prompt field
-        }),
-      });
+      // Services → service-box endpoint (applies watercolour style suffix automatically)
+      // Bundles  → admin/bundles endpoint (same watercolour pipeline)
+      // Products → generic admin/generate-image endpoint
+      let res;
+      if (entityType === 'service' && entityId) {
+        res = await fetch(`${API_URL}/api/service-box/services/${entityId}/generate-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          body: JSON.stringify({ prompt: trimmed }),
+        });
+      } else if (entityType === 'bundle' && entityId) {
+        res = await fetch(`${API_URL}/api/admin/bundles/${entityId}/generate-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          body: JSON.stringify({ prompt: trimmed }),
+        });
+      } else {
+        res = await fetch(`${API_URL}/api/admin/generate-image`, {
+          method: 'POST',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          body: JSON.stringify({
+            prompt:      trimmed,
+            entity_type: entityType,
+            entity_id:   entityId || '',
+            save_prompt: true,
+          }),
+        });
+      }
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -142,8 +157,10 @@ export default function AIImagePromptField({
       }
 
       const data = await res.json();
-      setResult(data.url);
-      onImageGenerated?.(data.url, trimmed);
+      // Normalise response: service-box returns {image_url}, admin returns {url}
+      const imageUrl = data.url || data.image_url;
+      setResult(imageUrl);
+      onImageGenerated?.(imageUrl, trimmed);
     } catch (e) {
       setError(e.message || 'Failed to generate. Try a more descriptive prompt.');
     } finally {
