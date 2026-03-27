@@ -73,18 +73,20 @@ export default function GoNearMe({ currentPet, setConciergeToast }) {
         <div style={{ fontSize:14, color:'rgba(255,255,255,0.85)', lineHeight:1.6 }}>{getMiraTip()}</div>
       </div>
 
-      {/* Type pills */}
-      <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4, marginBottom:14 }}>
+      {/* Type grid — 3 cols × 2 rows, no horizontal scroll */}
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8, marginBottom:14 }}>
         {SEARCH_TYPES.map(t => (
           <button key={t.id}
             onClick={() => { setSearchType(t.id); setResults([]); setSearched(false); }}
             style={{
-              flexShrink:0, padding:'7px 14px', borderRadius:999, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
+              padding:'10px 6px', borderRadius:14, border:'none', cursor:'pointer',
+              textAlign:'center', lineHeight:1.3,
               background: searchType === t.id ? G.teal : `${G.teal}15`,
               color:       searchType === t.id ? '#fff' : G.teal,
               transition:'all 0.2s',
             }}>
-            {t.emoji} {t.label}
+            <div style={{ fontSize:20, marginBottom:3 }}>{t.emoji}</div>
+            <div style={{ fontSize:11, fontWeight:600 }}>{t.label}</div>
           </button>
         ))}
       </div>
