@@ -113,7 +113,7 @@ function getTravelAnxiety(pet) {
 // ─────────────────────────────────────────────────────────────
 // GO DIMENSION CONFIG — dynamic per pet
 // ─────────────────────────────────────────────────────────────
-function getGoDims(pet) {
+export function getGoDims(pet) {
   const size      = getPetSize(pet);
   const condition = getHealthCondition(pet);
   const anxious   = getTravelAnxiety(pet);
@@ -912,7 +912,7 @@ function TripProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // DIM EXPANDED — mirrors CareSoulPage DimExpanded exactly
 // ─────────────────────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName   = pet?.name || "your dog";
   const allergies = getAllergies(pet);
   const condition = pet?.health_condition || pet?.medical_condition || null;
