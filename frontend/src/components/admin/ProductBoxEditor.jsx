@@ -1799,7 +1799,7 @@ const ProductBoxEditor = ({
               </div>
               
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 flex items-center gap-2">
                   <span className="font-medium">Image Status:</span>{' '}
                   <Badge className={
                     getValue('media.image_completeness') === 'complete' ? 'bg-green-100 text-green-700' :
@@ -1808,7 +1808,7 @@ const ProductBoxEditor = ({
                   }>
                     {getValue('media.image_completeness', 'incomplete')} ({getValue('media.image_count', 0)} images)
                   </Badge>
-                </p>
+                </div>
               </div>
             </Card>
           </TabsContent>
