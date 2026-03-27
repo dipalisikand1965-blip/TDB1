@@ -34,7 +34,7 @@ function EditBundleModal({ bundle, onClose, onSave }) {
     setSaving(true);
     try {
       const res = await fetch(`${API_URL}/api/admin/bundles/${form.id || form._id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: getAdminHeaders(),
         body: JSON.stringify({
           name: form.name,
