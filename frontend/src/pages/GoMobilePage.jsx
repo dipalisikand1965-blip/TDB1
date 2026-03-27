@@ -238,21 +238,28 @@ export default function GoMobilePage() {
                           <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
                             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
                               <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={Object.fromEntries(
-                                ['safety','calming','carriers','feeding','health','stay'].map(dimId => [
-                                  dimId,
-                                  allRaw.filter(p => {
-                                    const keywords = {
-                                      safety:   ['safety'],
-                                      calming:  ['calm'],
-                                      carriers: ['carrier'],
-                                      feeding:  ['feed'],
-                                      health:   ['health'],
-                                      stay:     ['boarding','stay'],
-                                    }[dimId] || [];
+                                ['safety','calming','carriers','feeding','health','stay'].map(dimId => {
+                                  const keywords = {
+                                    safety:   ['safety'],
+                                    calming:  ['calm'],
+                                    carriers: ['carrier'],
+                                    feeding:  ['feed'],
+                                    health:   ['health'],
+                                    stay:     ['boarding','stay'],
+                                  }[dimId] || [];
+                                  const filtered = allRaw.filter(p => {
                                     const txt = `${p.name} ${p.category} ${p.sub_category} ${p.description || ''}`.toLowerCase();
                                     return keywords.some(k => txt.includes(k));
-                                  })
-                                ])
+                                  });
+                                  // Group by sub_category — DimExpanded expects { [sub_cat]: products[] }
+                                  const grouped = {};
+                                  filtered.forEach(p => {
+                                    const sub = p.sub_category || 'General';
+                                    if (!grouped[sub]) grouped[sub] = [];
+                                    grouped[sub].push(p);
+                                  });
+                                  return [dimId, grouped];
+                                })
                               )} />
                             </div>
                           </div>
