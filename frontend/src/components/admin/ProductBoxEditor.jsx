@@ -19,7 +19,7 @@ import {
 import { API_URL } from '../../utils/api';
 import AIImagePromptField from './AIImagePromptField';
 import {
-  ALL_PILLARS, PILLAR_SUBCATEGORIES, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
+  ALL_PILLARS, PILLAR_SUBCATEGORIES, SOUL_MADE_TYPES, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
   CHEW_STRENGTHS, PLAY_TYPES, COAT_TYPES, COMMON_AVOIDS, MATERIAL_SAFETY_FLAGS,
   OCCASIONS, USE_CASE_TAGS, QUALITY_TIERS, INVENTORY_STATUS, DELIVERY_TYPES,
   APPROVAL_STATUS, CITIES, MAIN_CATEGORIES
@@ -1006,6 +1006,40 @@ const ProductBoxEditor = ({
                     Sub-section within the pillar. 
                     Auto formula: <strong>{getValue('breed','') || 'all'}-{getValue('pillar','') || 'general'}</strong>
                   </p>
+                </div>
+
+                {/* ── Soul Made™ Toggle ── */}
+                <div className="mt-4 p-4 rounded-xl" style={{ background:'linear-gradient(135deg,#1A0A2E,#2D1060)' }}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-bold text-white mb-1">✦ Soul Made™</div>
+                      <div className="text-xs" style={{ color:'rgba(255,255,255,0.6)' }}>AI-generated breed personalised product</div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={getValue('soul_tier','') === 'soul_made'}
+                      onChange={e => {
+                        updateField('soul_tier', e.target.checked ? 'soul_made' : '');
+                        updateField('source', e.target.checked ? 'soul_made' : 'manual');
+                      }}
+                      className="w-5 h-5 cursor-pointer"
+                    />
+                  </div>
+                  {getValue('soul_tier','') === 'soul_made' && (
+                    <div className="mt-3">
+                      <label className="text-xs mb-1 block" style={{ color:'rgba(255,255,255,0.7)' }}>Soul Made Type</label>
+                      <select
+                        value={getValue('sub_category','')}
+                        onChange={e => updateField('sub_category', e.target.value)}
+                        className="w-full p-2 rounded-lg text-sm border-none"
+                      >
+                        <option value="">— Select type —</option>
+                        {(SOUL_MADE_TYPES[getValue('pillar','')] || []).map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 {/* Pillar Status — activate/deactivate per pillar */}
