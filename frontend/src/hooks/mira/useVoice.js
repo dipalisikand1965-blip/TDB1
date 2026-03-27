@@ -210,10 +210,8 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   }, []);
   
   // ─── ElevenLabs Eloise voice (direct API, key rotation) ───────────────────
-  // To update: run `curl -X GET "https://api.elevenlabs.io/v1/voices" -H "xi-api-key: YOUR_KEY"`
-  // then find "Eloise" → paste her voice_id below.
-  // Current fallback: Bella (Professional, Bright, Warm) → hpp4J3VqNfWAUOO0d1Us
-  const ELOISE_VOICE_ID = 'hpp4J3VqNfWAUOO0d1Us'; // UPDATE when Eloise is added to account
+  // Eloise — AZnzlk1XvdvUeBnXmlld — user-confirmed, same ID used by backend tts_routes.py
+  const ELOISE_VOICE_ID = 'AZnzlk1XvdvUeBnXmlld'; // Eloise (ElevenLabs premade)
 
   const ELEVEN_KEYS = [
     process.env.REACT_APP_ELEVEN_LABS_KEY_1,
