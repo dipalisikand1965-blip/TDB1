@@ -434,8 +434,9 @@ const CelebratePageNew = () => {
       pet: selectedPet,
       channel: "celebrate_category_strip",
     });
-    // birthday-cakes + breed-cakes → open new DoggyBakeryCakeModal via event
-    if (categoryId === 'birthday-cakes' || categoryId === 'breed-cakes') {
+    // birthday-cakes → CelebrateContentModal (with breed+shape+loadmore inside)
+    // breed-cakes → open new DoggyBakeryCakeModal via event
+    if (categoryId === 'breed-cakes') {
       window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
         pet: selectedPet,
         petName: selectedPet?.name || '',
