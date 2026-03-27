@@ -793,6 +793,9 @@ FULFILMENT_TYPES = ["shipping", "store_pickup", "both"]
 
 # In-memory job store for single-product image generation (background tasks)
 _single_image_jobs: dict = {}
+# Separate job stores for services and bundles
+_single_service_image_jobs: dict = {}
+_single_bundle_image_jobs: dict = {}
 
 
 async def _run_single_product_image(product_id: str, product: dict):
@@ -7056,10 +7059,88 @@ async def admin_bulk_import_services(services: List[dict], username: str = Depen
     for service in services:
         if "id" not in service:
             service["id"] = f"svc-{uuid.uuid4().hex[:12]}"
+
+# ─── ADMIN BUNDLES — ALL PILLARS ─────────────────────────────────────────────
+@admin_router.get("/bundles/all")
+async def admin_get_all_bundles(pillar: str = None, limit: int = 200, username: str = Depends(verify_admin)):
+    """Get all bundles from master bundles collection."""
+    query = {} if not pillar or pillar == "all" else {"pillar": pillar}
+    raw = await db.bundles.find(query).to_list(length=limit)
+    bundles = []
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id", ""))
+        b.pop("_id", None)
+        bundles.append(b)
+    total = await db.bundles.count_documents(query)
+    return {"bundles": bundles, "total": total}
+
+@admin_router.patch("/bundles/all/{bundle_id}")
+async def admin_update_bundle(bundle_id: str, updates: dict, username: str = Depends(verify_admin)):
+    """Update a bundle in master bundles collection."""
+    from datetime import datetime, timezone
+    allowed = ["name","price","pillar","description","is_active","is_soul_made","discount_percent","items","tags"]
+    clean = {k: v for k, v in updates.items() if k in allowed}
+    clean["updated_at"] = datetime.now(timezone.utc).isoformat()
+    clean["updated_by"] = username
+    if "price" in clean:
+        clean["price"] = float(clean["price"])
+    result = await db.bundles.update_one({"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"$set": clean})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"success": True, "updated": clean}
+
+@admin_router.post("/bundles/all/import-csv")
+async def admin_import_bundles(bundles: list, username: str = Depends(verify_admin)):
+    """Import bundles into master bundles collection."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    for b in bundles:
+        if "id" not in b or not b["id"]:
+            b["id"] = f"bun-{uuid.uuid4().hex[:8]}"
+        b["updated_at"] = now
+        await db.bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
+    return {"imported": len(bundles)}
+
+@admin_router.get("/bundles/all/export-csv")
+async def admin_export_bundles_csv(username: str = Depends(verify_admin)):
+    """Export all bundles as CSV."""
+    import csv, io
+    raw = await db.bundles.find({}).to_list(length=500)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"])
+    writer.writeheader()
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id",""))
+        writer.writerow({k: b.get(k,"") for k in ["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"]})
+    from fastapi.responses import Response
+    return Response(content=output.getvalue(), media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=bundles_export.csv"})
+
+# ─── ADMIN SERVICES IMPORT CSV ────────────────────────────────────────────────
+@admin_router.post("/services/import-csv")
+async def admin_import_services_csv(services: list, username: str = Depends(verify_admin)):
+    """Import services into services_master."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    for s in services:
+        if "id" not in s or not s["id"]:
+            s["id"] = f"svc-{uuid.uuid4().hex[:8]}"
+        s["updated_at"] = now
+        s["updated_by"] = username
+        await db.services_master.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
+    return {"imported": len(services)}
+
+
+@admin_router.post("/services/bulk-import")
+async def admin_bulk_import_services(services: List[dict], username: str = Depends(verify_admin)):
+    """Bulk import services"""
+    for service in services:
+        if "id" not in service:
+            service["id"] = f"svc-{uuid.uuid4().hex[:12]}"
         service["created_at"] = get_utc_timestamp()
         service["updated_at"] = get_utc_timestamp()
         service["created_by"] = username
-    
+
     if services:
         await db.services_master.insert_many(services)
     
@@ -11525,7 +11606,10 @@ async def update_admin_product(product_id: str, updates: dict):
         "bundle_type", "bundle_includes", "options", "available",
         "is_pan_india_shippable", "tags", "minPrice", "autoship_enabled",
         "collection_ids", "image", "status", "sizes", "flavors", "variants",
-        "mira_hint", "breed_metadata", "is_active", "image_url", "images", "thumbnail"
+        "mira_hint", "breed_metadata", "is_active", "image_url", "images", "thumbnail",
+        # Cake-specific fields
+        "shape", "available_flavours", "available_bases",
+        "allergens", "is_doggy_bakery", "same_day_cities",
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -12420,7 +12504,10 @@ async def full_product_update(
         "bundle_type", "bundle_includes", "options", "variants",
         "search_keywords", "seo_title", "seo_description",
         "cross_sell_products", "upsell_products", "frequently_bought_together",
-        "allergy_warnings", "suitable_for_breeds", "not_suitable_for"
+        "allergy_warnings", "suitable_for_breeds", "not_suitable_for",
+        # Cake-specific fields
+        "shape", "available_flavours", "available_bases",
+        "allergens", "is_doggy_bakery", "same_day_cities",
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
@@ -22060,6 +22147,7 @@ async def generate_bundle_image_sync(
 @api_router.post("/admin/bundles/{bundle_id}/generate-image")
 async def generate_generic_bundle_image(
     bundle_id: str,
+    request: Request,
     username: str = Depends(verify_admin_auth),
 ):
     """Generate AI watercolor image for any bundle in the bundles collection."""
@@ -22094,7 +22182,12 @@ async def generate_generic_bundle_image(
     bundle_name = bundle.get("name", "Play Bundle")
     pillar = bundle.get("pillar", "play")
     items = bundle.get("items", "")
-    prompt = (
+    try:
+        req_body = await request.json()
+        custom_prompt = req_body.get("prompt", "")
+    except Exception:
+        custom_prompt = ""
+    prompt = custom_prompt if custom_prompt else (
         f"Soulful watercolor illustration of a dog {pillar} bundle called '{bundle_name}', "
         f"containing {items[:80] if items else 'toys, accessories, and treats'}, "
         "beautifully arranged, warm painterly brushstrokes, soft layered watercolor pigments, "
@@ -22152,6 +22245,8 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "pet_allergies": order.get("pet_allergies", []),
         "product_name": order.get("product_name", ""),
         "product_id": order.get("product_id", ""),
+        "product_image": order.get("product_image", ""),
+        "product_price": order.get("product_price", 0),
         "flavour": order.get("flavour", ""),
         "base": order.get("base", ""),
         "size": order.get("size", ""),
@@ -22160,29 +22255,30 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "message_on_cake": order.get("message_on_cake", ""),
         "delivery_date": order.get("delivery_date", ""),
         "delivery_time": order.get("delivery_time", ""),
-        "delivery_type": order.get("delivery_type", "delivery"),
+        "delivery_type": order.get("delivery_type", "Delivery"),
         "total_price": order.get("total_price", 0),
         "status": "pending",
         "created_at": ts.isoformat(),
-        "source": "doggy_bakery_cake_modal",
+        "source": order.get("source", "doggy_bakery_cake_modal"),
     }
     await db.cake_orders.insert_one(cake_order)
 
     allergies_str = ", ".join(cake_order["pet_allergies"]) if cake_order["pet_allergies"] else "None"
+    price_str = "\u20b9" + str(int(cake_order["total_price"])) if cake_order["total_price"] else "Price on request"
     ticket_text = (
         "\U0001f382 CAKE ORDER \u2014 " + pet_name + "\n\n"
-        "Product: " + cake_order["product_name"] + "\n"
-        "Flavour: " + cake_order["flavour"] + "\n"
-        "Base: " + cake_order["base"] + "\n"
-        "Size: " + cake_order["size"] + "\n"
-        "Shape: " + cake_order["shape"] + "\n"
-        "Name on cake: " + cake_order["pet_name_on_cake"] + "\n"
+        "Product: " + (cake_order["product_name"] or "—") + "\n"
+        "Flavour: " + (cake_order["flavour"] or "—") + "\n"
+        "Base: " + (cake_order["base"] or "—") + "\n"
+        "Size: " + (cake_order["size"] or "—") + "\n"
+        "Shape: " + (cake_order["shape"] or "—") + "\n"
+        "Name on cake: " + (cake_order["pet_name_on_cake"] or "—") + "\n"
         "Message: " + (cake_order["message_on_cake"] or "None") + "\n"
-        "Delivery date: " + cake_order["delivery_date"] + "\n"
-        "Delivery time: " + cake_order["delivery_time"] + "\n"
-        "Delivery type: " + cake_order["delivery_type"] + "\n"
-        "Total: \u20b9" + str(cake_order["total_price"]) + "\n\n"
-        "Pet: " + pet_name + " (" + cake_order["pet_breed"] + ")\n"
+        "Delivery date: " + (cake_order["delivery_date"] or "—") + "\n"
+        "Delivery time: " + (cake_order["delivery_time"] or "—") + "\n"
+        "Delivery type: " + (cake_order["delivery_type"] or "—") + "\n"
+        "Total: " + price_str + "\n\n"
+        "Pet: " + pet_name + " (" + (cake_order["pet_breed"] or "Unknown") + ")\n"
         "Allergies: " + allergies_str + "\n"
         "Customer: " + current_user.get("email", "")
     )
@@ -22227,7 +22323,7 @@ async def get_cake_orders(
     date: Optional[str] = None,
     limit: int = 50,
     skip: int = 0,
-    current_user: dict = Depends(get_current_user),
+    username: str = Depends(verify_admin),
 ):
     """Get all cake orders for admin view."""
     query: dict = {}
@@ -22252,7 +22348,7 @@ async def get_cake_orders(
 async def update_cake_order_status(
     order_id: str,
     update: dict,
-    current_user: dict = Depends(get_current_user),
+    username: str = Depends(verify_admin),
 ):
     """Update cake order status: pending → confirmed → baking → out_for_delivery → delivered."""
     from datetime import datetime, timezone
@@ -22267,13 +22363,83 @@ async def update_cake_order_status(
         {"$set": {
             "status": new_status,
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "updated_by": current_user.get("email", "admin"),
+            "updated_by": username,
         }},
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Cake order not found")
 
     return {"success": True, "status": new_status}
+
+
+# ── Cake Config (Flavours, Bases, Shapes) ──────────────────────────────────────
+
+DEFAULT_CAKE_CONFIG = {
+    "flavours": [
+        {"name": "Banana",        "emoji": "🍌", "is_allergen": False},
+        {"name": "Carrot",        "emoji": "🥕", "is_allergen": False},
+        {"name": "Chicken",       "emoji": "🍗", "is_allergen": True},
+        {"name": "Mutton",        "emoji": "🥩", "is_allergen": True},
+        {"name": "Peanut Butter", "emoji": "🥜", "is_allergen": False},
+        {"name": "Blueberry",     "emoji": "🫐", "is_allergen": False},
+        {"name": "Coconut Cream", "emoji": "🥥", "is_allergen": False},
+        {"name": "Strawberry",    "emoji": "🍓", "is_allergen": False},
+        {"name": "Fish & Salmon", "emoji": "🐟", "is_allergen": True},
+        {"name": "Pumpkin",       "emoji": "🎃", "is_allergen": False},
+    ],
+    "bases": [
+        {"name": "Oats",  "description": "Light & wholesome"},
+        {"name": "Ragi",  "description": "Nutrient-rich"},
+    ],
+    "shapes": ["All", "Circle", "Bone", "Heart", "Square", "Star", "Paw"],
+}
+
+
+@api_router.get("/admin/cake-config")
+async def get_cake_config(username: str = Depends(verify_admin)):
+    """Get active cake configuration (flavours, bases, shapes)."""
+    cfg = await db.cake_config.find_one({"_id": "active"}, {"_id": 0})
+    if cfg is None:
+        return DEFAULT_CAKE_CONFIG
+    return cfg
+
+
+@api_router.put("/admin/cake-config")
+async def update_cake_config(config: dict, username: str = Depends(verify_admin)):
+    """Save cake configuration to DB."""
+    from datetime import datetime, timezone
+    config["updated_at"] = datetime.now(timezone.utc).isoformat()
+    config["updated_by"] = username
+    await db.cake_config.update_one(
+        {"_id": "active"},
+        {"$set": config},
+        upsert=True,
+    )
+    return {"success": True}
+
+
+@api_router.patch("/admin/products/{product_id}/shape-tag")
+async def update_product_shape_tag(
+    product_id: str,
+    update: dict,
+    username: str = Depends(verify_admin),
+):
+    """Update the shape tag on a birthday cake product."""
+    shape = update.get("shape_tag", "").lower()
+    # Remove old shape tags and add new one
+    shape_tags = ["circle", "bone", "heart", "square", "star", "paw"]
+    result = await db.products.update_one(
+        {"id": product_id},
+        {
+            "$pull": {"tags": {"$in": shape_tags}},
+        },
+    )
+    if shape and shape != "all":
+        await db.products.update_one(
+            {"id": product_id},
+            {"$addToSet": {"tags": shape}},
+        )
+    return {"success": True, "shape_tag": shape}
 
 
 # Include routers
@@ -24883,3 +25049,385 @@ app.include_router(pawrent_journey_router)  # Pawrent Journey — must be after 
 # Concierge Intent Detection (Claude-powered)
 from concierge_intent_routes import concierge_intent_router
 app.include_router(concierge_intent_router, prefix="/api")
+
+# ─── ADMIN SERVICES CRUD ──────────────────────────────────────────────────────
+@api_router.get("/admin/services")
+async def get_admin_services(
+    pillar: str = None,
+    category: str = None,
+    limit: int = 200,
+    skip: int = 0,
+    search: str = None,
+    current_user: dict = Depends(verify_admin)
+):
+    """Get all services with optional pillar/category filter."""
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    if category:
+        query["category"] = category
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+    
+    services = await db.services_master.find(
+        query, {"_id": 0}
+    ).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.services_master.count_documents(query)
+    
+    return {
+        "services": services,
+        "total": total,
+        "pillar": pillar,
+    }
+
+@api_router.patch("/admin/services/{service_id}")
+async def update_admin_service(
+    service_id: str,
+    updates: dict,
+    current_user: dict = Depends(verify_admin)
+):
+    """Update a service by id."""
+    from datetime import datetime, timezone
+    
+    allowed = ["name", "price", "category", "sub_category", "pillar", 
+               "description", "is_active", "active", "display_name",
+               "short_description", "long_description", "tags"]
+    
+    clean = {k: v for k, v in updates.items() if k in allowed}
+    clean["updated_at"] = datetime.now(timezone.utc).isoformat()
+    clean["updated_by"] = current_user.get("username", "admin")
+    
+    if "price" in clean:
+        clean["price"] = float(clean["price"])
+    
+    result = await db.services_master.update_one(
+        {"$or": [{"id": service_id}, {"_id": service_id}]},
+        {"$set": clean}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    return {"success": True, "updated": clean}
+
+
+# ─── ADMIN BUNDLES — ALL COLLECTIONS ─────────────────────────────────────────
+@api_router.get("/admin/bundles/all")
+async def get_all_admin_bundles(
+    pillar: str = None,
+    limit: int = 200,
+    current_user: dict = Depends(verify_admin)
+):
+    """Get all bundles from master bundles collection (96 docs, all pillars)."""
+    query = {}
+    if pillar and pillar != "all":
+        query["pillar"] = pillar
+    raw = await db.bundles.find(query).to_list(length=limit)
+    bundles = []
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id", ""))
+        b.pop("_id", None)
+        bundles.append(b)
+    total = await db.bundles.count_documents(query)
+    return {"bundles": bundles, "total": total}
+
+@api_router.patch("/admin/bundles/all/{bundle_id}")
+async def update_admin_bundle_all(
+    bundle_id: str,
+    updates: dict,
+    current_user: dict = Depends(verify_admin)
+):
+    """Update a bundle in master bundles collection."""
+    from datetime import datetime, timezone
+    allowed = ["name","price","pillar","description","is_active","is_soul_made","discount_percent","items","tags"]
+    clean = {k: v for k, v in updates.items() if k in allowed}
+    clean["updated_at"] = datetime.now(timezone.utc).isoformat()
+    clean["updated_by"] = current_user.get("username","admin")
+    if "price" in clean:
+        clean["price"] = float(clean["price"])
+    result = await db.bundles.update_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+        {"$set": clean}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"success": True, "updated": clean}
+
+@api_router.get("/admin/bundles/all/export-csv")
+async def export_all_bundles_csv(current_user: dict = Depends(verify_admin)):
+    """Export all bundles as CSV."""
+    import csv, io
+    raw = await db.bundles.find({}).to_list(length=500)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"])
+    writer.writeheader()
+    for b in raw:
+        b["id"] = b.get("id") or str(b.get("_id",""))
+        writer.writerow({k: b.get(k,"") for k in ["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"]})
+    from fastapi.responses import Response
+    return Response(content=output.getvalue(), media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=bundles_export.csv"})
+
+@api_router.post("/admin/bundles/all/import-csv")
+async def import_all_bundles_csv(
+    bundles: list,
+    current_user: dict = Depends(verify_admin)
+):
+    """Bulk import bundles into master bundles collection."""
+    from datetime import datetime, timezone
+    import uuid
+    now = datetime.now(timezone.utc).isoformat()
+    imported = 0
+    for b in bundles:
+        if "id" not in b or not b["id"]:
+            b["id"] = f"bun-{uuid.uuid4().hex[:8]}"
+        b["created_at"] = now
+        b["updated_at"] = now
+        await db.bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
+        imported += 1
+    return {"imported": imported}
+
+# ─── ADMIN SERVICES CSV IMPORT ────────────────────────────────────────────────
+@api_router.post("/admin/services/import-csv")
+async def import_services_csv(
+    services: list,
+    current_user: dict = Depends(verify_admin)
+):
+    """Import services into services_master."""
+    from datetime import datetime, timezone
+    import uuid
+    now = datetime.now(timezone.utc).isoformat()
+    imported = 0
+    for s in services:
+        if "id" not in s:
+            s["id"] = f"svc-{uuid.uuid4().hex[:8]}"
+        s["updated_at"] = now
+        s["updated_by"] = current_user.get("username","admin")
+        await db.services_master.update_one({"id": s["id"]}, {"$set": s}, upsert=True)
+        imported += 1
+    return {"imported": imported}
+
+
+@api_router.get("/admin/bundles/debug")
+async def debug_bundles(current_user: dict = Depends(verify_admin)):
+    b_count = await db.bundles.count_documents({})
+    cb_count = await db.care_bundles.count_documents({})
+    pb_count = await db.product_bundles.count_documents({})
+    return {"bundles": b_count, "care_bundles": cb_count, "product_bundles": pb_count, "db_name": db.name}
+
+
+
+# ─── ASYNC SERVICE IMAGE GENERATION (with polling) ───────────────────────────
+
+async def _run_single_service_image(service_id: str, service: dict):
+    """Background task: generate AI image for a service and save to DB."""
+    import os, base64, cloudinary, cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    try:
+        emergent_api_key = (
+            os.environ.get("EMERGENT_LLM_KEY")
+            or os.environ.get("EMERGENT_API_KEY")
+            or os.environ.get("EMERGENT_MODEL_API_KEY")
+        )
+        if not emergent_api_key:
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "API key not configured", "service_id": service_id}
+            return
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        )
+
+        service_name = service.get("name", "Dog Service")
+        pillar = service.get("pillar", "care")
+        category = service.get("category", "")
+        prompt = service.get("ai_image_prompt") or (
+            f"Soulful watercolor illustration of a premium dog service: '{service_name}', "
+            f"pillar: {pillar}, category: {category or 'general'}. "
+            "Elegant brushwork, soft layered watercolor pigments, warm emotional palette, "
+            "premium editorial composition, no text, white background, "
+            "suitable for a luxury pet concierge service card."
+        )
+
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+
+        if not images:
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "No image returned", "service_id": service_id}
+            return
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder=f"doggy/services/{pillar}",
+            public_id=f"service-{service_id}-ai",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "Cloudinary upload failed", "service_id": service_id}
+            return
+
+        await db.services_master.update_one(
+            {"$or": [{"id": service_id}, {"_id": service_id}]},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "watercolor_image": image_url,
+                "ai_image_generated": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        _single_service_image_jobs[service_id] = {"status": "complete", "image_url": image_url, "service_id": service_id, "success": True}
+        logger.info(f"Service image done for '{service_name}': {image_url}")
+
+    except Exception as e:
+        logger.error(f"Service image generation failed for {service_id}: {e}")
+        _single_service_image_jobs[service_id] = {"status": "error", "error": str(e), "service_id": service_id}
+
+
+@api_router.post("/admin/services/{service_id}/generate-image")
+async def generate_service_image_async(
+    service_id: str,
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Start async AI image generation for a service. Returns immediately — poll /image-status."""
+    service = await db.services_master.find_one(
+        {"$or": [{"id": service_id}, {"_id": service_id}]}, {"_id": 0}
+    )
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    _single_service_image_jobs[service_id] = {
+        "status": "generating", "service_id": service_id,
+        "started_at": datetime.now(timezone.utc).isoformat()
+    }
+    background_tasks.add_task(_run_single_service_image, service_id, service)
+    return {"status": "generating", "service_id": service_id, "poll_url": f"/api/admin/services/{service_id}/image-status"}
+
+
+@api_router.get("/admin/services/{service_id}/image-status")
+async def get_service_image_status(
+    service_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Poll for the result of a background service image generation job."""
+    job = _single_service_image_jobs.get(service_id)
+    if not job:
+        service = await db.services_master.find_one(
+            {"$or": [{"id": service_id}, {"_id": service_id}]}, {"_id": 0, "image_url": 1}
+        )
+        if service and service.get("image_url", "").startswith("https://res.cloudinary.com"):
+            return {"status": "complete", "image_url": service["image_url"], "service_id": service_id}
+        return {"status": "not_started", "service_id": service_id}
+    return job
+
+
+# ─── ASYNC BUNDLE IMAGE GENERATION (with polling) ────────────────────────────
+
+async def _run_single_bundle_image(bundle_id: str, bundle: dict):
+    """Background task: generate AI image for a bundle and save to DB."""
+    import os, base64, cloudinary, cloudinary.uploader
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+
+    try:
+        emergent_api_key = (
+            os.environ.get("EMERGENT_LLM_KEY")
+            or os.environ.get("EMERGENT_API_KEY")
+            or os.environ.get("EMERGENT_MODEL_API_KEY")
+        )
+        if not emergent_api_key:
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "API key not configured", "bundle_id": bundle_id}
+            return
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        )
+
+        bundle_name = bundle.get("name", "Dog Bundle")
+        pillar = bundle.get("pillar", "care")
+        items = bundle.get("items", "")
+        prompt = bundle.get("ai_image_prompt") or (
+            f"Soulful watercolor illustration of a premium dog bundle called '{bundle_name}', "
+            f"pillar: {pillar}, items: {items[:80] if items else 'treats, accessories, and toys'}. "
+            "Beautifully arranged, warm painterly brushstrokes, soft layered watercolor pigments, "
+            "premium editorial composition, elegant and emotive, white background."
+        )
+
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+
+        if not images:
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "No image returned", "bundle_id": bundle_id}
+            return
+
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="doggy/bundles/ai-generated",
+            public_id=f"bundle-{bundle_id}-ai",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "Cloudinary upload failed", "bundle_id": bundle_id}
+            return
+
+        await db.bundles.update_one(
+            {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "watercolor_image": image_url,
+                "ai_image_generated": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        _single_bundle_image_jobs[bundle_id] = {"status": "complete", "image_url": image_url, "bundle_id": bundle_id, "success": True}
+        logger.info(f"Bundle image done for '{bundle_name}': {image_url}")
+
+    except Exception as e:
+        logger.error(f"Bundle image generation failed for {bundle_id}: {e}")
+        _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": str(e), "bundle_id": bundle_id}
+
+
+@api_router.post("/admin/bundles/{bundle_id}/generate-image-async")
+async def generate_bundle_image_async_poll(
+    bundle_id: str,
+    background_tasks: BackgroundTasks,
+    username: str = Depends(verify_admin_auth),
+):
+    """Start async AI image generation for a bundle. Returns immediately — poll /image-status."""
+    bundle = await db.bundles.find_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0}
+    )
+    if not bundle:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+
+    _single_bundle_image_jobs[bundle_id] = {
+        "status": "generating", "bundle_id": bundle_id,
+        "started_at": datetime.now(timezone.utc).isoformat()
+    }
+    background_tasks.add_task(_run_single_bundle_image, bundle_id, bundle)
+    return {"status": "generating", "bundle_id": bundle_id, "poll_url": f"/api/admin/bundles/{bundle_id}/image-status"}
+
+
+@api_router.get("/admin/bundles/{bundle_id}/image-status")
+async def get_bundle_image_status(
+    bundle_id: str,
+    username: str = Depends(verify_admin_auth),
+):
+    """Poll for the result of a background bundle image generation job."""
+    job = _single_bundle_image_jobs.get(bundle_id)
+    if not job:
+        bundle = await db.bundles.find_one(
+            {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "image_url": 1}
+        )
+        if bundle and bundle.get("image_url", "").startswith("https://res.cloudinary.com"):
+            return {"status": "complete", "image_url": bundle["image_url"], "bundle_id": bundle_id}
+        return {"status": "not_started", "bundle_id": bundle_id}
+    return job

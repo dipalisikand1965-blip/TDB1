@@ -19,6 +19,8 @@ import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GoConciergeSection from '../components/go/GoConciergeSection';
+import GoCategoryStrip from '../components/go/GoCategoryStrip';
+import { getGoDims, DimExpanded, MiraPicksSection, GO_SERVICES, ServiceBookingModal as GoServiceBookingModal } from './GoSoulPage';
 import GoNearMe from '../components/go/GoNearMe';
 import PetFriendlyStays from '../components/go/PetFriendlyStays';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
@@ -29,6 +31,7 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import NearMeConciergeModal from '../components/common/NearMeConciergeModal';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -90,7 +93,10 @@ export default function GoMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
+  const [nearMeConc, setNearMeConc] = useState({ open: false, venue: null });
+  const [goSvc, setGoSvc]           = useState(null); // for Go, Personally 8-flow modal
   const [showGoPlan, setShowGoPlan] = useState(false);
+  const [openDim, setOpenDim] = useState(null);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -132,182 +138,252 @@ export default function GoMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="go" pillarColor={G.teal} pillarLabel="Go" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.teal} />}
 
-        {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
+        {/* ── Hero — simple, matches Care pattern ── */}
+        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'40px 20px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
             <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>✈️ Go</div>
+              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.55)', letterSpacing:'0.14em', marginBottom:4 }}>THE DOGGY COMPANY</div>
+              <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>✈️ Go</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', justifyContent:'flex-end', maxWidth:'55%', scrollbarWidth:'none' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
+                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer', flexShrink:0,
                       border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
+                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                      color:'#fff', fontFamily:'inherit' }}>
                     {p.name}
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Flights, road trips, boarding, pet-friendly stays</div>
+          <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)', marginBottom:10 }}>Flights, road trips, boarding, pet-friendly stays.</div>
+          {/* Allergy tags */}
+          {currentPet?.allergies?.length > 0 && (
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              {currentPet.allergies.map(a => (
+                <span key={a} style={{ fontSize:11, fontWeight:700, background:'rgba(239,68,68,0.18)', color:'#fca5a5', borderRadius:999, padding:'3px 10px', border:'1px solid rgba(239,68,68,0.3)' }}>
+                  ⚠️ No {a}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
+        {/* ══ 2. GoCategoryStrip ══ */}
+        <GoCategoryStrip pet={currentPet} />
 
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(45,212,191,0.14),rgba(45,212,191,0.20))', border:'1px solid rgba(45,212,191,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#0F766E' }}>{currentPet?.name || 'your dog'}</span> love to travel?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Adventures, transport, hotels and activities — filtered to {currentPet?.name || 'your dog'}'s soul profile.
-            </div>
-          </div>
-        )}
-
-        {/* Tab Bar - iOS style */}
-        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" />}
-        <div className="ios-tab-bar" style={{ borderColor: G.border }}>
+        {/* ══ 3. Tab Bar ══ */}
+        <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'12px 16px 0', display:'flex', gap:8, overflowX:'auto', flexWrap:'nowrap', scrollbarWidth:'none' }}>
           {[
-            { id:'go',       label:'✈️ Go & Products' },
-            { id:'services', label:'🛎️ Services' },
-            { id:'stay',     label:'🏨 Stay' },
-            { id:'nearme',   label:'📍 Find Near Me' },
-          ].map(tab => (
-            <button key={tab.id} className={`ios-tab${activeTab===tab.id?' active':''}`}
-              data-testid={`go-tab-${tab.id}`}
-              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
-              {tab.label}
-            </button>
-          ))}
+            { id:'go',       label:'✈️ Products' },
+            { id:'nearme',   label:'📍 Near Me' },
+            { id:'services', label:'🗺️ Services' },
+          ].map(tab => {
+            const sel = activeTab === tab.id;
+            return (
+              <button key={tab.id} onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}
+                data-testid={`go-tab-${tab.id}`}
+                style={{ padding:'8px 18px', borderRadius:9999, border:'none', flexShrink:0,
+                  background: sel ? `linear-gradient(135deg,${G.teal},${G.mid})` : `rgba(26,188,156,0.08)`,
+                  color: sel ? '#fff' : G.mutedText,
+                  fontSize:13, fontWeight: sel ? 700 : 400,
+                  cursor:'pointer', transition:'all 0.15s', marginBottom:12, fontFamily:'inherit', whiteSpace:'nowrap' }}>
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* TAB 1: Go & Products */}
         {activeTab === 'go' && (
           <div>
-            {/* Mira Bar */}
+            {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
+            {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
+
+            {/* ══ Mira Picks Strip — AI Scored, same as Care ══ */}
+            <div style={{ padding:'16px 16px 0' }}>
+              <MiraPicksSection pet={currentPet} />
+            </div>
+
+            {/* ══ Mira intelligence bar ══ */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:14, fontWeight:700, color:`rgba(167,243,208,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S TRAVEL</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
-                "Every journey with {petName} needs the right gear and the right plan. I'll handle both."
+              <div style={{ fontSize:13, fontWeight:700, color:`rgba(167,243,208,0.9)`, letterSpacing:'0.1em', marginBottom:6 }}>✦ MIRA ON {petName.toUpperCase()}'S TRAVEL</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, fontStyle:'italic' }}>
+                {allergies.length > 0
+                  ? `"I've already removed everything containing ${allergies.join(' and ')} from ${petName}'s travel picks."`
+                  : `"Every journey with ${petName} needs the right gear and the right plan. I'll handle both."`}
               </div>
-              <button className="go-cta" onClick={() => { vibe('medium'); setShowGoPlan(true); }}>
-                Plan {petName}'s Next Trip →
-              </button>
             </div>
 
-            {/* dimTab */}
-            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
-              {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
-                <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
-                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
-                    background:dimTab===t.id?G.teal:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-
-            {dimTab === 'personalised' ? (
-              <div style={{ padding:'16px 16px 24px' }}>
-                <PersonalisedBreedSection pet={currentPet} pillar="go" token={token} />
-                {GO_IMAGINES.map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="go" />)}
-              </div>
-            ) : (
-              <div style={{ padding:'16px' }}>
-                {/* Sub-category pills */}
-                {subCats.length > 1 && (
-                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
-                    {subCats.map(cat => (
-                      <button key={cat} onClick={() => setSubCat(cat)}
-                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid ${subCat===cat?G.teal:G.border}`,
-                          background:subCat===cat?G.teal:'#fff',
-                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
-                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Mira's pick callout */}
-                {miraPick && (
-                  <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
-                    <div style={{ fontSize:14, color:'#003D3D', lineHeight:1.4 }}>
-                      <strong>Mira's pick:</strong> {miraPick.name}
-                      {miraPick.mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>}
-                    </div>
-                  </div>
-                )}
-
-                {products.length === 0 ? (
-                  <MiraEmptyRequest
-                    pet={currentPet}
-                    pillar="go"
-                    categoryName={`Go${subCat !== 'All' ? ` — ${subCat}` : ''} Products`}
-                    accentColor={G.teal}
-                    onRequest={async (msg) => {
-                      await request(msg, { channel:'go_empty_products', metadata:{ subCat, petName } });
-                    }}
-                  />
-                ) : (
+            <div style={{ padding:'16px' }}>
+              {/* ── 6 Go Dimensions ── */}
+              {(() => {
+                const goDims = getGoDims(currentPet);
+                return (
                   <>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                      {products.slice(0, 40).map(p => (
-                        <div key={p.id||p._id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1 }}>
-                          <SharedProductCard product={p} pillar="go" selectedPet={currentPet}
-                            onAddToCart={() => handleAddToCart(p)}
-                            onClick={() => { vibe(); setSelectedProduct(p); }} />
-                        </div>
-                      ))}
+                    {/* Section heading */}
+                    <div style={{ marginBottom:4 }}>
+                      <span style={{ fontSize:22, fontWeight:900, color:G.darkText }}>Go </span>
+                      <span style={{ fontSize:22, fontWeight:900, color:G.teal }}>for {petName}</span>
                     </div>
-                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
+                    <div style={{ fontSize:13, color:G.mutedText, marginBottom:12 }}>
+                      6 dimensions, matched to {petName}'s size and travel profile
                     </div>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+                        {goDims.map(dim => (
+                          <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)}
+                            style={{ background: dim.glow ? G.pale : '#fff', border:`1.5px solid ${openDim===dim.id ? G.teal : G.border}`, borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center', boxShadow: dim.glow ? `0 4px 16px rgba(26,188,156,0.15)` : 'none', position:'relative' }}>
+                            {dim.glow && <div style={{ position:'absolute', top:8, right:8, width:7, height:7, borderRadius:'50%', background:G.teal, boxShadow:`0 0 6px ${G.teal}` }} />}
+                            <div style={{ fontSize:26, marginBottom:6 }}>{dim.icon}</div>
+                            <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:3 }}>{dim.label}</div>
+                            <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.3 }}>{typeof dim.sub==='string' ? dim.sub.replace(/{name}/g, petName) : ''}</div>
+                            {dim.badge && <div style={{ display:'inline-flex', marginTop:6, background:dim.badgeBg, color:'#fff', borderRadius:20, padding:'2px 8px', fontSize:9, fontWeight:700 }}>{dim.badge}</div>}
+                          </div>
+                        ))}
+                      </div>
+                      {openDim && (() => {
+                        const activeDim = goDims.find(d => d.id === openDim);
+                        return activeDim ? (
+                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
+                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={Object.fromEntries(
+                                ['safety','calming','carriers','feeding','health','stay'].map(dimId => {
+                                  const keywords = {
+                                    safety:   ['safety'],
+                                    calming:  ['calm'],
+                                    carriers: ['carrier'],
+                                    feeding:  ['feed'],
+                                    health:   ['health'],
+                                    stay:     ['boarding','stay'],
+                                  }[dimId] || [];
+                                  const filtered = allRaw.filter(p => {
+                                    const txt = `${p.name} ${p.category} ${p.sub_category} ${p.description || ''}`.toLowerCase();
+                                    return keywords.some(k => txt.includes(k));
+                                  });
+                                  // Group by sub_category — DimExpanded expects { [sub_cat]: products[] }
+                                  const grouped = {};
+                                  filtered.forEach(p => {
+                                    const sub = p.sub_category || 'General';
+                                    if (!grouped[sub]) grouped[sub] = [];
+                                    grouped[sub].push(p);
+                                  });
+                                  return [dimId, grouped];
+                                })
+                              )} />
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+                    </>
+                  );
+                })()}
+
+
+
+                {/* GuidedGoPaths — always visible below dims */}
+
+                {/* GuidedGoPaths — always visible below dims */}
                 <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
 
+                {/* Concierge Banner */}
+                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
+                  <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(20,184,166,0.18)', border:'1px solid rgba(20,184,166,0.4)', borderRadius:999, padding:'5px 14px', fontSize:12, fontWeight:700, color:'#5EEAD4', letterSpacing:'0.08em', marginBottom:12 }}>
+                    ✈ TRAVEL CONCIERGE®
+                  </div>
+                  <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:8, fontFamily:"Georgia,'Times New Roman',serif" }}>
+                    Want us to plan {petName}'s whole trip?
+                  </div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>
+                    We check routes, book stays, arrange transport, and confirm everything is pet-safe before you leave.
+                  </div>
+                  <button onClick={() => { vibe('medium'); setShowGoPlan(true); }}
+                    style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#0F766E,#14B8A6)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                    ✈ Talk to your Concierge®
+                  </button>
+                </div>
+
+                {/* Soul Made CTA */}
                 <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
                   <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · TRAVEL GEAR FOR {petName.toUpperCase()}</div>
                   <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom travel tags, bags and accessories.</div>
                   <button className="go-cta">Explore Soul Made →</button>
                 </div>
-                  </>
-                )}
               </div>
-            )}
           </div>
         )}
 
-        {/* TAB 2: Services */}
-        {activeTab === 'services' && (
+        {/* TAB 2: Near Me — unified Stay + GoNearMe */}
+        {activeTab === 'nearme' && (
           <div style={{ padding:'16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Go Services for {petName}</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Flights, road trips, boarding, vet certificates — all arranged.</div>
-            <GoConciergeSection pet={currentPet} />
-          </div>
-        )}
+            <div style={{ fontSize:20, fontWeight:700, color:G.darkText, marginBottom:4 }}>
+              Find &amp; Stay with {petName}
+            </div>
+            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>
+              Pet-friendly stays, boarding, daycare and more — all bookable via Concierge®
+            </div>
 
-        {/* TAB 3: Stay */}
-        {activeTab === 'stay' && (
-          <div style={{ padding:'16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Pet-Friendly Stays</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Hotels, resorts, and homestays that welcome {petName}.</div>
-            <PetFriendlyStays pet={currentPet} token={token} onBook={stay => {
+            {/* Pet-Friendly Stays — Goa, Coorg, Manali etc */}
+            <PetFriendlyStays pet={currentPet} token={token} onBook={(stay, query) => {
+              if (!stay) {
+                setNearMeConc({ open: true, venue: { name: `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' } });
+                return;
+              }
               tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
               setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
+
+            {/* Divider */}
+            <div style={{ margin:'24px 0 16px', display:'flex', alignItems:'center', gap:12 }}>
+              <div style={{ flex:1, height:1, background:G.border }} />
+              <div style={{ fontSize:12, fontWeight:700, color:G.mutedText, letterSpacing:'0.08em' }}>FIND NEAR YOU</div>
+              <div style={{ flex:1, height:1, background:G.border }} />
+            </div>
+
+            {/* GoNearMe — Pet Hotels, Boarding, Taxi, Travel Vet, Day Care, Dog Parks */}
+            <GoNearMe currentPet={currentPet} />
           </div>
         )}
 
-        {/* TAB 4: Near Me */}
-        {activeTab === 'nearme' && (
-          <GoNearMe currentPet={currentPet} />
+        {/* TAB 3: Book a Service */}
+        {activeTab === 'services' && (
+          <div style={{ padding:'16px' }}>
+            {/* ── Go, Personally — 8 service tiles ── */}
+            <div style={{ marginBottom:28 }}>
+              <div style={{ fontSize:20, fontWeight:800, color:G.darkText, fontFamily:'Georgia,serif', marginBottom:4 }}>Go, Personally</div>
+              <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>
+                Tell us what you want {petName}'s trip to feel like. We'll handle every detail.
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                {GO_SERVICES.map(svc => {
+                  const petName_ = currentPet?.name || 'your dog';
+                  return (
+                    <div key={svc.id} onClick={() => setGoSvc(svc)}
+                      style={{ background:'#fff', borderRadius:14, overflow:'hidden', border:`1px solid ${svc.urgent ? '#FFCDD2' : G.border}`, cursor:'pointer', boxShadow:'0 2px 8px rgba(13,51,73,0.06)' }}>
+                      <div style={{ height:100, background:svc.illustrationBg, display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
+                        <span style={{ fontSize:36 }}>{svc.icon}</span>
+                        {svc.urgent && <div style={{ position:'absolute', top:6, right:6, background:'#C62828', color:'#fff', fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 7px' }}>URGENT</div>}
+                      </div>
+                      <div style={{ padding:'10px 12px 14px' }}>
+                        {svc.free && <div style={{ display:'inline-block', background:'#E8F5E9', color:'#2E7D32', fontSize:9, fontWeight:700, borderRadius:8, padding:'2px 7px', marginBottom:5 }}>Complimentary</div>}
+                        <div style={{ fontSize:10, color:G.mutedText, marginBottom:3 }}>{svc.tagline.replace('{petName}', petName_)}</div>
+                        <div style={{ fontSize:13, fontWeight:700, color: svc.urgent ? '#C62828' : G.darkText, lineHeight:1.2, marginBottom:5 }}>{svc.name}</div>
+                        <button style={{ fontSize:11, fontWeight:700, color: svc.urgent ? '#C62828' : G.teal, background:'none', border:'none', padding:0, cursor:'pointer' }}>
+                          {svc.urgent ? 'Get help now →' : `Book ${svc.steps}-step flow →`}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Live API services (GoConciergeSection) below ── */}
+            <GoConciergeSection pet={currentPet} />
+          </div>
         )}
       </div>
 
@@ -317,6 +393,25 @@ export default function GoMobilePage() {
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
       />
+
+      {nearMeConc.open && nearMeConc.venue && (
+        <NearMeConciergeModal
+          isOpen={nearMeConc.open}
+          venue={nearMeConc.venue}
+          pet={currentPet}
+          pillar="go"
+          onClose={() => setNearMeConc({ open: false, venue: null })}
+        />
+      )}
+
+      {/* Go, Personally — 8-step booking flow modal */}
+      {goSvc && (
+        <GoServiceBookingModal
+          service={goSvc}
+          pet={currentPet}
+          onClose={() => setGoSvc(null)}
+        />
+      )}
 
       <MiraPlanModal
         isOpen={showGoPlan}

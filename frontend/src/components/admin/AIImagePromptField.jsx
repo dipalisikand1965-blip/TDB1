@@ -31,6 +31,16 @@ function buildDefaultPrompt({ productName, pillar, category, breed, entityType }
     return `Watercolour illustration of a ${breedLabel} with ${name.toLowerCase()}, soft warm tones, artistic hand-painted style, ivory background, no text`;
   }
 
+  // Service — matches the warm watercolour oval style used across all service images
+  if (entityType === 'service') {
+    return `Soulful watercolor illustration of "${name}" pet service, caring handler with a golden retriever dog, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
+  }
+
+  // Bundle — painterly warm style
+  if (entityType === 'bundle') {
+    return `Soulful watercolor illustration of "${name}" dog bundle, beautifully curated pet items arranged together, warm painterly brushstrokes, soft layered watercolor pigments, premium editorial composition, ivory background, no text`;
+  }
+
   // Pillar-specific defaults
   const pillarPrompts = {
     care:       `Professional product photo of ${name}, pet care item, clean white studio background, soft natural lighting`,
@@ -111,20 +121,35 @@ export default function AIImagePromptField({
     setResult(null);
 
     try {
-      const res = await fetch(`${API_URL}/api/admin/generate-image`, {
-        method: 'POST',
-        credentials: 'omit',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': getAdminAuthHeader(),
-        },
-        body: JSON.stringify({
-          prompt:      trimmed,
-          entity_type: entityType,
-          entity_id:   entityId || '',
-          save_prompt: true,  // tells backend to save prompt to ai_prompt field
-        }),
-      });
+      // Services → service-box endpoint (applies watercolour style suffix automatically)
+      // Bundles  → admin/bundles endpoint (same watercolour pipeline)
+      // Products → generic admin/generate-image endpoint
+      let res;
+      if (entityType === 'service' && entityId) {
+        res = await fetch(`${API_URL}/api/service-box/services/${entityId}/generate-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          body: JSON.stringify({ prompt: trimmed }),
+        });
+      } else if (entityType === 'bundle' && entityId) {
+        res = await fetch(`${API_URL}/api/admin/bundles/${entityId}/generate-image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          body: JSON.stringify({ prompt: trimmed }),
+        });
+      } else {
+        res = await fetch(`${API_URL}/api/admin/generate-image`, {
+          method: 'POST',
+          credentials: 'omit',
+          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          body: JSON.stringify({
+            prompt:      trimmed,
+            entity_type: entityType,
+            entity_id:   entityId || '',
+            save_prompt: true,
+          }),
+        });
+      }
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -132,8 +157,10 @@ export default function AIImagePromptField({
       }
 
       const data = await res.json();
-      setResult(data.url);
-      onImageGenerated?.(data.url, trimmed);
+      // Normalise response: service-box returns {image_url}, admin returns {url}
+      const imageUrl = data.url || data.image_url;
+      setResult(imageUrl);
+      onImageGenerated?.(imageUrl, trimmed);
     } catch (e) {
       setError(e.message || 'Failed to generate. Try a more descriptive prompt.');
     } finally {

@@ -13,38 +13,72 @@ import GoConciergeModal from "./GoConciergeModal";
 const G = { deep:"#0D3349", deepMid:"#1A5276", teal:"#1ABC9C", light:"#76D7C4", pale:"#D1F2EB", gold:"#C9973A", mutedText:"#5D6D7E", darkText:"#0D3349", border:"rgba(26,188,156,0.18)" };
 
 function ServiceCard({ svc, petName, onClick }) {
-  const [hovered, setHovered] = useState(false);
   const accentColor = svc.accent_colour || G.deepMid;
   return (
     <div
-      style={{ background:"#fff", borderRadius:16, overflow:"hidden", border:`1px solid ${G.border}`, cursor:"pointer", transition:"transform 0.15s, box-shadow 0.15s", transform:hovered?"translateY(-4px)":"none", boxShadow:hovered?"0 12px 32px rgba(13,51,73,0.12)":"0 2px 8px rgba(13,51,73,0.06)" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       onClick={onClick}
-      data-testid={`go-service-card-${svc.id}`}>
-      {/* Illustration area */}
+      data-testid={`go-service-card-${svc.id}`}
+      style={{ background:"#fff", borderRadius:14, overflow:"hidden", border:`1px solid ${G.border}`, cursor:"pointer", boxShadow:"0 2px 8px rgba(13,51,73,0.06)" }}>
+      {/* Image — compact for 2-col mobile */}
       {(svc.cloudinary_image_url || svc.watercolor_image || svc.image_url) ? (
-        <img src={svc.cloudinary_image_url || svc.watercolor_image || svc.image_url} alt={svc.name} style={{ width:"100%", height:160, objectFit:"cover" }} onError={e => { e.target.style.display="none"; }} />
+        <img src={svc.cloudinary_image_url || svc.watercolor_image || svc.image_url} alt={svc.name}
+          style={{ width:"100%", height:120, objectFit:"cover", display:"block" }}
+          onError={e => { e.target.style.display="none"; }} />
       ) : (
-        <div style={{ height:160, background:`linear-gradient(135deg,${accentColor}22,${accentColor}44)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:52 }}>
+        <div style={{ height:120, background:`linear-gradient(135deg,${accentColor}22,${accentColor}44)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:40 }}>
           {svc.icon || "✈️"}
         </div>
       )}
-      <div style={{ padding:"14px 16px 18px" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
-          <span style={{ fontSize:10, fontWeight:700, background:`${accentColor}18`, color:accentColor, borderRadius:20, padding:"2px 8px", textTransform:"uppercase" }}>
-            {svc.category === "stay" ? "Stay & Board" : "Travel"}
-          </span>
-          {svc.urgent && <span style={{ fontSize:10, fontWeight:700, background:"#FFEBEE", color:"#C62828", borderRadius:20, padding:"2px 8px" }}>Urgent</span>}
-        </div>
-        <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:5, lineHeight:1.3 }}>{svc.name}</div>
-        {svc.tagline && <div style={{ fontSize:12, color:G.mutedText, lineHeight:1.5, marginBottom:12, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{svc.tagline}</div>}
-        <button
-          style={{ fontSize:13, fontWeight:700, color:accentColor, background:"none", border:"none", padding:0, cursor:"pointer" }}
-          onClick={onClick}>
+      <div style={{ padding:"10px 12px 14px" }}>
+        <span style={{ fontSize:9, fontWeight:700, background:`${accentColor}18`, color:accentColor, borderRadius:20, padding:"2px 7px", textTransform:"uppercase", display:"inline-block", marginBottom:5 }}>
+          {svc.category === "stay" ? "Stay & Board" : "Travel"}
+        </span>
+        <div style={{ fontSize:13, fontWeight:700, color:G.darkText, marginBottom:4, lineHeight:1.3 }}>{svc.name}</div>
+        {svc.tagline && (
+          <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.4, marginBottom:8, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+            {svc.tagline}
+          </div>
+        )}
+        <button style={{ fontSize:11, fontWeight:700, color:accentColor, background:"none", border:"none", padding:0, cursor:"pointer" }} onClick={onClick}>
           Book {petName}'s {svc.name} →
         </button>
       </div>
+    </div>
+  );
+}
+
+// Section block — 2×2 grid initially, quiet Load more
+function SectionBlock({ title, subtitle, icon, services: svcs, petName, accentGradient, onSelect }) {
+  const [visible, setVisible] = useState(4);
+  const shown = svcs.slice(0, visible);
+  const hasMore = visible < svcs.length;
+
+  return (
+    <div style={{ marginBottom:32 }}>
+      {/* Header */}
+      <div style={{ display:"flex", alignItems:"flex-start", gap:12, marginBottom:16, paddingBottom:14, borderBottom:`2px solid ${G.pale}` }}>
+        <div style={{ width:40, height:40, borderRadius:10, background:accentGradient, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{icon}</div>
+        <div>
+          <div style={{ fontSize:15, fontWeight:800, color:G.darkText, lineHeight:1.2 }}>{title}</div>
+          <div style={{ fontSize:12, color:G.mutedText, marginTop:3, lineHeight:1.4 }}>{subtitle}</div>
+        </div>
+      </div>
+
+      {/* 2-col grid — always 2 columns on all screens */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+        {shown.map((svc, i) => (
+          <ServiceCard key={svc.id || i} svc={svc} petName={petName} onClick={() => onSelect(svc)} />
+        ))}
+      </div>
+
+      {/* Quiet Load more */}
+      {hasMore && (
+        <button
+          onClick={() => setVisible(v => v + 4)}
+          style={{ display:"block", margin:"14px auto 0", background:"none", border:`1px solid ${G.border}`, borderRadius:20, padding:"7px 20px", fontSize:12, fontWeight:600, color:G.mutedText, cursor:"pointer" }}>
+          + {Math.min(4, svcs.length - visible)} more services
+        </button>
+      )}
     </div>
   );
 }
@@ -85,34 +119,17 @@ export default function GoConciergeSection({ pet }) {
     ? services.slice(0, 10)
     : null;
 
-  const SectionBlock = ({ title, subtitle, icon, services: svcs, accentGradient }) => (
-    <div style={{ marginBottom:40 }}>
-      <div style={{ display:"flex", alignItems:"flex-start", gap:14, marginBottom:20, paddingBottom:16, borderBottom:`2px solid ${G.pale}` }}>
-        <div style={{ width:44, height:44, borderRadius:12, background:accentGradient, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{icon}</div>
-        <div>
-          <h3 style={{ fontSize:"clamp(1.1rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, margin:0, fontFamily:"Georgia,serif" }}>{title}</h3>
-          <p style={{ fontSize:13, color:G.mutedText, margin:"4px 0 0", lineHeight:1.5 }}>{subtitle}</p>
-        </div>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))", gap:16 }}>
-        {svcs.map((svc, i) => (
-          <ServiceCard key={svc.id || i} svc={svc} petName={petName} onClick={() => setModalSvc(svc)} />
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <>
       {modalSvc && <GoConciergeModal pet={pet} service={modalSvc} token={token} onClose={() => setModalSvc(null)} />}
 
       <div style={{ marginBottom:32 }}>
         {/* Section heading */}
-        <div style={{ textAlign:"center", marginBottom:32 }}>
-          <h2 style={{ fontSize:"clamp(1.5rem,4vw,2rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6 }}>
-            Go, Personally
+        <div style={{ textAlign:"center", marginBottom:24 }}>
+          <h2 style={{ fontSize:"clamp(1.3rem,4vw,2rem)", fontWeight:800, color:G.darkText, fontFamily:"Georgia,serif", marginBottom:6 }}>
+            Ask {petName}'s Concierge®
           </h2>
-          <p style={{ fontSize:14, color:G.mutedText, maxWidth:540, margin:"0 auto", lineHeight:1.6 }}>
+          <p style={{ fontSize:13, color:G.mutedText, maxWidth:540, margin:"0 auto", lineHeight:1.6 }}>
             Tell us what you want {petName}'s journey to feel like. We'll handle everything else.
           </p>
         </div>
@@ -123,7 +140,9 @@ export default function GoConciergeSection({ pet }) {
             subtitle={`Flight, road trips, pet taxi, relocation, and complete trip planning for ${petName}.`}
             icon="✈️"
             services={travelServices}
+            petName={petName}
             accentGradient={`linear-gradient(135deg,#E3F2FD,#BBDEFB)`}
+            onSelect={setModalSvc}
           />
         )}
 
@@ -133,10 +152,12 @@ export default function GoConciergeSection({ pet }) {
             subtitle={`Boarding, daycare, and pet sitting arranged around ${petName}'s personality.`}
             icon="🏡"
             services={stayServices}
+            petName={petName}
             accentGradient={`linear-gradient(135deg,${G.pale},${G.light})`}
+            onSelect={setModalSvc}
           />
         )}
-        
+
         {/* Fallback: show all go services if no category tags found */}
         {allGoServices && allGoServices.length > 0 && (
           <SectionBlock
@@ -144,7 +165,9 @@ export default function GoConciergeSection({ pet }) {
             subtitle={`All travel, boarding, and go-related services available for ${petName}.`}
             icon="✈️"
             services={allGoServices}
+            petName={petName}
             accentGradient={`linear-gradient(135deg,${G.pale},${G.light})`}
+            onSelect={setModalSvc}
           />
         )}
 

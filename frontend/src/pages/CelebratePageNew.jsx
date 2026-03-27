@@ -53,6 +53,7 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMi
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
 import DoggyBakeryCakeModal from '../components/celebrate/BreedCakeOrderModal';
+import BirthdayCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
@@ -294,6 +295,7 @@ const CelebratePageNew = () => {
   const [loading, setLoading] = useState(true);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
   const [breedCakeOpen, setBreedCakeOpen] = useState(false);
+  const [birthdayCakesOpen, setBirthdayCakesOpen] = useState(false);
 
   // Wait for pet data to load from context
   useEffect(() => {
@@ -438,6 +440,11 @@ const CelebratePageNew = () => {
     // breed-cakes → open BreedCakeOrderModal (the "A cake that looks like Bruno" builder)
     if (categoryId === 'breed-cakes') {
       setBreedCakeOpen(true);
+      return;
+    }
+    // birthday-cakes → open DoggyBakeryCakeModal (full product grid + order form)
+    if (categoryId === 'birthday-cakes') {
+      setBirthdayCakesOpen(true);
       return;
     }
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
@@ -597,6 +604,11 @@ const CelebratePageNew = () => {
       {/* BREED CAKE BUILDER — "A cake that looks like Bruno" */}
       {breedCakeOpen && (
         <DoggyBakeryCakeModal pet={selectedPet} onClose={() => setBreedCakeOpen(false)} />
+      )}
+
+      {/* Birthday Cakes → full product grid + order form */}
+      {birthdayCakesOpen && (
+        <BirthdayCakeModal pet={selectedPet} onClose={() => setBirthdayCakesOpen(false)} />
       )}
 
       {/* CATEGORY STRIP MODAL — rendered here (outside Framer Motion tree) to fix fixed positioning */}

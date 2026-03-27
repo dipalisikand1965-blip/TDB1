@@ -3,7 +3,7 @@ Service Box Admin Routes
 Full CRUD for services with filtering, stats, and bulk operations
 """
 
-from fastapi import APIRouter, HTTPException, Query, Header
+from fastapi import APIRouter, HTTPException, Query, Header, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
@@ -798,7 +798,7 @@ DEFAULT_SERVICE_PROMPT = "Professional pet service in modern setting, happy dog 
 
 
 @router.post("/services/{service_id}/generate-image")
-async def generate_service_image(service_id: str, x_admin_user: Optional[str] = Header(None)):
+async def generate_service_image(service_id: str, request: Request, x_admin_user: Optional[str] = Header(None)):
     """Generate watercolor AI image for a specific service"""
     import os
     import cloudinary
@@ -814,8 +814,13 @@ async def generate_service_image(service_id: str, x_admin_user: Optional[str] = 
     service_name = service.get("name", "Pet Service")
     pillar = service.get("pillar", "care")
     
-    # Get contextual prompt
-    prompt = SERVICE_IMAGE_PROMPTS.get(service_name, DEFAULT_SERVICE_PROMPT)
+    # Get contextual prompt — use custom prompt from request body if provided
+    try:
+        body = await request.json()
+        custom_prompt = body.get("prompt", "")
+    except Exception:
+        custom_prompt = ""
+    prompt = custom_prompt if custom_prompt else SERVICE_IMAGE_PROMPTS.get(service_name, DEFAULT_SERVICE_PROMPT)
     
     # Add pillar context to prompt
     pillar_context = {

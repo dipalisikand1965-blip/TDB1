@@ -24,6 +24,7 @@ import PersonalisedBreedSection from '../components/common/PersonalisedBreedSect
 import CelebrateCategoryStrip from '../components/celebrate/CelebrateCategoryStrip';
 import CelebrateContentModal from '../components/celebrate/CelebrateContentModal';
 import DoggyBakeryCakeModal from '../components/celebrate/BreedCakeOrderModal';
+import BirthdayCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 import MiraBirthdayBox from '../components/celebrate/MiraBirthdayBox';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import BirthdayBoxBuilder from '../components/celebrate/BirthdayBoxBuilder';
@@ -262,6 +263,7 @@ export default function CelebrateMobilePage() {
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
   const [breedCakeOpen, setBreedCakeOpen] = useState(false);
+  const [birthdayCakesOpen, setBirthdayCakesOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('celebrate');
 
   // Handle build box from Mira's curated box — open BirthdayBoxBuilder modal
@@ -288,6 +290,11 @@ export default function CelebrateMobilePage() {
 
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
+    // birthday-cakes → open new DoggyBakeryCakeModal (full product grid + order form)
+    if (categoryId === 'birthday-cakes') {
+      setBirthdayCakesOpen(true);
+      return;
+    }
     // breed-cakes → open BreedCakeOrderModal (the "A cake that looks like Bruno" builder)
     if (categoryId === 'breed-cakes') {
       setBreedCakeOpen(true);
@@ -563,6 +570,11 @@ export default function CelebrateMobilePage() {
               });
             }}
           />
+        )}
+
+        {/* Birthday Cakes — DoggyBakeryCakeModal (product grid + order form) */}
+        {birthdayCakesOpen && (
+          <BirthdayCakeModal pet={currentPet} onClose={() => setBirthdayCakesOpen(false)} />
         )}
 
         {/* Breed Cake Builder — "A cake that looks like [petName]" */}

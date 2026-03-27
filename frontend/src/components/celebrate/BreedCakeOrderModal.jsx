@@ -381,7 +381,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                       onClick={() => { setBreed(b); setShowBreeds(false); }}
                       data-testid={`breed-pill-${b.replace(/\s+/g,'-')}`}
                     >
-                      {isPetBreed ? `${petName} (${b.charAt(0).toUpperCase()+b.slice(1)})` : b.charAt(0).toUpperCase() + b.slice(1)}
+                      {isPetBreed ? `🐾 Made for ${petName}` : b.charAt(0).toUpperCase() + b.slice(1)}
                     </button>
                   );
                 })}

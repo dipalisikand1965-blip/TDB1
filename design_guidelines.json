@@ -1,74 +1,30 @@
 {
+  "theme": "Light",
+  "archetype": "Organic & Earthy",
   "typography": {
-    "headings": "Manrope (Google Fonts)",
-    "body": "IBM Plex Sans (Google Fonts)",
-    "heading_weights": "font-semibold to font-bold",
-    "body_weights": "font-normal to font-medium",
-    "rules": "Never use Inter for headings. Use tight tracking (`tracking-tight`) on headings > 24px."
+    "headings": "DM Sans",
+    "body": "system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif"
   },
   "colors": {
-    "background": "#FFFFFF",
-    "surface": "#F8FAFC",
-    "primary": "#1A1A2E",
-    "accent": "#C9973A",
-    "text_main": "#1A1A2E",
-    "text_muted": "#64748B",
-    "border": "#E2E8F0",
-    "urgency_critical": "#EF4444",
-    "urgency_high": "#F97316",
-    "urgency_medium": "#EAB308",
-    "urgency_low": "#94A3B8"
+    "primary": "#1ABC9C",
+    "mid": "#0E8A70",
+    "deep": "#06503F",
+    "light": "#A7F3D0",
+    "pale": "#ECFDF5",
+    "cream": "#F0FDFA",
+    "dark": "#03211A",
+    "darkText": "#064E3B",
+    "mutedText": "#1ABC9C",
+    "border": "rgba(26,188,156,0.18)"
   },
-  "visual_enhancers": {
-    "shadows": "Minimal. Avoid dark dropshadows. Use `shadow-sm` and `1px border` for definition.",
-    "borders": "border-slate-200 everywhere to define structure.",
-    "radius": "rounded-md for buttons, rounded-lg for cards.",
-    "textures": "Flat and clean. No gradients. Fast scanning is priority."
+  "layout": {
+    "spacing_scale": "Tailwind standard",
+    "hero": "Dark teal gradient background with relative positioning and overflow hidden",
+    "tab_bar": "Sticky bottom bar with z-index 10 (ios-tab-bar)"
   },
-  "grids": {
-    "dashboard_mode": "High Density Grid (Mode B). grid-cols-1 md:grid-cols-4. gap-4.",
-    "ticket_list": "flex flex-col gap-3 for rapid visual scanning."
+  "components": {
+    "GoMobilePage": "Follows DineMobilePage architecture. Hero is the DIM trigger. PillarSoulProfile and PawrentFirstStepsTab moved inside the 'go' activeTab.",
+    "GoCategoryStrip": "Positioned immediately after the Hero component, outside the tab view."
   },
-  "layouts": {
-    "sidebar": "Fixed left sidebar, w-64, bg-white, border-r border-slate-200. Clean list items. On mobile, ensure it collapses into a hamburger menu.",
-    "header": "Sticky top, h-16, bg-white, border-b border-slate-200, flex items-center justify-between px-6. 'Go to Platform \u2192' button goes here.",
-    "main_content": "ml-0 md:ml-64 bg-[#F8FAFC] min-h-screen p-4 md:p-6 overflow-y-auto."
-  },
-  "motion": {
-    "hover": "Cards: -translate-y-[1px] and shadow-md. Buttons: hover:border-[#C9973A] hover:text-[#C9973A].",
-    "transitions": "transition-colors duration-200 ease-in-out, transition-transform duration-200"
-  },
-  "accessibility": {
-    "contrast": "Deep Navy (#1A1A2E) on White (#FFFFFF) passes WCAG AAA.",
-    "focus": "focus:ring-2 focus:ring-[#C9973A] focus:outline-none focus-visible:ring-2",
-    "test_ids": "All buttons, links, and forms MUST include data-testid (e.g., data-testid='ticket-card-reply-btn')"
-  },
-  "media": {
-    "images": "Not primarily an image-heavy view, but any avatars or pet images should be rounded-full, object-cover, border border-slate-200."
-  },
-  "3d_libraries": null,
-  "image_urls": [],
-  "component_path": "/app/frontend/src/components/admin/DoggyServiceDesk.jsx",
-  "instructions_to_main_agent": [
-    "CRITICAL: The target file is 6,874 lines. DO NOT attempt to rewrite the whole file. DO NOT output the whole file.",
-    "Use view_range with view_file tool to inspect specific sections, or use search_replace to target CSS class replacements directly.",
-    "1. THEME SWITCH: Replace 'bg-slate-900', 'bg-slate-800', 'bg-gray-900' with 'bg-white' or 'bg-slate-50'. Replace 'text-white' or 'text-slate-100' with 'text-[#1A1A2E]'.",
-    "2. HEADER: Inject a 'Go to Platform \u2192' button into the top header navigation. It must link to '/pet-home'. Use styling: px-4 py-2 border border-slate-200 text-[#1A1A2E] hover:text-[#C9973A] hover:border-[#C9973A] rounded-md transition-colors font-medium text-sm.",
-    "3. PILLAR NAMES: Search for occurrences of 'stay', 'enjoy', 'fit' in strings and UI labels. Replace them respectively with 'go', 'play', 'services'. (Watch out for case sensitivity like 'Stay' -> 'Go').",
-    "4. TICKETS: Update the ticket cards to have white background, subtle border, Deep Navy headings, and clear urgency indicators (\ud83d\udea8/\ud83d\udfe2/\ud83d\udfe1/\u26aa).",
-    "5. Keep existing application state, imports, and component methods strictly untouched."
-  ],
-  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
-    "You tend to converge toward generic outputs. Avoid this: make creative, distinctive frontends that surprise and delight.",
-    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
-    "Don't make generic centered layouts. Create depth through layered design elements with z-index hierarchy.",
-    "You MUST NOT apply universal transition (`transition: all`). Always add transitions for specific interactive elements.",
-    "You MUST NOT center align the app container. This disrupts the human natural reading flow of text.",
-    "Always use modern button styles.",
-    "NEVER: use AI assistant Emoji characters like \ud83e\udd16\ud83e\udde0\ud83d\udcad\ud83d\udca1\ud83d\udd2e\ud83c\udfaf for icons.",
-    "Every interaction needs micro-animations - hover states, transitions.",
-    "Components MUST use named exports, Pages MUST use default exports.",
-    "Use `sonner` for toasts if needed.",
-    "All interactive and key informational elements MUST include a `data-testid` attribute. Convention: kebab-case, role-based."
-  ]
+  "instructions_to_main_agent": "Ensure GoMobilePage.jsx is maintained exactly as structured. Do not introduce a separate Trips & Adventures card. Maintain z-index: 10 on the ios-tab-bar. Ensure all data-testids are kept intact."
 }

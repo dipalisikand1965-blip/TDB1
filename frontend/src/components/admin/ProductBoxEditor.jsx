@@ -19,7 +19,7 @@ import {
 import { API_URL } from '../../utils/api';
 import AIImagePromptField from './AIImagePromptField';
 import {
-  ALL_PILLARS, PILLAR_SUBCATEGORIES, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
+  ALL_PILLARS, PILLAR_SUBCATEGORIES, SOUL_MADE_TYPES, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
   CHEW_STRENGTHS, PLAY_TYPES, COAT_TYPES, COMMON_AVOIDS, MATERIAL_SAFETY_FLAGS,
   OCCASIONS, USE_CASE_TAGS, QUALITY_TIERS, INVENTORY_STATUS, DELIVERY_TYPES,
   APPROVAL_STATUS, CITIES, MAIN_CATEGORIES
@@ -173,8 +173,15 @@ const ProductBoxEditor = ({
   onClose, 
   onSave, 
   saving,
-  onGenerateMiraHint 
+  onGenerateMiraHint,
+  entityConfig
 }) => {
+  // entityConfig: { prefix, uploadPrefix, entityLabel, generateImageBasePath? }
+  const entityPrefix = entityConfig?.prefix || 'products';
+  const uploadEntityPrefix = entityConfig?.uploadPrefix || 'product';
+  const entityLabel = entityConfig?.entityLabel || 'Product';
+  // generateImageBasePath overrides the base URL for AI image generation (no /api/admin/ prefix)
+  const imageGenBasePath = entityConfig?.generateImageBasePath || `${API_URL}/api/admin/${entityPrefix}`;
   const [activeTab, setActiveTab] = useState('basics');
   const [dogBreeds, setDogBreeds] = useState([]);
   const [loadingBreeds, setLoadingBreeds] = useState(false);
@@ -198,14 +205,34 @@ const ProductBoxEditor = ({
     setGeneratingImage(true);
     try {
       // Step 1: Start background job — returns immediately
-      const startRes = await fetch(`${API_URL}/api/admin/products/${encodeURIComponent(product.id)}/generate-image`, {
+      const startRes = await fetch(`${imageGenBasePath}/${encodeURIComponent(product.id)}/generate-image`, {
         method: 'POST',
-        headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' }
+        headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: product.ai_image_prompt || product.ai_prompt || '' })
       });
-      if (startRes.status === 404) { setGeneratingImage(false); alert('Product not found. Please save first.'); return; }
+      if (startRes.status === 404) { setGeneratingImage(false); alert(`${entityLabel} not found. Please save first.`); return; }
       if (startRes.status === 401) { setGeneratingImage(false); alert('Session expired. Please log back in.'); return; }
 
       const startData = await startRes.json();
+
+      // Handle synchronous response (some entity types return image directly)
+      if (startData.image_url && (startData.success || startData.image_url)) {
+        setGeneratingImage(false);
+        const newUrl = startData.image_url;
+        setProduct(prev => ({
+          ...prev,
+          image_url: newUrl,
+          image: newUrl,
+          thumbnail: newUrl,
+          watercolor_image: newUrl,
+          cloudinary_url: newUrl,
+          media: { ...(prev.media || {}), primary_image: newUrl },
+        }));
+        setActiveTab('media');
+        // image_url already updated in state — preview refreshes automatically
+        return;
+      }
+
       if (startData.status !== 'generating') {
         setGeneratingImage(false);
         alert('Failed to start image generation: ' + (startData.detail || JSON.stringify(startData)));
@@ -218,7 +245,7 @@ const ProductBoxEditor = ({
       const pollInterval = setInterval(async () => {
         attempts++;
         try {
-          const statusRes = await fetch(`${API_URL}/api/admin/products/${encodeURIComponent(product.id)}/image-status`, {
+          const statusRes = await fetch(`${imageGenBasePath}/${encodeURIComponent(product.id)}/image-status`, {
             headers: { 'Authorization': `Basic ${adminAuth}` }
           });
           const statusData = await statusRes.json();
@@ -279,7 +306,7 @@ const ProductBoxEditor = ({
       
       const isExistingProduct = product?.id && !product.id.startsWith('NEW-');
       const uploadUrl = isExistingProduct
-        ? `${API_URL}/api/admin/product/${product.id}/upload-image`
+        ? `${API_URL}/api/admin/${uploadEntityPrefix}/${product.id}/upload-image`
         : `${API_URL}/api/upload/product-image`;
 
       const response = await fetch(uploadUrl, {
@@ -395,34 +422,44 @@ const ProductBoxEditor = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="w-5 h-5 text-purple-600" />
-            {isNew ? 'Create New Product' : 'Edit Product'}
-            {product.basics?.name && (
-              <Badge variant="outline" className="ml-2">{product.basics.name}</Badge>
+            {isNew ? `Create New ${entityLabel}` : `Edit ${entityLabel}`}
+            {(product.basics?.name || product.name) && (
+              <Badge variant="outline" className="ml-2">{product.basics?.name || product.name}</Badge>
             )}
           </DialogTitle>
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-          <TabsList className="grid grid-cols-6 w-full">
-            <TabsTrigger value="basics" className="text-xs">
-              <Package className="w-3 h-3 mr-1" /> Basics
-            </TabsTrigger>
-            <TabsTrigger value="suitability" className="text-xs">
-              <Shield className="w-3 h-3 mr-1" /> Suitability
-            </TabsTrigger>
-            <TabsTrigger value="pillars" className="text-xs">
-              <Tag className="w-3 h-3 mr-1" /> Pillars
-            </TabsTrigger>
-            <TabsTrigger value="commerce" className="text-xs">
-              <DollarSign className="w-3 h-3 mr-1" /> Commerce
-            </TabsTrigger>
-            <TabsTrigger value="media" className="text-xs">
-              <ImagePlus className="w-3 h-3 mr-1" /> Media
-            </TabsTrigger>
-            <TabsTrigger value="mira" className="text-xs">
-              <Bot className="w-3 h-3 mr-1" /> Mira AI
-            </TabsTrigger>
-          </TabsList>
+          {(() => {
+            const isCake = product?.product_type === 'birthday_cake' || product?.category === 'cakes' || product?.category === 'breed-cakes';
+            return (
+              <TabsList className={`grid ${isCake ? 'grid-cols-7' : 'grid-cols-6'} w-full`}>
+                <TabsTrigger value="basics" className="text-xs">
+                  <Package className="w-3 h-3 mr-1" /> Basics
+                </TabsTrigger>
+                <TabsTrigger value="suitability" className="text-xs">
+                  <Shield className="w-3 h-3 mr-1" /> Suitability
+                </TabsTrigger>
+                <TabsTrigger value="pillars" className="text-xs">
+                  <Tag className="w-3 h-3 mr-1" /> Pillars
+                </TabsTrigger>
+                <TabsTrigger value="commerce" className="text-xs">
+                  <DollarSign className="w-3 h-3 mr-1" /> Commerce
+                </TabsTrigger>
+                <TabsTrigger value="media" className="text-xs">
+                  <ImagePlus className="w-3 h-3 mr-1" /> Media
+                </TabsTrigger>
+                <TabsTrigger value="mira" className="text-xs">
+                  <Bot className="w-3 h-3 mr-1" /> Mira AI
+                </TabsTrigger>
+                {isCake && (
+                  <TabsTrigger value="cake" className="text-xs bg-purple-50 data-[state=active]:bg-purple-600 data-[state=active]:text-white">
+                    🎂 Cake Details
+                  </TabsTrigger>
+                )}
+              </TabsList>
+            );
+          })()}
           
           {/* TAB 1: BASICS */}
           <TabsContent value="basics" className="space-y-4 mt-4">
@@ -996,6 +1033,40 @@ const ProductBoxEditor = ({
                     Sub-section within the pillar. 
                     Auto formula: <strong>{getValue('breed','') || 'all'}-{getValue('pillar','') || 'general'}</strong>
                   </p>
+                </div>
+
+                {/* ── Soul Made™ Toggle ── */}
+                <div className="mt-4 p-4 rounded-xl" style={{ background:'linear-gradient(135deg,#1A0A2E,#2D1060)' }}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-bold text-white mb-1">✦ Soul Made™</div>
+                      <div className="text-xs" style={{ color:'rgba(255,255,255,0.6)' }}>AI-generated breed personalised product</div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={getValue('soul_tier','') === 'soul_made'}
+                      onChange={e => {
+                        updateField('soul_tier', e.target.checked ? 'soul_made' : '');
+                        updateField('source', e.target.checked ? 'soul_made' : 'manual');
+                      }}
+                      className="w-5 h-5 cursor-pointer"
+                    />
+                  </div>
+                  {getValue('soul_tier','') === 'soul_made' && (
+                    <div className="mt-3">
+                      <label className="text-xs mb-1 block" style={{ color:'rgba(255,255,255,0.7)' }}>Soul Made Type</label>
+                      <select
+                        value={getValue('sub_category','')}
+                        onChange={e => updateField('sub_category', e.target.value)}
+                        className="w-full p-2 rounded-lg text-sm border-none"
+                      >
+                        <option value="">— Select type —</option>
+                        {(SOUL_MADE_TYPES[getValue('pillar','')] || []).map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 {/* Pillar Status — activate/deactivate per pillar */}
@@ -1677,7 +1748,7 @@ const ProductBoxEditor = ({
               {/* Custom AI Prompt — pre-filled, editable, saves to ai_prompt */}
               <div className="mt-4">
                 <AIImagePromptField
-                  entityType="product"
+                  entityType={product?.product_type || 'product'}
                   entityId={product?.id}
                   currentPrompt={getValue('ai_image_prompt', '') || getValue('ai_prompt', '')}
                   productName={getValue('name', '')}
@@ -1728,7 +1799,7 @@ const ProductBoxEditor = ({
               </div>
               
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 flex items-center gap-2">
                   <span className="font-medium">Image Status:</span>{' '}
                   <Badge className={
                     getValue('media.image_completeness') === 'complete' ? 'bg-green-100 text-green-700' :
@@ -1737,7 +1808,7 @@ const ProductBoxEditor = ({
                   }>
                     {getValue('media.image_completeness', 'incomplete')} ({getValue('media.image_count', 0)} images)
                   </Badge>
-                </p>
+                </div>
               </div>
             </Card>
           </TabsContent>
@@ -1876,6 +1947,159 @@ const ProductBoxEditor = ({
               </Card>
             )}
           </TabsContent>
+
+          {/* TAB 7: CAKE DETAILS — only for birthday/breed cake products */}
+          {(product?.product_type === 'birthday_cake' || product?.category === 'cakes' || product?.category === 'breed-cakes') && (
+            <TabsContent value="cake" className="space-y-6 mt-4">
+              <SectionHeader icon="🎂" title="Cake Details" subtitle="Doggy Bakery specific fields" />
+
+              {/* Shape */}
+              <div>
+                <Label className="mb-2 block">Shape</Label>
+                <select
+                  value={getValue('shape', '') ||
+                    (getValue('tags', []) || []).find(t =>
+                      ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)
+                    ) || ''}
+                  onChange={e => {
+                    const SHAPES = ['Circle','Bone','Heart','Square','Star','Paw'];
+                    const currentTags = getValue('tags', []) || [];
+                    const withoutShape = currentTags.filter(t => !SHAPES.includes(t));
+                    const newTags = e.target.value ? [...withoutShape, e.target.value] : withoutShape;
+                    updateField('tags', newTags);
+                    updateField('shape', e.target.value);
+                  }}
+                  className="w-full border rounded p-2 text-sm"
+                >
+                  <option value="">— Select shape —</option>
+                  <option value="Circle">Circle</option>
+                  <option value="Bone">Bone</option>
+                  <option value="Heart">Heart</option>
+                  <option value="Square">Square</option>
+                  <option value="Star">Star</option>
+                  <option value="Paw">Paw</option>
+                </select>
+              </div>
+
+              {/* Available Flavours */}
+              <div>
+                <Label className="mb-2 block">Available Flavours for this cake</Label>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  {['Banana','Carrot','Chicken','Mutton','Peanut Butter',
+                    'Blueberry','Coconut Cream','Strawberry','Fish & Salmon','Pumpkin',
+                  ].map(f => {
+                    const selected = (getValue('available_flavours', []) || []).includes(f);
+                    return (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('available_flavours', []) || [];
+                          updateField('available_flavours', selected ? current.filter(x => x !== f) : [...current, f]);
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border transition-all ${
+                          selected ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">Select which flavours are available for this specific cake</p>
+              </div>
+
+              {/* Available Bases */}
+              <div>
+                <Label className="mb-2 block">Available Bases</Label>
+                <div style={{ display:'flex', gap:8 }}>
+                  {['Oats','Ragi'].map(b => {
+                    const selected = (getValue('available_bases', ['Oats','Ragi']) || []).includes(b);
+                    return (
+                      <button
+                        key={b}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('available_bases', ['Oats','Ragi']) || [];
+                          updateField('available_bases', selected ? current.filter(x => x !== b) : [...current, b]);
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm border ${
+                          selected ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        {b}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Allergen Flags */}
+              <div>
+                <Label className="mb-2 block">Contains Allergens</Label>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  {['Chicken','Beef','Fish','Dairy','Gluten','Egg','Nuts'].map(a => {
+                    const selected = (getValue('allergens', []) || []).includes(a);
+                    return (
+                      <button
+                        key={a}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('allergens', []) || [];
+                          updateField('allergens', selected ? current.filter(x => x !== a) : [...current, a]);
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border ${
+                          selected ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        ⚠ {a}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">These will trigger allergen warnings for pets with sensitivities</p>
+              </div>
+
+              {/* Doggy Bakery Flag */}
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  checked={!!getValue('is_doggy_bakery', false)}
+                  onChange={e => updateField('is_doggy_bakery', e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <div>
+                  <div className="text-sm font-semibold">Doggy Bakery Product</div>
+                  <div className="text-xs text-gray-500">Made fresh daily · No preservatives · FSSAI approved</div>
+                </div>
+              </div>
+
+              {/* Same Day Delivery Cities */}
+              <div>
+                <Label className="mb-2 block">Same Day Delivery Cities</Label>
+                <div style={{ display:'flex', gap:8 }}>
+                  {['Bangalore','Mumbai','Gurgaon'].map(city => {
+                    const selected = (getValue('same_day_cities', []) || []).includes(city);
+                    return (
+                      <button
+                        key={city}
+                        type="button"
+                        onClick={() => {
+                          const current = getValue('same_day_cities', []) || [];
+                          updateField('same_day_cities', selected ? current.filter(x => x !== city) : [...current, city]);
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm border ${
+                          selected ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-300'
+                        }`}
+                      >
+                        📍 {city}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
         
         <DialogFooter className="mt-6 pt-4 border-t">
