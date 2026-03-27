@@ -146,10 +146,10 @@ export default function GoMobilePage() {
               <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>✈️ Go</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', justifyContent:'flex-end', maxWidth:'55%', scrollbarWidth:'none' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer',
+                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer', flexShrink:0,
                       border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
                       background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
                       color:'#fff', fontFamily:'inherit' }}>
@@ -160,28 +160,38 @@ export default function GoMobilePage() {
             )}
           </div>
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Flights, road trips, boarding, pet-friendly stays.</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)', marginBottom:10 }}>Flights, road trips, boarding, pet-friendly stays.</div>
+          {/* Allergy tags */}
+          {currentPet?.allergies?.length > 0 && (
+            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              {currentPet.allergies.map(a => (
+                <span key={a} style={{ fontSize:11, fontWeight:700, background:'rgba(239,68,68,0.18)', color:'#fca5a5', borderRadius:999, padding:'3px 10px', border:'1px solid rgba(239,68,68,0.3)' }}>
+                  ⚠️ No {a}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ══ 2. GoCategoryStrip ══ */}
         <GoCategoryStrip pet={currentPet} />
 
-        {/* ══ 3. Tab Bar — matches desktop GoTabBar exactly ══ */}
-        <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'16px 16px 0', display:'flex', justifyContent:'center', gap:10, flexWrap:'wrap' }}>
+        {/* ══ 3. Tab Bar ══ */}
+        <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'12px 16px 0', display:'flex', gap:8, overflowX:'auto', flexWrap:'nowrap', scrollbarWidth:'none' }}>
           {[
-            { id:'go',       label:'✈️ Go Essentials' },
+            { id:'go',       label:'✈️ Products' },
             { id:'nearme',   label:'📍 Near Me' },
-            { id:'services', label:'🗺️ Book a Service' },
+            { id:'services', label:'🗺️ Services' },
           ].map(tab => {
             const sel = activeTab === tab.id;
             return (
               <button key={tab.id} onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}
                 data-testid={`go-tab-${tab.id}`}
-                style={{ padding:'10px 24px', borderRadius:9999, border:'none',
+                style={{ padding:'8px 18px', borderRadius:9999, border:'none', flexShrink:0,
                   background: sel ? `linear-gradient(135deg,${G.teal},${G.mid})` : `rgba(26,188,156,0.08)`,
                   color: sel ? '#fff' : G.mutedText,
-                  fontSize:14, fontWeight: sel ? 700 : 400,
-                  cursor:'pointer', transition:'all 0.15s', marginBottom:16, fontFamily:'inherit' }}>
+                  fontSize:13, fontWeight: sel ? 700 : 400,
+                  cursor:'pointer', transition:'all 0.15s', marginBottom:12, fontFamily:'inherit', whiteSpace:'nowrap' }}>
                 {tab.label}
               </button>
             );
