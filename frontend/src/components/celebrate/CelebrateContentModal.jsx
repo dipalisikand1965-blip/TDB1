@@ -1473,6 +1473,12 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
     : filteredProducts;
   const hasMoreCakes = category === 'birthday-cakes' && pagedProducts.length < filteredProducts.length;
 
+  // ── Swipeable row styles (mobile = horizontal scroll, desktop = grid) ───
+  const swipeRowStyle = isDesktop
+    ? { display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }
+    : { display: 'flex', gap: 10, overflowX: 'auto', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', paddingBottom: 6, scrollbarWidth: 'none', msOverflowStyle: 'none' };
+  const swipeCardStyle = isDesktop ? {} : { flex: '0 0 152px', scrollSnapAlign: 'start', minWidth: 0 };
+
   if (!isOpen) return null;
 
   const ModalContent = (
@@ -1558,10 +1564,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                       ✦ Complete Celebration Packages
                     </p>
                   </div>
-                  <div className="grid gap-4"
-                    style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))' }}>
+                  <div style={swipeRowStyle}>
                     {bundles.map((bundle, idx) => (
-                      <BundleCard key={bundle.id || idx} bundle={bundle} pet={pet} />
+                      <div key={bundle.id || idx} style={swipeCardStyle}>
+                        <BundleCard bundle={bundle} pet={pet} />
+                      </div>
                     ))}
                   </div>
                 </>
@@ -1590,10 +1597,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                         Made for {petName}
                       </span>
                     </div>
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                    <div style={swipeRowStyle}>
                       {breedProducts.map((p, idx) => (
-                        <SoulPickCard key={p.id || idx} product={p} pet={pet} />
+                        <div key={p.id || idx} style={swipeCardStyle}>
+                          <SoulPickCard product={p} pet={pet} />
+                        </div>
                       ))}
                     </div>
 
@@ -1674,10 +1682,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
 
                 {breedProducts.length > 0 ? (
                   artStyle === 'flat_art' ? (
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))' }}>
+                  <div style={swipeRowStyle}>
                       {breedProducts.map((p, idx) => (
-                        <FlatArtPickerCard key={p.id || p.name || idx} product={p} illustrations={yappyIllustrations} pet={pet} pillar="celebrate" />
+                        <div key={p.id || p.name || idx} style={swipeCardStyle}>
+                          <FlatArtPickerCard product={p} illustrations={yappyIllustrations} pet={pet} pillar="celebrate" />
+                        </div>
                       ))}
                     </div>
                   ) : (
@@ -1692,10 +1701,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                         Made for {petName}
                       </span>
                     </div>
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                    <div style={swipeRowStyle}>
                       {breedProducts.map((p, idx) => (
-                        <SoulPickCard key={p.id || idx} product={p} pet={pet} />
+                        <div key={p.id || idx} style={swipeCardStyle}>
+                          <SoulPickCard product={p} pet={pet} />
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -1768,10 +1778,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                     <p className="text-xs mb-3" style={{ color: '#888' }}>
                       Based on {petName}'s soul profile — not in range yet, but Mira can request these specially.
                     </p>
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                    <div style={swipeRowStyle}>
                       {miraImagines.map((flavor, idx) => (
-                        <MiraImaginesCard key={idx} flavor={flavor} pet={pet} />
+                        <div key={idx} style={swipeCardStyle}>
+                          <MiraImaginesCard flavor={flavor} pet={pet} />
+                        </div>
                       ))}
                     </div>
                     <div className="my-4 border-t" style={{ borderColor: '#F5E6FF' }} />
@@ -1798,10 +1809,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                       style={{ color: '#C44DFF', letterSpacing: '0.06em' }}>
                       🌟 Mira's picks — cakes {petName} would love
                     </p>
-                    <div className="grid gap-3"
-                      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                    <div style={swipeRowStyle}>
                       {products.map((p, idx) => (
-                        <ProductCard key={p.id || idx} product={p} pillar="celebrate" selectedPet={pet} size="small" />
+                        <div key={p.id || idx} style={swipeCardStyle}>
+                          <ProductCard product={p} pillar="celebrate" selectedPet={pet} size="small" />
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -1863,10 +1875,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                             Mira's picks
                           </span>
                         </div>
-                        <div className="grid gap-3"
-                          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                        <div style={swipeRowStyle}>
                           {myBreedItems.map((product, idx) => (
-                            <ProductCard key={product.id || idx} product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                            <div key={product.id || idx} style={swipeCardStyle}>
+                              <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -1877,10 +1890,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                             style={{ color: '#888', letterSpacing: '0.06em' }}>
                             All {config.label}
                           </p>
-                          <div className="grid gap-3"
-                            style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                          <div style={swipeRowStyle}>
                             {otherItems.map((product, idx) => (
-                              <ProductCard key={product.id || idx} product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                              <div key={product.id || idx} style={swipeCardStyle}>
+                                <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                              </div>
                             ))}
                           </div>
                         </>
@@ -1905,10 +1919,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                     )}
 
                     {filteredProducts.length > 0 ? (
-                      <div className="grid gap-3"
-                        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, 100%), 1fr))' }}>
+                      <div style={swipeRowStyle}>
                         {filteredProducts.map((product, idx) => (
-                          <ProductCard key={product.id || idx} product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                          <div key={product.id || idx} style={swipeCardStyle}>
+                            <ProductCard product={product} pillar="celebrate" selectedPet={pet} size="small" />
+                          </div>
                         ))}
                       </div>
                     ) : (
