@@ -686,7 +686,7 @@ function ModalShell({ onClose, children, noPadding }) {
   return (
     <>
       {/* Backdrop — standalone so its backdropFilter never bleeds into modal content */}
-      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(40,40,40,0.50)", backdropFilter:"blur(2px)", WebkitBackdropFilter:"blur(2px)" }} />
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.55)" }} />
       {/* Modal content — sibling at higher z-index, centered independently */}
       <div
         onClick={e => e.stopPropagation()}
