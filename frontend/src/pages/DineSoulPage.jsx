@@ -786,6 +786,7 @@ function DineMobilePage() {
   const [toastMsg, setToastMsg] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [visibleCount, setVisibleCount] = useState(4);
+  const [showDinePlan, setShowDinePlan] = useState(false);
 
   // Product state
   const [apiProducts, setApiProducts] = useState({});
