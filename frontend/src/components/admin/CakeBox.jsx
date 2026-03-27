@@ -390,7 +390,7 @@ function CatalogueTab() {
     try {
       const res = await fetch(`${API_URL}/api/product-box/products/${editProduct.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...getAdminHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify(editProduct),
       });
       if (res.ok) {
