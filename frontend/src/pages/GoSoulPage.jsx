@@ -914,6 +914,9 @@ function TripProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const petName   = pet?.name || "your dog";
+  const allergies = getAllergies(pet);
+  const condition = pet?.health_condition || pet?.medical_condition || null;
+  const size      = pet?.size || null;
   // apiProducts keyed by dim.id now
   const rawByTab  = apiProducts[dim.id] || {};
   const allRaw    = Object.values(rawByTab).flat();
