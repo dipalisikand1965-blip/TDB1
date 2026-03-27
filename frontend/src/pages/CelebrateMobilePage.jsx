@@ -513,7 +513,14 @@ export default function CelebrateMobilePage() {
         {/* ── CELEBRATE TAB CONTENT (below birthday box) ── */}
         {activeTab === 'celebrate' && (<>
 
-        {/* MiraImaginesBreed — desktop only, not shown on mobile */}
+        {/* MiraImaginesBreed — restored on mobile, fires tickets + tdc.imagine() internally */}
+        <MiraImaginesBreed
+          pet={currentPet}
+          pillar="celebrate"
+          colour="#9B59B6"
+          token={token}
+          onConcierge={() => setIntakeOpen(true)}
+        />
 
         <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="celebrate" /></div>
 
