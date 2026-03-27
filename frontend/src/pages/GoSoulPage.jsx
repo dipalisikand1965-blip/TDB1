@@ -1012,7 +1012,7 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
 // ─────────────────────────────────────────────────────────────
 // GO SERVICES — 8 booking flows
 // ─────────────────────────────────────────────────────────────
-const GO_SERVICES = [
+export const GO_SERVICES = [
   { id:"flight",     icon:"✈️", illustrationUrl:null, illustrationBg:`linear-gradient(135deg,#E3F2FD,#BBDEFB)`, free:false, name:"Flight Coordination",  tagline:"Cabin policy, docs & airport day", desc:"We handle airline policy, documentation, and airport coordination for {petName}'s flight.", accentColor:"#1565C0", steps:5 },
   { id:"roadtrip",   icon:"🚗", illustrationUrl:null, illustrationBg:`linear-gradient(135deg,#E8F5E9,#C8E6C9)`, free:false, name:"Road & Train Travel",    tagline:"Route planning & safety kit", desc:"Complete road or train journey planning — route, safety kit, rest stops, and vet check.", accentColor:"#2E7D32", steps:4 },
   { id:"boarding",   icon:"🏡", illustrationUrl:null, illustrationBg:`linear-gradient(135deg,${G.pale},${G.light})`, free:false, name:"Boarding & Daycare",    tagline:"When you travel — we find the best stay", desc:"We find and book the right boarding or daycare for {petName} while you're away.", accentColor:G.deepMid, steps:4 },
@@ -1654,7 +1654,7 @@ function EmergencyTravelFlow({ pet, service, onClose }) {
 }
 
 // ── SERVICE BOOKING MODAL ROUTER ────────────────────────────
-function ServiceBookingModal({ service, pet, onClose }) {
+export function ServiceBookingModal({ service, pet, onClose }) {
   const FlowMap = { flight:FlightFlow, roadtrip:RoadTripFlow, boarding:BoardingFlow, sitting:SittingFlow, relocation:RelocationFlow, taxi:TaxiFlow, planning:TravelPlanningFlow, emergency:EmergencyTravelFlow };
   const FlowComponent = FlowMap[service.id];
   return (

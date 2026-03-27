@@ -20,7 +20,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GoConciergeSection from '../components/go/GoConciergeSection';
 import GoCategoryStrip from '../components/go/GoCategoryStrip';
-import { getGoDims, DimExpanded, MiraPicksSection } from './GoSoulPage';
+import { getGoDims, DimExpanded, MiraPicksSection, GO_SERVICES, ServiceBookingModal as GoServiceBookingModal } from './GoSoulPage';
 import GoNearMe from '../components/go/GoNearMe';
 import PetFriendlyStays from '../components/go/PetFriendlyStays';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
@@ -94,6 +94,7 @@ export default function GoMobilePage() {
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
   const [nearMeConc, setNearMeConc] = useState({ open: false, venue: null });
+  const [goSvc, setGoSvc]           = useState(null); // for Go, Personally 8-flow modal
   const [showGoPlan, setShowGoPlan] = useState(false);
   const [openDim, setOpenDim] = useState(null);
 
@@ -340,8 +341,37 @@ export default function GoMobilePage() {
         {/* TAB 3: Book a Service */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Go Services for {petName}</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Flights, road trips, boarding, vet certificates — all arranged.</div>
+            {/* ── Go, Personally — 8 service tiles ── */}
+            <div style={{ marginBottom:28 }}>
+              <div style={{ fontSize:20, fontWeight:800, color:G.darkText, fontFamily:'Georgia,serif', marginBottom:4 }}>Go, Personally</div>
+              <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>
+                Tell us what you want {petName}'s trip to feel like. We'll handle every detail.
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                {GO_SERVICES.map(svc => {
+                  const petName_ = currentPet?.name || 'your dog';
+                  return (
+                    <div key={svc.id} onClick={() => setGoSvc(svc)}
+                      style={{ background:'#fff', borderRadius:14, overflow:'hidden', border:`1px solid ${svc.urgent ? '#FFCDD2' : G.border}`, cursor:'pointer', boxShadow:'0 2px 8px rgba(13,51,73,0.06)' }}>
+                      <div style={{ height:100, background:svc.illustrationBg, display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
+                        <span style={{ fontSize:36 }}>{svc.icon}</span>
+                        {svc.urgent && <div style={{ position:'absolute', top:6, right:6, background:'#C62828', color:'#fff', fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 7px' }}>URGENT</div>}
+                      </div>
+                      <div style={{ padding:'10px 12px 14px' }}>
+                        {svc.free && <div style={{ display:'inline-block', background:'#E8F5E9', color:'#2E7D32', fontSize:9, fontWeight:700, borderRadius:8, padding:'2px 7px', marginBottom:5 }}>Complimentary</div>}
+                        <div style={{ fontSize:10, color:G.mutedText, marginBottom:3 }}>{svc.tagline.replace('{petName}', petName_)}</div>
+                        <div style={{ fontSize:13, fontWeight:700, color: svc.urgent ? '#C62828' : G.darkText, lineHeight:1.2, marginBottom:5 }}>{svc.name}</div>
+                        <button style={{ fontSize:11, fontWeight:700, color: svc.urgent ? '#C62828' : G.teal, background:'none', border:'none', padding:0, cursor:'pointer' }}>
+                          {svc.urgent ? 'Get help now →' : `Book ${svc.steps}-step flow →`}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Live API services (GoConciergeSection) below ── */}
             <GoConciergeSection pet={currentPet} />
           </div>
         )}
@@ -361,6 +391,15 @@ export default function GoMobilePage() {
           pet={currentPet}
           pillar="go"
           onClose={() => setNearMeConc({ open: false, venue: null })}
+        />
+      )}
+
+      {/* Go, Personally — 8-step booking flow modal */}
+      {goSvc && (
+        <GoServiceBookingModal
+          service={goSvc}
+          pet={currentPet}
+          onClose={() => setGoSvc(null)}
         />
       )}
 
