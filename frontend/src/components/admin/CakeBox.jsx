@@ -1,643 +1,950 @@
 /**
  * CakeBox.jsx
- * Admin panel for all cake-related management
- * Architecture mirrors UnifiedProductBox.jsx
+ * The Doggy Company — Admin CakeBox
+ * Complete cake management system — 5 tabs
  *
- * Tab 1: Cake Orders       — cake_orders collection
- * Tab 2: Birthday Catalogue — 185 products (Shopify) with shape-tag editing
- * Tab 3: Flavours & Config  — manage flavours, bases, shape chips
- * Tab 4: Breed Illustrations — BreedCakeManager (existing component)
+ * Tab 1: 🎂 Cake Orders    — all orders, status pipeline, filter
+ * Tab 2: 📦 Catalogue      — 163 breed cakes + 40 TDB physical cakes
+ * Tab 3: 🏪 TDB Products   — pupcakes, treats, hampers, frozen
+ * Tab 4: ⚙️ Config         — flavours, bases, shapes, sizes, cities
+ * Tab 5: 🎨 Illustrations  — breed portraits (BreedCakeManager)
  */
-import React, { useState, useEffect, useCallback } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Card } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
-import { Label } from '../ui/label';
-import { toast } from 'sonner';
-import {
-  Search, RefreshCw, Loader2, Package, Check, X, Plus, Trash2,
-  ClipboardList, Settings, Image, Edit, ChevronDown, BarChart3,
-  ShoppingBag, Eye, EyeOff,
-} from 'lucide-react';
-import BreedCakeManager from './BreedCakeManager';
+
+import { useState, useEffect, useCallback } from 'react';
 import ProductBoxEditor from './ProductBoxEditor';
+import BreedCakeManager from './BreedCakeManager';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-const ADMIN_AUTH = `Basic ${btoa('aditya:lola4304')}`;
-const ADMIN_HEADERS = { Authorization: ADMIN_AUTH };
 
-const STATUS_COLORS = {
-  pending:           'bg-yellow-100 text-yellow-800',
-  confirmed:         'bg-blue-100 text-blue-800',
-  baking:            'bg-orange-100 text-orange-800',
-  out_for_delivery:  'bg-purple-100 text-purple-800',
-  delivered:         'bg-green-100 text-green-800',
-  cancelled:         'bg-red-100 text-red-800',
+// ── Admin token helper ────────────────────────────────────────────────────────
+// Mirrors the exact pattern in Admin.jsx (lines 1156-1164):
+// Try localStorage first, fall back to hardcoded credentials so the browser
+// never gets a bare 401 and shows its native Basic Auth popup.
+function getAdminHeaders() {
+  const auth = localStorage.getItem('adminAuth') || btoa('aditya:lola4304');
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Basic ${auth}`,
+  };
+}
+
+// ── Colour palette ────────────────────────────────────────────────────────────
+const P = {
+  purple:  '#4A1B6D',
+  purpleL: '#9B59B6',
+  purpleXL:'#C39BD3',
+  pink:    '#E91E8C',
+  gold:    '#C9973A',
+  goldL:   '#F0C060',
+  dark:    '#1A0A2E',
+  cream:   '#FAF7FF',
+  border:  '#E8D5F5',
+  muted:   '#7A6890',
+  red:     '#EF4444',
+  green:   '#22C55E',
+  amber:   '#F59E0B',
 };
 
-const STATUS_OPTIONS = ['pending', 'confirmed', 'baking', 'out_for_delivery', 'delivered', 'cancelled'];
-const SHAPE_OPTS = ['all', 'circle', 'bone', 'heart', 'square', 'star', 'paw'];
+// ── STATUS CONFIG ─────────────────────────────────────────────────────────────
+const ORDER_STATUSES = [
+  { id: 'pending',          label: 'Pending',          color: P.amber,  bg: '#FEF3C7' },
+  { id: 'confirmed',        label: 'Confirmed',        color: P.purpleL,bg: '#F5EEFF' },
+  { id: 'baking',           label: 'Baking',           color: P.pink,   bg: '#FCE4F4' },
+  { id: 'out_for_delivery', label: 'Out for Delivery', color: P.gold,   bg: '#FEF9EC' },
+  { id: 'delivered',        label: 'Delivered',        color: P.green,  bg: '#DCFCE7' },
+  { id: 'cancelled',        label: 'Cancelled',        color: P.red,    bg: '#FEE2E2' },
+];
 
-// ─── helpers ──────────────────────────────────────────────────────────────────
-const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
-const fmtDate = (s) => {
-  if (!s) return '—';
-  try { return new Date(s).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }); }
-  catch { return s; }
-};
+const SHAPES    = ['Circle', 'Bone', 'Heart', 'Square', 'Star', 'Paw'];
+const SEASONS   = ['Birthday', 'Diwali', 'Valentine', 'Christmas', 'Holi', 'Easter', 'Pride'];
+const CITIES    = ['Bangalore', 'Mumbai', 'Gurgaon', 'Delhi'];
+const FLAVOURS  = [
+  'Banana', 'Carrot', 'Chicken', 'Mutton', 'Peanut Butter',
+  'Blueberry', 'Coconut Cream', 'Strawberry', 'Fish & Salmon', 'Pumpkin',
+];
+const BASES     = ['Oats', 'Ragi'];
+const ALLERGENS = ['Chicken', 'Beef', 'Fish', 'Dairy', 'Gluten', 'Egg', 'Nuts'];
 
-// ── Tab 1: Cake Orders ─────────────────────────────────────────────────────────
+// ── SHARED COMPONENTS ─────────────────────────────────────────────────────────
+
+function StatusBadge({ status }) {
+  const cfg = ORDER_STATUSES.find(s => s.id === status) || ORDER_STATUSES[0];
+  return (
+    <span style={{
+      background: cfg.bg, color: cfg.color,
+      border: `1px solid ${cfg.color}44`,
+      borderRadius: 20, padding: '3px 10px',
+      fontSize: 11, fontWeight: 700,
+    }}>
+      {cfg.label}
+    </span>
+  );
+}
+
+function ShapeBadge({ shape }) {
+  if (!shape) return <span style={{ color: P.muted, fontSize: 12 }}>—</span>;
+  return (
+    <span style={{
+      background: P.purpleXL + '33', color: P.purple,
+      border: `1px solid ${P.purpleXL}`,
+      borderRadius: 20, padding: '2px 10px',
+      fontSize: 11, fontWeight: 700,
+    }}>
+      {shape}
+    </span>
+  );
+}
+
+function StatCard({ value, label, color }) {
+  return (
+    <div style={{
+      background: '#fff', border: `1px solid ${P.border}`,
+      borderRadius: 12, padding: '14px 16px', minWidth: 80,
+    }}>
+      <div style={{ fontSize: 22, fontWeight: 800, color: color || P.purple }}>{value}</div>
+      <div style={{ fontSize: 11, color: P.muted, marginTop: 2 }}>{label}</div>
+    </div>
+  );
+}
+
+function Toast({ msg, onClose }) {
+  useEffect(() => { if (msg) { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); } }, [msg, onClose]);
+  if (!msg) return null;
+  return (
+    <div style={{
+      position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+      background: P.dark, color: '#fff', borderRadius: 20,
+      padding: '10px 20px', fontSize: 13, fontWeight: 700,
+      boxShadow: '0 8px 24px rgba(0,0,0,0.3)', zIndex: 99999,
+      whiteSpace: 'nowrap',
+    }}>
+      {msg}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 1 — CAKE ORDERS
+// ══════════════════════════════════════════════════════════════════════════════
 function CakeOrdersTab() {
-  const [orders,   setOrders]   = useState([]);
-  const [stats,    setStats]    = useState({ pending: 0, confirmed: 0, delivered: 0, total: 0 });
-  const [loading,  setLoading]  = useState(false);
-  const [filter,   setFilter]   = useState('');  // status filter
-  const [page,     setPage]     = useState(0);
-  const [total,    setTotal]    = useState(0);
-  const [saving,   setSaving]   = useState(null); // order_id being saved
-  const [editStatus, setEditStatus] = useState({}); // { [orderId]: newStatus }
-  const LIMIT = 20;
+  const [orders, setOrders]             = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter]     = useState('');
+  const [search, setSearch]             = useState('');
+  const [page, setPage]                 = useState(1);
+  const [totals, setTotals]             = useState({});
+  const [expandedOrder, setExpandedOrder] = useState(null);
+  const [toast, setToast]               = useState('');
+  const PER_PAGE = 20;
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ limit: LIMIT, skip: page * LIMIT });
-      if (filter) params.set('status', filter);
-      const res = await fetch(`${API_URL}/api/admin/cake-orders?${params}`, {
-        headers: ADMIN_HEADERS,
-      });
-      if (!res.ok) throw new Error('Failed');
+      let url = `${API_URL}/api/admin/cake-orders?limit=200`;
+      if (statusFilter !== 'all') url += `&status=${statusFilter}`;
+      if (dateFilter) url += `&date=${dateFilter}`;
+      const res = await fetch(url, { headers: getAdminHeaders() });
       const data = await res.json();
       setOrders(data.orders || []);
-      setTotal(data.total || 0);
-      setStats({ pending: data.pending || 0, confirmed: data.confirmed || 0, delivered: data.delivered || 0, total: data.total || 0 });
-    } catch (e) { toast.error('Failed to load cake orders'); }
+      setTotals({
+        total: data.total || 0,
+        pending: data.pending || 0,
+        confirmed: data.confirmed || 0,
+        delivered: data.delivered || 0,
+      });
+    } catch { setOrders([]); }
     setLoading(false);
-  }, [filter, page]);
+  }, [statusFilter, dateFilter]);
 
   useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
-  const saveStatus = async (orderId) => {
-    const newStatus = editStatus[orderId];
-    if (!newStatus) return;
-    setSaving(orderId);
+  const updateStatus = async (orderId, newStatus) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/api/admin/cake-orders/${orderId}/status`, {
+      await fetch(`${API_URL}/api/admin/cake-orders/${orderId}/status`, {
         method: 'PATCH',
-        headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
+        headers: getAdminHeaders(),
         body: JSON.stringify({ status: newStatus }),
       });
-      if (!res.ok) throw new Error('Failed');
-      toast.success(`Order updated to ${newStatus}`);
-      setEditStatus(p => { const n = { ...p }; delete n[orderId]; return n; });
+      setToast(`✅ Status updated to ${newStatus}`);
       fetchOrders();
-    } catch { toast.error('Update failed'); }
-    setSaving(null);
+    } catch { setToast('❌ Update failed'); }
   };
 
+  const filtered = orders.filter(o =>
+    !search ||
+    o.pet_name?.toLowerCase().includes(search.toLowerCase()) ||
+    o.product_name?.toLowerCase().includes(search.toLowerCase()) ||
+    o.id?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
+
   return (
-    <div className="space-y-4">
+    <div>
+      <Toast msg={toast} onClose={() => setToast('')} />
+
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: 'Pending',   val: stats.pending,   color: 'bg-yellow-50 border-yellow-200' },
-          { label: 'Confirmed', val: stats.confirmed, color: 'bg-blue-50 border-blue-200' },
-          { label: 'Delivered', val: stats.delivered, color: 'bg-green-50 border-green-200' },
-          { label: 'Total',     val: stats.total,     color: 'bg-gray-50 border-gray-200' },
-        ].map(s => (
-          <Card key={s.label} className={`p-4 border ${s.color}`}>
-            <div className="text-2xl font-bold">{s.val}</div>
-            <div className="text-sm text-gray-500">{s.label}</div>
-          </Card>
-        ))}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
+        <StatCard value={totals.total || 0}     label="Total Orders"  color={P.purple} />
+        <StatCard value={totals.pending || 0}   label="Pending"       color={P.amber} />
+        <StatCard value={totals.confirmed || 0} label="Confirmed"     color={P.purpleL} />
+        <StatCard value={totals.delivered || 0} label="Delivered"     color={P.green} />
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 flex-wrap">
+      {/* Filters */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search orders…"
+          style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13, minWidth: 200 }}
+        />
         <select
-          value={filter}
-          onChange={e => { setFilter(e.target.value); setPage(0); }}
-          className="border rounded px-3 py-2 text-sm"
+          value={statusFilter}
+          onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
+          style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}
         >
-          <option value="">All Statuses</option>
-          {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+          <option value="all">All Statuses</option>
+          {ORDER_STATUSES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
         </select>
-        <Button size="sm" variant="outline" onClick={() => fetchOrders()}>
-          <RefreshCw className="h-3.5 w-3.5 mr-1" /> Refresh
-        </Button>
-        <span className="text-sm text-gray-500 ml-auto">{total} orders</span>
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={e => { setDateFilter(e.target.value); setPage(1); }}
+          style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}
+        />
+        <button
+          onClick={fetchOrders}
+          style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 13 }}
+        >
+          ↻ Refresh
+        </button>
       </div>
 
       {/* Table */}
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="animate-spin h-6 w-6 text-purple-500" /></div>
-      ) : orders.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">No cake orders found</div>
+        <div style={{ textAlign: 'center', padding: 40, color: P.muted }}>Loading orders…</div>
+      ) : filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 60 }}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>🎂</div>
+          <div style={{ color: P.muted }}>No cake orders yet</div>
+        </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
-            <thead className="bg-purple-50">
-              <tr>
-                {['Order', 'Pet', 'Flavour', 'Base', 'Shape', 'Delivery', 'Message', 'Price', 'Status', ''].map(h => (
-                  <th key={h} className="px-3 py-3 text-left font-semibold text-purple-900 whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((o, i) => (
-                <tr key={o.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-3 py-3 font-mono text-xs text-gray-400">{String(o.id || '').slice(-6)}</td>
-                  <td className="px-3 py-3 font-medium">{o.pet_name || '—'}</td>
-                  <td className="px-3 py-3">{o.flavour || '—'}</td>
-                  <td className="px-3 py-3">{o.base || '—'}</td>
-                  <td className="px-3 py-3 capitalize">{o.shape || '—'}</td>
-                  <td className="px-3 py-3 whitespace-nowrap">{fmtDate(o.delivery_date)}</td>
-                  <td className="px-3 py-3 max-w-[140px] truncate text-gray-500" title={o.message_on_cake}>
-                    {o.message_on_cake || '—'}
-                  </td>
-                  <td className="px-3 py-3 font-semibold">{fmt(o.total_price)}</td>
-                  <td className="px-3 py-3">
-                    <select
-                      value={editStatus[o.id] ?? o.status}
-                      onChange={e => setEditStatus(p => ({ ...p, [o.id]: e.target.value }))}
-                      className={`border rounded px-2 py-1 text-xs font-medium ${STATUS_COLORS[editStatus[o.id] ?? o.status] || ''}`}
-                    >
-                      {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </td>
-                  <td className="px-3 py-3">
-                    {editStatus[o.id] && editStatus[o.id] !== o.status && (
-                      <Button size="sm" onClick={() => saveStatus(o.id)} disabled={saving === o.id}>
-                        {saving === o.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+        <>
+          <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden' }}>
+            {/* Header */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 120px', gap: 12, padding: '10px 16px', background: P.cream, borderBottom: `1px solid ${P.border}`, fontSize: 11, fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div>Order</div><div>Pet</div><div>Delivery</div><div>Total</div><div>Status</div><div>Actions</div>
+            </div>
 
-      {/* Pagination */}
-      {total > LIMIT && (
-        <div className="flex justify-center gap-2">
-          <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Prev</Button>
-          <span className="px-3 py-1 text-sm">Page {page + 1} / {Math.ceil(total / LIMIT)}</span>
-          <Button size="sm" variant="outline" disabled={(page + 1) * LIMIT >= total} onClick={() => setPage(p => p + 1)}>Next</Button>
-        </div>
+            {paginated.map((order, i) => (
+              <div key={order.id}>
+                <div
+                  style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 120px', gap: 12, padding: '12px 16px', borderBottom: i < paginated.length - 1 ? `1px solid ${P.border}` : 'none', cursor: 'pointer', transition: 'background 0.1s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = P.cream}
+                  onMouseLeave={e => e.currentTarget.style.background = ''}
+                  onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                >
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: P.dark }}>{order.product_name || '—'}</div>
+                    <div style={{ fontSize: 11, color: P.muted, marginTop: 2 }}>{order.id}</div>
+                    <div style={{ fontSize: 11, color: P.purple, marginTop: 2 }}>
+                      {order.flavour && `${order.flavour} · `}{order.base && `${order.base} base · `}{order.size}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{order.pet_name}</div>
+                    <div style={{ fontSize: 11, color: P.muted }}>{order.pet_breed}</div>
+                    {order.pet_allergies?.length > 0 && (
+                      <div style={{ fontSize: 10, color: P.red, marginTop: 2 }}>⚠ No {order.pet_allergies.join(', ')}</div>
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{order.delivery_date || '—'}</div>
+                    <div style={{ fontSize: 11, color: P.muted }}>{order.delivery_time}</div>
+                    <div style={{ fontSize: 11, color: P.muted }}>{order.delivery_type}</div>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: P.purple }}>
+                    {order.total_price ? `₹${order.total_price.toLocaleString('en-IN')}` : '—'}
+                  </div>
+                  <div><StatusBadge status={order.status} /></div>
+                  <div onClick={e => e.stopPropagation()}>
+                    <select
+                      value={order.status}
+                      onChange={e => updateStatus(order.id, e.target.value)}
+                      style={{ width: '100%', padding: '5px 6px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 11, cursor: 'pointer' }}
+                    >
+                      {ORDER_STATUSES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Expanded detail */}
+                {expandedOrder === order.id && (
+                  <div style={{ padding: '12px 16px 16px', background: '#FAF5FF', borderBottom: `1px solid ${P.border}` }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                      {[
+                        ['Product', order.product_name],
+                        ['Flavour', order.flavour],
+                        ['Base', order.base],
+                        ['Size', order.size],
+                        ['Shape', order.shape],
+                        ['Name on cake', order.pet_name_on_cake],
+                        ['Message', order.message_on_cake || 'None'],
+                        ['Delivery date', order.delivery_date],
+                        ['Delivery time', order.delivery_time],
+                        ['Delivery type', order.delivery_type],
+                        ['Customer', order.user_email],
+                        ['Order ID', order.id],
+                      ].map(([k, v]) => (
+                        <div key={k}>
+                          <div style={{ fontSize: 10, fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>{k}</div>
+                          <div style={{ fontSize: 13, color: P.dark }}>{v || '—'}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: page === 1 ? '#f5f5f5' : '#fff', cursor: page === 1 ? 'default' : 'pointer', fontSize: 12 }}>← Prev</button>
+              <span style={{ padding: '6px 12px', fontSize: 12, color: P.muted }}>Page {page} of {totalPages}</span>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: page === totalPages ? '#f5f5f5' : '#fff', cursor: page === totalPages ? 'default' : 'pointer', fontSize: 12 }}>Next →</button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 }
 
-// ── Tab 2: Birthday Catalogue (full UnifiedProductBox architecture) ────────────
-function BirthdayCatalogueTab() {
-  const [products, setProducts]       = useState([]);
-  const [loading,  setLoading]        = useState(false);
-  const [search,   setSearch]         = useState('');
-  const [shapeFilter, setShapeFilter] = useState('all');
-  const [editProduct, setEditProduct] = useState(null);
-  const [saving,   setSaving]         = useState(false);
-  const [deleting, setDeleting]       = useState(null);
-  const [stats,    setStats]          = useState({});
-  const [page,     setPage]           = useState(0);
-  const LIMIT = 50;
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 2 — CATALOGUE
+// ══════════════════════════════════════════════════════════════════════════════
+function CatalogueTab() {
+  const [cakes, setCakes]               = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [shapeFilter, setShapeFilter]   = useState('all');
+  const [seasonFilter, setSeasonFilter] = useState('all');
+  const [search, setSearch]             = useState('');
+  const [page, setPage]                 = useState(1);
+  const [editProduct, setEditProduct]   = useState(null);
+  const [toast, setToast]               = useState('');
+  const [stats, setStats]               = useState({});
+  const [showAddModal, setShowAddModal] = useState(false);
+  const PER_PAGE = 20;
 
-  const fetchProducts = useCallback(async () => {
+  const fetchCakes = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/products?category=cakes&limit=200`);
-      if (!res.ok) throw new Error('Failed');
-      const data = await res.json();
-      const all = data.products || data || [];
-      setProducts(all);
-      // Compute shape stats
+      // Fetch both sources in parallel
+      // source 1: products_master where category=cakes (185 physical cakes)
+      // source 2: products collection where category=breed-cakes (40 Shopify breed cakes)
+      const [masterRes, physicalRes] = await Promise.all([
+        fetch(`${API_URL}/api/product-box/products?category=cakes&limit=300`, { headers: getAdminHeaders() }),
+        fetch(`${API_URL}/api/admin/products?category=breed-cakes&limit=100`, { headers: getAdminHeaders() }),
+      ]);
+      const masterData   = masterRes.ok   ? await masterRes.json()   : {};
+      const physicalData = physicalRes.ok ? await physicalRes.json() : {};
+
+      const masterCakes   = (masterData.products || []).map(p => ({ ...p, _source: 'master' }));
+      const physicalCakes = (physicalData.products || []).map(p => ({ ...p, _source: 'physical' }));
+      const all = [...masterCakes, ...physicalCakes];
+      setCakes(all);
+
+      // Build shape stats
       const shapeCounts = {};
-      all.forEach(p => {
-        const s = getShapeTag(p);
-        if (s) shapeCounts[s] = (shapeCounts[s] || 0) + 1;
-        else shapeCounts['none'] = (shapeCounts['none'] || 0) + 1;
+      all.forEach(c => {
+        const shape = c.shape || (c.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
+        if (shape) shapeCounts[shape] = (shapeCounts[shape] || 0) + 1;
       });
-      setStats({ total: all.length, ...shapeCounts });
-    } catch { toast.error('Failed to load cake catalogue'); }
+      setStats({ total: all.length, shapes: shapeCounts });
+    } catch { setCakes([]); }
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+  useEffect(() => { fetchCakes(); }, [fetchCakes]);
 
-  const getShapeTag = (p) => {
-    const tags = (p.tags || []).map(t => String(t).toLowerCase());
-    return SHAPE_OPTS.slice(1).find(s => tags.includes(s)) || '';
+  const deleteProduct = async (product) => {
+    if (!window.confirm(`Archive "${product.name}"?`)) return;
+    try {
+      await fetch(`${API_URL}/api/product-box/products/${product.id}`, {
+        method: 'DELETE',
+        headers: getAdminHeaders(),
+      });
+      setToast(`✅ "${product.name}" archived`);
+      fetchCakes();
+    } catch { setToast('❌ Delete failed'); }
   };
 
-  const filtered = products.filter(p => {
-    const matchSearch = !search || (p.name || '').toLowerCase().includes(search.toLowerCase());
-    const matchShape  = shapeFilter === 'all' || getShapeTag(p) === shapeFilter;
-    return matchSearch && matchShape;
+  const filtered = cakes.filter(c => {
+    const shape  = c.shape || (c.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
+    const tagStr = (c.tags || []).join(' ').toLowerCase();
+    if (shapeFilter !== 'all' && shape.toLowerCase() !== shapeFilter.toLowerCase()) return false;
+    if (seasonFilter !== 'all' && !tagStr.includes(seasonFilter.toLowerCase())) return false;
+    if (search && !c.name?.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
   });
 
-  const paged = filtered.slice(page * LIMIT, (page + 1) * LIMIT);
-
-  // Save via unified product-box endpoint (now also handles products collection)
-  const saveProduct = async (productToSave) => {
-    const p = productToSave || editProduct;
-    if (!p) return;
-    setSaving(true);
-    try {
-      const res = await fetch(`${API_URL}/api/product-box/products/${p.id}`, {
-        method: 'PUT',
-        headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
-        body: JSON.stringify(p),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || 'Save failed');
-      }
-      toast.success('Product saved');
-      setEditProduct(null);
-      fetchProducts();
-    } catch (e) { toast.error(e.message || 'Save failed'); }
-    setSaving(false);
-  };
-
-  const handleDelete = async (product) => {
-    if (!window.confirm(`Archive "${product.name}"?`)) return;
-    setDeleting(product.id);
-    try {
-      const res = await fetch(`${API_URL}/api/product-box/products/${product.id}`, {
-        method: 'DELETE',
-        headers: ADMIN_HEADERS,
-      });
-      if (!res.ok) throw new Error('Failed');
-      toast.success('Product archived');
-      fetchProducts();
-    } catch { toast.error('Delete failed'); }
-    setDeleting(null);
-  };
-
-  const SHAPE_BADGE_COLOR = {
-    circle: 'bg-blue-100 text-blue-800',
-    bone:   'bg-amber-100 text-amber-800',
-    heart:  'bg-pink-100 text-pink-800',
-    square: 'bg-gray-100 text-gray-800',
-    star:   'bg-yellow-100 text-yellow-800',
-    paw:    'bg-purple-100 text-purple-800',
-  };
+  const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
   return (
-    <div className="space-y-4">
+    <div>
+      <Toast msg={toast} onClose={() => setToast('')} />
+
       {/* Stats row */}
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-        <Card className="p-3 border bg-purple-50">
-          <div className="text-2xl font-bold text-purple-700">{stats.total || 0}</div>
-          <div className="text-xs text-gray-500">Total Cakes</div>
-        </Card>
-        {['circle','bone','heart','square','star','paw'].map(s => (
-          <Card key={s} className="p-3 border">
-            <div className="text-xl font-bold text-gray-700 capitalize">{stats[s] || 0}</div>
-            <div className="text-xs text-gray-500 capitalize">{s}</div>
-          </Card>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
+        <StatCard value={stats.total || 0} label="Total Cakes" color={P.purple} />
+        {SHAPES.map(s => stats.shapes?.[s] > 0 && (
+          <StatCard key={s} value={stats.shapes[s]} label={s} color={P.purpleL} />
         ))}
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search cakes..."
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(0); }}
-            className="pl-9 w-56"
-          />
-        </div>
-        {/* Shape filter chips */}
-        <div className="flex gap-1.5 flex-wrap">
-          {SHAPE_OPTS.map(s => (
-            <button
-              key={s}
-              onClick={() => { setShapeFilter(s); setPage(0); }}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors capitalize ${
-                shapeFilter === s ? 'bg-purple-600 text-white border-purple-600' : 'bg-white text-gray-600 border-gray-300 hover:border-purple-400'
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-        <Button size="sm" variant="outline" onClick={fetchProducts}>
-          <RefreshCw className="h-3.5 w-3.5 mr-1" /> Refresh
-        </Button>
-        <span className="text-sm text-gray-500 ml-auto">{filtered.length} / {products.length} cakes</span>
+      {/* Filters + Add */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input
+          value={search}
+          onChange={e => { setSearch(e.target.value); setPage(1); }}
+          placeholder="Search cakes…"
+          style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13, minWidth: 180 }}
+        />
+        {/* Shape chips */}
+        {['all', ...SHAPES].map(s => (
+          <button
+            key={s}
+            onClick={() => { setShapeFilter(s); setPage(1); }}
+            style={{
+              padding: '6px 14px', borderRadius: 20, border: `1.5px solid ${shapeFilter === s ? P.purple : P.border}`,
+              background: shapeFilter === s ? P.purple : '#fff',
+              color: shapeFilter === s ? '#fff' : P.muted,
+              fontSize: 12, fontWeight: 700, cursor: 'pointer', textTransform: 'capitalize',
+            }}
+          >
+            {s === 'all' ? 'All' : s}
+          </button>
+        ))}
+        {/* Season filter */}
+        <select
+          value={seasonFilter}
+          onChange={e => { setSeasonFilter(e.target.value); setPage(1); }}
+          style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 12 }}
+        >
+          <option value="all">All Seasons</option>
+          {SEASONS.map(s => <option key={s} value={s.toLowerCase()}>{s}</option>)}
+        </select>
+        <button
+          onClick={() => setShowAddModal(true)}
+          style={{ marginLeft: 'auto', padding: '8px 16px', borderRadius: 8, background: P.purple, color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+        >
+          + Add Cake
+        </button>
+        <button onClick={fetchCakes} style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>↻</button>
+        <span style={{ fontSize: 12, color: P.muted }}>{filtered.length} / {cakes.length} cakes</span>
       </div>
 
       {/* Table */}
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="animate-spin h-6 w-6 text-purple-500" /></div>
+        <div style={{ textAlign: 'center', padding: 40, color: P.muted }}>Loading catalogue…</div>
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full text-sm">
-              <thead className="bg-purple-50">
-                <tr>
-                  {['Product', 'Shape', 'Price', 'Status', 'Actions'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left font-semibold text-purple-900 whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {paged.map((p, i) => {
-                  const shape = getShapeTag(p);
-                  const isActive = p.is_active !== false && p.available !== false;
-                  return (
-                    <tr key={p.id} className={`${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-purple-50 transition-colors`}>
-                      {/* Product */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                            {p.image_url ? (
-                              <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-2xl">🎂</div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-gray-900 line-clamp-1 max-w-[240px]">{p.name}</div>
-                            <div className="text-xs text-gray-400 font-mono mt-0.5">{String(p.id || '').slice(-10)}</div>
-                          </div>
-                        </div>
-                      </td>
-                      {/* Shape */}
-                      <td className="px-4 py-3">
-                        {shape ? (
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${SHAPE_BADGE_COLOR[shape] || 'bg-gray-100 text-gray-700'}`}>
-                            {shape}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400 text-xs">—</span>
-                        )}
-                      </td>
-                      {/* Price */}
-                      <td className="px-4 py-3 font-semibold text-gray-800">
-                        {p.original_price > 0 ? fmt(p.original_price) : <span className="text-gray-400 text-xs">—</span>}
-                      </td>
-                      {/* Status */}
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
-                          {isActive ? <Check className="h-3 w-3 mr-1" /> : <X className="h-3 w-3 mr-1" />}
-                          {isActive ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      {/* Actions */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setEditProduct({ ...p })}
-                            className="h-8 px-3 text-xs"
-                          >
-                            <Edit className="h-3.5 w-3.5 mr-1" /> Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDelete(p)}
-                            disabled={deleting === p.id}
-                            className="h-8 px-3 text-xs text-red-600 border-red-200 hover:bg-red-50"
-                          >
-                            {deleting === p.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 100px 80px 100px', gap: 12, padding: '10px 16px', background: P.cream, borderBottom: `1px solid ${P.border}`, fontSize: 11, fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div>Product</div><div>Shape</div><div>Price</div><div>Status</div><div>Actions</div>
+            </div>
+
+            {paginated.map((cake, i) => {
+              const shape = cake.shape || (cake.tags || []).find(t => SHAPES.map(s => s.toLowerCase()).includes(t?.toLowerCase())) || '';
+              const img   = cake.image_url || cake.image || cake.mockup_url || '';
+              return (
+                <div key={cake.id} style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 100px 80px 100px', gap: 12, padding: '10px 16px', borderBottom: i < paginated.length - 1 ? `1px solid ${P.border}` : 'none', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: P.cream }}>
+                      {img ? <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🎂</div>}
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: P.dark }}>{cake.name}</div>
+                      <div style={{ fontSize: 10, color: P.muted, marginTop: 2 }}>{cake.id}</div>
+                      {cake._source === 'physical' && (
+                        <span style={{ fontSize: 9, background: '#E8F5E9', color: '#2E7D32', borderRadius: 20, padding: '1px 6px', fontWeight: 700 }}>TDB Physical</span>
+                      )}
+                    </div>
+                  </div>
+                  <div><ShapeBadge shape={shape} /></div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: P.purple }}>
+                    {cake.price || cake.original_price ? `₹${cake.price || cake.original_price}` : '—'}
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: (cake.is_active || cake.active) ? P.green : P.red }}>
+                      {(cake.is_active || cake.active) ? '✓ Active' : '✗ Off'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      onClick={() => setEditProduct(cake)}
+                      style={{ padding: '5px 10px', borderRadius: 6, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
+                    >
+                      ✏ Edit
+                    </button>
+                    <button
+                      onClick={() => deleteProduct(cake)}
+                      style={{ padding: '5px 8px', borderRadius: 6, border: `1px solid #FECACA`, background: '#FFF5F5', color: P.red, cursor: 'pointer', fontSize: 11 }}
+                    >
+                      ⌫
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Pagination */}
-          {filtered.length > LIMIT && (
-            <div className="flex justify-center gap-2">
-              <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Prev</Button>
-              <span className="px-3 py-1 text-sm">Page {page + 1} / {Math.ceil(filtered.length / LIMIT)}</span>
-              <Button size="sm" variant="outline" disabled={(page + 1) * LIMIT >= filtered.length} onClick={() => setPage(p => p + 1)}>Next</Button>
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: page === 1 ? '#f5f5f5' : '#fff', cursor: page === 1 ? 'default' : 'pointer', fontSize: 12 }}>← Prev</button>
+              <span style={{ padding: '6px 12px', fontSize: 12, color: P.muted }}>Page {page} of {totalPages} · {filtered.length} cakes</span>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: page === totalPages ? '#f5f5f5' : '#fff', cursor: page === totalPages ? 'default' : 'pointer', fontSize: 12 }}>Next →</button>
             </div>
           )}
         </>
       )}
 
-      {/* ProductBoxEditor modal */}
+      {/* Product Editor Modal */}
       {editProduct && (
         <ProductBoxEditor
+          open={true}
           product={editProduct}
-          setProduct={setEditProduct}
-          open={!!editProduct}
-          onClose={() => { setEditProduct(null); setSaving(false); }}
-          onSave={() => saveProduct(editProduct)}
-          saving={saving}
-          onGenerateMiraHint={() => {}}
+          onClose={() => { setEditProduct(null); fetchCakes(); }}
+          onSave={() => { setEditProduct(null); fetchCakes(); setToast('✅ Cake saved'); }}
+        />
+      )}
+
+      {/* Add Cake Modal */}
+      {showAddModal && (
+        <AddCakeModal
+          onClose={() => setShowAddModal(false)}
+          onSave={() => { setShowAddModal(false); fetchCakes(); setToast('✅ Cake added'); }}
         />
       )}
     </div>
   );
 }
 
-// ── Tab 3: Flavours & Config ───────────────────────────────────────────────────
-function FlavoursConfigTab() {
-  const [config, setConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving,  setSaving]  = useState(false);
+// ── Add Cake Modal ────────────────────────────────────────────────────────────
+function AddCakeModal({ onClose, onSave }) {
+  const [form, setForm] = useState({
+    name: '', description: '', price: '', shape: '', category: 'cakes',
+    product_type: 'birthday_cake', pillar: 'celebrate',
+    is_doggy_bakery: true, available_bases: ['Oats', 'Ragi'],
+    same_day_cities: ['Bangalore', 'Mumbai'], is_active: true,
+  });
+  const [saving, setSaving] = useState(false);
 
-  const fetchConfig = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/api/admin/cake-config`, {
-        headers: ADMIN_HEADERS,
-      });
-      if (!res.ok) throw new Error('Failed');
-      setConfig(await res.json());
-    } catch { toast.error('Failed to load config'); }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => { fetchConfig(); }, [fetchConfig]);
-
-  const saveConfig = async () => {
+  const save = async () => {
+    if (!form.name) return alert('Name is required');
     setSaving(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/cake-config`, {
-        method: 'PUT',
-        headers: { ...ADMIN_HEADERS, 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
+      await fetch(`${API_URL}/api/product-box/products`, {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: JSON.stringify({ ...form, price: Number(form.price) || 0 }),
       });
-      if (!res.ok) throw new Error('Failed');
-      toast.success('Cake config saved');
-    } catch { toast.error('Save failed'); }
+      onSave();
+    } catch { alert('Save failed'); }
     setSaving(false);
   };
 
-  const updateFlavour = (i, field, val) => setConfig(c => ({
-    ...c,
-    flavours: c.flavours.map((f, idx) => idx === i ? { ...f, [field]: val } : f),
-  }));
-  const removeFlavour = (i) => setConfig(c => ({ ...c, flavours: c.flavours.filter((_, idx) => idx !== i) }));
-  const addFlavour = () => setConfig(c => ({ ...c, flavours: [...c.flavours, { name: '', emoji: '🎂', is_allergen: false }] }));
-
-  const updateBase = (i, field, val) => setConfig(c => ({
-    ...c,
-    bases: c.bases.map((b, idx) => idx === i ? { ...b, [field]: val } : b),
-  }));
-  const removeBase = (i) => setConfig(c => ({ ...c, bases: c.bases.filter((_, idx) => idx !== i) }));
-  const addBase = () => setConfig(c => ({ ...c, bases: [...c.bases, { name: '', description: '' }] }));
-
-  const updateShape = (i, val) => setConfig(c => ({ ...c, shapes: c.shapes.map((s, idx) => idx === i ? val : s) }));
-  const removeShape = (i) => setConfig(c => ({ ...c, shapes: c.shapes.filter((_, idx) => idx !== i) }));
-  const addShape = () => setConfig(c => ({ ...c, shapes: [...c.shapes, ''] }));
-
-  if (loading) return <div className="flex justify-center py-12"><Loader2 className="animate-spin h-6 w-6 text-purple-500" /></div>;
-  if (!config) return null;
-
   return (
-    <div className="space-y-6 max-w-2xl">
-      {/* Flavours */}
-      <Card className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-lg">Cake Flavours</h3>
-          <Button size="sm" variant="outline" onClick={addFlavour}><Plus className="h-3.5 w-3.5 mr-1" />Add</Button>
+    <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 16, padding: 28, width: 480, maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>🎂 Add New Cake</div>
+        {[
+          ['Name', 'name', 'text'],
+          ['Price (₹)', 'price', 'number'],
+          ['Description', 'description', 'text'],
+        ].map(([label, key, type]) => (
+          <div key={key} style={{ marginBottom: 14 }}>
+            <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4, color: P.muted }}>{label}</label>
+            <input
+              type={type}
+              value={form[key]}
+              onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}
+            />
+          </div>
+        ))}
+        <div style={{ marginBottom: 14 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, display: 'block', marginBottom: 4, color: P.muted }}>Shape</label>
+          <select value={form.shape} onChange={e => setForm(f => ({ ...f, shape: e.target.value }))}
+            style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13 }}>
+            <option value="">— Select —</option>
+            {SHAPES.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
-        <div className="space-y-2">
-          {config.flavours.map((f, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Input value={f.emoji} onChange={e => updateFlavour(i, 'emoji', e.target.value)} className="w-14 text-center text-lg" />
-              <Input value={f.name} onChange={e => updateFlavour(i, 'name', e.target.value)} placeholder="Flavour name" className="flex-1" />
-              <label className="flex items-center gap-1.5 text-xs cursor-pointer whitespace-nowrap">
-                <input
-                  type="checkbox"
-                  checked={!!f.is_allergen}
-                  onChange={e => updateFlavour(i, 'is_allergen', e.target.checked)}
-                  className="w-3.5 h-3.5"
-                />
-                Allergen
-              </label>
-              <button onClick={() => removeFlavour(i)} className="text-red-400 hover:text-red-600 p-1">
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
+        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+          <button onClick={onClose} style={{ flex: 1, padding: '10px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 13 }}>Cancel</button>
+          <button onClick={save} disabled={saving} style={{ flex: 2, padding: '10px', borderRadius: 8, background: P.purple, color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
+            {saving ? 'Saving…' : 'Add Cake'}
+          </button>
         </div>
-      </Card>
-
-      {/* Bases */}
-      <Card className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-lg">Cake Bases</h3>
-          <Button size="sm" variant="outline" onClick={addBase}><Plus className="h-3.5 w-3.5 mr-1" />Add</Button>
-        </div>
-        <div className="space-y-2">
-          {config.bases.map((b, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Input value={b.name} onChange={e => updateBase(i, 'name', e.target.value)} placeholder="Base name (e.g. Oats)" className="w-40" />
-              <Input value={b.description} onChange={e => updateBase(i, 'description', e.target.value)} placeholder="Description (e.g. Light & wholesome)" className="flex-1" />
-              <button onClick={() => removeBase(i)} className="text-red-400 hover:text-red-600 p-1">
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Shapes */}
-      <Card className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-lg">Shape Chips</h3>
-          <Button size="sm" variant="outline" onClick={addShape}><Plus className="h-3.5 w-3.5 mr-1" />Add</Button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {config.shapes.map((s, i) => (
-            <div key={i} className="flex items-center gap-1 bg-purple-50 border border-purple-200 rounded-full px-3 py-1">
-              <Input
-                value={s}
-                onChange={e => updateShape(i, e.target.value)}
-                className="border-none bg-transparent p-0 w-20 text-sm focus:ring-0 h-auto"
-              />
-              <button onClick={() => removeShape(i)} className="text-red-400 hover:text-red-600">
-                <X className="h-3 w-3" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Save */}
-      <Button onClick={saveConfig} disabled={saving} className="bg-purple-600 hover:bg-purple-700 text-white">
-        {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Check className="h-4 w-4 mr-2" />}
-        Save Configuration
-      </Button>
+      </div>
     </div>
   );
 }
 
-// ── Main CakeBox Component ─────────────────────────────────────────────────────
-export default function CakeBox() {
-  const [tab, setTab] = useState('orders');
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 3 — TDB PRODUCTS (Pupcakes, Treats, Hampers, Frozen)
+// ══════════════════════════════════════════════════════════════════════════════
+const TDB_CATEGORIES = [
+  { id: 'pupcakes',    label: 'Pupcakes',      icon: '🧁', type: 'pupcake_set' },
+  { id: 'desi-treats', label: 'Desi Treats',   icon: '🍖', type: 'desi_treat' },
+  { id: 'frozen',      label: 'Frozen Treats', icon: '🧊', type: 'frozen_treat' },
+  { id: 'hampers',     label: 'Hampers',        icon: '🎁', type: 'hamper' },
+  { id: 'addons',      label: 'Party Add-Ons', icon: '🎉', type: 'celebration_addon' },
+  { id: 'breed-cakes', label: 'Breed Cakes',   icon: '🐾', type: 'breed_cake' },
+];
+
+function TDBProductsTab() {
+  const [activeCategory, setActiveCategory] = useState('pupcakes');
+  const [products, setProducts]             = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [editProduct, setEditProduct]       = useState(null);
+  const [search, setSearch]                 = useState('');
+  const [page, setPage]                     = useState(1);
+  const [toast, setToast]                   = useState('');
+  const PER_PAGE = 20;
+
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/api/admin/products?category=${activeCategory}&limit=200`,
+        { headers: getAdminHeaders() }
+      );
+      const data = res.ok ? await res.json() : {};
+      setProducts(data.products || []);
+    } catch { setProducts([]); }
+    setLoading(false);
+  }, [activeCategory]);
+
+  useEffect(() => { fetchProducts(); setPage(1); }, [fetchProducts]);
+
+  const filtered   = products.filter(p => !search || p.name?.toLowerCase().includes(search.toLowerCase()));
+  const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="text-2xl">🎂</div>
+    <div>
+      <Toast msg={toast} onClose={() => setToast('')} />
+
+      {/* Category tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        {TDB_CATEGORIES.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => { setActiveCategory(cat.id); setSearch(''); }}
+            style={{
+              padding: '8px 16px', borderRadius: 20, cursor: 'pointer', fontSize: 13, fontWeight: 700,
+              border: `1.5px solid ${activeCategory === cat.id ? P.purple : P.border}`,
+              background: activeCategory === cat.id ? P.purple : '#fff',
+              color: activeCategory === cat.id ? '#fff' : P.muted,
+            }}
+          >
+            {cat.icon} {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Search + count */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14, alignItems: 'center' }}>
+        <input
+          value={search}
+          onChange={e => { setSearch(e.target.value); setPage(1); }}
+          placeholder="Search…"
+          style={{ padding: '8px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 13, minWidth: 200 }}
+        />
+        <span style={{ fontSize: 12, color: P.muted }}>{filtered.length} products</span>
+        <button onClick={fetchProducts} style={{ padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>↻</button>
+      </div>
+
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: 40, color: P.muted }}>Loading…</div>
+      ) : filtered.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 60 }}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>{TDB_CATEGORIES.find(c => c.id === activeCategory)?.icon}</div>
+          <div style={{ color: P.muted }}>No {activeCategory} products found</div>
+        </div>
+      ) : (
+        <>
+          <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 80px 80px', gap: 12, padding: '10px 16px', background: P.cream, borderBottom: `1px solid ${P.border}`, fontSize: 11, fontWeight: 700, color: P.muted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div>Product</div><div>Price</div><div>Status</div><div>Actions</div>
+            </div>
+            {paginated.map((p, i) => (
+              <div key={p.id} style={{ display: 'grid', gridTemplateColumns: '2.5fr 100px 80px 80px', gap: 12, padding: '10px 16px', borderBottom: i < paginated.length - 1 ? `1px solid ${P.border}` : 'none', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 8, overflow: 'hidden', flexShrink: 0, background: P.cream }}>
+                    {(p.image_url || p.image) ? <img src={p.image_url || p.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🎁</div>}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: P.dark }}>{p.name}</div>
+                    <div style={{ fontSize: 10, color: P.muted }}>{p.id}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: P.purple }}>{(p.price || p.original_price) ? `₹${p.price || p.original_price}` : '—'}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: (p.is_active || p.active) ? P.green : P.red }}>
+                  {(p.is_active || p.active) ? '✓ Active' : '✗ Off'}
+                </div>
+                <button onClick={() => setEditProduct(p)} style={{ padding: '5px 10px', borderRadius: 6, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+                  ✏ Edit
+                </button>
+              </div>
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>← Prev</button>
+              <span style={{ padding: '6px 12px', fontSize: 12, color: P.muted }}>Page {page} of {totalPages}</span>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} style={{ padding: '6px 12px', borderRadius: 8, border: `1px solid ${P.border}`, background: '#fff', cursor: 'pointer', fontSize: 12 }}>Next →</button>
+            </div>
+          )}
+        </>
+      )}
+
+      {editProduct && (
+        <ProductBoxEditor
+          open={true}
+          product={editProduct}
+          onClose={() => { setEditProduct(null); fetchProducts(); }}
+          onSave={() => { setEditProduct(null); fetchProducts(); setToast('✅ Saved'); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TAB 4 — CONFIG (Flavours, Bases, Shapes, Sizes, Cities, Lead Times)
+// ══════════════════════════════════════════════════════════════════════════════
+function ConfigTab() {
+  const [config, setConfig] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [newItem, setNewItem] = useState({ flavour: '', shape: '', city: '', season: '', base: '', allergen: '' });
+  const [toast, setToast]    = useState('');
+  const [saving, setSaving]  = useState(false);
+
+  const defaultConfig = {
+    flavours:  FLAVOURS,
+    bases:     BASES,
+    shapes:    SHAPES,
+    cities:    CITIES,
+    seasons:   SEASONS,
+    allergens: ALLERGENS,
+    sizes: [
+      { name: 'Mini',    feeds: '2-4',   price: 450,  weight: '300g', lead_hours: 24 },
+      { name: 'Regular', feeds: '6-8',   price: 750,  weight: '500g', lead_hours: 24 },
+      { name: 'Large',   feeds: '10-12', price: 1100, weight: '1kg',  lead_hours: 48 },
+    ],
+  };
+
+  const fetchConfig = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/cake-config`, { headers: getAdminHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        // Normalize: the backend may return flavours/allergens as objects {name, emoji, is_allergen}
+        // Convert all array entries to plain strings using .name if they are objects
+        const toStrings = arr => (arr || []).map(i => (i && typeof i === 'object') ? (i.name || String(i)) : i);
+        const merged = { ...defaultConfig, ...data };
+        ['flavours', 'bases', 'shapes', 'cities', 'seasons', 'allergens'].forEach(k => {
+          merged[k] = toStrings(merged[k]);
+        });
+        setConfig(merged);
+      } else {
+        setConfig(defaultConfig);
+      }
+    } catch {
+      setConfig(defaultConfig);
+    }
+    setLoading(false);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { fetchConfig(); }, [fetchConfig]);
+
+  const addItem = (key, value) => {
+    if (!value.trim()) return;
+    setConfig(c => ({ ...c, [key]: [...(c[key] || []), value.trim()] }));
+    const addKey = key.replace(/s$/, '');
+    setNewItem(n => ({ ...n, [addKey]: '' }));
+  };
+
+  const removeItem = (key, item) => {
+    setConfig(c => ({ ...c, [key]: c[key].filter(x => x !== item) }));
+  };
+
+  const saveConfig = async () => {
+    setSaving(true);
+    try {
+      await fetch(`${API_URL}/api/admin/cake-config`, {
+        method: 'PUT',
+        headers: getAdminHeaders(),
+        body: JSON.stringify(config),
+      });
+      setToast('✅ Config saved');
+    } catch { setToast('❌ Save failed — config stored locally'); }
+    setSaving(false);
+  };
+
+  const updateSize = (i, field, value) => {
+    setConfig(c => {
+      const sizes = [...c.sizes];
+      sizes[i] = { ...sizes[i], [field]: value };
+      return { ...c, sizes };
+    });
+  };
+
+  const ConfigList = ({ title, configKey, addKey, placeholder, color }) => (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10, color: P.dark }}>{title}</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+        {(config[configKey] || []).map(item => (
+          <span key={item} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 20, background: color + '22', border: `1px solid ${color}44`, fontSize: 12, fontWeight: 600, color }}>
+            {item}
+            <button onClick={() => removeItem(configKey, item)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: P.red, fontSize: 14, padding: 0, lineHeight: 1 }}>×</button>
+          </span>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input
+          value={newItem[addKey] || ''}
+          onChange={e => setNewItem(n => ({ ...n, [addKey]: e.target.value }))}
+          onKeyDown={e => e.key === 'Enter' && addItem(configKey, newItem[addKey] || '')}
+          placeholder={placeholder}
+          style={{ flex: 1, padding: '7px 12px', borderRadius: 8, border: `1px solid ${P.border}`, fontSize: 12 }}
+        />
+        <button
+          onClick={() => addItem(configKey, newItem[addKey] || '')}
+          style={{ padding: '7px 14px', borderRadius: 8, background: color, color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+        >
+          + Add
+        </button>
+      </div>
+    </div>
+  );
+
+  if (loading) return <div style={{ textAlign: 'center', padding: 40, color: P.muted }}>Loading config…</div>;
+  if (!config) return null;
+
+  return (
+    <div>
+      <Toast msg={toast} onClose={() => setToast('')} />
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Cake Box</h2>
-          <p className="text-sm text-gray-500">Manage orders, catalogue, config and breed illustrations</p>
+          <ConfigList title="🍰 Available Flavours"  configKey="flavours"  addKey="flavour"  placeholder="Add flavour…"  color={P.purpleL} />
+          <ConfigList title="🌾 Available Bases"     configKey="bases"     addKey="base"     placeholder="Add base…"     color={P.gold} />
+          <ConfigList title="⚠ Allergen Flags"      configKey="allergens" addKey="allergen" placeholder="Add allergen…" color={P.red} />
+        </div>
+        <div>
+          <ConfigList title="🎯 Cake Shapes"         configKey="shapes"  addKey="shape"  placeholder="Add shape…"  color={P.pink} />
+          <ConfigList title="📍 Same Day Cities"     configKey="cities"  addKey="city"   placeholder="Add city…"   color={P.green} />
+          <ConfigList title="🎉 Seasonal Collections" configKey="seasons" addKey="season" placeholder="Add season…" color={P.amber} />
         </div>
       </div>
 
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid w-full grid-cols-4 bg-purple-50 p-1 rounded-lg">
-          <TabsTrigger value="orders" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-1.5">
-            <ClipboardList className="h-4 w-4" />
-            <span className="hidden sm:inline">Cake Orders</span>
-            <span className="sm:hidden">Orders</span>
-          </TabsTrigger>
-          <TabsTrigger value="catalogue" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-1.5">
-            <ShoppingBag className="h-4 w-4" />
-            <span className="hidden sm:inline">Catalogue</span>
-            <span className="sm:hidden">Catalogue</span>
-          </TabsTrigger>
-          <TabsTrigger value="config" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-1.5">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Flavours & Config</span>
-            <span className="sm:hidden">Config</span>
-          </TabsTrigger>
-          <TabsTrigger value="breeds" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white gap-1.5">
-            <Image className="h-4 w-4" />
-            <span className="hidden sm:inline">Breed Illustrations</span>
-            <span className="sm:hidden">Breeds</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Sizes */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: P.dark }}>📏 Cake Sizes & Pricing</div>
+        <div style={{ background: '#fff', border: `1px solid ${P.border}`, borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 12, padding: '10px 16px', background: P.cream, borderBottom: `1px solid ${P.border}`, fontSize: 11, fontWeight: 700, color: P.muted, textTransform: 'uppercase' }}>
+            <div>Name</div><div>Feeds</div><div>Price (₹)</div><div>Weight</div><div>Lead Time (hrs)</div>
+          </div>
+          {(config.sizes || []).map((size, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: 12, padding: '10px 16px', borderBottom: i < config.sizes.length - 1 ? `1px solid ${P.border}` : 'none' }}>
+              {['name', 'feeds', 'price', 'weight', 'lead_hours'].map(field => (
+                <input
+                  key={field}
+                  value={size[field]}
+                  onChange={e => updateSize(i, field, field === 'price' || field === 'lead_hours' ? Number(e.target.value) : e.target.value)}
+                  style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: `1px solid ${P.border}`, fontSize: 12 }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
-        <TabsContent value="orders" className="mt-4">
-          <CakeOrdersTab />
-        </TabsContent>
+      <button
+        onClick={saveConfig}
+        disabled={saving}
+        style={{ padding: '12px 28px', borderRadius: 10, background: `linear-gradient(135deg, ${P.purple}, ${P.purpleL})`, color: '#fff', border: 'none', fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.7 : 1 }}
+      >
+        {saving ? 'Saving…' : '💾 Save Config'}
+      </button>
+    </div>
+  );
+}
 
-        <TabsContent value="catalogue" className="mt-4">
-          <BirthdayCatalogueTab />
-        </TabsContent>
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN — CakeBox
+// ══════════════════════════════════════════════════════════════════════════════
+const TABS = [
+  { id: 'orders',        icon: '🎂', label: 'Cake Orders' },
+  { id: 'catalogue',     icon: '📦', label: 'Catalogue' },
+  { id: 'tdb',           icon: '🏪', label: 'TDB Products' },
+  { id: 'config',        icon: '⚙️', label: 'Config' },
+  { id: 'illustrations', icon: '🎨', label: 'Illustrations' },
+];
 
-        <TabsContent value="config" className="mt-4">
-          <FlavoursConfigTab />
-        </TabsContent>
+export default function CakeBox() {
+  const [activeTab, setActiveTab] = useState('orders');
 
-        <TabsContent value="breeds" className="mt-4">
-          <BreedCakeManager />
-        </TabsContent>
-      </Tabs>
+  return (
+    <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: P.dark }}>
+      {/* Header */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+          <span style={{ fontSize: 28 }}>🎂</span>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: P.dark }}>Cake Box</h2>
+            <p style={{ margin: 0, fontSize: 13, color: P.muted }}>Manage orders, catalogue, TDB products, config and breed illustrations</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: `2px solid ${P.border}`, marginBottom: 24 }}>
+        {TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            style={{
+              padding: '10px 20px', border: 'none', cursor: 'pointer',
+              background: 'transparent', fontSize: 13, fontWeight: activeTab === tab.id ? 700 : 500,
+              color: activeTab === tab.id ? P.purple : P.muted,
+              borderBottom: activeTab === tab.id ? `2px solid ${P.purple}` : '2px solid transparent',
+              marginBottom: -2, transition: 'all 0.15s',
+            }}
+          >
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      {activeTab === 'orders'        && <CakeOrdersTab />}
+      {activeTab === 'catalogue'     && <CatalogueTab />}
+      {activeTab === 'tdb'           && <TDBProductsTab />}
+      {activeTab === 'config'        && <ConfigTab />}
+      {activeTab === 'illustrations' && <BreedCakeManager />}
     </div>
   );
 }
