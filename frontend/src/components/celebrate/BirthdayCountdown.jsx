@@ -28,7 +28,9 @@ const BirthdayCountdown = ({ pet, onPlanParty, onViewCakes }) => {
       let nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
       
       // If birthday has passed this year, get next year's
-      if (nextBirthday < today) {
+      // Guard: don't jump to next year if today IS the birthday (calendar date match)
+      const isBirthdayToday = today.getDate() === birthDate.getDate() && today.getMonth() === birthDate.getMonth();
+      if (!isBirthdayToday && nextBirthday < today) {
         nextBirthday = new Date(today.getFullYear() + 1, birthDate.getMonth(), birthDate.getDate());
       }
       
