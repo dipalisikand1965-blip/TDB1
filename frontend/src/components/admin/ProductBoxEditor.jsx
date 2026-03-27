@@ -207,7 +207,8 @@ const ProductBoxEditor = ({
       // Step 1: Start background job — returns immediately
       const startRes = await fetch(`${imageGenBasePath}/${encodeURIComponent(product.id)}/generate-image`, {
         method: 'POST',
-        headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' }
+        headers: { 'Authorization': `Basic ${adminAuth}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: product.ai_image_prompt || product.ai_prompt || product.basics?.description || '' })
       });
       if (startRes.status === 404) { setGeneratingImage(false); alert(`${entityLabel} not found. Please save first.`); return; }
       if (startRes.status === 401) { setGeneratingImage(false); alert('Session expired. Please log back in.'); return; }
