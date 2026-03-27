@@ -14,6 +14,7 @@ import SoulMadeModal from "../SoulMadeModal";
 import { tdc } from "../../utils/tdc_intent";
 import { bookViaConcierge } from "../../utils/MiraCardActions";
 import { filterBreedProducts } from "../../hooks/useMiraFilter";
+import { ProductDetailModal } from "../ProductCard";
 
 const PILLAR_COLORS = {
   dine:      { deep:"#1A2F1A", orange:"#C9973A", pale:"#FFF8EE" },
@@ -220,9 +221,11 @@ export default function PersonalisedBreedSection({
           return (
             <div key={p.id || i}
               onClick={() => {
-                setSelected(selected?.id === p.id ? null : p);
-                tdc.view({ product: p, pillar, pet, channel: `${pillar}_personalised_view` });
-                onViewProduct?.(p);
+                if (!isConciergeMode) {
+                  setSelected(p);
+                  tdc.view({ product: p, pillar, pet, channel: `${pillar}_personalised_view` });
+                  onViewProduct?.(p);
+                }
               }}
               data-testid={`personalised-product-${p.id}`}
               style={{ background:"#fff", borderRadius:14, overflow:"hidden", cursor:"pointer", border:`1.5px solid ${selected?.id===p.id ? C.orange : C.pale}`, transition:"all 0.15s", boxShadow: selected?.id===p.id ? `0 4px 16px ${C.orange}22` : "none" }}
@@ -242,8 +245,12 @@ export default function PersonalisedBreedSection({
                   <button
                     onClick={e => {
                       e.stopPropagation();
-                      // Always route through canonical concierge — personalised items need custom fulfillment
-                      handleRequestProduct(p);
+                      if (isConciergeMode) {
+                        handleRequestProduct(p);
+                      } else {
+                        setSelected(p);
+                        tdc.view({ product: p, pillar, pet, channel: `${pillar}_personalised_view` });
+                      }
                     }}
                     data-testid={`personalised-product-action-${p.id}`}
                     style={{ background:C.orange, color:"#fff", border:"none", borderRadius:8, padding:"4px 10px", fontSize:10, fontWeight:700, cursor:"pointer" }}
@@ -290,23 +297,14 @@ export default function PersonalisedBreedSection({
         />
       )}
 
-      {/* Selected product detail */}
-      {selected && (
-        <div style={{ marginTop:14, background:C.pale, borderRadius:14, padding:"14px 16px", border:`1px solid ${C.orange}30` }}>
-          <div style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
-            <div style={{ width:18, height:18, borderRadius:"50%", background:MIRA_ORB, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#fff", flexShrink:0, marginTop:2 }}>✦</div>
-            <div>
-              <div style={{ fontSize:12, fontWeight:700, color:C.deep, marginBottom:4 }}>{selected.name}</div>
-              <div style={{ fontSize:12, color:"#555", lineHeight:1.55 }}>{selected.short_description || selected.description}</div>
-              {selected.soul_tier === "soul_made" && (
-                <div style={{ marginTop:8 }}>
-                  <SoulChip bg={`${C.orange}18`} color={C.orange}>Soul Made</SoulChip>
-                  <span style={{ fontSize:10, color:"#888" }}> Handcrafted for {breed}s</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* Product Detail Modal — opens on Add → or card click */}
+      {selected && !isConciergeMode && (
+        <ProductDetailModal
+          product={selected}
+          pillar={pillar}
+          selectedPet={pet}
+          onClose={() => setSelected(null)}
+        />
       )}
     </div>
   );
