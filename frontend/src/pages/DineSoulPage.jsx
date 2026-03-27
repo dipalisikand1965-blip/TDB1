@@ -138,10 +138,17 @@ function getLoves(pet) {
 }
 
 function getFavourite(pet) {
-  return pet?.doggy_soul_answers?.favourite_treat?.replace(/_/g, ' ') ||
-         pet?.doggy_soul_answers?.favorite_treats?.replace(/_/g, ' ') || null;
+  const pick = v => Array.isArray(v) ? v[0] : v;
+  const t1 = pick(pet?.doggy_soul_answers?.favourite_treat);
+  const t2 = pick(pet?.doggy_soul_answers?.favorite_treats);
+  const s1 = typeof t1 === 'string' ? t1.replace(/_/g, ' ') : '';
+  const s2 = typeof t2 === 'string' ? t2.replace(/_/g, ' ') : '';
+  return s1 || s2 || null;
 }
-function getDiet(pet) { return pet?.doggy_soul_answers?.diet_type?.replace(/_/g, ' ') || null; }
+function getDiet(pet) {
+  const dt = pet?.doggy_soul_answers?.diet_type;
+  return typeof dt === 'string' ? dt.replace(/_/g, ' ') : null;
+}
 function getHealthCondition(pet) {
   const raw = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
   if (!raw) return null;
