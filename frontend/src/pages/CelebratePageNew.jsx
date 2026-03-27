@@ -52,7 +52,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
-import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
+import DoggyBakeryCakeModal from '../components/celebrate/BreedCakeOrderModal';
 
 // API utilities
 import { getApiUrl, API_URL } from '../utils/api';
@@ -293,6 +293,7 @@ const CelebratePageNew = () => {
   const [soulScore, setSoulScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
+  const [breedCakeOpen, setBreedCakeOpen] = useState(false);
 
   // Wait for pet data to load from context
   useEffect(() => {
@@ -435,14 +436,9 @@ const CelebratePageNew = () => {
       pet: selectedPet,
       channel: "celebrate_category_strip",
     });
-    // birthday-cakes → CelebrateContentModal (with breed+shape+loadmore inside)
-    // breed-cakes → open DoggyBakeryCakeModal via its dedicated event
+    // breed-cakes → open BreedCakeOrderModal (the "A cake that looks like Bruno" builder)
     if (categoryId === 'breed-cakes') {
-      window.dispatchEvent(new CustomEvent('openDoggyBakeryCakes', { detail: {
-        pet: selectedPet,
-        petName: selectedPet?.name || '',
-        petBreed: selectedPet?.breed || '',
-      } }));
+      setBreedCakeOpen(true);
       return;
     }
     setCelebrateCatModal({ id: categoryId, obj: categoryObj });
@@ -599,8 +595,10 @@ const CelebratePageNew = () => {
         onOpenBuilder={handleBuildBox}
       />
 
-      {/* BIRTHDAY CAKES MODAL — cake-only browse triggered by category strip */}
-      <DoggyBakeryCakeModal />
+      {/* BREED CAKE BUILDER — "A cake that looks like Bruno" */}
+      {breedCakeOpen && (
+        <DoggyBakeryCakeModal pet={selectedPet} onClose={() => setBreedCakeOpen(false)} />
+      )}
 
       {/* CATEGORY STRIP MODAL — rendered here (outside Framer Motion tree) to fix fixed positioning */}
       {celebrateCatModal && (
