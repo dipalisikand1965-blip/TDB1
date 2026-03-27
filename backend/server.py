@@ -24962,3 +24962,65 @@ app.include_router(pawrent_journey_router)  # Pawrent Journey — must be after 
 # Concierge Intent Detection (Claude-powered)
 from concierge_intent_routes import concierge_intent_router
 app.include_router(concierge_intent_router, prefix="/api")
+
+# ─── ADMIN SERVICES CRUD ──────────────────────────────────────────────────────
+@api_router.get("/admin/services")
+async def get_admin_services(
+    pillar: str = None,
+    category: str = None,
+    limit: int = 200,
+    skip: int = 0,
+    search: str = None,
+    current_user: dict = Depends(verify_admin)
+):
+    """Get all services with optional pillar/category filter."""
+    query = {}
+    if pillar:
+        query["pillar"] = pillar
+    if category:
+        query["category"] = category
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+    
+    services = await db.services_master.find(
+        query, {"_id": 0}
+    ).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db.services_master.count_documents(query)
+    
+    return {
+        "services": services,
+        "total": total,
+        "pillar": pillar,
+    }
+
+@api_router.patch("/admin/services/{service_id}")
+async def update_admin_service(
+    service_id: str,
+    updates: dict,
+    current_user: dict = Depends(verify_admin)
+):
+    """Update a service by id."""
+    from datetime import datetime, timezone
+    
+    allowed = ["name", "price", "category", "sub_category", "pillar", 
+               "description", "is_active", "active", "display_name",
+               "short_description", "long_description", "tags"]
+    
+    clean = {k: v for k, v in updates.items() if k in allowed}
+    clean["updated_at"] = datetime.now(timezone.utc).isoformat()
+    clean["updated_by"] = current_user.get("username", "admin")
+    
+    if "price" in clean:
+        clean["price"] = float(clean["price"])
+    
+    result = await db.services_master.update_one(
+        {"$or": [{"id": service_id}, {"_id": service_id}]},
+        {"$set": clean}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    return {"success": True, "updated": clean}
+
