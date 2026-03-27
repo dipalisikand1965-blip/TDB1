@@ -241,72 +241,36 @@ export default function GoMobilePage() {
                   );
                 })()}
 
-                {/* Sub-category pills */}
-                {subCats.length > 1 && (
-                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
-                    {subCats.map(cat => (
-                      <button key={cat} onClick={() => setSubCat(cat)}
-                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid ${subCat===cat?G.teal:G.border}`,
-                          background:subCat===cat?G.teal:'#fff',
-                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
-                        {cat.replace(/_/g,' ').replace(/\\b\\w/g,c=>c.toUpperCase())}
-                      </button>
-                    ))}
+
+
+                {/* GuidedGoPaths — always visible below dims */}
+
+                {/* GuidedGoPaths — always visible below dims */}
+                <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
+
+                {/* Concierge Banner */}
+                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
+                  <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(20,184,166,0.18)', border:'1px solid rgba(20,184,166,0.4)', borderRadius:999, padding:'5px 14px', fontSize:12, fontWeight:700, color:'#5EEAD4', letterSpacing:'0.08em', marginBottom:12 }}>
+                    ✈ TRAVEL CONCIERGE®
                   </div>
-                )}
+                  <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:8, fontFamily:"Georgia,'Times New Roman',serif" }}>
+                    Want us to plan {petName}'s whole trip?
+                  </div>
+                  <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>
+                    We check routes, book stays, arrange transport, and confirm everything is pet-safe before you leave.
+                  </div>
+                  <button onClick={() => { vibe('medium'); setShowGoPlan(true); }}
+                    style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#0F766E,#14B8A6)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                    ✈ Talk to your Concierge®
+                  </button>
+                </div>
 
-
-                {products.length === 0 ? (
-                  <MiraEmptyRequest
-                    pet={currentPet}
-                    pillar="go"
-                    categoryName={`Go${subCat !== 'All' ? ` - ${subCat}` : ''} Products`}
-                    accentColor={G.teal}
-                    onRequest={async (msg) => {
-                      await request(msg, { channel:'go_empty_products', metadata:{ subCat, petName } });
-                    }}
-                  />
-                ) : (
-                  <>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                      {products.slice(0, 40).map(p => (
-                        <div key={p.id||p._id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1 }}>
-                          <SharedProductCard product={p} pillar="go" selectedPet={currentPet}
-                            onAddToCart={() => handleAddToCart(p)}
-                            onClick={() => { vibe(); setSelectedProduct(p); }} />
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
-                    </div>
-                    <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
-
-                    {/* Concierge Banner — Travel Concierge® (Phase 8 fix) */}
-                    <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
-                      <div style={{ display:'inline-flex', alignItems:'center', gap:5, background:'rgba(20,184,166,0.18)', border:'1px solid rgba(20,184,166,0.4)', borderRadius:999, padding:'5px 14px', fontSize:12, fontWeight:700, color:'#5EEAD4', letterSpacing:'0.08em', marginBottom:12 }}>
-                        ✈ TRAVEL CONCIERGE®
-                      </div>
-                      <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.25, marginBottom:8, fontFamily:"Georgia,'Times New Roman',serif" }}>
-                        Want us to plan {petName}'s whole trip?
-                      </div>
-                      <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>
-                        We check routes, book stays, arrange transport, and confirm everything is pet-safe before you leave.
-                      </div>
-                      <button onClick={() => { vibe('medium'); setShowGoPlan(true); }}
-                        style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:'linear-gradient(135deg,#0F766E,#14B8A6)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
-                        ✈ Talk to your Concierge®
-                      </button>
-                    </div>
-
-                    <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-                      <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · TRAVEL GEAR FOR {petName.toUpperCase()}</div>
-                      <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom travel tags, bags and accessories.</div>
-                      <button className="go-cta">Explore Soul Made →</button>
-                    </div>
-                  </>
-                )}
+                {/* Soul Made CTA */}
+                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
+                  <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · TRAVEL GEAR FOR {petName.toUpperCase()}</div>
+                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom travel tags, bags and accessories.</div>
+                  <button className="go-cta">Explore Soul Made →</button>
+                </div>
               </div>
           </div>
         )}
