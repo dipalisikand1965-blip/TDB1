@@ -290,7 +290,7 @@ export default function CelebrateMobilePage() {
   const handleCategorySelect = useCallback((categoryId, categoryObj) => {
     tdc.view({ product: categoryId, pillar: 'celebrate', pet: currentPet, channel: 'celebrate_category_strip' });
     // birthday-cakes AND breed-cakes both open the new DoggyBakeryCakeModal
-    if (categoryId === 'birthday-cakes' || categoryId === 'breed-cakes') {
+    if (categoryId === 'breed-cakes') {
       window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', { detail: {
         pet: currentPet,
         petName: currentPet?.name || '',
