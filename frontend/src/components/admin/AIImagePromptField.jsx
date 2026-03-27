@@ -31,6 +31,16 @@ function buildDefaultPrompt({ productName, pillar, category, breed, entityType }
     return `Watercolour illustration of a ${breedLabel} with ${name.toLowerCase()}, soft warm tones, artistic hand-painted style, ivory background, no text`;
   }
 
+  // Service — matches the warm watercolour oval style used across all service images
+  if (entityType === 'service') {
+    return `Soulful watercolor illustration of "${name}" pet service, caring handler with a golden retriever dog, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
+  }
+
+  // Bundle — painterly warm style
+  if (entityType === 'bundle') {
+    return `Soulful watercolor illustration of "${name}" dog bundle, beautifully curated pet items arranged together, warm painterly brushstrokes, soft layered watercolor pigments, premium editorial composition, ivory background, no text`;
+  }
+
   // Pillar-specific defaults
   const pillarPrompts = {
     care:       `Professional product photo of ${name}, pet care item, clean white studio background, soft natural lighting`,
