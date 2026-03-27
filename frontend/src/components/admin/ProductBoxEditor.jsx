@@ -1163,22 +1163,32 @@ const ProductBoxEditor = ({
                   <select
                     value={getValue('pillars_occasions.cake_bakery.shape', '') || getValue('shape', '')}
                     onChange={(e) => {
-                      updateField('pillars_occasions.cake_bakery.shape', e.target.value);
-                      updateField('shape', e.target.value);
+                      const newShape = e.target.value;
+                      // Keep existing fields for backwards compat
+                      updateField('pillars_occasions.cake_bakery.shape', newShape);
+                      updateField('shape', newShape);
+                      // Sync shape into tags array — this is what the Celebrate filter reads
+                      const SHAPES = ['Circle','Bone','Heart','Square','Star','Paw','Round','Number','Donut','Silhouette','Custom'];
+                      setProduct(prev => {
+                        const currentTags = prev.tags || [];
+                        const withoutShape = currentTags.filter(t => !SHAPES.map(s => s.toLowerCase()).includes(String(t).toLowerCase()));
+                        const shaped = newShape ? [...withoutShape, newShape.charAt(0).toUpperCase() + newShape.slice(1)] : withoutShape;
+                        return { ...prev, tags: shaped };
+                      });
                     }}
                     className="w-full h-10 px-3 rounded-md border border-pink-200 bg-white"
                   >
                     <option value="">-- Select Shape --</option>
-                    <option value="paw">🐾 Paw Shape</option>
-                    <option value="bone">🦴 Bone Shape</option>
-                    <option value="heart">💜 Heart Shape</option>
-                    <option value="round">⭕ Round/Circle</option>
-                    <option value="square">⬜ Square</option>
-                    <option value="star">⭐ Star Shape</option>
-                    <option value="number">🔢 Number Cake</option>
-                    <option value="donut">🍩 Donut Shape</option>
-                    <option value="silhouette">🐕 Breed Silhouette</option>
-                    <option value="custom">✨ Custom Shape</option>
+                    <option value="Paw">🐾 Paw</option>
+                    <option value="Bone">🦴 Bone</option>
+                    <option value="Heart">💜 Heart</option>
+                    <option value="Round">⭕ Round / Circle</option>
+                    <option value="Square">⬜ Square</option>
+                    <option value="Star">⭐ Star</option>
+                    <option value="Number">🔢 Number Cake</option>
+                    <option value="Donut">🍩 Donut</option>
+                    <option value="Silhouette">🐕 Breed Silhouette</option>
+                    <option value="Custom">✨ Custom</option>
                   </select>
                   <p className="text-xs text-pink-500 mt-1">
                     Used for shape filters on the Celebrate page (paw, bone, heart, etc.)
