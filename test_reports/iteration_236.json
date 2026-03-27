@@ -1,0 +1,169 @@
+{
+  "summary": "PILLAR: Go Mobile | STATUS: PARTIAL PASS | Date: 2026-03-27 | Mobile audit at 375px for dipali@clubconcierge.in (Mojo). 6/8 phases PASS, 2 phases PARTIAL (Phase 1: allergy tags + pet switcher; Phase 3: tab bar wrapping). Phases 2, 4, 5, 6, 7, 8 all PASS.",
+
+  "test_context": {
+    "url": "https://pet-soul-ranking.preview.emergentagent.com/go",
+    "viewport": "375x812 (mobile)",
+    "user": "dipali@clubconcierge.in",
+    "pet": "Mojo (Indie, chicken+beef allergy, 8 pets total on account)",
+    "date": "2026-03-27"
+  },
+
+  "phase_results": {
+    "phase1_hero": {
+      "status": "PARTIAL PASS",
+      "items": [
+        {"check": "Dark teal gradient (very dark top, lighter bottom)", "result": "PASS", "detail": "linear-gradient(160deg, #03211A 0%, #06503F 55%, #0E8A70 100%)"},
+        {"check": "✈️ Go title showing", "result": "PASS"},
+        {"check": "Travel & Go with Mojo subtitle", "result": "PASS"},
+        {"check": "Allergy tags showing (⚠️ No chicken, ⚠️ No beef)", "result": "FAIL", "detail": "No ⚠️ formatted allergy tags anywhere in hero or visible area. Allergies only mentioned in Mira bar text: 'I've already removed everything containing chicken and beef from Mojo's travel picks.' No visual warning tags."},
+        {"check": "Pet switcher scrolls horizontally (not wrapping to 2 rows)", "result": "FAIL", "detail": "Pet switcher uses flexWrap:'wrap' not overflowX:'auto'. With 8 pets (Mojo, Mystique, Bruno, Buddy, Lola, Meister, Luna, Coco), it wraps to 3 rows (height=144px). Code line 149: style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}"}
+      ]
+    },
+    "phase2_category_strip": {
+      "status": "PASS",
+      "items": [
+        {"check": "GoCategoryStrip showing below hero", "result": "PASS", "detail": "Scrollable strip with ✨Soul Go, 🪄Mira's Picks, 🛡️Safety, 😌Calming, 🎒Carriers, 🥣Feeding, 💊Health & Docs, 🏡Stay & Board, ✦Soul Made™"},
+        {"check": "Icons scrollable horizontally", "result": "PASS", "detail": "overflowX:auto confirmed"}
+      ]
+    },
+    "phase3_tab_bar": {
+      "status": "PARTIAL PASS",
+      "items": [
+        {"check": "Exactly 3 tabs", "result": "PASS", "detail": "go-tab-go (✈️ Go Essentials), go-tab-nearme (📍 Near Me), go-tab-services (🗺️ Book a Service)"},
+        {"check": "Tab labels match spec (✈️ Products, 🗺️ Book a Service, 📍 Near Me)", "result": "PASS", "detail": "Labels differ slightly but acceptable: ✈️ Go Essentials, 📍 Near Me, 🗺️ Book a Service"},
+        {"check": "Tabs in single row at 375px", "result": "FAIL", "detail": "Tab bar wraps to 2 rows: row1=[✈️ Go Essentials y=33, 📍 Near Me y=33], row2=[🗺️ Book a Service y=103]. Container height=147px. Labels too long for 375px with padding:'10px 24px'. Fix: shorten labels OR use overflowX:'auto' + white-space:'nowrap' OR reduce padding."}
+      ]
+    },
+    "phase4_products_tab": {
+      "status": "PASS",
+      "items": [
+        {"check": "6 dimension tiles in 2-column grid", "result": "PASS", "detail": "Safety & Security, Calming & Comfort, Carriers & Crates, Feeding & Hydration, Health & Documents, Stay & Board"},
+        {"check": "Tap tile → bottom sheet opens", "result": "PASS", "detail": "Fixed overlay with border-radius 20px 20px 0 0"},
+        {"check": "Products show allergy/personalisation text", "result": "PASS", "detail": "Header shows 'chicken-free · beef-free · Personalised for Mojo'"},
+        {"check": "All Products / Personalised toggle", "result": "PASS", "detail": "🎯 All Products and ✦ Personalised tabs present and clickable"},
+        {"check": "Sub-category pills present", "result": "PASS", "detail": "All, Safety, Travel-Safety pills found"},
+        {"check": "Mira's pick callout showing", "result": "PASS", "detail": "★ Mira Pick badge visible in GuidedGoPaths"},
+        {"check": "GuidedGoPaths below dimensions", "result": "PASS"},
+        {"check": "Travel Concierge® dark card", "result": "PASS", "detail": "✦ TRAVEL CONCIERGE® · 'Want us to plan Mojo's whole trip?' with 'Talk to your Concierge®' button"},
+        {"check": "Soul Made™ dark card", "result": "PASS", "detail": "✦ SOUL MADE™ · TRAVEL GEAR FOR MOJO with 'Explore Soul Made →' button"}
+      ]
+    },
+    "phase5_services_tab": {
+      "status": "PASS",
+      "items": [
+        {"check": "Go, Personally section heading", "result": "PASS"},
+        {"check": "8 service tiles in 2×2 grid", "result": "PASS", "detail": "All 8: Flight Coordination, Road & Train Travel, Boarding & Daycare, Pet Sitting, Relocation, Pet Taxi, Travel Planning, Emergency Travel"},
+        {"check": "Tap tile → multi-step booking flow", "result": "PASS", "detail": "GoServiceBookingModal opens (5-step flow for flight)"},
+        {"check": "GoConciergeSection with live API services", "result": "PASS", "detail": "8 service cards loaded from API (TRAVEL category)"}
+      ]
+    },
+    "phase6_find_stay_tab": {
+      "status": "PASS",
+      "items": [
+        {"check": "PetFriendlyStays section at top", "result": "PASS", "detail": "Auto-loaded Goa results (10 pet-friendly stays) since Mojo's city=Goa"},
+        {"check": "Search bar", "result": "PASS", "detail": "Placeholder: 'Goa, Paris, Bali, New York — anywhere…'"},
+        {"check": "Popular city chips", "result": "PASS", "detail": "Goa, Coorg, Manali, Bali, Paris, London + more visible"},
+        {"check": "'FIND NEAR YOU' divider", "result": "PASS"},
+        {"check": "6 search type tiles in 3-col grid", "result": "PASS", "detail": "Pet Hotels, Boarding, Pet Taxi, Travel Vet, Day Care, Dog Parks in repeat(3,1fr) grid"},
+        {"check": "GoNearMe search bar + Find button", "result": "PASS", "detail": "Input: 'Search city or area…' with Find button"},
+        {"check": "Mira tip card showing", "result": "PASS", "detail": "Dark card: '✦ MIRA ON MOJO'S TRAVEL - When booking a pet-friendly hotel for Mojo...'"}
+      ]
+    },
+    "phase7_concierge_wiring": {
+      "status": "PASS",
+      "items": [
+        {"check": "'Talk to your Concierge®' → ticket/modal opens", "result": "PASS", "detail": "MiraPlanModal opens: 'Mojo's Adventure Plan · Travel and outings curated for you both'"},
+        {"check": "'Explore Soul Made' → SoulMadeModal opens", "result": "PASS", "detail": "SOUL MADE™ · GO modal opens with Indie-specific items (Indie Bandana, Indie Tote Bag, etc.)"},
+        {"check": "Service card → GoConciergeModal opens", "result": "PASS", "detail": "GoConciergeModal opens: 'What should Mojo's trip feel like? Three questions.'"},
+        {"check": "'Ask our Concierge®' → NearMeConciergeModal (NOT grooming)", "result": "PASS", "detail": "NearMeConciergeModal opens with header 'BOOK VIA CONCIERGE · GO', venue='Pet-Friendly Stay in Goa', date picker, notes, 'Send to Go Concierge →' button. Confirmed NOT a grooming modal."}
+      ]
+    },
+    "phase8_mira": {
+      "status": "PASS",
+      "items": [
+        {"check": "Mira widget opens on /go page", "result": "PASS", "detail": "Widget at bottom-right (z-[9999] fixed), opens as full panel"},
+        {"check": "Mira shows travel context quick actions", "result": "PASS", "detail": "Quick Actions: 'Indie-specific go tips', 'Show me options', 'What's recommended for Mojo?'"},
+        {"check": "Ask 'where can I take Mojo?' → travel context response", "result": "PASS", "detail": "Response includes 'Day Adventures: Dog parks, Pet-friendly hiking trails (short ones since Mojo's still little!), Dog-friendly cafes' and 'Travel Tips' - travel-relevant content confirmed"}
+      ]
+    }
+  },
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "GoMobilePage.jsx Hero — Pet switcher",
+        "issue": "Pet switcher uses flexWrap:'wrap' causing it to wrap into 3 rows for users with 8 pets (Mojo, Mystique, Bruno, Buddy, Lola, Meister, Luna, Coco). Spec requires horizontal scrolling, not wrapping.",
+        "location": "GoMobilePage.jsx line 149",
+        "fix": "Change flexWrap:'wrap' to flexWrap:'nowrap' and add overflowX:'auto' on the pet switcher container",
+        "priority": "HIGH"
+      },
+      {
+        "component": "GoMobilePage.jsx Hero — Allergy tags",
+        "issue": "No ⚠️ No chicken / ⚠️ No beef allergy warning tags shown in the hero section. Allergies only referenced in Mira intelligence bar text below. Other pages (CareSoulPage) show allergy tags in the hero.",
+        "location": "GoMobilePage.jsx hero section (lines 141-164)",
+        "fix": "Add allergy tags to hero section, similar to how they appear in CareSoulPage or in the DimExpanded sheet header",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "GoMobilePage.jsx — Tab bar",
+        "issue": "Tab bar wraps to 2 rows at 375px. Row1: [✈️ Go Essentials, 📍 Near Me], Row2: [🗺️ Book a Service]. Container height=147px instead of ~44px.",
+        "location": "GoMobilePage.jsx lines 170-189 — tab container has flexWrap:'wrap'",
+        "fix": "Option 1: Add overflowX:'auto' + white-space:'nowrap' to tab container. Option 2: Shorten labels (e.g., '✈️ Products', '📍 Near Me', '🗺️ Services'). Option 3: Remove flexWrap:'wrap' and adjust flex layout.",
+        "selector": "[data-testid^='go-tab-']",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Go mobile hero (/go at 375px)",
+        "issues": [
+          "Pet switcher wraps to 3 rows instead of scrolling horizontally — visible for accounts with 4+ pets",
+          "No ⚠️ allergy warning tags in hero — the allergies are only in the Mira intelligence bar further down the page",
+          "Tab bar wraps to 2 rows — 'Book a Service' tab falls to second row at 375px"
+        ]
+      }
+    ]
+  },
+
+  "test_report_links": [],
+  
+  "action_items": [
+    "Fix pet switcher: GoMobilePage.jsx line 149 — change flexWrap:'wrap' to flexWrap:'nowrap' + overflowX:'auto' on the switcher container",
+    "Add allergy tags to hero section: GoMobilePage.jsx — add ⚠️ No chicken / ⚠️ No beef badges below the title/subtitle in the hero div (dark gradient area)",
+    "Fix tab bar: GoMobilePage.jsx lines 170-189 — shorten tab labels OR add overflow-x:auto to prevent wrapping at 375px. Suggested labels: '✈️ Products', '📍 Near Me', '🗺️ Services'"
+  ],
+
+  "critical_code_review_comments": [
+    "GoMobilePage.jsx line 149: flexWrap:'wrap' on pet switcher causes overflow for users with many pets. Should be overflowX:'auto' + flexWrap:'nowrap'",
+    "GoMobilePage.jsx lines 170-189: Tab bar container has flexWrap:'wrap' causing 2-row layout on 375px. Tab labels are too long. Either shorten or use scrollable row.",
+    "GoMobilePage.jsx: Hero section missing allergy tags — other pillar pages (Care, Dine) show ⚠️ allergy tags in visible pill format near hero title. Go page only mentions allergies in the Mira bar text further down."
+  ],
+
+  "success_rate": {
+    "backend": "N/A",
+    "frontend": "85% (3 item failures out of ~23 checked items; 6/8 phases fully pass)"
+  },
+
+  "phases_summary": {
+    "phase1_hero": "❌ PARTIAL — Allergy tags missing, pet switcher wraps",
+    "phase2_category_strip": "✅ PASS",
+    "phase3_tab_bar": "❌ PARTIAL — 3 tabs present but wraps to 2 rows at 375px",
+    "phase4_products_tab": "✅ PASS — All 6 dims, bottom sheet, toggles, pills, Mira pick, Concierge cards",
+    "phase5_services_tab": "✅ PASS — 8 service tiles, booking modal, live API services",
+    "phase6_find_stay_tab": "✅ PASS — Stays, search, chips, divider, 6 type tiles, Mira tip",
+    "phase7_concierge_wiring": "✅ PASS — All 4 concierge flows verified, NearMeConciergeModal correct",
+    "phase8_mira": "✅ PASS — Widget opens, travel context quick actions, travel response"
+  },
+
+  "updated_files": [],
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Go mobile page at 375px. Tested with dipali@clubconcierge.in (Mojo - Indie, chicken+beef allergy, 8 pets). 3 issues: (1) pet switcher wraps 3 rows instead of horizontal scroll, (2) no ⚠️ allergy tags in hero, (3) tab bar wraps to 2 rows. All Phase 4-8 features confirmed working: dimensions, bottom sheet, services, stays, concierge modals, Mira. Credential note: token not in localStorage but user data is - auth works via session/cookie. Test credentials: dipali@clubconcierge.in / test123"
+}
