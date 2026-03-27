@@ -140,7 +140,7 @@ export default function GoMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>✈️ Go</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
                     style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,

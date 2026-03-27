@@ -996,7 +996,7 @@ function DineMobilePage() {
               <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🍽️ Dine</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', scrollbarWidth:'none' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe('light'); setCurrentPet(p); }}
                     style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
@@ -1057,11 +1057,6 @@ function DineMobilePage() {
         ════════════════════════════════════ */}
         {mode === 'eat' && (
           <>
-            <DineSectionHeading
-              title={`How would ${petName} love to eat?`}
-              helper="Food, treats, and recipes filtered to their body and taste."
-            />
-
             {/* ── Dimensions Rail (real tabs, no cap) ── */}
             <DineDimensionsRail
               dims={DIMS}
@@ -1178,12 +1173,8 @@ function DineMobilePage() {
         ════════════════════════════════════ */}
         {mode === 'out' && (
           <>
-            <DineSectionHeading
-              title={`Where would ${petName} love to eat?`}
-              helper="Pet-friendly restaurants and cafés near you."
-            />
             {/* Book Dine Concierge® CTA */}
-            <div style={{ padding:'0 16px 20px' }}>
+            <div style={{ padding:'16px 16px 20px' }}>
               <button
                 className="dp-cta"
                 onClick={() => { vibe('medium'); setIntakeOpen(true); }}

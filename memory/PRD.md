@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-26 (Session 16 — PawrentJourney Wiring + Care Mobile Fixes)
+## Last Updated: 2026-03-27 (Session 17 — Pet Selector Unification + DoggyBakeryCakeModal Order Form)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
