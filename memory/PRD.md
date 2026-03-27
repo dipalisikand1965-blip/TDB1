@@ -402,9 +402,12 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 2. ✅ **Duplicate "Switching to pet" messages fixed** — Added `lastPetSwitchRef` 2-second debounce + `isOpen` guard on `handlePetChange`. Pet-switch messages now only appear when the widget is already open (not on page load) and only once per 2 seconds per pet.
 3. ✅ **Full E2E verified**: memory created → widget opens → follow-up shown as sole message → marked shown → next open no follow-up (clean welcome) → resolve PATCH clears pending.
 
-### Pending Items (Updated after Session 17)
-- Admin notification bell returning 0 (P0)
-- ProductCard `display_only` flag — insurance items showing "Add to Cart" (P0)
+### Pending Items (Updated after Session 18)
+- Admin notification bell returning 0 (P1)
+- ProductCard `display_only` flag — insurance items showing "Add to Cart" (P1)
 - Farewell service prices all Rs.0 (P1)
 - LearnNearMe, PaperworkNearMe, GoNearMe on mobile pages (P1)
 - Wellness Profile score calibration: visual verify (user request)
+
+### SESSION 18 — Soul Chapter Score Fix
+1. ✅ **Soul Chapter Scores fixed** — `GET /pets/{pet_id}/soul` was counting keys starting with "q1/q2/q3" (always 0). Now returns `category_scores` from `calculate_pet_soul_score()`. Buddy: safety=100, personality=100, lifestyle=75, nutrition=33. Zero false zeros.
