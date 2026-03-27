@@ -191,7 +191,7 @@ export default function GoMobilePage() {
             {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
             {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
 
-            {/* ══ 5. GO FOR MOJO — Mira intelligence bar ══ */}
+            {/* ══ Mira intelligence bar ══ */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:13, fontWeight:700, color:`rgba(167,243,208,0.9)`, letterSpacing:'0.1em', marginBottom:6 }}>✦ MIRA ON {petName.toUpperCase()}'S TRAVEL</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, fontStyle:'italic' }}>
@@ -201,32 +201,20 @@ export default function GoMobilePage() {
               </div>
             </div>
 
-            {/* dimTab */}
-            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
-              {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
-                <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
-                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
-                    background:dimTab===t.id?G.teal:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-
-            {dimTab === 'personalised' ? (
-              <div style={{ padding:'16px 16px 24px' }}>
-                <PersonalisedBreedSection pet={currentPet} pillar="go" token={token} />
-                {GO_IMAGINES.map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="go" />)}
-              </div>
-            ) : (
-              <div style={{ padding:'16px' }}>
-                {/* ── 6 Go Dimensions — matches desktop exactly ── */}
-                {(() => {
-                  const goDims = getGoDims(currentPet);
-                  return (
-                    <>
-                      <div style={{ fontSize:13, color:G.mutedText, marginBottom:10 }}>
-                        6 dimensions, matched to {petName}'s travel profile
-                      </div>
+            <div style={{ padding:'16px' }}>
+              {/* ── 6 Go Dimensions ── */}
+              {(() => {
+                const goDims = getGoDims(currentPet);
+                return (
+                  <>
+                    {/* Section heading */}
+                    <div style={{ marginBottom:4 }}>
+                      <span style={{ fontSize:22, fontWeight:900, color:G.darkText }}>Go </span>
+                      <span style={{ fontSize:22, fontWeight:900, color:G.teal }}>for {petName}</span>
+                    </div>
+                    <div style={{ fontSize:13, color:G.mutedText, marginBottom:12 }}>
+                      6 dimensions, matched to {petName}'s size and travel profile
+                    </div>
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
                         {goDims.map(dim => (
                           <div key={dim.id} onClick={() => setOpenDim(openDim === dim.id ? null : dim.id)}
@@ -244,7 +232,7 @@ export default function GoMobilePage() {
                         return activeDim ? (
                           <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
                             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
-                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={{}} />
                             </div>
                           </div>
                         ) : null;
@@ -268,16 +256,6 @@ export default function GoMobilePage() {
                   </div>
                 )}
 
-                {/* Mira's pick callout */}
-                {miraPick && (
-                  <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
-                    <div style={{ fontSize:14, color:'#003D3D', lineHeight:1.4 }}>
-                      <strong>Mira's pick:</strong> {miraPick.name}
-                      {miraPick.mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>}
-                    </div>
-                  </div>
-                )}
 
                 {products.length === 0 ? (
                   <MiraEmptyRequest
@@ -330,7 +308,6 @@ export default function GoMobilePage() {
                   </>
                 )}
               </div>
-            )}
           </div>
         )}
 
