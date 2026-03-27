@@ -4,7 +4,7 @@
  * Products tab: dimTab (Products/Personalised) + sub-category pills
  * Colour: Teal #1ABC9C
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -92,6 +92,7 @@ export default function GoMobilePage() {
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
   const [showGoPlan, setShowGoPlan] = useState(false);
+  const tabBarRef = useRef(null);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -193,12 +194,16 @@ export default function GoMobilePage() {
             { label:'✈ Go Essentials', tab:'go' },
             { label:'🏡 Find a Stay',  tab:'stay' },
             { label:'📋 Book a Service', tab:'services' },
-          ].map(btn => (
-            <button key={btn.tab} onClick={() => { vibe(); setActiveTab(btn.tab); }}
-              style={{ flex:1, padding:'10px 8px', borderRadius:12, border:`1.5px solid ${G.border}`, background:'#fff', fontSize:13, fontWeight:700, color:'#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow:'0 2px 8px rgba(0,0,0,0.06)', textAlign:'center', position:'relative', zIndex:5 }}>
-              {btn.label}
-            </button>
-          ))}
+          ].map(btn => {
+            const isActive = activeTab === btn.tab;
+            return (
+              <button key={btn.tab}
+                onClick={() => { vibe(); setActiveTab(btn.tab); setTimeout(() => tabBarRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 50); }}
+                style={{ flex:1, padding:'10px 8px', borderRadius:12, border:`2px solid ${isActive ? G.teal : G.border}`, background: isActive ? G.teal : '#fff', fontSize:13, fontWeight:700, color: isActive ? '#fff' : '#1A0A2E', cursor:'pointer', whiteSpace:'nowrap', boxShadow: isActive ? `0 4px 12px rgba(26,188,156,0.3)` : '0 2px 8px rgba(0,0,0,0.06)', textAlign:'center', position:'relative', zIndex:5, transition:'all 0.15s' }}>
+                {btn.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* ── 3. TRIPS & ADVENTURES CARD (after selector) ── */}
@@ -228,7 +233,7 @@ export default function GoMobilePage() {
 
         {/* ══ 4. PAWRENT JOURNEY ══ */}
         {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" />}
-        <div className="ios-tab-bar" style={{ borderColor: G.border }}>
+        <div ref={tabBarRef} className="ios-tab-bar" style={{ borderColor: G.border }}>
           {[
             { id:'go',       label:'✈️ Go & Products' },
             { id:'services', label:'🛎️ Services' },
