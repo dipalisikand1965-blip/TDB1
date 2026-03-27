@@ -373,14 +373,15 @@ const CelebratePageNew = () => {
 
   // Handle open browse drawer from Birthday Box secondary button
   const handleOpenBrowseDrawer = useCallback((boxPreview) => {
-    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowse', {
+    window.dispatchEvent(new CustomEvent('openBirthdayBoxBrowseDrawer', {
       detail: {
         boxPreview,
         petName: selectedPet?.name,
         petBreed: selectedPet?.breed || '',
+        pet: selectedPet,
       }
     }));
-  }, [selectedPet?.name, selectedPet?.breed]);
+  }, [selectedPet]);
 
   // Handle talk to concierge — fires canonical flow + opens intake modal
   const [showConciergeModal, setShowConciergeModal] = useState(false);
@@ -592,7 +593,12 @@ const CelebratePageNew = () => {
         onOpenBrowseDrawer={() => handleOpenBrowseDrawer(null)}
       />
 
-      {/* BIRTHDAY BOX BROWSE DRAWER — replaced by DoggyBakeryCakeModal (event-driven) */}
+      {/* BIRTHDAY BOX BROWSE DRAWER — full browse by category (Cakes/Toys/Style/Memory/Wellness) */}
+      <BirthdayBoxBrowseDrawer
+        onOpenBuilder={handleBuildBox}
+      />
+
+      {/* BIRTHDAY CAKES MODAL — cake-only browse triggered by category strip */}
       <DoggyBakeryCakeModal />
 
       {/* CATEGORY STRIP MODAL — rendered here (outside Framer Motion tree) to fix fixed positioning */}
