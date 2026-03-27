@@ -20,7 +20,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GoConciergeSection from '../components/go/GoConciergeSection';
 import GoCategoryStrip from '../components/go/GoCategoryStrip';
-import { getGoDims, DimExpanded } from './GoSoulPage';
+import { getGoDims, DimExpanded, MiraPicksSection } from './GoSoulPage';
 import GoNearMe from '../components/go/GoNearMe';
 import PetFriendlyStays from '../components/go/PetFriendlyStays';
 import GuidedGoPaths from '../components/go/GuidedGoPaths';
@@ -190,6 +190,11 @@ export default function GoMobilePage() {
           <div>
             {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
             {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
+
+            {/* ══ Mira Picks Strip — AI Scored, same as Care ══ */}
+            <div style={{ padding:'16px 16px 0' }}>
+              <MiraPicksSection pet={currentPet} />
+            </div>
 
             {/* ══ Mira intelligence bar ══ */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>

@@ -307,7 +307,7 @@ function resolvePickImage(pick) {
   return candidates.find(url => url && url.startsWith("http")) || null;
 }
 
-function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet }) {
   const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]               = useState([]);
   const [loading, setLoading]           = useState(true);
