@@ -173,9 +173,9 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     setLoading(true);
     Promise.all([
-      fetch(`${API_URL}/api/products?category=cakes&limit=200`, { headers })
+      fetch(`${API_URL}/api/product-box/products?category=cakes&limit=200`, { headers })
         .then(r => r.json()).then(d => Array.isArray(d) ? d : d.products || d.data || []),
-      fetch(`${API_URL}/api/products?category=breed-cakes&limit=100`, { headers })
+      fetch(`${API_URL}/api/product-box/products?category=breed-cakes&limit=100`, { headers })
         .then(r => r.json()).then(d => Array.isArray(d) ? d : d.products || d.data || []),
     ])
       .then(([c, b]) => { setCakes(c); setBreedCakes(b); })
