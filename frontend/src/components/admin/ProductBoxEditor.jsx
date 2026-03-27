@@ -221,12 +221,15 @@ const ProductBoxEditor = ({
         const newUrl = startData.image_url;
         setProduct(prev => ({
           ...prev,
-          image_url: newUrl, image: newUrl, images: [newUrl],
-          thumbnail: newUrl, watercolor_image: newUrl, cloudinary_url: newUrl,
-          media: { ...(prev.media || {}), primary_image: newUrl, images: [newUrl] },
+          image_url: newUrl,
+          image: newUrl,
+          thumbnail: newUrl,
+          watercolor_image: newUrl,
+          cloudinary_url: newUrl,
+          media: { ...(prev.media || {}), primary_image: newUrl },
         }));
         setActiveTab('media');
-        alert(`✅ AI image generated for "${product.name || product.basics?.name}"`);
+        // image_url already updated in state — preview refreshes automatically
         return;
       }
 
