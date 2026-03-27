@@ -31,6 +31,7 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import NearMeConciergeModal from '../components/common/NearMeConciergeModal';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -92,6 +93,7 @@ export default function GoMobilePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'boarding' });
+  const [nearMeConc, setNearMeConc] = useState({ open: false, venue: null });
   const [showGoPlan, setShowGoPlan] = useState(false);
   const [openDim, setOpenDim] = useState(null);
 
@@ -308,7 +310,12 @@ export default function GoMobilePage() {
           <div style={{ padding:'16px' }}>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Pet-Friendly Stays</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Hotels, resorts, and homestays that welcome {petName}.</div>
-            <PetFriendlyStays pet={currentPet} token={token} onBook={stay => {
+            <PetFriendlyStays pet={currentPet} token={token} onBook={(stay, query) => {
+              if (!stay) {
+                // "Ask our Concierge®" CTA — open NearMeConciergeModal with synthetic venue
+                setNearMeConc({ open: true, venue: { name: `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' } });
+                return;
+              }
               tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
               setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
             }} />
@@ -334,6 +341,16 @@ export default function GoMobilePage() {
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
       />
+
+      {nearMeConc.open && nearMeConc.venue && (
+        <NearMeConciergeModal
+          isOpen={nearMeConc.open}
+          venue={nearMeConc.venue}
+          pet={currentPet}
+          pillar="go"
+          onClose={() => setNearMeConc({ open: false, venue: null })}
+        />
+      )}
 
       <MiraPlanModal
         isOpen={showGoPlan}
