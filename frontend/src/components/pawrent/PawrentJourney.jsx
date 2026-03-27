@@ -268,6 +268,33 @@ const FIRST_STEPS = {
       pillar: "celebrate",
       intent: "gotcha_day_setup",
     },
+    {
+      id: "celebrate-first-birthday",
+      icon: "🎂",
+      title: "Plan first birthday",
+      desc: "Mira builds the perfect birthday box for their breed.",
+      cta: "Plan via Concierge®",
+      pillar: "celebrate",
+      intent: "birthday_planning",
+    },
+    {
+      id: "celebrate-breed-cake",
+      icon: "🍰",
+      title: "Order a breed cake",
+      desc: "A cake made just for their breed — from The Doggy Bakery.",
+      cta: "Order via Concierge®",
+      pillar: "celebrate",
+      intent: "cake_order",
+    },
+    {
+      id: "celebrate-memory-photo",
+      icon: "📸",
+      title: "First memory photo",
+      desc: "Capture this moment. Mira will remind you every year.",
+      cta: "Book photography →",
+      pillar: "celebrate",
+      intent: "photography_booking",
+    },
   ],
   play: [
     {
