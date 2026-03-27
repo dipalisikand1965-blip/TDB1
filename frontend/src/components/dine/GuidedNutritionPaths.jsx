@@ -34,7 +34,9 @@ function capitalisedList(arr) {
 // ─────────────────────────────────────────────────────────────
 function buildPaths(pet) {
   const allergies = normaliseAllergies(
-    pet?.allergies || pet?.preferences?.allergies || pet?.doggy_soul_answers?.food_allergies
+    (pet?.allergies?.length ? pet.allergies : null) ||
+    pet?.preferences?.allergies ||
+    pet?.doggy_soul_answers?.food_allergies
   );
   const name = pet?.name || "your pet";
   const firstAllergy = allergies[0] || "an allergen";

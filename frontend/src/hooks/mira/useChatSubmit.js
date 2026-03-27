@@ -627,10 +627,10 @@ const useChatSubmit = (config) => {
         }
       }
       
-      // ── Mira Ticket Intelligence — fire on concern detection ──
+      // ── Mira Ticket Intelligence — fire on concern detection OR 3+ message conversations ──
       import('./useMiraTicket').then(({ detectConcernType, fireMiraTicket }) => {
-        const concernType = detectConcernType(inputQuery);
-        if (concernType) {
+        const concernType = detectConcernType(inputQuery) || (conversationHistory?.length >= 3 ? 'general' : null);
+        if (concernType && pet?.id) {
           fireMiraTicket({ pet, pillar, userMessage: inputQuery, miraResponse: miraResponseText, concernType, token });
         }
       });

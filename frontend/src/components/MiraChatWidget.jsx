@@ -1252,10 +1252,10 @@ const MiraChatWidget = ({
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText } : m
           ));
 
-          // ── Mira Ticket Intelligence — fire on concern detection ──
+          // ── Mira Ticket Intelligence — fire on concern detection OR 3+ message conversations ──
           const { detectConcernType: detectCT, fireMiraTicket } = await import('../hooks/mira/useMiraTicket');
-          const concernType = detectCT(messageToSend);
-          if (concernType) {
+          const concernType = detectCT(messageToSend) || (messages.length >= 3 ? 'general' : null);
+          if (concernType && selectedPet?.id) {
             fireMiraTicket({ pet: selectedPet, pillar, userMessage: messageToSend, miraResponse: fullText, concernType, token });
           }
 
