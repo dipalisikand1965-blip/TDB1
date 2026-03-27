@@ -480,13 +480,13 @@ export default function PlayNearMe({ pet, onBook }) {
         )}
       </div>
 
-      {/* Type filter pills */}
-      <div style={{ display:"flex", gap:8, overflowX:"auto", paddingBottom:4, marginBottom:20, scrollbarWidth:"none" }} className="play-type-strip">
+      {/* Type filter pills — wrap on mobile, no horizontal scroll */}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginBottom:20 }} className="play-type-strip">
         {PLAY_TYPES.map(type => {
           const sel = activeType === type.id;
           return (
     <button key={type.id} onClick={() => setActiveType(type.id)}
-              style={{ display:"inline-flex", alignItems:"center", gap:5, flexShrink:0, padding:"7px 16px", borderRadius:9999, border:`1.5px solid ${sel?"#E76F51":"rgba(231,111,81,0.22)"}`, background:sel?"#E76F51":"#fff", color:sel?G.deep:G.mutedText, fontSize:12, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s" }}>
+              style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"7px 14px", borderRadius:9999, border:`1.5px solid ${sel?"#E76F51":"rgba(231,111,81,0.22)"}`, background:sel?"#E76F51":"#fff", color:sel?G.deep:G.mutedText, fontSize:12, fontWeight:sel?700:400, cursor:"pointer", transition:"all 0.15s" }}>
               <span style={{ fontSize:14 }}>{type.icon}</span>{type.label}
             </button>
           );
