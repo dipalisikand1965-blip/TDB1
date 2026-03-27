@@ -971,6 +971,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const [selectedOptions, setSelectedOptions] = useState(initializeSelectedOptions);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [dateError, setDateError] = useState(false); // Bug fix: track missing required date
+  const [nameError, setNameError] = useState(false);
+  const [ageError, setAgeError] = useState(false);
 
   // Determine if this product REQUIRES a delivery/pickup date before checkout
   const isCakeProduct = (product.category || '').toLowerCase().includes('cake') ||
@@ -1000,6 +1002,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
+  const [celebrateSoulProducts, setCelebrateSoulProducts] = useState([]);
   
   // Bundle products (cakes and toys for hamper selection)
   const [bundleCakes, setBundleCakes] = useState([]);
@@ -1111,6 +1114,27 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     };
     fetchRelated();
   }, [product.id, pillar]);
+
+  // For celebrate pillar: fetch breed-specific soul made products (bandanas, mugs, etc.)
+  React.useEffect(() => {
+    if (pillar !== 'celebrate') return;
+    const pet = effectiveSelectedPet;
+    if (!pet?.breed) return;
+    const breedKey = (pet.breed || '').toLowerCase().replace(/\s+/g, '_').replace(/[()]/g, '');
+    const fetchBreedSoul = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=8`);
+        if (res.ok) {
+          const data = await res.json();
+          const prods = (data.products || []).filter(p =>
+            p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
+          );
+          setCelebrateSoulProducts(prods.slice(0, 4));
+        }
+      } catch (e) { /* silent */ }
+    };
+    fetchBreedSoul();
+  }, [pillar, effectiveSelectedPet?.breed]);
 
   // Fetch bundle products (cakes and toys) for hamper products
   React.useEffect(() => {
@@ -1227,14 +1251,18 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   };
 
   const handleAddToCart = async () => {
-    // Bug fix: Block checkout if product requires a date and none is selected
-    if (requiresDate && !cartInput.date) {
-      setDateError(true);
-      // Scroll calendar into view / open it
-      setCalendarOpen(true);
-      return; // Hard stop — no order placed without date
+    // For cake/celebration products: name, age and date are all required
+    const isCelebrationProduct = requiresDate || ['cakes','hampers','pupcakes','dognuts'].some(c => (product.category||'').toLowerCase().includes(c));
+    if (isCelebrationProduct) {
+      const missingName = !cartInput.petName?.trim();
+      const missingAge  = !cartInput.age?.trim();
+      const missingDate = !cartInput.date;
+      setNameError(missingName);
+      setAgeError(missingAge);
+      setDateError(missingDate);
+      if (missingDate) setCalendarOpen(true);
+      if (missingName || missingAge || missingDate) return;
     }
-    setDateError(false);
 
     // Build variant string from selected options
     const variantDescription = Object.entries(selectedOptions)
@@ -1657,11 +1685,16 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               {/* Manual input - show if no pets or user selected manual */}
               {(!user || userPets.length === 0 || selectedPetId === 'manual' || selectedPetId === '') && (
                 <Input 
-                  placeholder="Pet's Name (for cake)" 
+                  placeholder="Pet's Name (for cake) *" 
                   value={cartInput.petName}
-                  onChange={(e) => setCartInput({...cartInput, petName: e.target.value})}
-                  className="text-sm"
+                  onChange={(e) => { setCartInput({...cartInput, petName: e.target.value}); setNameError(false); }}
+                  className={`text-sm ${nameError ? 'border-red-400 border-2' : ''}`}
                 />
+              )}
+              {nameError && (
+                <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
+                  <span>⚠</span> Pet name is required
+                </p>
               )}
               
               {/* Show selected pet info */}
@@ -1673,14 +1706,19 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                 </div>
               )}
               
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col gap-2">
                 <Input 
-                  placeholder="Pet's Age" 
+                  placeholder="Pet's Age *" 
                   value={cartInput.age}
-                  onChange={(e) => setCartInput({...cartInput, age: e.target.value})}
-                  className="text-sm"
-                  disabled={selectedPetId && selectedPetId !== 'manual' && cartInput.age}
+                  onChange={(e) => { setCartInput({...cartInput, age: e.target.value}); setAgeError(false); }}
+                  className={`text-sm ${ageError ? 'border-red-400 border-2' : ''}`}
+                  disabled={selectedPetId && selectedPetId !== 'manual' && !!cartInput.age}
                 />
+                {ageError && (
+                  <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
+                    <span>⚠</span> Pet's age is required
+                  </p>
+                )}
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                   <PopoverTrigger asChild>
                     <Button 
@@ -1708,31 +1746,19 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                       onSelect={(date) => {
                         setCartInput({...cartInput, date});
                         setCalendarOpen(false);
-                        setDateError(false); // Clear error when date is selected
+                        setDateError(false);
                       }}
                       disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
+                {dateError && (
+                  <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
+                    <span>⚠</span> Please select a delivery date before proceeding
+                  </p>
+                )}
               </div>
-              {/* Bug fix: Date required error message */}
-              {dateError && (
-                <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
-                  <span>⚠</span> Please select a delivery date before proceeding
-                </p>
-              )}
-              <select 
-                className="w-full px-3 py-2 border rounded-lg text-sm"
-                value={cartInput.time}
-                onChange={(e) => setCartInput({...cartInput, time: e.target.value})}
-              >
-                <option value="">Select Pick Up | Delivery Time</option>
-                <option value="10am-1pm">10 AM - 1 PM</option>
-                <option value="1pm-4pm">1 PM - 4 PM</option>
-                <option value="4pm-7pm">4 PM - 7 PM</option>
-                <option value="7pm-9pm">7 PM - 9 PM</option>
-              </select>
             </div>
             )}
 
@@ -2035,42 +2061,55 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
         </div>
 
-        {relatedProducts.length > 0 && (
+        {/* Complete the Celebration — breed soul made products take priority over generic related */}
+        {(celebrateSoulProducts.length > 0 || relatedProducts.length > 0) && (
           <div className="border-t bg-gradient-to-r from-purple-50 to-pink-50 p-4">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-5 h-5 text-purple-600" />
               <h3 className="font-bold text-gray-900">{PILLAR_CROSS_SELL_TITLES[pillar] || PILLAR_CROSS_SELL_TITLES.default}</h3>
+              {celebrateSoulProducts.length > 0 && effectiveSelectedPet?.breed && (
+                <span className="text-xs rounded-full px-2 py-0.5 font-bold text-white"
+                  style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
+                  Made for {effectiveSelectedPet.name || effectiveSelectedPet.breed}
+                </span>
+              )}
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {relatedProducts.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="aspect-square rounded-md overflow-hidden mb-2">
-                    <img 
-                      src={item.image} 
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
+              {(celebrateSoulProducts.length > 0 ? celebrateSoulProducts : relatedProducts).map((item, idx) => {
+                const img = item.mockup_url || item.cloudinary_url || item.image_url || item.image;
+                const name = item.product_name || item.name;
+                const price = item.price || item.minPrice || 0;
+                return (
+                  <div 
+                    key={item.id || idx} 
+                    className="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="aspect-square rounded-md overflow-hidden mb-2">
+                      <img 
+                        src={img} 
+                        alt={name}
+                        className="w-full h-full object-cover"
+                        onError={e => { e.target.style.display='none'; }}
+                      />
+                    </div>
+                    <p className="text-xs font-medium text-gray-900 line-clamp-2">{name}</p>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs font-bold text-purple-600">
+                        {price > 0 ? `₹${price}` : 'Custom'}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0 hover:bg-purple-100"
+                        onClick={() => handleQuickAdd(celebrateSoulProducts.length > 0 ? { ...item, name, price } : item)}
+                        data-testid={`quick-add-${item.id || idx}`}
+                      >
+                        <Plus className="w-4 h-4 text-purple-600" />
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-xs font-medium text-gray-900 line-clamp-1">{item.name}</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-xs font-bold text-purple-600">
-                      ₹{item.minPrice || item.price || 0}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 w-6 p-0 hover:bg-purple-100"
-                      onClick={() => handleQuickAdd(item)}
-                      data-testid={`quick-add-${item.id}`}
-                    >
-                      <Plus className="w-4 h-4 text-purple-600" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
