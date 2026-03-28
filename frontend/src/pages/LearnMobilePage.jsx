@@ -28,6 +28,7 @@ import { getLearnDims, MiraPicksSection } from './LearnSoulPage';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const LEARN_STRIP_CATS = [
   { id:"foundations", icon:"🎓", label:"Foundations",    iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
@@ -278,7 +279,8 @@ export default function LearnMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeDim, setActiveDim] = useState(LEARN_DIMS[0].id);
-  const [mainTab, setMainTab] = useState('learn'); // 'learn' | 'nearme'
+  const [mainTab, setMainTab] = useState('learn');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false); // 'learn' | 'nearme'
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
@@ -305,6 +307,13 @@ export default function LearnMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🎓</div><div>Loading learn…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
@@ -376,6 +385,17 @@ export default function LearnMobilePage() {
         {/* Services Tab */}
         {mainTab === 'services' && (
           <div style={{ padding:'16px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#0F0A23', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Training, behaviour consultations, breed education — arranged personally for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="learn-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(139,92,246,0.3)', background:'linear-gradient(135deg,#0F0A23,#2D1B69)', color:'#A78BFA', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <PillarServiceSection
               pillar="learn"
               pet={currentPet}

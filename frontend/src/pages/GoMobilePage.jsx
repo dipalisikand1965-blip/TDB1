@@ -33,6 +33,7 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import NearMeConciergeModal from '../components/common/NearMeConciergeModal';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const G = {
   teal:'#1ABC9C', mid:'#0E8A70', deep:'#06503F', light:'#A7F3D0',
@@ -87,6 +88,7 @@ export default function GoMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('go');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState('products');
   const [subCat, setSubCat] = useState('All');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -336,7 +338,17 @@ export default function GoMobilePage() {
         {/* TAB 3: Book a Service */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
-            {/* ── Go, Personally — 8 service tiles ── */}
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#03140E', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Tell us exactly what {petName} needs. Our Concierge® team arranges every detail of your journey.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="go-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'none', background:'linear-gradient(135deg,#03211A,#1ABC9C33)', color:'#1ABC9C', fontSize:15, fontWeight:700, cursor:'pointer', borderWidth:1, borderStyle:'solid', borderColor:'rgba(26,188,156,0.3)' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <div style={{ marginBottom:28 }}>
               <div style={{ fontSize:20, fontWeight:800, color:G.darkText, fontFamily:'Georgia,serif', marginBottom:4 }}>Go, Personally</div>
               <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>
@@ -404,6 +416,13 @@ export default function GoMobilePage() {
         pet={currentPet}
         pillar="go"
         token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
       />
     </PillarPageLayout>
   );
