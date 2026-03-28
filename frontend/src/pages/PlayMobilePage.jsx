@@ -177,7 +177,7 @@ export default function PlayMobilePage() {
           ].map(tab => (
             <button key={tab.id} className={`play-tab${activeTab===tab.id?' active':''}`}
               data-testid={`play-tab-${tab.id}`}
-              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
+              onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
             </button>
           ))}
