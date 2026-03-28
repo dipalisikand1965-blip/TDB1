@@ -35,6 +35,7 @@ import ServiceBookingModal, { guessServiceType } from '../components/ServiceBook
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
 import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -169,6 +170,9 @@ export default function CareMobilePage() {
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Care & Wellness for {petName}</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Grooming, health, dental, coat — all personalised.</div>
         </div>
+
+        {/* First Time Pawrent — emotional centrepiece */}
+        {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#40916C" /></div>}
 
         {/* ── CareCategoryStrip — EXACT DESKTOP COMPONENT ── */}
         {/* This is Pic 3 — 9 rounded icon squares, each opens CareContentModal */}
