@@ -1202,16 +1202,22 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
 
 @service_desk_router.get("/ticket/{ticket_id}")
 async def get_ticket(ticket_id: str):
-    """Get a ticket by ID with full conversation history."""
+    """Get a ticket by ID with full conversation history. Checks all collections."""
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
     
-    ticket = await db.mira_conversations.find_one(
-        {"ticket_id": ticket_id},
-        {"_id": 0}
-    )
+    # Check mira_conversations first (concierge/soul-made tickets)
+    ticket = await db.mira_conversations.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
+    # Fall back to service_desk_tickets (shop orders, admin-created tickets)
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    # Fall back to mira_tickets
+    if not ticket:
+        ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+
     if not ticket:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
     
