@@ -29,6 +29,23 @@ html {
     background: linear-gradient(135deg, #5a1b68, #d12480, #e6cf00);
 }
 
+/* Global no-scrollbar utility — works on both desktop and mobile */
+.no-sb {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-sb::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}
+
+/* Hide scrollbars in modal/overlay panels (GuidedPaths, profile drawers) */
+[style*="overflow-y: auto"]::-webkit-scrollbar,
+[style*="overflow-y:auto"]::-webkit-scrollbar {
+  width: 0 !important;
+  display: none !important;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {

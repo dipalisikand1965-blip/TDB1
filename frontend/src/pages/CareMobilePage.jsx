@@ -174,17 +174,6 @@ export default function CareMobilePage() {
         {/* First Time Pawrent — emotional centrepiece */}
         {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#40916C" /></div>}
 
-        {/* ── CareCategoryStrip — EXACT DESKTOP COMPONENT ── */}
-        {/* This is Pic 3 — 9 rounded icon squares, each opens CareContentModal */}
-        {currentPet && (
-          <CareCategoryStrip
-            pet={currentPet}
-            onDimSelect={() => {}}
-            activeDim={null}
-            onSoulMade={() => setSoulMadeOpen(true)}
-          />
-        )}
-
         {/* ── Tab Bar ── */}
         <div className="ios-tab-bar" style={{ borderColor:G.greenBorder }}>
           {[
@@ -205,6 +194,16 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 1: Care ══════════ */}
         {activeTab === 'care' && currentPet && (
           <div style={{ padding:'16px' }}>
+
+            {/* CareCategoryStrip — inside Care tab (moved from above tab bar) */}
+            <div style={{ margin:'0 -16px 8px' }}>
+              <CareCategoryStrip
+                pet={currentPet}
+                onDimSelect={() => {}}
+                activeDim={null}
+                onSoulMade={() => setSoulMadeOpen(true)}
+              />
+            </div>
 
             {/* WellnessProfile — EXACT DESKTOP COMPONENT */}
             <WellnessProfile pet={currentPet} token={token} />

@@ -184,16 +184,6 @@ export default function PlayMobilePage() {
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Toys, enrichment, playgroups, dog walkers</div>
         </div>
 
-        {/* PlayCategoryStrip — immediately after hero, same as Care */}
-        {currentPet && (
-          <PlayCategoryStrip
-            pet={currentPet}
-            openDim={modalCategory}
-            onSelect={id => { vibe(); setModalCategory(id); setActiveTab('play'); }}
-            onMiraPicks={() => { vibe(); setModalCategory('miras-picks'); setActiveTab('play'); }}
-          />
-        )}
-
         {/* Tab Bar */}
         <div className="ios-tab-bar">
           {[
@@ -214,6 +204,16 @@ export default function PlayMobilePage() {
         {/* TAB 1: Play & Products */}
         {activeTab === 'play' && (
           <div>
+            {/* PlayCategoryStrip — inside Play tab (moved from above tab bar) */}
+            {currentPet && (
+              <PlayCategoryStrip
+                pet={currentPet}
+                openDim={modalCategory}
+                onSelect={id => { vibe(); setModalCategory(id); }}
+                onMiraPicks={() => { vibe(); setModalCategory('miras-picks'); }}
+              />
+            )}
+
             {/* Soul Profile + CTA — inside tab, same as Care */}
             {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
             {currentPet && (
