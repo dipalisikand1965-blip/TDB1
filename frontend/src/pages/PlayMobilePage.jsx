@@ -304,6 +304,20 @@ export default function PlayMobilePage() {
 
         {/* TAB 2: Services */}
         {activeTab === 'services' && (
+          <>
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
           <div style={{ padding:'16px' }}>
             {/* ── Bespoke Concierge Builder CTA ── */}
             <div style={{ background:'#0D0500', borderRadius:20, padding:16, marginBottom:20 }}>
@@ -323,6 +337,7 @@ export default function PlayMobilePage() {
               <PlayConciergeSection pet={currentPet} />
             </div>
           </div>
+          </>
         )}
 
         {/* TAB 3: Find Play */}
