@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 21 — ConciergeRequestBuilder mobile rollout + hero rewrites)
+## Last Updated: 2026-03-28 (Session 22 — Desktop/Mobile Parity Sprint + Bug Fixes)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -463,3 +463,24 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 3. ✅ **GoMobilePage.jsx** — Pet selector buttons aligned to match all other pillars: `flexWrap:'wrap'`, `padding:'6px 16px'`, `fontSize:13`, removed `maxWidth:'55%'`. Also removed allergy tags from hero.
 4. ✅ **ServicesMobilePage.jsx** — Hero aligned: replaced pet-avatar + text flex layout with standard two-line subtitle text (matches all other pillars).
 5. ✅ **ServicesMobilePage.jsx** — Bottom "Book via Concierge® →" CTA now calls `setSvcBooking({ isOpen:true })` opening the full 4-step ServiceBookingModal (was calling `request()` which showed a toast instead).
+
+### SESSION 22 — (2026-03-28) Parity Sprint + Bug Fixes
+
+**Bugs Fixed:**
+1. ✅ **Double navigation rows** — CategoryStrips (DineCategoryStrip, CareCategoryStrip, GoCategoryStrip, PlayCategoryStrip) were rendering ABOVE the ios-tab-bar. Moved all of them INSIDE their respective first tab content (Dine/Care/Go/Play tab). Only one row of navigation tabs now shows at the top.
+2. ✅ **PillarSoulProfile drawer going under navbar** — Root cause: App's `overflow-x: hidden` wrapper creates CSS containment that clips `position: fixed` z-index on iOS Safari. Fix: Profile modal now uses `ReactDOM.createPortal` to render directly in `document.body` with zIndex: 100000 + frosted glass backdrop. Bypasses all ancestor stacking contexts.
+3. ✅ **ios-tab-bar top changed from 56px to 0** — Tab bar now sticks at viewport top. Eliminates profile card going under header issue.
+4. ✅ **Desktop scrollbars in modals** — Added global `.no-sb` CSS rules to `App.css` (was only in mobile-design-system.css). Added `[style*="overflow-y: auto"]` webkit scrollbar hide rule. Added `className="no-sb"` to GuidedCarePaths (both components/ and pages/ versions).
+
+**Desktop Parity Features Added:**
+5. ✅ **Services tab standardisation** — All desktop soul pages now use `🐕 Services` label:
+   - CareSoulPage: ✂️ Care Services → 🐕 Services
+   - GoSoulPage: 🗺️ Book a Service → 🐕 Services
+   - DineSoulPageDesktopLegacy: Added 3rd tab (🐕 Services), DineConciergeSection moved there
+   - LearnSoulPage: 📋 Book / 📋 Book a Session → 🐕 Services
+   - PlaySoulPage: 💪 Book a Service → 🐕 Services
+   - EmergencySoulPage: 📋 Book Help → 🐕 Services
+   - PaperworkSoulPage: 📋 Services → 🐕 Services
+6. ✅ **Adopt sectioned products on desktop (AdoptSoulPage)** — Added `rawProducts` state, `applyMiraFilter` import, `useMemo` for `adoptSections` (Breed Essentials, Arrival Essentials, Home Readiness, Enrichment & Bonding). Sectioned product display added to adopt tab below MiraPicksSection.
+
+**Test Results (iteration_239.json):** 17/17 tests passing (100%)
