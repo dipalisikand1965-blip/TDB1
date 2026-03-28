@@ -854,6 +854,16 @@ async def append_message(request: AppendMessageRequest):
         {"ticket_id": request.ticket_id},
         mira_tickets_ops
     )
+
+    # ── CRITICAL: Also sync to service_desk_tickets (admin inbox) ──────────
+    # Without this, Mira widget conversations are invisible in the Service Desk
+    await db.service_desk_tickets.update_one(
+        {"ticket_id": request.ticket_id},
+        {
+            "$push": {"conversation": message_entry},
+            "$set": {"updated_at": now.isoformat()}
+        }
+    )
     
     if result.matched_count == 0 and mira_tickets_result.matched_count == 0:
         raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
