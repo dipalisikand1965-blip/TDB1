@@ -71,6 +71,7 @@ const BREED_SYNONYMS = {
   schnoodle:        ['schnoodle', 'shnoodle'],
   saint_bernard:    ['saint bernard', 'st bernard', 'st. bernard', 'st_bernard'],
   jack_russell:     ['jack russell', 'jack russell terrier', 'jack_russell'],
+  alaskan_malamute: ['alaskan malamute', 'malamute', 'alaskan_malamute'],
 };
 
 // Breeds with no product catalog match → treat as universal (show for all pets)
@@ -561,6 +562,7 @@ export const KNOWN_BREEDS = [
   'saint bernard','st bernard','jack russell',
   // Universal-fallback breeds (no dedicated catalog but valid breed names)
   'akita','american bully','australian shepherd',
+  'alaskan malamute','malamute',
   'basenji','basset hound','bichon frise','dalmatian',
   'great dane','greyhound','maltipoo','mastiff','pekingese',
   'samoyed','springer spaniel','vizsla','weimaraner',
