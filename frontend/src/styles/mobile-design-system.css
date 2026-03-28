@@ -263,13 +263,11 @@
   }
 }
 
-/* ========== HIDE SCROLLBARS GLOBALLY ON MOBILE ========== */
-@media (max-width: 768px) {
-  * {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  *::-webkit-scrollbar {
-    display: none;
-  }
+/* ========== HIDE SCROLLBARS GLOBALLY (all viewports) ========== */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
 }
