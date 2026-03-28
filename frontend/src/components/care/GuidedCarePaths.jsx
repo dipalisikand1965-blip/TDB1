@@ -705,6 +705,7 @@ function ModalShell({ onClose, children, noPadding }) {
       {/* Modal content — sibling at higher z-index, centered independently */}
       <div
         onClick={e => e.stopPropagation()}
+        className="no-sb"
         style={{
           position:"fixed", zIndex:10000,
           top:"50%", left:"50%", transform:"translate(-50%,-50%)",
