@@ -1,6 +1,6 @@
 /**
  * FarewellMobilePage.jsx — /farewell (mobile)
- * 3-tab layout: Legacy & Memorial | Get Support | Find Care
+ * 3-tab layout: Memorial & Grief | Get Support | Find Care
  * Colour: Deep Midnight #1A1A2E + Soft Indigo #6366F1
  * The most sacred pillar. For Mystique, and every beloved dog.
  */
@@ -65,7 +65,7 @@ const FAREWELL_SERVICES = [
 ];
 
 
-const PROD_TABS = ["Memorial & Legacy", "Grief Support", "Final Care"];
+const PROD_TABS = ["Memorial & Grief", "Keepsakes", "Final Care"];
 
 export default function FarewellMobilePage() {
   const { token } = useAuth();
@@ -155,8 +155,8 @@ export default function FarewellMobilePage() {
       })
     : products.filter(p => {
         const n = (p.name || "").toLowerCase();
-        if (prodTab === "Memorial & Legacy") return n.includes("urn") || n.includes("memorial") || n.includes("paw") || n.includes("print") || n.includes("portrait") || n.includes("memory") || n.includes("tribute") || products.indexOf(p) < 8;
-        if (prodTab === "Grief Support") return n.includes("grief") || n.includes("book") || n.includes("journal") || n.includes("comfort") || products.indexOf(p) < 8;
+        if (prodTab === "Memorial & Grief") return n.includes("urn") || n.includes("memorial") || n.includes("paw") || n.includes("print") || n.includes("portrait") || n.includes("memory") || n.includes("tribute") || products.indexOf(p) < 8;
+        if (prodTab === "Keepsakes") return n.includes("grief") || n.includes("book") || n.includes("journal") || n.includes("comfort") || n.includes("frame") || n.includes("ornament") || products.indexOf(p) < 8;
         return true;
       });
 
@@ -199,8 +199,8 @@ export default function FarewellMobilePage() {
           activeId={null}
           onSelect={id => {
             vibe();
-            if (id === 'memorial' || id === 'tribute') { setActiveTab('farewell'); setProdTab('Memorial & Legacy'); }
-            else if (id === 'grief') { setActiveTab('farewell'); setProdTab('Grief Support'); }
+            if (id === 'memorial' || id === 'tribute') { setActiveTab('farewell'); setProdTab('Memorial & Grief'); }
+            else if (id === 'grief') { setActiveTab('farewell'); setProdTab('Keepsakes'); }
             else if (id === 'eol' || id === 'cremation' || id === 'ceremony' || id === 'support') { setActiveTab('services'); }
             else setActiveTab('farewell');
           }}
@@ -224,7 +224,7 @@ export default function FarewellMobilePage() {
           ))}
         </div>
 
-        {/* TAB 1: Legacy & Memorial */}
+        {/* TAB 1: Memorial & Grief */}
         {activeTab === 'farewell' && (
           <div>
             {/* Mode Toggle — While here vs When the time comes */}
@@ -249,10 +249,10 @@ export default function FarewellMobilePage() {
             {currentPet && (
               <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(129,140,248,0.14),rgba(129,140,248,0.20))', border:'1px solid rgba(129,140,248,0.35)', borderRadius:18, padding:'16px' }}>
                 <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
-                  How would <span style={{ color:'#4F46E5' }}>{petName}</span> be remembered?
+                  Honouring <span style={{ color:'#4F46E5' }}>{petName}</span> — every memory held gently.
                 </div>
                 <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-                  Tributes, keepsakes and celebrations of life — crafted with love for {petName}.
+                  Urns, paw prints, memorial portraits and keepsakes — crafted with love, whenever you're ready.
                 </div>
               </div>
             )}
@@ -263,7 +263,7 @@ export default function FarewellMobilePage() {
               </div>
               {farewellMode === 'here' ? (
                 <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
-                  "Every moment with {petName} is a gift. Let's capture memories, create tributes, and celebrate everything {petName} means to you — right now, while they're here."
+                  "Every day with {petName} is a gift. When you're ready, we'll help you capture their memory — in paw prints, portraits, and pieces that last forever."
                 </div>
               ) : (
                 <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
@@ -330,12 +330,12 @@ export default function FarewellMobilePage() {
           {/* Mode-aware services intro */}
           <div style={{ padding:'16px 16px 8px' }}>
             <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:4 }}>
-              {farewellMode === 'here' ? `Celebrating ${petName}'s life today` : `Gentle support, whenever you're ready`}
+              {farewellMode === 'here' ? `Honouring ${petName}'s life, gently` : `Gentle support, whenever you're ready`}
             </div>
             <div style={{ fontSize:13, color:G.mutedText }}>
               {farewellMode === 'here'
-                ? 'Memories, tributes and soul-made keepsakes — while every moment is still happening.'
-                : 'Everything arranged with care — euthanasia guidance, cremation, ceremony, grief support.'}
+                ? 'Paw prints, memory boxes and keepsakes — held with care, for whenever you need them.'
+                : 'Everything arranged with compassion — euthanasia guidance, cremation, ceremony, grief support.'}
             </div>
           </div>
 
