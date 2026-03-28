@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 24 — Scrollbar Polish + Emergency Red + Breed Chip Slider)
+## Last Updated: 2026-03-28 (Session 25 — BirthdayBox scrollbar, Mira Picks gold cards, Modal scrollbars sweep)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---

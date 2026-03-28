@@ -530,6 +530,8 @@ function ModalShell({ onClose, children, noPadding }) {
           width:"min(720px,100%)",
           maxHeight:"90vh",
           overflowY:"auto",
+          scrollbarWidth:"none",
+          msOverflowStyle:"none",
           boxShadow:"0 24px 80px rgba(0,0,0,0.20)",
           padding: noPadding ? 0 : "28px 28px 24px",
           border:`2px solid #F0E8E0`,

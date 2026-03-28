@@ -153,6 +153,8 @@ const ProductDetailModal = ({
           maxHeight: isMobile ? '92vh' : '90vh',
           borderRadius: isMobile ? '24px 24px 0 0' : 24,
           overflowY: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}
       >
         {/* Drag handle (mobile) */}
@@ -379,6 +381,7 @@ const ProductDetailModal = ({
              data-testid="custom-concierge-modal-overlay">
           <div style={{ background:"#fff", borderRadius:20, padding:32,
                         maxWidth:480, width:"100%", maxHeight:"90vh", overflowY:"auto",
+                        scrollbarWidth:"none", msOverflowStyle:"none",
                         position:"relative", boxShadow:"0 24px 64px rgba(0,0,0,0.20)" }}
                onClick={e => e.stopPropagation()}>
 

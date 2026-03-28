@@ -300,7 +300,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
         onClick={e => e.stopPropagation()}
         style={{
           width:'100%', maxWidth:'min(760px, 98vw)',
-          maxHeight:'92vh', overflowY:'auto',
+          maxHeight:'92vh', overflowY:'auto', scrollbarWidth:'none', msOverflowStyle:'none',
           background:'#0F0A1E',
           borderRadius:'24px',
           fontFamily:"'DM Sans',sans-serif",
