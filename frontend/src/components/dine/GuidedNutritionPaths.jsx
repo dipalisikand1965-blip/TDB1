@@ -516,7 +516,7 @@ function ModalShell({ onClose, children, noPadding }) {
     <div
       style={{
         position:"fixed", inset:0, zIndex:10002,
-        background:"rgba(0,0,0,0.78)",
+        background:"rgba(0,0,0,0.65)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)",
         display:"flex", alignItems:"center",
         justifyContent:"center", padding:20,
       }}
