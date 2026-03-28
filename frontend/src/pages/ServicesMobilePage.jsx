@@ -14,6 +14,21 @@ import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import '../styles/mobile-design-system.css';
+
+const SVC_STRIP_CATS = [
+  { id:"pamper",    icon:"✨", label:"Pamper",       iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
+  { id:"health",    icon:"🏥", label:"Health & Vet", iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
+  { id:"learn",     icon:"🎓", label:"Train",        iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+  { id:"celebrate", icon:"🎉", label:"Celebrate",    iconBg:"linear-gradient(135deg,#FDF2F8,#FBCFE8)" },
+  { id:"fitness",   icon:"🏃", label:"Fitness",      iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
+  { id:"travel",    icon:"✈️",  label:"Travel",       iconBg:"linear-gradient(135deg,#DCFCE7,#BBF7D0)" },
+  { id:"life",      icon:"🌷", label:"Life Events",  iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
+];
 
 const G = {
   navy:'#0F1A3D', navyL:'#2E4DA6', navyXL:'#5B7FD4',
@@ -149,9 +164,6 @@ function ServiceGroupCard({ group, pet, token, onBook }) {
   );
 }
 
-import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
-import '../styles/mobile-design-system.css';
-
 export default function ServicesMobilePage() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -162,6 +174,7 @@ export default function ServicesMobilePage() {
   const [loading, setLoading] = useState(true);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
   const [selectedSvc, setSelectedSvc] = useState(null);
+  const [showSvcPlan, setShowSvcPlan] = useState(false);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -236,9 +249,35 @@ export default function ServicesMobilePage() {
           </div>
         </div>
 
+        {/* Services Category Strip — always visible above content */}
+        <PillarCategoryStrip
+          categories={SVC_STRIP_CATS}
+          activeId={null}
+          onSelect={id => {
+            vibe();
+            // Expand corresponding service group
+            const el = document.querySelector(`[data-testid="service-group-${id}"] button`);
+            if (el) { el.click(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+          }}
+          accentColor={G.navyL}
+        />
+
         <div style={{ padding:'0 16px 8px' }}>
           <PillarSoulProfile pet={currentPet} pillar="services" token={token} />
         </div>
+
+        {/* Soul Pillar CTA */}
+        <div style={{ margin:'0 16px 12px', background:'linear-gradient(135deg,rgba(91,127,212,0.08),rgba(91,127,212,0.14))', border:'1px solid rgba(91,127,212,0.25)', borderRadius:18, padding:'16px' }}>
+          <div style={{ fontSize:18, fontWeight:700, color:G.dark, lineHeight:1.25, marginBottom:4 }}>
+            What would <span style={{ color:G.navyL }}>{petName}</span> need?
+          </div>
+          <div style={{ fontSize:13, color:G.taupe, lineHeight:1.5 }}>
+            Every service personally arranged by Concierge®. Matched to {petName}'s soul profile and health needs.
+          </div>
+        </div>
+
+        {/* Pawrent Journey First Steps */}
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="services" /></div>}
 
         {/* Mira Bar */}
         <div style={{ margin:'0 16px 20px', background:G.dark, borderRadius:20, padding:16 }}>
@@ -253,15 +292,6 @@ export default function ServicesMobilePage() {
 
         {/* Service Group Cards */}
         <div style={{ padding:'0 16px 8px' }}>
-          {/* Soul Pillar CTA — What would Mojo need? */}
-          <div style={{ background:'linear-gradient(135deg,rgba(91,127,212,0.08),rgba(91,127,212,0.14))', border:'1px solid rgba(91,127,212,0.25)', borderRadius:18, padding:'18px 16px', marginBottom:20 }}>
-            <div style={{ fontSize:20, fontWeight:700, color:G.dark, lineHeight:1.25, marginBottom:5 }}>
-              What would <span style={{ color:G.navyL }}>{petName}</span> need?
-            </div>
-            <div style={{ fontSize:13, color:G.taupe, lineHeight:1.5 }}>
-              Every service personally arranged by Concierge®. Matched to {petName}'s soul profile and health needs.
-            </div>
-          </div>
           <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Concierge® Services for {petName}</div>
           <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>Mira's handpicked experts. One message and it's arranged.</div>
           {SERVICE_GROUPS.map(group => (
@@ -297,6 +327,13 @@ export default function ServicesMobilePage() {
         onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
         serviceType={svcBooking.serviceType}
         onBookingComplete={() => { setSvcBooking(p => ({ ...p, isOpen: false })); }}
+      />
+      <MiraPlanModal
+        isOpen={showSvcPlan}
+        onClose={() => setShowSvcPlan(false)}
+        pet={currentPet}
+        pillar="services"
+        token={token}
       />
     </PillarPageLayout>
   );
