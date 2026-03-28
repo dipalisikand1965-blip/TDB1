@@ -581,61 +581,66 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             </p>
           )}
           
-          {/* ✦ MIRA EXPLAINS WHY — expandable soul-profile reasoning */}
-          {product.mira_hint && (
-            <div onClick={(e) => e.stopPropagation()} style={{ marginTop:4 }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setMiraExpanded(x => !x); }}
-                data-testid={`mira-explains-${product.id}`}
-                style={{
-                  display:'flex', alignItems:'center', gap:5,
-                  background: miraExpanded ? 'rgba(155,89,182,0.12)' : 'rgba(155,89,182,0.07)',
-                  border: '1px solid rgba(155,89,182,0.22)',
-                  borderRadius: miraExpanded ? '8px 8px 0 0' : 8,
-                  cursor:'pointer', padding:'5px 8px', width:'100%', textAlign:'left',
-                  transition:'all 0.18s ease',
-                }}
-              >
-                <span style={{ fontSize:9, fontWeight:900, color:'#9B59B6', letterSpacing:'0.1em', lineHeight:1, flexShrink:0 }}>✦ MIRA</span>
-                <span style={{ fontSize:10, fontWeight:600, color:'#9B59B6', lineHeight:1.2, flex:1 }}>
-                  {product.mira_hint.length > 38 ? product.mira_hint.slice(0,38)+'…' : product.mira_hint}
-                </span>
-                <svg width="11" height="11" viewBox="0 0 10 10" fill="none" style={{ flexShrink:0, transition:'transform 0.2s', transform: miraExpanded ? 'rotate(180deg)' : 'none' }}>
-                  <path d="M2 3.5L5 6.5L8 3.5" stroke="#9B59B6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-              {miraExpanded && (
-                <div style={{
-                  fontSize:11, lineHeight:1.6,
-                  padding:'8px 10px 10px',
-                  background:'rgba(155,89,182,0.05)',
-                  border:'1px solid rgba(155,89,182,0.22)',
-                  borderTop:'none',
-                  borderRadius:'0 0 8px 8px',
-                  animation:'fadeIn 0.18s ease',
-                }}>
-                  <div style={{ color:'#7D3C98', fontWeight:700, fontSize:10, letterSpacing:'0.06em', marginBottom:4 }}>✦ WHY MIRA PICKED THIS</div>
-                  <div style={{ color:'#5D3A6E' }}>
-                    {product.mira_hint}
-                    {product._miraRank && product._miraRank <= 2 && (
-                      <span style={{ display:'inline-block', marginLeft:6, fontSize:9, fontWeight:800, background:'#F3E8FF', color:'#7D3C98', borderRadius:4, padding:'1px 5px' }}>
-                        #{product._miraRank} Match
-                      </span>
+          {/* ✦ MIRA EXPLAINS WHY — expandable soul-profile reasoning (always shown) */}
+          {(() => {
+            const miraText = product.mira_hint || productMiraTip || '';
+            if (!miraText) return null;
+            const previewText = miraText.replace(/^✨\s*/, '');
+            return (
+              <div onClick={(e) => e.stopPropagation()} style={{ marginTop:4 }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setMiraExpanded(x => !x); }}
+                  data-testid={`mira-explains-${product.id}`}
+                  style={{
+                    display:'flex', alignItems:'center', gap:5,
+                    background: miraExpanded ? 'rgba(155,89,182,0.12)' : 'rgba(155,89,182,0.07)',
+                    border: '1px solid rgba(155,89,182,0.22)',
+                    borderRadius: miraExpanded ? '8px 8px 0 0' : 8,
+                    cursor:'pointer', padding:'5px 8px', width:'100%', textAlign:'left',
+                    transition:'all 0.18s ease',
+                  }}
+                >
+                  <span style={{ fontSize:9, fontWeight:900, color:'#9B59B6', letterSpacing:'0.1em', lineHeight:1, flexShrink:0 }}>✦ MIRA</span>
+                  <span style={{ fontSize:10, fontWeight:600, color:'#9B59B6', lineHeight:1.2, flex:1 }}>
+                    {previewText.length > 38 ? previewText.slice(0,38)+'…' : previewText}
+                  </span>
+                  <svg width="11" height="11" viewBox="0 0 10 10" fill="none" style={{ flexShrink:0, transition:'transform 0.2s', transform: miraExpanded ? 'rotate(180deg)' : 'none' }}>
+                    <path d="M2 3.5L5 6.5L8 3.5" stroke="#9B59B6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                {miraExpanded && (
+                  <div style={{
+                    fontSize:11, lineHeight:1.6,
+                    padding:'8px 10px 10px',
+                    background:'rgba(155,89,182,0.05)',
+                    border:'1px solid rgba(155,89,182,0.22)',
+                    borderTop:'none',
+                    borderRadius:'0 0 8px 8px',
+                    animation:'fadeIn 0.18s ease',
+                  }}>
+                    <div style={{ color:'#7D3C98', fontWeight:700, fontSize:10, letterSpacing:'0.06em', marginBottom:4 }}>✦ WHY MIRA PICKED THIS</div>
+                    <div style={{ color:'#5D3A6E' }}>
+                      {miraText}
+                      {product._miraRank && product._miraRank <= 2 && (
+                        <span style={{ display:'inline-block', marginLeft:6, fontSize:9, fontWeight:800, background:'#F3E8FF', color:'#7D3C98', borderRadius:4, padding:'1px 5px' }}>
+                          #{product._miraRank} Match
+                        </span>
+                      )}
+                    </div>
+                    {product.tags && product.tags.length > 0 && (
+                      <div style={{ marginTop:5, display:'flex', flexWrap:'wrap', gap:3 }}>
+                        {product.tags.slice(0,4).map((tag,i) => (
+                          <span key={i} style={{ fontSize:9, background:'#EDE7F6', color:'#6A0DAD', borderRadius:4, padding:'2px 5px' }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  {product.tags && product.tags.length > 0 && (
-                    <div style={{ marginTop:5, display:'flex', flexWrap:'wrap', gap:3 }}>
-                      {product.tags.slice(0,4).map((tag,i) => (
-                        <span key={i} style={{ fontSize:9, background:'#EDE7F6', color:'#6A0DAD', borderRadius:4, padding:'2px 5px' }}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            );
+          })()}
           {/* CTA — opens modal; modal handles Concierge® for services */}
           <button
             onClick={(e) => { e.stopPropagation(); openDetails(); }}
