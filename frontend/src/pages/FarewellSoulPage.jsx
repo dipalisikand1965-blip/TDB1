@@ -242,7 +242,7 @@ const FarewellSoulPage = () => {
 
   const [loading,  setLoading]  = useState(true);
   const [activeTab, setActiveTab] = useState("farewell");
-  const [prodTab,  setProdTab]  = useState("Memorial & Legacy");
+  const [prodTab,  setProdTab]  = useState("memorial");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
   const [breedProds,  setBreedProds]  = useState([]);
@@ -380,9 +380,9 @@ const FarewellSoulPage = () => {
             {/* Product category tabs */}
             {(() => {
               const FAREWELL_TABS = [
-                { id:"Memorial & Legacy",   label:"🌷 Memorial",   icon:"🌷" },
-                { id:"Grief & Healing",     label:"💙 Grief",      icon:"💙" },
-                { id:"Cremation & Burial",  label:"🌿 Cremation",  icon:"🌿" },
+                { id:"memorial",   label:"🌷 Memorial",   icon:"🌷" },
+                { id:"soul_made",  label:"✨ Soul Made",   icon:"✨" },
+                { id:"all",        label:"🐾 All Items",   icon:"🐾" },
               ];
 
               // Flatten all farewell products with breed filter
@@ -391,9 +391,18 @@ const FarewellSoulPage = () => {
                 petData?.breed
               );
 
+              const nameOf = p => (p.name || '').toLowerCase();
+              const catOf  = p => (p.category || '').toLowerCase();
               const tabProds = prodTab === "breed"
                 ? breedProds.slice(0, 12)
-                : allProds.filter(p => (p.category||"") === prodTab).slice(0, 12);
+                : allProds.filter(p => {
+                    const n = nameOf(p), c = catOf(p);
+                    if (prodTab === "memorial")
+                      return c === "memorial" || c.includes("memorial") || n.includes("memorial") || n.includes("portrait") || n.includes("paw") || n.includes("frame") || n.includes("ornament") || n.includes("memory") || n.includes("urn") || n.includes("keepsake");
+                    if (prodTab === "soul_made")
+                      return c.startsWith("breed-") || n.includes("breed") || n.includes("indie") || n.includes("custom");
+                    return true; // "all"
+                  }).slice(0, 12);
 
               return (
                 <>
@@ -412,12 +421,12 @@ const FarewellSoulPage = () => {
                       <p style={{fontWeight:600,marginBottom:8}}>
                         {prodTab==="breed"
                           ? `${breed||petName}-specific farewell pieces being created`
-                          : "Memorial products being curated with love"}
+                          : "Memorial products being arranged with love"}
                       </p>
                       <p style={{fontSize:13,marginBottom:16}}>
                         {prodTab==="breed"
                           ? `We're designing farewell keepsakes just for ${breed||petName}s.`
-                          : `Mira is sourcing ${breed||petName}-specific items for this category.`}
+                          : `Mira is hand-picking the right keepsakes for ${petName}.`}
                       </p>
                       <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Ask Mira for guidance →</button>
                     </div>
