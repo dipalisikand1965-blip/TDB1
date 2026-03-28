@@ -285,44 +285,96 @@ async def create_order(order: dict):
             logger.error(f"Failed to create service desk ticket: {e}", exc_info=True)
     
 
-    # Create service desk ticket for ALL non-cake orders
+    # ── Create rich Service Desk ticket for ALL non-cake orders ─────────────
+    # Writes directly to service_desk_tickets so it appears in Admin inbox
     if not has_cake_items:
         try:
-            from ticket_auto_create import create_ticket_from_event
             customer = order.get("customer") or {}
             delivery = order.get("delivery") or {}
             pricing = order.get("pricing") or {}
-            items_summary = ", ".join([
-                f"{item.get('name','Item')} x{item.get('quantity',1)}"
-                for item in order.get("items", [])
-            ])
+            pet_info = order.get("pet") or {}
             order_id_val = order.get("order_id") or order.get("orderId") or order.get("id")
-            result = await create_ticket_from_event(
-                db=db,
-                event_type="product_order",
-                event_data={
-                    "order_id": order_id_val,
-                    "customer_name": customer.get("name") or customer.get("parentName"),
-                    "customer_email": customer.get("email"),
-                    "customer_phone": customer.get("phone") or customer.get("whatsapp"),
-                    "city": delivery.get("city"),
-                    "items": order.get("items", []),
-                    "items_summary": items_summary,
-                    "total": pricing.get("grand_total") or order.get("total"),
-                    "pillar": pillar,
-                    "delivery_date": delivery.get("date"),
-                    "delivery_address": delivery.get("address"),
-                    "special_instructions": order.get("special_instructions"),
-                    "reference_images": reference_images,
-                    "pet_name": order.get("pet", {}).get("name"),
-                    "pet_breed": order.get("pet", {}).get("breed"),
-                    "is_gift": order.get("is_gift"),
-                    "gift_message": order.get("gift_message"),
-                }
+            items_list = order.get("items", [])
+            items_summary = ", ".join([
+                f"{i.get('name','Item')} x{i.get('quantity',1)}"
+                for i in items_list
+            ])
+            items_lines = "\n".join([
+                f"  • {i.get('name','?')} x{i.get('quantity',1)} — ₹{i.get('price',0)} {('| '+i.get('size')) if i.get('size') else ''} {('| '+i.get('flavor')) if i.get('flavor') else ''}".strip()
+                for i in items_list
+            ])
+            now_iso = datetime.now(timezone.utc).isoformat()
+            sd_ticket_id = f"ORD-{order_id_val[:8].upper()}" if order_id_val else f"ORD-{uuid.uuid4().hex[:8].upper()}"
+            
+            mira_briefing = (
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                f"  🛒 SHOP ORDER — AUTO TICKET\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"🧾 Order ID: {order_id_val or 'N/A'}\n"
+                f"📦 Items:\n{items_lines}\n\n"
+                f"💰 Total: ₹{pricing.get('grand_total') or order.get('total','?')}\n"
+                f"👤 Customer: {customer.get('name','?')} | {customer.get('email','?')} | {customer.get('phone','?')}\n"
+                f"🐾 Pet: {pet_info.get('name','?')} ({pet_info.get('breed','?')})\n"
+                f"📍 Delivery: {delivery.get('address','?')}, {delivery.get('city','?')} — {delivery.get('method','delivery').upper()}\n"
+                f"📅 Delivery Date: {delivery.get('date','Not specified')}\n"
+                f"🎁 Gift: {'Yes — ' + order.get('gift_message','') if order.get('is_gift') else 'No'}\n"
+                f"📝 Instructions: {order.get('special_instructions') or 'None'}\n"
+                + (f"\n🖼 Reference Images: {len(reference_images)} attached\n" if reference_images else "")
             )
-            logger.info(f"✅ Service desk ticket created for order {order_id_val}: {result}")
+            
+            sd_ticket = {
+                "id": sd_ticket_id,
+                "ticket_id": sd_ticket_id,
+                "channel": pillar or "shop",
+                "category": pillar or "shop",
+                "request_type": "product_order",
+                "status": "open",
+                "priority": "normal",
+                "subject": f"Shop Order — {items_summary[:60]}",
+                "order_id": order_id_val,
+                "customer_name": customer.get("name"),
+                "customer_email": customer.get("email"),
+                "customer_phone": customer.get("phone"),
+                "pet_name": pet_info.get("name"),
+                "pet_breed": pet_info.get("breed"),
+                "items": items_list,
+                "items_summary": items_summary,
+                "total": pricing.get("grand_total") or order.get("total"),
+                "delivery": delivery,
+                "special_instructions": order.get("special_instructions"),
+                "reference_images": reference_images or [],
+                "is_gift": order.get("is_gift", False),
+                "gift_message": order.get("gift_message"),
+                "description": mira_briefing,
+                "conversation": [
+                    {
+                        "sender": "mira",
+                        "source": "order_briefing",
+                        "is_briefing": True,
+                        "text": mira_briefing,
+                        "timestamp": now_iso,
+                    }
+                ] + ([{
+                    "sender": "member",
+                    "source": "reference_images",
+                    "text": f"Reference images for order {order_id_val}:\n" + "\n".join([
+                        f"Photo: {img}" if isinstance(img, str) else f"Photo: {img.get('url','')}"
+                        for img in reference_images
+                    ]),
+                    "timestamp": now_iso,
+                }] if reference_images else []),
+                "messages": [],
+                "activity_log": [{"event": "order_placed", "at": now_iso}],
+                "created_at": now_iso,
+                "updated_at": now_iso,
+            }
+            await db.service_desk_tickets.insert_one(sd_ticket)
+            # Remove _id before logging
+            sd_ticket.pop("_id", None)
+            logger.info(f"✅ Rich service desk ticket {sd_ticket_id} created for order {order_id_val}")
         except Exception as e:
-            logger.error(f"Failed to create ticket for non-cake order: {e}")
+            logger.error(f"Failed to create rich ticket for order: {e}", exc_info=True)
+
 
     # Send notification
     try:

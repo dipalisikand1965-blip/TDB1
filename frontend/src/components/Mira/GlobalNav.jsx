@@ -80,7 +80,58 @@ const GlobalNav = ({
     }
   };
 
+  // ── Birthday Whisper Logic (mobile) ──────────────────────────────────────
+  const [mobileWhisperDismissed, setMobileWhisperDismissed] = useState(false);
+  const activePet = pets.find(p => p.id === activePetId) || pets[0];
+  const getMobileBirthdayWhisper = () => {
+    if (mobileWhisperDismissed || !activePet) return null;
+    const rawDate = activePet?.birthday || activePet?.birth_date || activePet?.dob || activePet?.gotcha_date;
+    if (!rawDate) return null;
+    try {
+      const now = new Date();
+      const bday = new Date(rawDate);
+      const next = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
+      if (next < now) next.setFullYear(now.getFullYear() + 1);
+      const daysUntil = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+      if (daysUntil > 7) return null;
+      const petName = activePet.name || 'Your pup';
+      const isGotcha = !!(activePet?.gotcha_date) && !activePet?.birthday && !activePet?.birth_date;
+      const label = isGotcha ? 'Gotcha Day' : 'birthday';
+      if (daysUntil === 0) return { text: `It's ${petName}'s ${label} today`, icon: '🎉' };
+      if (daysUntil === 1) return { text: `${petName}'s ${label} is tomorrow`, icon: '🎂' };
+      return { text: `${petName}'s ${label} in ${daysUntil} days`, icon: '🐾' };
+    } catch { return null; }
+  };
+  const mobileWhisper = getMobileBirthdayWhisper();
+
   return (
+    <>
+    {/* ── Mobile Birthday Whisper Bar ── */}
+    {mobileWhisper && (
+      <div
+        data-testid="mobile-birthday-whisper"
+        style={{
+          background: 'linear-gradient(90deg, #1a0a1e, #0f1a2e)',
+          borderBottom: '1px solid rgba(236,72,153,0.3)',
+          padding: '6px 14px 6px 12px',
+          display: 'flex', alignItems: 'center', gap: 8,
+          fontSize: 12,
+        }}
+      >
+        <span>{mobileWhisper.icon}</span>
+        <span style={{ flex: 1, color: '#F9A8D4', fontWeight: 600 }}>
+          {mobileWhisper.text}
+          {' — '}
+          <button
+            onClick={() => navigate('/celebrate')}
+            style={{ background:'none', border:'none', cursor:'pointer', color:'#C084FC', fontWeight:700, fontSize:12, padding:0, textDecoration:'underline', textUnderlineOffset:2 }}
+          >
+            Plan now →
+          </button>
+        </span>
+        <button onClick={() => setMobileWhisperDismissed(true)} style={{ background:'none', border:'none', cursor:'pointer', color:'#6B7280', fontSize:16, padding:'0 2px', lineHeight:1 }}>×</button>
+      </div>
+    )}
     <div className="flex items-center justify-between px-4 py-2 bg-[#0d0d1a] border-b border-gray-800/50">
       {/* Segmented Control: Dashboard | Inbox | Ask Mira */}
       <div className="flex bg-gray-800/50 rounded-full p-1">
@@ -210,6 +261,7 @@ const GlobalNav = ({
         </div>
       )}
     </div>
+    </>
   );
 };
 
