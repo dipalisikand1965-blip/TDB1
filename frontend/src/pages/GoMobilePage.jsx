@@ -254,7 +254,7 @@ export default function GoMobilePage() {
                                 ['safety','calming','carriers','feeding','health','stay'].map(dimId => {
                                   const keywords = {
                                     safety:   ['safety'],
-                                    calming:  ['calm'],
+                                    calming:  ['calm', 'anxiety', 'comfort', 'thunder', 'pheromone'],
                                     carriers: ['carrier'],
                                     feeding:  ['feed'],
                                     health:   ['health'],
