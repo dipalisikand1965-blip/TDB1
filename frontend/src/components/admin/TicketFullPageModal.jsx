@@ -235,7 +235,43 @@ const TicketFullPageModal = ({
   const subject = ticket.subject || ticket.title || 'No Subject';
   const status = ticket.status || 'open';
   const priority = ticket.priority || 'normal';
-  const messages = ticket.messages || [];
+
+  // ── Merge ALL message sources: conversation[] + thread[] + messages[] ──
+  const extractPhotoUrls = (text) => {
+    if (!text) return [];
+    return [...new Set((text.match(/https?:\/\/[^\s,)]+\.(jpg|jpeg|png|gif|webp)/gi) || []))];
+  };
+  const stripPhotoUrls = (text) => {
+    if (!text) return '';
+    return text.replace(/Photo:\s*https?:\/\/[^\s\n]+/gi, '').replace(/\bhttps?:\/\/[^\s,)]+\.(jpg|jpeg|png|gif|webp)\b/gi, '').trim();
+  };
+  const messages = [
+    ...(ticket.conversation || []).map(m => ({
+      ...m,
+      _text: m.text || m.content || m.message || '',
+      content: m.content || m.message || m.text || '',
+      sender: m.sender,
+      is_mira: m.is_briefing === true || m.sender === 'mira',
+      timestamp: m.timestamp || m.created_at,
+    })),
+    ...(ticket.thread || []).map(m => ({
+      ...m,
+      _text: m.text || m.content || m.message || '',
+      content: m.content || m.message || m.text || '',
+      timestamp: m.timestamp || m.created_at,
+    })),
+    ...(ticket.messages || []).map(m => ({
+      ...m,
+      _text: m.text || m.content || m.message || '',
+      content: m.content || m.message || m.text || '',
+    })),
+  ]
+    .filter((m, i, arr) => {
+      const key = `${m.sender}|${m.timestamp || m.created_at}`;
+      return arr.findIndex(x => `${x.sender}|${x.timestamp || x.created_at}` === key) === i;
+    })
+    .sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
+
   const customerName = memberProfile?.name || ticket.member?.name || petProfile?.parent_name || 'Customer';
   const petName = petProfile?.name || ticket.pet_info?.name;
 
@@ -626,13 +662,36 @@ const TicketFullPageModal = ({
                       const { isAgent, name } = getSenderInfo(msg);
                       const isInternalNote = msg.is_internal || msg.type === 'internal';
                       const isSystem = msg.type === 'system';
+                      const isMira = msg.is_mira;
+                      const rawText = msg._text || '';
+                      const photoUrls = extractPhotoUrls(rawText);
+                      const cleanText = stripPhotoUrls(rawText);
+                      const htmlContent = msg.content || '';
                       
                       // System messages (centered)
                       if (isSystem) {
                         return (
                           <div key={msg.id || idx} className="flex justify-center">
                             <div className="bg-gray-100 text-gray-500 text-xs px-3 py-1.5 rounded-full max-w-md text-center">
-                              {msg.content || msg.message}
+                              {htmlContent || rawText}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      // Mira AI briefing — full-width card
+                      if (isMira) {
+                        return (
+                          <div key={msg.id || idx} className="w-full" data-testid={`message-${idx}`}>
+                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                              <div className="flex items-center gap-2 text-xs font-semibold text-purple-600 mb-2">
+                                <span className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-[9px]">✨</span>
+                                Mira AI — Soul Briefing
+                                <span className="ml-auto text-gray-400 font-normal">{formatTime(msg.timestamp || msg.created_at)}</span>
+                              </div>
+                              <pre className="text-xs text-purple-900 whitespace-pre-wrap font-mono leading-relaxed bg-white/60 rounded-lg p-3 border border-purple-100 max-h-72 overflow-y-auto">
+                                {cleanText || rawText}
+                              </pre>
                             </div>
                           </div>
                         );
@@ -678,12 +737,24 @@ const TicketFullPageModal = ({
                                   : 'bg-white border border-gray-200 text-gray-800 rounded-tl-md shadow-sm'
                               }`}
                             >
-                              <div 
-                                className={`text-[14px] leading-relaxed prose prose-sm max-w-none ${isAgent && !isInternalNote ? 'prose-invert' : ''}`}
-                                dangerouslySetInnerHTML={{ 
-                                  __html: (msg.content || msg.message || '').replace(/<[^>]*>/g, '') 
-                                }}
-                              />
+                              {/* Photo URLs rendered as images */}
+                              {photoUrls.length > 0 && (
+                                <div className="mb-2 flex flex-wrap gap-2">
+                                  {photoUrls.map((url, ui) => (
+                                    <img key={ui} src={url} alt="Attached" className="w-36 h-36 rounded-lg object-cover cursor-pointer border border-white/30 shadow-sm" onClick={() => window.open(url, '_blank')} />
+                                  ))}
+                                </div>
+                              )}
+                              {htmlContent ? (
+                                <div 
+                                  className={`text-[14px] leading-relaxed prose prose-sm max-w-none ${isAgent && !isInternalNote ? 'prose-invert' : ''}`}
+                                  dangerouslySetInnerHTML={{ __html: htmlContent.replace(/<[^>]*>/g, '') }}
+                                />
+                              ) : (
+                                <p className={`text-[14px] leading-relaxed whitespace-pre-wrap ${isAgent && !isInternalNote ? 'text-white' : 'text-gray-800'}`}>
+                                  {cleanText || rawText}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>
