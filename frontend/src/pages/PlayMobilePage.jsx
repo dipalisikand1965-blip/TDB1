@@ -86,6 +86,7 @@ export default function PlayMobilePage() {
   const [activeTab, setActiveTab] = useState('play');
   const [dimTab, setDimTab] = useState('products');
   const [openDim, setOpenDim] = useState(null);
+  const [showMiraPicks, setShowMiraPicks] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
@@ -128,6 +129,17 @@ export default function PlayMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.orange} />}
 
+        {/* Mira Picks bottom-sheet — opened by PlayCategoryStrip chip */}
+        {showMiraPicks && (
+          <div onClick={() => setShowMiraPicks(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', padding:'8px 0 32px' }}>
+              <div style={{ width:36, height:4, background:'#ddd', borderRadius:2, margin:'8px auto 16px' }} />
+              <MiraPicksSection pet={currentPet} />
+              <button onClick={() => setShowMiraPicks(false)} style={{ display:'block', margin:'16px auto 0', padding:'10px 32px', borderRadius:999, border:'none', background:G.orange, color:'#fff', fontWeight:700, fontSize:14, cursor:'pointer' }}>Close</button>
+            </div>
+          </div>
+        )}
+
         {/* Hero */}
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
@@ -159,7 +171,7 @@ export default function PlayMobilePage() {
             pet={currentPet}
             openDim={openDim}
             onSelect={id => { vibe(); setOpenDim(openDim === id ? null : id); setDimTab('products'); setActiveTab('play'); }}
-            onMiraPicks={() => { vibe(); setOpenDim(openDim === 'mira' ? null : 'mira'); setActiveTab('play'); }}
+            onMiraPicks={() => { vibe(); setShowMiraPicks(true); setOpenDim(null); setActiveTab('play'); }}
           />
         )}
 
