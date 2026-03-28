@@ -110,7 +110,7 @@ function getEnergy(pet) { return pet?.doggy_soul_answers?.energy_level||null; }
 function isRescue(pet)  { return !!(pet?.doggy_soul_answers?.is_rescue||(""+pet?.origin).toLowerCase().includes("rescue")); }
 
 // ─── DIM CONFIG ──────────────────────────────────────────────
-function getLearnDims(pet) {
+export function getLearnDims(pet) {
   const health = getHealth(pet);
   const senior = isSenior(pet);
   const puppy  = isPuppy(pet);
@@ -1348,7 +1348,7 @@ function MiraLearnImagineCard({ item, pet, token }) {
   );
 }
 
-function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet }) {
   const [picks,       setPicks]       = useState([]);
   const [picksLoading,setPicksLoading]= useState(true);
   const [selectedPick,setSelectedPick]= useState(null);

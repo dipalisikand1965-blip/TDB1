@@ -24,6 +24,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import LearnNearMe from '../components/learn/LearnNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import { getLearnDims, MiraPicksSection } from './LearnSoulPage';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -294,7 +295,8 @@ export default function LearnMobilePage() {
   );
 
   const petName = currentPet?.name || 'your dog';
-  const currentDim = LEARN_DIMS.find(d => d.id === activeDim) || LEARN_DIMS[0];
+  const learnDims = getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS;
+  const currentDim = learnDims.find(d => d.id === activeDim) || learnDims[0];
 
   return (
     <PillarPageLayout pillar="learn" hideHero hideNavigation>
@@ -382,19 +384,21 @@ export default function LearnMobilePage() {
           </button>
         </div>
 
-        {/* 7 Dimension Pills */}
+        {/* 7 Dimension Pills — dynamic per pet */}
         <div style={{ padding:'16px 16px 8px' }}>
-          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10 }}>Choose a Learning Dimension</div>
+          <MiraPicksSection pet={currentPet} />
+          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10, marginTop:16 }}>Choose a Learning Dimension</div>
           <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-            {LEARN_DIMS.map(dim => (
+            {(getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS).map(dim => (
               <button key={dim.id} onClick={() => { vibe(); setActiveDim(dim.id); }}
                 data-testid={`learn-dim-${dim.id}`}
                 style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
                   padding:'10px 12px', borderRadius:16, minWidth:72,
-                  border:`2px solid ${activeDim===dim.id?dim.accent:G.border}`,
-                  background:activeDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
+                  border:`2px solid ${activeDim===dim.id?(dim.accent||G.purple):G.border}`,
+                  background:activeDim===dim.id?(dim.bg||'#EDE9FE'):'#fff', cursor:'pointer' }}>
                 <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:14, fontWeight:700, color:activeDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
+                <span style={{ fontSize:14, fontWeight:700, color:activeDim===dim.id?(dim.accent||G.purple):G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
+                {dim.badge && <span style={{ fontSize:9, fontWeight:700, color:'#fff', background:dim.badgeBg||dim.accent||G.purple, borderRadius:20, padding:'2px 6px' }}>{dim.badge}</span>}
               </button>
             ))}
           </div>
