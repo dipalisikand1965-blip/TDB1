@@ -484,7 +484,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
                 {artStyleLabel && (
                   <div style={{
                     position:'absolute', bottom:6, left:6,
-                    background:'rgba(0,0,0,0.78)', borderRadius:999,
+                    background:'rgba(0,0,0,0.65)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)', borderRadius:999,
                     padding:'3px 9px', fontSize:9, fontWeight:700,
                     color:'#fff', letterSpacing:'0.04em', pointerEvents:'none',
                   }}>
