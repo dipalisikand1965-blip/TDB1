@@ -6,6 +6,7 @@
  */
 import { tdc } from '../../utils/tdc_intent';
 import { useConcierge } from '../../hooks/useConcierge';
+import { useState, useEffect } from 'react';
 
 const SERVICES = [
   {
@@ -107,8 +108,6 @@ const G = {
 };
 
 function vibe(t = 'light') { if (navigator?.vibrate) navigator.vibrate(t === 'medium' ? [12] : [6]); }
-
-import { useState, useEffect } from 'react';
 
 export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, preselect }) {
   const [step, setStep] = useState(0); // 0=select service, 1=q1, 2=q2, 3=sending, 4=done
