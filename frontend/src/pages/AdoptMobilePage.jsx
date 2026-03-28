@@ -26,6 +26,7 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
 import '../styles/mobile-design-system.css';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
@@ -242,6 +243,9 @@ export default function AdoptMobilePage() {
 
             {/* Guided Paths */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
+
+            {/* First Time Pawrent — emotional centrepiece */}
+            {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
 
             {/* Products */}
             {products.length > 0 && (
