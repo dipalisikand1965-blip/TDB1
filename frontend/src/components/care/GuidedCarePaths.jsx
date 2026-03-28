@@ -687,7 +687,7 @@ function ModalShell({ onClose, children, noPadding }) {
   return createPortal(
     <>
       {/* Backdrop — portaled to body so no ancestor transform can contain it */}
-      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.55)" }} />
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.78)" }} />
       {/* Modal content — sibling at higher z-index, centered independently */}
       <div
         onClick={e => e.stopPropagation()}

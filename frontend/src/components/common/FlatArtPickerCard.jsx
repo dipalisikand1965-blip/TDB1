@@ -231,7 +231,7 @@ export default function FlatArtPickerCard({ product, illustrations = [], pet, pi
           />
           <div style={{
             position:'absolute', bottom:8, left:8,
-            background:'rgba(0,0,0,0.55)', borderRadius:999,
+            background:'rgba(0,0,0,0.78)', borderRadius:999,
             padding:'3px 9px', fontSize:9, fontWeight:700, color:'#fff',
           }}>
             🐾 Flat Art
