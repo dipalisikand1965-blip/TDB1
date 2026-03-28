@@ -119,11 +119,21 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
   const petName = pet?.name || 'your dog';
   const breed = (pet?.breed || '').split('(')[0].trim();
 
-  // Build allergy string from all possible soul profile fields
+  // Build allergy list from all possible soul profile storage formats
+  // Handles both array fields AND "chicken, beef allergy" descriptive strings
+  const parseAllergyString = (str) => {
+    if (!str || typeof str !== 'string') return [];
+    return str.toLowerCase().split(/[,\s&]+/)
+      .map(w => w.replace(/allergy|allergic|to|and/g, '').trim())
+      .filter(w => w.length > 2 && !['the', 'for', 'with', 'otherwise', 'healthy'].includes(w));
+  };
   const allergies = [
     ...(pet?.allergies || []),
     ...(pet?.health?.allergies || []),
     ...(pet?.dsa?.food_allergies || []),
+    // Fallback: parse health dimension description strings
+    ...parseAllergyString(pet?.health?.description),
+    ...parseAllergyString(pet?.health?.notes),
   ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
   const allergyLabel = allergies.length > 0 ? ` · allergic to ${allergies.join(', ')}` : '';
 

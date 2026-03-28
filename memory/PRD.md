@@ -453,6 +453,7 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
    - `preselect` prop — auto-jumps to a service category (used by FirstTimePawrent)
    - Soul profile pre-fill pill — shows breed + allergies in Step 0 header
    - Allergen-aware message — `allergyLabel` appended to every ticket message
+   - Added `parseAllergyString()` fallback to extract allergies from health description strings (handles "chicken, beef allergy — otherwise healthy" text format)
 3. ✅ **Adopt mobile copy rewrite** — Hero: "Every dog deserves the right home". Mira bar: "The right match between a dog and their family changes two lives forever."
 4. ✅ **Farewell toggle** — "While {name} is here" / "When the time comes" pill toggle. Changes Mira bar copy + CTA button label + Services tab intro text dynamically.
 5. ✅ **Desktop floating button cluster** — Concierge® button moved to `bottom: 96px` (stacks cleanly above Mira orb at `bottom: 24px`). Added hover micro-animation.
