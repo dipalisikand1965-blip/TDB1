@@ -222,8 +222,13 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 2. ✅ **Mira explains why expand row** — ProductCard.jsx was conditioned on `product.mira_hint` (DB field, almost never set). Changed to `product.mira_hint || productMiraTip` where productMiraTip is always computed (e.g. "✨ Makes celebrations special"). All product cards now show clickable ✦ MIRA expand button.
 3. ✅ **Cart orders in My Requests** — Added 🛍️ Orders tab to MyRequestsPage filtering by `request_type==='product_order'` or `order_id` present or `category==='shop'`. Subtitle updated to "Your concierge requests & shop orders".
 
-### P0 — Next Session
-1. GitHub merge (user requested after resolving the 3 bugs above)
+### SESSION 28.6 — (2026-03-28) Farewell Tone Rewrite
+
+1. ✅ **"Legacy & Memorial" → "Memorial & Grief"** — All 3 product sub-tabs renamed: Memorial & Grief / Keepsakes / Final Care
+2. ✅ **Mira bar "while here" rewritten** — Removed "celebrate everything {petName} means to you". Now: "Every day with {petName} is a gift. When you're ready, we'll help you capture their memory — in paw prints, portraits, and pieces that last forever."
+3. ✅ **CTA card rewritten** — Removed "celebrations of life". Now: "Honouring {petName} — every memory held gently. Urns, paw prints, memorial portraits and keepsakes."
+4. ✅ **Services tab intro** — "Celebrating {petName}'s life today" → "Honouring {petName}'s life, gently"
+5. ✅ **Keepsakes filter expanded** — Now includes frame + ornament in product matching
 2. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
 3. Generate Full Migration Package Report (no code changes, just text report)
 
