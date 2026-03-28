@@ -524,6 +524,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
       >
         <div
           onClick={e => e.stopPropagation()}
+          className="no-sb"
           style={{
             position: 'relative',
             width: '100%',
