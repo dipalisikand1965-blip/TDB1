@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-27 (Session 17 — Pet Selector Unification + DoggyBakeryCakeModal Order Form)
+## Last Updated: 2026-03-28 (Session 18 — Mobile Parity Sprint: CategoryStrips + PawrentFirstStepsTab + Section Order Fix)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -413,3 +413,34 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 
 ### SESSION 18 — Soul Chapter Score Fix
 1. ✅ **Soul Chapter Scores fixed** — `GET /pets/{pet_id}/soul` was counting keys starting with "q1/q2/q3" (always 0). Now returns `category_scores` from `calculate_pet_soul_score()`. Buddy: safety=100, personality=100, lifestyle=75, nutrition=33. Zero false zeros.
+
+
+### SESSION 19 — (2026-03-28) Mobile Parity Sprint: CategoryStrips + PawrentFirstStepsTab
+
+1. ✅ **PillarCategoryStrip created** — `/app/frontend/src/components/common/PillarCategoryStrip.jsx` — generic horizontally-scrollable icon chip strip. Props: `categories[]`, `activeId`, `onSelect(id)`, `accentColor`. All chips have `data-testid="strip-cat-{id}"`.
+
+2. ✅ **CategoryStrips added to 6 mobile pages** (was missing before this session):
+   - **Learn**: `LEARN_STRIP_CATS` (Foundations / Behaviour / Training / Tricks / Enrichment / Know Breed / Soul Learn / Bundles / Mira's Picks) → clicking chip sets `activeDim` + switches to learn tab.
+   - **Paperwork**: `PW_STRIP_CATS` (Identity / Health / Travel / Insurance / Breed Guides / Advisory / Soul Docs / Soul Made™) → clicking chip sets `activeDim`.
+   - **Emergency**: `EMERG_STRIP_CATS` (First Aid Kit / 24hr Vets / Poison / Lost Pet / Transport / First Aid Course / Safety Plan) — after urgent CTA bar.
+   - **Farewell**: `FAREWELL_STRIP_CATS` (End of Life / Support / Cremation / Memorial / Ceremony / Grief Support / Soul Made™).
+   - **Adopt**: `ADOPT_STRIP_CATS` (Am I Ready? / Ready / Find a Match / We Matched! / Coming Home / Breed Guide / Book Guidance) → chips sync with `adoptStage` state.
+   - **Services**: `SVC_STRIP_CATS` (Pamper / Health & Vet / Train / Celebrate / Fitness / Travel / Life Events).
+
+3. ✅ **Section order fixed** — PillarSoulProfile + CTA card + PawrentFirstStepsTab moved INSIDE Tab 1 content (was before tab bar) for: Learn, Paperwork, Farewell, Adopt pages. Now matches Play/Care gold standard.
+
+4. ✅ **Tab bars made sticky** — Learn and Paperwork tab bars now use `position:'sticky', top:0, zIndex:100` with border-bottom style (was pill-style, non-sticky).
+
+5. ✅ **PawrentFirstStepsTab added to Emergency, Farewell, Shop, Services** — component placed in JSX for all 4 pages.
+
+6. ✅ **FIRST_STEPS entries added** to `PawrentJourney.jsx` for 4 new pillars:
+   - `emergency`: Build First Aid Kit / Register Emergency Vet / Create Safety Plan
+   - `farewell`: End-of-Life Care Plan / Plan a Memorial / Grief Support
+   - `shop`: See Mira's Shop Picks / Explore Breed Collection
+   - `services`: Book First Groom / Book Vet Consultation
+
+7. ✅ **Shop page crash fixed** (by testing agent) — `showShopPlan` state was missing from ShopMobilePage useState declarations.
+
+8. ✅ **MiraPlanModal placement fixed** in PaperworkMobilePage — was incorrectly nested inside loading state JSX.
+
+**Test Results (iteration_237.json):** 80% → 100% after FIRST_STEPS fix. All 7 CategoryStrips render. Sticky tab bars confirmed. Soul Profile inside Tab 1 confirmed. PawrentFirstStepsTab now renders on all 11 applicable pillar pages.
