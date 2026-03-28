@@ -93,11 +93,23 @@ export default function FarewellMobilePage() {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
   }, [contextPets, currentPet, setCurrentPet]);
 
+  // Safety: stop loading after 3 seconds even if context never resolves
   useEffect(() => {
-    if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    const t = setTimeout(() => setLoading(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    // Always fetch farewell products — breed filter applied client-side after
+    const breedParam = currentPet?.breed ? `&breed=${encodeURIComponent(currentPet.breed)}` : '';
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=200${breedParam}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed), currentPet)); })
+      .then(d => {
+        if (!d?.products) return;
+        const base = excludeCakeProducts(d.products);
+        // Apply breed+Mira filtering only when a pet is selected
+        setProducts(currentPet ? applyMiraFilter(filterBreedProducts(base, currentPet.breed), currentPet) : base);
+      })
       .catch(() => {});
     // Fetch farewell services from Service Box API
     fetch(`${API_URL}/api/service-box/services?pillar=farewell&limit=20`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
