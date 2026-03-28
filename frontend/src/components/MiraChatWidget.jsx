@@ -186,7 +186,13 @@ const shouldShowProducts = (responseText) => {
 const PILLAR_PATHS = [
   '/dine', '/care', '/go', '/play', '/learn', '/celebrate-soul', '/celebrate',
   '/shop', '/services', '/paperwork', '/emergency', '/farewell', '/adopt',
-  '/cakes', '/treats', '/meals', '/breed-cakes', '/product/'
+  '/cakes', '/treats', '/meals', '/breed-cakes', '/product/',
+  // Member account & utility pages — widget lives inside these, don't show FAB
+  '/pet-home', '/my-pets', '/dashboard', '/notifications', '/profile',
+  '/my-requests', '/orders', '/rewards', '/checkout', '/tickets',
+  '/soul-builder', '/paw-points', '/documents', '/addresses', '/membership',
+  '/pet-profile', '/wrapped', '/login', '/register', '/onboarding',
+  '/mira', '/admin',
 ];
 
 const MiraChatWidget = ({ 

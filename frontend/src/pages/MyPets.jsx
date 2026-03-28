@@ -383,7 +383,29 @@ const MyPets = () => {
     }
   };
 
-  // Upload pet photo
+  // ── Client-side image compression (max 1200px, max 800KB) ────────────────
+  const compressImage = (file) => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX_DIM = 1200;
+        let { width, height } = img;
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width > height) { height = Math.round(height * MAX_DIM / width); width = MAX_DIM; }
+          else { width = Math.round(width * MAX_DIM / height); height = MAX_DIM; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => resolve(new File([blob], file.name, { type: 'image/jpeg' })), 'image/jpeg', 0.82);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Upload pet photo — compresses client-side then uploads to Cloudinary via backend
   const handlePhotoUpload = async (petId, file) => {
     if (!file) return;
     
@@ -393,38 +415,38 @@ const MyPets = () => {
       return;
     }
     
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: 'Error', description: 'Image must be less than 5MB', variant: 'destructive' });
+    // Hard limit 15MB before compression — basically any phone photo is fine
+    if (file.size > 15 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Please choose an image under 15MB', variant: 'destructive' });
       return;
     }
     
     setUploadingPhoto(petId);
     
     try {
+      // Auto-compress large images down to ≤ 800KB before uploading
+      const toUpload = file.size > 800 * 1024 ? await compressImage(file) : file;
+      
       const formData = new FormData();
-      formData.append('photo', file);
+      formData.append('photo', toUpload);
       
       const response = await fetch(`${API_URL}/api/pets/${petId}/photo`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Update pet in local state with new photo URL
         setPets(pets.map(p => p.id === petId ? { ...p, photo_url: data.photo_url } : p));
         toast({ title: 'Photo Updated!', description: `${pets.find(p => p.id === petId)?.name}'s photo has been updated` });
       } else {
-        const error = await response.json();
-        toast({ title: 'Error', description: error.detail || 'Failed to upload photo', variant: 'destructive' });
+        const error = await response.json().catch(() => ({}));
+        toast({ title: 'Upload Failed', description: error.detail || 'Please try again with a smaller image', variant: 'destructive' });
       }
     } catch (error) {
-      console.error('Failed to upload photo:', error);
-      toast({ title: 'Error', description: 'Failed to upload photo', variant: 'destructive' });
+      console.error('Photo upload error:', error);
+      toast({ title: 'Error', description: 'Failed to upload photo. Please try again.', variant: 'destructive' });
     } finally {
       setUploadingPhoto(null);
     }
