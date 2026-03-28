@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 27 — Platform audit, bell auth fix, nudge cleanup)
+## Last Updated: 2026-03-28 (Session 28 — Cart→Service Desk wiring, Mira expand row, Birthday whisper bar)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
