@@ -108,11 +108,13 @@ const NotificationBell = ({ credentials, onNavigate }) => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState('all');
 
+  // Compute auth headers at component scope so ALL functions can use them
+  const authHeaders = credentials?.username
+    ? { 'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`) }
+    : {};
+
   const fetchNotifications = useCallback(async () => {
     if (!credentials?.username || !credentials?.password) return;
-    const authHeaders = {
-      'Authorization': 'Basic ' + btoa(`${credentials.username}:${credentials.password}`)
-    };
     try {
       const res = await fetch(
         `${API_URL}/api/admin/notifications?limit=50&unread_only=${filter === 'unread'}`,
@@ -127,7 +129,7 @@ const NotificationBell = ({ credentials, onNavigate }) => {
     } catch (err) {
       console.error('Failed to fetch notifications:', err);
     }
-  }, [filter, credentials]);
+  }, [filter, credentials]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll for new notifications every 10 seconds (faster updates)
   useEffect(() => {
@@ -136,12 +138,25 @@ const NotificationBell = ({ credentials, onNavigate }) => {
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
-  // Fetch when dropdown opens
+  // Fetch when dropdown opens and auto-mark all as read after 2 seconds
   useEffect(() => {
     if (isOpen) {
       fetchNotifications();
+      // Auto-clear after 2s of viewing (UX: bell opens = admin has seen them)
+      const timer = setTimeout(async () => {
+        if (unreadCount > 0 && credentials?.username) {
+          try {
+            await fetch(`${API_URL}/api/admin/notifications/mark-all-read`, {
+              method: 'PUT', headers: authHeaders
+            });
+            setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+            setUnreadCount(0);
+          } catch(e) {}
+        }
+      }, 2000);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen, fetchNotifications]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const markAsRead = async (notificationId) => {
     try {
