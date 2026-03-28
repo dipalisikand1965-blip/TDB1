@@ -27,6 +27,7 @@ import PaperworkNearMe from '../components/paperwork/PaperworkNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
 
 const PW_STRIP_CATS = [
@@ -276,14 +277,13 @@ export default function PaperworkMobilePage() {
         />
 
         {/* Main Tab Bar — sticky */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
-          {[{id:'paperwork',label:'📋 Paperwork'},{id:'nearme',label:'📍 Near Me'}].map(t => (
-            <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
+        <div className="ios-tab-bar">
+          {[{id:'paperwork',label:'📋 Paperwork'},{id:'services',label:'🐕 Services'},{id:'nearme',label:'📍 Near Me'}].map(t => (
+            <button key={t.id}
+              className={`ios-tab${mainTab===t.id?' active':''}`}
+              style={mainTab===t.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`pw-tab-${t.id}`}
-              style={{ flex:1, padding:'12px 4px', background:'none', border:'none',
-                borderBottom: mainTab===t.id ? `2.5px solid ${G.teal}` : '2.5px solid transparent',
-                fontSize:13, fontWeight: mainTab===t.id ? 700 : 500,
-                color: mainTab===t.id ? G.teal : '#999', cursor:'pointer', transition:'all 0.15s', whiteSpace:'nowrap', fontFamily:'inherit' }}>
+              onClick={() => { vibe(); setMainTab(t.id); }}>
               {t.label}
             </button>
           ))}
@@ -293,6 +293,20 @@ export default function PaperworkMobilePage() {
         {mainTab === 'nearme' && (
           <div style={{ padding:'16px 16px 8px' }}>
             <PaperworkNearMe pet={currentPet} />
+          </div>
+        )}
+
+        {/* Services Tab */}
+        {mainTab === 'services' && (
+          <div style={{ padding:'16px' }}>
+            <PillarServiceSection
+              pillar="paperwork"
+              pet={currentPet}
+              title="Paperwork, Personally"
+              accentColor={G.teal}
+              darkColor={G.dark}
+              isMobile
+            />
           </div>
         )}
 

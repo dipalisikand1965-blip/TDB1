@@ -24,6 +24,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import AdoptMobilePage from './AdoptMobilePage';
 
@@ -361,28 +362,14 @@ const AdoptSoulPage = () => {
         {/* Book Guidance tab */}
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Expert adoption guidance — <span style={{color:G.rose}}>gentle and concierge-led</span></h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Mira guides every stage of your adoption journey.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {ADOPT_SERVICES.map(svc=>{
-                const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
-                const img=dbSvc.watercolor_image||dbSvc.image_url||null;
-                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(212,83,126,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                  {img?<img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span style={{fontSize:38}}>{svc.icon}</span>}
-                </div>
-                <div style={{padding:"14px 16px 16px"}}>
-                  <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
-                  <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
-                  <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{svc.desc}</div>
-                  <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.rose}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows}</span></div>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <span style={{fontSize:11,color:G.rose,fontStyle:'italic'}}>Price on WhatsApp</span>
-                    <button onClick={()=>openAdoptConcierge(svc.name)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
-                  </div>
-                </div>
-              </div>);})}
-            </div>
+            <PillarServiceSection
+              pillar="adopt"
+              pet={petData}
+              title="Adoption Guidance, Personally"
+              accentColor={G.rose}
+              darkColor={G.darkText}
+              preloadedServices={services}
+            />
           </div>
         )}
 

@@ -167,25 +167,20 @@ export default function GoMobilePage() {
         <GoCategoryStrip pet={currentPet} />
 
         {/* ══ 3. Tab Bar ══ */}
-        <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'12px 16px 0', display:'flex', gap:8, overflowX:'auto', flexWrap:'nowrap', scrollbarWidth:'none' }}>
+        <div className="ios-tab-bar">
           {[
             { id:'go',       label:'✈️ Go' },
             { id:'nearme',   label:'📍 Find & Stay' },
             { id:'services', label:'🐕 Services' },
-          ].map(tab => {
-            const sel = activeTab === tab.id;
-            return (
-              <button key={tab.id} onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}
-                data-testid={`go-tab-${tab.id}`}
-                style={{ padding:'8px 18px', borderRadius:9999, border:'none', flexShrink:0,
-                  background: sel ? `linear-gradient(135deg,${G.teal},${G.mid})` : `rgba(26,188,156,0.08)`,
-                  color: sel ? '#fff' : G.mutedText,
-                  fontSize:13, fontWeight: sel ? 700 : 400,
-                  cursor:'pointer', transition:'all 0.15s', marginBottom:12, fontFamily:'inherit', whiteSpace:'nowrap' }}>
-                {tab.label}
-              </button>
-            );
-          })}
+          ].map(tab => (
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
+              data-testid={`go-tab-${tab.id}`}
+              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* TAB 1: Go & Products */}

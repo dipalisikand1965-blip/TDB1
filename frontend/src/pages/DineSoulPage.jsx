@@ -1048,18 +1048,17 @@ function DineMobilePage() {
         <DineCategoryStrip pet={currentPet} />
 
         {/* ── 3. Main 3-Tab Bar ── */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:'1px solid #F0EDE8', position:'sticky', top:0, zIndex:100 }}>
+        <div className="ios-tab-bar">
           {[
             { id:'dine',     label:'🍲 Dine' },
             { id:'services', label:'🐕 Services' },
             { id:'nearme',   label:'📍 Find Restaurants' },
           ].map(t => (
-            <button key={t.id} onClick={() => { vibe('light'); setMainDineTab(t.id); }}
-              style={{ flex:1, padding:'12px 4px', background:'none', border:'none',
-                borderBottom: mainDineTab===t.id ? '2.5px solid #D97706' : '2.5px solid transparent',
-                fontSize:12, fontWeight: mainDineTab===t.id ? 700 : 500,
-                color: mainDineTab===t.id ? '#D97706' : '#999', cursor:'pointer', transition:'all 0.15s',
-                whiteSpace:'nowrap', fontFamily:'inherit' }}>
+            <button key={t.id}
+              className={`ios-tab${mainDineTab===t.id?' active':''}`}
+              style={mainDineTab===t.id ? { backgroundColor:C.dark, color:'#fff' } : {}}
+              data-testid={`dine-tab-${t.id}`}
+              onClick={() => { vibe('light'); setMainDineTab(t.id); }}>
               {t.label}
             </button>
           ))}
