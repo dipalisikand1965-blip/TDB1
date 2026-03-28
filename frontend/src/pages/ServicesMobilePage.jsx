@@ -187,7 +187,7 @@ export default function ServicesMobilePage() {
     vibe('medium');
     tdc.book({ service:svc.name || svc.label, pillar:'services', pet:currentPet, channel:'services_group_card' });
     setSelectedSvc(svc);
-    setSvcBooking({ isOpen: true, serviceType: guessServiceType(svc) });
+    setConciergeBuilderOpen(true);
   }, [currentPet]);
 
   if (loading) return (
@@ -309,7 +309,7 @@ export default function ServicesMobilePage() {
           <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:14, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
           <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge®.</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
-          <button onClick={() => { vibe('medium'); setSvcBooking({ isOpen: true, serviceType: 'grooming' }); }}
+          <button onClick={() => { vibe('medium'); setConciergeBuilderOpen(true); }}
             style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
             Book via Concierge® →
           </button>
