@@ -70,7 +70,7 @@ export default function ProductModal({ item, pet, pillar, onClose, onBook, colou
   const priceDisplay = isFree ? "Free" : isQuote ? "Request a Quote" : item.price ? `₹${String(item.price).replace("₹","")}` : null;
 
   return (
-    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:10010, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.78)", zIndex:10010, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
       <div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:"20px 20px 0 0", width:"100%", maxWidth:540, maxHeight:"90vh", overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none", animation:"slideUp 0.25s ease" }}>
         <style>{`@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
 

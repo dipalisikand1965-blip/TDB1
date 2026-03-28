@@ -61,7 +61,7 @@ export default function GoConciergeModal({ pet, service, token, onClose }) {
   };
 
   const modal = (
-    <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:10010, background:"rgba(0,0,0,0.60)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+    <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:10010, background:"rgba(0,0,0,0.78)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
       <div onClick={e => e.stopPropagation()}
         style={{ background:"#fff", borderRadius:24, width:"min(640px,100%)", maxHeight:"90vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.35)" }}>
 
