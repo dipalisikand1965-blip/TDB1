@@ -421,7 +421,7 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
 function DineSegmentedSwitch({ mode, onChange }) {
   return (
     <div style={{ margin:'0 16px 24px', background:C.border, borderRadius:14, padding:3, display:'flex', gap:3 }}>
-      {[{ id:'eat', label:'🍲 Dine' }, { id:'out', label:'🐕 Services' }].map(tab => (
+      {[{ id:'eat', label:'🍲 Eat & Nourish' }, { id:'out', label:'🍽️ Dine Out' }].map(tab => (
         <button key={tab.id} className={`dp-seg ${mode === tab.id ? 'on' : 'off'}`} onClick={() => { vibe('light'); onChange(tab.id); }}>
           {tab.label}
         </button>
