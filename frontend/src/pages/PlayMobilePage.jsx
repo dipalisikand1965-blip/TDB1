@@ -176,7 +176,7 @@ export default function PlayMobilePage() {
         )}
 
         {/* Pawrent Journey */}
-        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" />}
+        {/* Tab Bar */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
           {[
             { id:'play',      label:'🎾 Play & Products' },
@@ -206,6 +206,7 @@ export default function PlayMobilePage() {
                 </div>
               </div>
             )}
+            {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" /></div>}
 
             {/* Mira Bar */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
