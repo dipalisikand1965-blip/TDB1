@@ -32,6 +32,7 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { getPlayDims, MiraPicksSection } from './PlaySoulPage';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const G = {
   orange:'#E76F51', mid:'#C25B3D', deep:'#7A2E1A', light:'#FBD8CE',
@@ -85,6 +86,7 @@ export default function PlayMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('play');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState('products');
   const [modalCategory, setModalCategory] = useState(null);
   const [showMiraPicks, setShowMiraPicks] = useState(false);
@@ -116,6 +118,13 @@ export default function PlayMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🎾</div><div>Loading play products…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
@@ -296,6 +305,17 @@ export default function PlayMobilePage() {
         {/* TAB 2: Services */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#0D0500', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Custom play sessions, trainer matching, group classes — arranged for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="play-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(245,158,11,0.3)', background:'linear-gradient(135deg,#1F0A04,#3D1500)', color:'#F59E0B', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Play Services for {petName}</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Dog walkers, playgroups, training, hydrotherapy.</div>
             <BuddyMeetup pet={currentPet} />

@@ -27,6 +27,7 @@ import PersonalisedBreedSection from '../components/common/PersonalisedBreedSect
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const ADOPT_STRIP_CATS = [
   { id:"thinking",   icon:"💭", label:"Am I Ready?",      iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
@@ -82,6 +83,7 @@ export default function AdoptMobilePage() {
   const [loading, setLoading] = useState(true);
   const [showAdoptPlan, setShowAdoptPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("adopt");
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [adoptStage, setAdoptStage] = useState("thinking");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -126,6 +128,13 @@ export default function AdoptMobilePage() {
         pillar="adopt"
         token={token}
       />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
@@ -160,8 +169,8 @@ export default function AdoptMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Find & Welcome a Dog</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Ethical adoption, rescue, and rehoming support</div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Welcome {petName}'s New Friend Home</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>From rescue to breeder to street dog — every dog deserves a forever home prepared with love</div>
         </div>
 
         {/* Adopt Category Strip — always visible above tabs */}
@@ -256,6 +265,17 @@ export default function AdoptMobilePage() {
         {/* TAB 2: Book Guidance */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#1A0010', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Home visits, breed matching, first-week setup — personalised adoption guidance for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="adopt-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(212,83,126,0.35)', background:'linear-gradient(135deg,#1A0010,#4A1428)', color:'#F9A8D4', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <PillarServiceSection
               pillar="adopt"
               pet={currentPet}
