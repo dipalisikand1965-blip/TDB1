@@ -250,6 +250,7 @@ const MiraChatWidget = ({
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const voiceEnabledRef = useRef(true); // always-current ref for async closures
   const [speechSupported, setSpeechSupported] = useState(false);
   const [useElevenLabs, setUseElevenLabs] = useState(true); // Prefer ElevenLabs
   const recognitionRef = useRef(null);
@@ -258,6 +259,23 @@ const MiraChatWidget = ({
   
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Keep voiceEnabledRef in sync with state, and stop audio immediately on toggle-off
+  useEffect(() => {
+    voiceEnabledRef.current = voiceEnabled;
+    if (!voiceEnabled) {
+      // Stop any playing ElevenLabs audio
+      if (audioRef.current) {
+        try { audioRef.current.pause(); audioRef.current.currentTime = 0; } catch(e) {}
+        audioRef.current = null;
+      }
+      // Stop Web Speech
+      if (synthRef.current) {
+        try { synthRef.current.cancel(); } catch(e) {}
+      }
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled]);
   
   // Mira Signal tracking for passive learning & personalization
   const miraSignal = useMiraSignal() || {};
@@ -679,7 +697,7 @@ const MiraChatWidget = ({
       addFollowUpOrWelcome();
       
       // Speak welcome greeting when widget opens (if voice is enabled)
-      if (synthRef.current && voiceEnabled) {
+      if (synthRef.current && voiceEnabledRef.current) {
         setTimeout(() => {
           const synth = synthRef.current;
           if (!synth) return;
@@ -866,7 +884,7 @@ const MiraChatWidget = ({
   };
 
   const speakWithElevenLabs = useCallback(async (text) => {
-    if (!voiceEnabled) return false;
+    if (!voiceEnabledRef.current) return false;
     const apiKey = getNextElevenKey();
     if (!apiKey) return false;
 
@@ -920,7 +938,7 @@ const MiraChatWidget = ({
   
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback(async (text) => {
-    if (!voiceEnabled) return;
+    if (!voiceEnabledRef.current) return;
     
     // Try ElevenLabs first for premium voice
     if (useElevenLabs) {
@@ -1302,7 +1320,7 @@ const MiraChatWidget = ({
           }
 
           // ── ElevenLabs / TTS — speak the FULL completed text once ──
-          if (voiceEnabled && fullText) {
+          if (voiceEnabledRef.current && fullText) {
             speakText(fullText);
           }
 
@@ -1384,7 +1402,7 @@ const MiraChatWidget = ({
               serviceType: action.action_type || pillar
             }]);
             
-            if (voiceEnabled && !streamingWorked) {
+            if (voiceEnabledRef.current && !streamingWorked) {
               speakText(data.response);
             }
             setIsSending(false);
@@ -1511,7 +1529,7 @@ const MiraChatWidget = ({
           }, 800);
         }
         
-        if (voiceEnabled && !streamingWorked) {
+        if (voiceEnabledRef.current && !streamingWorked) {
           speakText(data.response);
         }
       } else {

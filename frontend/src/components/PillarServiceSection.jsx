@@ -28,6 +28,10 @@ const PillarServiceSection = ({
 }) => {
   const [services, setServices] = useState(preloadedServices || []);
   const [loading, setLoading]   = useState(!preloadedServices?.length);
+  const [pendingService, setPendingService] = useState(null);
+  const [notes, setNotes]       = useState('');
+  const [sending, setSending]   = useState(false);
+  const [sent, setSent]         = useState(false);
   const { request } = useConcierge({ pet, pillar });
   const petName = pet?.name || 'your pet';
 
@@ -46,6 +50,32 @@ const PillarServiceSection = ({
       })
       .catch(() => setLoading(false));
   }, [pillar]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openModal = (svc) => {
+    setNotes('');
+    setSent(false);
+    setPendingService(svc);
+  };
+
+  const closeModal = () => {
+    if (sending) return;
+    setPendingService(null);
+    setNotes('');
+    setSent(false);
+  };
+
+  const confirmRequest = async () => {
+    if (sending || !pendingService) return;
+    setSending(true);
+    await request(pendingService.name, {
+      channel: `${pillar}_svc_modal`,
+      serviceId: pendingService.id,
+      note: notes || undefined,
+    });
+    setSending(false);
+    setSent(true);
+    setTimeout(closeModal, 1800);
+  };
 
   if (loading) {
     return (
@@ -105,10 +135,94 @@ const PillarServiceSection = ({
             title={svc.name}
             description={svc.description || svc.tagline || ''}
             ctaText={`Book for ${petName} →`}
-            onCta={() => request(svc.name, { channel: `${pillar}_svc`, serviceId: svc.id })}
+            onCta={() => openModal(svc)}
           />
         ))}
       </div>
+
+      {/* Concierge request modal */}
+      {pendingService && (
+        <div
+          onClick={closeModal}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 10010,
+            background: 'rgba(0,0,0,0.65)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: '28px 24px',
+              width: '100%',
+              maxWidth: 420,
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Close */}
+            <button
+              onClick={closeModal}
+              style={{ position: 'absolute', top: 14, right: 16, background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#999', lineHeight: 1 }}
+            >✕</button>
+
+            {sent ? (
+              <div style={{ textAlign: 'center', padding: '12px 0' }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>❤️</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#111', marginBottom: 8 }}>Mira's on it</div>
+                <div style={{ fontSize: 14, color: '#666' }}>Concierge® will reach out on WhatsApp within 2 hours.</div>
+              </div>
+            ) : (
+              <>
+                {/* Badge */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: `${accentColor}15`, border: `1px solid ${accentColor}40`, borderRadius: 999, padding: '4px 12px', marginBottom: 14 }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: accentColor, letterSpacing: '0.05em', textTransform: 'uppercase' }}>★ Concierge®</span>
+                </div>
+
+                <h3 style={{ fontSize: 20, fontWeight: 800, color: '#111', marginBottom: 4, lineHeight: 1.2, fontFamily: 'Georgia,serif' }}>
+                  {pendingService.name}
+                </h3>
+                <p style={{ fontSize: 13, color: '#666', marginBottom: 18, lineHeight: 1.6 }}>
+                  {pendingService.description || pendingService.tagline || `Personalised for ${petName} — our team handles every detail.`}
+                </p>
+
+                {/* Notes */}
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder={`Any notes for ${petName}'s request? (optional)`}
+                  rows={3}
+                  style={{
+                    width: '100%', borderRadius: 12, border: '1.5px solid #e5e7eb',
+                    padding: '10px 12px', fontSize: 13, color: '#333', resize: 'none',
+                    outline: 'none', boxSizing: 'border-box', marginBottom: 16,
+                    fontFamily: 'inherit',
+                  }}
+                />
+
+                <button
+                  onClick={confirmRequest}
+                  disabled={sending}
+                  data-testid={`concierge-confirm-${pillar}`}
+                  style={{
+                    width: '100%', padding: '14px', borderRadius: 12, border: 'none',
+                    background: sending ? `${accentColor}66` : `linear-gradient(135deg,${accentColor},${accentColor}cc)`,
+                    color: '#fff', fontSize: 15, fontWeight: 800, cursor: sending ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {sending ? 'Connecting…' : `✦ Connect with Concierge® →`}
+                </button>
+                <p style={{ fontSize: 11, color: '#aaa', textAlign: 'center', marginTop: 10, margin: '10px 0 0' }}>
+                  Responds within 2 hours · Emergency within 15 minutes
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
