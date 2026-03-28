@@ -1116,20 +1116,30 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     fetchRelated();
   }, [product.id, pillar]);
 
-  // For celebrate pillar: fetch breed-specific soul made products (bandanas, mugs, etc.)
+  // All pillars: fetch breed-specific soul made products for "✦ SOUL MADE™" section
   React.useEffect(() => {
-    if (pillar !== 'celebrate') return;
     if (!selectedPet?.breed) return;
     const breedKey = (selectedPet.breed || '').toLowerCase().replace(/\s+/g, '_').replace(/[()]/g, '');
     const fetchBreedSoul = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=8`);
+        // First try pillar-specific, fall back to celebrate (richest soul_made catalogue)
+        const res = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=${pillar}&limit=4`);
         if (res.ok) {
           const data = await res.json();
-          const prods = (data.products || []).filter(p =>
+          let prods = (data.products || []).filter(p =>
             p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
           );
-          setCelebrateSoulProducts(prods.slice(0, 4));
+          // If pillar has no breed products, fall back to celebrate soul_made
+          if (!prods.length && pillar !== 'celebrate') {
+            const fallback = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=4`);
+            if (fallback.ok) {
+              const fb = await fallback.json();
+              prods = (fb.products || []).filter(p =>
+                p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
+              );
+            }
+          }
+          setCelebrateSoulProducts(prods.slice(0, 3));
         }
       } catch (e) { /* silent */ }
     };
@@ -2063,51 +2073,43 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
         </div>
 
-        {/* Complete the Celebration — breed soul made products take priority over generic related */}
+        {/* ✦ SOUL MADE™ — breed-specific products, shown on every pillar */}
         {(celebrateSoulProducts.length > 0 || relatedProducts.length > 0) && (
-          <div className="border-t bg-gradient-to-r from-purple-50 to-pink-50 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-5 h-5 text-purple-600" />
-              <h3 className="font-bold text-gray-900">{PILLAR_CROSS_SELL_TITLES[pillar] || PILLAR_CROSS_SELL_TITLES.default}</h3>
-              {celebrateSoulProducts.length > 0 && selectedPet?.breed && (
-                <span className="text-xs rounded-full px-2 py-0.5 font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-                  Made for {selectedPet.name || selectedPet.breed}
-                </span>
-              )}
+          <div style={{ background: '#0A0A14', borderTop: '1px solid rgba(201,151,58,0.15)', padding: '20px 16px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#C9973A', letterSpacing: '0.14em', marginBottom: 3 }}>
+                  ✦ SOUL MADE™ · JUST FOR {(selectedPet?.name || 'YOUR DOG').toUpperCase()}
+                </div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
+                  {selectedPet?.breed ? `Made for ${selectedPet.breed.split('(')[0].trim()}s` : 'Personalised for your dog'}
+                </div>
+              </div>
+              <button
+                onClick={() => window.location.href = '/celebrate'}
+                style={{ fontSize: 12, fontWeight: 700, color: '#C9973A', background: 'none', border: '1px solid rgba(201,151,58,0.30)', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Explore Soul Made →
+              </button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {(celebrateSoulProducts.length > 0 ? celebrateSoulProducts : relatedProducts).map((item, idx) => {
-                const img = item.mockup_url || item.cloudinary_url || item.image_url || item.image;
-                const name = item.product_name || item.name;
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+              {(celebrateSoulProducts.length > 0 ? celebrateSoulProducts : relatedProducts.slice(0, 3)).map((item, idx) => {
+                const img = item.mockup_url || item.watercolor_image || item.cloudinary_url || item.image_url || item.image;
+                const name = item.product_name || item.name || item.title;
                 const price = item.price || item.minPrice || 0;
                 return (
-                  <div 
-                    key={item.id || idx} 
-                    className="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="aspect-square rounded-md overflow-hidden mb-2">
-                      <img 
-                        src={img} 
-                        alt={name}
-                        className="w-full h-full object-cover"
-                        onError={e => { e.target.style.display='none'; }}
-                      />
+                  <div key={item.id || idx} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}
+                    onClick={() => handleQuickAdd(item)}>
+                    <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#111' }}>
+                      {img ? (
+                        <img src={img} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={e => { e.target.style.display = 'none'; }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🐾</div>
+                      )}
                     </div>
-                    <p className="text-xs font-medium text-gray-900 line-clamp-2">{name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs font-bold text-purple-600">
-                        {price > 0 ? `₹${price}` : 'Custom'}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 hover:bg-purple-100"
-                        onClick={() => handleQuickAdd(celebrateSoulProducts.length > 0 ? { ...item, name, price } : item)}
-                        data-testid={`quick-add-${item.id || idx}`}
-                      >
-                        <Plus className="w-4 h-4 text-purple-600" />
-                      </Button>
+                    <div style={{ padding: '8px 8px 10px' }}>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontWeight: 600, lineHeight: 1.35, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{name}</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#C9973A' }}>{price > 0 ? `₹${price}` : 'Custom'}</div>
                     </div>
                   </div>
                 );
