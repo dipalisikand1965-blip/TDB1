@@ -455,7 +455,7 @@ const EmergencySoulPage = () => {
 
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
-          {[{id:"emergency",label:"🚨 Emergency Kit"},{id:"services",label:"📋 Book Help"},{id:"find",label:"📍 Find Vet"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.crimson}`:"3px solid transparent",color:a?G.crimson:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
+          {[{id:"emergency",label:"🚨 Emergency Kit"},{id:"services",label:"🐕 Services"},{id:"find",label:"📍 Find Vet"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.crimson}`:"3px solid transparent",color:a?G.crimson:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
         </div>
 
         {/* Emergency Kit tab */}

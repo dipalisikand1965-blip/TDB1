@@ -1342,7 +1342,7 @@ function PlayTabBar({ active, onChange }) {
   const tabs = [
     { id: "play",      label: "🌳 Play & Explore" },
     { id: "find-play", label: "📍 Find Play" },
-    { id: "services",  label: "💪 Book a Service" },
+    { id: "services",  label: "🐕 Services" },
   ];
   return (
     <div style={{ background:"#fff", borderBottom:"1px solid #F0F0F0", display:"flex", justifyContent:"center", position:"sticky", top:58, zIndex:100, overflowX:"auto" }}>

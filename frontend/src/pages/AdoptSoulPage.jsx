@@ -7,8 +7,8 @@
  * Architecture: Full Care/Learn parity (Session 83n)
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { filterBreedProducts } from '../hooks/useMiraFilter';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
@@ -243,6 +243,7 @@ const AdoptSoulPage = () => {
   const [activeTab, setActiveTab] = useState("adopt");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
+  const [rawProducts, setRawProducts] = useState([]);
   const [services,    setServices]    = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [conciergeSvc,  setConciergeSvc]  = useState("");
@@ -254,7 +255,10 @@ const AdoptSoulPage = () => {
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
   useEffect(()=>{
     fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=100`).then(r=>r.ok?r.json():null).then(d=>{
-      const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});setApiProducts(grouped);
+      const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});
+      setApiProducts(grouped);
+      const miraFiltered = petData ? applyMiraFilter(filterBreedProducts(d?.products||[], petData?.breed||''), petData) : (d?.products||[]);
+      setRawProducts(miraFiltered);
     }).catch(()=>{});
     fetch(`${API_URL}/api/service-box/services?pillar=adopt`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
   },[]);
@@ -266,6 +270,25 @@ const AdoptSoulPage = () => {
     setConciergeSvc(serviceName);
     setConciergeOpen(true);
   }, [petData]);
+
+  // ── Adopt Product Sections (mirrors AdoptMobilePage) ──────────────────────
+  const adoptSections = useMemo(() => {
+    if (!rawProducts?.length) return [];
+    const breedSlug = (petData?.breed || '').toLowerCase().replace(/\s+/g, '-').split('(')[0].trim();
+    const breedSpecific = rawProducts.filter(p =>
+      (p.sub_category || '').toLowerCase().includes('-adopt') &&
+      (p.sub_category || '').toLowerCase().includes(breedSlug)
+    );
+    const essentials = rawProducts.filter(p => (p.sub_category || '') === 'essentials');
+    const readiness  = rawProducts.filter(p => ['readiness', 'discover'].includes(p.sub_category || ''));
+    const enrichment = rawProducts.filter(p => ['adopt-enrichment', 'behaviour', 'soul'].includes(p.sub_category || ''));
+    return [
+      breedSpecific.length ? { id:'breed',      icon:'🐾', label:`${petData?.breed?.split('(')[0].trim() || 'Breed'} Essentials`, products: breedSpecific } : null,
+      essentials.length    ? { id:'essentials', icon:'🏠', label:'Arrival Essentials',   products: essentials  } : null,
+      readiness.length     ? { id:'readiness',  icon:'📋', label:'Home Readiness',        products: readiness   } : null,
+      enrichment.length    ? { id:'enrichment', icon:'🎾', label:'Enrichment & Bonding',  products: enrichment  } : null,
+    ].filter(Boolean);
+  }, [rawProducts, petData]);
 
   // Mobile detection
   if (!isDesktop) return <AdoptMobilePage />;
@@ -338,6 +361,28 @@ const AdoptSoulPage = () => {
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData} onOpenService={(serviceName)=>openAdoptConcierge(serviceName||'Adoption support')}/>
+
+            {/* ── Sectioned Products (Breed Essentials, Arrival Essentials, etc.) ── */}
+            {adoptSections.length > 0 && (
+              <div style={{marginBottom:28}}>
+                <h3 style={{fontSize:"clamp(1rem,2.5vw,1.25rem)",fontWeight:800,color:G.darkText,marginBottom:20,fontFamily:"Georgia,serif"}}>Mira's Adoption Picks for {petName}</h3>
+                {adoptSections.map(section => (
+                  <div key={section.id} style={{marginBottom:28}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+                      <span style={{fontSize:18}}>{section.icon}</span>
+                      <h4 style={{fontSize:15,fontWeight:700,color:G.darkText,margin:0}}>{section.label}</h4>
+                    </div>
+                    <div style={{display:'flex',gap:14,overflowX:'auto',paddingBottom:8,scrollbarWidth:'none'}}>
+                      {section.products.slice(0,8).map(p => (
+                        <div key={p.id||p._id} style={{flexShrink:0,width:168}}>
+                          <SharedProductCard product={p} pillar="adopt" selectedPet={petData} compact />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             {/* ✦ Soul Made™ trigger */}
             <div data-testid="adopt-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
