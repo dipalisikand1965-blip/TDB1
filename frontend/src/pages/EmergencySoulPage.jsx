@@ -470,15 +470,15 @@ const EmergencySoulPage = () => {
             <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{const map={'Emergency Vet Discovery':'Find emergency vet','After-Hours Care Guidance':'Accident response','24/7 Emergency Helpline Subscription':'Emergency transport','24/7 Emergency Vet Hotline':'Find emergency vet'};openEmergencyService(map[serviceName]||serviceName||'Find emergency vet');}}/>
             {/* ✦ Soul Made™ trigger — custom emergency ID tags, medical alert tags */}
             <div data-testid="emergency-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
-              style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
-              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 32px rgba(196,77,255,0.32)";}}
-              onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(196,77,255,0.18)";}}>
-              <div style={{position:"absolute",top:-40,right:-40,width:160,height:160,background:"radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)",pointerEvents:"none"}}/>
-              <div style={{fontSize:10,fontWeight:800,letterSpacing:"0.15em",color:"#C44DFF",marginBottom:8}}>{`\u2726 SOUL MADE\u2122 \u00B7 SAFETY GEAR FOR ${(petName||"YOUR DOG").toUpperCase()}`}</div>
+              style={{width:"100%",marginBottom:24,padding:"20px 20px 18px",background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 50%,${G.deep} 100%)`,border:`1.5px solid rgba(220,38,38,0.4)`,borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:`0 4px 24px rgba(220,38,38,0.18)`,transition:"transform 0.15s, box-shadow 0.15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 8px 32px rgba(220,38,38,0.32)`;}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=`0 4px 24px rgba(220,38,38,0.18)`;}}>
+              <div style={{position:"absolute",top:-40,right:-40,width:160,height:160,background:`radial-gradient(circle,rgba(220,38,38,0.15) 0%,transparent 70%)`,pointerEvents:"none"}}/>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:"0.15em",color:G.light,marginBottom:8}}>{`\u2726 SOUL MADE\u2122 \u00B7 SAFETY GEAR FOR ${(petName||"YOUR DOG").toUpperCase()}`}</div>
               <div style={{fontSize:20,fontWeight:800,color:"#F5F0E8",fontFamily:"Georgia,serif",marginBottom:6,lineHeight:1.2}}>Custom safety gear for {petName}.</div>
-              <div style={{fontSize:13,color:"rgba(245,240,232,0.55)",marginBottom:16}}>ID Tag · Medical Alert Collar · Emergency Go-Bag · GPS Tag · and more</div>
+              <div style={{fontSize:13,color:"rgba(245,240,232,0.65)",marginBottom:16}}>ID Tag · Medical Alert Collar · Emergency Go-Bag · GPS Tag · and more</div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C44DFF,#9333EA)",borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:"0 4px 16px rgba(196,77,255,0.4)"}}>{`\u2726 Make something only ${petName} has`}</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`linear-gradient(135deg,${G.crimson},${G.mid})`,borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:`0 4px 16px rgba(220,38,38,0.4)`}}>{`\u2726 Make something only ${petName} has`}</div>
                 <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it</div>
               </div>
             </div>

@@ -532,7 +532,7 @@ const FlowModal = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto no-sb p-0">
         {/* Resume Modal */}
         {showResume ? (
           <div className="p-6">
