@@ -15,7 +15,7 @@
  *
  * WIRING: POST /api/concierge/adopt-path
  */
-import { useState } from "react";
+import { useState, useEffect } from 'react';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = { deep:"#4A0E2E", mid:"#7B1D4A", mauve:"#D4537E", light:"#F4C0D1", pale:"#FFF0F5", cream:"#FFF5F8", darkText:"#4A0E2E", mutedText:"#7B1D4A" };
@@ -308,7 +308,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 function ModalShell({ onClose, children, noPadding }) {
 
 // Lock body scroll while modal is open
-React.useEffect(() => {
+useEffect(() => {
   document.body.style.overflow = 'hidden';
   return () => { document.body.style.overflow = ''; };
 }, []);

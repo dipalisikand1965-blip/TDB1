@@ -15,7 +15,7 @@
  *
  * WIRING: POST /api/concierge/paperwork-path
  */
-import { useState } from "react";
+import { useState, useEffect } from 'react';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = { deep:"#1E293B", mid:"#334155", teal:"#0D9488", light:"#99F6E4", pale:"#F0FDFA", cream:"#F8FAFC", darkText:"#1E293B", mutedText:"#475569" };

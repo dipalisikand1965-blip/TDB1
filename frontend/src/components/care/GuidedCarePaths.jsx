@@ -23,7 +23,7 @@
  *   body: { petId, pathId, selections }
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { createPortal } from "react-dom";
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 import { tdc } from "../../utils/tdc_intent";

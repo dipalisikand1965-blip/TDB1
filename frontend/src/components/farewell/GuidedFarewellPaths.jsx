@@ -18,7 +18,7 @@
  * WIRING: POST /api/concierge/farewell-path
  * TONE:   Gentle. Unhurried. Never clinical.
  */
-import { useState } from "react";
+import { useState, useEffect } from 'react';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = { deep:"#1A1A2E", mid:"#2D2D4E", indigo:"#6366F1", light:"#A5B4FC", pale:"#EEF2FF", cream:"#F5F7FF", darkText:"#1A1A2E", mutedText:"#4338CA" };
@@ -305,7 +305,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 function ModalShell({ onClose, children, noPadding }) {
 
 // Lock body scroll while modal is open
-React.useEffect(() => {
+useEffect(() => {
   document.body.style.overflow = 'hidden';
   return () => { document.body.style.overflow = ''; };
 }, []);
