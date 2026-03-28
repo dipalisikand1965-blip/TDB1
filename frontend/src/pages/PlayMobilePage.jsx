@@ -100,7 +100,7 @@ export default function PlayMobilePage() {
 
   useEffect(() => {
     if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=600&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
       .catch(() => {});
@@ -282,6 +282,10 @@ export default function PlayMobilePage() {
                         const keywords = DIM_KEYWORDS[openDim] || [];
                         const grouped = {};
                         allRaw.filter(p => {
+                          // Bundles: match by entity_type or category (same as desktop)
+                          if (openDim === 'bundles') {
+                            return p.entity_type === 'bundle' || (p.category || '').toLowerCase() === 'bundles';
+                          }
                           const txt = `${p.name} ${p.category||''} ${p.sub_category||''} ${p.description||''}`.toLowerCase();
                           return keywords.length === 0 || keywords.some(k => txt.includes(k));
                         }).forEach(p => {
