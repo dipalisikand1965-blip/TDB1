@@ -234,10 +234,11 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
         }}
       >
         {/* Handle bar + Close */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px 0' }}>
-          <div style={{ width:36, height:4, background:'rgba(255,255,255,0.15)', borderRadius:2, margin:'0 auto' }} />
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px 4px', position:'relative' }}>
+          <div style={{ position:'absolute', left:'50%', transform:'translateX(-50%)', width:36, height:4, background:'rgba(255,255,255,0.15)', borderRadius:2 }} />
+          <div style={{ width:32, height:32 }} />
           <button onClick={handleClose}
-            style={{ position:'absolute', right:16, top:14, width:32, height:32, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.15)', background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.6)', fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1 }}>
+            style={{ width:32, height:32, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.25)', background:'rgba(255,255,255,0.12)', color:'rgba(255,255,255,0.8)', fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1, flexShrink:0 }}>
             ✕
           </button>
         </div>
