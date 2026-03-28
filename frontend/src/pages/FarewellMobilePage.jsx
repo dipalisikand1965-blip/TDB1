@@ -24,7 +24,19 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import '../styles/mobile-design-system.css';
+
+const FAREWELL_STRIP_CATS = [
+  { id:"eol",      icon:"🕊️", label:"End of Life",      iconBg:"linear-gradient(135deg,#EEF2FF,#E0E7FF)" },
+  { id:"support",  icon:"💙", label:"Support",           iconBg:"linear-gradient(135deg,#EFF6FF,#DBEAFE)" },
+  { id:"cremation",icon:"🌿", label:"Cremation",         iconBg:"linear-gradient(135deg,#F0FDF4,#DCFCE7)" },
+  { id:"memorial", icon:"🌷", label:"Memorial",          iconBg:"linear-gradient(135deg,#FDF2F8,#FCE7F3)" },
+  { id:"ceremony", icon:"🕯️", label:"Ceremony",          iconBg:"linear-gradient(135deg,#FFFBEB,#FEF3C7)" },
+  { id:"grief",    icon:"💜", label:"Grief Support",     iconBg:"linear-gradient(135deg,#FAF5FF,#EDE9FE)" },
+  { id:"tribute",  icon:"✦",  label:"Soul Made™",        iconBg:"linear-gradient(135deg,#F8FAFC,#F1F5F9)" },
+];
 
 const G = {
   deep:'#1A1A2E', mid:'#4B4B6E', indigo:'#6366F1', light:'#C7D2FE',
@@ -153,22 +165,21 @@ export default function FarewellMobilePage() {
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Their memory lives on in everything they taught you."</div>
         </div>
 
-        {/* Soul Profile */}
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="farewell" token={token} /></div>}
+        {/* Farewell Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={FAREWELL_STRIP_CATS}
+          activeId={null}
+          onSelect={id => {
+            vibe();
+            if (id === 'memorial' || id === 'tribute') { setActiveTab('farewell'); setProdTab('Memorial & Legacy'); }
+            else if (id === 'grief') { setActiveTab('farewell'); setProdTab('Grief Support'); }
+            else if (id === 'eol' || id === 'cremation' || id === 'ceremony' || id === 'support') { setActiveTab('services'); }
+            else setActiveTab('farewell');
+          }}
+          accentColor={G.indigo}
+        />
 
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(129,140,248,0.14),rgba(129,140,248,0.20))', border:'1px solid rgba(129,140,248,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#4F46E5' }}>{petName}</span> be remembered?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Tributes, keepsakes and celebrations of life — crafted with love for {petName}.
-            </div>
-          </div>
-        )}
-
-        {/* Tab Bar */}
+        {/* Tab Bar — sticky */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
           {[
             { id:'farewell',  label:'🌷 Legacy & Memorial' },
@@ -186,7 +197,19 @@ export default function FarewellMobilePage() {
         {/* TAB 1: Legacy & Memorial */}
         {activeTab === 'farewell' && (
           <div>
-            {/* Mira Reflection */}
+            {/* Soul Profile + CTA + Pawrent — inside Tab 1 */}
+            {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="farewell" token={token} /></div>}
+            {currentPet && (
+              <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(129,140,248,0.14),rgba(129,140,248,0.20))', border:'1px solid rgba(129,140,248,0.35)', borderRadius:18, padding:'16px' }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+                  How would <span style={{ color:'#4F46E5' }}>{petName}</span> be remembered?
+                </div>
+                <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+                  Tributes, keepsakes and celebrations of life — crafted with love for {petName}.
+                </div>
+              </div>
+            )}
+            {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="farewell" /></div>}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ A MESSAGE FROM MIRA</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
