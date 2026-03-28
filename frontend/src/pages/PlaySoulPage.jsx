@@ -98,7 +98,7 @@ function isSenior(pet)  { return getAge(pet) >= 7; }
 // ─────────────────────────────────────────────────────────────
 // PLAY DIMENSION CONFIG
 // ─────────────────────────────────────────────────────────────
-function getPlayDims(pet) {
+export function getPlayDims(pet) {
   const size    = getSize(pet);
   const energy  = getEnergy(pet);
   const health  = getHealth(pet);
@@ -279,7 +279,7 @@ function MiraImagineCard({ card, pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // MIRA PICKS SECTION
 // ─────────────────────────────────────────────────────────────
-function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet }) {
   const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]       = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -867,7 +867,7 @@ function ActivityProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // DIM EXPANDED — inline panel (exactly mirrors DineSoulPage DimExpanded)
 // ─────────────────────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }) {
   const petName = pet?.name || "your dog";
 
   // Use pre-fetched products from parent — no internal fetch (same as Dine)
