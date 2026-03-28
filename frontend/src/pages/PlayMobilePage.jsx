@@ -185,15 +185,16 @@ export default function PlayMobilePage() {
           />
         )}
 
-        {/* Pawrent Journey */}
         {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+        <div className="ios-tab-bar">
           {[
             { id:'play',      label:'🎾 Play' },
             { id:'services',  label:'🐕 Services' },
             { id:'find-play', label:'📍 Find Play' },
           ].map(tab => (
-            <button key={tab.id} className={`play-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`play-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
