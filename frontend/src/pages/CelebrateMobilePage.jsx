@@ -425,17 +425,14 @@ export default function CelebrateMobilePage() {
         {/* ── 2. Category Strip (outside tabs, always visible) ── */}
         <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
-        {/* ── 3. Tab Bar: Celebrate | Near Me ── */}
-        <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.25)', marginBottom:0 }}>
+        {/* ── 3. Tab Bar: Celebrate | Services | Near Me ── */}
+        <div className="ios-tab-bar">
           {[{ id:'celebrate', label:'🎉 Celebrate' }, { id:'services', label:'🐕 Services' }, { id:'nearme', label:'📍 Find Venues' }].map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
+            <button key={t.id}
+              className={`ios-tab${activeTab===t.id?' active':''}`}
+              style={activeTab===t.id ? { backgroundColor:'#1a1028', color:'#fff' } : {}}
               data-testid={`celebrate-tab-${t.id}`}
-              style={{ flex:1, padding:'10px 4px', borderRadius:'12px 12px 0 0', border:'none',
-                background: activeTab===t.id ? 'rgba(155,89,182,0.12)' : 'transparent',
-                color: activeTab===t.id ? '#9B59B6' : '#6B7280',
-                fontSize:14, fontWeight: activeTab===t.id ? 700 : 500, cursor:'pointer',
-                fontFamily:'inherit', borderBottom: activeTab===t.id ? '2px solid #9B59B6' : '2px solid transparent',
-                transition:'all 0.15s' }}>
+              onClick={() => setActiveTab(t.id)}>
               {t.label}
             </button>
           ))}
@@ -500,6 +497,8 @@ export default function CelebrateMobilePage() {
                 Book Celebrate Concierge® →
               </button>
             </div>
+            {/* Celebrate service cards from Service Box */}
+            <CelebrateServiceGrid pet={currentPet} />
           </div>
         )}
 

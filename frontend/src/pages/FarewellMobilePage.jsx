@@ -26,6 +26,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
 
 const FAREWELL_STRIP_CATS = [
@@ -180,13 +181,15 @@ export default function FarewellMobilePage() {
         />
 
         {/* Tab Bar — sticky */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
+        <div className="ios-tab-bar">
           {[
             { id:'farewell',  label:'🌷 Farewell' },
             { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Care' },
           ].map(tab => (
-            <button key={tab.id} className={`farewell-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`farewell-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
@@ -272,28 +275,14 @@ export default function FarewellMobilePage() {
         {/* TAB 2: Get Support */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Farewell Support Services</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:4 }}>Gentle, concierge-led support — whenever you are ready.</div>
-            <div style={{ fontSize:14, color:G.mutedText, fontStyle:'italic', marginBottom:20 }}>"Take your time. We're here whenever you're ready." — Mira</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {(services.length ? services : FAREWELL_SERVICES).map(svc => (
-                <div key={svc.id} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px', overflow:'hidden' }}>
-                  <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10 }}>
-                    <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon}</div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline}</div>
-                    </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.indigo, flexShrink:0 }}></div>
-                  </div>
-                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{(svc.desc || svc.description || '').replace(/{name}/g, petName)}</div>
-                  <button onClick={() => handleBookService(svc)} data-testid={`farewell-svc-book-${svc.id}`}
-                    style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.indigo})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                    Reach out gently →
-                  </button>
-                </div>
-              ))}
-            </div>
+            <PillarServiceSection
+              pillar="farewell"
+              pet={currentPet}
+              title="Farewell Support, Personally"
+              accentColor={G.indigo}
+              darkColor={G.dark}
+              isMobile
+            />
           </div>
         )}
 

@@ -25,6 +25,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
 
 const EMERG_STRIP_CATS = [
@@ -227,13 +228,15 @@ export default function EmergencyMobilePage() {
         )}
 
         {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
+        <div className="ios-tab-bar">
           {[
             { id:'emergency', label:'🚨 Emergency' },
             { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Vet' },
           ].map(tab => (
-            <button key={tab.id} className={`emerg-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`emergency-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
@@ -319,27 +322,14 @@ export default function EmergencyMobilePage() {
         {/* TAB 2: Book Help */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Emergency Services</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:20 }}>Concierge® responds within 2 hours. For life-threatening — call vet directly.</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {(services.length ? services : EMERG_SERVICES).map((svc, i) => (
-                <div key={svc.id || i} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px' }}>
-                  <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10 }}>
-                    <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon || '🩺'}</div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || ''}</div>
-                    </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.crimson, flexShrink:0 }}></div>
-                  </div>
-                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc || svc.description || ''}</div>
-                  <button onClick={() => handleBookService(svc)} data-testid={`emergency-svc-book-${svc.id || i}`}
-                    style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.crimson})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                    Get Emergency Help →
-                  </button>
-                </div>
-              ))}
-            </div>
+            <PillarServiceSection
+              pillar="emergency"
+              pet={currentPet}
+              title="Emergency Help, Personally"
+              accentColor={G.crimson}
+              darkColor={G.dark}
+              isMobile
+            />
           </div>
         )}
 
