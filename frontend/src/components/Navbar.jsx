@@ -584,6 +584,28 @@ const Navbar = () => {
     return 'left-1/2 -translate-x-1/2'; // Middle items center
   };
 
+  // ── Birthday Whisper Logic ────────────────────────────────────────────────
+  const [navWhisperDismissed, setNavWhisperDismissed] = useState(false);
+  const getNavBirthdayWhisper = () => {
+    if (navWhisperDismissed || !primaryPet) return null;
+    const rawDate = primaryPet?.birthday || primaryPet?.birth_date || primaryPet?.dob || primaryPet?.gotcha_date;
+    if (!rawDate) return null;
+    try {
+      const now = new Date();
+      const bday = new Date(rawDate);
+      const next = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
+      if (next < now) next.setFullYear(now.getFullYear() + 1);
+      const daysUntil = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+      if (daysUntil > 7) return null;
+      const isGotcha = !!(primaryPet?.gotcha_date) && !primaryPet?.birthday && !primaryPet?.birth_date;
+      const label = isGotcha ? 'Gotcha Day' : 'birthday';
+      const name = primaryPet.name || 'Your pup';
+      if (daysUntil === 0) return { text: `It's ${name}'s ${label} today`, cta: 'Plan the celebration', icon: '🎉' };
+      if (daysUntil === 1) return { text: `${name}'s ${label} is tomorrow`, cta: 'Arrange a photoshoot', icon: '🐾' };
+      return { text: `${name}'s ${label} is in ${daysUntil} days`, cta: 'Arrange a Gotcha Day photoshoot', icon: '🎂' };
+    } catch { return null; }
+  };
+
   return (
     <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Top Announcement Banner */}
@@ -601,6 +623,41 @@ const Navbar = () => {
       >
         <span>✦ The world's first Pet Life OS · Built in memory of Mystique · Now in early access</span>
       </div>
+
+      {/* ── Birthday Whisper Bar (Mira) ── */}
+      {(() => {
+        const w = getNavBirthdayWhisper();
+        return w ? (
+          <div
+            data-testid="nav-birthday-whisper"
+            style={{
+              background: 'linear-gradient(90deg, #FFF0F8, #F0F4FF, #FFF0F8)',
+              borderBottom: '1px solid #FBCFE8',
+              padding: '6px 16px',
+              display: 'flex', alignItems: 'center', gap: 10,
+              position: 'relative',
+            }}
+          >
+            <span style={{ fontSize: 18 }}>{w.icon}</span>
+            <span style={{ flex: 1, fontSize: 13, lineHeight: 1.3 }}>
+              <span style={{ fontWeight: 700, color: '#BE185D' }}>{w.text}</span>
+              {' — '}
+              <Link
+                to="/celebrate"
+                style={{ color: '#9333EA', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: 2 }}
+              >
+                {w.cta} →
+              </Link>
+            </span>
+            <span style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic', marginRight: 22 }}>Mira</span>
+            <button
+              onClick={() => setNavWhisperDismissed(true)}
+              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#D1D5DB', fontSize:18, padding:'0 4px', lineHeight:1 }}
+              aria-label="Dismiss birthday whisper"
+            >×</button>
+          </div>
+        ) : null;
+      })()}
 
       {/* Main Header Row */}
       <div className="bg-slate-900 text-white">
