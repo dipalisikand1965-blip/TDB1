@@ -216,8 +216,14 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 
 ## 9. PENDING TASKS (Priority for next session)
 
-### P0 — Next Session (Full Audit)
-1. Full audit of all 12 pillars — user will provide audit checklist
+### SESSION 28.5 — (2026-03-28) 3 P0 Bug Fixes
+
+1. ✅ **Farewell products loading** — Removed `if (!currentPet?.id) return` guard from FarewellMobilePage useEffect. Products now fetch at mount with breed filter applied client-side. Added 3s safety timeout for guest users. 16 memorial products now visible on /farewell without pet selection.
+2. ✅ **Mira explains why expand row** — ProductCard.jsx was conditioned on `product.mira_hint` (DB field, almost never set). Changed to `product.mira_hint || productMiraTip` where productMiraTip is always computed (e.g. "✨ Makes celebrations special"). All product cards now show clickable ✦ MIRA expand button.
+3. ✅ **Cart orders in My Requests** — Added 🛍️ Orders tab to MyRequestsPage filtering by `request_type==='product_order'` or `order_id` present or `category==='shop'`. Subtitle updated to "Your concierge requests & shop orders".
+
+### P0 — Next Session
+1. GitHub merge (user requested after resolving the 3 bugs above)
 2. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
 3. Generate Full Migration Package Report (no code changes, just text report)
 
