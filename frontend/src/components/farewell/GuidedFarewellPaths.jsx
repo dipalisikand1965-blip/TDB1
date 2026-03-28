@@ -385,7 +385,7 @@ function PathCard({ path, pet, onOpen }) {
         {(path.stepLabels||[]).map((label,i)=>(
           <div key={i} style={{flex:1}}>
             <div style={{height:3,borderRadius:3,marginBottom:3,background:i===0?path.accentColor:'rgba(99,102,241,0.15)'}}/>
-            <div style={{fontSize:9,color:'#aaa',textAlign:'center',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{label}</div>
+            <div style={{fontSize:9,color:'#aaa',textAlign:'center',lineHeight:1.3,wordBreak:'break-word',overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{label}</div>
           </div>
         ))}
       </div>
