@@ -26,7 +26,19 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import PaperworkNearMe from '../components/paperwork/PaperworkNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import '../styles/mobile-design-system.css';
+
+const PW_STRIP_CATS = [
+  { id:"identity",  icon:"🪪", label:"Identity",      iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+  { id:"health",    icon:"🏥", label:"Health",        iconBg:"linear-gradient(135deg,#E0F2FE,#BAE6FD)" },
+  { id:"travel",    icon:"✈️",  label:"Travel",        iconBg:"linear-gradient(135deg,#DCFCE7,#BBF7D0)" },
+  { id:"insurance", icon:"🛡️", label:"Insurance",     iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
+  { id:"breeds",    icon:"📚", label:"Breed Guides",  iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
+  { id:"advisory",  icon:"💡", label:"Advisory",      iconBg:"linear-gradient(135deg,#CCFBF1,#99F6E4)" },
+  { id:"soul",      icon:"🌟", label:"Soul Docs",     iconBg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)" },
+  { id:"soul_made", icon:"✦",  label:"Soul Made™",   iconBg:"linear-gradient(135deg,#EDE9FE,#C4B5FD)" },
+];
 
 const G = {
   teal:'#0D9488', mid:'#0F766E', deep:'#134E4A', light:'#99F6E4',
@@ -216,14 +228,6 @@ export default function PaperworkMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>📋</div><div>Loading paperwork…</div></div>
       </div>
-    
-      <MiraPlanModal
-        isOpen={showPaperworkPlan}
-        onClose={() => setShowPaperworkPlan(false)}
-        pet={currentPet}
-        pillar="paperwork"
-        token={token}
-      />
     </PillarPageLayout>
   );
 
@@ -263,35 +267,23 @@ export default function PaperworkMobilePage() {
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Identity, health, travel, insurance — all organised</div>
         </div>
 
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="paperwork" token={token} /></div>}
+        {/* Paperwork Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={PW_STRIP_CATS}
+          activeId={activeDim}
+          onSelect={id => { if (id) { vibe(); setActiveDim(id); setMainTab('paperwork'); } }}
+          accentColor={G.teal}
+        />
 
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(99,179,237,0.14),rgba(99,179,237,0.20))', border:'1px solid rgba(99,179,237,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#0284C7' }}>{currentPet?.name || 'your dog'}</span> love to stay organised?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Documents, insurance, vaccination — all handled by Concierge® for {currentPet?.name || 'your dog'}.
-            </div>
-          </div>
-        )}
-
-        {/* Pawrent Journey First Steps */}
-        {currentPet && (
-          <div style={{ padding:'0 16px 8px' }}>
-            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="paperwork" />
-          </div>
-        )}
-
-        {/* Main Tab Bar: Paperwork | Near Me */}
-        <div style={{ display:'flex', margin:'8px 16px 0', background:'#F0FDFA', borderRadius:12, padding:4 }}>
-          {[{id:'paperwork',label:'📋 Paperwork'},{id:'nearme',label:'📍 Near Me'}].map(t => (
+        {/* Main Tab Bar — sticky */}
+        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+          {[{id:'paperwork',label:'📋 Documents'},{id:'nearme',label:'📍 Near Me'}].map(t => (
             <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
               data-testid={`pw-tab-${t.id}`}
-              style={{ flex:1, padding:'9px 0', borderRadius:9, fontSize:13, fontWeight:700, border:'none', cursor:'pointer',
-                background: mainTab===t.id ? G.teal : 'transparent',
-                color: mainTab===t.id ? '#fff' : G.darkText, transition:'all 0.15s' }}>
+              style={{ flex:1, padding:'12px 4px', background:'none', border:'none',
+                borderBottom: mainTab===t.id ? `2.5px solid ${G.teal}` : '2.5px solid transparent',
+                fontSize:13, fontWeight: mainTab===t.id ? 700 : 500,
+                color: mainTab===t.id ? G.teal : '#999', cursor:'pointer', transition:'all 0.15s', whiteSpace:'nowrap', fontFamily:'inherit' }}>
               {t.label}
             </button>
           ))}
@@ -305,6 +297,19 @@ export default function PaperworkMobilePage() {
         )}
 
         {mainTab === 'paperwork' && <>
+        {/* Soul Profile + CTA + Pawrent — inside tab, same as Play/Care */}
+        {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="paperwork" token={token} /></div>}
+        {currentPet && (
+          <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(99,179,237,0.14),rgba(99,179,237,0.20))', border:'1px solid rgba(99,179,237,0.35)', borderRadius:18, padding:'16px' }}>
+            <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+              How would <span style={{ color:'#0D9488' }}>{petName}</span> love to stay organised?
+            </div>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+              Documents, insurance, vaccination — all handled by Concierge® for {petName}.
+            </div>
+          </div>
+        )}
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="paperwork" /></div>}
         {/* Document Vault */}
         {currentPet && (
           <div style={{ padding:'16px 16px 8px' }}>

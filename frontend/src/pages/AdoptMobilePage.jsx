@@ -23,7 +23,19 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import '../styles/mobile-design-system.css';
+
+const ADOPT_STRIP_CATS = [
+  { id:"thinking",   icon:"💭", label:"Am I Ready?",      iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
+  { id:"ready",      icon:"✅", label:"Ready to Adopt",   iconBg:"linear-gradient(135deg,#F0FDF4,#BBF7D0)" },
+  { id:"looking",    icon:"🔍", label:"Find a Match",     iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
+  { id:"matched",    icon:"❤️", label:"We Matched!",       iconBg:"linear-gradient(135deg,#FDF2F8,#FBCFE8)" },
+  { id:"home",       icon:"🏠", label:"Coming Home",       iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
+  { id:"breed",      icon:"📚", label:"Breed Guide",       iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
+  { id:"guidance",   icon:"💌", label:"Book Guidance",     iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+];
 
 const G = {
   deep:'#4A0E2E', mid:'#7B1D4E', rose:'#D4537E', light:'#F9A8C9',
@@ -151,27 +163,17 @@ export default function AdoptMobilePage() {
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Ethical adoption, rescue, and rehoming support</div>
         </div>
 
-        {/* Soul Profile */}
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="adopt" token={token} /></div>}
-
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(251,113,133,0.14),rgba(251,113,133,0.20))', border:'1px solid rgba(251,113,133,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#E11D48' }}>{petName}</span> welcome a new friend?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Resources and support for making {petName}'s new sibling feel at home.
-            </div>
-          </div>
-        )}
-
-        {/* Pawrent Journey First Steps */}
-        {currentPet && (
-          <div style={{ padding:'0 16px 8px' }}>
-            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="adopt" />
-          </div>
-        )}
+        {/* Adopt Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={ADOPT_STRIP_CATS}
+          activeId={adoptStage}
+          onSelect={id => {
+            vibe();
+            if (id === 'guidance') { setActiveTab('services'); }
+            else { setAdoptStage(id); setActiveTab('adopt'); }
+          }}
+          accentColor={G.rose}
+        />
 
         {/* Tab Bar */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
@@ -191,8 +193,22 @@ export default function AdoptMobilePage() {
         {/* TAB 1: Find Your Dog */}
         {activeTab === 'adopt' && (
           <div>
+            {/* Soul Profile + CTA + Pawrent — inside Tab 1, same as Play/Care */}
+            {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="adopt" token={token} /></div>}
+            {currentPet && (
+              <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(251,113,133,0.14),rgba(251,113,133,0.20))', border:'1px solid rgba(251,113,133,0.35)', borderRadius:18, padding:'16px' }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+                  How would <span style={{ color:'#E11D48' }}>{petName}</span> welcome a new friend?
+                </div>
+                <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+                  Resources and support for making {petName}'s new sibling feel at home.
+                </div>
+              </div>
+            )}
+            {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="adopt" /></div>}
+
             {/* Stage Tracker */}
-            <div style={{ padding:'16px 16px 8px' }}>
+            <div style={{ padding:'12px 16px 8px' }}>
               <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (

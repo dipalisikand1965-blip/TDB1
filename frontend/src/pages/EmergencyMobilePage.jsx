@@ -23,7 +23,19 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import '../styles/mobile-design-system.css';
+
+const EMERG_STRIP_CATS = [
+  { id:"kit",       icon:"📦", label:"First Aid Kit",   iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
+  { id:"vets",      icon:"🏥", label:"24hr Vets",       iconBg:"linear-gradient(135deg,#E0F2FE,#BAE6FD)" },
+  { id:"poison",    icon:"☠️", label:"Poison Response", iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
+  { id:"lost",      icon:"📍", label:"Lost Pet",        iconBg:"linear-gradient(135deg,#DCFCE7,#BBF7D0)" },
+  { id:"transport", icon:"🚐", label:"Transport",       iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+  { id:"course",    icon:"📚", label:"First Aid Course",iconBg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)" },
+  { id:"plan",      icon:"🛡️", label:"Safety Plan",     iconBg:"linear-gradient(135deg,#F1F5F9,#E2E8F0)" },
+];
 
 const G = {
   crimson:'#DC2626', mid:'#991B1B', dark:'#1A0000', pale:'#FEF2F2',
@@ -187,6 +199,18 @@ export default function EmergencyMobilePage() {
           </button>
         </div>
 
+        {/* Emergency Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={EMERG_STRIP_CATS}
+          activeId={null}
+          onSelect={id => {
+            if (id === 'vets') { vibe(); setActiveTab('find'); }
+            else if (id === 'plan') { vibe('medium'); setShowEmergencyPlan(true); }
+            else { vibe(); setActiveTab('emergency'); setDimTab('services'); }
+          }}
+          accentColor={G.crimson}
+        />
+
         {/* Soul Profile */}
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="emergency" token={token} /></div>}
 
@@ -230,6 +254,9 @@ export default function EmergencyMobilePage() {
                 Build {petName}'s Safety Plan →
               </button>
             </div>
+
+            {/* Pawrent Journey First Steps */}
+            {currentPet && <div style={{ padding:'8px 16px 0' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="emergency" /></div>}
 
             {/* Products / Services dimTab */}
             <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
