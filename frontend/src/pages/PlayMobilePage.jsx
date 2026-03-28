@@ -20,6 +20,7 @@ import PillarSoulProfile from '../components/PillarSoulProfile';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
 import PlayNearMe from '../components/play/PlayNearMe';
 import PlayCategoryStrip from '../components/play/PlayCategoryStrip';
+import PlayContentModal from '../components/play/PlayContentModal';
 import BuddyMeetup from '../components/play/BuddyMeetup';
 import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -86,6 +87,7 @@ export default function PlayMobilePage() {
   const [activeTab, setActiveTab] = useState('play');
   const [dimTab, setDimTab] = useState('products');
   const [openDim, setOpenDim] = useState(null);
+  const [modalCategory, setModalCategory] = useState(null);
   const [showMiraPicks, setShowMiraPicks] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -129,7 +131,16 @@ export default function PlayMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.orange} />}
 
-        {/* Mira Picks bottom-sheet — opened by PlayCategoryStrip chip */}
+        {/* PlayContentModal — same as desktop, opened by PlayCategoryStrip chip */}
+        <PlayContentModal
+          isOpen={!!modalCategory}
+          category={modalCategory}
+          pet={currentPet}
+          onClose={() => setModalCategory(null)}
+          onNavigateToNearMe={() => { setModalCategory(null); setActiveTab('find-play'); }}
+        />
+
+        {/* Mira Picks bottom-sheet — kept as fallback */}
         {showMiraPicks && (
           <div onClick={() => setShowMiraPicks(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', padding:'8px 0 32px' }}>
@@ -170,8 +181,8 @@ export default function PlayMobilePage() {
           <PlayCategoryStrip
             pet={currentPet}
             openDim={openDim}
-            onSelect={id => { vibe(); setOpenDim(openDim === id ? null : id); setDimTab('products'); setActiveTab('play'); }}
-            onMiraPicks={() => { vibe(); setShowMiraPicks(true); setOpenDim(null); setActiveTab('play'); }}
+            onSelect={id => { vibe(); setModalCategory(id); setActiveTab('play'); }}
+            onMiraPicks={() => { vibe(); setModalCategory('miras-picks'); setActiveTab('play'); }}
           />
         )}
 
