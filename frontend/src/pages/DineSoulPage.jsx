@@ -32,6 +32,7 @@ import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
@@ -784,6 +785,8 @@ function DineMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('eat');
+  const [mainDineTab, setMainDineTab] = useState('dine');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [openDim, setOpenDim] = useState(null);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -1044,7 +1047,28 @@ function DineMobilePage() {
         {/* ── 2. Category Strip (outside tabs) ── */}
         <DineCategoryStrip pet={currentPet} />
 
-        {/* ── 3. Tab Bar / Segmented Switch ── */}
+        {/* ── 3. Main 3-Tab Bar ── */}
+        <div style={{ display:'flex', background:'#fff', borderBottom:'1px solid #F0EDE8', position:'sticky', top:0, zIndex:100 }}>
+          {[
+            { id:'dine',     label:'🍲 Dine' },
+            { id:'services', label:'🐕 Services' },
+            { id:'nearme',   label:'📍 Find Restaurants' },
+          ].map(t => (
+            <button key={t.id} onClick={() => { vibe('light'); setMainDineTab(t.id); }}
+              style={{ flex:1, padding:'12px 4px', background:'none', border:'none',
+                borderBottom: mainDineTab===t.id ? '2.5px solid #D97706' : '2.5px solid transparent',
+                fontSize:12, fontWeight: mainDineTab===t.id ? 700 : 500,
+                color: mainDineTab===t.id ? '#D97706' : '#999', cursor:'pointer', transition:'all 0.15s',
+                whiteSpace:'nowrap', fontFamily:'inherit' }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* ════ TAB 1: 🍲 Dine ════ */}
+        {mainDineTab === 'dine' && (<>
+
+        {/* Sub-toggle: Eat & Nourish / Dine Out */}
         <DineSegmentedSwitch mode={mode} onChange={setMode} />
 
         {/* ── 4. Food Profile + Pawrent Journey inside Eat tab ── */}
@@ -1176,37 +1200,58 @@ function DineMobilePage() {
         )}
 
         {/* ════════════════════════════════════
-            DINE OUT
+            DINE OUT (sub-tab)
         ════════════════════════════════════ */}
         {mode === 'out' && (
           <>
-            {/* Book Dine Concierge® CTA */}
-            <div style={{ padding:'16px 16px 20px' }}>
-              <button
-                className="dp-cta"
-                onClick={() => { vibe('medium'); setIntakeOpen(true); }}
-                style={{ background:DarkGrad, fontSize:15 }}
-              >
-                ✦ Book Dine Concierge® →
-              </button>
+            <div style={{ padding:'16px 16px 0' }}>
+              <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
             </div>
             <div style={{ padding:'0 16px 24px' }}>
-              <PetFriendlySpots
-                pet={currentPet}
-                onReserve={venueName => {
-                  tdc.request(`Reserve dining venue for ${petName}: ${venueName}`, {
-                    pillar:'dine', channel:'dine_nearme', pet:currentPet,
-                    metadata:{ venue:venueName }
-                  });
-                  setPrefillVenue(venueName);
-                  setIntakeOpen(true);
-                }}
-              />
+              <DineConciergeSection pet={currentPet} />
             </div>
           </>
         )}
 
-        {/* ── Concierge® CTA ── */}
+        </>)} {/* end TAB 1 */}
+
+        {/* ════ TAB 2: 🐕 Services ════ */}
+        {mainDineTab === 'services' && (
+          <div style={{ padding:'16px 16px 24px' }}>
+            <div style={{ background:'#0A0A14', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ DINE CONCIERGE®</div>
+              <div style={{ fontSize:15, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Restaurant reservations, food sourcing, nutrition plans — all arranged for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)}
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'none',
+                  background:'linear-gradient(135deg,#C9973A,#E8B84B)', color:'#0A0A14',
+                  fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                Book Dine Concierge® →
+              </button>
+            </div>
+            <DineConciergeSection pet={currentPet} />
+          </div>
+        )}
+
+        {/* ════ TAB 3: 📍 Find Restaurants ════ */}
+        {mainDineTab === 'nearme' && (
+          <div style={{ padding:'16px 16px 24px' }}>
+            <PetFriendlySpots
+              pet={currentPet}
+              onReserve={venueName => {
+                tdc.request(`Reserve dining venue for ${petName}: ${venueName}`, {
+                  pillar:'dine', channel:'dine_nearme', pet:currentPet,
+                  metadata:{ venue:venueName }
+                });
+                setPrefillVenue(venueName);
+                setIntakeOpen(true);
+              }}
+            />
+          </div>
+        )}
+
+        {/* ── Concierge® CTA — bottom (always visible) ── */}
         <DineConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
 
       </div>
@@ -1218,6 +1263,12 @@ function DineMobilePage() {
         pet={currentPet}
         pillar="dine"
         token={token}
+      />
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
       />
 
     </PillarPageLayout>

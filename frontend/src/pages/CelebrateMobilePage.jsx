@@ -38,6 +38,7 @@ import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
 import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
 import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import '../styles/mobile-design-system.css';
 
 const C = {
@@ -259,6 +260,7 @@ export default function CelebrateMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [showCelebratePlan, setShowCelebratePlan] = useState(false);
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -425,7 +427,7 @@ export default function CelebrateMobilePage() {
 
         {/* ── 3. Tab Bar: Celebrate | Near Me ── */}
         <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.25)', marginBottom:0 }}>
-          {[{ id:'celebrate', label:'🎉 Celebrate' }, { id:'nearme', label:'📍 Near Me' }].map(t => (
+          {[{ id:'celebrate', label:'🎉 Celebrate' }, { id:'services', label:'🐕 Services' }, { id:'nearme', label:'📍 Find Venues' }].map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               data-testid={`celebrate-tab-${t.id}`}
               style={{ flex:1, padding:'10px 4px', borderRadius:'12px 12px 0 0', border:'none',
@@ -482,6 +484,24 @@ export default function CelebrateMobilePage() {
           </div>
         )}
         </>)}
+
+        {/* ── SERVICES TAB ── */}
+        {activeTab === 'services' && (
+          <div style={{ padding:'16px 16px 24px' }}>
+            <div style={{ background:'#0A0A14', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ CELEBRATE CONCIERGE®</div>
+              <div style={{ fontSize:15, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Birthday cakes, party planning, gifting, venue booking — all arranged for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)}
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'none',
+                  background:'linear-gradient(135deg,#9B59B6,#C084FC)', color:'#fff',
+                  fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                Book Celebrate Concierge® →
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── NEAR ME TAB ── */}
         {activeTab === 'nearme' && (
@@ -604,6 +624,12 @@ export default function CelebrateMobilePage() {
         pet={currentPet}
         pillar="celebrate"
         token={token}
+      />
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
       />
     </PillarPageLayout>
   );
