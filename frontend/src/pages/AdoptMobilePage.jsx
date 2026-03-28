@@ -22,6 +22,7 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -66,6 +67,7 @@ export default function AdoptMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showAdoptPlan, setShowAdoptPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("adopt");
   const [adoptStage, setAdoptStage] = useState("thinking");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -103,6 +105,14 @@ export default function AdoptMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🐾</div><div>Loading adoption paths…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showAdoptPlan}
+        onClose={() => setShowAdoptPlan(false)}
+        pet={currentPet}
+        pillar="adopt"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -199,7 +209,7 @@ export default function AdoptMobilePage() {
             <div style={{ margin:'0 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:'rgba(249,168,201,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON ADOPTION</div>
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"Every dog deserves a forever home. I'll help you find the right match and guide you through every step."</div>
-              <button className="adopt-cta" onClick={() => { vibe('medium'); request('Start adoption journey', { channel:'adopt_mira_cta' }); }}>Start Adoption Journey →</button>
+              <button className="adopt-cta" onClick={() => { vibe('medium'); setShowAdoptPlan(true); }}>Build {petName}'s Adoption Plan →</button>
             </div>
 
             {/* Guided Paths */}
@@ -285,6 +295,14 @@ export default function AdoptMobilePage() {
           </div>
         )}
       </div>
+    
+      <MiraPlanModal
+        isOpen={showAdoptPlan}
+        onClose={() => setShowAdoptPlan(false)}
+        pet={currentPet}
+        pillar="adopt"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }
