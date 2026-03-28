@@ -278,7 +278,11 @@ const AdoptSoulPage = () => {
       <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#BE185D 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center",boxSizing:"border-box",width:"100%"}}>
         <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(212,83,126,0.50)"}}>✦</div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:12}}>
-          <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${G.light},${G.rose})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,border:"3px solid rgba(255,255,255,0.30)"}}>🐾</div>
+          <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${G.light},${G.rose})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,border:"3px solid rgba(255,255,255,0.30)",overflow:"hidden"}}>
+            {petData?.photo_url
+              ? <img src={petData.photo_url} alt={petData?.name||"pet"} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%"}} onError={e=>{e.target.style.display="none";e.target.parentNode.innerHTML="🐾";}}/>
+              : "🐾"}
+          </div>
           <div style={{marginTop:-8,background:`linear-gradient(135deg,${G.deep},${G.rose})`,borderRadius:20,padding:"3px 10px",fontSize:9,fontWeight:700,color:"#fff",border:"1.5px solid rgba(255,255,255,0.25)"}}>Adoption Ready</div>
         </div>
         <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(249,168,201,0.18)",borderRadius:20,padding:"4px 14px",marginBottom:14}}>

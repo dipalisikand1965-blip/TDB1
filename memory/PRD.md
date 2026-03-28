@@ -444,3 +444,12 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 8. ✅ **MiraPlanModal placement fixed** in PaperworkMobilePage — was incorrectly nested inside loading state JSX.
 
 **Test Results (iteration_237.json):** 80% → 100% after FIRST_STEPS fix. All 7 CategoryStrips render. Sticky tab bars confirmed. Soul Profile inside Tab 1 confirmed. PawrentFirstStepsTab now renders on all 11 applicable pillar pages.
+
+
+### HOTFIX — (2026-03-28) Pet Photo + Hero Alignment + Go Pet Selector + Services Modal
+
+1. ✅ **AdoptSoulPage.jsx** — Hero pet avatar: replaced hardcoded `🐾` with `petData.photo_url ? <img/> : 🐾` fallback.
+2. ✅ **ServicesSoulPage.jsx** — Hero orb: replaced hardcoded Mira ✦ orb with `petData.photo_url ? <img/> : ✦` fallback.
+3. ✅ **GoMobilePage.jsx** — Pet selector buttons aligned to match all other pillars: `flexWrap:'wrap'`, `padding:'6px 16px'`, `fontSize:13`, removed `maxWidth:'55%'`. Also removed allergy tags from hero.
+4. ✅ **ServicesMobilePage.jsx** — Hero aligned: replaced pet-avatar + text flex layout with standard two-line subtitle text (matches all other pillars).
+5. ✅ **ServicesMobilePage.jsx** — Bottom "Book via Concierge® →" CTA now calls `setSvcBooking({ isOpen:true })` opening the full 4-step ServiceBookingModal (was calling `request()` which showed a toast instead).

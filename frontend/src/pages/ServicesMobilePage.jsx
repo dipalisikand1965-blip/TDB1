@@ -238,15 +238,8 @@ export default function ServicesMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-            <div style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <span style={{ fontSize:22 }}>🐾</span>}
-            </div>
-            <div>
-              <div style={{ fontSize:20, fontWeight:700, color:'#fff' }}>Expert Services</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>for {petName} · All via Concierge®</div>
-            </div>
-          </div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Expert Services for {petName}</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Every service arranged by Concierge® · Matched to {petName}'s soul</div>
         </div>
 
         {/* Services Category Strip — always visible above content */}
@@ -314,7 +307,7 @@ export default function ServicesMobilePage() {
           <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:14, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
           <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge®.</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
-          <button onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_cta' }); }}
+          <button onClick={() => { vibe('medium'); setSvcBooking({ isOpen: true, serviceType: 'grooming' }); }}
             style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
             Book via Concierge® →
           </button>

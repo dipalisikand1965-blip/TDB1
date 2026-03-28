@@ -146,31 +146,21 @@ export default function GoMobilePage() {
               <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>✈️ Go</div>
             </div>
             {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', justifyContent:'flex-end', maxWidth:'55%', scrollbarWidth:'none' }}>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
                 {contextPets.map(p => (
                   <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer', flexShrink:0,
+                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer',
                       border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
                       background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
-                      color:'#fff', fontFamily:'inherit' }}>
+                      color:'#fff', fontFamily:'inherit', transition:'all 0.15s' }}>
                     {p.name}
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)', marginBottom:10 }}>Flights, road trips, boarding, pet-friendly stays.</div>
-          {/* Allergy tags */}
-          {currentPet?.allergies?.length > 0 && (
-            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-              {currentPet.allergies.map(a => (
-                <span key={a} style={{ fontSize:11, fontWeight:700, background:'rgba(239,68,68,0.18)', color:'#fca5a5', borderRadius:999, padding:'3px 10px', border:'1px solid rgba(239,68,68,0.3)' }}>
-                  ⚠️ No {a}
-                </span>
-              ))}
-            </div>
-          )}
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Flights, road trips, boarding, pet-friendly stays.</div>
         </div>
 
         {/* ══ 2. GoCategoryStrip ══ */}
