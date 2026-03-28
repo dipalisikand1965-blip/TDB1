@@ -171,8 +171,14 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose })
         onClick={e => e.stopPropagation()}
         style={{ background: G.dark, borderRadius: '24px 24px 0 0', maxHeight: '92vh', overflowY: 'auto', paddingBottom: 'calc(32px + env(safe-area-inset-bottom))' }}
       >
-        {/* Handle bar */}
-        <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.15)', borderRadius: 2, margin: '12px auto 0' }} />
+        {/* Handle bar + Close */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px 0' }}>
+          <div style={{ width:36, height:4, background:'rgba(255,255,255,0.15)', borderRadius:2, margin:'0 auto' }} />
+          <button onClick={handleClose}
+            style={{ position:'absolute', right:16, top:14, width:32, height:32, borderRadius:'50%', border:'1px solid rgba(255,255,255,0.15)', background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.6)', fontSize:16, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', lineHeight:1 }}>
+            ✕
+          </button>
+        </div>
 
         {/* STEP 0 — Select Service */}
         {step === 0 && (
