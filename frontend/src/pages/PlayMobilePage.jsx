@@ -179,7 +179,7 @@ export default function PlayMobilePage() {
         {currentPet && (
           <PlayCategoryStrip
             pet={currentPet}
-            openDim={openDim}
+            openDim={modalCategory}
             onSelect={id => { vibe(); setModalCategory(id); setActiveTab('play'); }}
             onMiraPicks={() => { vibe(); setModalCategory('miras-picks'); setActiveTab('play'); }}
           />
@@ -232,7 +232,7 @@ export default function PlayMobilePage() {
             {/* dimTab toggle */}
             <div style={{ display:'flex', margin:'12px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
               {[{ id:'products', label:'🎯 Dimensions' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
-                <button key={t.id} onClick={() => { setDimTab(t.id); setOpenDim(null); }}
+                <button key={t.id} onClick={() => { setDimTab(t.id); }}
                   style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
                     background:dimTab===t.id?G.orange:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
                   {t.label}
