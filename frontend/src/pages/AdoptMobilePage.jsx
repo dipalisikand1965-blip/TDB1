@@ -170,8 +170,8 @@ export default function AdoptMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Welcome {petName}'s New Friend Home</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>From rescue to breeder to street dog — every dog deserves a forever home prepared with love</div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Every dog deserves the right home</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Breed matching, rescue connections, home readiness and first-year support — all guided by Mira.</div>
         </div>
 
         {/* Adopt Category Strip — always visible above tabs */}
@@ -237,7 +237,7 @@ export default function AdoptMobilePage() {
             {/* Mira Bar */}
             <div style={{ margin:'0 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:'rgba(249,168,201,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON ADOPTION</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"Every dog deserves a forever home. I'll help you find the right match and guide you through every step."</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"The right match between a dog and their family changes two lives forever. I make sure it's the right one."</div>
               <button className="adopt-cta" onClick={() => { vibe('medium'); setShowAdoptPlan(true); }}>Build {petName}'s Adoption Plan →</button>
             </div>
 

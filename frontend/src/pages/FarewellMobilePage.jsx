@@ -78,6 +78,7 @@ export default function FarewellMobilePage() {
   const [loading, setLoading] = useState(true);
   const [showFarewellPlan, setShowFarewellPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("farewell");
+  const [farewellMode, setFarewellMode] = useState('here'); // 'here' | 'gone'
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [prodTab, setProdTab] = useState(PROD_TABS[0]);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -175,6 +176,25 @@ export default function FarewellMobilePage() {
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Capture memories now. And when the time comes — we hold your hand through every step."</div>
         </div>
 
+        {/* "While here" / "When the time comes" toggle — emotional mode selector */}
+        <div style={{ display:'flex', gap:0, margin:'0 16px 4px', background:'rgba(99,102,241,0.08)', borderRadius:16, border:'1px solid rgba(99,102,241,0.18)', overflow:'hidden' }}>
+          {[
+            { id:'here', label:`While ${petName} is here`, emoji:'🌷' },
+            { id:'gone', label:'When the time comes',    emoji:'🕊️' },
+          ].map(m => (
+            <button key={m.id} onClick={() => { vibe(); setFarewellMode(m.id); }}
+              data-testid={`farewell-mode-${m.id}`}
+              style={{ flex:1, padding:'12px 8px', border:'none', borderRadius:0,
+                background: farewellMode===m.id ? `linear-gradient(135deg,${G.deep},${G.mid})` : 'transparent',
+                color: farewellMode===m.id ? '#fff' : G.mutedText,
+                fontSize:13, fontWeight: farewellMode===m.id ? 700 : 500,
+                cursor:'pointer', transition:'all 0.18s', lineHeight:1.3 }}>
+              <div>{m.emoji}</div>
+              <div>{m.label}</div>
+            </button>
+          ))}
+        </div>
+
         {/* Farewell Category Strip — always visible above tabs */}
         <PillarCategoryStrip
           categories={FAREWELL_STRIP_CATS}
@@ -224,11 +244,17 @@ export default function FarewellMobilePage() {
             {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="farewell" /></div>}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ A MESSAGE FROM MIRA</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
-                "You don't have to figure this out alone. Whatever you need for {petName}, I'll help hold every detail gently. 🌷"
-              </div>
+              {farewellMode === 'here' ? (
+                <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
+                  "Every moment with {petName} is already a memory being made. Let me help you capture and celebrate them — so nothing is ever forgotten. 🌷"
+                </div>
+              ) : (
+                <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
+                  "You don't have to figure this out alone. Whatever you need for {petName}, I'll help hold every detail gently. 🌷"
+                </div>
+              )}
               <button className="farewell-cta" onClick={() => { vibe('medium'); setShowFarewellPlan(true); }}>
-                Build {petName}'s Farewell Plan →
+                {farewellMode === 'here' ? `Capture ${petName}'s Story →` : `Build ${petName}'s Farewell Plan →`}
               </button>
             </div>
 
@@ -284,6 +310,17 @@ export default function FarewellMobilePage() {
         {/* TAB 2: Get Support */}
         {activeTab === 'services' && (
           <>
+          {/* Mode-aware services intro */}
+          <div style={{ padding:'16px 16px 8px' }}>
+            <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:4 }}>
+              {farewellMode === 'here' ? `Celebrating ${petName}'s life today` : `Gentle support, whenever you're ready`}
+            </div>
+            <div style={{ fontSize:13, color:G.mutedText }}>
+              {farewellMode === 'here'
+                ? 'Memories, tributes and soul-made keepsakes — while every moment is still happening.'
+                : 'Everything arranged with care — euthanasia guidance, cremation, ceremony, grief support.'}
+            </div>
+          </div>
 
       {/* Concierge® Request Builder */}
       <div style={{ padding:'0 16px 16px' }}>
