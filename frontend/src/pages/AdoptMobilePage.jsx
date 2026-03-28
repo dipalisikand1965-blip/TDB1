@@ -3,7 +3,7 @@
  * 3-tab layout: Find Your Dog | Book Guidance | Find Rescue
  * Colour: Deep Mauve #4A0E2E + Rose #D4537E
  */
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -104,6 +104,27 @@ export default function AdoptMobilePage() {
       .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed), currentPet)); })
       .catch(() => {});
   }, [currentPet?.id, token]);
+
+  // ── Adopt Product Sections ──────────────────────────────────
+  const adoptSections = useMemo(() => {
+    if (!products?.length) return [];
+    const breed = (currentPet?.breed || '').toLowerCase().replace(/\s+/g, '-').split('(')[0].trim();
+
+    const breedSpecific = products.filter(p =>
+      (p.sub_category || '').toLowerCase().includes('-adopt') &&
+      (p.sub_category || '').toLowerCase().includes(breed)
+    );
+    const essentials = products.filter(p => (p.sub_category || '') === 'essentials');
+    const readiness  = products.filter(p => ['readiness', 'discover'].includes(p.sub_category || ''));
+    const enrichment = products.filter(p => ['adopt-enrichment', 'behaviour', 'soul'].includes(p.sub_category || ''));
+
+    return [
+      breedSpecific.length ? { id: 'breed',      icon: '🐾', label: `${currentPet?.breed?.split('(')[0].trim() || 'Breed'} Essentials`, products: breedSpecific } : null,
+      essentials.length    ? { id: 'essentials', icon: '🏠', label: 'Arrival Essentials',   products: essentials  } : null,
+      readiness.length     ? { id: 'readiness',  icon: '📋', label: 'Home Readiness',        products: readiness   } : null,
+      enrichment.length    ? { id: 'enrichment', icon: '🎾', label: 'Enrichment & Bonding',  products: enrichment  } : null,
+    ].filter(Boolean);
+  }, [products, currentPet]);
 
   const handleAddToCart = useCallback(p => {
     addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'adopt', quantity:1 });
@@ -247,10 +268,29 @@ export default function AdoptMobilePage() {
             {/* First Time Pawrent — emotional centrepiece */}
             {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
 
-            {/* Products */}
-            {products.length > 0 && (
-              <div style={{ padding:'0 16px 24px' }}>
-                <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Adoption Essentials for {petName}</div>
+            {/* Adopt Product Sections */}
+            <div style={{ padding:'0 16px 24px' }}>
+              <div style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>Everything for {petName}'s arrival</div>
+              {adoptSections.length > 0 ? (
+                <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
+                  {adoptSections.map(section => (
+                    <div key={section.id}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                        <span style={{ fontSize:20 }}>{section.icon}</span>
+                        <span style={{ fontSize:16, fontWeight:800, color:'#1A0A2E' }}>{section.label}</span>
+                        <span style={{ fontSize:12, color:'#6B7280', marginLeft:4 }}>({section.products.length})</span>
+                      </div>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        {section.products.slice(0, 6).map(p => (
+                          <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
+                            onAddToCart={() => handleAddToCart(p)}
+                            onClick={() => { vibe(); setSelectedProduct(p); }} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : products.length > 0 ? (
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                   {products.slice(0, 20).map(p => (
                     <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
@@ -258,8 +298,8 @@ export default function AdoptMobilePage() {
                       onClick={() => { vibe(); setSelectedProduct(p); }} />
                   ))}
                 </div>
-              </div>
-            )}
+              ) : null}
+            </div>
 
             {/* Mira Imagines */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="adopt" token={token} /></div>}
