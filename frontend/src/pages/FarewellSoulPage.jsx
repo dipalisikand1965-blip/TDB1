@@ -292,7 +292,8 @@ const FarewellSoulPage = () => {
   // Mobile detection
   if (!isDesktop) return <FarewellMobilePage />;
 
-  if(loading) return <PillarPageLayout pillar="farewell" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
+  if(loading) return <PillarPageLayout pillar="farewell" hideHero hideNavigation><LoadingState/>
+      </PillarPageLayout>;
 
   return (
     <>

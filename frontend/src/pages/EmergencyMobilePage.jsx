@@ -22,6 +22,7 @@ import EmergencyNearMe from '../components/emergency/EmergencyNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -57,6 +58,7 @@ export default function EmergencyMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showEmergencyPlan, setShowEmergencyPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("emergency");
   const [dimTab, setDimTab] = useState("products");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -125,6 +127,14 @@ export default function EmergencyMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🚨</div><div>Checking emergency readiness…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showEmergencyPlan}
+        onClose={() => setShowEmergencyPlan(false)}
+        pet={currentPet}
+        pillar="emergency"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -216,8 +226,8 @@ export default function EmergencyMobilePage() {
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
                 "The best emergency is one you're prepared for. Let me check {petName}'s readiness."
               </div>
-              <button className="emerg-cta" onClick={() => { vibe('medium'); request('Emergency preparedness check', { channel:'emergency_mira_cta' }); }}>
-                Check Readiness →
+              <button className="emerg-cta" onClick={() => { vibe('medium'); setShowEmergencyPlan(true); }}>
+                Build {petName}'s Safety Plan →
               </button>
             </div>
 
@@ -340,6 +350,14 @@ export default function EmergencyMobilePage() {
           </div>
         )}
       </div>
+    
+      <MiraPlanModal
+        isOpen={showEmergencyPlan}
+        onClose={() => setShowEmergencyPlan(false)}
+        pet={currentPet}
+        pillar="emergency"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }

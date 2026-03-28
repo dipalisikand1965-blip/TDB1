@@ -25,6 +25,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PaperworkNearMe from '../components/paperwork/PaperworkNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -199,6 +200,7 @@ export default function PaperworkMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showPaperworkPlan, setShowPaperworkPlan] = useState(false);
   const [activeDim, setActiveDim] = useState(PW_DIMS[0].id);
   const [mainTab, setMainTab] = useState('paperwork');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -214,6 +216,14 @@ export default function PaperworkMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>📋</div><div>Loading paperwork…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showPaperworkPlan}
+        onClose={() => setShowPaperworkPlan(false)}
+        pet={currentPet}
+        pillar="paperwork"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -308,8 +318,8 @@ export default function PaperworkMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "Every responsible pet parent needs {petName}'s documents organised. Choose a category to start."
           </div>
-          <button className="pw-cta" onClick={() => { vibe('medium'); request('Paperwork review', { channel:'paperwork_mira_cta' }); }}>
-            Organise {petName}'s Documents →
+          <button className="pw-cta" onClick={() => { vibe('medium'); setShowPaperworkPlan(true); }}>
+            Build {petName}'s Paperwork Plan →
           </button>
         </div>
 
@@ -366,6 +376,14 @@ export default function PaperworkMobilePage() {
         </div>
         </>}
       </div>
+    
+      <MiraPlanModal
+        isOpen={showPaperworkPlan}
+        onClose={() => setShowPaperworkPlan(false)}
+        pet={currentPet}
+        pillar="paperwork"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }

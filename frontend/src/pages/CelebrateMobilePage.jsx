@@ -37,6 +37,7 @@ import { SoulCelebrationPillars } from '../components/celebrate';
 import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
 import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
 import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import '../styles/mobile-design-system.css';
 
 const C = {
@@ -142,7 +143,7 @@ function CelebratePetCard({ pet, onOpen }) {
   );
 }
 
-function CelebrateMiraBar({ pet, onOpen }) {
+function CelebrateMiraBar({ pet, onOpen, onPlan }) {
   const name = pet?.name || 'your dog';
   const allergies = getAllergies(pet);
   const text = allergies.length > 0
@@ -153,6 +154,7 @@ function CelebrateMiraBar({ pet, onOpen }) {
       <div style={{ fontSize:14, fontWeight:700, color:'rgba(233,30,140,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S CELEBRATIONS</div>
       <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
       <button className="cp-cta" onClick={() => { vibe('medium'); onOpen(); }}>See Mira&apos;s Picks for {name} →</button>
+      <button className="cp-cta" onClick={() => { vibe('medium'); onPlan?.(); }} style={{ marginTop:8, opacity:0.85 }}>Build {name}&apos;s Celebration Plan →</button>
     </div>
   );
 }
@@ -256,6 +258,7 @@ export default function CelebrateMobilePage() {
   const { request, book } = useConcierge({ pet:currentPet, pillar:'celebrate' });
 
   const [loading, setLoading] = useState(true);
+  const [showCelebratePlan, setShowCelebratePlan] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -345,13 +348,14 @@ export default function CelebrateMobilePage() {
       { channel:'celebrate_intake', metadata:{ type, notes } });
   }, [request, currentPet]);
 
-  if (loading) return <PillarPageLayout pillar="celebrate" hideHero hideNavigation><CelebrateLoadingState /></PillarPageLayout>;
+  if (loading) return <PillarPageLayout pillar="celebrate" hideHero hideNavigation><CelebrateLoadingState />
+      </PillarPageLayout>;
 
   if (!currentPet) return (
     <PillarPageLayout pillar="celebrate" hideHero hideNavigation>
       <style>{CSS}</style>
       <div className="cp mobile-page-container"><CelebrateEmptyState onAddPet={() => navigate('/join')} /></div>
-    </PillarPageLayout>
+      </PillarPageLayout>
   );
 
   const petName = currentPet.name;
@@ -465,7 +469,7 @@ export default function CelebrateMobilePage() {
         <SoulCelebrationPillars pet={currentPet} />
 
         {/* Mira bar */}
-        <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
+        <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} onPlan={() => setShowCelebratePlan(true)} />
 
         {/* Mira's Birthday Box */}
         {currentPet && (
@@ -593,6 +597,14 @@ export default function CelebrateMobilePage() {
         } />
 
       </div>
+      
+      <MiraPlanModal
+        isOpen={showCelebratePlan}
+        onClose={() => setShowCelebratePlan(false)}
+        pet={currentPet}
+        pillar="celebrate"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }

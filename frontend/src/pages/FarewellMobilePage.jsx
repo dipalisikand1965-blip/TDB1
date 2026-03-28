@@ -14,6 +14,7 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedFarewellPaths from '../components/farewell/GuidedFarewellPaths';
@@ -61,6 +62,7 @@ export default function FarewellMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showFarewellPlan, setShowFarewellPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("farewell");
   const [prodTab, setProdTab] = useState(PROD_TABS[0]);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -190,8 +192,8 @@ export default function FarewellMobilePage() {
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
                 "You don't have to figure this out alone. Whatever you need for {petName}, I'll help hold every detail gently. 🌷"
               </div>
-              <button className="farewell-cta" onClick={() => { vibe('medium'); request('Farewell guidance', { channel:'farewell_mira_cta' }); }}>
-                Reach out to Mira →
+              <button className="farewell-cta" onClick={() => { vibe('medium'); setShowFarewellPlan(true); }}>
+                Build {petName}'s Farewell Plan →
               </button>
             </div>
 
@@ -295,6 +297,13 @@ export default function FarewellMobilePage() {
           </div>
         )}
       </div>
+      <MiraPlanModal
+        isOpen={showFarewellPlan}
+        onClose={() => setShowFarewellPlan(false)}
+        pet={currentPet}
+        pillar="farewell"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }
