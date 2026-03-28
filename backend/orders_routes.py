@@ -213,8 +213,8 @@ async def create_order(order: dict):
             },
             "message": f"Order #{order.get('orderId')}: {', '.join([item.get('name', 'Item') for item in order.get('items', [])])}",
             "metadata": {
-                "order_id": order.get("orderId"),
-                "order_internal_id": order.get("id"),
+                "order_id": order.get("order_id") or order.get("orderId"),
+                "order_internal_id": order.get("id") or order.get("order_id"),
                 "items_count": len(order.get("items", [])),
                 "total": order.get("total"),
                 "delivery_method": delivery.get("method"),
@@ -245,7 +245,7 @@ async def create_order(order: dict):
             pillar_request = {
                 **channel_intake_record,
                 "source_collection": "orders",
-                "order_id": order.get("orderId"),
+                "order_id": order.get("order_id") or order.get("orderId"),
                 "routed_at": datetime.now(timezone.utc).isoformat()
             }
             await db[pillar_collection].insert_one(pillar_request)
@@ -265,7 +265,7 @@ async def create_order(order: dict):
                 db=db,
                 event_type="cake_order",
                 event_data={
-                    "order_id": order.get("orderId"),
+                    "order_id": order.get("order_id") or order.get("orderId"),
                     "customer_name": customer.get("parentName"),
                     "customer_email": customer.get("email"),
                     "customer_phone": customer.get("phone") or customer.get("whatsappNumber"),
@@ -284,6 +284,46 @@ async def create_order(order: dict):
         except Exception as e:
             logger.error(f"Failed to create service desk ticket: {e}", exc_info=True)
     
+
+    # Create service desk ticket for ALL non-cake orders
+    if not has_cake_items:
+        try:
+            from ticket_auto_create import create_ticket_from_event
+            customer = order.get("customer") or {}
+            delivery = order.get("delivery") or {}
+            pricing = order.get("pricing") or {}
+            items_summary = ", ".join([
+                f"{item.get('name','Item')} x{item.get('quantity',1)}"
+                for item in order.get("items", [])
+            ])
+            order_id_val = order.get("order_id") or order.get("orderId") or order.get("id")
+            result = await create_ticket_from_event(
+                db=db,
+                event_type="product_order",
+                event_data={
+                    "order_id": order_id_val,
+                    "customer_name": customer.get("name") or customer.get("parentName"),
+                    "customer_email": customer.get("email"),
+                    "customer_phone": customer.get("phone") or customer.get("whatsapp"),
+                    "city": delivery.get("city"),
+                    "items": order.get("items", []),
+                    "items_summary": items_summary,
+                    "total": pricing.get("grand_total") or order.get("total"),
+                    "pillar": pillar,
+                    "delivery_date": delivery.get("date"),
+                    "delivery_address": delivery.get("address"),
+                    "special_instructions": order.get("special_instructions"),
+                    "reference_images": reference_images,
+                    "pet_name": order.get("pet", {}).get("name"),
+                    "pet_breed": order.get("pet", {}).get("breed"),
+                    "is_gift": order.get("is_gift"),
+                    "gift_message": order.get("gift_message"),
+                }
+            )
+            logger.info(f"✅ Service desk ticket created for order {order_id_val}: {result}")
+        except Exception as e:
+            logger.error(f"Failed to create ticket for non-cake order: {e}")
+
     # Send notification
     try:
         customer = order.get("customer") or {}
