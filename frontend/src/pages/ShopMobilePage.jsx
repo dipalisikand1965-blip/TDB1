@@ -19,6 +19,7 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import '../styles/mobile-design-system.css';
 
 const S = { gold:'#4A2800', goldL:'#C9973A', goldXL:'#E8B84B', cream:'#FFFBF5', border:'#F5E6C8', dark:'#1A0E00', taupe:'#7A6A4A' };
@@ -49,6 +50,7 @@ const SHOP_CATS = [
 function MiraPicksSection({ pet, token, onConcierge }) {
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showShopPlan, setShowShopPlan] = useState(false);
   const [selected, setSelected] = useState(null);
   const petName = pet?.name || 'your dog';
 
@@ -446,6 +448,14 @@ export default function ShopMobilePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}><div style={{ fontSize: 36, marginBottom: 12 }}>🛍️</div><div>Loading your shop…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showShopPlan}
+        onClose={() => setShowShopPlan(false)}
+        pet={currentPet}
+        pillar="shop"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -461,6 +471,14 @@ export default function ShopMobilePage() {
           </div>
         </div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showShopPlan}
+        onClose={() => setShowShopPlan(false)}
+        pet={currentPet}
+        pillar="shop"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -548,6 +566,9 @@ export default function ShopMobilePage() {
           </div>
           <button className="shop-cta" onClick={handleSeePicks} data-testid="see-mira-picks-btn">
             See Mira's Shop Picks →
+          </button>
+          <button className="shop-cta" onClick={() => { vibe('medium'); setShowShopPlan(true); }} style={{ marginTop:8 }}>
+            Build {petName}'s Shop Plan →
           </button>
         </div>
 
@@ -649,6 +670,14 @@ export default function ShopMobilePage() {
           </button>
         </div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showShopPlan}
+        onClose={() => setShowShopPlan(false)}
+        pet={currentPet}
+        pillar="shop"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }
