@@ -100,6 +100,17 @@ const SERVICES = [
       { id: 'frequency', label: 'How often?',            options: ['Weekly check-ins', 'Monthly summary', 'Only when due', 'As needed'] },
     ],
   },
+  {
+    id: 'custom',
+    icon: '✍️',
+    label: 'Anything Else',
+    tagline: 'Tell us in your own words — we figure it out.',
+    colour: '#6B7280',
+    bg: '#F9FAFB',
+    urgency: 'normal',
+    questions: [],
+    freeText: true,
+  },
 ];
 
 const G = {
@@ -110,9 +121,10 @@ const G = {
 function vibe(t = 'light') { if (navigator?.vibrate) navigator.vibrate(t === 'medium' ? [12] : [6]); }
 
 export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, preselect }) {
-  const [step, setStep] = useState(0); // 0=select service, 1=q1, 2=q2, 3=sending, 4=done
+  const [step, setStep] = useState(0); // 0=select service, 1=q1, 2=q2, 3=sending, 4=done, 'freetext'
   const [selectedService, setSelectedService] = useState(null);
   const [answers, setAnswers] = useState({});
+  const [freeText, setFreeText] = useState('');
   const { request } = useConcierge({ pet, pillar: 'services' });
 
   const petName = pet?.name || 'your dog';
@@ -142,16 +154,20 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
       const svc = SERVICES.find(s => s.id === preselect);
       if (svc) { setSelectedService(svc); setStep(1); }
     }
-    if (!isOpen) { setStep(0); setSelectedService(null); setAnswers({}); }
+    if (!isOpen) { setStep(0); setSelectedService(null); setAnswers({}); setFreeText(''); }
   }, [isOpen, preselect]);
 
-  const reset = () => { setStep(0); setSelectedService(null); setAnswers({}); };
+  const reset = () => { setStep(0); setSelectedService(null); setAnswers({}); setFreeText(''); };
   const handleClose = () => { reset(); onClose(); };
 
   const selectService = (svc) => {
     vibe('medium');
     setSelectedService(svc);
-    setStep(1);
+    if (svc.freeText) {
+      setStep('freetext');
+    } else {
+      setStep(1);
+    }
   };
 
   const answerQuestion = (qId, answer) => {
@@ -269,6 +285,39 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
             <div style={{ marginTop: 20, textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', paddingBottom: 8 }}>
               Concierge® responds within 2 hours · Emergency within 15 minutes
             </div>
+          </div>
+        )}
+
+        {/* STEP FREE TEXT — Anything else */}
+        {step === 'freetext' && selectedService && (
+          <div style={{ padding: '20px 20px 8px' }}>
+            <button onClick={() => { vibe(); reset(); }}
+              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 14, cursor: 'pointer', marginBottom: 16, padding: 0 }}>
+              ← Back
+            </button>
+            <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: 8, fontFamily: 'Georgia,serif' }}>
+              Tell us what {petName} needs
+            </div>
+            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>
+              In your own words — anything at all. We figure it out.
+            </div>
+            <textarea
+              value={freeText}
+              onChange={e => setFreeText(e.target.value)}
+              placeholder={`e.g. "${petName} needs a hypoallergenic food I can't find anywhere..."`}
+              rows={5}
+              style={{ width: '100%', borderRadius: 14, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.07)', color: '#fff', fontSize: 15, padding: '14px 16px', fontFamily: 'inherit', resize: 'none', outline: 'none', boxSizing: 'border-box' }}
+            />
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: '8px 0 20px', textAlign: 'right' }}>
+              {freeText.length} characters
+            </div>
+            <button
+              data-testid="freetext-send-btn"
+              onClick={() => { if (freeText.trim()) sendRequest(selectedService, { request: freeText }); }}
+              disabled={!freeText.trim()}
+              style={{ width: '100%', minHeight: 48, borderRadius: 14, border: 'none', background: freeText.trim() ? 'linear-gradient(135deg,#C9973A,#E8B84B)' : 'rgba(255,255,255,0.10)', color: freeText.trim() ? '#0A0A14' : 'rgba(255,255,255,0.3)', fontSize: 15, fontWeight: 700, cursor: freeText.trim() ? 'pointer' : 'not-allowed', transition: 'all 0.15s' }}>
+              Send to Concierge® →
+            </button>
           </div>
         )}
 
