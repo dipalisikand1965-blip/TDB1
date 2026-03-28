@@ -429,7 +429,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
 
   const tabs = [
     { id:"products",  label:"📦 Products" },
-    { id:"services",  label:"📋 Services" },
+    { id:"services",  label:"🐕 Services" },
     ...( dim.id!=="soul" ? [{ id:"advisory", label:"💡 Advisory" }] : [] ),
   ];
 

@@ -1264,7 +1264,7 @@ function CareTabBar({ active, onChange }) {
     >
       {[
         { id:"care",       icon:"🌿", label:"Care & Products" },
-        { id:"services",   icon:"✂️",  label:"Care Services" },
+        { id:"services",   icon:"🐕",  label:"Services" },
         { id:"find-care",  icon:"📍", label:"Find Care" },
       ].map(tab => (
         <button

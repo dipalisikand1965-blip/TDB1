@@ -1354,6 +1354,7 @@ function TabBar({ active, onChange }) {
       {[
         { id: "eat", icon: "🍽️", label: "Eat & Nourish" },
         { id: "out", icon: "🗺️", label: "Dine Out" },
+        { id: "services", icon: "🐕", label: "Services" },
       ].map(tab => (
         <button
           key={tab.id}
@@ -1575,9 +1576,13 @@ const DineSoulPage = () => {
 
             <DiningConcierge pet={petData} />
 
-            <DineConciergeSection pet={petData} />
-
             <GuidedNutritionPaths pet={petData} />
+          </>
+        )}
+
+        {activeTab === "services" && (
+          <>
+            <DineConciergeSection pet={petData} />
           </>
         )}
 

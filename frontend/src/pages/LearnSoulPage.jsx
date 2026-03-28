@@ -1027,7 +1027,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
     ...( dim.ytQuery ? [{ id:"videos", label:"🎬 Videos" }] : [] ),
     { id:"personalised",label:"✦ Personalised" },
     ...( dim.id !== "soul" ? [{ id:"find", label:"📍 Find" }] : [] ),
-    { id:"services",    label:"📋 Book" },
+    { id:"services",    label:"🐕 Services" },
   ];
 
   return (
@@ -2096,7 +2096,7 @@ const LearnSoulPage = () => {
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[
             {id:"learn",        label:"🎓 Learn & Products"},
-            {id:"services",     label:"📋 Book a Session"},
+            {id:"services",     label:"🐕 Services"},
             {id:"find-learn",   label:"📍 Find Learn"},
           ].map(tab=>{
             const a=activeTab===tab.id;
