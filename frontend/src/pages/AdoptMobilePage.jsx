@@ -265,15 +265,14 @@ export default function AdoptMobilePage() {
         {/* TAB 2: Book Guidance */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
-            {/* ── Bespoke Concierge Builder CTA ── */}
-            <div style={{ background:'#1A0010', borderRadius:20, padding:16, marginBottom:20 }}>
-              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
-                Home visits, breed matching, first-week setup — personalised adoption guidance for {petName}.
-              </div>
+            <div style={{ paddingBottom:16 }}>
               <button onClick={() => setConciergeBuilderOpen(true)} data-testid="adopt-concierge-builder-btn"
-                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(212,83,126,0.35)', background:'linear-gradient(135deg,#1A0010,#4A1428)', color:'#F9A8D4', fontSize:15, fontWeight:700, cursor:'pointer' }}>
-                ✦ Bespoke Requests →
+                style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+                  background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+                  color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                <span style={{ fontSize:18 }}>✦</span>
+                <span>What does {petName} need? Ask Concierge®</span>
               </button>
             </div>
             <PillarServiceSection
