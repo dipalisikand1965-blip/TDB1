@@ -277,7 +277,7 @@ export default function PaperworkMobilePage() {
 
         {/* Main Tab Bar — sticky */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
-          {[{id:'paperwork',label:'📋 Documents'},{id:'nearme',label:'📍 Near Me'}].map(t => (
+          {[{id:'paperwork',label:'📋 Paperwork'},{id:'nearme',label:'📍 Near Me'}].map(t => (
             <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
               data-testid={`pw-tab-${t.id}`}
               style={{ flex:1, padding:'12px 4px', background:'none', border:'none',

@@ -182,8 +182,8 @@ export default function FarewellMobilePage() {
         {/* Tab Bar — sticky */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
           {[
-            { id:'farewell',  label:'🌷 Legacy & Memorial' },
-            { id:'services',  label:'💙 Get Support' },
+            { id:'farewell',  label:'🌷 Farewell' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Care' },
           ].map(tab => (
             <button key={tab.id} className={`farewell-tab${activeTab===tab.id?' active':''}`}

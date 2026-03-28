@@ -185,7 +185,7 @@ export default function CareMobilePage() {
         <div className="ios-tab-bar" style={{ borderColor:G.greenBorder }}>
           {[
             { id:'care',      label:'🌿 Care' },
-            { id:'services',  label:'✂️ Services' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find-care', label:'📍 Find Care' },
           ].map(tab => (
             <button key={tab.id}
