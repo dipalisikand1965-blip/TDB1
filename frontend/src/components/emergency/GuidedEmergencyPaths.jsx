@@ -373,7 +373,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 function ModalShell({ onClose, children, noPadding }) {
   return (
     <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.50)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <div onClick={e => e.stopPropagation()} style={{ background:"#fff", borderRadius:20, width:"min(720px,100%)", maxHeight:"90vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.20)", padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background:"#fff", borderRadius:20, width:"min(720px,100%)", maxHeight:"90vh", overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none", boxShadow:"0 24px 80px rgba(0,0,0,0.35)", padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0" }}>
         {children}
       </div>
     </div>
