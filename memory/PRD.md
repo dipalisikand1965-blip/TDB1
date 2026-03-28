@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 22 — Desktop/Mobile Parity Sprint + Bug Fixes)
+## Last Updated: 2026-03-28 (Session 23 — Voice Toggle Fix + Concierge Modal Fix)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
