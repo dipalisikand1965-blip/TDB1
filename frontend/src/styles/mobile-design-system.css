@@ -9,14 +9,14 @@
   --font-serif: 'Cormorant Garamond', serif;
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
   
-  /* iOS Type Scale */
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-base: 16px; /* Minimum body size for iOS readability */
-  --text-lg: 18px;
-  --text-xl: 22px;
-  --text-2xl: 28px;
-  --text-3xl: 34px;
+  /* iOS Type Scale — bumped for iOS readability (Apple HIG minimum 17px body) */
+  --text-xs: 13px;   /* was 12px — used for chips, badges */
+  --text-sm: 15px;   /* was 14px — used for secondary text, captions */
+  --text-base: 17px; /* was 16px — Apple's standard body size */
+  --text-lg: 20px;   /* was 18px */
+  --text-xl: 23px;   /* was 22px */
+  --text-2xl: 30px;  /* was 28px */
+  --text-3xl: 36px;  /* was 34px */
   
   /* Shared Base Colors */
   --color-dark-bg: #0B1628;
@@ -222,7 +222,7 @@
 /* ========== LETTER SPACING IMPROVEMENTS ========== */
 .ios-eyebrow {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -234,3 +234,20 @@
     font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
   }
 }
+
+/* ========== MOBILE FONT SIZE FLOOR ========== */
+/* Catches hardcoded inline fontSize: 11/12/13/14 values throughout mobile pages.
+   Applied only inside .mobile-page-container so desktop is never affected. */
+@media (max-width: 768px) {
+  .mobile-page-container [style*="font-size: 10px"],
+  .mobile-page-container [style*="font-size: 11px"] { font-size: 13px !important; }
+
+  .mobile-page-container [style*="font-size: 12px"] { font-size: 13px !important; }
+
+  .mobile-page-container [style*="font-size: 13px"] { font-size: 15px !important; }
+
+  .mobile-page-container [style*="font-size: 14px"] { font-size: 16px !important; }
+}
+
+/* Eyebrow labels — bump from 11px */
+.ios-eyebrow { font-size: 12px; }
