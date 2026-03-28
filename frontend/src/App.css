@@ -219,3 +219,21 @@ html {
     background-color: #ED2B91;
     color: white;
 }
+
+/* ========== TDC PREMIUM TYPOGRAPHY ========== */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbar hide on all inner containers */
+.overflow-y-auto::-webkit-scrollbar,
+div[style*="overflowY"]::-webkit-scrollbar,
+div[style*="overflow-y"]::-webkit-scrollbar,
+div[style*="overflow-x"]::-webkit-scrollbar,
+div[style*="overflowX"]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

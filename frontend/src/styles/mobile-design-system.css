@@ -281,3 +281,148 @@
 [style*="overflow-x:auto"]::-webkit-scrollbar {
   display: none;
 }
+
+/* ========== PREMIUM iOS FONT & SPACING UPGRADE ========== */
+/* Dipali's Golden Phone Audit — larger, breathable, premium */
+
+/* Base font size bump for all mobile pages */
+@media (max-width: 768px) {
+  .mobile-page-container {
+    font-size: 17px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  /* Hero section — bigger, bolder */
+  .mobile-page-container > div:first-child {
+    padding: 40px 20px 28px !important;
+  }
+
+  /* All section headings */
+  .mobile-page-container h1,
+  .mobile-page-container h2,
+  .mobile-page-container h3 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Mira dark bar — more breathing room */
+  .mobile-page-container [style*="borderRadius:20"][style*="padding:16"] {
+    padding: 20px !important;
+  }
+
+  /* Tab bar pills — bigger touch targets */
+  .ios-tab {
+    padding: 12px 22px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Product cards — more padding */
+  .mobile-page-container [style*="gridTemplateColumns:'1fr 1fr'"] > div,
+  .mobile-page-container [style*='gridTemplateColumns:"1fr 1fr"'] > div {
+    border-radius: 16px !important;
+  }
+
+  /* Buttons — proper Apple touch targets (min 48px) */
+  .mobile-page-container button {
+    min-height: 44px;
+    font-size: 16px !important;
+  }
+
+  /* CTA buttons — even bigger */
+  .mobile-page-container [class*="-cta"] {
+    min-height: 52px !important;
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    border-radius: 16px !important;
+  }
+
+  /* Cards — more generous padding */
+  .mobile-page-container [style*="padding:'14px"] {
+    padding: 18px !important;
+  }
+  .mobile-page-container [style*='padding:"14px'] {
+    padding: 18px !important;
+  }
+
+  /* Dim tiles — bigger */
+  .mobile-page-container [style*="minHeight:130"],
+  .mobile-page-container [style*="minHeight: 130"] {
+    min-height: 150px !important;
+  }
+
+  /* Pet switcher buttons in hero */
+  .mobile-page-container [style*="borderRadius:999"][style*="fontSize:13"] {
+    font-size: 15px !important;
+    padding: 8px 20px !important;
+  }
+
+  /* Soul profile card */
+  .mobile-page-container [data-testid*="soul-profile"] {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Section labels */
+  .mobile-page-container [style*="fontSize:14"][style*="fontWeight:700"],
+  .mobile-page-container [style*='fontSize:"14'][style*='fontWeight:"700'] {
+    font-size: 16px !important;
+  }
+
+  /* Mira quote text */
+  .mobile-page-container [style*="fontStyle:'italic'"],
+  .mobile-page-container [style*='fontStyle:"italic"'] {
+    font-size: 16px !important;
+    line-height: 1.7 !important;
+  }
+
+  /* Badge chips */
+  .mobile-page-container [style*="fontSize:9"],
+  .mobile-page-container [style*='fontSize:"9"'],
+  .mobile-page-container [style*="fontSize:10"],
+  .mobile-page-container [style*='fontSize:"10"'] {
+    font-size: 12px !important;
+  }
+
+  /* Eyebrow labels like "THE DOGGY COMPANY" */
+  .mobile-page-container [style*="letterSpacing:'0.1em'"],
+  .mobile-page-container [style*='letterSpacing:"0.1em"'] {
+    font-size: 13px !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  /* Service cards */
+  .mobile-page-container [style*="borderRadius:16"][style*="padding:'14px"] {
+    padding: 18px 16px !important;
+  }
+
+  /* Spacing between sections */
+  .mobile-page-container [style*="margin:'0 16px"],
+  .mobile-page-container [style*='margin:"0 16px'] {
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+  }
+}
+
+/* ========== PREMIUM DESKTOP UPGRADE ========== */
+@media (min-width: 769px) {
+  /* Soul pages — more generous spacing */
+  [class*="SoulPage"],
+  [data-testid*="-desktop"] {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  /* All cards on desktop */
+  [style*="borderRadius:18"],
+  [style*='borderRadius:"18"'] {
+    border-radius: 20px !important;
+  }
+
+  /* Section headings */
+  [style*="fontSize:22"][style*="fontWeight:700"],
+  [style*='fontSize:"22"'] {
+    font-size: 24px !important;
+  }
+}
