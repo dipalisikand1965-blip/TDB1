@@ -16,6 +16,7 @@
  * WIRING: POST /api/concierge/paperwork-path
  */
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = { deep:"#1E293B", mid:"#334155", teal:"#0D9488", light:"#99F6E4", pale:"#F0FDFA", cream:"#F8FAFC", darkText:"#1E293B", mutedText:"#475569" };
@@ -294,7 +295,39 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 }
 
 function ModalShell({ onClose, children, noPadding }) {
-  return (<div onClick={onClose} data-testid="paperwork-pathflow-backdrop" style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.78)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}><div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:20, width:"min(720px,100%)", maxHeight:"90vh", overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none", boxShadow:"0 24px 80px rgba(0,0,0,0.35)", padding:noPadding?0:"28px 28px 24px", border:"2px solid #F0E8E0" }}>{children}</div></div>);
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  return createPortal(
+    <>
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.78)" }} />
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position:"fixed", zIndex:10000,
+          top:"50%", left:"50%", transform:"translate(-50%,-50%)",
+          background:"#fff", borderRadius:20,
+          width:"min(720px,calc(100vw - 40px))", maxHeight:"90vh",
+          overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none",
+          boxShadow:"0 24px 80px rgba(0,0,0,0.35)",
+          padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0"
+        }}
+      >
+        {children}
+      </div>
+    </>,
+    document.body
+  );
 }
 
 export function PathFlowModal({ path, pet, onClose }) {

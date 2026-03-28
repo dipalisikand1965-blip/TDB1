@@ -684,6 +684,20 @@ export function PathFlowModal({ path, pet, onClose }) {
 // MODAL SHELL
 // ─────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children, noPadding }) {
+
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
   return createPortal(
     <>
       {/* Backdrop — portaled to body so no ancestor transform can contain it */}
