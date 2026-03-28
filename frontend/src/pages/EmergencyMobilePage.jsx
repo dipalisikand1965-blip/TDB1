@@ -229,8 +229,8 @@ export default function EmergencyMobilePage() {
         {/* Tab Bar */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
           {[
-            { id:'emergency', label:'🩺 Emergency Kit' },
-            { id:'services',  label:'📋 Book Help' },
+            { id:'emergency', label:'🚨 Emergency' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Vet' },
           ].map(tab => (
             <button key={tab.id} className={`emerg-tab${activeTab===tab.id?' active':''}`}

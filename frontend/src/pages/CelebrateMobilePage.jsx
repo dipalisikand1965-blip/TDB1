@@ -425,7 +425,7 @@ export default function CelebrateMobilePage() {
 
         {/* ── 3. Tab Bar: Celebrate | Near Me ── */}
         <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.25)', marginBottom:0 }}>
-          {[{ id:'celebrate', label:'Celebrate' }, { id:'nearme', label:'Near Me' }].map(t => (
+          {[{ id:'celebrate', label:'🎉 Celebrate' }, { id:'nearme', label:'📍 Near Me' }].map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               data-testid={`celebrate-tab-${t.id}`}
               style={{ flex:1, padding:'10px 4px', borderRadius:'12px 12px 0 0', border:'none',

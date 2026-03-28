@@ -189,7 +189,7 @@ export default function PlayMobilePage() {
         {/* Tab Bar */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
           {[
-            { id:'play',      label:'🎾 Play & Products' },
+            { id:'play',      label:'🎾 Play' },
             { id:'services',  label:'🐕 Services' },
             { id:'find-play', label:'📍 Find Play' },
           ].map(tab => (
