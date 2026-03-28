@@ -251,3 +251,25 @@
 
 /* Eyebrow labels — bump from 11px */
 .ios-eyebrow { font-size: 12px; }
+
+/* ========== FROSTED GLASS OVERLAYS ========== */
+/* All fixed overlays on mobile get frosted glass treatment */
+@media (max-width: 768px) {
+  .mobile-page-container ~ div[style*="rgba(0,0,0"],
+  div[style*="position: fixed"][style*="rgba(0,0,0"],
+  div[style*="position:fixed"][style*="rgba(0,0,0"] {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+}
+
+/* ========== HIDE SCROLLBARS GLOBALLY ON MOBILE ========== */
+@media (max-width: 768px) {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
