@@ -47,6 +47,7 @@ import { useConcierge } from "../hooks/useConcierge";
 import CareMobilePage from './CareMobilePage';
 import { filterBreedProducts } from '../hooks/useMiraFilter';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
 // ─────────────────────────────────────────────────────────────
 // COLOUR SYSTEM — Sage Green
 // ─────────────────────────────────────────────────────────────
@@ -1263,7 +1264,7 @@ function CareTabBar({ active, onChange }) {
     >
       {[
         { id:"care",       icon:"🌿", label:"Care & Products" },
-        { id:"services",   icon:"✂️",  label:"Care Services" },
+        { id:"services",   icon:"🐕",  label:"Services" },
         { id:"find-care",  icon:"📍", label:"Find Care" },
       ].map(tab => (
         <button
@@ -2261,6 +2262,7 @@ export default function CareSoulPage() {
       <CareHero pet={petData} soulScore={soulScore} />
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
+        <div style={{padding:"0 0 16px"}}><FirstTimePawrent pet={petData} token={token} accentColor="#40916C" /></div>
         <CareCategoryStrip pet={petData} onDimSelect={id => setOpenDim(prev => prev===id?null:id)} activeDim={openDim} onSoulMade={() => setSoulMadeOpen(true)} />
 
         <CareTabBar active={activeTab} onChange={setActiveTab} />

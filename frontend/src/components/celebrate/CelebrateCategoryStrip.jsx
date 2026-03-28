@@ -84,6 +84,18 @@ const CELEBRATE_CATEGORIES = [
     icon: '✦',
     iconBg: 'linear-gradient(135deg, #E8D5F5, #C44DFF)'
   },
+  {
+    id: 'portraits',
+    name: 'Portraits & Photoshoot',
+    icon: '📸',
+    iconBg: 'linear-gradient(135deg, #FFF8EE, #F5E6C8)'
+  },
+  {
+    id: 'memory_books',
+    name: 'Memory Books',
+    icon: '📖',
+    iconBg: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)'
+  },
 ];
 
 export { CELEBRATE_CATEGORIES };

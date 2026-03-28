@@ -169,6 +169,14 @@ const CATEGORY_API = {
   'soul-picks':      [],  // handled separately with breed endpoint
   'soul_made':       [],  // handled separately with breed endpoint
   'miras-picks':     [{ url: '/api/products?category=cakes&limit=60', key: 'products' }], // breed-filtered client-side
+  'portraits':       [
+    { url: '/api/products?category=portraits&limit=20&pillar=celebrate', key: 'products' },
+    { url: '/api/products?category=memory_books&limit=20&pillar=celebrate', key: 'products' },
+  ],
+  'memory_books':    [
+    { url: '/api/products?category=memory_books&limit=20&pillar=celebrate', key: 'products' },
+    { url: '/api/products?category=portraits&limit=10&pillar=celebrate', key: 'products' },
+  ],
 };
 
 // Fallback if primary category yields nothing
@@ -188,6 +196,8 @@ const MIRA_WHISPERS = {
   'soul-picks':     (n) => `✨ Soul picks — made just for ${n}`,
   'soul_made':      (n) => `✦ Want something truly unique for ${n}? Upload a photo — Concierge® creates it.`,
   'miras-picks':    (n) => `🌟 Mira curated these just for ${n}`,
+  'portraits':      (n) => `📸 Capture this moment with ${n} — portraits & photoshoots, beautifully done`,
+  'memory_books':   (n) => `📖 Create something ${n}'s family will treasure forever`,
 };
 
 const CTA_LABELS = {
@@ -219,7 +229,7 @@ const BundleDetailSheet = ({ bundle, pet, onClose }) => {
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 bg-white"
-        style={{ zIndex: 71, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85vh', overflowY: 'auto' }}
+        style={{ zIndex: 71, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85vh', overflowY: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {/* Header with drag handle + X */}
         <div className="sticky top-0 bg-white flex items-center justify-between px-4 pt-3 pb-2"

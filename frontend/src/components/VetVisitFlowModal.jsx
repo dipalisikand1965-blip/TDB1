@@ -483,7 +483,7 @@ const VetVisitFlowModal = ({
         {/* Main content area - Two column layout on desktop - Scrollable */}
         <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-hidden">
           {/* Left column - Form */}
-          <div className="flex-1 px-6 py-5 overflow-y-auto">
+          <div className="flex-1 px-6 py-5 overflow-y-auto no-sb">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}

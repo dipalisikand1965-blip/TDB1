@@ -29,6 +29,23 @@ html {
     background: linear-gradient(135deg, #5a1b68, #d12480, #e6cf00);
 }
 
+/* Global no-scrollbar utility — works on both desktop and mobile */
+.no-sb {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-sb::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}
+
+/* Hide scrollbars in modal/overlay panels (GuidedPaths, profile drawers) */
+[style*="overflow-y: auto"]::-webkit-scrollbar,
+[style*="overflow-y:auto"]::-webkit-scrollbar {
+  width: 0 !important;
+  display: none !important;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {
@@ -201,4 +218,22 @@ html {
 ::-moz-selection {
     background-color: #ED2B91;
     color: white;
+}
+
+/* ========== TDC PREMIUM TYPOGRAPHY ========== */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbar hide on all inner containers */
+.overflow-y-auto::-webkit-scrollbar,
+div[style*="overflowY"]::-webkit-scrollbar,
+div[style*="overflow-y"]::-webkit-scrollbar,
+div[style*="overflow-x"]::-webkit-scrollbar,
+div[style*="overflowX"]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }

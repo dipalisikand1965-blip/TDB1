@@ -3,7 +3,7 @@
  * 3-tab layout: Find Your Dog | Book Guidance | Find Rescue
  * Colour: Deep Mauve #4A0E2E + Rose #D4537E
  */
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -22,7 +22,23 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+
+const ADOPT_STRIP_CATS = [
+  { id:"thinking",   icon:"💭", label:"Am I Ready?",      iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
+  { id:"ready",      icon:"✅", label:"Ready to Adopt",   iconBg:"linear-gradient(135deg,#F0FDF4,#BBF7D0)" },
+  { id:"looking",    icon:"🔍", label:"Find a Match",     iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
+  { id:"matched",    icon:"❤️", label:"We Matched!",       iconBg:"linear-gradient(135deg,#FDF2F8,#FBCFE8)" },
+  { id:"home",       icon:"🏠", label:"Coming Home",       iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
+  { id:"breed",      icon:"📚", label:"Breed Guide",       iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
+  { id:"guidance",   icon:"💌", label:"Book Guidance",     iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+];
 
 const G = {
   deep:'#4A0E2E', mid:'#7B1D4E', rose:'#D4537E', light:'#F9A8C9',
@@ -66,7 +82,9 @@ export default function AdoptMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showAdoptPlan, setShowAdoptPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("adopt");
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [adoptStage, setAdoptStage] = useState("thinking");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -87,6 +105,27 @@ export default function AdoptMobilePage() {
       .catch(() => {});
   }, [currentPet?.id, token]);
 
+  // ── Adopt Product Sections ──────────────────────────────────
+  const adoptSections = useMemo(() => {
+    if (!products?.length) return [];
+    const breed = (currentPet?.breed || '').toLowerCase().replace(/\s+/g, '-').split('(')[0].trim();
+
+    const breedSpecific = products.filter(p =>
+      (p.sub_category || '').toLowerCase().includes('-adopt') &&
+      (p.sub_category || '').toLowerCase().includes(breed)
+    );
+    const essentials = products.filter(p => (p.sub_category || '') === 'essentials');
+    const readiness  = products.filter(p => ['readiness', 'discover'].includes(p.sub_category || ''));
+    const enrichment = products.filter(p => ['adopt-enrichment', 'behaviour', 'soul'].includes(p.sub_category || ''));
+
+    return [
+      breedSpecific.length ? { id: 'breed',      icon: '🐾', label: `${currentPet?.breed?.split('(')[0].trim() || 'Breed'} Essentials`, products: breedSpecific } : null,
+      essentials.length    ? { id: 'essentials', icon: '🏠', label: 'Arrival Essentials',   products: essentials  } : null,
+      readiness.length     ? { id: 'readiness',  icon: '📋', label: 'Home Readiness',        products: readiness   } : null,
+      enrichment.length    ? { id: 'enrichment', icon: '🎾', label: 'Enrichment & Bonding',  products: enrichment  } : null,
+    ].filter(Boolean);
+  }, [products, currentPet]);
+
   const handleAddToCart = useCallback(p => {
     addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'adopt', quantity:1 });
   }, [addToCart]);
@@ -103,6 +142,21 @@ export default function AdoptMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🐾</div><div>Loading adoption paths…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showAdoptPlan}
+        onClose={() => setShowAdoptPlan(false)}
+        pet={currentPet}
+        pillar="adopt"
+        token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
@@ -137,40 +191,32 @@ export default function AdoptMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Find & Welcome a Dog</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Ethical adoption, rescue, and rehoming support</div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Every dog deserves the right home</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Breed matching, rescue connections, home readiness and first-year support — all guided by Mira.</div>
         </div>
 
-        {/* Soul Profile */}
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="adopt" token={token} /></div>}
-
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(251,113,133,0.14),rgba(251,113,133,0.20))', border:'1px solid rgba(251,113,133,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#E11D48' }}>{petName}</span> welcome a new friend?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Resources and support for making {petName}'s new sibling feel at home.
-            </div>
-          </div>
-        )}
-
-        {/* Pawrent Journey First Steps */}
-        {currentPet && (
-          <div style={{ padding:'0 16px 8px' }}>
-            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="adopt" />
-          </div>
-        )}
+        {/* Adopt Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={ADOPT_STRIP_CATS}
+          activeId={adoptStage}
+          onSelect={id => {
+            vibe();
+            if (id === 'guidance') { setActiveTab('services'); }
+            else { setAdoptStage(id); setActiveTab('adopt'); }
+          }}
+          accentColor={G.rose}
+        />
 
         {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
+        <div className="ios-tab-bar">
           {[
-            { id:'adopt',    label:'🐾 Find Your Dog' },
-            { id:'services', label:'💌 Book Guidance' },
+            { id:'adopt',    label:'🐾 Adopt' },
+            { id:'services', label:'🐕 Services' },
             { id:'find',     label:'📍 Find Rescue' },
           ].map(tab => (
-            <button key={tab.id} className={`adopt-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`adopt-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
@@ -181,8 +227,22 @@ export default function AdoptMobilePage() {
         {/* TAB 1: Find Your Dog */}
         {activeTab === 'adopt' && (
           <div>
+            {/* Soul Profile + CTA + Pawrent — inside Tab 1, same as Play/Care */}
+            {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="adopt" token={token} /></div>}
+            {currentPet && (
+              <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(251,113,133,0.14),rgba(251,113,133,0.20))', border:'1px solid rgba(251,113,133,0.35)', borderRadius:18, padding:'16px' }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+                  How would <span style={{ color:'#E11D48' }}>{petName}</span> welcome a new friend?
+                </div>
+                <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+                  Resources and support for making {petName}'s new sibling feel at home.
+                </div>
+              </div>
+            )}
+            {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="adopt" /></div>}
+
             {/* Stage Tracker */}
-            <div style={{ padding:'16px 16px 8px' }}>
+            <div style={{ padding:'12px 16px 8px' }}>
               <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (
@@ -198,17 +258,39 @@ export default function AdoptMobilePage() {
             {/* Mira Bar */}
             <div style={{ margin:'0 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:'rgba(249,168,201,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON ADOPTION</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"Every dog deserves a forever home. I'll help you find the right match and guide you through every step."</div>
-              <button className="adopt-cta" onClick={() => { vibe('medium'); request('Start adoption journey', { channel:'adopt_mira_cta' }); }}>Start Adoption Journey →</button>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"The right match between a dog and their family changes two lives forever. I make sure it's the right one."</div>
+              <button className="adopt-cta" onClick={() => { vibe('medium'); setShowAdoptPlan(true); }}>Build {petName}'s Adoption Plan →</button>
             </div>
 
             {/* Guided Paths */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
 
-            {/* Products */}
-            {products.length > 0 && (
-              <div style={{ padding:'0 16px 24px' }}>
-                <div style={{ fontSize:18, fontWeight:700, marginBottom:12 }}>Adoption Essentials for {petName}</div>
+            {/* First Time Pawrent — emotional centrepiece */}
+            {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+
+            {/* Adopt Product Sections */}
+            <div style={{ padding:'0 16px 24px' }}>
+              <div style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>Everything for {petName}'s arrival</div>
+              {adoptSections.length > 0 ? (
+                <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
+                  {adoptSections.map(section => (
+                    <div key={section.id}>
+                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                        <span style={{ fontSize:20 }}>{section.icon}</span>
+                        <span style={{ fontSize:16, fontWeight:800, color:'#1A0A2E' }}>{section.label}</span>
+                        <span style={{ fontSize:12, color:'#6B7280', marginLeft:4 }}>({section.products.length})</span>
+                      </div>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        {section.products.slice(0, 6).map(p => (
+                          <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
+                            onAddToCart={() => handleAddToCart(p)}
+                            onClick={() => { vibe(); setSelectedProduct(p); }} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : products.length > 0 ? (
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
                   {products.slice(0, 20).map(p => (
                     <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
@@ -216,8 +298,8 @@ export default function AdoptMobilePage() {
                       onClick={() => { vibe(); setSelectedProduct(p); }} />
                   ))}
                 </div>
-              </div>
-            )}
+              ) : null}
+            </div>
 
             {/* Mira Imagines */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="adopt" token={token} /></div>}
@@ -227,29 +309,25 @@ export default function AdoptMobilePage() {
         {/* TAB 2: Book Guidance */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Adoption Guidance Services</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:20 }}>Concierge®-led support for every stage of your journey.</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {ADOPT_SERVICES.map(svc => (
-                <div key={svc.id} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px', overflow:'hidden' }}>
-                  <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10 }}>
-                    <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon}</div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline}</div>
-                    </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.rose, flexShrink:0 }}></div>
-                  </div>
-                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc}</div>
-                  <button onClick={() => handleBookService(svc)} data-testid={`adopt-svc-book-${svc.id}`}
-                    style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.rose})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                    Book via Concierge® →
-                  </button>
-                </div>
-              ))}
+            <div style={{ paddingBottom:16 }}>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="adopt-concierge-builder-btn"
+                style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+                  background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+                  color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                <span style={{ fontSize:18 }}>✦</span>
+                <span>What does {petName} need? Ask Concierge®</span>
+              </button>
             </div>
-
-            {/* MiraImaginesCard */}
+            <PillarServiceSection
+              pillar="adopt"
+              pet={currentPet}
+              title="Adoption Guidance, Personally"
+              accentColor={G.rose}
+              darkColor={G.dark}
+              isMobile
+            />
+            {/* Mira Imagines Cards */}
             {currentPet && (
               <div style={{ marginTop:24 }}>
                 {[
@@ -285,6 +363,14 @@ export default function AdoptMobilePage() {
           </div>
         )}
       </div>
+    
+      <MiraPlanModal
+        isOpen={showAdoptPlan}
+        onClose={() => setShowAdoptPlan(false)}
+        pet={currentPet}
+        pillar="adopt"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }

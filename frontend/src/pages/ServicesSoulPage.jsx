@@ -675,9 +675,13 @@ const ServicesSoulPage = () => {
         {/* Hero */}
         <div style={{ textAlign:"center", padding:"32px 0 24px",
                       borderBottom:`1px solid ${G.border}`, marginBottom:24 }}>
-          <div style={{ width:64, height:64, borderRadius:"50%", background:MIRA_ORB,
+          <div style={{ width:64, height:64, borderRadius:"50%", background: petData?.photo_url ? "transparent" : MIRA_ORB,
                         display:"flex", alignItems:"center", justifyContent:"center",
-                        fontSize:28, color:"#fff", margin:"0 auto 12px" }}>✦</div>
+                        fontSize:28, color:"#fff", margin:"0 auto 12px", overflow:"hidden", border: "2px solid rgba(255,255,255,0.2)" }}>
+            {petData?.photo_url
+              ? <img src={petData.photo_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";e.target.parentNode.innerHTML="✦";e.target.parentNode.style.background=MIRA_ORB;}}/>
+              : "✦"}
+          </div>
           <h1 style={{ fontSize:"clamp(1.875rem,4vw,2.5rem)", fontWeight:800,
                        color:G.deep, fontFamily:"Georgia,'Times New Roman',serif", margin:"0 0 6px" }}>
             {petData ? `Services for ${petName}` : "All Services"}

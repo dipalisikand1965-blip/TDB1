@@ -1,0 +1,62 @@
+{
+  "summary": "Tested all 8 Emotional UX Sprint features on mobile (390px) and desktop (1280px) viewports. All core features pass. 1 data-format note for allergy pill. Tested: Farewell toggle, Adopt hero/Mira quote, FirstTimePawrent on Adopt+Care, ConciergeRequestBuilder preselect+Step0, desktop button stack.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "ConciergeRequestBuilder Step 0 - Allergy pill",
+        "issue": "Allergy info NOT showing in breed pill for Mojo (shows only 'Indie', no 'allergic to chicken, beef'). Root cause: Mojo's allergies stored as a health description string ('chicken, beef allergy - otherwise healthy'), NOT as structured arrays in pet.allergies, pet.health.allergies, or pet.dsa.food_allergies. ConciergeRequestBuilder code correctly spreads those arrays but they are all empty for this user. Not a code bug - data format mismatch between pet profile storage and component expectation.",
+        "affected_selectors": ["[data-testid='concierge-builder-float-btn']"],
+        "priority": "LOW"
+      }
+    ],
+    "design_issues": []
+  },
+  "passing_tests": [
+    "Farewell mobile: 'While Mojo is here' toggle text correctly shows pet name ✅",
+    "Farewell mobile: 'When the time comes' toggle text is correct ✅",
+    "Farewell mobile: Toggle positioned BELOW hero section ✅",
+    "Farewell mobile: Clicking 'When the time comes' changes Mira bar text to 'You don't have to figure this out alone...' ✅",
+    "Farewell mobile: CTA changes from 'Capture Mojo's Story →' to 'Build Mojo's Farewell Plan →' ✅",
+    "Adopt mobile hero subtitle: 'Every dog deserves the right home' ✅",
+    "Adopt mobile Mira bar quote: 'The right match between a dog and their family changes two lives forever...' ✅",
+    "FirstTimePawrent card renders on Adopt mobile page (after GuidedAdoptPaths) ✅",
+    "FirstTimePawrent header: '🐾 First time with a dog?' with expand chevron ✅",
+    "FirstTimePawrent checklist expands showing 6 items (Vet registration, Feeding schedule, Safe space, First night guide, Emergency contacts, Week one routine) ✅",
+    "FirstTimePawrent card renders on Care mobile page ABOVE CareCategoryStrip (top=377 vs strip=495) ✅",
+    "FirstTimePawrent expand behavior same on Care page ✅",
+    "FirstTimePawrent CTA 'Build Mojo's First Week Plan →' found with data-testid='first-pawrent-cta-btn' ✅",
+    "FirstTimePawrent CTA opens ConciergeRequestBuilder modal ✅",
+    "ConciergeRequestBuilder opens on Step 1 (Life Stage Support questions) directly when preselect='lifestage' — NOT Step 0 ✅",
+    "ConciergeRequestBuilder Step 0 shows '✦ CONCIERGE® · REGISTERED TRADEMARK' header ✅",
+    "ConciergeRequestBuilder Step 0 shows breed pill with 'Indie' for Mojo ✅",
+    "ConciergeRequestBuilder Step 0 shows all 7 service cards ✅",
+    "Desktop Concierge® Requests button at bottom: 96px from viewport bottom, right: 24px ✅",
+    "Desktop Mira orb (Ask Mira) at bottom: 24px — BELOW Concierge button (visually stacked correctly) ✅",
+    "Desktop button stack: No overlapping — Concierge (96px) clearly above Mira orb (24px) ✅"
+  ],
+  "failing_tests": [],
+  "test_report_links": ["/app/test_reports/iteration_238.json"],
+  "action_items": [
+    "LOW PRIORITY: ConciergeRequestBuilder allergy pill may not display for pets whose allergies are stored as a health description string rather than structured pet.allergies / pet.health.allergies / pet.dsa.food_allergies arrays. Consider mapping the health description allergy text to a structured field, or adding a fallback parser in ConciergeRequestBuilder that reads the health dimension text. Affects display only — no functional impact on concierge request flow."
+  ],
+  "critical_code_review_comments": [
+    "ConciergeRequestBuilder.jsx: Allergy detection reads from 3 fields (pet.allergies, pet.health.allergies, pet.dsa.food_allergies). If pets store allergies as a string description in the health record (e.g. 'chicken, beef allergy - otherwise healthy'), the pill will only show the breed, not allergies. May need a data migration or parser to extract allergy items from the health dimension description text.",
+    "FarewellMobilePage.jsx: The farewellMode toggle uses local state correctly. Text and CTA both update reactively. Implementation is solid.",
+    "Desktop PillarPageLayout.jsx: Concierge button (bottom:96, zIndex:900) and Mira widget (bottom:24, zIndex:9999) do not overlap — correct stack. Mira's zIndex is higher but since it's lower in the viewport, no visual conflict."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "frontend": "100% (21/21 requirements passing, 1 data-format note)"
+  },
+  "seed_data_creation": "",
+  "test_credentials": "dipali@clubconcierge.in / test123 (Mojo - Indie, 100% Soul profile)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 8 Emotional UX Sprint features verified working. Tested on mobile viewport 390px for Farewell/Adopt/Care pages and desktop 1280px for button stack. Key findings: (1) Farewell toggle fully functional with dynamic Mira text + CTA changes. (2) Adopt page hero/Mira quote updated correctly. (3) FirstTimePawrent renders correctly on both Adopt (below GuidedAdoptPaths) and Care (above CareCategoryStrip). (4) ConciergeRequestBuilder preselect='lifestage' correctly skips Step 0 to Step 1. (5) Desktop button stack: Concierge at 96px, Mira orb at 24px - no overlap. Only note: allergy pill only shows breed (Indie) but not allergies for test user Mojo, because allergies stored as description text not structured array.",
+  "rca_of_issue": "Allergy pill in ConciergeRequestBuilder Step 0: Code reads from pet.allergies[], pet.health.allergies[], pet.dsa.food_allergies[]. Mojo's health record has 'chicken, beef allergy' as a descriptive text string in health dimensions, not as a structured array. The three checked fields are all empty arrays. Fix: Either store allergies as arrays in pet profile OR add a text parser in ConciergeRequestBuilder to extract allergy names from health description text."
+}

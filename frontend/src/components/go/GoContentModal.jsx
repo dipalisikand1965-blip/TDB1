@@ -506,7 +506,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
             )}
 
             {/* Content */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: 20, paddingBottom: 80 }}>
+            <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth:'none', msOverflowStyle:'none', padding: 20, paddingBottom: 80 }}>
               {goTab === "personalised" ? (
                 <div>
                   <PersonalisedBreedSection pet={pet} pillar="go" />

@@ -671,12 +671,13 @@ function ModalShell({ onClose, children, noPadding }) {
       <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.55)" }} />
       <div
         onClick={e => e.stopPropagation()}
+        className="no-sb"
         style={{
           position:"fixed", zIndex:10000,
           top:"50%", left:"50%", transform:"translate(-50%,-50%)",
           background:"#fff", borderRadius:20,
           width:"min(720px,calc(100vw - 40px))", maxHeight:"90vh",
-          overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.20)",
+          overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none", boxShadow:"0 24px 80px rgba(0,0,0,0.20)",
           padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0"
         }}
       >

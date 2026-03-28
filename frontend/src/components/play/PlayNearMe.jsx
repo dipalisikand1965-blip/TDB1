@@ -547,7 +547,7 @@ export default function PlayNearMe({ pet, onBook }) {
         <div style={{ textAlign:"center", padding:"40px 20px", background:"#fff", borderRadius:16, border:`1px solid rgba(231,111,81,0.12)`, marginBottom:16 }}>
           <div style={{ fontSize:40, marginBottom:12 }}>🔍</div>
           <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:6 }}>
-            No {PLAY_TYPES.find(t=>t.id===activeType)?.label.toLowerCase()||"spots"} found in {activeQuery==="near_me"?"your area":activeQuery}
+            No {PLAY_TYPES.find(t=>t.id===activeType && t.id!=="all")?.label.toLowerCase()||"play spots"} found in {activeQuery==="near_me"?"your area":activeQuery}
           </div>
           <div style={{ fontSize:13, color:G.mutedText, marginBottom:20, lineHeight:1.6 }}>
             Google doesn't have full coverage here — but our Concierge® researches personal recommendations too.

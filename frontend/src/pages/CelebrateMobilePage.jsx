@@ -37,6 +37,8 @@ import { SoulCelebrationPillars } from '../components/celebrate';
 import BirthdayCountdown from '../components/celebrate/BirthdayCountdown';
 import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall';
 import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import '../styles/mobile-design-system.css';
 
 const C = {
@@ -142,7 +144,7 @@ function CelebratePetCard({ pet, onOpen }) {
   );
 }
 
-function CelebrateMiraBar({ pet, onOpen }) {
+function CelebrateMiraBar({ pet, onOpen, onPlan }) {
   const name = pet?.name || 'your dog';
   const allergies = getAllergies(pet);
   const text = allergies.length > 0
@@ -153,6 +155,7 @@ function CelebrateMiraBar({ pet, onOpen }) {
       <div style={{ fontSize:14, fontWeight:700, color:'rgba(233,30,140,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {name.toUpperCase()}&apos;S CELEBRATIONS</div>
       <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>&quot;{text}&quot;</div>
       <button className="cp-cta" onClick={() => { vibe('medium'); onOpen(); }}>See Mira&apos;s Picks for {name} →</button>
+      <button className="cp-cta" onClick={() => { vibe('medium'); onPlan?.(); }} style={{ marginTop:8, opacity:0.85 }}>Build {name}&apos;s Celebration Plan →</button>
     </div>
   );
 }
@@ -256,6 +259,8 @@ export default function CelebrateMobilePage() {
   const { request, book } = useConcierge({ pet:currentPet, pillar:'celebrate' });
 
   const [loading, setLoading] = useState(true);
+  const [showCelebratePlan, setShowCelebratePlan] = useState(false);
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [intakeOpen, setIntakeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -345,13 +350,14 @@ export default function CelebrateMobilePage() {
       { channel:'celebrate_intake', metadata:{ type, notes } });
   }, [request, currentPet]);
 
-  if (loading) return <PillarPageLayout pillar="celebrate" hideHero hideNavigation><CelebrateLoadingState /></PillarPageLayout>;
+  if (loading) return <PillarPageLayout pillar="celebrate" hideHero hideNavigation><CelebrateLoadingState />
+      </PillarPageLayout>;
 
   if (!currentPet) return (
     <PillarPageLayout pillar="celebrate" hideHero hideNavigation>
       <style>{CSS}</style>
       <div className="cp mobile-page-container"><CelebrateEmptyState onAddPet={() => navigate('/join')} /></div>
-    </PillarPageLayout>
+      </PillarPageLayout>
   );
 
   const petName = currentPet.name;
@@ -419,17 +425,14 @@ export default function CelebrateMobilePage() {
         {/* ── 2. Category Strip (outside tabs, always visible) ── */}
         <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />
 
-        {/* ── 3. Tab Bar: Celebrate | Near Me ── */}
-        <div style={{ display:'flex', gap:6, padding:'8px 16px 0', borderBottom:'1px solid rgba(155,89,182,0.25)', marginBottom:0 }}>
-          {[{ id:'celebrate', label:'Celebrate' }, { id:'nearme', label:'Near Me' }].map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
+        {/* ── 3. Tab Bar: Celebrate | Services | Near Me ── */}
+        <div className="ios-tab-bar">
+          {[{ id:'celebrate', label:'🎉 Celebrate' }, { id:'services', label:'🐕 Services' }, { id:'nearme', label:'📍 Find Venues' }].map(t => (
+            <button key={t.id}
+              className={`ios-tab${activeTab===t.id?' active':''}`}
+              style={activeTab===t.id ? { backgroundColor:'#1a1028', color:'#fff' } : {}}
               data-testid={`celebrate-tab-${t.id}`}
-              style={{ flex:1, padding:'10px 4px', borderRadius:'12px 12px 0 0', border:'none',
-                background: activeTab===t.id ? 'rgba(155,89,182,0.12)' : 'transparent',
-                color: activeTab===t.id ? '#9B59B6' : '#6B7280',
-                fontSize:14, fontWeight: activeTab===t.id ? 700 : 500, cursor:'pointer',
-                fontFamily:'inherit', borderBottom: activeTab===t.id ? '2px solid #9B59B6' : '2px solid transparent',
-                transition:'all 0.15s' }}>
+              onClick={() => setActiveTab(t.id)}>
               {t.label}
             </button>
           ))}
@@ -465,7 +468,7 @@ export default function CelebrateMobilePage() {
         <SoulCelebrationPillars pet={currentPet} />
 
         {/* Mira bar */}
-        <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} />
+        <CelebrateMiraBar pet={currentPet} onOpen={() => setMiraPicksOpen(true)} onPlan={() => setShowCelebratePlan(true)} />
 
         {/* Mira's Birthday Box */}
         {currentPet && (
@@ -478,6 +481,26 @@ export default function CelebrateMobilePage() {
           </div>
         )}
         </>)}
+
+        {/* ── SERVICES TAB ── */}
+        {activeTab === 'services' && (
+          <div style={{ padding:'16px 16px 24px' }}>
+            <div style={{ background:'#0A0A14', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:13, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ CELEBRATE CONCIERGE®</div>
+              <div style={{ fontSize:15, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Birthday cakes, party planning, gifting, venue booking — all arranged for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)}
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'none',
+                  background:'linear-gradient(135deg,#9B59B6,#C084FC)', color:'#fff',
+                  fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                Book Celebrate Concierge® →
+              </button>
+            </div>
+            {/* Celebrate service cards from Service Box */}
+            <CelebrateServiceGrid pet={currentPet} />
+          </div>
+        )}
 
         {/* ── NEAR ME TAB ── */}
         {activeTab === 'nearme' && (
@@ -593,6 +616,20 @@ export default function CelebrateMobilePage() {
         } />
 
       </div>
+      
+      <MiraPlanModal
+        isOpen={showCelebratePlan}
+        onClose={() => setShowCelebratePlan(false)}
+        pet={currentPet}
+        pillar="celebrate"
+        token={token}
+      />
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 }

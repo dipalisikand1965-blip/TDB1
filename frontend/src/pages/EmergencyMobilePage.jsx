@@ -22,7 +22,22 @@ import EmergencyNearMe from '../components/emergency/EmergencyNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+
+const EMERG_STRIP_CATS = [
+  { id:"kit",       icon:"📦", label:"First Aid Kit",   iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
+  { id:"vets",      icon:"🏥", label:"24hr Vets",       iconBg:"linear-gradient(135deg,#E0F2FE,#BAE6FD)" },
+  { id:"poison",    icon:"☠️", label:"Poison Response", iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
+  { id:"lost",      icon:"📍", label:"Lost Pet",        iconBg:"linear-gradient(135deg,#DCFCE7,#BBF7D0)" },
+  { id:"transport", icon:"🚐", label:"Transport",       iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+  { id:"course",    icon:"📚", label:"First Aid Course",iconBg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)" },
+  { id:"plan",      icon:"🛡️", label:"Safety Plan",     iconBg:"linear-gradient(135deg,#F1F5F9,#E2E8F0)" },
+];
 
 const G = {
   crimson:'#DC2626', mid:'#991B1B', dark:'#1A0000', pale:'#FEF2F2',
@@ -57,7 +72,9 @@ export default function EmergencyMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showEmergencyPlan, setShowEmergencyPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("emergency");
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState("products");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -125,6 +142,21 @@ export default function EmergencyMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🚨</div><div>Checking emergency readiness…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showEmergencyPlan}
+        onClose={() => setShowEmergencyPlan(false)}
+        pet={currentPet}
+        pillar="emergency"
+        token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
@@ -177,6 +209,18 @@ export default function EmergencyMobilePage() {
           </button>
         </div>
 
+        {/* Emergency Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={EMERG_STRIP_CATS}
+          activeId={null}
+          onSelect={id => {
+            if (id === 'vets') { vibe(); setActiveTab('find'); }
+            else if (id === 'plan') { vibe('medium'); setShowEmergencyPlan(true); }
+            else { vibe(); setActiveTab('emergency'); setDimTab('services'); }
+          }}
+          accentColor={G.crimson}
+        />
+
         {/* Soul Profile */}
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="emergency" token={token} /></div>}
 
@@ -193,13 +237,15 @@ export default function EmergencyMobilePage() {
         )}
 
         {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
+        <div className="ios-tab-bar">
           {[
-            { id:'emergency', label:'🩺 Emergency Kit' },
-            { id:'services',  label:'📋 Book Help' },
+            { id:'emergency', label:'🚨 Emergency' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Vet' },
           ].map(tab => (
-            <button key={tab.id} className={`emerg-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`emergency-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
@@ -216,10 +262,13 @@ export default function EmergencyMobilePage() {
               <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
                 "The best emergency is one you're prepared for. Let me check {petName}'s readiness."
               </div>
-              <button className="emerg-cta" onClick={() => { vibe('medium'); request('Emergency preparedness check', { channel:'emergency_mira_cta' }); }}>
-                Check Readiness →
+              <button className="emerg-cta" onClick={() => { vibe('medium'); setShowEmergencyPlan(true); }}>
+                Build {petName}'s Safety Plan →
               </button>
             </div>
+
+            {/* Pawrent Journey First Steps */}
+            {currentPet && <div style={{ padding:'8px 16px 0' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="emergency" /></div>}
 
             {/* Products / Services dimTab */}
             <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
@@ -281,29 +330,42 @@ export default function EmergencyMobilePage() {
 
         {/* TAB 2: Book Help */}
         {activeTab === 'services' && (
+          <>
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
           <div style={{ padding:'16px 16px 24px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Emergency Services</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:20 }}>Concierge® responds within 2 hours. For life-threatening — call vet directly.</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {(services.length ? services : EMERG_SERVICES).map((svc, i) => (
-                <div key={svc.id || i} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px' }}>
-                  <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10 }}>
-                    <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon || '🩺'}</div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || ''}</div>
-                    </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.crimson, flexShrink:0 }}></div>
-                  </div>
-                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{svc.desc || svc.description || ''}</div>
-                  <button onClick={() => handleBookService(svc)} data-testid={`emergency-svc-book-${svc.id || i}`}
-                    style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.crimson})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                    Get Emergency Help →
-                  </button>
-                </div>
-              ))}
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#1A0000', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Emergency care, poison control, vet transport — Concierge® responds fast for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="emergency-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(220,38,38,0.4)', background:'linear-gradient(135deg,#1A0000,#450A0A)', color:'#F87171', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Emergency Request →
+              </button>
             </div>
+            <PillarServiceSection
+              pillar="emergency"
+              pet={currentPet}
+              title="Emergency Help, Personally"
+              accentColor={G.crimson}
+              darkColor={G.dark}
+              isMobile
+            />
           </div>
+          </>
         )}
 
         {/* TAB 3: Find Vet */}
@@ -340,6 +402,14 @@ export default function EmergencyMobilePage() {
           </div>
         )}
       </div>
+    
+      <MiraPlanModal
+        isOpen={showEmergencyPlan}
+        onClose={() => setShowEmergencyPlan(false)}
+        pet={currentPet}
+        pillar="emergency"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }

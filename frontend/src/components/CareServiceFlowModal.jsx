@@ -342,7 +342,7 @@ const CareServiceFlowModal = ({
         </div>
         
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto no-sb p-6">
           {/* Pet Selector (if multiple pets) */}
           {userPets.length > 1 && (
             <div className="mb-6">

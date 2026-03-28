@@ -1,6 +1,6 @@
 /**
  * FarewellMobilePage.jsx — /farewell (mobile)
- * 3-tab layout: Legacy & Memorial | Get Support | Find Care
+ * 3-tab layout: Memorial & Grief | Get Support | Find Care
  * Colour: Deep Midnight #1A1A2E + Soft Indigo #6366F1
  * The most sacred pillar. For Mystique, and every beloved dog.
  */
@@ -14,6 +14,7 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedFarewellPaths from '../components/farewell/GuidedFarewellPaths';
@@ -23,7 +24,21 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+
+const FAREWELL_STRIP_CATS = [
+  { id:"eol",      icon:"🕊️", label:"End of Life",      iconBg:"linear-gradient(135deg,#EEF2FF,#E0E7FF)" },
+  { id:"support",  icon:"💙", label:"Support",           iconBg:"linear-gradient(135deg,#EFF6FF,#DBEAFE)" },
+  { id:"cremation",icon:"🌿", label:"Cremation",         iconBg:"linear-gradient(135deg,#F0FDF4,#DCFCE7)" },
+  { id:"memorial", icon:"🌷", label:"Memorial",          iconBg:"linear-gradient(135deg,#FDF2F8,#FCE7F3)" },
+  { id:"ceremony", icon:"🕯️", label:"Ceremony",          iconBg:"linear-gradient(135deg,#FFFBEB,#FEF3C7)" },
+  { id:"grief",    icon:"💜", label:"Grief Support",     iconBg:"linear-gradient(135deg,#FAF5FF,#EDE9FE)" },
+  { id:"tribute",  icon:"✦",  label:"Soul Made™",        iconBg:"linear-gradient(135deg,#F8FAFC,#F1F5F9)" },
+];
 
 const G = {
   deep:'#1A1A2E', mid:'#4B4B6E', indigo:'#6366F1', light:'#C7D2FE',
@@ -50,7 +65,7 @@ const FAREWELL_SERVICES = [
 ];
 
 
-const PROD_TABS = ["Memorial & Legacy", "Grief Support", "Final Care"];
+const PROD_TABS = ["Memorial & Grief", "Keepsakes", "Final Care"];
 
 export default function FarewellMobilePage() {
   const { token } = useAuth();
@@ -61,7 +76,10 @@ export default function FarewellMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
+  const [showFarewellPlan, setShowFarewellPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("farewell");
+  const [farewellMode, setFarewellMode] = useState('here'); // 'here' | 'time'
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [prodTab, setProdTab] = useState(PROD_TABS[0]);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -75,11 +93,23 @@ export default function FarewellMobilePage() {
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
   }, [contextPets, currentPet, setCurrentPet]);
 
+  // Safety: stop loading after 3 seconds even if context never resolves
   useEffect(() => {
-    if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    const t = setTimeout(() => setLoading(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    // Always fetch farewell products — breed filter applied client-side after
+    const breedParam = currentPet?.breed ? `&breed=${encodeURIComponent(currentPet.breed)}` : '';
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=200${breedParam}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed), currentPet)); })
+      .then(d => {
+        if (!d?.products) return;
+        const base = excludeCakeProducts(d.products);
+        // Apply breed+Mira filtering only when a pet is selected
+        setProducts(currentPet ? applyMiraFilter(filterBreedProducts(base, currentPet.breed), currentPet) : base);
+      })
       .catch(() => {});
     // Fetch farewell services from Service Box API
     fetch(`${API_URL}/api/service-box/services?pillar=farewell&limit=20`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
@@ -104,19 +134,31 @@ export default function FarewellMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌷</div><div>Preparing farewell space…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
   const petName = currentPet?.name || 'your dog';
   const breed = (currentPet?.breed || "").split("(")[0].trim();
 
-  // Filter products by sub-tab
-  const filteredProducts = products.filter(p => {
-    const n = (p.name || "").toLowerCase();
-    if (prodTab === "Memorial & Legacy") return n.includes("urn") || n.includes("memorial") || n.includes("paw") || n.includes("print") || n.includes("portrait") || n.includes("memory") || n.includes("tribute") || products.indexOf(p) < 8;
-    if (prodTab === "Grief Support") return n.includes("grief") || n.includes("book") || n.includes("journal") || n.includes("comfort") || products.indexOf(p) < 8;
-    return true;
-  });
+  // Filter products by sub-tab + farewellMode
+  const filteredProducts = farewellMode === 'here'
+    ? products.filter(p => {
+        const n = (p.name || '').toLowerCase();
+        return n.includes('paw') || n.includes('print') || n.includes('portrait') || n.includes('photo') || n.includes('memory') || n.includes('book') || n.includes('frame') || n.includes('bandana') || products.indexOf(p) < 8;
+      })
+    : products.filter(p => {
+        const n = (p.name || "").toLowerCase();
+        if (prodTab === "Memorial & Grief") return n.includes("urn") || n.includes("memorial") || n.includes("paw") || n.includes("print") || n.includes("portrait") || n.includes("memory") || n.includes("tribute") || products.indexOf(p) < 8;
+        if (prodTab === "Keepsakes") return n.includes("grief") || n.includes("book") || n.includes("journal") || n.includes("comfort") || n.includes("frame") || n.includes("ornament") || products.indexOf(p) < 8;
+        return true;
+      });
 
   return (
     <PillarPageLayout pillar="farewell" hideHero hideNavigation>
@@ -147,33 +189,34 @@ export default function FarewellMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Honour {petName}'s Legacy</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Their memory lives on in everything they taught you."</div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Every moment with {petName} is a gift</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Capture memories now. And when the time comes — we hold your hand through every step."</div>
         </div>
 
-        {/* Soul Profile */}
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="farewell" token={token} /></div>}
+        {/* Farewell Category Strip — always visible above tabs */}
+        <PillarCategoryStrip
+          categories={FAREWELL_STRIP_CATS}
+          activeId={null}
+          onSelect={id => {
+            vibe();
+            if (id === 'memorial' || id === 'tribute') { setActiveTab('farewell'); setProdTab('Memorial & Grief'); }
+            else if (id === 'grief') { setActiveTab('farewell'); setProdTab('Keepsakes'); }
+            else if (id === 'eol' || id === 'cremation' || id === 'ceremony' || id === 'support') { setActiveTab('services'); }
+            else setActiveTab('farewell');
+          }}
+          accentColor={G.indigo}
+        />
 
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(129,140,248,0.14),rgba(129,140,248,0.20))', border:'1px solid rgba(129,140,248,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#4F46E5' }}>{petName}</span> be remembered?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Tributes, keepsakes and celebrations of life — crafted with love for {petName}.
-            </div>
-          </div>
-        )}
-
-        {/* Tab Bar */}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
+        {/* Tab Bar — sticky */}
+        <div className="ios-tab-bar">
           {[
-            { id:'farewell',  label:'🌷 Legacy & Memorial' },
-            { id:'services',  label:'💙 Get Support' },
+            { id:'farewell',  label:'🌷 Farewell' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Care' },
           ].map(tab => (
-            <button key={tab.id} className={`farewell-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`farewell-tab-${tab.id}`}
               onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
@@ -181,17 +224,54 @@ export default function FarewellMobilePage() {
           ))}
         </div>
 
-        {/* TAB 1: Legacy & Memorial */}
+        {/* TAB 1: Memorial & Grief */}
         {activeTab === 'farewell' && (
           <div>
-            {/* Mira Reflection */}
-            <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ A MESSAGE FROM MIRA</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
-                "You don't have to figure this out alone. Whatever you need for {petName}, I'll help hold every detail gently. 🌷"
+            {/* Mode Toggle — While here vs When the time comes */}
+            <div style={{ display:'flex', margin:'12px 16px 0', background:'rgba(99,102,241,0.08)', borderRadius:14, padding:4 }}>
+              {[
+                { id:'here', label:"🌸 While they're still here" },
+                { id:'time', label:'🕊️ When the time comes' },
+              ].map(m => (
+                <button key={m.id} onClick={() => { vibe(); setFarewellMode(m.id); }}
+                  data-testid={`farewell-mode-${m.id}`}
+                  style={{ flex:1, padding:'10px 8px', borderRadius:11, border:'none', fontSize:12, fontWeight:700,
+                    cursor:'pointer', textAlign:'center', transition:'all 0.2s',
+                    background: farewellMode===m.id ? G.indigo : 'transparent',
+                    color: farewellMode===m.id ? '#fff' : G.mutedText }}>
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Soul Profile + CTA + Pawrent — inside Tab 1 */}
+            {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="farewell" token={token} /></div>}
+            {currentPet && (
+              <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(129,140,248,0.14),rgba(129,140,248,0.20))', border:'1px solid rgba(129,140,248,0.35)', borderRadius:18, padding:'16px' }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+                  Honouring <span style={{ color:'#4F46E5' }}>{petName}</span> — every memory held gently.
+                </div>
+                <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+                  Urns, paw prints, memorial portraits and keepsakes — crafted with love, whenever you're ready.
+                </div>
               </div>
-              <button className="farewell-cta" onClick={() => { vibe('medium'); request('Farewell guidance', { channel:'farewell_mira_cta' }); }}>
-                Reach out to Mira →
+            )}
+            {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="farewell" /></div>}
+            <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>
+                {farewellMode === 'here' ? `✦ WHILE ${petName.toUpperCase()} IS STILL HERE` : '✦ A MESSAGE FROM MIRA'}
+              </div>
+              {farewellMode === 'here' ? (
+                <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
+                  "Every day with {petName} is a gift. When you're ready, we'll help you capture their memory — in paw prints, portraits, and pieces that last forever."
+                </div>
+              ) : (
+                <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
+                  "You don't have to figure this out alone. Whatever you need for {petName}, I'll help hold every detail gently. 🌷"
+                </div>
+              )}
+              <button className="farewell-cta" onClick={() => { vibe('medium'); setShowFarewellPlan(true); }}>
+                {farewellMode === 'here' ? `Capture ${petName}'s Story →` : `Build ${petName}'s Farewell Plan →`}
               </button>
             </div>
 
@@ -246,30 +326,53 @@ export default function FarewellMobilePage() {
 
         {/* TAB 2: Get Support */}
         {activeTab === 'services' && (
-          <div style={{ padding:'16px 16px 24px' }}>
-            <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Farewell Support Services</div>
-            <div style={{ fontSize:14, color:G.mutedText, marginBottom:4 }}>Gentle, concierge-led support — whenever you are ready.</div>
-            <div style={{ fontSize:14, color:G.mutedText, fontStyle:'italic', marginBottom:20 }}>"Take your time. We're here whenever you're ready." — Mira</div>
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              {(services.length ? services : FAREWELL_SERVICES).map(svc => (
-                <div key={svc.id} style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, padding:'16px', overflow:'hidden' }}>
-                  <div style={{ display:'flex', alignItems:'flex-start', gap:12, marginBottom:10 }}>
-                    <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon}</div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:2 }}>{svc.name}</div>
-                      <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline}</div>
-                    </div>
-                    <div style={{ fontSize:14, fontWeight:700, color:G.indigo, flexShrink:0 }}></div>
-                  </div>
-                  <div style={{ fontSize:14, color:'#555', lineHeight:1.6, marginBottom:12 }}>{(svc.desc || svc.description || '').replace(/{name}/g, petName)}</div>
-                  <button onClick={() => handleBookService(svc)} data-testid={`farewell-svc-book-${svc.id}`}
-                    style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${G.mid},${G.indigo})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                    Reach out gently →
-                  </button>
-                </div>
-              ))}
+          <>
+          {/* Mode-aware services intro */}
+          <div style={{ padding:'16px 16px 8px' }}>
+            <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:4 }}>
+              {farewellMode === 'here' ? `Honouring ${petName}'s life, gently` : `Gentle support, whenever you're ready`}
+            </div>
+            <div style={{ fontSize:13, color:G.mutedText }}>
+              {farewellMode === 'here'
+                ? 'Paw prints, memory boxes and keepsakes — held with care, for whenever you need them.'
+                : 'Everything arranged with compassion — euthanasia guidance, cremation, ceremony, grief support.'}
             </div>
           </div>
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
+          <div style={{ padding:'16px 16px 24px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#0A0A1E', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Memorial services, grief support, paw prints, tributes — gently arranged for your family.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="farewell-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(99,102,241,0.35)', background:'linear-gradient(135deg,#0A0A1E,#1E1B4B)', color:'#A5B4FC', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
+            <PillarServiceSection
+              pillar="farewell"
+              pet={currentPet}
+              title="Farewell Support, Personally"
+              accentColor={G.indigo}
+              darkColor={G.dark}
+              isMobile
+            />
+          </div>
+          </>
         )}
 
         {/* TAB 3: Find Care */}
@@ -295,6 +398,13 @@ export default function FarewellMobilePage() {
           </div>
         )}
       </div>
+      <MiraPlanModal
+        isOpen={showFarewellPlan}
+        onClose={() => setShowFarewellPlan(false)}
+        pet={currentPet}
+        pillar="farewell"
+        token={token}
+      />
     </PillarPageLayout>
   );
 }

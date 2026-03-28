@@ -34,6 +34,8 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
 import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -54,6 +56,7 @@ export default function CareMobilePage() {
   usePlatformTracking({ pillar:'care', pet:currentPet });
 
   const [loading, setLoading]       = useState(true);
+  const [showCarePlan, setShowCarePlan] = useState(false);
   const [activeTab, setActiveTab]   = useState('care');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [svcBooking, setSvcBooking] = useState({ isOpen:false, serviceType:'grooming' });
@@ -130,7 +133,7 @@ export default function CareMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌿</div><div>Loading…</div></div>
       </div>
-    </PillarPageLayout>
+      </PillarPageLayout>
   );
 
   const petName = currentPet?.name || 'your dog';
@@ -168,22 +171,14 @@ export default function CareMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Grooming, health, dental, coat — all personalised.</div>
         </div>
 
-        {/* ── CareCategoryStrip — EXACT DESKTOP COMPONENT ── */}
-        {/* This is Pic 3 — 9 rounded icon squares, each opens CareContentModal */}
-        {currentPet && (
-          <CareCategoryStrip
-            pet={currentPet}
-            onDimSelect={() => {}}
-            activeDim={null}
-            onSoulMade={() => setSoulMadeOpen(true)}
-          />
-        )}
+        {/* First Time Pawrent — emotional centrepiece */}
+        {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#40916C" /></div>}
 
         {/* ── Tab Bar ── */}
         <div className="ios-tab-bar" style={{ borderColor:G.greenBorder }}>
           {[
             { id:'care',      label:'🌿 Care' },
-            { id:'services',  label:'✂️ Services' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find-care', label:'📍 Find Care' },
           ].map(tab => (
             <button key={tab.id}
@@ -199,6 +194,16 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 1: Care ══════════ */}
         {activeTab === 'care' && currentPet && (
           <div style={{ padding:'16px' }}>
+
+            {/* CareCategoryStrip — inside Care tab (moved from above tab bar) */}
+            <div style={{ margin:'0 -16px 8px' }}>
+              <CareCategoryStrip
+                pet={currentPet}
+                onDimSelect={() => {}}
+                activeDim={null}
+                onSoulMade={() => setSoulMadeOpen(true)}
+              />
+            </div>
 
             {/* WellnessProfile — EXACT DESKTOP COMPONENT */}
             <WellnessProfile pet={currentPet} token={token} />
@@ -330,6 +335,15 @@ export default function CareMobilePage() {
               <div style={{ fontSize:20, fontWeight:800, color:'#fff', marginBottom:16 }}>{petName}'s breed-specific care, curated by Mira.</div>
               <button className="ios-btn-primary" style={{ background:`linear-gradient(135deg,${G.mid},${G.sage})`, fontSize:14 }}>Explore Soul Made →</button>
             </div>
+
+            {/* Mira Care Plan CTA */}
+            <div style={{ marginTop:12, background:`linear-gradient(135deg,rgba(116,198,157,0.12),rgba(116,198,157,0.06))`, border:`1px solid rgba(116,198,157,0.3)`, borderRadius:18, padding:'16px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+              <div>
+                <div style={{ fontSize:13, fontWeight:700, color:G.sage, marginBottom:2 }}>✦ MIRA'S CARE PLAN</div>
+                <div style={{ fontSize:14, color:G.darkText, fontWeight:600 }}>Health & wellness tailored to {petName}</div>
+              </div>
+              <button onClick={() => { vibe('medium'); setShowCarePlan(true); }} style={{ flexShrink:0, padding:'10px 18px', borderRadius:14, border:'none', background:G.sage, color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>Build Plan →</button>
+            </div>
           </div>
         )}
 
@@ -426,6 +440,14 @@ export default function CareMobilePage() {
         serviceType={svcBooking.serviceType}
         pet={currentPet}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen:false }))}
+      />
+      
+      <MiraPlanModal
+        isOpen={showCarePlan}
+        onClose={() => setShowCarePlan(false)}
+        pet={currentPet}
+        pillar="care"
+        token={token}
       />
     </PillarPageLayout>
   );

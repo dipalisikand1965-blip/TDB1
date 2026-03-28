@@ -9,6 +9,7 @@
  *   Footer    — "See full profile" → /my-pets
  */
 import { useState, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import MiraImaginesBreed from './common/MiraImaginesBreed';
 import { useConcierge } from '../hooks/useConcierge';
@@ -352,10 +353,11 @@ export default function PillarSoulProfile({
         </div>
       </div>
 
-      {/* Drawer overlay */}
-      {open && (
-        <div onClick={() => setOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', zIndex:50001, display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
+      {/* Drawer overlay — rendered via portal to escape overflow-x-hidden App wrapper */}
+      {open && ReactDOM.createPortal(
+        <div onClick={() => setOpen(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.72)', zIndex:100000, display:'flex', alignItems:'center', justifyContent:'center', padding:16, backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)' }}>
           <div onClick={e => e.stopPropagation()} data-testid={`${pillar}-profile-drawer`}
+            className="no-sb"
             style={{ width:'100%', maxWidth:'min(680px, 95vw)', maxHeight:'85vh', background:'#0F0A1E', borderRadius:20, border:`1px solid ${pColor}30`, overflowY:'auto' }}>
 
             {/* Header */}
@@ -538,7 +540,8 @@ export default function PillarSoulProfile({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

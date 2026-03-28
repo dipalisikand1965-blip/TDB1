@@ -1760,7 +1760,7 @@ function GoTabBar({ active, onChange }) {
   const tabs = [
     { id: "go",       label: "✈️ Go Essentials" },
     { id: "stay",     label: "🏡 Find a Stay" },
-    { id: "services", label: "🗺️ Book a Service" },
+    { id: "services", label: "🐕 Services" },
   ];
   return (
     <div style={{ background:"#fff", borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:"16px 16px 0", display:"flex", justifyContent:"center", gap:10, flexWrap:"wrap" }}>

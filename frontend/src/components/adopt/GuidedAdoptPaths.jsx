@@ -15,7 +15,8 @@
  *
  * WIRING: POST /api/concierge/adopt-path
  */
-import { useState } from "react";
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = { deep:"#4A0E2E", mid:"#7B1D4A", mauve:"#D4537E", light:"#F4C0D1", pale:"#FFF0F5", cream:"#FFF5F8", darkText:"#4A0E2E", mutedText:"#7B1D4A" };
@@ -306,7 +307,39 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 }
 
 function ModalShell({ onClose, children, noPadding }) {
-  return (<div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.50)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}><div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:20, width:"min(720px,100%)", maxHeight:"90vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.20)", padding:noPadding?0:"28px 28px 24px", border:"2px solid #F0E8E0" }}>{children}</div></div>);
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  return createPortal(
+    <>
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }} />
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position:"fixed", zIndex:10000,
+          top:"50%", left:"50%", transform:"translate(-50%,-50%)",
+          background:"#fff", borderRadius:20,
+          width:"min(720px,calc(100vw - 40px))", maxHeight:"90vh",
+          overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none",
+          boxShadow:"0 24px 80px rgba(0,0,0,0.35)",
+          padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0"
+        }}
+      >
+        {children}
+      </div>
+    </>,
+    document.body
+  );
 }
 
 function PathFlowModal({ path, pet, onClose }) {

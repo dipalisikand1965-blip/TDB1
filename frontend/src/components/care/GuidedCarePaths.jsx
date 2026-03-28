@@ -23,7 +23,7 @@
  *   body: { petId, pathId, selections }
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import { createPortal } from "react-dom";
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 import { tdc } from "../../utils/tdc_intent";
@@ -684,19 +684,34 @@ export function PathFlowModal({ path, pet, onClose }) {
 // MODAL SHELL
 // ─────────────────────────────────────────────────────────────
 function ModalShell({ onClose, children, noPadding }) {
+
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
   return createPortal(
     <>
       {/* Backdrop — portaled to body so no ancestor transform can contain it */}
-      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.55)" }} />
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }} />
       {/* Modal content — sibling at higher z-index, centered independently */}
       <div
         onClick={e => e.stopPropagation()}
+        className="no-sb"
         style={{
           position:"fixed", zIndex:10000,
           top:"50%", left:"50%", transform:"translate(-50%,-50%)",
           background:"#fff", borderRadius:20,
           width:"min(720px,calc(100vw - 40px))", maxHeight:"90vh",
-          overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.20)",
+          overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none", boxShadow:"0 24px 80px rgba(0,0,0,0.35)",
           padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0"
         }}
       >

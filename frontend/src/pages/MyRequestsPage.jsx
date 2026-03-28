@@ -18,6 +18,7 @@ const getMessageText = (msg) => msg?.text || msg?.content || '';
 
 const TABS = [
   { id: 'all',       label: 'All',      icon: '📬' },
+  { id: 'orders',    label: 'Orders',   icon: '🛍️' },
   { id: 'open',      label: 'Active',   icon: '⚡' },
   { id: 'bookings',  label: 'Bookings', icon: '📅' },
   { id: 'mira',      label: 'Mira',     icon: '✦' },
@@ -197,6 +198,7 @@ export default function MyRequestsPage() {
   // ── Filter tickets by tab ──
   const filtered = tickets.filter(t => {
     if (activeTab === 'all')      return true;
+    if (activeTab === 'orders')   return t.request_type === 'product_order' || !!t.order_id || t.category === 'shop' || t.auto_created_from === 'cake_order';
     if (activeTab === 'open')     return ['open', 'awaiting_concierge', 'in_progress'].includes(t.status);
     if (activeTab === 'bookings') return t.intent_primary === 'service_booking';
     if (activeTab === 'mira')     return t.channel?.includes('mira');
@@ -317,7 +319,7 @@ export default function MyRequestsPage() {
             </div>
           )}
         </div>
-        <div style={c.sub}>Your concierge requests · Updates every 15 seconds</div>
+        <div style={c.sub}>Your concierge requests & shop orders · Updates every 15 seconds</div>
         <div style={c.tabs}>
           {TABS.map(tab => (
             <button key={tab.id} style={c.tab(activeTab === tab.id)} onClick={() => setActiveTab(tab.id)}>
@@ -349,7 +351,7 @@ export default function MyRequestsPage() {
               >
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${pillarColor}18`, border: `1px solid ${pillarColor}35`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>
-                    {ticket.pillar === 'celebrate' ? '🎂' : ticket.pillar === 'care' ? '🌿' : ticket.pillar === 'dine' ? '🍽️' : ticket.pillar === 'go' ? '✈️' : ticket.pillar === 'emergency' ? '🚨' : '🐾'}
+                    {ticket.pillar === 'celebrate' ? '🎂' : ticket.pillar === 'care' ? '🌿' : ticket.pillar === 'dine' ? '🍽️' : ticket.pillar === 'go' ? '✈️' : ticket.pillar === 'shop' ? '🛍️' : ticket.pillar === 'emergency' ? '🚨' : ticket.request_type === 'product_order' || ticket.order_id ? '🛍️' : '🐾'}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

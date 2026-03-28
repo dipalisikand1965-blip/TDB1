@@ -54,6 +54,7 @@ const MiraUniversalBar = ({
   const [showMiraResponse, setShowMiraResponse] = useState(false);
   const [miraResponse, setMiraResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [whisperDismissed, setWhisperDismissed] = useState(false);
   const searchRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -67,6 +68,30 @@ const MiraUniversalBar = ({
     favorites: { treat: 'liver, jerkies' },
     soul_percentage: 70.4
   };
+
+  // ── Birthday Whisper Logic ────────────────────────────────────────────────
+  const getBirthdayWhisper = () => {
+    if (whisperDismissed) return null;
+    const rawDate = currentPet?.birthday || currentPet?.birth_date || currentPet?.dob || currentPet?.gotcha_date;
+    if (!rawDate) return null;
+    try {
+      const now = new Date();
+      const bday = new Date(rawDate);
+      // Set birthday to current year (or next year if already passed)
+      const next = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
+      if (next < now) next.setFullYear(now.getFullYear() + 1);
+      const daysUntil = Math.ceil((next - now) / (1000 * 60 * 60 * 24));
+      if (daysUntil > 7) return null;
+      const isToday = daysUntil === 0;
+      const isGotcha = !!(currentPet?.gotcha_date) && !currentPet?.birthday && !currentPet?.birth_date;
+      const label = isGotcha ? 'Gotcha Day' : 'birthday';
+      const petName = currentPet.name || 'Your pup';
+      if (isToday) return { days: 0, label: `It's ${petName}'s ${label} today`, cta: 'Plan the celebration', icon: '🎉' };
+      if (daysUntil === 1) return { days: 1, label: `${petName}'s ${label} is tomorrow`, cta: 'Arrange a photoshoot', icon: '🐾' };
+      return { days: daysUntil, label: `${petName}'s ${label} is in ${daysUntil} days`, cta: 'Arrange a Gotcha Day photoshoot', icon: '🎂' };
+    } catch { return null; }
+  };
+  const birthdayWhisper = getBirthdayWhisper();
 
   // Get current pillar from URL
   const getCurrentPillar = () => {
@@ -184,6 +209,49 @@ const MiraUniversalBar = ({
 
   return (
     <>
+      {/* ── Birthday Whisper Bar ── */}
+      {birthdayWhisper && (
+        <div
+          data-testid="birthday-whisper-bar"
+          style={{
+            background: 'linear-gradient(90deg, #FDF2F8 0%, #F0F9FF 50%, #FDF2F8 100%)',
+            borderBottom: '1px solid #FBCFE8',
+            padding: '7px 16px',
+            display: 'flex', alignItems: 'center', gap: 10,
+            fontSize: 13, lineHeight: 1.3,
+            position: 'relative',
+          }}
+        >
+          <span style={{ fontSize: 18 }}>{birthdayWhisper.icon}</span>
+          <span style={{ flex: 1 }}>
+            <span style={{ fontWeight: 700, color: '#BE185D' }}>{birthdayWhisper.label}</span>
+            {' — '}
+            <button
+              onClick={() => navigate('/celebrate')}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: '#9333EA', fontWeight: 700, fontSize: 13,
+                textDecoration: 'underline', textUnderlineOffset: 2, padding: 0,
+              }}
+            >
+              {birthdayWhisper.cta} →
+            </button>
+          </span>
+          <span style={{ fontSize: 10, color: '#9CA3AF', fontStyle: 'italic', marginRight: 20 }}>
+            — Mira
+          </span>
+          <button
+            onClick={() => setWhisperDismissed(true)}
+            style={{
+              position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+              background: 'none', border: 'none', cursor: 'pointer',
+              color: '#D1D5DB', fontSize: 16, lineHeight: 1, padding: '2px 4px',
+            }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+      )}
+
       {/* Universal Header Bar */}
       <header className="mira-universal-header">
         {/* Top Banner */}

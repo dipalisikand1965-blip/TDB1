@@ -398,7 +398,7 @@ const CareFlowModal = ({
         )}
         
         {/* Step content */}
-        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">
+        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0 no-sb">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}

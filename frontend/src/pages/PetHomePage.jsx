@@ -735,19 +735,46 @@ const PetHomePage = () => {
               </button>
             )}
             
-            {/* Pet Wrapped Download Button */}
-            {soulScore >= 10 && (pet?._id || pet?.id) && (
+            {/* ✦ Pet Wrapped — always visible, premium styling */}
+            {(pet?._id || pet?.id) && (
               <button
                 onClick={() => {
                   const baseUrl = getWrappedApiBase();
                   window.open(`${baseUrl}/api/wrapped/download/${pet._id || pet.id}`, '_blank');
                 }}
-                className="mt-3 w-full py-2.5 bg-gradient-to-r from-amber-500/20 to-orange-600/20 border border-amber-500/30 rounded-xl text-amber-400 text-sm font-medium flex items-center justify-center gap-2 hover:bg-amber-500/30 hover:border-amber-500/50 transition-all"
                 data-testid="pet-wrapped-download-btn"
+                style={{
+                  marginTop: 12,
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'linear-gradient(135deg, #B45309 0%, #D97706 40%, #F59E0B 70%, #FBBF24 100%)',
+                  border: 'none',
+                  borderRadius: 16,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 10,
+                  boxShadow: '0 4px 20px rgba(217,119,6,0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 6px 28px rgba(217,119,6,0.5), inset 0 1px 0 rgba(255,255,255,0.25)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 4px 20px rgba(217,119,6,0.35), inset 0 1px 0 rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'none'; }}
               >
-                <Gift className="w-4 h-4" />
-                Download {pet?.name}'s Pet Wrapped
-                <Download className="w-3.5 h-3.5 ml-1 opacity-70" />
+                {/* Shimmer overlay */}
+                <div style={{ position:'absolute', inset:0, background:'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)', backgroundSize:'200% 100%', animation:'shimmer 2.5s infinite', pointerEvents:'none' }}/>
+                <span style={{ fontSize: 18 }}>🎁</span>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '0.02em', lineHeight: 1.2 }}>
+                    {pet?.name}'s Pet Wrapped
+                  </div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.8)', fontWeight: 500, letterSpacing: '0.04em' }}>
+                    YOUR YEAR IN REVIEW ✦ DOWNLOAD PDF
+                  </div>
+                </div>
+                <Download style={{ marginLeft: 'auto', width: 16, height: 16, color: 'rgba(255,255,255,0.85)' }} />
               </button>
             )}
 

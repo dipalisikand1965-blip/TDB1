@@ -476,7 +476,7 @@ const GroomingFlowModal = ({
         )}
         
         {/* Step content - Scrollable, takes remaining space */}
-        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">
+        <div className="px-6 py-5 overflow-y-auto no-sb flex-1 min-h-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}

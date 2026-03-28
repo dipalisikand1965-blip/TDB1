@@ -483,11 +483,12 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
 
   const panelStyle = isDesktop ? {
     background: '#fff', borderRadius: 20, width: '100%', maxWidth: 860,
-    maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+    maxHeight: '90vh', overflowY: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
     position: 'relative',
   } : {
     background: '#fff', borderRadius: '20px 20px 0 0', width: '100%',
-    maxHeight: '92vh', overflowY: 'auto',
+    maxHeight: '92vh', overflowY: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none',
   };
 
   return createPortal(
