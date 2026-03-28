@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 20 — Webpack fix, ConciergeRequestBuilder on all desktop pages, PillarServiceSection rollout)
+## Last Updated: 2026-03-28 (Session 21 — ConciergeRequestBuilder mobile rollout + hero rewrites)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---

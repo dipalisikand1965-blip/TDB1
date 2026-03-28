@@ -28,6 +28,7 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const FAREWELL_STRIP_CATS = [
   { id:"eol",      icon:"🕊️", label:"End of Life",      iconBg:"linear-gradient(135deg,#EEF2FF,#E0E7FF)" },
@@ -77,6 +78,7 @@ export default function FarewellMobilePage() {
   const [loading, setLoading] = useState(true);
   const [showFarewellPlan, setShowFarewellPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("farewell");
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [prodTab, setProdTab] = useState(PROD_TABS[0]);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -119,6 +121,13 @@ export default function FarewellMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌷</div><div>Preparing farewell space…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
@@ -162,8 +171,8 @@ export default function FarewellMobilePage() {
               </div>
             )}
           </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Honour {petName}'s Legacy</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Their memory lives on in everything they taught you."</div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Every moment with {petName} is a gift</div>
+          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Capture memories now. And when the time comes — we hold your hand through every step."</div>
         </div>
 
         {/* Farewell Category Strip — always visible above tabs */}
@@ -275,6 +284,17 @@ export default function FarewellMobilePage() {
         {/* TAB 2: Get Support */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#0A0A1E', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Memorial services, grief support, paw prints, tributes — gently arranged for your family.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="farewell-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(99,102,241,0.35)', background:'linear-gradient(135deg,#0A0A1E,#1E1B4B)', color:'#A5B4FC', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <PillarServiceSection
               pillar="farewell"
               pet={currentPet}

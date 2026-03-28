@@ -27,6 +27,7 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const EMERG_STRIP_CATS = [
   { id:"kit",       icon:"📦", label:"First Aid Kit",   iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
@@ -73,6 +74,7 @@ export default function EmergencyMobilePage() {
   const [loading, setLoading] = useState(true);
   const [showEmergencyPlan, setShowEmergencyPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("emergency");
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState("products");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -147,6 +149,13 @@ export default function EmergencyMobilePage() {
         pet={currentPet}
         pillar="emergency"
         token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
       />
     </PillarPageLayout>
   );
@@ -322,6 +331,17 @@ export default function EmergencyMobilePage() {
         {/* TAB 2: Book Help */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#1A0000', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Emergency care, poison control, vet transport — Concierge® responds fast for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="emergency-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(220,38,38,0.4)', background:'linear-gradient(135deg,#1A0000,#450A0A)', color:'#F87171', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Emergency Request →
+              </button>
+            </div>
             <PillarServiceSection
               pillar="emergency"
               pet={currentPet}
