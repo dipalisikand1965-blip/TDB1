@@ -153,21 +153,7 @@ export default function PlayMobilePage() {
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Toys, enrichment, playgroups, dog walkers</div>
         </div>
 
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
-
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(251,146,60,0.14),rgba(251,146,60,0.20))', border:'1px solid rgba(251,146,60,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#C2410C' }}>{petName}</span> love to play?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Enrichment, activities, toys and services matched to {petName}'s soul profile.
-            </div>
-          </div>
-        )}
-
-        {/* PlayCategoryStrip — always visible above tabs, same as Care */}
+        {/* PlayCategoryStrip — immediately after hero, same as Care */}
         {currentPet && (
           <PlayCategoryStrip
             pet={currentPet}
@@ -177,7 +163,7 @@ export default function PlayMobilePage() {
           />
         )}
 
-        {/* Tab Bar */}
+        {/* Pawrent Journey */}
         {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" />}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
           {[
@@ -196,6 +182,19 @@ export default function PlayMobilePage() {
         {/* TAB 1: Play & Products */}
         {activeTab === 'play' && (
           <div>
+            {/* Soul Profile + CTA — inside tab, same as Care */}
+            {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
+            {currentPet && (
+              <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(251,146,60,0.14),rgba(251,146,60,0.20))', border:'1px solid rgba(251,146,60,0.35)', borderRadius:18, padding:'16px' }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+                  How would <span style={{ color:'#C2410C' }}>{petName}</span> love to play?
+                </div>
+                <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+                  Enrichment, activities, toys and services matched to {petName}'s soul profile.
+                </div>
+              </div>
+            )}
+
             {/* Mira Bar */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:`rgba(251,216,206,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S JOY</div>
