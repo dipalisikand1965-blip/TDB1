@@ -167,6 +167,16 @@ export default function PlayMobilePage() {
           </div>
         )}
 
+        {/* PlayCategoryStrip — always visible above tabs, same as Care */}
+        {currentPet && (
+          <PlayCategoryStrip
+            pet={currentPet}
+            openDim={openDim}
+            onSelect={id => { vibe(); setOpenDim(openDim === id ? null : id); setDimTab('products'); setActiveTab('play'); }}
+            onMiraPicks={() => { vibe(); setOpenDim(openDim === 'mira' ? null : 'mira'); setActiveTab('play'); }}
+          />
+        )}
+
         {/* Tab Bar */}
         {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" />}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
@@ -196,14 +206,6 @@ export default function PlayMobilePage() {
                 Build {petName}'s Play Plan →
               </button>
             </div>
-
-            {/* PlayCategoryStrip — same as desktop */}
-            <PlayCategoryStrip
-              pet={currentPet}
-              openDim={openDim}
-              onSelect={id => { vibe(); setOpenDim(openDim === id ? null : id); setDimTab('products'); }}
-              onMiraPicks={() => { vibe(); setOpenDim(openDim === 'mira' ? null : 'mira'); }}
-            />
 
             {/* dimTab toggle */}
             <div style={{ display:'flex', margin:'12px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
