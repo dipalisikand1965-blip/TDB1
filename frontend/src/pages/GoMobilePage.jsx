@@ -169,9 +169,9 @@ export default function GoMobilePage() {
         {/* ══ 3. Tab Bar ══ */}
         <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'12px 16px 0', display:'flex', gap:8, overflowX:'auto', flexWrap:'nowrap', scrollbarWidth:'none' }}>
           {[
-            { id:'go',       label:'✈️ Products' },
-            { id:'nearme',   label:'📍 Near Me' },
-            { id:'services', label:'🗺️ Services' },
+            { id:'go',       label:'✈️ Go' },
+            { id:'nearme',   label:'📍 Find & Stay' },
+            { id:'services', label:'🐕 Services' },
           ].map(tab => {
             const sel = activeTab === tab.id;
             return (

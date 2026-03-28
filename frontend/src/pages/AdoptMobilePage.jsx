@@ -178,8 +178,8 @@ export default function AdoptMobilePage() {
         {/* Tab Bar */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100, overflowX:'auto' }}>
           {[
-            { id:'adopt',    label:'🐾 Find Your Dog' },
-            { id:'services', label:'💌 Book Guidance' },
+            { id:'adopt',    label:'🐾 Adopt' },
+            { id:'services', label:'🐕 Services' },
             { id:'find',     label:'📍 Find Rescue' },
           ].map(tab => (
             <button key={tab.id} className={`adopt-tab${activeTab===tab.id?' active':''}`}

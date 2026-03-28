@@ -354,7 +354,7 @@ export default function LearnMobilePage() {
 
         {/* Main Tab Bar: Learn | Near Me — sticky */}
         <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
-          {[{id:'learn',label:'📚 Learn & Products'},{id:'nearme',label:'📍 Near Me'}].map(t => (
+          {[{id:'learn',label:'🎓 Learn'},{id:'nearme',label:'📍 Find Classes'}].map(t => (
             <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
               data-testid={`learn-tab-${t.id}`}
               style={{ flex:1, padding:'12px 4px', background:'none', border:'none',
