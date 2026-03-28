@@ -19,6 +19,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
 import PlayNearMe from '../components/play/PlayNearMe';
+import PlayCategoryStrip from '../components/play/PlayCategoryStrip';
 import BuddyMeetup from '../components/play/BuddyMeetup';
 import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -28,6 +29,7 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import { getPlayDims, DimExpanded, MiraPicksSection } from './PlaySoulPage';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -83,7 +85,7 @@ export default function PlayMobilePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('play');
   const [dimTab, setDimTab] = useState('products');
-  const [subCat, setSubCat] = useState('All');
+  const [openDim, setOpenDim] = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
@@ -117,16 +119,6 @@ export default function PlayMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const allergies = getAllergies(currentPet);
-  // Safety wrapper - never crash the page
-  let intelligent = [];
-  try {
-    intelligent = applyMiraFilter(allRaw, currentPet) || [];
-  } catch (e) {
-    intelligent = allRaw || [];
-  }
-  const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
-  const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
-  const miraPick = products.find(p => p.miraPick) || products[0] || null;
 
   return (
     <PillarPageLayout pillar="play" hideHero hideNavigation>
@@ -205,10 +197,18 @@ export default function PlayMobilePage() {
               </button>
             </div>
 
-            {/* dimTab */}
-            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
-              {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
-                <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
+            {/* PlayCategoryStrip — same as desktop */}
+            <PlayCategoryStrip
+              pet={currentPet}
+              openDim={openDim}
+              onSelect={id => { vibe(); setOpenDim(openDim === id ? null : id); setDimTab('products'); }}
+              onMiraPicks={() => { vibe(); setOpenDim(openDim === 'mira' ? null : 'mira'); }}
+            />
+
+            {/* dimTab toggle */}
+            <div style={{ display:'flex', margin:'12px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
+              {[{ id:'products', label:'🎯 Dimensions' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
+                <button key={t.id} onClick={() => { setDimTab(t.id); setOpenDim(null); }}
                   style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
                     background:dimTab===t.id?G.orange:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
                   {t.label}
@@ -223,69 +223,78 @@ export default function PlayMobilePage() {
               </div>
             ) : (
               <div style={{ padding:'16px' }}>
-                {/* Sub-category pills */}
-                {subCats.length > 1 && (
-                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
-                    {subCats.map(cat => (
-                      <button key={cat} onClick={() => setSubCat(cat)}
-                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid ${subCat===cat?G.orange:G.border}`,
-                          background:subCat===cat?G.orange:'#fff',
-                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
-                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                {/* Mira Picks section */}
+                <MiraPicksSection pet={currentPet} />
 
-                {/* Mira's pick callout */}
-                {miraPick && (
-                  <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
-                    <div style={{ fontSize:14, color:'#3D1A00', lineHeight:1.4 }}>
-                      <strong>Mira's pick:</strong> {miraPick.name}
-                      {miraPick.mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>}
-                    </div>
-                  </div>
-                )}
+                {/* 7 Play Dimensions grid */}
+                {(() => {
+                  const playDims = getPlayDims(currentPet);
+                  const DIM_KEYWORDS = {
+                    outings:   ['outing','park','beach','trail','adventure','outdoor'],
+                    playdates: ['playdate','social','buddy','meetup'],
+                    walking:   ['walk','leash','lead','harness'],
+                    fitness:   ['fitness','agility','training','exercise','weight'],
+                    swimming:  ['swim','hydro','water','pool','life jacket'],
+                    soul:      ['soul','mira','curated'],
+                    bundles:   ['bundle','kit','pack','set'],
+                  };
+                  return (
+                    <>
+                      <div style={{ marginBottom:4, marginTop:4 }}>
+                        <span style={{ fontSize:20, fontWeight:900, color:G.darkText }}>Play </span>
+                        <span style={{ fontSize:20, fontWeight:900, color:G.orange }}>for {petName}</span>
+                      </div>
+                      <div style={{ fontSize:13, color:G.mutedText, marginBottom:12 }}>
+                        {playDims.length} dimensions matched to {petName}'s energy and play profile
+                      </div>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+                        {playDims.map(dim => (
+                          <div key={dim.id}
+                            data-testid={`play-dim-card-${dim.id}`}
+                            onClick={() => { vibe(); setOpenDim(openDim === dim.id ? null : dim.id); }}
+                            style={{ background: dim.glow ? G.pale : '#fff', border:`1.5px solid ${openDim===dim.id ? G.orange : G.border}`, borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center', boxShadow: dim.glow ? `0 4px 16px rgba(231,111,81,0.15)` : 'none', position:'relative' }}>
+                            {dim.glow && <div style={{ position:'absolute', top:8, right:8, width:7, height:7, borderRadius:'50%', background:G.orange, boxShadow:`0 0 6px ${G.orange}` }} />}
+                            <div style={{ fontSize:26, marginBottom:6 }}>{dim.icon}</div>
+                            <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:3 }}>{dim.label}</div>
+                            <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.3 }}>{typeof dim.sub==='string' ? dim.sub.replace(/{name}/g, petName) : ''}</div>
+                            {dim.badge && <div style={{ display:'inline-flex', marginTop:6, background:dim.badgeBg, color:'#fff', borderRadius:20, padding:'2px 8px', fontSize:9, fontWeight:700 }}>{dim.badge}</div>}
+                          </div>
+                        ))}
+                      </div>
 
-                {products.length === 0 ? (
-                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    {allergies.length > 0 ? (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
-                        <div>Mira filtered everything for {petName}&apos;s allergies. Ask Concierge® for alternatives.</div>
-                      </>
-                    ) : (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🎾</div>
-                        <div>Loading play products for {petName}…</div>
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                      {products.slice(0, 40).map(p => (
-                        <div key={p.id||p._id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1 }}>
-                          <SharedProductCard product={p} pillar="play" selectedPet={currentPet}
-                            onAddToCart={() => handleAddToCart(p)}
-                            onClick={() => { vibe(); setSelectedProduct(p); }} />
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
-                    </div>
-                <div style={{ marginTop:16 }}><GuidedPlayPaths pet={currentPet} /></div>
+                      {/* DimExpanded bottom-sheet */}
+                      {openDim && (() => {
+                        const activeDim = playDims.find(d => d.id === openDim);
+                        if (!activeDim) return null;
+                        const keywords = DIM_KEYWORDS[openDim] || [];
+                        const grouped = {};
+                        allRaw.filter(p => {
+                          const txt = `${p.name} ${p.category||''} ${p.sub_category||''} ${p.description||''}`.toLowerCase();
+                          return keywords.length === 0 || keywords.some(k => txt.includes(k));
+                        }).forEach(p => {
+                          const sub = p.sub_category || 'General';
+                          if (!grouped[sub]) grouped[sub] = [];
+                          grouped[sub].push(p);
+                        });
+                        return (
+                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
+                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={{ [openDim]: grouped }} />
+                            </div>
+                          </div>
+                        );
+                      })()}
 
-                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-                  <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · PLAY GEAR FOR {petName.toUpperCase()}</div>
-                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom bandanas, toys and play accessories.</div>
-                  <button className="play-cta">Explore Soul Made →</button>
-                </div>
-                  </>
-                )}
+                      <div style={{ marginTop:8 }}><GuidedPlayPaths pet={currentPet} /></div>
+
+                      <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
+                        <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · PLAY GEAR FOR {petName.toUpperCase()}</div>
+                        <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom bandanas, toys and play accessories.</div>
+                        <button className="play-cta">Explore Soul Made →</button>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
