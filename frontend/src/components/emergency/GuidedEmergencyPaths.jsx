@@ -20,7 +20,7 @@
  *   POST /api/concierge/emergency-path
  *   body: { petId, pathId, selections }
  */
-import { useState } from "react";
+import { useState, useEffect } from 'react';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = {
