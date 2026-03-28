@@ -258,6 +258,23 @@ const PillarPageLayout = ({
   };
   
   const bgGradient = PILLAR_BG[pillar] || 'from-gray-50';
+
+  // Pillar-specific accent colours for the Concierge® floating button
+  const PILLAR_ACCENT = {
+    celebrate : { text: '#F9A8D4', border: 'rgba(249,168,212,0.40)', bg: 'linear-gradient(135deg,#1A0010,#3D0025)' },
+    dine      : { text: '#FCD34D', border: 'rgba(252,211,77,0.40)',   bg: 'linear-gradient(135deg,#1A0E00,#3D2200)' },
+    care      : { text: '#6EE7B7', border: 'rgba(110,231,183,0.40)',  bg: 'linear-gradient(135deg,#00160D,#003322)' },
+    go        : { text: '#93C5FD', border: 'rgba(147,197,253,0.40)',  bg: 'linear-gradient(135deg,#00082A,#001A4D)' },
+    play      : { text: '#C4B5FD', border: 'rgba(196,181,253,0.40)',  bg: 'linear-gradient(135deg,#0D001A,#220038)' },
+    learn     : { text: '#7DD3FC', border: 'rgba(125,211,252,0.40)',  bg: 'linear-gradient(135deg,#00101A,#002438)' },
+    paperwork : { text: '#D1D5DB', border: 'rgba(209,213,219,0.40)',  bg: 'linear-gradient(135deg,#0D0D0D,#1F1F1F)' },
+    emergency : { text: '#FCA5A5', border: 'rgba(252,165,165,0.40)',  bg: 'linear-gradient(135deg,#1A0000,#3D0000)' },
+    farewell  : { text: '#A5B4FC', border: 'rgba(165,180,252,0.40)',  bg: 'linear-gradient(135deg,#04001A,#0D0040)' },
+    adopt     : { text: '#FBCFE8', border: 'rgba(251,207,232,0.40)',  bg: 'linear-gradient(135deg,#1A0010,#3D0030)' },
+    shop      : { text: '#FED7AA', border: 'rgba(254,215,170,0.40)',  bg: 'linear-gradient(135deg,#1A0800,#3D1A00)' },
+    services  : { text: '#C9973A', border: 'rgba(201,151,58,0.35)',   bg: 'linear-gradient(135deg,#1C0A00,#3D1A00)' },
+  };
+  const accent = PILLAR_ACCENT[pillar] || PILLAR_ACCENT.services;
   
   return (
     <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
@@ -442,17 +459,17 @@ const PillarPageLayout = ({
           position: 'fixed', bottom: 96, right: 24, zIndex: 900,
           alignItems: 'center', gap: 8,
           padding: '12px 20px',
-          background: 'linear-gradient(135deg,#1C0A00,#3D1A00)',
-          color: '#C9973A',
+          background: accent.bg,
+          color: accent.text,
           borderRadius: 999,
-          border: '1px solid rgba(201,151,58,0.35)',
+          border: `1px solid ${accent.border}`,
           fontSize: 13, fontWeight: 700, cursor: 'pointer',
           boxShadow: '0 4px 24px rgba(0,0,0,0.30)',
           letterSpacing: '0.03em',
           fontFamily: 'inherit',
           transition: 'transform 0.15s, box-shadow 0.15s',
         }}
-        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.40)'; }}
+        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.45)'; }}
         onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(0,0,0,0.30)'; }}
       >
         <span style={{ fontSize: 14 }}>✦</span>
