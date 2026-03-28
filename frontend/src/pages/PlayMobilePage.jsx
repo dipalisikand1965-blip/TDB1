@@ -30,7 +30,7 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { getPlayDims, DimExpanded, MiraPicksSection } from './PlaySoulPage';
+import { getPlayDims, MiraPicksSection } from './PlaySoulPage';
 import '../styles/mobile-design-system.css';
 
 const G = {
@@ -86,7 +86,6 @@ export default function PlayMobilePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('play');
   const [dimTab, setDimTab] = useState('products');
-  const [openDim, setOpenDim] = useState(null);
   const [modalCategory, setModalCategory] = useState(null);
   const [showMiraPicks, setShowMiraPicks] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -251,18 +250,9 @@ export default function PlayMobilePage() {
                 {/* Mira Picks section */}
                 <MiraPicksSection pet={currentPet} />
 
-                {/* 7 Play Dimensions grid */}
+                {/* 7 Play Dimensions grid — tapping any card opens PlayContentModal (same as desktop) */}
                 {(() => {
                   const playDims = getPlayDims(currentPet);
-                  const DIM_KEYWORDS = {
-                    outings:   ['outing','park','beach','trail','adventure','outdoor'],
-                    playdates: ['playdate','social','buddy','meetup'],
-                    walking:   ['walk','leash','lead','harness'],
-                    fitness:   ['fitness','agility','training','exercise','weight'],
-                    swimming:  ['swim','hydro','water','pool','life jacket'],
-                    soul:      ['soul','mira','curated'],
-                    bundles:   ['bundle','kit','pack','set'],
-                  };
                   return (
                     <>
                       <div style={{ marginBottom:4, marginTop:4 }}>
@@ -276,8 +266,8 @@ export default function PlayMobilePage() {
                         {playDims.map(dim => (
                           <div key={dim.id}
                             data-testid={`play-dim-card-${dim.id}`}
-                            onClick={() => { vibe(); setOpenDim(openDim === dim.id ? null : dim.id); }}
-                            style={{ background: dim.glow ? G.pale : '#fff', border:`1.5px solid ${openDim===dim.id ? G.orange : G.border}`, borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center', boxShadow: dim.glow ? `0 4px 16px rgba(231,111,81,0.15)` : 'none', position:'relative' }}>
+                            onClick={() => { vibe(); setModalCategory(dim.id); }}
+                            style={{ background: dim.glow ? G.pale : '#fff', border:`1.5px solid ${modalCategory===dim.id ? G.orange : G.border}`, borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center', boxShadow: dim.glow ? `0 4px 16px rgba(231,111,81,0.15)` : 'none', position:'relative' }}>
                             {dim.glow && <div style={{ position:'absolute', top:8, right:8, width:7, height:7, borderRadius:'50%', background:G.orange, boxShadow:`0 0 6px ${G.orange}` }} />}
                             <div style={{ fontSize:26, marginBottom:6 }}>{dim.icon}</div>
                             <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:3 }}>{dim.label}</div>
@@ -286,33 +276,6 @@ export default function PlayMobilePage() {
                           </div>
                         ))}
                       </div>
-
-                      {/* DimExpanded bottom-sheet */}
-                      {openDim && (() => {
-                        const activeDim = playDims.find(d => d.id === openDim);
-                        if (!activeDim) return null;
-                        const keywords = DIM_KEYWORDS[openDim] || [];
-                        const grouped = {};
-                        allRaw.filter(p => {
-                          // Bundles: match by entity_type or category (same as desktop)
-                          if (openDim === 'bundles') {
-                            return p.entity_type === 'bundle' || (p.category || '').toLowerCase() === 'bundles';
-                          }
-                          const txt = `${p.name} ${p.category||''} ${p.sub_category||''} ${p.description||''}`.toLowerCase();
-                          return keywords.length === 0 || keywords.some(k => txt.includes(k));
-                        }).forEach(p => {
-                          const sub = p.sub_category || 'General';
-                          if (!grouped[sub]) grouped[sub] = [];
-                          grouped[sub].push(p);
-                        });
-                        return (
-                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
-                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
-                              <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={{ [openDim]: grouped }} />
-                            </div>
-                          </div>
-                        );
-                      })()}
 
                       <div style={{ marginTop:8 }}><GuidedPlayPaths pet={currentPet} /></div>
 
