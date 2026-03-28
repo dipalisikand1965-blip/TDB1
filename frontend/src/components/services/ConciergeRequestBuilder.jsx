@@ -162,14 +162,32 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose })
   const svc = selectedService;
   const currentQ = svc?.questions?.[step - 1];
 
+  // Desktop = centered dialog, mobile = bottom sheet
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
+
   return (
     <div
       onClick={handleClose}
-      style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.85)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.85)',
+        display: 'flex', flexDirection: 'column',
+        justifyContent: isDesktop ? 'center' : 'flex-end',
+        alignItems: isDesktop ? 'center' : 'stretch',
+      }}
     >
       <div
         onClick={e => e.stopPropagation()}
-        style={{ background: G.dark, borderRadius: '24px 24px 0 0', maxHeight: '92vh', overflowY: 'auto', paddingBottom: 'calc(32px + env(safe-area-inset-bottom))' }}
+        style={{
+          background: G.dark,
+          borderRadius: isDesktop ? '24px' : '24px 24px 0 0',
+          maxHeight: isDesktop ? '88vh' : '92vh',
+          overflowY: 'auto',
+          paddingBottom: isDesktop ? '24px' : 'calc(32px + env(safe-area-inset-bottom))',
+          width: isDesktop ? '480px' : '100%',
+          maxWidth: isDesktop ? '480px' : undefined,
+          boxShadow: isDesktop ? '0 32px 64px rgba(0,0,0,0.6)' : undefined,
+        }}
       >
         {/* Handle bar + Close */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'12px 16px 0' }}>

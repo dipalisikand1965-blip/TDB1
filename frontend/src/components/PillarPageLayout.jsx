@@ -22,6 +22,7 @@ import UnifiedHero from './UnifiedHero';
 import PillarNav from './PillarNav';
 import SEOHead from './SEOHead';
 import MiraChatWidget from './MiraChatWidget';
+import ConciergeRequestBuilder from './services/ConciergeRequestBuilder';
 // MobileMenu removed — Navbar from MainLayout handles mobile navigation
 
 // Pillar subcategories configuration - with REAL product images from Shopify
@@ -236,6 +237,9 @@ const PillarPageLayout = ({
   // Get subcategories for current pillar
   const subcategories = PILLAR_SUBCATEGORIES[pillar] || [];
   
+  // Concierge Request Builder state (desktop floating button)
+  const [conciergeLayoutOpen, setConciergeLayoutOpen] = useState(false);
+  
   // Get pillar-specific gradient for bottom section
   const PILLAR_BG = {
     celebrate: 'from-pink-50',
@@ -428,6 +432,36 @@ const PillarPageLayout = ({
       
       {/* Mira Chat Widget - hidden when page uses MiraOSTrigger */}
       {!hideMiraWidget && <MiraChatWidget pillar={pillar} />}
+
+      {/* Concierge® Request Builder — desktop floating trigger */}
+      <button
+        onClick={() => setConciergeLayoutOpen(true)}
+        data-testid="concierge-builder-float-btn"
+        className="hidden md:flex"
+        style={{
+          position: 'fixed', bottom: 28, right: 28, zIndex: 900,
+          alignItems: 'center', gap: 8,
+          padding: '12px 20px',
+          background: 'linear-gradient(135deg,#1C0A00,#3D1A00)',
+          color: '#C9973A',
+          borderRadius: 999,
+          border: '1px solid rgba(201,151,58,0.35)',
+          fontSize: 13, fontWeight: 700, cursor: 'pointer',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.30)',
+          letterSpacing: '0.03em',
+          fontFamily: 'inherit',
+        }}
+      >
+        <span style={{ fontSize: 14 }}>✦</span>
+        Concierge® Requests
+      </button>
+
+      <ConciergeRequestBuilder
+        pet={activePet}
+        token={token}
+        isOpen={conciergeLayoutOpen}
+        onClose={() => setConciergeLayoutOpen(false)}
+      />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 19 — Global Tab CSS Parity + PillarServiceSection watercolour cards)
+## Last Updated: 2026-03-28 (Session 20 — Webpack fix, ConciergeRequestBuilder on all desktop pages, PillarServiceSection rollout)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
