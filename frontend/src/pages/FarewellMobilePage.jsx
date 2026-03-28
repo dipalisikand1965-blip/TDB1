@@ -78,7 +78,7 @@ export default function FarewellMobilePage() {
   const [loading, setLoading] = useState(true);
   const [showFarewellPlan, setShowFarewellPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("farewell");
-  const [farewellMode, setFarewellMode] = useState('here'); // 'here' | 'gone'
+  const [farewellMode, setFarewellMode] = useState('here'); // 'here' | 'time'
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [prodTab, setProdTab] = useState(PROD_TABS[0]);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -135,13 +135,18 @@ export default function FarewellMobilePage() {
   const petName = currentPet?.name || 'your dog';
   const breed = (currentPet?.breed || "").split("(")[0].trim();
 
-  // Filter products by sub-tab
-  const filteredProducts = products.filter(p => {
-    const n = (p.name || "").toLowerCase();
-    if (prodTab === "Memorial & Legacy") return n.includes("urn") || n.includes("memorial") || n.includes("paw") || n.includes("print") || n.includes("portrait") || n.includes("memory") || n.includes("tribute") || products.indexOf(p) < 8;
-    if (prodTab === "Grief Support") return n.includes("grief") || n.includes("book") || n.includes("journal") || n.includes("comfort") || products.indexOf(p) < 8;
-    return true;
-  });
+  // Filter products by sub-tab + farewellMode
+  const filteredProducts = farewellMode === 'here'
+    ? products.filter(p => {
+        const n = (p.name || '').toLowerCase();
+        return n.includes('paw') || n.includes('print') || n.includes('portrait') || n.includes('photo') || n.includes('memory') || n.includes('book') || n.includes('frame') || n.includes('bandana') || products.indexOf(p) < 8;
+      })
+    : products.filter(p => {
+        const n = (p.name || "").toLowerCase();
+        if (prodTab === "Memorial & Legacy") return n.includes("urn") || n.includes("memorial") || n.includes("paw") || n.includes("print") || n.includes("portrait") || n.includes("memory") || n.includes("tribute") || products.indexOf(p) < 8;
+        if (prodTab === "Grief Support") return n.includes("grief") || n.includes("book") || n.includes("journal") || n.includes("comfort") || products.indexOf(p) < 8;
+        return true;
+      });
 
   return (
     <PillarPageLayout pillar="farewell" hideHero hideNavigation>
@@ -174,25 +179,6 @@ export default function FarewellMobilePage() {
           </div>
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Every moment with {petName} is a gift</div>
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', fontStyle:'italic' }}>"Capture memories now. And when the time comes — we hold your hand through every step."</div>
-        </div>
-
-        {/* "While here" / "When the time comes" toggle — emotional mode selector */}
-        <div style={{ display:'flex', gap:0, margin:'0 16px 4px', background:'rgba(99,102,241,0.08)', borderRadius:16, border:'1px solid rgba(99,102,241,0.18)', overflow:'hidden' }}>
-          {[
-            { id:'here', label:`While ${petName} is here`, emoji:'🌷' },
-            { id:'gone', label:'When the time comes',    emoji:'🕊️' },
-          ].map(m => (
-            <button key={m.id} onClick={() => { vibe(); setFarewellMode(m.id); }}
-              data-testid={`farewell-mode-${m.id}`}
-              style={{ flex:1, padding:'12px 8px', border:'none', borderRadius:0,
-                background: farewellMode===m.id ? `linear-gradient(135deg,${G.deep},${G.mid})` : 'transparent',
-                color: farewellMode===m.id ? '#fff' : G.mutedText,
-                fontSize:13, fontWeight: farewellMode===m.id ? 700 : 500,
-                cursor:'pointer', transition:'all 0.18s', lineHeight:1.3 }}>
-              <div>{m.emoji}</div>
-              <div>{m.label}</div>
-            </button>
-          ))}
         </div>
 
         {/* Farewell Category Strip — always visible above tabs */}
@@ -229,6 +215,23 @@ export default function FarewellMobilePage() {
         {/* TAB 1: Legacy & Memorial */}
         {activeTab === 'farewell' && (
           <div>
+            {/* Mode Toggle — While here vs When the time comes */}
+            <div style={{ display:'flex', margin:'12px 16px 0', background:'rgba(99,102,241,0.08)', borderRadius:14, padding:4 }}>
+              {[
+                { id:'here', label:"🌸 While they're still here" },
+                { id:'time', label:'🕊️ When the time comes' },
+              ].map(m => (
+                <button key={m.id} onClick={() => { vibe(); setFarewellMode(m.id); }}
+                  data-testid={`farewell-mode-${m.id}`}
+                  style={{ flex:1, padding:'10px 8px', borderRadius:11, border:'none', fontSize:12, fontWeight:700,
+                    cursor:'pointer', textAlign:'center', transition:'all 0.2s',
+                    background: farewellMode===m.id ? G.indigo : 'transparent',
+                    color: farewellMode===m.id ? '#fff' : G.mutedText }}>
+                  {m.label}
+                </button>
+              ))}
+            </div>
+
             {/* Soul Profile + CTA + Pawrent — inside Tab 1 */}
             {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="farewell" token={token} /></div>}
             {currentPet && (
@@ -243,10 +246,12 @@ export default function FarewellMobilePage() {
             )}
             {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="farewell" /></div>}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ A MESSAGE FROM MIRA</div>
+              <div style={{ fontSize:14, fontWeight:700, color:'rgba(199,210,254,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>
+                {farewellMode === 'here' ? `✦ WHILE ${petName.toUpperCase()} IS STILL HERE` : '✦ A MESSAGE FROM MIRA'}
+              </div>
               {farewellMode === 'here' ? (
                 <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>
-                  "Every moment with {petName} is already a memory being made. Let me help you capture and celebrate them — so nothing is ever forgotten. 🌷"
+                  "Every moment with {petName} is a gift. Let's capture memories, create tributes, and celebrate everything {petName} means to you — right now, while they're here."
                 </div>
               ) : (
                 <div style={{ fontSize:14, color:'rgba(255,255,255,0.80)', lineHeight:1.7, fontStyle:'italic', marginBottom:14 }}>

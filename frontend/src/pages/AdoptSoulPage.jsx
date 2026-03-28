@@ -290,9 +290,9 @@ const AdoptSoulPage = () => {
           <span style={{fontSize:11,color:G.light,fontWeight:700}}>✦ Find your perfect dog — Mira guides every step</span>
         </div>
         <h1 style={{fontSize:"clamp(1.875rem,4vw,2.5rem)",fontWeight:900,color:"#fff",marginBottom:8,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif"}}>
-          Every dog deserves<br/><span style={{color:G.light}}>the right home</span>
+          Bring home<br/><span style={{color:G.light}}>your new best friend</span>
         </h1>
-        <p style={{fontSize:14,color:"rgba(255,255,255,0.72)",marginBottom:16,maxWidth:480,margin:"0 auto 16px",lineHeight:1.6}}>Breed matching, home readiness, rescue connections and first-year support — all guided by Mira.</p>
+        <p style={{fontSize:14,color:"rgba(255,255,255,0.72)",marginBottom:16,maxWidth:480,margin:"0 auto 16px",lineHeight:1.6}}>Whether from a rescue, a breeder, or the street — every dog deserves a forever home prepared with love.</p>
         <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:16}}>
           <SoulChip value="🐾 Find your match"/>
           <SoulChip value="❤️ Rescue network"/>
@@ -317,7 +317,7 @@ const AdoptSoulPage = () => {
         </div>
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
-          {[{id:"adopt",label:"🐾 Find Your Dog"},{id:"services",label:"💌 Book Guidance"},{id:"find",label:"📍 Find Rescue"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.rose}`:"3px solid transparent",color:a?G.rose:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
+          {[{id:"adopt",label:"🐾 Welcome Home"},{id:"services",label:"🐕 Services"},{id:"find",label:"📍 Find Rescue"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.rose}`:"3px solid transparent",color:a?G.rose:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
         </div>
 
         {/* Stage tracker */}
@@ -353,7 +353,7 @@ const AdoptSoulPage = () => {
             <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>
-              <p style={{fontSize:13,color:"rgba(255,255,255,0.70)",marginBottom:16}}>Breed match, rescue connections, home readiness — all in one conversation with Mira.</p>
+              <p style={{fontSize:13,color:"rgba(255,255,255,0.70)",marginBottom:16}}>From rescue to breeder to street dog — I'll prepare everything for your new arrival.</p>
               <button onClick={()=>openAdoptConcierge('Adoption support')} style={{background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>✦ Start with Mira →</button>
             </div>
           </>
