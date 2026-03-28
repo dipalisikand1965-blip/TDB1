@@ -446,7 +446,16 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 **Test Results (iteration_237.json):** 80% → 100% after FIRST_STEPS fix. All 7 CategoryStrips render. Sticky tab bars confirmed. Soul Profile inside Tab 1 confirmed. PawrentFirstStepsTab now renders on all 11 applicable pillar pages.
 
 
-### HOTFIX — (2026-03-28) Pet Photo + Hero Alignment + Go Pet Selector + Services Modal
+### SESSION 20 — (2026-03-28) Emotional UX Sprint
+
+1. ✅ **FirstTimePawrent.jsx** created — collapsible week-one checklist card on Adopt (pink) and Care (green). CTA opens ConciergeRequestBuilder with `preselect="lifestage"`.
+2. ✅ **ConciergeRequestBuilder** upgraded:
+   - `preselect` prop — auto-jumps to a service category (used by FirstTimePawrent)
+   - Soul profile pre-fill pill — shows breed + allergies in Step 0 header
+   - Allergen-aware message — `allergyLabel` appended to every ticket message
+3. ✅ **Adopt mobile copy rewrite** — Hero: "Every dog deserves the right home". Mira bar: "The right match between a dog and their family changes two lives forever."
+4. ✅ **Farewell toggle** — "While {name} is here" / "When the time comes" pill toggle. Changes Mira bar copy + CTA button label + Services tab intro text dynamically.
+5. ✅ **Desktop floating button cluster** — Concierge® button moved to `bottom: 96px` (stacks cleanly above Mira orb at `bottom: 24px`). Added hover micro-animation.
 
 1. ✅ **AdoptSoulPage.jsx** — Hero pet avatar: replaced hardcoded `🐾` with `petData.photo_url ? <img/> : 🐾` fallback.
 2. ✅ **ServicesSoulPage.jsx** — Hero orb: replaced hardcoded Mira ✦ orb with `petData.photo_url ? <img/> : ✦` fallback.

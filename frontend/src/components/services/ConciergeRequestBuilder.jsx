@@ -4,7 +4,6 @@
  * 7 service categories → 2 taps → WhatsApp + ticket to Concierge® team
  * Dipali Sikand © The Doggy Company — Concierge® is a registered trademark
  */
-import { useState } from 'react';
 import { tdc } from '../../utils/tdc_intent';
 import { useConcierge } from '../../hooks/useConcierge';
 
@@ -109,7 +108,9 @@ const G = {
 
 function vibe(t = 'light') { if (navigator?.vibrate) navigator.vibrate(t === 'medium' ? [12] : [6]); }
 
-export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose }) {
+import { useState, useEffect } from 'react';
+
+export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, preselect }) {
   const [step, setStep] = useState(0); // 0=select service, 1=q1, 2=q2, 3=sending, 4=done
   const [selectedService, setSelectedService] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -117,6 +118,23 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose })
 
   const petName = pet?.name || 'your dog';
   const breed = (pet?.breed || '').split('(')[0].trim();
+
+  // Build allergy string from all possible soul profile fields
+  const allergies = [
+    ...(pet?.allergies || []),
+    ...(pet?.health?.allergies || []),
+    ...(pet?.dsa?.food_allergies || []),
+  ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
+  const allergyLabel = allergies.length > 0 ? ` · allergic to ${allergies.join(', ')}` : '';
+
+  // Auto-select service when preselect prop is provided
+  useEffect(() => {
+    if (isOpen && preselect) {
+      const svc = SERVICES.find(s => s.id === preselect);
+      if (svc) { setSelectedService(svc); setStep(1); }
+    }
+    if (!isOpen) { setStep(0); setSelectedService(null); setAnswers({}); }
+  }, [isOpen, preselect]);
 
   const reset = () => { setStep(0); setSelectedService(null); setAnswers({}); };
   const handleClose = () => { reset(); onClose(); };
@@ -145,7 +163,8 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose })
     const answerSummary = Object.entries(finalAnswers)
       .map(([k, v]) => `${k}: ${v}`)
       .join(', ');
-    const message = `Concierge® Request — ${svc.label} for ${petName} (${breed}). ${answerSummary}. Soul profile on file.`;
+    const profileContext = `${petName} (${breed || 'dog'}${allergyLabel})`;
+    const message = `Concierge® Request — ${svc.label} for ${profileContext}. ${answerSummary}. Soul profile on file.`;
     try {
       await request(message, {
         channel: `concierge_builder_${svc.id}`,
@@ -207,6 +226,15 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose })
             <div style={{ fontSize: 24, fontWeight: 800, color: '#fff', lineHeight: 1.2, marginBottom: 6, fontFamily: 'Georgia,serif' }}>
               What does {petName} need?
             </div>
+            {/* Soul profile pre-fill pill */}
+            {(breed || allergies.length > 0) && (
+              <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:999, background:'rgba(201,151,58,0.12)', border:'1px solid rgba(201,151,58,0.25)', marginBottom:14 }}>
+                <span style={{ fontSize:11, color:'rgba(201,151,58,0.9)', fontWeight:600 }}>
+                  {breed && <span>{breed}</span>}
+                  {allergies.length > 0 && <span style={{ color:'rgba(255,255,255,0.45)' }}>{breed ? ' · ' : ''}allergic to {allergies.join(', ')}</span>}
+                </span>
+              </div>
+            )}
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', marginBottom: 20, lineHeight: 1.5 }}>
               Tell us once. We figure it out and get it done.
             </div>

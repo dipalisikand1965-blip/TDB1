@@ -433,13 +433,13 @@ const PillarPageLayout = ({
       {/* Mira Chat Widget - hidden when page uses MiraOSTrigger */}
       {!hideMiraWidget && <MiraChatWidget pillar={pillar} />}
 
-      {/* Concierge® Request Builder — desktop floating trigger */}
+      {/* Concierge® Request Builder — desktop floating trigger, stacked above Mira orb */}
       <button
         onClick={() => setConciergeLayoutOpen(true)}
         data-testid="concierge-builder-float-btn"
         className="hidden md:flex"
         style={{
-          position: 'fixed', bottom: 28, right: 28, zIndex: 900,
+          position: 'fixed', bottom: 96, right: 24, zIndex: 900,
           alignItems: 'center', gap: 8,
           padding: '12px 20px',
           background: 'linear-gradient(135deg,#1C0A00,#3D1A00)',
@@ -450,7 +450,10 @@ const PillarPageLayout = ({
           boxShadow: '0 4px 24px rgba(0,0,0,0.30)',
           letterSpacing: '0.03em',
           fontFamily: 'inherit',
+          transition: 'transform 0.15s, box-shadow 0.15s',
         }}
+        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.40)'; }}
+        onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(0,0,0,0.30)'; }}
       >
         <span style={{ fontSize: 14 }}>✦</span>
         Concierge® Requests
