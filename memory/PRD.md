@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 25 — BirthdayBox scrollbar, Mira Picks gold cards, Modal scrollbars sweep)
+## Last Updated: 2026-03-28 (Session 26 — ConciergeBuilder X fix, Celebrate Portrait/Memory categories)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
