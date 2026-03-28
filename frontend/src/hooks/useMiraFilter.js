@@ -49,7 +49,7 @@ const BREED_SYNONYMS = {
   labrador:         ['labrador', 'lab', 'labrador retriever'],
   golden:           ['golden', 'golden retriever'],
   german_shepherd:  ['german shepherd', 'german_shepherd', 'gsd', 'alsatian'],
-  indie:            ['indie', 'indian', 'indian pariah', 'desi', 'indie dog', 'street dog', 'mixed', 'desi dog'],
+  indie:            ['indie', 'indian pariah', 'desi', 'indie dog', 'street dog', 'mixed', 'desi dog'],
   poodle:           ['poodle', 'toy poodle', 'miniature poodle', 'standard poodle'],
   beagle:           ['beagle'],
   bulldog:          ['bulldog', 'english bulldog', 'french bulldog', 'frenchie'],
@@ -72,6 +72,7 @@ const BREED_SYNONYMS = {
   saint_bernard:    ['saint bernard', 'st bernard', 'st. bernard', 'st_bernard'],
   jack_russell:     ['jack russell', 'jack russell terrier', 'jack_russell'],
   alaskan_malamute: ['alaskan malamute', 'malamute', 'alaskan_malamute'],
+  indian_spitz:     ['indian spitz', 'indian_spitz'],
 };
 
 // Breeds with no product catalog match → treat as universal (show for all pets)
