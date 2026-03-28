@@ -262,16 +262,22 @@
   }
 }
 
-/* ========== HIDE SCROLLBARS GLOBALLY (all viewports) ========== */
-* {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+/* ========== MODAL CONTENT SCROLLBARS — hide without killing page scroll ========== */
+/* Targets only modal inner containers with maxHeight + overflowY */
+[style*="maxHeight"][style*="overflowY"]::-webkit-scrollbar,
+[style*="max-height"][style*="overflow-y"]::-webkit-scrollbar {
+  display: none;
+  width: 0;
 }
-*::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+/* NEVER use * { scrollbar: none } — kills ALL page scrolling */
+.no-sb,
+[style*="overflow-x: auto"],
+[style*="overflow-x:auto"] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-html body {
-  scrollbar-width: none !important;
+.no-sb::-webkit-scrollbar,
+[style*="overflow-x: auto"]::-webkit-scrollbar,
+[style*="overflow-x:auto"]::-webkit-scrollbar {
+  display: none;
 }
