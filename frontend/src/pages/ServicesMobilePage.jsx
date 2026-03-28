@@ -18,6 +18,7 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import '../styles/mobile-design-system.css';
 
 const SVC_STRIP_CATS = [
@@ -173,6 +174,7 @@ export default function ServicesMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [selectedSvc, setSelectedSvc] = useState(null);
   const [showSvcPlan, setShowSvcPlan] = useState(false);
 
@@ -278,7 +280,7 @@ export default function ServicesMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "I know {petName}'s breed and health history. Every service here is matched to what they actually need."
           </div>
-          <button className="svc-cta" onClick={() => { vibe('medium'); request(`Services for ${petName}`, { channel:'services_mira_cta' }); }}>
+          <button className="svc-cta" onClick={() => { vibe('medium'); setConciergeBuilderOpen(true); }}>
             See Mira's Service Picks →
           </button>
         </div>
@@ -314,6 +316,12 @@ export default function ServicesMobilePage() {
         </div>
       </div>
 
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
       {/* Service Booking Modal — full 4-step flow */}
       <ServiceBookingModal
         isOpen={svcBooking.isOpen}
