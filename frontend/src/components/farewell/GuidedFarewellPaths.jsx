@@ -319,7 +319,7 @@ function ModalShell({ onClose, children, noPadding }) {
 
   return createPortal(
     <>
-      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.78)" }} />
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }} />
       <div
         onClick={e => e.stopPropagation()}
         style={{
