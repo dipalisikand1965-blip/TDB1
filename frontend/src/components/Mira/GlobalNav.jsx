@@ -104,32 +104,35 @@ const GlobalNav = ({
   };
   const mobileWhisper = getMobileBirthdayWhisper();
 
+  const handleMobileWhisperCTA = () => {
+    setMobileWhisperDismissed(true);
+    navigate('/celebrate');
+  };
+
   return (
     <>
-    {/* ── Mobile Birthday Whisper Bar ── */}
+    {/* ── Mobile Birthday Whisper Bar — compact ── */}
     {mobileWhisper && (
       <div
         data-testid="mobile-birthday-whisper"
-        style={{
-          background: 'linear-gradient(90deg, #1a0a1e, #0f1a2e)',
-          borderBottom: '1px solid rgba(236,72,153,0.3)',
-          padding: '6px 14px 6px 12px',
-          display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: 12,
-        }}
+        className="flex items-center gap-2 px-3 py-1 text-[11px]"
+        style={{ background: 'linear-gradient(90deg,#0f0520,#0a1428,#0f0520)', borderBottom: '1px solid rgba(196,92,253,0.25)' }}
       >
-        <span>{mobileWhisper.icon}</span>
-        <span style={{ flex: 1, color: '#F9A8D4', fontWeight: 600 }}>
+        <span className="flex-shrink-0 text-sm">{mobileWhisper.icon}</span>
+        <span className="flex-1 text-[#E879F9] font-medium truncate">
           {mobileWhisper.text}
-          {' — '}
+          {' · '}
           <button
-            onClick={() => navigate('/celebrate')}
-            style={{ background:'none', border:'none', cursor:'pointer', color:'#C084FC', fontWeight:700, fontSize:12, padding:0, textDecoration:'underline', textUnderlineOffset:2 }}
+            onClick={handleMobileWhisperCTA}
+            className="text-[#A78BFA] font-semibold underline underline-offset-1 bg-transparent border-none cursor-pointer p-0 text-[11px]"
           >
             Plan now →
           </button>
         </span>
-        <button onClick={() => setMobileWhisperDismissed(true)} style={{ background:'none', border:'none', cursor:'pointer', color:'#6B7280', fontSize:16, padding:'0 2px', lineHeight:1 }}>×</button>
+        <button
+          onClick={() => setMobileWhisperDismissed(true)}
+          className="text-gray-600 bg-transparent border-none cursor-pointer text-base leading-none flex-shrink-0 p-0.5"
+        >×</button>
       </div>
     )}
     <div className="flex items-center justify-between px-4 py-2 bg-[#0d0d1a] border-b border-gray-800/50">

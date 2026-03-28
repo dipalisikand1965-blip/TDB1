@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from '../hooks/use-toast';
 import { ShoppingCart, Menu, X, Search, User, ChevronDown, ChevronUp, ChevronRight, Sparkles, PawPrint, LogOut, Mic, MicOff, Loader2, Package, Bell } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -606,6 +607,34 @@ const Navbar = () => {
     } catch { return null; }
   };
 
+  // When CTA clicked — send to concierge + show toast confirmation
+  const handleBirthdayWhisperCTA = async () => {
+    const w = getNavBirthdayWhisper();
+    if (!w) return;
+    setNavWhisperDismissed(true);
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      await fetch(`${API_URL}/api/concierge/intake`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          request_type: 'birthday_photoshoot',
+          pet_name: primaryPet?.name,
+          message: `${w.text} — please arrange a Gotcha Day photoshoot for ${primaryPet?.name || 'my pet'}. Mira auto-suggested this.`,
+          channel: 'celebrate',
+          priority: 'high',
+        }),
+      });
+    } catch { /* fire and forget */ }
+    toast({
+      title: `Request sent to Concierge`,
+      description: `We'll arrange a photoshoot for ${primaryPet?.name || 'your pet'}'s special day. Our team will reach out on WhatsApp.`,
+      duration: 5000,
+    });
+    navigate('/celebrate');
+  };
+
   return (
     <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`} style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Top Announcement Banner */}
@@ -624,36 +653,31 @@ const Navbar = () => {
         <span>✦ The world's first Pet Life OS · Built in memory of Mystique · Now in early access</span>
       </div>
 
-      {/* ── Birthday Whisper Bar (Mira) ── */}
+      {/* ── Birthday Whisper Bar (Mira) — compact & elegant ── */}
       {(() => {
         const w = getNavBirthdayWhisper();
         return w ? (
           <div
             data-testid="nav-birthday-whisper"
-            style={{
-              background: 'linear-gradient(90deg, #FFF0F8, #F0F4FF, #FFF0F8)',
-              borderBottom: '1px solid #FBCFE8',
-              padding: '6px 16px',
-              display: 'flex', alignItems: 'center', gap: 10,
-              position: 'relative',
-            }}
+            className="flex items-center gap-2 px-4 py-1.5 text-xs"
+            style={{ background: 'linear-gradient(90deg,#fdf4ff,#fff0f9,#fdf4ff)', borderBottom: '1px solid #f0abfc' }}
           >
-            <span style={{ fontSize: 18 }}>{w.icon}</span>
-            <span style={{ flex: 1, fontSize: 13, lineHeight: 1.3 }}>
-              <span style={{ fontWeight: 700, color: '#BE185D' }}>{w.text}</span>
+            <span className="flex-shrink-0">{w.icon}</span>
+            <span className="flex-1 text-[#9D174D] font-medium truncate">
+              {w.text}
               {' — '}
-              <Link
-                to="/celebrate"
-                style={{ color: '#9333EA', fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: 2 }}
+              <button
+                onClick={handleBirthdayWhisperCTA}
+                className="font-semibold text-[#7C3AED] underline underline-offset-2 hover:text-[#5B21B6] bg-transparent border-none cursor-pointer p-0 text-xs"
               >
                 {w.cta} →
-              </Link>
+              </button>
             </span>
-            <span style={{ fontSize: 11, color: '#9CA3AF', fontStyle: 'italic', marginRight: 22 }}>Mira</span>
+            <span className="text-[#C4B5FD] italic text-[10px] flex-shrink-0 hidden sm:block">Mira</span>
             <button
               onClick={() => setNavWhisperDismissed(true)}
-              style={{ position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#D1D5DB', fontSize:18, padding:'0 4px', lineHeight:1 }}
-              aria-label="Dismiss birthday whisper"
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer leading-none flex-shrink-0 text-base p-0.5 ml-1"
+              aria-label="Dismiss"
             >×</button>
           </div>
         ) : null;
