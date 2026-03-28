@@ -1044,9 +1044,6 @@ function DineMobilePage() {
           </div>
         </div>
 
-        {/* ── 2. Category Strip (outside tabs) ── */}
-        <DineCategoryStrip pet={currentPet} />
-
         {/* ── 3. Main 3-Tab Bar ── */}
         <div className="ios-tab-bar">
           {[
@@ -1066,6 +1063,9 @@ function DineMobilePage() {
 
         {/* ════ TAB 1: 🍲 Dine ════ */}
         {mainDineTab === 'dine' && (<>
+
+        {/* Category Strip — inside Dine tab only */}
+        <DineCategoryStrip pet={currentPet} />
 
         {/* Sub-toggle: Eat & Nourish / Dine Out */}
         <DineSegmentedSwitch mode={mode} onChange={setMode} />

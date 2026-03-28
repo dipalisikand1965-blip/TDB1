@@ -165,9 +165,6 @@ export default function GoMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Flights, road trips, boarding, pet-friendly stays.</div>
         </div>
 
-        {/* ══ 2. GoCategoryStrip ══ */}
-        <GoCategoryStrip pet={currentPet} />
-
         {/* ══ 3. Tab Bar ══ */}
         <div className="ios-tab-bar">
           {[
@@ -188,6 +185,9 @@ export default function GoMobilePage() {
         {/* TAB 1: Go & Products */}
         {activeTab === 'go' && (
           <div>
+            {/* GoCategoryStrip — inside Go tab (moved from above tab bar) */}
+            {currentPet && <GoCategoryStrip pet={currentPet} />}
+
             {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
             {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
 
