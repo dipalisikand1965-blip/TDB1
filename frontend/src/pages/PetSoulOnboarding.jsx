@@ -685,6 +685,14 @@ const CHAPTERS = [
           { label: "More joy and play",  value: "happiness", emoji: "\u{1F3BE}" },
         ]
       },
+      {
+        key:         "life_vision",
+        pts:         8,
+        text:        "In one sentence, what kind of life do you want for {name}?",
+        mira:        "\"Beautiful. Everything I do for {name} will be guided by this.\"",
+        type:        "text",
+        placeholder: "e.g. A life full of adventure, love and salmon treats\u2026",
+      },
     ]
   },
 ];
@@ -782,6 +790,7 @@ export default function PetSoulOnboarding() {
   const [pets,         setPets]         = useState([]);
   const [currentPet,   setCurrentPet]   = useState(null);
   const [petsLoaded,   setPetsLoaded]   = useState(false);
+  const [textAnswer,   setTextAnswer]   = useState('');
 
   const startChapterRef = useRef(null);
 
@@ -853,17 +862,21 @@ export default function PetSoulOnboarding() {
 
   // ── Next question ──────────────────────────────────────────────────────
   const handleNext = async () => {
-    if (!selected || animating) return;
+    const isTextQ = q.type === 'text';
+    const canProceed = isTextQ ? textAnswer.trim().length > 0 : !!selected;
+    if (!canProceed || animating) return;
     setAnimating(true);
     setSaving(true);
 
+    const answerValue = isTextQ ? textAnswer.trim() : selected.value;
+
     // Save to backend
-    await saveAnswer(q.key, selected.value, q.chapterLabel);
+    await saveAnswer(q.key, answerValue, q.chapterLabel);
 
     // Update score
     const newScore = score + q.pts;
     setScore(newScore);
-    setAnswers(prev => ({ ...prev, [q.key]: selected.value }));
+    setAnswers(prev => ({ ...prev, [q.key]: answerValue }));
 
     // Show pts popup
     setPtsPop(q.pts);
@@ -885,6 +898,7 @@ export default function PetSoulOnboarding() {
     setTimeout(() => {
       setQIdx(prev => prev + 1);
       setSelected(null);
+      setTextAnswer('');
       setAnimating(false);
     }, 350);
   };
@@ -898,6 +912,7 @@ export default function PetSoulOnboarding() {
     } else {
       setQIdx(nextQIdx);
       setSelected(null);
+      setTextAnswer('');
     }
   };
 
@@ -1168,7 +1183,30 @@ export default function PetSoulOnboarding() {
             {txt(q.text)}
           </h2>
 
-          {/* Options */}
+          {/* Options (choice) or Text input */}
+          {q.type === 'text' ? (
+            <textarea
+              value={textAnswer}
+              onChange={e => setTextAnswer(e.target.value)}
+              placeholder={q.placeholder || 'Type your answer\u2026'}
+              rows={4}
+              data-testid="soul-text-input"
+              style={{
+                width: '100%',
+                background: 'rgba(255,255,255,0.06)',
+                border: `1.5px solid ${textAnswer.trim() ? 'rgba(155,89,182,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                borderRadius: 14,
+                padding: '14px 16px',
+                color: '#F5F0E8',
+                fontSize: 15,
+                fontFamily: "'DM Sans', sans-serif",
+                lineHeight: 1.6,
+                resize: 'none',
+                outline: 'none',
+                transition: 'border-color 0.2s',
+              }}
+            />
+          ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {q.options.map(opt => (
               <button
@@ -1187,6 +1225,7 @@ export default function PetSoulOnboarding() {
               </button>
             ))}
           </div>
+          )}
         </div>
 
         {/* Footer buttons */}
@@ -1198,16 +1237,16 @@ export default function PetSoulOnboarding() {
         }}>
           <button
             onClick={handleNext}
-            disabled={!selected || saving || animating}
+            disabled={q.type === 'text' ? (!textAnswer.trim() || saving || animating) : (!selected || saving || animating)}
             data-testid="soul-builder-next-btn"
             style={{
               width: '100%', padding: '15px', borderRadius: 12, border: 'none',
-              background: selected && !saving
+              background: ((q.type === 'text' ? textAnswer.trim() : selected) && !saving)
                 ? `linear-gradient(135deg, ${C.purple}, ${C.pink})`
                 : 'rgba(155,89,182,0.2)',
-              color: selected && !saving ? '#fff' : 'rgba(245,240,232,0.3)',
+              color: ((q.type === 'text' ? textAnswer.trim() : selected) && !saving) ? '#fff' : 'rgba(245,240,232,0.3)',
               fontSize: 15, fontWeight: 700,
-              cursor: selected && !saving ? 'pointer' : 'not-allowed',
+              cursor: ((q.type === 'text' ? textAnswer.trim() : selected) && !saving) ? 'pointer' : 'not-allowed',
               fontFamily: "'DM Sans', sans-serif",
               transition: 'all 0.2s',
             }}
