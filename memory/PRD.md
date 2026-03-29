@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-29 (Session 30 — Unified PillarHero component wired across all 12 mobile pillar pages)
+## Last Updated: 2026-03-29 (Session 31 — SoulBuilder life_vision + Ticker jerkies + Paperwork 2-col grid)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
