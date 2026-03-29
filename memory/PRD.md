@@ -522,3 +522,21 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 6. ✅ **Adopt sectioned products on desktop (AdoptSoulPage)** — Added `rawProducts` state, `applyMiraFilter` import, `useMemo` for `adoptSections` (Breed Essentials, Arrival Essentials, Home Readiness, Enrichment & Bonding). Sectioned product display added to adopt tab below MiraPicksSection.
 
 **Test Results (iteration_239.json):** 17/17 tests passing (100%)
+
+### SESSION 23 — (2026-03-29) Design Token System Integration Sprint
+
+**P0 — Design Token System:**
+1. ✅ **tdc-design-tokens.css created** at `/app/frontend/src/styles/tdc-design-tokens.css` (1044 lines). Single source of truth for all visual decisions: typography (SF Pro, Cormorant Garamond), spacing (golden ratio 4px–89px), colors, chips, buttons, cards, Mira OS desktop layout.
+2. ✅ **Imported FIRST in index.css** (line 1 — `@import "./styles/tdc-design-tokens.css"`) before all other styles, making it the cascade origin.
+3. ✅ **CSS deprecated chip classes updated** in `mira-chat.css` and `mira-10x.css` to use token variables (`--radius-full`, `--text-xs`, `--font-sans`, `--color-text-inv`, `--space-*`, `--duration-fast`).
+4. ✅ **Full chip sweep** — Replaced inline tailwind pill patterns (`px-2 py-0.5 rounded-full text-xs`) with `tdc-chip` + variant classes across 10+ files: PersonalizedPicksPanel, MiraDemoPage, MiraPureOSPage, ServicesPage, TicketThread, TicketDetailPanel, TopPicksPanel (53 total `tdc-chip` usages).
+5. ✅ **CSS gold token conflict fixed** — Removed `--color-gold` override from `mobile-design-system.css` (was overriding tdc-design-tokens.css's canonical value).
+
+**P1 — Watch & Learn YouTube:**
+6. ✅ **CareMobilePage.jsx** — Added `WatchSection` component. Fetches breed-specific YouTube videos via `/api/test/youtube`. Shows 2-column grid of video thumbnails with play button overlay after CareConciergeSection.
+7. ✅ **GoMobilePage.jsx** — Added `GoWatchSection` component. Fetches dog travel YouTube videos. Shows after GuidedGoPaths in the 'go' tab.
+
+**P1 — MiraOSPage Desktop Layout:**
+8. ✅ **MiraOSPage.jsx** (at `/mira-os-shell`) — Added `mira-os-layout` class (2-column grid: 320px sidebar + 1fr main on 1024px+). Header has `mira-unified-header` (full width). MiraHeaderShell wrapped in `mira-os-sidebar`. Tab contents wrapped in `<main class="mira-os-main">`.
+
+**Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
