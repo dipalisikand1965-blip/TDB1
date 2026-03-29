@@ -214,7 +214,7 @@ const PILLAR_QUESTIONS = {
   enjoy:     "What experience for {pet}?",
 };
 
-function BookingModal({ service, pet, user, onClose, onBooked }) {
+export function BookingModal({ service, pet, user, onClose, onBooked }) {
   const [selectedType, setSelectedType] = useState(service?.sub_category || '');
   const [serviceDate, setServiceDate] = useState('');
   const [notSureDate, setNotSureDate] = useState(false);
