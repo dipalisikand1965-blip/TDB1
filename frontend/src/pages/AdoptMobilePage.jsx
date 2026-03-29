@@ -56,11 +56,13 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 function vibe(t='light'){if(navigator?.vibrate)navigator.vibrate(t==='medium'?[12]:[6]);}
 
 const ADOPT_STAGES = [
-  { id:"thinking",  label:"Thinking",  emoji:"💭" },
-  { id:"ready",     label:"Ready",     emoji:"✅" },
-  { id:"looking",   label:"Looking",   emoji:"🔍" },
-  { id:"matched",   label:"Matched",   emoji:"❤️" },
-  { id:"home",      label:"Home",      emoji:"🏠" },
+  { id:"thinking",  label:"Ready?",       emoji:"💭" },
+  { id:"ready",     label:"Adopting",     emoji:"✅" },
+  { id:"looking",   label:"Find Match",   emoji:"🔍" },
+  { id:"matched",   label:"Matched!",     emoji:"❤️" },
+  { id:"home",      label:"Coming Home",  emoji:"🏠" },
+  { id:"breed",     label:"Breeds",       emoji:"📚" },
+  { id:"guidance",  label:"Book",         emoji:"💌" },
 ];
 
 const ADOPT_SERVICES = [
@@ -260,9 +262,9 @@ export default function AdoptMobilePage() {
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (
                   <button key={s.id} onClick={() => { vibe(); setOpenDim(prev => prev === s.id ? null : s.id); }}
-                    style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'8px 12px', borderRadius:14, border:`2px solid ${openDim===s.id?G.rose:G.border}`, background:openDim===s.id?G.pale:'#fff', cursor:'pointer', minWidth:68 }}>
-                    <span style={{ fontSize:18 }}>{s.emoji}</span>
-                    <span style={{ fontSize:14, fontWeight:700, color:openDim===s.id?G.rose:G.darkText }}>{s.label}</span>
+                    style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:5, padding:'10px 14px', borderRadius:16, border:`2px solid ${openDim===s.id?G.rose:G.border}`, background:openDim===s.id?G.pale:'#fff', cursor:'pointer', minWidth:76, minHeight:78 }}>
+                    <span style={{ fontSize:22 }}>{s.emoji}</span>
+                    <span style={{ fontSize:11, fontWeight:700, color:openDim===s.id?G.rose:G.darkText, textAlign:'center', lineHeight:1.25, whiteSpace:'normal', maxWidth:64 }}>{s.label}</span>
                   </button>
                 ))}
               </div>
