@@ -78,8 +78,9 @@ const transformPetData = (apiPet) => ({
  * @returns {Object} Pet state and controls
  */
 const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
-  const [pet, setPet] = useState(null);          // null = loading, not DEMO_PET (Buddy)
-  const [allPets, setAllPets] = useState([]);    // empty until API responds
+  const [pet, setPet] = useState(DEMO_PET);    // keeps codebase safe (no null crashes)
+  const [allPets, setAllPets] = useState(ALL_DEMO_PETS);
+  const [petLoaded, setPetLoaded] = useState(false); // true once REAL pet arrives from API
   const [showPetSelector, setShowPetSelector] = useState(false);
   const [isLoadingPets, setIsLoadingPets] = useState(false);
   
@@ -104,6 +105,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
             setPet(transformedPets[0]);
           }
           
+          setPetLoaded(true); // real pet is now available
           console.log('[usePet] Loaded', transformedPets.length, 'pets');
           return transformedPets;
         }
@@ -137,6 +139,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
             setPet(formattedPets[0]);
           }
           
+          setPetLoaded(true);
           return formattedPets;
         }
       }
@@ -187,6 +190,13 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     return pet?.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
   }, [pet?.id]);
   
+  // Auto-mark petLoaded when pet switches from DEMO_PET to a real pet
+  useEffect(() => {
+    if (pet && pet.id !== 'demo-pet' && !pet.id.startsWith('pet-')) {
+      setPetLoaded(true);
+    }
+  }, [pet?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Load pets on user change (only if autoLoad is enabled)
   // Note: MiraDemoPage has its own pet-loading logic, so autoLoad is disabled there
   useEffect(() => {
@@ -195,17 +205,16 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     }
   }, [autoLoad, user?.id, loadUserPets]);
 
-  // Safety fallback: after 4s with no user, use DEMO_PET so UI doesn't hang on "Loading Mira..."
+  // Safety fallback: after 4s with no user, mark as loaded so UI doesn't hang
   useEffect(() => {
-    if (pet !== null) return; // Already have a real pet
+    if (petLoaded) return;
     const timer = setTimeout(() => {
       if (!user?.id) {
-        setPet(DEMO_PET);
-        setAllPets(ALL_DEMO_PETS);
+        setPetLoaded(true); // guest/unauthenticated — show DEMO_PET
       }
     }, 4000);
     return () => clearTimeout(timer);
-  }, [pet, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [petLoaded, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
   // Find pet by ID
   const getPetById = useCallback((petId) => {
@@ -227,6 +236,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     
     // Loading state
     isLoadingPets,
+    petLoaded,        // true once real pet arrives (use for render guard vs DEMO_PET)
     
     // Actions
     loadUserPets,

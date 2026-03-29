@@ -372,7 +372,8 @@ const MiraDemoPage = () => {
     showPetSelector,
     setShowPetSelector,
     isLoadingPets,
-    isRealPet
+    isRealPet,
+    petLoaded
   } = usePet({ user, token });
   
   // ═══════════════════════════════════════════════════════════════════════════════
@@ -1374,7 +1375,7 @@ const MiraDemoPage = () => {
     lastActivityRef.current = Date.now();
     
     console.log(`[MIRA] Conversation archived: ${reason}`);
-  }, [conversationHistory, pet?.name, pet?.id, clearPicks]);
+  }, [conversationHistory, pet.name, pet.id, clearPicks]);
   
   // Check for inactivity and archive conversation
   useEffect(() => {
@@ -1883,9 +1884,9 @@ const MiraDemoPage = () => {
     // Show starter chips after new chat
     setShowStarterChips(true);
     
-    console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet?.name);
+    console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet.name);
     return newSessionId;
-  }, [baseStartNewSession, pet?.name, clearPicks]);
+  }, [baseStartNewSession, pet.name, clearPicks]);
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // NEW CHAT FLOW - Smart handler with confirmation if draft/awaiting exists
@@ -2082,7 +2083,7 @@ const MiraDemoPage = () => {
   useEffect(() => {
     const fetchProactiveAlerts = async () => {
       // Guard: Skip if still loading pets or using demo pet
-      if (isLoadingPets || !pet?.id || pet.id.startsWith('demo')) return;
+      if (isLoadingPets || !pet.id || pet.id.startsWith('demo')) return;
       
       try {
         // Fetch celebrations, health reminders, health vault status, weather, bundles, AND new proactive alerts
@@ -2233,11 +2234,11 @@ const MiraDemoPage = () => {
     };
     
     fetchProactiveAlerts();
-  }, [pet?.id, isLoadingPets]);
+  }, [pet.id, isLoadingPets]);
   
   // MULTI-PET: Switch to a different pet
   const switchPet = async (newPet) => {
-    if (newPet.id === pet?.id) {
+    if (newPet.id === pet.id) {
       setShowPetSelector(false);
       return;
     }
@@ -3980,7 +3981,7 @@ const MiraDemoPage = () => {
   };
 
   // Guard: don't render until real pet data loads (prevents Buddy flash)
-  if (!pet) {
+  if (!petLoaded) {
     return (
       <div style={{
         minHeight: '100vh',
