@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-29 (Session 29 — iOS Audio, Chip Colors, Concierge Label, Pet Selector consistency)
+## Last Updated: 2026-03-29 (Session 29 — iOS Audio, Chip Colors, Concierge Label, Pet Selector consistency, Mira header bleed fix, Shop white text)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
