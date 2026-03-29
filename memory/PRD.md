@@ -216,7 +216,28 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 
 ## 9. PENDING TASKS (Priority for next session)
 
-### SESSION 28.5 — (2026-03-28) 3 P0 Bug Fixes
+### SESSION 29 — (2026-03-29) 5 Bug Fixes (/mira-os + Admin)
+
+1. ✅ **PicksVault.jsx** — `why_for_pet` field didn't exist in API. Now maps `why_reason || why_it_fits || reason` across all pick types (catalogue/concierge/personalized).
+2. ✅ **ConciergePanel.jsx** — Textarea for "Anything else" now always visible (was conditional on Learn context only). WhatsApp message uses edited textarea text.
+3. ✅ **MiraUnifiedHeader.jsx** — Mira logo now clickable → navigates to `/pet-home` (back button behavior).
+4. ✅ **MiraDemoPage.jsx** — Hardcoded `'Buddy'` in quick reply chip replaced with `pet?.name || 'my dog'`. `extractQuickReplies` useCallback dependency updated to include `pet`.
+5. ✅ **ServicesManager.jsx** — Was stuck on "Loading services..." because `pillar=services` returns 0 DB results. Now fetches all services with no pillar filter + pillar dropdown for client-side filtering.
+
+### P0 — Remaining (Onboarding dialog)
+- `NewChatConfirmDialog` / `OnboardingTooltip` on `/mira-os` shows on EVERY page load (should show once via localStorage). Blocks header clicks.
+
+### P1 — Upcoming
+1. Watch & Learn YouTube sections (Care + Go)
+2. Add LearnNearMe, PaperworkNearMe, GoNearMe components to mobile pages
+3. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
+
+### P2 — Future
+1. Production DB (Atlas IP whitelist)
+2. Refactor Admin.jsx (7k lines), server.py (24k lines), MiraDemoPage.jsx (5.5k lines)
+3. Build Love pillar
+
+
 
 1. ✅ **Farewell products loading** — Removed `if (!currentPet?.id) return` guard from FarewellMobilePage useEffect. Products now fetch at mount with breed filter applied client-side. Added 3s safety timeout for guest users. 16 memorial products now visible on /farewell without pet selection.
 2. ✅ **Mira explains why expand row** — ProductCard.jsx was conditioned on `product.mira_hint` (DB field, almost never set). Changed to `product.mira_hint || productMiraTip` where productMiraTip is always computed (e.g. "✨ Makes celebrations special"). All product cards now show clickable ✦ MIRA expand button.
