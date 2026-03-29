@@ -539,4 +539,8 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 **P1 — MiraOSPage Desktop Layout:**
 8. ✅ **MiraOSPage.jsx** (at `/mira-os-shell`) — Added `mira-os-layout` class (2-column grid: 320px sidebar + 1fr main on 1024px+). Header has `mira-unified-header` (full width). MiraHeaderShell wrapped in `mira-os-sidebar`. Tab contents wrapped in `<main class="mira-os-main">`.
 
+**P1 — Watch & Learn YouTube in Desktop DimExpanded (Session 24):**
+9. ✅ **CareSoulPage.jsx** — Added `ytQuery` to all 9 care dims (grooming, dental, coat, wellness, senior, supplements, soul, mira, soul_made). Added 3rd "🎬 Watch" tab to `DimExpanded` (lazy-loaded YouTube videos on tab activation). Breed + dim-specific query. 2-column video grid with play button overlay.
+10. ✅ **GoSoulPage.jsx** — Same pattern. Added `ytQuery` to all 6 go dims (safety, calming, carriers, feeding, health, stay). 3rd "🎬 Watch" tab in `DimExpanded`.
+
 **Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
