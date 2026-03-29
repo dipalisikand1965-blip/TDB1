@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-28 (Session 28 — Cart→Service Desk wiring, Mira expand row, Birthday whisper bar)
+## Last Updated: 2026-03-29 (Session 29 — iOS Audio, Chip Colors, Concierge Label, Pet Selector consistency)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
