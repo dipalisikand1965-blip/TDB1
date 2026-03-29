@@ -25,7 +25,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import LearnNearMe from '../components/learn/LearnNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { getLearnDims, MiraPicksSection, DimExpanded, DIM_ID_TO_CATEGORY, LearnContentModal, LEARN_CATS } from './LearnSoulPage';
+import { getLearnDims, MiraPicksSection, LearnContentModal } from './LearnSoulPage';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
@@ -279,17 +279,9 @@ export default function LearnMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
-  const [openDim, setOpenDim] = useState(null);        // null = collapsed; dim.id = expanded
   const [catModal, setCatModal] = useState(null);       // opens LearnContentModal (same as desktop category strip)
   const [mainTab, setMainTab] = useState('learn');
-  const dimExpandedRef = useRef(null);
-  useEffect(() => {
-    if (openDim && dimExpandedRef.current) {
-      setTimeout(() => {
-        dimExpandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  }, [openDim]);
+  const dimExpandedRef = useRef(null); // kept for PaperworkMobilePage pattern parity
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -497,66 +489,48 @@ export default function LearnMobilePage() {
           `}</style>
           <div className="learn-dims-grid-mobile">
             {learnDims.map(dim => {
-              const isOpen = openDim === dim.id;
+              const isActive = catModal === dim.id;
               return (
-                <div key={dim.id} style={{ gridColumn: isOpen ? '1 / -1' : 'auto' }}>
-                  {/* Card — matches desktop LearnSoulPage card design */}
-                  <div
-                    onClick={() => { vibe(); setOpenDim(isOpen ? null : dim.id); }}
-                    data-testid={`learn-dim-${dim.id}`}
-                    style={{
-                      background:'#fff',
-                      borderRadius: isOpen ? '16px 16px 0 0' : 16,
-                      cursor:'pointer',
-                      position:'relative',
-                      border: isOpen ? `2px solid ${G.purple}` : `2px solid ${G.border}`,
-                      boxShadow: dim.glow && !isOpen ? `0 4px 20px ${dim.glowColor}` : '0 2px 8px rgba(0,0,0,0.06)',
-                      transition:'all 0.2s',
-                      overflow:'hidden',
-                    }}>
-                    {/* Coloured top bar */}
-                    <div style={{ height:5, background: isOpen ? G.purple : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
-                    <div style={{ padding:'12px 12px 10px' }}>
-                      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:10 }}>
-                        <div style={{ width:40, height:40, borderRadius:12,
-                          background: dim.glow ? `linear-gradient(135deg,${dim.glowColor}22,${dim.glowColor}44)` : '#F3F4F6',
-                          display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
-                          {dim.icon}
-                        </div>
-                        <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:3 }}>
-                          <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 8px',
-                            background:`${dim.badgeBg}20`, color:dim.badgeBg, border:`1px solid ${dim.badgeBg}40` }}>
-                            {dim.badge}
-                          </span>
-                          {dim.glow && !isOpen && <div style={{ width:7, height:7, borderRadius:'50%', background:G.purple }} />}
-                        </div>
+                <div
+                  key={dim.id}
+                  onClick={() => { vibe(); setCatModal(dim.id); }}
+                  data-testid={`learn-dim-${dim.id}`}
+                  style={{
+                    background:'#fff',
+                    borderRadius: 16,
+                    cursor:'pointer',
+                    position:'relative',
+                    border: isActive ? `2px solid ${G.purple}` : `2px solid ${G.border}`,
+                    boxShadow: dim.glow ? `0 4px 20px ${dim.glowColor}` : '0 2px 8px rgba(0,0,0,0.06)',
+                    transition:'all 0.2s',
+                    overflow:'hidden',
+                  }}>
+                  {/* Coloured top bar */}
+                  <div style={{ height:5, background: isActive ? G.purple : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
+                  <div style={{ padding:'12px 12px 10px' }}>
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:10 }}>
+                      <div style={{ width:40, height:40, borderRadius:12,
+                        background: dim.glow ? `linear-gradient(135deg,${dim.glowColor}22,${dim.glowColor}44)` : '#F3F4F6',
+                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
+                        {dim.icon}
                       </div>
-                      <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:4, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
-                        {dim.label}
-                      </div>
-                      <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.45, marginBottom:8,
-                        display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
-                        {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
-                      </div>
-                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-                        <span style={{ fontSize:11, color:G.purple, fontWeight:700 }}>{isOpen ? 'Close ↑' : 'Explore →'}</span>
-                        <span style={{ fontSize:10, color:'#aaa' }}>{dim.ytQuery ? 'Products · Videos' : 'Products'}</span>
+                      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:3 }}>
+                        <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 8px',
+                          background:`${dim.badgeBg}20`, color:dim.badgeBg, border:`1px solid ${dim.badgeBg}40` }}>
+                          {dim.badge}
+                        </span>
+                        {dim.glow && <div style={{ width:7, height:7, borderRadius:'50%', background:G.purple }} />}
                       </div>
                     </div>
+                    <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:4, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
+                      {dim.label}
+                    </div>
+                    <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.45, marginBottom:8,
+                      display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                      {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
+                    </div>
+                    <span style={{ fontSize:11, color:G.purple, fontWeight:700 }}>Explore →</span>
                   </div>
-                  {/* DimExpanded — opens inline below card, scrolls into view */}
-                  {isOpen && (
-                    <div ref={dimExpandedRef} style={{ scrollMarginTop:72 }}>
-                      <DimExpanded
-                        dim={dim}
-                        pet={currentPet}
-                        onClose={() => setOpenDim(null)}
-                        apiProducts={apiProducts}
-                        services={learnServices}
-                        onBook={svcName => { setSvcBooking({ isOpen: true, serviceType: guessServiceType(svcName) }); }}
-                      />
-                    </div>
-                  )}
                 </div>
               );
             })}
