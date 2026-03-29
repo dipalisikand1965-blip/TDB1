@@ -1,7 +1,7 @@
 /**
  * ServicesMobilePage.jsx — /services (mobile)
- * 7 expandable service group cards — mirrors desktop SERVICE_GROUPS
- * Each group fetches from /api/service-box/services?pillar=X lazily (on expand)
+ * Mirrors desktop ServicesSoulPage: watercolour illustrations + service groups
+ * Rule: Desktop is always the source of truth. Mobile changes layout, never content.
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
@@ -22,6 +22,17 @@ import ServiceBookingModal, { guessServiceType } from '../components/ServiceBook
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import '../styles/mobile-design-system.css';
 
+// ── Service groups — identical to desktop (source of truth) ──────────────────
+const SERVICE_GROUPS = [
+  { id:"pamper",    label:"Pamper & Groom",       icon:"✨", colour:"#40916C", pillars:["care"],                                          desc:"Grooming, spa, coat care — for every breed and comfort level" },
+  { id:"health",    label:"Health & Vet",          icon:"🏥", colour:"#DC2626", pillars:["care","emergency"],                               desc:"Vet consultations, emergency support, first aid" },
+  { id:"learn",     label:"Train & Learn",         icon:"🎓", colour:"#7C3AED", pillars:["learn","play"],                                   desc:"Training, behaviour, enrichment, puppy foundations" },
+  { id:"celebrate", label:"Celebrate",             icon:"🎉", colour:"#9B59B6", pillars:["celebrate"],                                      desc:"Birthday parties, photography, special occasions" },
+  { id:"fitness",   label:"Fitness & Walks",       icon:"🏃", colour:"#E76F51", pillars:["fit","play"],                                     desc:"Dog walking, fitness plans, hydrotherapy" },
+  { id:"travel",    label:"Travel & Paperwork",    icon:"✈️",  colour:"#1ABC9C", pillars:["go","travel","paperwork"],                        desc:"Pet passports, microchipping, travel docs, flight coordination" },
+  { id:"life",      label:"Life Events",           icon:"🌷", colour:"#6366F1", pillars:["adopt","farewell","enjoy","dine"],                desc:"Adoption support, farewell services, dining, social events" },
+];
+
 const SVC_STRIP_CATS = [
   { id:"pamper",    icon:"✨", label:"Pamper",       iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
   { id:"health",    icon:"🏥", label:"Health & Vet", iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
@@ -35,6 +46,7 @@ const SVC_STRIP_CATS = [
 const G = {
   navy:'#0F1A3D', navyL:'#2E4DA6', navyXL:'#5B7FD4',
   cream:'#F0F2FF', border:'#C5CFF0', dark:'#060D1E', taupe:'#4A557A',
+  deep:'#0F1A3D', mutedText:'#6B7280', pale:'#F8FAFC',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
 .svc{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
@@ -43,8 +55,94 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
+// ── Mobile Service Card — exact same content as desktop, touch-optimized layout ──
+function MobileServiceCard({ service, groupColour, onBook }) {
+  const img = service.watercolour_image || service.image_url || service.image || null;
+  return (
+    <div style={{ background:'#fff', border:`1px solid ${G.border}`, borderRadius:14,
+                  overflow:'hidden', marginBottom:10 }}
+         data-testid={`mobile-service-card-${service._id || service.id}`}>
+      {/* Watercolour image / colour block — identical to desktop */}
+      <div style={{ height:90, background: img ? 'transparent' : `linear-gradient(135deg,${groupColour}22,${groupColour}44)`,
+                    display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
+        {img
+          ? <img src={img} alt={service.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+          : <div style={{ fontSize:32 }}>{service.icon || '✦'}</div>}
+      </div>
+      <div style={{ padding:'10px 12px 12px' }}>
+        <div style={{ fontSize:13, fontWeight:700, color:G.deep, marginBottom:3, lineHeight:1.3 }}>
+          {service.name}
+        </div>
+        {service.description && (
+          <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.4, marginBottom:8,
+                        display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+            {service.description.slice(0, 80)}
+          </div>
+        )}
+        <button onClick={() => onBook(service)}
+          data-testid={`mobile-service-book-${service._id || service.id}`}
+          style={{ width:'100%', padding:'9px', borderRadius:10, fontSize:13, fontWeight:700,
+                   background:'linear-gradient(135deg,#C9973A,#F0C060)',
+                   color:'#1A0A00', border:'none', cursor:'pointer' }}>
+          Book via Concierge® →
+        </button>
+      </div>
+    </div>
+  );
+}
 
+// ── Mobile Service Group — accordion with watercolour cards ───────────────────
+function MobileServiceGroup({ group, services, onBook }) {
+  const [expanded, setExpanded] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  if (!services.length) return null;
+  const visible = showAll ? services : services.slice(0, 4);
+  return (
+    <div style={{ marginBottom:4, borderRadius:16, overflow:'hidden',
+                  border:`1px solid ${group.colour}30`, background:'#fff' }}
+         data-testid={`service-group-${group.id}`}>
+      {/* Group header — tap to expand */}
+      <button onClick={() => { vibe(); setExpanded(e => !e); }}
+        style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'14px 16px',
+                 background:'transparent', border:'none', cursor:'pointer', textAlign:'left' }}>
+        <div style={{ width:38, height:38, borderRadius:10, background:`${group.colour}18`,
+                      display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>
+          {group.icon}
+        </div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:15, fontWeight:800, color:G.deep, fontFamily:'Georgia,serif' }}>
+            {group.label}
+          </div>
+          <div style={{ fontSize:11, color:G.mutedText, marginTop:1 }}>{group.desc}</div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <span style={{ fontSize:11, fontWeight:700, background:`${group.colour}18`,
+                         color:group.colour, borderRadius:20, padding:'3px 8px' }}>
+            {services.length}
+          </span>
+          <span style={{ color:G.mutedText, fontSize:12, transform: expanded ? 'rotate(180deg)' : 'none', transition:'transform 0.2s' }}>▼</span>
+        </div>
+      </button>
 
+      {expanded && (
+        <div style={{ padding:'0 12px 12px' }}>
+          {visible.map((svc, i) => (
+            <MobileServiceCard key={svc._id || svc.id || i} service={svc}
+              groupColour={group.colour} onBook={onBook} />
+          ))}
+          {services.length > 4 && (
+            <button onClick={() => setShowAll(s => !s)}
+              style={{ width:'100%', padding:'10px', borderRadius:10, fontSize:13,
+                       fontWeight:600, background:G.pale, border:`1px solid ${G.border}`,
+                       color:G.mutedText, cursor:'pointer', marginTop:4 }}>
+              {showAll ? 'Show less' : `Show all ${services.length} ${group.label.toLowerCase()} services`}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ServicesMobilePage() {
   const { token } = useAuth();
@@ -56,8 +154,27 @@ export default function ServicesMobilePage() {
   const [loading, setLoading] = useState(true);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
+  const [prefilledIntent, setPrefilledIntent] = useState('');
   const [selectedSvc, setSelectedSvc] = useState(null);
   const [showSvcPlan, setShowSvcPlan] = useState(false);
+  const [allServices, setAllServices] = useState([]);
+  const [svcLoading, setSvcLoading] = useState(true);
+
+  // Fetch all services — identical to desktop
+  useEffect(() => {
+    const PILLARS = ["care","emergency","learn","play","celebrate","fit","go","travel","paperwork","adopt","farewell","enjoy","dine"];
+    Promise.all(
+      PILLARS.map(p =>
+        fetch(`${API_URL}/api/service-box/services?pillar=${p}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(data => (data?.services || []).map(s => ({ ...s, pillar:p })))
+          .catch(() => [])
+      )
+    ).then(results => {
+      setAllServices(results.flat());
+      setSvcLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -67,9 +184,17 @@ export default function ServicesMobilePage() {
   const handleBook = useCallback((svc) => {
     vibe('medium');
     tdc.book({ service:svc.name || svc.label, pillar:'services', pet:currentPet, channel:'services_group_card' });
+    const intent = `Book ${svc.name || svc.label} for ${currentPet?.name || 'my dog'}`;
+    setPrefilledIntent(intent);
     setSelectedSvc(svc);
     setConciergeBuilderOpen(true);
   }, [currentPet]);
+
+  // Group services exactly like desktop
+  const grouped = SERVICE_GROUPS.map(group => ({
+    ...group,
+    services: allServices.filter(s => group.pillars.includes(s.pillar)),
+  }));
 
   if (loading) return (
     <PillarPageLayout pillar="services" hideHero hideNavigation>
@@ -140,7 +265,15 @@ export default function ServicesMobilePage() {
         />
 
         <div style={{ padding:'0 16px 8px' }}>
-          <PillarConciergeCards pillar="services" pet={currentPet} token={token} />
+          <PillarConciergeCards
+            pillar="services"
+            pet={currentPet}
+            token={token}
+            onCardSelect={(intent) => {
+              setPrefilledIntent(intent);
+              setConciergeBuilderOpen(true);
+            }}
+          />
           <PillarSoulProfile pet={currentPet} pillar="services" token={token} />
         </div>
 
@@ -168,11 +301,23 @@ export default function ServicesMobilePage() {
           </button>
         </div>
 
-        {/* Service Group Cards */}
+        {/* Service Group Cards — with watercolour illustrations (mirrors desktop exactly) */}
         <div style={{ padding:'0 16px 8px' }}>
           <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Concierge® Services for {petName}</div>
-          <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>Mira's handpicked experts. One message and it's arranged.</div>
+          <div style={{ fontSize:14, color:G.taupe, marginBottom:12 }}>Mira's handpicked experts. One message and it's arranged.</div>
         </div>
+
+        {svcLoading ? (
+          <div style={{ textAlign:'center', padding:'20px 16px', color:G.taupe, fontSize:14 }}>
+            Loading services…
+          </div>
+        ) : (
+          <div style={{ padding:'0 16px 8px' }}>
+            {grouped.map(group => (
+              <MobileServiceGroup key={group.id} group={group} services={group.services} onBook={handleBook} />
+            ))}
+          </div>
+        )}
 
         <div style={{ padding:'0 16px 24px' }}>
           <PersonalisedBreedSection pet={currentPet} pillar="services" token={token} entityType="service" />
@@ -194,7 +339,8 @@ export default function ServicesMobilePage() {
         pet={currentPet}
         token={token}
         isOpen={conciergeBuilderOpen}
-        onClose={() => setConciergeBuilderOpen(false)}
+        onClose={() => { setConciergeBuilderOpen(false); setPrefilledIntent(''); }}
+        prefilledText={prefilledIntent}
       />
       {/* Service Booking Modal — full 4-step flow */}
       <ServiceBookingModal
