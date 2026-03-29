@@ -24,3 +24,10 @@
 - Added 7th "Cake Details" tab to ProductBoxEditor.jsx
 - Fixed Admin Basic Auth for cake-orders endpoints
 - Generated formatted service desk tickets on cake order submission
+
+## 2026-03-29 — PillarConciergeCards: Text fix + Self-firing
+
+### Changes
+- **`PillarConciergeCards.jsx`**: Fixed white-text-on-light-background issue. Card titles changed from `rgba(255,255,255,0.92)` → `#111827`, subtitles from `rgba(255,255,255,0.55)` → `rgba(0,0,0,0.5)`, intro text from `rgba(255,255,255,0.65)` → `rgba(0,0,0,0.5)`. Card bg reduced from `color+'22'` to `color+'15'` for better contrast.
+- **`PillarConciergeCards.jsx`**: Added `useState` + internal `builderOpen` / `prefilledIntent` state. Clicking a card now opens `ConciergeRequestBuilder` directly (self-contained) on ALL pages — not just pages that pass `onCardSelect`. Backward-compatible: if `onCardSelect` is passed, it still uses that.
+- **`ShopMobilePage.jsx`**: Moved `PillarConciergeCards` out of the dark `S.dark` CTA wrapper so dark text renders on a light background.
