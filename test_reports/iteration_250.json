@@ -1,0 +1,63 @@
+{
+  "summary": "Tested DineMobilePage and EmergencyMobilePage at 390px viewport. All 6 test scenarios passed. The PetFriendlySpots import fix (line 40 DineMobilePage.jsx) is confirmed working — no 'Can't find variable: PetFriendlySpots' error. Both pages render PillarHero correctly with THE DOGGY COMPANY label, pet avatar with soul ring, and pillar-specific styling.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_250.json"],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "100% (6/6 tests passed)"
+  },
+  "test_credentials": {
+    "email": "dipali@clubconcierge.in",
+    "password": "test123"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "PetFriendlySpots import fix verified. DineMobilePage.jsx line 40 imports PetFriendlySpots correctly. EmergencyMobilePage.jsx already had all imports. Both pages render correctly at 390px. The only console errors are pre-existing 'Failed to fetch pets' network errors (unrelated to fix).",
+  "test_results": {
+    "dine_mobile_390px": {
+      "status": "PASS",
+      "details": {
+        "page_loads_no_js_errors": true,
+        "no_pet_friendly_spots_error": true,
+        "pillar_hero_tdc_label": true,
+        "pillar_hero_title_dine": "🍽️ Dine — FOUND",
+        "pillar_hero_soul_ring": "100% SOUL badge visible",
+        "allergy_chips": ["⚠️ No chicken", "⚠️ No beef"],
+        "loves_chip": "💚 Loves salmon",
+        "pet_switcher": ["Mojo", "Mystique", "Bruno"],
+        "find_restaurants_tab": "FOUND — data-testid='dine-tab-nearme'",
+        "near_me_tab_content": "PetFriendlySpots renders: 'Where would Mojo love to dine out?' with city search"
+      }
+    },
+    "emergency_mobile_390px": {
+      "status": "PASS",
+      "details": {
+        "page_loads_no_js_errors": true,
+        "pillar_hero_tdc_label": true,
+        "pillar_hero_title_emergency": "🚨 Emergency — FOUND",
+        "pillar_hero_gradient": "red/crimson linear-gradient — VISIBLE",
+        "pillar_hero_subtitle": "Mojo's Emergency Centre",
+        "urgent_cta_banner": "URGENT — Contact Emergency Vet Now + Get Help button (data-testid='emergency-sos-btn')",
+        "category_strip": ["First Aid", "Lost Pet", "Emergency Vet", "Transport", "Insurance"],
+        "tabs": ["🚨 Emergency (data-testid='emergency-tab-emergency')", "🐕 Services (data-testid='emergency-tab-services')", "📍 Find Vet (data-testid='emergency-tab-find')"],
+        "find_vet_tab_content": "EmergencyNearMe renders: 'Find emergency care for Mojo' with city search, filter buttons (24hr Emergency Vet, Poison Control, Critical Care, Pet Transport)"
+      }
+    }
+  },
+  "console_errors_noted": [
+    "Failed to fetch pets: TypeError: Failed to fetch (pre-existing network error, unrelated to fix, present on login redirect)",
+    "Error fetching pets for Mira: TypeError: Failed to fetch (same pre-existing error)"
+  ]
+}
