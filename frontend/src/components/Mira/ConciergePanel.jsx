@@ -46,20 +46,17 @@ const ConciergePanel = ({
   
   if (!isOpen) return null;
   
-  // Build WhatsApp message with context
+  // Build WhatsApp message — use edited textarea message first, then fallback
+  const defaultMsg = `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`;
   const whatsappMessage = encodeURIComponent(
-    initialContext?.initialMessage 
-      ? initialContext.initialMessage
-      : `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`
+    message || initialContext?.initialMessage || defaultMsg
   );
   
   // 🎯 UNIVERSAL SERVICE FLOW: Handle WhatsApp click with ticket creation
   const handleWhatsAppClick = async (e) => {
     e.preventDefault();
     
-    const messageText = initialContext?.initialMessage 
-      ? initialContext.initialMessage
-      : `Hi, I need help with ${pet.name}${pet.breed ? ` (${pet.breed})` : ''}.`;
+    const messageText = message || initialContext?.initialMessage || defaultMsg;
     
     // Create service ticket BEFORE opening WhatsApp
     try {
@@ -163,22 +160,21 @@ const ConciergePanel = ({
         </div>
       )}
       
-      {/* Pre-filled message input when coming from LEARN */}
-      {hasLearnContext && (
-        <div style={{ marginBottom: '12px' }}>
+      {/* Message input — always visible, pre-filled from LEARN context */}
+      <div style={{ marginBottom: '12px' }}>
           <label style={{ 
             fontSize: '12px', 
             color: 'rgba(255,255,255,0.6)', 
             marginBottom: '6px',
             display: 'block'
           }}>
-            Your message (you can edit):
+            {hasLearnContext ? 'Your message (you can edit):' : `Anything else? Tell us how we can help ${pet.name}:`}
           </label>
           <div style={{ position: 'relative' }}>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="What would you like help with?"
+              placeholder={hasLearnContext ? 'What would you like help with?' : `Hi, I need help with ${pet.name}…`}
               data-testid="concierge-message-input"
               style={{
                 width: '100%',
@@ -195,7 +191,6 @@ const ConciergePanel = ({
             />
           </div>
         </div>
-      )}
       
       <p className="mp-concierge-panel-desc">
         {hasLearnContext 
