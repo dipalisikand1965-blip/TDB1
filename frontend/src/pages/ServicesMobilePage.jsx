@@ -4,6 +4,7 @@
  * Rule: Desktop is always the source of truth. Mobile changes layout, never content.
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import { BookingModal } from './ServicesSoulPage';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -18,7 +19,6 @@ import PersonalisedBreedSection from '../components/common/PersonalisedBreedSect
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
-import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
@@ -59,10 +59,14 @@ function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'
 function MobileServiceCard({ service, groupColour, onBook }) {
   const img = service.watercolour_image || service.image_url || service.image || null;
   return (
-    <div style={{ background:'#fff', border:`1px solid ${G.border}`, borderRadius:14,
-                  overflow:'hidden', marginBottom:10 }}
-         data-testid={`mobile-service-card-${service._id || service.id}`}>
-      {/* Watercolour image / colour block — identical to desktop */}
+    <div
+      onClick={() => onBook(service)}
+      style={{ background:'#fff', border:`1px solid ${G.border}`, borderRadius:14,
+                overflow:'hidden', marginBottom:10, cursor:'pointer', transition:'transform 0.15s' }}
+      onTouchStart={e => e.currentTarget.style.transform='scale(0.98)'}
+      onTouchEnd={e => e.currentTarget.style.transform=''}
+      data-testid={`mobile-service-card-${service._id || service.id}`}>
+      {/* Watercolour image — full card is tappable */}
       <div style={{ height:90, background: img ? 'transparent' : `linear-gradient(135deg,${groupColour}22,${groupColour}44)`,
                     display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
         {img
@@ -79,13 +83,13 @@ function MobileServiceCard({ service, groupColour, onBook }) {
             {service.description.slice(0, 80)}
           </div>
         )}
-        <button onClick={() => onBook(service)}
+        <div
           data-testid={`mobile-service-book-${service._id || service.id}`}
           style={{ width:'100%', padding:'9px', borderRadius:10, fontSize:13, fontWeight:700,
-                   background:'linear-gradient(135deg,#C9973A,#F0C060)',
-                   color:'#1A0A00', border:'none', cursor:'pointer' }}>
+                   background:'linear-gradient(135deg,#C9973A,#F0C060)', textAlign:'center',
+                   color:'#1A0A00' }}>
           Book via Concierge® →
-        </button>
+        </div>
       </div>
     </div>
   );
@@ -152,7 +156,7 @@ export default function ServicesMobilePage() {
   const { request } = useConcierge({ pet:currentPet, pillar:'services' });
 
   const [loading, setLoading] = useState(true);
-  const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
+  const [svcBooking, setSvcBooking] = useState(null); // null = closed; object = BookingModal open
   const [showSvcPlan, setShowSvcPlan] = useState(false);
   const [allServices, setAllServices] = useState([]);
   const [svcLoading, setSvcLoading] = useState(true);
@@ -181,8 +185,7 @@ export default function ServicesMobilePage() {
   const handleBook = useCallback((svc) => {
     vibe('medium');
     tdc.book({ service:svc.name || svc.label, pillar:'services', pet:currentPet, channel:'services_group_card' });
-    const type = guessServiceType(svc.name || svc.label || '');
-    setSvcBooking({ isOpen: true, serviceType: type });
+    setSvcBooking(svc);  // open BookingModal with this service
   }, [currentPet]);
 
   // Group services exactly like desktop
@@ -250,10 +253,6 @@ export default function ServicesMobilePage() {
             pillar="services"
             pet={currentPet}
             token={token}
-            onCardSelect={(intent) => {
-              setPrefilledIntent(intent);
-              setConciergeBuilderOpen(true);
-            }}
           />
           <PillarSoulProfile pet={currentPet} pillar="services" token={token} />
         </div>
@@ -277,7 +276,7 @@ export default function ServicesMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "I know {petName}'s breed and health history. Every service here is matched to what they actually need."
           </div>
-          <button className="svc-cta" onClick={() => { vibe('medium'); setSvcBooking({ isOpen:true, serviceType:'grooming' }); }}>
+          <button className="svc-cta" onClick={() => { vibe('medium'); setSvcBooking({ name:'General Inquiry', pillar:'services' }); }}>
             See Mira's Service Picks →
           </button>
         </div>
@@ -309,20 +308,23 @@ export default function ServicesMobilePage() {
           <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:14, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
           <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge®.</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
-          <button onClick={() => { vibe('medium'); setSvcBooking({ isOpen:true, serviceType:'grooming' }); }}
+          <button onClick={() => { vibe('medium'); setSvcBooking({ name:'General Inquiry', pillar:'services' }); }}
             style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
             Book via Concierge® →
           </button>
         </div>
       </div>
 
-      {/* Service Booking Modal — full 4-step flow */}
-      <ServiceBookingModal
-        isOpen={svcBooking.isOpen}
-        onClose={() => setSvcBooking(p => ({ ...p, isOpen: false }))}
-        serviceType={svcBooking.serviceType}
-        onBookingComplete={() => { setSvcBooking(p => ({ ...p, isOpen: false })); }}
-      />
+      {/* BookingModal — intake style, no prices (same as desktop ServicesSoulPage) */}
+      {svcBooking && (
+        <BookingModal
+          service={svcBooking}
+          pet={currentPet}
+          user={user}
+          onClose={() => setSvcBooking(null)}
+          onBooked={() => setSvcBooking(null)}
+        />
+      )}
       <MiraPlanModal
         isOpen={showSvcPlan}
         onClose={() => setShowSvcPlan(false)}
