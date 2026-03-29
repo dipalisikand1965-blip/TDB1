@@ -265,6 +265,13 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
           channel:        'doggy_bakery_order',
           urgency:        'normal',
           pet_id:         pet?.id,
+          metadata: {
+            image_url:          illusUrl || undefined,
+            illustration_name:  selIllus?.name || selIllus?.colour_label || undefined,
+            breed_cake:         true,
+            flavour:            selectedFlavour?.label || flavour,
+            base:               selectedBase?.label,
+          },
           initial_message: {
             sender: 'parent',
             source: 'breed_cake_order',

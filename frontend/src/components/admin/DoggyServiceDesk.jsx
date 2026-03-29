@@ -5016,22 +5016,84 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           </div>
                           
                           {/* Conversation — merge ALL sources: conversation (soul_made/concierge), thread (concierge replies), messages (legacy) */}
-                          {/* Soul Made photo banner — shown if ticket has top-level photo_url */}
-                          {(selectedTicket.photo_url || selectedTicket.soul_made_photo) && (
-                            <div className="mx-4 mb-3 p-3 rounded-xl border border-amber-200 bg-amber-50 flex items-center gap-3">
-                              <img
-                                src={selectedTicket.photo_url || selectedTicket.soul_made_photo}
-                                alt="Soul Made pet photo"
-                                className="w-20 h-20 rounded-lg object-cover border border-amber-300 cursor-pointer shadow-sm flex-shrink-0"
-                                onClick={() => window.open(selectedTicket.photo_url || selectedTicket.soul_made_photo, '_blank')}
-                              />
-                              <div>
-                                <div className="text-xs font-semibold text-amber-700 mb-1">📸 Soul Made™ Photo</div>
-                                <div className="text-xs text-amber-600">Pet photo attached by member for custom product</div>
-                                <button className="mt-1 text-xs text-amber-700 underline" onClick={() => window.open(selectedTicket.photo_url || selectedTicket.soul_made_photo, '_blank')}>Open full size →</button>
+                          {/* Universal Media Attachments — images/docs from metadata, conversation, or message text */}
+                          {(() => {
+                            // Collect ALL media URLs from every ticket source
+                            const IMAGE_EXT = /\.(jpg|jpeg|png|gif|webp)(\?[^\s]*)?$/i;
+                            const CLOUDINARY = /https?:\/\/res\.cloudinary\.com\/[^\s,)"']+/gi;
+                            const ANY_URL = /https?:\/\/[^\s,)"']+/gi;
+                            const seen = new Set();
+                            const mediaItems = [];
+
+                            const addUrl = (url, label = '') => {
+                              if (!url || typeof url !== 'string' || seen.has(url)) return;
+                              if (!url.startsWith('http')) return;
+                              seen.add(url);
+                              const isImage = IMAGE_EXT.test(url) || CLOUDINARY.test(url) || url.includes('/image/') || url.includes('cloudinary');
+                              mediaItems.push({ url, label, isImage });
+                            };
+
+                            // 1. Top-level fields
+                            addUrl(selectedTicket.photo_url, 'Pet Photo');
+                            addUrl(selectedTicket.soul_made_photo, 'Soul Made™ Photo');
+                            addUrl(selectedTicket.image_url, 'Image');
+                            addUrl(selectedTicket.document_url, 'Document');
+
+                            // 2. metadata — scan every value for URLs
+                            const meta = selectedTicket.metadata || {};
+                            Object.entries(meta).forEach(([k, v]) => {
+                              if (typeof v === 'string' && v.startsWith('http')) {
+                                const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                                addUrl(v, label);
+                              }
+                            });
+
+                            // 3. All conversation + thread + messages
+                            const allSources = [
+                              ...(selectedTicket.conversation || []),
+                              ...(selectedTicket.thread || []),
+                              ...(selectedTicket.messages || []),
+                            ];
+                            allSources.forEach(m => {
+                              addUrl(m.image_url, '📸 Photo');
+                              addUrl(m.document_url, '📄 Document');
+                              addUrl(m.file_url, '📎 File');
+                              // URLs embedded in message text
+                              const txt = m.text || m.content || m.message || '';
+                              const matches = txt.match(ANY_URL) || [];
+                              matches.forEach(u => {
+                                if (IMAGE_EXT.test(u) || u.includes('cloudinary')) addUrl(u, 'Embedded Image');
+                              });
+                            });
+
+                            if (mediaItems.length === 0) return null;
+                            return (
+                              <div className="mx-4 mb-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+                                <div className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">📎 Attachments ({mediaItems.length})</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {mediaItems.map((item, i) => (
+                                    item.isImage ? (
+                                      <div key={i} className="flex flex-col items-center gap-1">
+                                        <img
+                                          src={item.url}
+                                          alt={item.label}
+                                          className="w-20 h-20 rounded-lg object-cover border border-slate-300 cursor-pointer shadow-sm"
+                                          onClick={() => window.open(item.url, '_blank')}
+                                          onError={e => { e.target.style.display='none'; }}
+                                        />
+                                        <span className="text-[10px] text-slate-500 max-w-[80px] truncate">{item.label}</span>
+                                      </div>
+                                    ) : (
+                                      <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
+                                        className="flex items-center gap-1 px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs text-slate-700 hover:bg-slate-100 cursor-pointer">
+                                        📄 {item.label || 'File'}
+                                      </a>
+                                    )
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            );
+                          })()}
                           {(() => {
                             // Helper: extract inline photo URLs from text (Cloudinary / external images)
                             const extractPhotoUrls = (text, msgImageUrl) => {
