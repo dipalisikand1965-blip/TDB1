@@ -347,7 +347,6 @@ export default function LearnMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const learnDims = getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS;
-  const learnDims = getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS;
   const activeDimObj = learnDims.find(d => d.id === openDim);
 
   return (
