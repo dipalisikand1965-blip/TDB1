@@ -37,6 +37,7 @@ import { DINE_DIMS, DineDimensionsRail,
   getNutritionGoal, applyMiraIntelligence, normCard, CSS,
 } from './DineSoulPage';
 import PillarHero from '../components/PillarHero';
+import PetFriendlySpots from '../components/dine/PetFriendlySpots';
 import '../styles/mobile-design-system.css';
 
 // ── Design tokens (copied from DineSoulPage) ──────────────────────────────
