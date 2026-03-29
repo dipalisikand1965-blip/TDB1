@@ -62,9 +62,8 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   const [voiceEnabled, setVoiceEnabledState] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('mira_voice_enabled');
-      // Default to FALSE (off) - Voice should be opt-in, not forced
-      // User can enable it, preference persists
-      return saved !== null ? saved === 'true' : false;
+      // Default to TRUE (on) — ElevenLabs Eloise, opt-out instead of opt-in
+      return saved !== null ? saved === 'true' : true;
     }
     return true;
   });

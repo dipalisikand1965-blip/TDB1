@@ -78,8 +78,8 @@ const transformPetData = (apiPet) => ({
  * @returns {Object} Pet state and controls
  */
 const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
-  const [pet, setPet] = useState(DEMO_PET);
-  const [allPets, setAllPets] = useState(ALL_DEMO_PETS);
+  const [pet, setPet] = useState(null);          // null = loading, not DEMO_PET (Buddy)
+  const [allPets, setAllPets] = useState([]);    // empty until API responds
   const [showPetSelector, setShowPetSelector] = useState(false);
   const [isLoadingPets, setIsLoadingPets] = useState(false);
   
@@ -99,8 +99,8 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
           const transformedPets = data.pets.map(transformPetData);
           setAllPets(transformedPets);
           
-          // Set first pet as active if no pet selected
-          if (pet.id === 'demo-pet') {
+          // Set first pet as active if no pet selected yet
+          if (!pet || pet.id === 'demo-pet') {
             setPet(transformedPets[0]);
           }
           
@@ -114,7 +114,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
       setIsLoadingPets(false);
     }
     return [];
-  }, [user?.id, token, pet.id]);
+  }, [user?.id, token, pet?.id]);
   
   // Fetch all pets (alternative endpoint)
   const fetchAllPets = useCallback(async () => {
@@ -132,7 +132,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
           setAllPets(formattedPets);
           
           // Keep current pet or select first
-          const currentPetExists = formattedPets.find(p => p.id === pet.id);
+          const currentPetExists = formattedPets.find(p => p.id === pet?.id);
           if (!currentPetExists && formattedPets.length > 0) {
             setPet(formattedPets[0]);
           }
@@ -144,7 +144,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
       console.error('[usePet] Error fetching pets:', error);
     }
     return [];
-  }, [token, pet.id]);
+  }, [token, pet?.id]);
   
   // Fetch specific pet details
   const fetchPetDetails = useCallback(async (petId) => {
@@ -167,7 +167,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
   
   // Switch to a different pet
   const switchPet = useCallback(async (newPet) => {
-    if (newPet.id === pet.id) {
+    if (pet && newPet.id === pet.id) {
       setShowPetSelector(false);
       return;
     }
@@ -180,12 +180,12 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     if (onPetSwitch) {
       await onPetSwitch(newPet);
     }
-  }, [pet.id, onPetSwitch]);
+  }, [pet?.id, onPetSwitch]);
   
   // Check if pet is a demo/fake pet
   const isRealPet = useCallback(() => {
-    return pet.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
-  }, [pet.id]);
+    return pet?.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
+  }, [pet?.id]);
   
   // Load pets on user change (only if autoLoad is enabled)
   // Note: MiraDemoPage has its own pet-loading logic, so autoLoad is disabled there
@@ -194,6 +194,18 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
       loadUserPets();
     }
   }, [autoLoad, user?.id, loadUserPets]);
+
+  // Safety fallback: after 4s with no user, use DEMO_PET so UI doesn't hang on "Loading Mira..."
+  useEffect(() => {
+    if (pet !== null) return; // Already have a real pet
+    const timer = setTimeout(() => {
+      if (!user?.id) {
+        setPet(DEMO_PET);
+        setAllPets(ALL_DEMO_PETS);
+      }
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [pet, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
   // Find pet by ID
   const getPetById = useCallback((petId) => {
