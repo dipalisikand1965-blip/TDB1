@@ -4,6 +4,7 @@
  * Colour: Gold #4A2800 → #C9973A
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import ConciergeRequestBuilder from '../components/ConciergeRequestBuilder';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -431,6 +432,7 @@ export default function ShopMobilePage() {
   const [loading, setLoading] = useState(true);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [mainTab, setMainTab] = useState('mira');
+  const [conciergeOpen, setConciergeOpen] = useState(false);
   const [showMiraPicks, setShowMiraPicks] = useState(false);
   const [showShopPlan, setShowShopPlan] = useState(false);
   const miraPicksRef = useRef(null);
@@ -669,7 +671,8 @@ export default function ShopMobilePage() {
           <div style={{ display: 'inline-flex', background: 'rgba(232,184,75,0.2)', border: '1px solid rgba(232,184,75,0.4)', borderRadius: 999, padding: '5px 14px', color: S.goldXL, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>🛍️ Shop Concierge®</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', lineHeight: 1.2, marginBottom: 10, fontFamily: 'Georgia,serif' }}>Can't find what you need for {petName}?</div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 16 }}>Tell us what you're looking for. Concierge® will source it.</div>
-          <button onClick={() => { vibe('medium'); request(`Shop concierge for ${petName}`, { channel: 'shop_cta' }); }}
+          <button onClick={() => { vibe('medium'); setConciergeOpen(true); }}
+            data-testid="shop-ask-concierge-btn"
             style={{ width: '100%', minHeight: 48, borderRadius: 14, border: 'none', background: `linear-gradient(135deg,${S.goldL},${S.goldXL})`, color: S.dark, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
             🛍️ Ask Concierge® →
           </button>
@@ -682,6 +685,14 @@ export default function ShopMobilePage() {
         pet={currentPet}
         pillar="shop"
         token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeOpen}
+        onClose={() => setConciergeOpen(false)}
+        prefilledText="I'm looking for something specific for my dog"
       />
     </PillarPageLayout>
   );
