@@ -157,6 +157,12 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
     }
     if (isOpen && prefilledText) {
       setFreeText(prefilledText);
+      // Ensure a service exists so the freetext step renders
+      setSelectedService(prev => prev || {
+        id: 'general', label: 'Concierge® Request', icon: '✦',
+        freeText: true, urgency: 'standard', questions: [],
+        colour: '#C9973A', bg: 'linear-gradient(135deg,#1C0A00,#3D1A00)',
+      });
       setStep('freetext');
     }
     if (!isOpen) { setStep(0); setSelectedService(null); setAnswers({}); setFreeText(''); }
