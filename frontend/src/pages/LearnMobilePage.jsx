@@ -5,6 +5,7 @@
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -289,6 +290,7 @@ export default function LearnMobilePage() {
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
   const [learnServices, setLearnServices] = useState([]);
   const [showLearnPlan, setShowLearnPlan] = useState(false);
+  useScrollLock(showLearnPlan); // catModal handled by LearnContentModal's own scroll lock
   const [apiProducts, setApiProducts] = useState({});
 
   // Fetch products — mirrors desktop LearnSoulPage exactly (source of truth)

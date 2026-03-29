@@ -23,7 +23,8 @@
  *   body: { petId, pathId, selections }
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useScrollLock } from '../hooks/useScrollLock';
 import { tdc } from "../utils/tdc_intent";
 
 // ─────────────────────────────────────────────────────────────
@@ -481,6 +482,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 // PATH FLOW MODAL
 // ─────────────────────────────────────────────────────────────
 function PathFlowModal({ path, pet, onClose }) {
+  useScrollLock(true); // always locked — only mounted when modal is open
   const [currentStep,    setCurrentStep]    = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [selections,     setSelections]     = useState({ step1:[], step2:null, step3:[], step4:null });
