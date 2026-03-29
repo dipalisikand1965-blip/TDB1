@@ -28,7 +28,12 @@ import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { DINE_DIMS, DineDimensionsRail } from './DineSoulPage';
+import { DINE_DIMS, DineDimensionsRail,
+  DineLoadingState, DineEmptyState, DinePetProfileCard,
+  DineProfileSheet, DineSegmentedSwitch, DineSectionHeading,
+  DineProductCard, DineMiraBar, DineMiraPicksSheet,
+  DineSoulMadeInlineCard, DineConciergeCard, DineIntakeSheet,
+} from './DineSoulPage';
 import '../styles/mobile-design-system.css';
 
 // ── Design tokens (copied from DineSoulPage) ──────────────────────────────
