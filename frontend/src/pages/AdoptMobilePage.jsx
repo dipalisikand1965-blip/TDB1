@@ -257,18 +257,31 @@ export default function AdoptMobilePage() {
             )}
             {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="adopt" /></div>}
 
-            {/* Stage Tracker */}
+            {/* Stage Cards — 2-column grid (matches Learn desktop pattern) */}
             <div style={{ padding:'12px 16px 8px' }}>
               <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
-              <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
-                {ADOPT_STAGES.map(s => (
-                  <button key={s.id} onClick={() => { vibe(); if (s.id === 'guidance') { setConciergeBuilderOpen(true); }
-            else { setOpenDim(prev => prev === s.id ? null : s.id); } }}
-                    style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:5, padding:'10px 14px', borderRadius:16, border:`2px solid ${openDim===s.id?G.rose:G.border}`, background:openDim===s.id?G.pale:'#fff', cursor:'pointer', minWidth:76, minHeight:78 }}>
-                    <span style={{ fontSize:22 }}>{s.emoji}</span>
-                    <span style={{ fontSize:11, fontWeight:700, color:openDim===s.id?G.rose:G.darkText, textAlign:'center', lineHeight:1.25, whiteSpace:'normal', maxWidth:64 }}>{s.label}</span>
-                  </button>
-                ))}
+              <style>{`.adopt-stages-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}`}</style>
+              <div className="adopt-stages-grid">
+                {ADOPT_STAGES.map(s => {
+                  const isActive = openDim === s.id;
+                  return (
+                    <div key={s.id} onClick={() => { vibe(); if (s.id === 'guidance') { setConciergeBuilderOpen(true); }
+                      else { setOpenDim(prev => prev === s.id ? null : s.id); } }}
+                      style={{ background:'#fff', borderRadius:16, cursor:'pointer', overflow:'hidden',
+                        border:`2px solid ${isActive ? G.rose : G.border}`,
+                        boxShadow: isActive ? `0 4px 16px ${G.rose}33` : '0 2px 8px rgba(0,0,0,0.06)',
+                        transition:'all 0.2s' }}>
+                      <div style={{ height:4, background: isActive ? G.rose : '#F9A8D4', borderRadius:'16px 16px 0 0' }} />
+                      <div style={{ padding:'10px 12px 10px' }}>
+                        <div style={{ fontSize:24, marginBottom:8 }}>{s.emoji}</div>
+                        <div style={{ fontSize:12, fontWeight:800, color: isActive ? G.rose : G.darkText, lineHeight:1.25, fontFamily:'Georgia,serif' }}>{s.label}</div>
+                        {s.sub && <div style={{ fontSize:10, color:G.mutedText, marginTop:4, lineHeight:1.4,
+                          display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{s.sub}</div>}
+                        <div style={{ marginTop:8, fontSize:11, color: G.rose, fontWeight:700 }}>{isActive ? 'Close ↑' : 'Explore →'}</div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

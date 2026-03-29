@@ -302,42 +302,61 @@ export default function EmergencyMobilePage() {
             {/* Pawrent Journey First Steps */}
             {currentPet && <div style={{ padding:'8px 16px 0' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="emergency" /></div>}
 
-            {/* Dim Chips — same pattern as desktop EmergencySoulPage (source of truth) */}
+            {/* Emergency Dim Cards — 2-column grid. Tap → DimExpanded as fixed portal overlay (mirrors desktop exactly) */}
             {(() => {
               const emergDims = getEmergDims(currentPet);
               const activeDimObj = emergDims.find(d => d.id === openDim);
               return (<>
                 <div style={{ padding:'16px 16px 4px' }}>
-                  <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Emergency Categories</div>
-                  <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:8 }}>Emergency Categories</div>
+                  <style>{`.emerg-dims-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}`}</style>
+                  <div className="emerg-dims-grid">
                     {emergDims.map(dim => (
-                      <button key={dim.id} onClick={() => { vibe(); setOpenDim(dim.id === openDim ? null : dim.id); }}
-                        data-testid={`emergency-dim-${dim.id}`}
-                        style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
-                          padding:'10px 12px', borderRadius:16, minWidth:72,
-                          border:`2px solid ${openDim===dim.id?dim.accent:G.border}`,
-                          background:openDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
-                        <span style={{ fontSize:20 }}>{dim.icon}</span>
-                        <span style={{ fontSize:10, fontWeight:700, color:openDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
-                      </button>
+                      <div key={dim.id} data-testid={`emergency-dim-${dim.id}`}
+                        onClick={() => { vibe(); setOpenDim(dim.id === openDim ? null : dim.id); }}
+                        style={{ background:'#fff', borderRadius:16, cursor:'pointer', overflow:'hidden',
+                          border:`2px solid ${openDim===dim.id ? G.crimson : G.border}`,
+                          boxShadow:'0 2px 8px rgba(0,0,0,0.06)', transition:'all 0.2s' }}>
+                        <div style={{ height:5, background: openDim===dim.id ? G.crimson : (dim.glowColor||'#FCA5A5'), borderRadius:'16px 16px 0 0' }} />
+                        <div style={{ padding:'10px' }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
+                            <span style={{ fontSize:22 }}>{dim.icon}</span>
+                            {dim.glow && <div style={{ width:7, height:7, borderRadius:'50%', background:G.crimson, marginTop:2 }} />}
+                          </div>
+                          <div style={{ fontSize:12, fontWeight:800, color:G.darkText, marginBottom:3, lineHeight:1.25, fontFamily:'Georgia,serif' }}>{dim.label}</div>
+                          <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.4, marginBottom:6,
+                            display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                            {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
+                          </div>
+                          <span style={{ fontSize:11, color:G.crimson, fontWeight:700 }}>Explore →</span>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
 
-                {/* DimExpanded — opens below chips on tap, mirrors desktop exactly */}
-                {activeDimObj ? (
-                  <div ref={dimExpandedRef} style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
-                    <DimExpanded
-                      dim={activeDimObj}
-                      pet={currentPet}
-                      onClose={() => setOpenDim(null)}
-                      apiProducts={apiProducts}
-                      onBook={svcName => { handleBookService({ name: svcName }); }}
-                    />
+                {/* DimExpanded — fixed portal overlay (mirrors desktop EmergencySoulPage exactly) */}
+                {activeDimObj && (
+                  <div onClick={() => setOpenDim(null)}
+                    style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:9999,
+                      display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+                    <div onClick={e => e.stopPropagation()}
+                      style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto',
+                        WebkitOverflowScrolling:'touch', paddingBottom:'env(safe-area-inset-bottom,0px)' }}>
+                      <div style={{ width:36, height:4, background:'#e5e7eb', borderRadius:4, margin:'12px auto 4px' }} />
+                      <DimExpanded
+                        dim={activeDimObj}
+                        pet={currentPet}
+                        onClose={() => setOpenDim(null)}
+                        apiProducts={apiProducts}
+                        onBook={svcName => { handleBookService({ name: svcName }); }}
+                      />
+                    </div>
                   </div>
-                ) : (
+                )}
+                {/* Products / Services fallback (when no dim selected) */}
+                {!openDim && (
                   <>
-                    {/* Products / Services dimTab (fallback when no dim selected) */}
                     <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
                       {[{ id:'products', label:'📦 Products' }, { id:'services', label:'🩺 Services' }].map(t => (
                         <button key={t.id} onClick={() => setDimTab(t.id)}

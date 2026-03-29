@@ -523,7 +523,7 @@ export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], on
 // ─── LOADING / NO PET ──────────────────────────────────────
 
 // ─── PAPERWORK CONTENT MODAL (category pill → products) ──────
-function PaperworkContentModal({ isOpen, onClose, category, pet }) {
+export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
   const [products,setProducts]=useState([]); const [loading,setLoading]=useState(false); const [selProd,setSelProd]=useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
