@@ -103,7 +103,7 @@ const CSS = `
 `;
 
 // ── Haptic ─────────────────────────────────────────────────────
-function vibe(type = 'light') {
+export function vibe(type = 'light') {
   if (!navigator?.vibrate) return;
   if (type === 'success') navigator.vibrate([8, 40, 10]);
   else if (type === 'medium') navigator.vibrate([12]);
@@ -113,7 +113,7 @@ function vibe(type = 'light') {
 // ── Pet data helpers ───────────────────────────────────────────
 const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies|unknown|na|n\/a)$/i;
 
-function getAllergies(pet) {
+export function getAllergies(pet) {
   const s = new Set();
   const add = v => {
     if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(String(x).trim()); });
@@ -126,7 +126,7 @@ function getAllergies(pet) {
   return [...s];
 }
 
-function getLoves(pet) {
+export function getLoves(pet) {
   const loves = [];
   const addLove = item => {
     if (!item) return;
@@ -139,7 +139,7 @@ function getLoves(pet) {
   return [...new Set(loves)].slice(0, 3);
 }
 
-function getFavourite(pet) {
+export function getFavourite(pet) {
   const pick = v => Array.isArray(v) ? v[0] : v;
   const t1 = pick(pet?.doggy_soul_answers?.favourite_treat);
   const t2 = pick(pet?.doggy_soul_answers?.favorite_treats);
@@ -147,37 +147,37 @@ function getFavourite(pet) {
   const s2 = typeof t2 === 'string' ? t2.replace(/_/g, ' ') : '';
   return s1 || s2 || null;
 }
-function getDiet(pet) {
+export function getDiet(pet) {
   const dt = pet?.doggy_soul_answers?.diet_type;
   return typeof dt === 'string' ? dt.replace(/_/g, ' ') : null;
 }
-function getHealthCondition(pet) {
+export function getHealthCondition(pet) {
   const raw = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
   if (!raw) return null;
   const str = Array.isArray(raw) ? raw.join(', ') : String(raw);
   return str.toLowerCase() === 'none' || str.trim() === '' ? null : str;
 }
-function getFavoriteProtein(pet) {
+export function getFavoriteProtein(pet) {
   return pet?.doggy_soul_answers?.favorite_protein || pet?.doggy_soul_answers?.fav_protein || null;
 }
-function getNutritionGoal(pet) {
+export function getNutritionGoal(pet) {
   return pet?.doggy_soul_answers?.nutrition_goal || pet?.doggy_soul_answers?.weight_goal || null;
 }
 
 // ── Mira Intelligence ──────────────────────────────────────────
-function isSafeFromAllergen(allergen, text, freeText) {
+export function isSafeFromAllergen(allergen, text, freeText) {
   const a = allergen.toLowerCase();
   if (freeText.includes(`${a}-free`) || freeText.includes(`${a} free`)) return true;
   if (text.includes(`${a}-free`) || text.includes(`${a} free`)) return true;
   return false;
 }
-function containsAllergen(allergen, text) {
+export function containsAllergen(allergen, text) {
   const a = allergen.toLowerCase();
   const cleaned = text.replace(new RegExp(`${a}[- ]free`, 'gi'), '');
   return cleaned.includes(a);
 }
 
-function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
+export function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
   const petName = pet?.name || 'your dog';
   const allergyTerms = allergies.map(a => a.toLowerCase().trim());
   const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
@@ -244,7 +244,7 @@ export const DINE_DIMS = [
 ];
 
 // ── Normalise product card ─────────────────────────────────────
-const normCard = (p, petName) => ({
+export const normCard = (p, petName) => ({
   id: p.id || p._id,
   name: p.name,
   desc: p.sub_category?.replace(/_/g, ' ') || `For ${petName}`,
