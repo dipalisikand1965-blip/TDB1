@@ -245,7 +245,7 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
         body: JSON.stringify({
           text: cleanText,
           model_id: 'eleven_turbo_v2',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+          voice_settings: { stability: 0.35, similarity_boost: 0.75, style: 0.25, speed: 0.95 },
         }),
       }
     );
