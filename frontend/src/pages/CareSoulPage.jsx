@@ -155,6 +155,7 @@ export function getCareDims(pet) {
       sub: coat ? `${cap(coat)} coat · ${comfort ? comfort + " with grooming" : "personalised"}` : "Coat care, bath & salon",
       badge: coat ? `${cap(coat)} coat match` : "Mira matched",
       badgeBg: G.sage, glowColor: "rgba(64,145,108,0.25)", glow: true,
+      ytQuery: `dog grooming tips ${coat ? coat.toLowerCase() + " coat" : "at home"}`,
       mira: coat
         ? `I matched everything here to {name}'s ${coat.toLowerCase()} coat. ${comfort ? "And I know {name} is " + comfort.toLowerCase() + " with grooming." : ""}`
         : `These products are matched to {name}'s coat type — tell me more and I can be even more specific.`,
@@ -163,12 +164,14 @@ export function getCareDims(pet) {
       id: "dental", icon: "🦷", label: "Dental & Paw",
       sub: "Oral care, paw health & nail care",
       badge: "Daily care", badgeBg: "#00695C", glowColor: "rgba(0,105,92,0.22)", glow: true,
+      ytQuery: "how to brush dog teeth dental care at home",
       mira: "Dental health is the most overlooked part of care. These are the products I'd choose for {name}'s daily routine.",
     },
     {
       id: "coat", icon: "🌿", label: "Coat & Skin",
       sub: `${allergyText} · inside-out coat health`,
       badge: "Health priority", badgeBg: "#388E3C", glowColor: "rgba(56,142,60,0.20)", glow: true,
+      ytQuery: "dog coat skin care supplements routine",
       mira: allergies.length
         ? "{name} has sensitivities — every product here is safe and chosen specifically for that."
         : "These supplements and topical products support {name}'s coat and skin from the inside out.",
@@ -177,6 +180,7 @@ export function getCareDims(pet) {
       id: "wellness", icon: "🏥", label: "Wellness Visits",
       sub: "Vet discovery, vaccination & health records",
       badge: "Explore", badgeBg: "rgba(0,0,0,0.07)", glowColor: "rgba(0,0,0,0.05)", glow: false,
+      ytQuery: "dog vet checkup wellness visit what to expect",
       mira: "Tell me when {name} last visited the vet and I'll help you plan the next one.",
     },
     {
@@ -185,6 +189,7 @@ export function getCareDims(pet) {
       badge: condition ? "Health priority" : "Explore",
       badgeBg: condition ? "#AD1457" : "rgba(0,0,0,0.07)",
       glowColor: "rgba(173,20,87,0.20)", glow: !!condition,
+      ytQuery: "senior dog care tips mobility comfort",
       mira: condition
         ? "I've taken {name}'s " + condition + " into account for everything here."
         : "These products support {name}'s comfort and quality of life as they get older.",
@@ -195,6 +200,7 @@ export function getCareDims(pet) {
       badge: condition ? "Health priority" : "Wellness",
       badgeBg: condition ? "#2E7D32" : "#4A148C",
       glowColor: "rgba(74,20,140,0.18)", glow: !!condition,
+      ytQuery: "dog supplements vitamins guide which are best",
       mira: condition
         ? "Every supplement here is treatment-safe for {name}'s " + condition + "."
         : "These are the supplements I'd choose for {name} right now — vet-checked and age-appropriate.",
@@ -203,18 +209,21 @@ export function getCareDims(pet) {
       id: "soul", icon: "✨", label: "Soul Care",
       sub: "Breed collection & personalised for {name}",
       badge: "Soul Made", badgeBg: G.deepMid, glowColor: "rgba(45,106,79,0.22)", glow: true,
+      ytQuery: "dog breed specific care guide tips",
       mira: "These are made specifically for {name}'s breed and personality. The collection grows as I learn more.",
     },
     {
       id: "mira", icon: "🪄", label: "Mira's Picks",
       sub: "Curated for {name}'s WellnessProfile",
       badge: "✦ Mira Pick", badgeBg: G.deep, glowColor: "rgba(45,106,79,0.22)", glow: true,
+      ytQuery: "best dog health care routine tips",
       mira: "These are my top picks across all care dimensions for {name} right now.",
     },
     {
       id: "soul_made", icon: "✦", label: "Soul Made™",
       sub: "Custom-made for {name}",
       badge: "Make it personal", badgeBg: G.sage, glowColor: "rgba(45,157,120,0.18)", glow: true,
+      ytQuery: "personalized dog accessories custom pet gifts",
       mira: "Want something truly one-of-a-kind? Upload {name}'s photo — I'll have Concierge® create it just for you.",
     },
   ];
@@ -1120,6 +1129,11 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const loadMoreRef = useRef(null);
   const [visibleCount, setVisibleCount] = useState(20);
 
+  // ── YouTube Watch & Learn ─────────────────────────────────
+  const [videos, setVideos] = useState([]);
+  const [videosLoading, setVideosLoading] = useState(false);
+  const [videosFetched, setVideosFetched] = useState(false);
+
   // All raw products for this dimension from API
   const rawByTab = apiProducts[catName] || {};
   let allRaw = Object.values(rawByTab).flat();
@@ -1138,6 +1152,27 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const tabList = ["All", ...filteredSubCats];
   const [activeTab, setActiveTab] = useState("All");
   const [dimTab, setDimTab] = useState("products");
+
+  // Fetch YouTube videos when Watch tab is activated
+  useEffect(() => {
+    if (dimTab !== "videos" || videosFetched || !dim.ytQuery) return;
+    setVideosLoading(true);
+    const breed = pet?.breed || "";
+    const q = breed ? `${breed} ${dim.ytQuery}` : dim.ytQuery;
+    fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(q)}&max_results=6`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d?.videos || d?.items || d?.results || []).map(v => ({
+          id: v.videoId || v.id?.videoId || v.id,
+          title: v.title || v.snippet?.title || "",
+          thumbnail: v.thumbnail || v.snippet?.thumbnails?.medium?.url || "",
+          url: `https://www.youtube.com/watch?v=${v.videoId || v.id?.videoId || v.id}`,
+        }));
+        setVideos(list);
+      })
+      .catch(() => {})
+      .finally(() => { setVideosLoading(false); setVideosFetched(true); });
+  }, [dimTab, videosFetched, dim.ytQuery, pet?.breed]);
 
   const products = activeTab === "All"
     ? intelligent
@@ -1189,9 +1224,13 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         </div>
       </div>
 
-      {/* Products / Personalised tab toggle */}
+      {/* Products / Personalised / Watch & Learn tab toggle */}
       <div style={{ display:"flex", borderBottom:`1px solid ${G.borderLight}`, marginBottom:14 }}>
-        {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+        {[
+          ["products","🎯 All Products"],
+          ["personalised","✦ Personalised"],
+          ...(dim.ytQuery ? [["videos","🎬 Watch"]] : []),
+        ].map(([tid,label]) => (
           <button key={tid} onClick={() => setDimTab(tid)} data-testid={`care-dim-tab-${tid}`}
             style={{ flex:1, padding:"9px 0", background:"none", border:"none", borderBottom:dimTab===tid?`2.5px solid ${G.sage}`:"2.5px solid transparent", color:dimTab===tid?G.sage:"#888", fontSize:12, fontWeight:dimTab===tid?700:400, cursor:"pointer" }}>
             {label}
@@ -1202,6 +1241,43 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
       {dimTab === "personalised" ? (
         <div>
           <PersonalisedBreedSection pet={pet} pillar="care" />
+        </div>
+      ) : dimTab === "videos" ? (
+        /* ── Watch & Learn ── */
+        <div>
+          {videosLoading && (
+            <div style={{ textAlign:"center", padding:"24px 0", color:G.mutedText, fontSize:13 }}>
+              Loading videos for {petName}…
+            </div>
+          )}
+          {!videosLoading && videos.length === 0 && videosFetched && (
+            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
+              No videos found right now — try again later.
+            </div>
+          )}
+          {videos.length > 0 && (
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              {videos.map((v, i) => (
+                <div key={v.id || i} onClick={() => window.open(v.url, "_blank")}
+                  data-testid={`care-dim-video-${i}`}
+                  style={{ cursor:"pointer", borderRadius:12, overflow:"hidden", border:`1px solid ${G.border}`, background:"#fff", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+                  <div style={{ position:"relative", paddingTop:"56.25%", background:G.pale }}>
+                    {v.thumbnail && <img src={v.thumbnail} alt={v.title} style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />}
+                    <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.22)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ width:36, height:36, borderRadius:"50%", background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <span style={{ color:"#fff", fontSize:14, marginLeft:2 }}>▶</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding:"8px 10px" }}>
+                    <div style={{ fontSize:11, fontWeight:600, color:G.darkText, lineHeight:1.4 }}>
+                      {(v.title||"").slice(0,60)}{v.title?.length > 60 ? "…" : ""}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <>
