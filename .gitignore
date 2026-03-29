@@ -1532,3 +1532,7 @@ frontend/node_modules/.cache/default-development/141.pack
 # Environment files
 *.env
 *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
