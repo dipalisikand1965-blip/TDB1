@@ -581,9 +581,11 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             </p>
           )}
           
-          {/* ✦ MIRA EXPLAINS WHY — expandable soul-profile reasoning (always shown) */}
+          {/* ✦ MIRA EXPLAINS WHY — show when product has mira_score or mira_hint */
           {(() => {
-            const miraText = product.mira_hint || productMiraTip || '';
+            const miraText = product.mira_hint || productMiraTip ||
+              (product.mira_score >= 80 ? `Top pick for ${product.name?.split(' ')[0]} — scored ${product.mira_score} by Mira` :
+               product.mira_score >= 60 ? `Mira scored this ${product.mira_score} for your dog's profile` : '');
             if (!miraText) return null;
             const previewText = miraText.replace(/^✨\s*/, '');
             return (
@@ -732,7 +734,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
             </h2>
             <p className="text-sm text-slate-500 mb-4">Curated for {petName}. Pricing is shared by Concierge® after review.</p>
 
-            {product.mira_hint && (
+            {(product.mira_hint || product.mira_score > 0) && (
               <div className="rounded-xl border border-teal-100 bg-teal-50 p-4 mb-4">
                 <p className="text-xs font-semibold text-teal-800 mb-1">Why Mira picked this</p>
                 <p className="text-sm text-teal-700">{product.mira_hint}</p>
@@ -1886,7 +1888,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             )}
 
             {/* Why Mira suggests this — shown when mira_hint is set (e.g. from DimExpanded intelligence) */}
-            {product.mira_hint && (
+            {(product.mira_hint || product.mira_score > 0) && (
               <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
                 <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">✦</div>
                 <div>
