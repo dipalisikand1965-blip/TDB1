@@ -391,7 +391,7 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
             <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 20 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: G.goldL, letterSpacing: '0.1em', marginBottom: 12 }}>WHAT HAPPENS NEXT</div>
               {[
-                { icon: '📋', text: `Your ${svc.label.toLowerCase()} request is logged with ${petName}'s soul profile` },
+                { icon: '📋', text: `Your request is logged with ${petName}'s soul profile` },
                 { icon: '📞', text: 'Your Concierge® reviews and contacts you directly' },
                 { icon: '✅', text: 'We coordinate everything — you just show up' },
               ].map((item, i) => (
