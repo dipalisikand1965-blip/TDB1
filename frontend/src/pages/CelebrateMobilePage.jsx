@@ -40,6 +40,7 @@ import CelebrationMemoryWall from '../components/celebrate/CelebrationMemoryWall
 import MiraSoulNudge from '../components/celebrate/MiraSoulNudge';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 const C = {
@@ -386,44 +387,18 @@ export default function CelebrateMobilePage() {
           </div>
         )}
 
-        {/* ── 1. Dim Modal — dark hero (always visible, above tabs) ── */}
-        <div style={{ background:'linear-gradient(160deg,#1A0A2E 0%,#4A1B6D 50%,#9B59B6 100%)', padding:'32px 16px 20px', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(233,30,140,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-            <div>
-              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎉 Celebrate</div>
-            </div>
-          </div>
-          {/* Pet selector — horizontal scroll row below title */}
-          {contextPets?.length > 1 && (
-            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch', scrollbarWidth:'none', marginBottom:10, paddingBottom:2 }}>
-              {contextPets.map(p => (
-                <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                  style={{ flexShrink:0, padding:'6px 14px', borderRadius:999, fontSize:12, fontWeight:700,
-                    border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                    background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                    color:'#fff', cursor:'pointer', transition:'all 0.15s', whiteSpace:'nowrap' }}>
-                  {p.name}
-                </button>
-              ))}
-            </div>
-          )}
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:10 }}>
-            <div style={{ width:48, height:48, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden' }}>
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }}/> : <span style={{ fontSize:22 }}>🐾</span>}
-            </div>
-            <div>
-              <div style={{ fontSize:18, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Birthdays & Milestones</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName}</div>
-            </div>
-          </div>
-          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-            {getAllergies(currentPet).map(a => (
-              <div key={a} style={{ background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'3px 10px', fontSize:13, color:'#FFB3B0' }}>⚠️ No {a}</div>
-            ))}
-          </div>
-        </div>
+        {/* ── 1. Hero ── */}
+        <PillarHero
+          pillar="celebrate"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient="linear-gradient(160deg,#1A0A2E 0%,#4A1B6D 50%,#9B59B6 100%)"
+          title="🎂 Celebrate"
+          subtitle="Birthdays & Milestones"
+          tagline={`for ${petName}`}
+          allergies={getAllergies(currentPet)}
+        />
 
         {/* ── 2. Category Strip (outside tabs, always visible) ── */}
         <CelebrateCategoryStrip pet={currentPet} onCategorySelect={handleCategorySelect} />

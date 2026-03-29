@@ -28,6 +28,7 @@ import PersonalisedBreedSection from '../components/common/PersonalisedBreedSect
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import FirstTimePawrent from '../components/common/FirstTimePawrent';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
@@ -184,29 +185,16 @@ export default function AdoptMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.rose} />}
 
         {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🐾 Adopt</div>
-            </div>
-          </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Every dog deserves the right home</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Breed matching, rescue connections, home readiness and first-year support — all guided by Mira.</div>
-          {contextPets?.length > 1 && (
-            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch', scrollbarWidth:'none', marginTop:12, paddingBottom:2 }}>
-              {contextPets.map(p => (
-                <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                  style={{ flexShrink:0, padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                    border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                    background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                    color:'#fff', cursor:'pointer', transition:'all 0.15s', whiteSpace:'nowrap' }}>
-                  {p.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <PillarHero
+          pillar="adopt"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`}
+          title="🐾 Adopt"
+          subtitle="Every dog deserves the right home"
+          tagline="Breed matching, rescue connections, home readiness and first-year support — all guided by Mira."
+        />
 
         {/* Adopt Category Strip — always visible above tabs */}
         <PillarCategoryStrip

@@ -37,6 +37,7 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import FirstTimePawrent from '../components/common/FirstTimePawrent';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -216,30 +217,16 @@ export default function CareMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="care" pillarColor={G.sage} pillarLabel="Care" onClose={() => setSoulMadeOpen(false)} />}
 
         {/* ── Mobile Hero ── */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`, padding:'40px 20px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-            <div>
-              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.55)', letterSpacing:'0.14em', marginBottom:4 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>🌿 Care</div>
-            </div>
-          </div>
-          <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Care & Wellness for {petName}</div>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Grooming, health, dental, coat — all personalised.</div>
-          {/* Pet selector — horizontal scroll row */}
-          {contextPets?.length > 1 && (
-            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch', scrollbarWidth:'none', marginTop:12, paddingBottom:2 }}>
-              {contextPets.map(p => (
-                <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                  style={{ flexShrink:0, padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer',
-                    border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                    background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
-                    color:'#fff', whiteSpace:'nowrap' }}>
-                  {p.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <PillarHero
+          pillar="care"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`}
+          title="🌿 Care"
+          subtitle={`Care & Wellness for ${petName}`}
+          tagline="Grooming, health, dental, coat — all personalised."
+        />
 
         {/* First Time Pawrent — emotional centrepiece */}
         {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#40916C" /></div>}

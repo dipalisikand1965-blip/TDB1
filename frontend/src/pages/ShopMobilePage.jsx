@@ -22,6 +22,7 @@ import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 const S = { gold:'#4A2800', goldL:'#C9973A', goldXL:'#E8B84B', cream:'#FFFBF5', border:'#F5E6C8', dark:'#1A0E00', taupe:'#7A6A4A' };
@@ -503,36 +504,16 @@ export default function ShopMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="shop" pillarColor={S.goldL} pillarLabel="Shop" onClose={() => setSoulMadeOpen(false)} />}
 
         {/* Hero */}
-        <div style={{ background: `linear-gradient(160deg,${S.dark} 0%,${S.gold} 50%,${S.goldL} 100%)`, padding: '32px 16px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', marginBottom: 2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>🛍️ Shop</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding: '6px 16px', borderRadius: 999, fontSize: 13, fontWeight: 700,
-                      border: currentPet?.id === p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id === p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color: '#fff', cursor: 'pointer', transition: 'all 0.15s' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 52, height: 52, borderRadius: '50%', flexShrink: 0, background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 22 }}>🐾</span>}
-            </div>
-            <div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Shop for {petName}</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{breed ? `${breed} · ` : ''}5,358 breed-matched products</div>
-            </div>
-          </div>
-        </div>
+        <PillarHero
+          pillar="shop"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${S.dark} 0%,${S.gold} 50%,${S.goldL} 100%)`}
+          title="🛍️ Shop"
+          subtitle={`Shop for ${petName}`}
+          tagline={`${breed ? `${breed} · ` : ''}5,358 breed-matched products`}
+        />
 
         <div style={{ padding: '0 16px 8px' }}>
           <PillarSoulProfile pet={currentPet} pillar="shop" token={token} />
