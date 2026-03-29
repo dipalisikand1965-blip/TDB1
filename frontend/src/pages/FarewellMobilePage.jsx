@@ -147,11 +147,11 @@ function FarewellContentModal({ isOpen, onClose, category, pet, token, services,
     <div onClick={onClose}
       style={{ position:'fixed', inset:0, zIndex:9999,
         background:'rgba(0,0,0,0.72)', display:'flex',
-        flexDirection:'column', justifyContent:'flex-end' }}>
+        flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}>
       <div onClick={e => e.stopPropagation()}
         style={{ background:'#fff', borderRadius:'24px 24px 0 0',
           maxHeight:'88vh', display:'flex', flexDirection:'column',
-          overflowY:'hidden' }}>
+          overflowY:'hidden', paddingTop:'env(safe-area-inset-top, 0px)' }}>
 
         {/* Header */}
         <div style={{ background:`linear-gradient(135deg,${G.dark},${G.mid})`,
@@ -577,8 +577,8 @@ export default function FarewellMobilePage() {
 
         {/* Concierge® Confirmation Sheet */}
         {conciergeOpen && selectedSvc && (
-          <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>
+          <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end', touchAction:'none' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px', paddingTop:'env(safe-area-inset-top, 0px)' }}>
               <div style={{ fontSize:28, textAlign:'center', marginBottom:12 }}>{selectedSvc.icon}</div>
               <div style={{ fontSize:18, fontWeight:700, color:G.darkText, textAlign:'center', marginBottom:8 }}>{selectedSvc.name}</div>
               <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.7, fontStyle:'italic', marginBottom:20 }}>Concierge® will reach you gently within 48 hours. No rush — whenever you're ready.</div>

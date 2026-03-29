@@ -335,10 +335,10 @@ export default function EmergencyMobilePage() {
                 {activeDimObj && (
                   <div onClick={() => setOpenDim(null)}
                     style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:9999,
-                      display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+                      display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}>
                     <div onClick={e => e.stopPropagation()}
                       style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto',
-                        WebkitOverflowScrolling:'touch', paddingBottom:'env(safe-area-inset-bottom,0px)' }}>
+                        WebkitOverflowScrolling:'touch', paddingBottom:'env(safe-area-inset-bottom,0px)', paddingTop:'env(safe-area-inset-top, 0px)' }}>
                       <div style={{ width:36, height:4, background:'#e5e7eb', borderRadius:4, margin:'12px auto 4px' }} />
                       <DimExpanded
                         dim={activeDimObj}
@@ -466,8 +466,8 @@ export default function EmergencyMobilePage() {
 
         {/* Concierge® Confirmation Sheet */}
         {conciergeOpen && selectedSvc && (
-          <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>
+          <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end', touchAction:'none' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px', paddingTop:'env(safe-area-inset-top, 0px)' }}>
               <div style={{ fontSize:28, textAlign:'center', marginBottom:12 }}>{selectedSvc.icon || '🚨'}</div>
               <div style={{ fontSize:18, fontWeight:700, color:G.darkText, textAlign:'center', marginBottom:8 }}>{selectedSvc.name}</div>
               <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.6, marginBottom:20 }}>

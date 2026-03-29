@@ -131,6 +131,7 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
         justifyContent: 'center',
         padding: isMobile ? '88px 0 0' : '16px',
         overflowY: isMobile ? 'auto' : 'visible',
+        touchAction: 'none',
       }}
       data-testid="wall-upload-modal-overlay"
     >
@@ -140,6 +141,7 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
           background: '#FFFFFF',
           borderRadius: isMobile ? '20px 20px 0 0' : 20,
           padding: isMobile ? '24px 20px' : 32,
+          paddingTop: isMobile ? 'env(safe-area-inset-top, 0px)' : undefined,
           maxWidth: 460, width: '100%',
           maxHeight: isMobile ? 'none' : '90vh',
           overflowY: 'auto',
