@@ -156,9 +156,19 @@ export default function PillarConciergeCards({ pillar, pet, token }) {
               <div style={{ fontSize:11, color:'#6B7280', lineHeight:1.4, marginBottom:10 }}>
                 {card.sub.replace('your dog', petName)}
               </div>
-              <div style={{ fontSize:11, fontWeight:700, color: color,
-                background: color + '18', borderRadius:20, padding:'4px 10px',
-                whiteSpace:'nowrap' }}>
+              <div style={{
+                marginTop: 'auto',
+                display: 'inline-flex',
+                alignItems: 'center',
+                fontSize: 11,
+                fontWeight: 800,
+                color: '#fff',
+                background: color,
+                borderRadius: 20,
+                padding: '5px 12px',
+                letterSpacing: '0.02em',
+                whiteSpace: 'nowrap',
+              }}>
                 C®
               </div>
             </button>
