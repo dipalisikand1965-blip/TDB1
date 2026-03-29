@@ -511,7 +511,7 @@ export const LEARN_CATS = [
   { id:"behaviour",   icon:"🧠", label:"Behaviour",      dbCategory:"behavior",                bg:"#FFF3E0", accent:"#F57C00" },
   { id:"training",    icon:"🏆", label:"Training",       dbCategory:"training",                bg:"#E3F2FD", accent:"#1565C0" },
   { id:"tricks",      icon:"✨", label:"Tricks & Fun",   dbCategory:"tricks",                  bg:"#FCE4EC", accent:"#C2185B" },
-  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dbCategory:"classes",                 bg:"#E8F5E9", accent:"#2E7D32" },
+  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dbCategory:"enrichment",              bg:"#E8F5E9", accent:"#2E7D32" },
   { id:"breed",       icon:"📚", label:"Know Your Breed",dbCategory:"breed-training_logs",     bg:"#FFF8E1", accent:"#FF8F00" },
   { id:"soul",        icon:"🌟", label:"Soul Learn",     dbCategory:"breed-treat_pouchs",      bg:"#F3E5F5", accent:"#7B1FA2" },
   { id:"bundles",     icon:"🎁", label:"Bundles",        dbCategory:"bundles",                 bg:"#E8F5E9", accent:"#2E7D32" },
@@ -618,7 +618,7 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
       return;
     }
     // Use larger limit for breed-specific categories so filterBreedProducts finds the right breed
-    const breedLimit = ["breed-training_logs","breed-treat_pouchs","breed-treat_jars","breed-care-guide"].includes(catCfg.dbCategory) ? 100 : 12;
+    const breedLimit = ["breed-training_logs","breed-treat_pouchs","breed-treat_jars","breed-care-guide"].includes(catCfg.dbCategory) ? 100 : 80;
     const params = new URLSearchParams({ pillar:"learn", category:catCfg.dbCategory, limit:breedLimit });
     // Don't pass breed to API — filterBreedProducts handles it client-side by product name
     fetch(`${API_URL}/api/admin/pillar-products?${params}`, {
