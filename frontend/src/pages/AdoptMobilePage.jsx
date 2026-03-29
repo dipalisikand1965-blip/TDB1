@@ -262,46 +262,89 @@ export default function AdoptMobilePage() {
               <button className="adopt-cta" onClick={() => { vibe('medium'); setShowAdoptPlan(true); }}>Build {petName}'s Adoption Plan →</button>
             </div>
 
-            {/* Guided Paths */}
-            {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
+            {/* ── Stage-gated content (switches on adoptStage pill) ── */}
 
-            {/* First Time Pawrent — emotional centrepiece */}
-            {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+            {/* THINKING — Am I ready? */}
+            {adoptStage === 'thinking' && (
+              <>
+                {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
+                {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+              </>
+            )}
 
-            {/* Adopt Product Sections */}
-            <div style={{ padding:'0 16px 24px' }}>
-              <div style={{ fontSize:18, fontWeight:700, marginBottom:16 }}>Everything for {petName}'s arrival</div>
-              {adoptSections.length > 0 ? (
-                <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
-                  {adoptSections.map(section => (
-                    <div key={section.id}>
-                      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-                        <span style={{ fontSize:20 }}>{section.icon}</span>
-                        <span style={{ fontSize:16, fontWeight:800, color:'#1A0A2E' }}>{section.label}</span>
-                        <span style={{ fontSize:12, color:'#6B7280', marginLeft:4 }}>({section.products.length})</span>
+            {/* ADOPTING — Committed, breed match */}
+            {adoptStage === 'ready' && (
+              <>
+                {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
+                <div style={{ padding:'0 16px 24px' }}>
+                  <div style={{ fontSize:18, fontWeight:700, marginBottom:16, color:'#1A0A2E' }}>Mira's adoption services for you</div>
+                  <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
+                </div>
+              </>
+            )}
+
+            {/* FIND MATCH — Rescue centres near me */}
+            {adoptStage === 'looking' && (
+              <div style={{ padding:'0 16px 24px' }}>
+                <AdoptNearMe pet={currentPet} onBook={shelter => {
+                  tdc.request(`Adoption enquiry: ${shelter}`, { pillar:'adopt', channel:'adopt_nearme', pet:currentPet });
+                }} />
+              </div>
+            )}
+
+            {/* MATCHED — Prep products */}
+            {adoptStage === 'matched' && (
+              <div style={{ padding:'0 16px 24px' }}>
+                <div style={{ fontSize:18, fontWeight:700, marginBottom:16, color:'#1A0A2E' }}>Get ready for {petName}'s new sibling</div>
+                {adoptSections.length > 0 ? (
+                  <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
+                    {adoptSections.map(section => (
+                      <div key={section.id}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
+                          <span style={{ fontSize:20 }}>{section.icon}</span>
+                          <span style={{ fontSize:16, fontWeight:800, color:'#1A0A2E' }}>{section.label}</span>
+                          <span style={{ fontSize:12, color:'#6B7280', marginLeft:4 }}>({section.products.length})</span>
+                        </div>
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                          {section.products.slice(0, 6).map(p => (
+                            <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
+                              onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
+                          ))}
+                        </div>
                       </div>
-                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                        {section.products.slice(0, 6).map(p => (
-                          <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
-                            onAddToCart={() => handleAddToCart(p)}
-                            onClick={() => { vibe(); setSelectedProduct(p); }} />
-                        ))}
-                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ textAlign:'center', padding:'32px 0', color:'#9CA3AF', fontSize:14 }}>
+                    Products loading — add a pet profile to see personalised picks
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* COMING HOME — Arrival essentials */}
+            {adoptStage === 'home' && (
+              <>
+                {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+                <div style={{ padding:'16px 16px 24px' }}>
+                  <div style={{ fontSize:18, fontWeight:700, marginBottom:16, color:'#1A0A2E' }}>Everything for week one</div>
+                  {products.length > 0 ? (
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                      {products.slice(0, 20).map(p => (
+                        <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
+                          onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <div style={{ textAlign:'center', padding:'32px 0', color:'#9CA3AF', fontSize:14 }}>
+                      Loading arrival essentials for you...
+                    </div>
+                  )}
                 </div>
-              ) : products.length > 0 ? (
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                  {products.slice(0, 20).map(p => (
-                    <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
-                      onAddToCart={() => handleAddToCart(p)}
-                      onClick={() => { vibe(); setSelectedProduct(p); }} />
-                  ))}
-                </div>
-              ) : null}
-            </div>
+              </>
+            )}
 
-            {/* Mira Imagines */}
+            {/* Mira Imagines — always shown */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="adopt" token={token} /></div>}
           </div>
         )}
@@ -340,7 +383,7 @@ export default function AdoptMobilePage() {
           </div>
         )}
 
-        {/* TAB 3: Find Rescue */}
+        {/* TAB 3: Find Rescue — redirects to Find Match pill */}
         {activeTab === 'find' && (
           <div style={{ padding:'16px' }}>
             <AdoptNearMe pet={currentPet} onBook={shelter => {
