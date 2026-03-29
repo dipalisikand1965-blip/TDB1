@@ -279,14 +279,16 @@ export default function AdoptMobilePage() {
             {openDim && (
               <div ref={dimExpandedRef} style={{ margin:'0 16px 16px', background:'#fff', border:`2px solid ${G.rose}`, borderRadius:20, padding:20 }}>
                 {/* Header */}
-                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16, paddingBottom:12, borderBottom:`1px solid ${G.paleRose}` }}>
-                  <span style={{ fontSize:26 }}>{JOURNEY_STAGES.find(s=>s.id===openDim)?.icon || ADOPT_STAGES.find(s=>s.id===openDim)?.emoji}</span>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
+                  <span style={{ fontSize:26 }}>{ADOPT_STAGES.find(s=>s.id===openDim)?.emoji}</span>
                   <div style={{ flex:1 }}>
-                    <div style={{ fontSize:15, fontWeight:800, color:G.darkText }}>{JOURNEY_STAGES.find(s=>s.id===openDim)?.label || ADOPT_STAGES.find(s=>s.id===openDim)?.label}</div>
+                    <div style={{ fontSize:15, fontWeight:800, color:G.darkText }}>{ADOPT_STAGES.find(s=>s.id===openDim)?.label}</div>
                     <div style={{ fontSize:11, color:'#888' }}>Personalised for {petName}</div>
                   </div>
                   <button onClick={() => setOpenDim(null)} style={{ background:G.pale, border:'none', borderRadius:20, padding:'4px 12px', fontSize:11, fontWeight:700, color:G.rose, cursor:'pointer' }}>Close ✕</button>
                 </div>
+                {/* panel header separator */}
+                <div style={{ height:1, background:'rgba(212,83,126,0.15)', margin:'0 0 16px' }} />
 
                 {/* READY? — Guided paths + readiness */}
                 {openDim === 'thinking' && (
