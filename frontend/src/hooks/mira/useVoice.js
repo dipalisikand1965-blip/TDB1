@@ -251,11 +251,36 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
     );
     if (!response.ok) throw new Error(`ElevenLabs ${response.status}`);
     const audioBlob = await response.blob();
-    const audio = new Audio(URL.createObjectURL(audioBlob));
-    audio.onended = () => setIsSpeaking(false);
-    audio.onerror = () => setIsSpeaking(false);
-    audioRef.current = audio;
-    audio.play();
+
+    // iOS Safari: use AudioContext + decodeAudioData (avoids blob URL autoplay restrictions)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      const ArrayBufferData = await audioBlob.arrayBuffer();
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) throw new Error('AudioContext not supported');
+      const audioCtx = new AudioCtx();
+      // Resume context in case it was suspended (iOS requirement)
+      if (audioCtx.state === 'suspended') await audioCtx.resume();
+      const audioBuffer = await audioCtx.decodeAudioData(ArrayBufferData);
+      const source = audioCtx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioCtx.destination);
+      source.onended = () => { setIsSpeaking(false); try { audioCtx.close(); } catch(e) {} };
+      source.start(0);
+    } else {
+      const blobUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(blobUrl);
+      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(blobUrl); };
+      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(blobUrl); };
+      audioRef.current = audio;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.log('[useVoice] Audio play blocked:', err.message);
+          setIsSpeaking(false);
+        });
+      }
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Speak text with Mira's voice (TTS)
