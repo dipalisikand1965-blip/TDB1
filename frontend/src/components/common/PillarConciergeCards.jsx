@@ -124,7 +124,7 @@ const PILLAR_CARDS = {
   ]},
 };
 
-export default function PillarConciergeCards({ pillar, pet, token }) {
+export default function PillarConciergeCards({ pillar, pet, token, onSheetClose }) {
   const [builderOpen, setBuilderOpen] = useState(false);
   const [preselectedIntent, setPreselectedIntent] = useState('');
   const config = PILLAR_CARDS[pillar] || PILLAR_CARDS.services;
@@ -133,6 +133,8 @@ export default function PillarConciergeCards({ pillar, pet, token }) {
 
   const handleCard = (card) => {
     setPreselectedIntent(card.title.replace('my dog', petName).replace('My dog', petName));
+    // Close the parent sheet first, then open builder
+    if (onSheetClose) onSheetClose();
     setBuilderOpen(true);
   };
 
@@ -160,14 +162,15 @@ export default function PillarConciergeCards({ pillar, pet, token }) {
                 marginTop: 'auto',
                 display: 'inline-flex',
                 alignItems: 'center',
-                fontSize: 11,
-                fontWeight: 800,
-                color: '#fff',
-                background: color,
-                borderRadius: 20,
-                padding: '5px 12px',
-                letterSpacing: '0.02em',
+                fontSize: 10,
+                fontWeight: 700,
+                color: color,
+                background: color + '15',
+                borderRadius: 6,
+                padding: '3px 8px',
+                letterSpacing: '0.01em',
                 whiteSpace: 'nowrap',
+                border: `1px solid ${color}30`,
               }}>
                 C®
               </div>
