@@ -28,7 +28,6 @@ import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import AdoptMobilePage from './AdoptMobilePage';
 import FirstTimePawrent from '../components/common/FirstTimePawrent';
-import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -252,21 +251,21 @@ const AdoptSoulPage = () => {
   const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [openDim, setOpenDim] = useState(null);
-  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
 
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
   useEffect(()=>{
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=100`).then(r=>r.ok?r.json():null).then(d=>{
+    const breedParam = petData?.breed ? `&breed=${encodeURIComponent(petData.breed)}` : '';
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=200${breedParam}`).then(r=>r.ok?r.json():null).then(d=>{
       const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});
       setApiProducts(grouped);
       const miraFiltered = petData ? applyMiraFilter(filterBreedProducts(d?.products||[], petData?.breed||''), petData) : (d?.products||[]);
       setRawProducts(miraFiltered);
     }).catch(()=>{});
     fetch(`${API_URL}/api/service-box/services?pillar=adopt`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
-  },[]);
+  },[petData?.breed]);
 
   const petName = petData?.name || "you";
   const breed   = petData?.breed||"";
@@ -358,7 +357,7 @@ const AdoptSoulPage = () => {
               <div style={{display:"flex",gap:8,overflowX:"auto",scrollbarWidth:"none",paddingBottom:4}}>
                 {ADOPT_STAGES.map(s=>(
                   <button key={s.id}
-                    onClick={()=>{ if(s.id==='guidance'){setConciergeBuilderOpen(true);}else{setOpenDim(prev=>prev===s.id?null:s.id);} }}
+                    onClick={()=>{ if(s.id==='guidance'){setConciergeOpen(true);}else{setOpenDim(prev=>prev===s.id?null:s.id);} }}
                     style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:5,padding:"10px 14px",borderRadius:16,border:`2px solid ${openDim===s.id?G.rose:G.border}`,background:openDim===s.id?G.pale:"#fff",cursor:"pointer",minWidth:76,minHeight:78,transition:"all 0.15s"}}>
                     <span style={{fontSize:22}}>{s.emoji}</span>
                     <span style={{fontSize:11,fontWeight:700,color:openDim===s.id?G.rose:G.darkText,textAlign:"center",lineHeight:1.25,whiteSpace:"normal",maxWidth:64}}>{s.label}</span>
