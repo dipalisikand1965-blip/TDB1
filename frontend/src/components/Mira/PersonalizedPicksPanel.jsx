@@ -126,6 +126,8 @@ const PILLARS = [
   { id: 'learn', name: 'Learn', emoji: '📚', icon: GraduationCap, gradient: 'from-indigo-400 to-purple-500' },
   { id: 'paperwork', name: 'Paperwork', emoji: '📋', icon: Info, gradient: 'from-violet-400 to-purple-500' },
   { id: 'shop', name: 'Shop', emoji: '🛍️', icon: Scissors, gradient: 'from-cyan-400 to-blue-500' },
+  { id: 'farewell', name: 'Farewell', emoji: '🕊️', icon: Leaf, gradient: 'from-slate-400 to-gray-500' },
+  { id: 'adopt', name: 'Adopt', emoji: '🐾', icon: Heart, gradient: 'from-emerald-400 to-teal-500' },
   { id: 'services', name: 'Services', emoji: '✂️', icon: Scissors, gradient: 'from-emerald-400 to-green-500' },
   { id: 'emergency', name: 'Emergency', emoji: '🚨', icon: HeartPulse, gradient: 'from-red-500 to-orange-500' },
 ];
