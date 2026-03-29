@@ -45,7 +45,6 @@ KNOWN_BREED_NAMES = sorted([
     "alaskan malamute", "malamute", "miniature schnauzer", "giant schnauzer",
     "miniature poodle", "toy poodle", "standard poodle",
     "english springer spaniel", "springer spaniel",
-    "fawn", "brindle",
 ], key=len, reverse=True)  # Longest first so "golden retriever" beats "retriever"
 
 
