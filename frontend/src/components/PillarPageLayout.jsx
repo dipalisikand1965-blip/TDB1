@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Package, Wrench, PawPrint } from 'lucide-react';
 import { API_URL } from '../utils/api';
@@ -279,6 +280,7 @@ const PillarPageLayout = ({
   const accent = PILLAR_ACCENT[pillar] || PILLAR_ACCENT.services;
   
   return (
+    <>
     <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
       {/* ── Mobile nav header — REMOVED: Navbar from MainLayout handles this ───────────── */}
       {/* Back button only on mobile, subtly placed below Navbar */}
@@ -452,74 +454,70 @@ const PillarPageLayout = ({
       {/* Mira Chat Widget - hidden when page uses MiraOSTrigger */}
       {!hideMiraWidget && <MiraChatWidget pillar={pillar} />}
 
-      {/* Concierge® Request Builder — desktop floating trigger, stacked above Mira orb */}
-      <button
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
-        data-testid="concierge-builder-float-btn"
-        className="hidden md:flex"
-        style={{
-          position: 'fixed', bottom: 96, right: 24, zIndex: 900,
-          alignItems: 'center', gap: 8,
-          padding: '12px 20px',
-          background: accent.bg,
-          color: accent.text,
-          borderRadius: 999,
-          border: `1px solid ${accent.border}`,
-          fontSize: 13, fontWeight: 700, cursor: 'pointer',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.30)',
-          letterSpacing: '0.03em',
-          fontFamily: 'inherit',
-          transition: 'transform 0.15s, box-shadow 0.15s',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.transform='translateY(-2px)'; e.currentTarget.style.boxShadow='0 8px 32px rgba(0,0,0,0.45)'; }}
-        onMouseLeave={e => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow='0 4px 24px rgba(0,0,0,0.30)'; }}
-      >
-        <span style={{ fontSize: 14 }}>✦</span>
-        Concierge® Requests
-      </button>
 
-
-      {/* Mobile floating C® button — pillar colour, above bottom nav */}
-      <button
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
-        className="flex md:hidden"
-        data-testid="concierge-mobile-float-btn"
-        style={{
-          position: 'fixed', bottom: 88, right: 16, zIndex: 900,
-          width: 48, height: 48,
-          background: accent.bg,
-          color: accent.text,
-          borderRadius: '50%',
-          border: `1.5px solid ${accent.border}`,
-          fontSize: 13, fontWeight: 800, cursor: 'pointer',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-          alignItems: 'center', justifyContent: 'center',
-          letterSpacing: '-0.02em',
-        }}
-      >
-        C®
-      </button>
-      {/* Pillar-specific cards sheet — opens when floating button clicked */}
-      {pillarCardsOpen && (
-        <div style={{ position:'fixed', inset:0, zIndex:10000, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
-          <div onClick={() => setPillarCardsOpen(false)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.55)' }} />
-          <div style={{ position:'relative', background:'#fff', borderRadius:'24px 24px 0 0', padding:'24px 24px 40px', maxHeight:'80vh', overflowY:'auto', zIndex:1 }}>
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
-              <div style={{ fontSize:17, fontWeight:800, color:'#1A0A2E' }}>✦ How can Concierge® help?</div>
-              <button onClick={() => setPillarCardsOpen(false)} style={{ background:'#F3F4F6', border:'none', borderRadius:20, padding:'6px 14px', fontSize:12, fontWeight:700, cursor:'pointer', color:'#6B7280' }}>Close ✕</button>
-            </div>
-            <PillarConciergeCards pillar={pillar} pet={activePet} token={token} onSheetClose={() => setPillarCardsOpen(false)} />
-          </div>
-        </div>
-      )}
-
-      <ConciergeRequestBuilder
-        pet={activePet}
-        token={token}
-        isOpen={conciergeLayoutOpen}
-        onClose={() => setConciergeLayoutOpen(false)}
-      />
     </div>
+      {/* Portal: renders directly in document.body — escapes ALL overflow-x-hidden ancestors */}
+      {typeof document !== 'undefined' && ReactDOM.createPortal(
+        <>
+          {/* Desktop floating button */}
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
+            data-testid="concierge-builder-float-btn"
+            className="hidden md:flex"
+            style={{
+              position: 'fixed', bottom: 96, right: 24, zIndex: 100000,
+              alignItems: 'center', gap: 8, padding: '12px 20px',
+              background: accent.bg, color: accent.text,
+              borderRadius: 999, border: `1px solid ${accent.border}`,
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.30)',
+              fontFamily: 'inherit',
+            }}
+          >
+            <span style={{ fontSize: 14 }}>✦</span>
+            Concierge® Requests
+          </button>
+
+          {/* Mobile floating button */}
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
+            data-testid="concierge-mobile-float-btn"
+            className="flex md:hidden"
+            style={{
+              position: 'fixed', bottom: 88, right: 16, zIndex: 100000,
+              width: 48, height: 48,
+              background: accent.bg, color: accent.text,
+              borderRadius: '50%', border: `1.5px solid ${accent.border}`,
+              fontSize: 13, fontWeight: 800, cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+              alignItems: 'center', justifyContent: 'center',
+            }}
+          >C®</button>
+
+          {/* Bottom sheet */}
+          {pillarCardsOpen && (
+            <div style={{ position:'fixed', inset:0, zIndex:100001, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+              <div onClick={() => setPillarCardsOpen(false)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.55)', backdropFilter:'blur(8px)' }} />
+              <div style={{ position:'relative', background:'#fff', borderRadius:'24px 24px 0 0', padding:'24px 24px 40px', maxHeight:'80vh', overflowY:'auto', zIndex:1, maxWidth:600, margin:'0 auto', width:'100%' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+                  <div style={{ fontSize:17, fontWeight:800, color:'#1A0A2E' }}>✦ How can Concierge® help?</div>
+                  <button onClick={() => setPillarCardsOpen(false)} style={{ background:'#F3F4F6', border:'none', borderRadius:20, padding:'6px 14px', fontSize:12, fontWeight:700, cursor:'pointer', color:'#6B7280' }}>Close ✕</button>
+                </div>
+                <PillarConciergeCards pillar={pillar} pet={activePet} token={token} onSheetClose={() => setPillarCardsOpen(false)} />
+              </div>
+            </div>
+          )}
+
+          <ConciergeRequestBuilder
+            pet={activePet}
+            token={token}
+            isOpen={conciergeLayoutOpen}
+            onClose={() => setConciergeLayoutOpen(false)}
+          />
+        </>,
+        document.body
+      )}
+    </>
   );
 };
 
