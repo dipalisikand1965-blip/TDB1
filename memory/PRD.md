@@ -225,7 +225,13 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 5. ✅ **ServicesManager.jsx** — Was stuck on "Loading services..." because `pillar=services` returns 0 DB results. Now fetches all services with no pillar filter + pillar dropdown for client-side filtering.
 
 ### P0 — Remaining (Onboarding dialog)
-- `NewChatConfirmDialog` / `OnboardingTooltip` on `/mira-os` shows on EVERY page load (should show once via localStorage). Blocks header clicks.
+- `OnboardingTooltip` already has localStorage `hasBeenDismissed()` — only shows once per user. No fix needed.
+
+### SESSION 29.1 — (2026-03-29) Bugs A–D + Pet Loading Fix (Bug 7)
+1. ✅ **Bug A** — `SoulKnowledgeTicker.jsx`: filter strips `none`, `null`, `undefined` values from Soul chips
+2. ✅ **Bug B (Pet loading)** — `usePet.js`: `petLoaded` flag added (false until API returns real pet). `MiraDemoPage.jsx`: renders loading spinner until `petLoaded=true`. No Buddy flash.
+3. ✅ **Bug C** — `PersonalizedPicksPanel.jsx` PILLARS extended: farewell (🕊️) + adopt (🐾)
+4. ✅ **Bug D** — `useVoice.js` default → `true` (ElevenLabs ON by default, opt-out not opt-in)
 
 ### P1 — Upcoming
 1. Watch & Learn YouTube sections (Care + Go)
