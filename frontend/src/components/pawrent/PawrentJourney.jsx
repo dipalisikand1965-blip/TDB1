@@ -745,9 +745,9 @@ export default function PawrentJourney({ pet, token }) {
         <div
           style={{
             display: "flex",
+            flexWrap: "wrap",
             gap: 8,
-            overflowX: "auto",
-            paddingBottom: 8,
+            paddingBottom: 4,
             marginBottom: 16,
           }}
         >
@@ -768,7 +768,7 @@ export default function PawrentJourney({ pet, token }) {
                   fontSize: 12,
                   fontWeight: 600,
                   cursor: "pointer",
-                  whiteSpace: "nowrap",
+                  flexShrink: 0,
                   textTransform: "capitalize",
                 }}
               >
