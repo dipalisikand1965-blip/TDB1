@@ -242,12 +242,6 @@ const PillarPageLayout = ({
   // Concierge Request Builder state (desktop floating button)
   const [conciergeLayoutOpen, setConciergeLayoutOpen] = useState(false);
   const [pillarCardsOpen, setPillarCardsOpen] = useState(false);
-  const [isWide, setIsWide] = useState(() => typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
-  useEffect(() => {
-    const onResize = () => setIsWide(window.innerWidth >= 768);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
   
   // Get pillar-specific gradient for bottom section
   const PILLAR_BG = {
@@ -464,8 +458,7 @@ const PillarPageLayout = ({
     </div>
     {ReactDOM.createPortal(
       <>
-        {isWide ? (
-          <button
+        <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(v => !v); }}
             data-testid="concierge-builder-float-btn"
             style={{
@@ -480,21 +473,6 @@ const PillarPageLayout = ({
           >
             <span>✦</span> Concierge® Requests
           </button>
-        ) : (
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(v => !v); }}
-            data-testid="concierge-mobile-float-btn"
-            style={{
-              position: 'fixed', bottom: 152, right: 16, zIndex: 2147483640,
-              display: 'flex', width: 48, height: 48,
-              alignItems: 'center', justifyContent: 'center',
-              background: accent.bg, color: accent.text,
-              borderRadius: '50%', border: '1.5px solid ' + accent.border,
-              fontSize: 13, fontWeight: 800, cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-            }}
-          >C®</button>
-        )}
         {pillarCardsOpen && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
