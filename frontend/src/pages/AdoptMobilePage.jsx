@@ -261,7 +261,8 @@ export default function AdoptMobilePage() {
               <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (
-                  <button key={s.id} onClick={() => { vibe(); setOpenDim(prev => prev === s.id ? null : s.id); }}
+                  <button key={s.id} onClick={() => { vibe(); if (s.id === 'guidance') { setConciergeBuilderOpen(true); }
+            else { setOpenDim(prev => prev === s.id ? null : s.id); } }}
                     style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:5, padding:'10px 14px', borderRadius:16, border:`2px solid ${openDim===s.id?G.rose:G.border}`, background:openDim===s.id?G.pale:'#fff', cursor:'pointer', minWidth:76, minHeight:78 }}>
                     <span style={{ fontSize:22 }}>{s.emoji}</span>
                     <span style={{ fontSize:11, fontWeight:700, color:openDim===s.id?G.rose:G.darkText, textAlign:'center', lineHeight:1.25, whiteSpace:'normal', maxWidth:64 }}>{s.label}</span>
@@ -301,11 +302,21 @@ export default function AdoptMobilePage() {
                   <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
                 )}
 
-                {/* FIND MATCH — Rescue near me */}
+                {/* FIND MATCH — Breed info + Rescue near me */}
                 {openDim === 'looking' && (
-                  <AdoptNearMe pet={currentPet} onBook={shelter => {
-                    tdc.request(`Adoption enquiry: ${shelter}`, { pillar:'adopt', channel:'adopt_nearme', pet:currentPet });
-                  }} />
+                  <>
+                    <div style={{ background:'linear-gradient(135deg,rgba(212,83,126,0.08),rgba(212,83,126,0.14))', borderRadius:14, padding:'14px 16px', marginBottom:16 }}>
+                      <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:4 }}>
+                        Finding the right {(currentPet?.breed||'dog').split('(')[0].trim()}
+                      </div>
+                      <div style={{ fontSize:13, color:G.mutedText, lineHeight:1.6 }}>
+                        Mira matches breed energy, size and temperament to your lifestyle — before you meet one dog. Rescues, breeders and street dogs all verified.
+                      </div>
+                    </div>
+                    <AdoptNearMe pet={currentPet} onBook={shelter => {
+                      tdc.request(`Adoption enquiry: ${shelter}`, { pillar:'adopt', channel:'adopt_nearme', pet:currentPet });
+                    }} />
+                  </>
                 )}
 
                 {/* MATCHED! — Product sections */}
@@ -327,17 +338,13 @@ export default function AdoptMobilePage() {
                   ) : <div style={{ textAlign:'center', padding:'24px 0', color:'#9CA3AF', fontSize:13 }}>Add a pet profile to see personalised adoption picks</div>
                 )}
 
-                {/* BREEDS — breed-specific products */}
+                {/* BREEDS — breed-specific products from PersonalisedBreedSection */}
                 {openDim === 'breed' && (
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                    {products.filter(p => {
-                      const breed = (currentPet?.breed||'').toLowerCase().split('(')[0].trim();
-                      return (p.breed_tags||[]).some(t => (t||'').toLowerCase().includes(breed)) ||
-                             (p.name||'').toLowerCase().includes(breed);
-                    }).slice(0,12).map(p => (
-                      <SharedProductCard key={p.id||p._id} product={p} pillar="adopt" selectedPet={currentPet}
-                        onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
-                    ))}
+                  <div>
+                    <div style={{ fontSize:14, color:G.mutedText, marginBottom:12, lineHeight:1.5 }}>
+                      Products made specifically for {(currentPet?.breed||'').split('(')[0].trim()} dogs — from breed guides to welcome kits.
+                    </div>
+                    <PersonalisedBreedSection pet={currentPet} pillar="adopt" token={token} />
                   </div>
                 )}
 
