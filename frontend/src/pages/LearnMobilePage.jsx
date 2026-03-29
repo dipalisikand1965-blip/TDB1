@@ -552,7 +552,7 @@ export default function LearnMobilePage() {
             </div>
             <button
               data-testid="learn-soul-profile-cta"
-              onClick={() => navigate('/soul-builder')}
+              onClick={() => navigate('/pet-home')}
               style={{ marginTop:12, width:'100%', padding:'11px 16px', background:`linear-gradient(135deg,${G.mid},${G.purple})`, borderRadius:12, border:'none', color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer' }}>
               Complete {petName}'s Profile →
             </button>
