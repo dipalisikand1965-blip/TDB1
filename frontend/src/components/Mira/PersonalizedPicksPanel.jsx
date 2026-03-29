@@ -1065,6 +1065,41 @@ const PersonalizedPicksPanel = ({
     });
   };
   
+  // "Anything else" — direct send to Concierge® without going through cart
+  const handleAnythingElseSend = async () => {
+    const text = customRequest.trim();
+    if (!text || isSending) return;
+    hapticFeedback.success();
+    setIsSending(true);
+    try {
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          pet_id: pet?.id,
+          pet_name: pet?.name,
+          pillar: activePillar || 'general',
+          source: 'picks_anything_else',
+          intent: 'custom_request',
+          customer_message: text,
+        }),
+      });
+      toast.success(`Received ✓ Your Concierge® is on it for ${pet?.name || 'your pet'}`, {
+        icon: '🐾',
+        duration: 4000,
+      });
+      setCustomRequest('');
+    } catch (err) {
+      console.error('[Picks] Anything else send failed:', err);
+      toast.error('Could not send — please try again');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // Flow single pick to chat - creates ticket and adds message to chat
   // UNIFIED SERVICE FLOW: Always creates a service ticket for concierge
   const flowPickToChat = async (pick, pickType = 'catalogue') => {
@@ -2336,31 +2371,29 @@ const PersonalizedPicksPanel = ({
                 </p>
               </div>
               
+              {/* "Anything else" — direct send to Concierge + Enter key support */}
               <div className="relative">
                 <textarea
                   value={customRequest}
                   onChange={(e) => setCustomRequest(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      handleAnythingElseSend();
+                    }
+                  }}
                   placeholder={`What would you like for ${pet?.name}? A surprise treat? Special arrangement? Just ask...`}
                   className="w-full bg-gray-800/80 border border-gray-700 rounded-2xl p-4 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none"
                   rows={3}
                 />
                 {customRequest.trim() && (
                   <button
-                    onClick={() => {
-                      hapticFeedback.success();
-                      const customItem = {
-                        id: `custom-${Date.now()}`,
-                        name: customRequest.trim().slice(0, 50) + (customRequest.length > 50 ? '...' : ''),
-                        full_request: customRequest.trim(),
-                        type: 'custom_request',
-                        pick_type: 'custom'
-                      };
-                      setSelectedItems(prev => [...prev, customItem]);
-                      setCustomRequest('');
-                    }}
-                    className="absolute bottom-3 right-3 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+                    onClick={handleAnythingElseSend}
+                    disabled={isSending}
+                    data-testid="anything-else-send-btn"
+                    className="absolute bottom-3 right-3 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
-                    Add Request
+                    {isSending ? 'Sending...' : 'Send to Concierge®'}
                   </button>
                 )}
               </div>
