@@ -1067,12 +1067,10 @@ function DineMobilePage() {
         {/* Category Strip — inside Dine tab only */}
         <DineCategoryStrip pet={currentPet} />
 
-        {/* Sub-toggle: Eat & Nourish / Dine Out */}
-        <DineSegmentedSwitch mode={mode} onChange={setMode} />
+        {/* Sub-toggle REMOVED — Eat & Nourish content always shown in Dine tab */}
 
-        {/* ── 4. Food Profile + Pawrent Journey inside Eat tab ── */}
-        {mode === 'eat' && (
-          <>
+        {/* ── 4. Food Profile + Pawrent Journey ── */}
+        <>
             <div style={{ padding:'12px 16px 0' }}>
               <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
             </div>
@@ -1080,13 +1078,11 @@ function DineMobilePage() {
               <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="dine" defaultCollapsed={true} />
             </div>
           </>
-        )}
 
         {/* ════════════════════════════════════
             EAT & NOURISH
         ════════════════════════════════════ */}
-        {mode === 'eat' && (
-          <>
+        <>
             {/* ── Dimensions Rail (real tabs, no cap) ── */}
             <DineDimensionsRail
               dims={DIMS}
@@ -1196,21 +1192,6 @@ function DineMobilePage() {
               <DineConciergeSection pet={currentPet} />
             </div>
           </>
-        )}
-
-        {/* ════════════════════════════════════
-            DINE OUT (sub-tab)
-        ════════════════════════════════════ */}
-        {mode === 'out' && (
-          <>
-            <div style={{ padding:'16px 16px 0' }}>
-              <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
-            </div>
-            <div style={{ padding:'0 16px 24px' }}>
-              <DineConciergeSection pet={currentPet} />
-            </div>
-          </>
-        )}
 
         </>)} {/* end TAB 1 */}
 
