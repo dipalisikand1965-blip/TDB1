@@ -75,7 +75,7 @@ const CTAGrad  = 'linear-gradient(135deg,#F97316,#D97706)';
 const DarkGrad = 'linear-gradient(135deg,#1A0A00,#2D1A00)';
 
 // ── CSS ────────────────────────────────────────────────────────
-const CSS = `
+export const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
   .dp { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
         background:${C.cream}; color:${C.brown}; min-height:100vh;
