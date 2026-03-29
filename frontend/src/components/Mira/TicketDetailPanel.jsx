@@ -66,7 +66,7 @@ const TimelineStep = memo(({ step, isLast, isCompleted, isCurrent }) => {
             {step.status_label || step.status?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
           </span>
           {isCurrent && (
-            <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full">
+            <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(139,92,246,0.2)', color:'#c4b5fd', borderColor:'rgba(139,92,246,0.3)' }}>
               Current
             </span>
           )}
@@ -336,7 +336,7 @@ const TicketDetailPanel = ({
           <div className={`px-4 py-3 ${ticketData.status_display?.color === 'amber' ? 'bg-amber-500/10' : 'bg-purple-500/10'}`}>
             <div className="flex items-center gap-2">
               {ticketData.awaiting_user && (
-                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-medium rounded-full">
+                <span className="tdc-chip tdc-chip-gold" style={{ background:'rgba(245,158,11,0.2)', color:'#fcd34d', borderColor:'rgba(245,158,11,0.3)' }}>
                   Awaiting You
                 </span>
               )}

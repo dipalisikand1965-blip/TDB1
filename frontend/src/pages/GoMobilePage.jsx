@@ -42,6 +42,70 @@ const G = {
   darkText:'#064E3B', mutedText:'#1ABC9C',
   border:'rgba(26,188,156,0.18)',
 };
+
+/* ─── Watch & Learn section ─────────────────────────────────────────────── */
+const GO_WATCH_QUERY = 'dog friendly travel tips pet road trip';
+
+function GoWatchSection({ pet }) {
+  const [videos, setVideos] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const breed = pet?.breed || 'dog';
+
+  useEffect(() => {
+    const q = `${breed} ${GO_WATCH_QUERY}`;
+    fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(q)}&max_results=6`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d?.videos || d?.items || d?.results || []).map(v => ({
+          id: v.videoId || v.id?.videoId || v.id,
+          title: v.title || v.snippet?.title || '',
+          thumbnail: v.thumbnail || v.snippet?.thumbnails?.medium?.url || '',
+          url: `https://www.youtube.com/watch?v=${v.videoId || v.id?.videoId || v.id}`,
+        }));
+        setVideos(list);
+      })
+      .catch(() => {});
+  }, [breed]);
+
+  if (!videos.length) return null;
+  const shown = expanded ? videos : videos.slice(0, 4);
+
+  return (
+    <div style={{ marginTop:20 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+        <div style={{ fontSize:11, letterSpacing:'0.12em', fontWeight:700, color:'rgba(26,188,156,0.9)', textTransform:'uppercase' }}>
+          ✦ Watch &amp; Learn
+        </div>
+        {videos.length > 4 && (
+          <button onClick={() => setExpanded(e => !e)}
+            style={{ fontSize:11, color:'#1ABC9C', fontWeight:600, background:'none', border:'none', cursor:'pointer', padding:0 }}>
+            {expanded ? 'Show less' : `+${videos.length - 4} more`}
+          </button>
+        )}
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        {shown.map((v, i) => (
+          <div key={v.id || i} onClick={() => window.open(v.url, '_blank')}
+            style={{ cursor:'pointer', borderRadius:12, overflow:'hidden', border:'1px solid rgba(26,188,156,0.18)', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+            <div style={{ position:'relative', paddingTop:'56.25%', background:'#E0FBF5' }}>
+              {v.thumbnail && <img src={v.thumbnail} alt={v.title} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />}
+              <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <span style={{ color:'#fff', fontSize:13, marginLeft:2 }}>▶</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ padding:'8px 10px' }}>
+              <div style={{ fontSize:11, fontWeight:600, color:'#064E3B', lineHeight:1.4 }}>
+                {(v.title||'').slice(0, 55)}{v.title?.length > 55 ? '…' : ''}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
 .go-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .go-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.teal});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
@@ -276,6 +340,9 @@ export default function GoMobilePage() {
 
                 {/* GuidedGoPaths — always visible below dims */}
                 <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
+
+                {/* Watch & Learn — YouTube section */}
+                <GoWatchSection pet={currentPet} />
 
                 {/* Concierge Banner */}
                 <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>

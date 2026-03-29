@@ -41,6 +41,75 @@ import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
+/* ─── Watch & Learn section ─────────────────────────────────────────────── */
+const CARE_WATCH_QUERIES = [
+  'dog grooming tips at home',
+  'dog health wellness routine',
+  'dog dental care how to',
+  'dog skin coat care tips',
+];
+
+function WatchSection({ pet }) {
+  const [videos, setVideos] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const breed = pet?.breed || 'dog';
+
+  useEffect(() => {
+    const q = `${breed} ${CARE_WATCH_QUERIES[0]}`;
+    fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(q)}&max_results=6`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d?.videos || d?.items || d?.results || []).map(v => ({
+          id: v.videoId || v.id?.videoId || v.id,
+          title: v.title || v.snippet?.title || '',
+          thumbnail: v.thumbnail || v.snippet?.thumbnails?.medium?.url || '',
+          url: `https://www.youtube.com/watch?v=${v.videoId || v.id?.videoId || v.id}`,
+        }));
+        setVideos(list);
+      })
+      .catch(() => {});
+  }, [breed]);
+
+  if (!videos.length) return null;
+  const shown = expanded ? videos : videos.slice(0, 4);
+
+  return (
+    <div style={{ marginTop: 20 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+        <div style={{ fontSize:11, letterSpacing:'0.12em', fontWeight:700, color:'rgba(64,145,108,0.9)', textTransform:'uppercase' }}>
+          ✦ Watch &amp; Learn
+        </div>
+        {videos.length > 4 && (
+          <button onClick={() => setExpanded(e => !e)}
+            style={{ fontSize:11, color:'#40916C', fontWeight:600, background:'none', border:'none', cursor:'pointer', padding:0 }}>
+            {expanded ? 'Show less' : `+${videos.length - 4} more`}
+          </button>
+        )}
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        {shown.map((v, i) => (
+          <div key={v.id || i} onClick={() => window.open(v.url, '_blank')}
+            style={{ cursor:'pointer', borderRadius:12, overflow:'hidden', border:'1px solid rgba(64,145,108,0.18)', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+            <div style={{ position:'relative', paddingTop:'56.25%', background:'#e8f5e9' }}>
+              {v.thumbnail && <img src={v.thumbnail} alt={v.title} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />}
+              <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <span style={{ color:'#fff', fontSize:13, marginLeft:2 }}>▶</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ padding:'8px 10px' }}>
+              <div style={{ fontSize:11, fontWeight:600, color:'#1B4332', lineHeight:1.4 }}>
+                {(v.title||'').slice(0, 55)}{v.title?.length > 55 ? '…' : ''}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const G = {
   sage:'#40916C', deepMid:'#1B4332', mid:'#2D6A4F',
   pale:'#D8F3DC', cream:'#F0FDF4',
@@ -328,6 +397,9 @@ export default function CareMobilePage() {
 
             {/* Concierge section */}
             <CareConciergeSection pet={currentPet} />
+
+            {/* Watch & Learn — YouTube section */}
+            <WatchSection pet={currentPet} />
 
             {/* Soul Made CTA */}
             <div style={{ marginTop:16, background:G.dark, borderRadius:24, padding:24, cursor:'pointer' }}

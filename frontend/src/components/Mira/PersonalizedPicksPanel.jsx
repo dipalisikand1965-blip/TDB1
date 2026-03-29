@@ -105,7 +105,8 @@ const FitBadges = ({ pick, pet }) => {
         return (
           <span 
             key={badge.id}
-            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border ${badge.color}`}
+            className={`tdc-chip tdc-chip-pillar ${badge.color}`}
+            style={{ '--chip-color': 'currentColor' }}
           >
             <Icon className="w-2.5 h-2.5" />
             {badge.label}
@@ -203,7 +204,7 @@ const ExpandablePickCard = ({
         <div className="p-4">
           {/* Badge row */}
           <div className="flex items-center justify-between mb-3">
-            <span className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-medium rounded-full">
+            <span className="tdc-chip tdc-chip-gold" style={{ background:'linear-gradient(135deg,#ec4899,#8b5cf6)', color:'#fff', borderColor:'transparent' }}>
               {pick.seasonal ? '☆ Seasonal' : 'Concierge® Pick'}
             </span>
             <button 
@@ -237,7 +238,7 @@ const ExpandablePickCard = ({
           {/* Spec Chip */}
           {pick.spec_chip && (
             <div className="flex justify-center mb-3">
-              <span className="px-3 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full border border-pink-500/30">
+              <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.2)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                 {pick.spec_chip}
               </span>
             </div>
@@ -424,12 +425,12 @@ const ExpandablePickCard = ({
             {/* Category + Brand */}
             <div className="flex flex-wrap gap-1 mb-2">
               {pick.category && (
-                <span className="px-2 py-0.5 bg-gray-700/50 text-gray-400 text-xs rounded-full">
+                <span className="tdc-chip tdc-chip-dark">
                   {pick.category}
                 </span>
               )}
               {pick.brand && (
-                <span className="px-2 py-0.5 bg-gray-700/50 text-gray-400 text-xs rounded-full">
+                <span className="tdc-chip tdc-chip-dark">
                   {pick.brand}
                 </span>
               )}
@@ -528,7 +529,7 @@ const CollapsibleSection = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-0.5 ${styles.countBg} ${styles.countColor} text-xs rounded-full`}>
+          <span className={`tdc-chip ${styles.countBg} ${styles.countColor}`}>
             {count}
           </span>
           <ChevronDown 
@@ -1549,13 +1550,13 @@ const PersonalizedPicksPanel = ({
                     </span>
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">
-                    <span className="px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full text-[10px]">
+                    <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(139,92,246,0.2)', color:'#c4b5fd', borderColor:'rgba(139,92,246,0.3)' }}>
                       Pet profile matched
                     </span>
-                    <span className="px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full text-[10px]">
+                    <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(34,197,94,0.2)', color:'#86efac', borderColor:'rgba(34,197,94,0.3)' }}>
                       Safety checked
                     </span>
-                    <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-[10px]">
+                    <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(59,130,246,0.2)', color:'#93c5fd', borderColor:'rgba(59,130,246,0.3)' }}>
                       Ranked by relevance
                     </span>
                   </div>
@@ -2182,12 +2183,12 @@ const PersonalizedPicksPanel = ({
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
+                                  <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.3)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                                     Concierge® Pick
                                   </span>
                                   {/* Task Status Badge */}
                                   {getTaskStatus(pick) && (
-                                    <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                    <span className={`tdc-chip tdc-chip-dark ${
                                       getTaskStatus(pick) === 'scheduled' 
                                         ? 'bg-green-500/30 text-green-300' 
                                         : getTaskStatus(pick) === 'in_progress'
@@ -2332,7 +2333,7 @@ const PersonalizedPicksPanel = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
+                            <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.3)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                               Arranged for {pet?.name}
                             </span>
                           </div>

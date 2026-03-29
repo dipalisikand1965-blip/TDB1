@@ -1,0 +1,80 @@
+{
+  "summary": "Tested all 7 frontend features from the pre-launch sprint: design tokens, chip classes, Watch & Learn sections on Care/Go, MiraOS desktop 2-column layout, Cormorant Garamond font, and regressions check.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "App.js routing — MiraOS Desktop Layout",
+        "issue": "Route /mira-os points to MiraDemoPage (no 2-column grid layout). The 2-column mira-os-layout was implemented in MiraOSPage.jsx but is only accessible at /mira-os-shell. Test requirement says /mira-os should have the 2-column grid — but the route is not updated.",
+        "selector": "App.js line 415: Route path='/mira-os' element={MiraDemoPage}",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Global CSS variables",
+        "issues": ["mobile-design-system.css overrides --color-gold from tdc-design-tokens.css: #D4A853 (mobile-design-system) vs #C9973A (tdc-design-tokens). Since tdc-design-tokens.css is the intended single source of truth, mobile-design-system.css should not redefine --color-gold"]
+      }
+    ]
+  },
+  "test_results": {
+    "test_1_design_tokens": {
+      "status": "PASS",
+      "details": "tdc-design-tokens.css is imported FIRST on line 1 of index.css. All key CSS variables available: --radius-full=9999px, --text-xs=13px, --color-dark=#0A0A14, --font-sans contains SF Pro Display, --font-serif='Cormorant Garamond'. 7 design tokens confirmed."
+    },
+    "test_2_chip_classes": {
+      "status": "PASS",
+      "details": ".tdc-chip CSS class: border-radius=9999px (pill shape), font-family=SF Pro Display/system, font-size=14px (desktop override of 13px base). 11 tdc-chip CSS rules loaded. /mira-os page renders correctly with no visual regressions."
+    },
+    "test_3_watch_learn_care": {
+      "status": "PASS",
+      "details": "WatchSection component found on /care page (logged in as dipali@clubconcierge.in). YouTube API returns results. 4 video thumbnails displayed in 2-column grid. '✦ Watch & Learn +21 more' header visible. Section requires login to show (currentPet context needed)."
+    },
+    "test_4_watch_learn_go": {
+      "status": "PASS",
+      "details": "GoWatchSection found on /go page (logged in). YouTube API working. 3 video thumbnails found including 'Traveling with Dogs Essential Tips for a Fall Getaway!'. Section appears after GuidedGoPaths in the go tab."
+    },
+    "test_5_mira_os_desktop_layout": {
+      "status": "PARTIAL",
+      "details": "The 2-column grid layout IS correctly implemented in MiraOSPage.jsx and works at /mira-os-shell: grid-template-columns=400px 1200px 320px at 1920px (3-col ultra-wide), 320px sidebar at 1024px. Header spans full width (gridColumn: 1/-1). BUT: /mira-os route points to MiraDemoPage which has NO mira-os-layout class. The feature is accessible only at /mira-os-shell, not /mira-os."
+    },
+    "test_6_font_tokens": {
+      "status": "PASS",
+      "details": "Landing page H1 'Your dog has a soul. We remember it.' uses font-family: 'Cormorant Garamond', Georgia, serif at 104px font-weight 300. Cormorant Garamond Google Font is imported in tdc-design-tokens.css and LandingPage.jsx."
+    },
+    "test_7_no_regressions": {
+      "status": "PASS",
+      "details": "All pages load without error boundaries or console errors. /mira-os (MiraDemoPage) renders correctly with proper layout, pet badges visible. /care, /go pages load without breakage. Landing page loads cleanly."
+    }
+  },
+  "test_report_links": ["/app/test_reports/iteration_247.json"],
+  "action_items": [
+    "MEDIUM: If /mira-os should have the 2-column desktop layout, update App.js route from MiraDemoPage to MiraOSPage (swap lines 415 and 418 in App.js). Currently only /mira-os-shell has the 2-column grid.",
+    "MINOR: mobile-design-system.css line 23 defines --color-gold: #D4A853 which overrides tdc-design-tokens.css's --color-gold: #C9973A. Remove --color-gold from mobile-design-system.css to keep tdc-design-tokens.css as single source of truth."
+  ],
+  "critical_code_review_comments": [
+    "Route mismatch: App.js line 415 routes /mira-os to MiraDemoPage (5500+ lines) instead of the new MiraOSPage. MiraDemoPage has no mira-os-layout class so desktop 2-column grid never applies on the primary /mira-os route.",
+    "CSS cascade conflict: mobile-design-system.css overrides --color-gold token that was defined as canonical in tdc-design-tokens.css (imported first). Single source of truth principle is violated.",
+    "MiraDemoPage.jsx is 5511+ lines — this was noted in iterations 245/246 and remains a critical refactor candidate."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "86% (6/7 tests pass; Test 5 is partial - layout exists at /mira-os-shell not /mira-os)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All new features (Watch & Learn on Care/Go, tdc-design-tokens, chip system, Cormorant font) confirmed working. Key route issue: /mira-os routes to MiraDemoPage (no 2-column layout), while /mira-os-shell routes to MiraOSPage (has 2-column layout). If the sprint goal was to add 2-column layout to /mira-os specifically, that route change hasn't been made. YouTube API endpoint /api/test/youtube works fine and returns video results. Credentials: dipali@clubconcierge.in / test123. Admin: aditya / lola4304 at /admin.",
+  "rca_of_issues": {
+    "route_mismatch": "App.js has two separate routes: /mira-os → MiraDemoPage and /mira-os-shell → MiraOSPage. The 2-column grid (mira-os-layout) was implemented in MiraOSPage.jsx but the primary user-facing URL /mira-os still uses MiraDemoPage. To fix: change App.js line 415 to use MiraOSPage instead of MiraDemoPage, or add mira-os-layout to MiraDemoPage.",
+    "css_gold_override": "CSS cascade: index.css imports tdc-design-tokens.css first (line 1) then mobile-design-system.css (line 18). Since CSS cascade applies last-wins, mobile-design-system.css's --color-gold (#D4A853) overrides tdc-design-tokens.css's --color-gold (#C9973A). Fix: remove --color-gold definition from mobile-design-system.css."
+  }
+}

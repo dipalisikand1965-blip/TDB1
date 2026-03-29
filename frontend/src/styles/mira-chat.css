@@ -162,21 +162,22 @@
   letter-spacing: 0.5px;
 }
 
-/* Pet Badge */
+/* Pet Badge — tdc-chip tdc-chip-dark equivalent */
 .mira-os-pet-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 8px 14px;
-  border-radius: 24px;
+  gap: var(--space-2, 8px);
+  background: var(--tdc-chip-dark-bg, rgba(255,255,255,0.08));
+  border: 1px solid var(--tdc-chip-dark-border, rgba(255,255,255,0.12));
+  padding: var(--space-2, 8px) var(--space-3, 13px);
+  border-radius: var(--radius-full, 9999px);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--duration-fast, 120ms) var(--ease-out, ease);
+  font-family: var(--font-sans);
 }
 
 .mira-os-pet-badge:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.14);
 }
 
 .mira-os-pet-avatar {
@@ -951,17 +952,19 @@
   gap: var(--mira-space-sm);
 }
 
+/* Scenario chip — tdc-chip tdc-chip-interactive equivalent */
 .mira-scenario-chip {
-  padding: var(--mira-space-sm) var(--mira-space-md);
+  padding: var(--space-2, 8px) var(--space-3, 13px);
   min-height: 36px;
-  border-radius: var(--mira-radius-full);
+  border-radius: var(--radius-full, 9999px);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  font-size: var(--mira-font-size-sm);
-  font-weight: 500;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-inv, white);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs, 13px);
+  font-weight: var(--weight-medium, 500);
   cursor: pointer;
-  transition: all var(--mira-transition-fast);
+  transition: all var(--duration-fast, 120ms) var(--ease-out, ease);
 }
 
 .mira-scenario-chip:hover {
@@ -1050,18 +1053,22 @@
   margin: 0 auto;
 }
 
+/* Welcome chip — tdc-chip tdc-chip-interactive tdc-chip-dark equivalent */
 .mira-welcome-chip {
-  padding: var(--mira-space-md) var(--mira-space-lg);
-  min-height: var(--mira-touch-target);
-  border-radius: var(--mira-radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
+  padding: var(--space-3, 13px) var(--space-5, 21px);
+  min-height: 44px;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
-  color: white;
-  font-size: var(--mira-font-size-sm);
-  font-weight: 500;
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--color-text-inv, white);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs, 13px);
+  font-weight: var(--weight-medium, 500);
+  letter-spacing: var(--tracking-normal, 0);
   cursor: pointer;
-  transition: all var(--mira-transition-fast);
+  transition: all var(--duration-fast, 120ms) var(--ease-out, ease);
 }
 
 .mira-welcome-chip:hover {
@@ -1157,13 +1164,15 @@
   color: white;
 }
 
+/* Intent badge — tdc-chip tdc-chip-pillar equivalent */
 .mira-intent-badge {
-  font-size: var(--mira-font-size-xs);
-  font-weight: 600;
-  padding: 2px 10px;
-  border-radius: var(--mira-radius-full);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs, 13px);
+  font-weight: var(--weight-semibold, 600);
+  padding: 2px var(--space-3, 13px);
+  border-radius: var(--radius-full, 9999px);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: var(--tracking-wide, 0.08em);
 }
 
 /* Intent-specific colors - Updated for dark card */
