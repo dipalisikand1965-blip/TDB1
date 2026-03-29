@@ -587,6 +587,7 @@ export default function MiraImaginesBreed({
   pillar = "shop",
   onConcierge,
   colour = "#9B59B6",
+  limit,
 }) {
   const petName    = pet?.name || "your dog";
   const rawBreed   = (pet?.breed || pet?.doggy_soul_answers?.breed || "").toLowerCase().trim();
@@ -683,11 +684,11 @@ export default function MiraImaginesBreed({
       {/* Imagine cards */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill,minmax(min(240px,100%),1fr))",
+        gridTemplateColumns: (limit === 2) ? "1fr 1fr" : "repeat(auto-fill,minmax(min(240px,100%),1fr))",
         gap: 16,
         marginBottom: 20,
       }}>
-        {cards.map((card, i) => (
+        {cards.slice(0, limit || cards.length).map((card, i) => (
           <ImagineCard
             key={i}
             card={card}

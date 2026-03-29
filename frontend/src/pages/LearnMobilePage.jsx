@@ -538,16 +538,38 @@ export default function LearnMobilePage() {
         {/* PersonalisedBreedSection */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><PersonalisedBreedSection pet={currentPet} pillar="learn" token={token} /></div>}
 
-        {/* Mira Imagines */}
-        {currentPet && <div style={{ padding:'0 16px 16px' }}><MiraImaginesBreed pet={currentPet} pillar="learn" token={token} /></div>}
+        {/* Mira Imagines — 2 cards max, 2-column grid */}
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><MiraImaginesBreed pet={currentPet} pillar="learn" token={token} limit={2} /></div>}
 
-        {/* MiraImaginesCard */}
+        {/* MiraImaginesCard — illustration cards in 2-col grid */}
         {currentPet && (
-          <div style={{ padding:'0 16px 24px' }}>
-            {[
-              { id:'l-1', emoji:'📚', name:'Training Handbook Bundle', description:`The complete training guide set for ${petName}'s breed — from puppy to senior.` },
-              { id:'l-2', emoji:'🎬', name:'Video Masterclass Access', description:'12-month access to The Doggy Company training video library — 200+ sessions.' },
-            ].map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" />)}
+          <div style={{ padding:'0 16px 8px' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {[
+                { id:'l-1', emoji:'📚', name:'Training Handbook Bundle', description:`The complete training guide set for ${petName}'s breed — from puppy to senior.` },
+                { id:'l-2', emoji:'🎬', name:'Video Masterclass Access', description:'12-month access to The Doggy Company training video library — 200+ sessions.' },
+              ].map(item => (
+                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" style={{ width:'100%', flexShrink:1 }} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mira is learning — soul profile CTA */}
+        {currentPet && (
+          <div style={{ margin:'4px 16px 16px', padding:'16px', background:'linear-gradient(135deg,rgba(124,58,237,0.08),rgba(124,58,237,0.04))', border:'1px solid rgba(124,58,237,0.18)', borderRadius:16 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:G.purple, marginBottom:6, letterSpacing:'0.04em' }}>
+              🧠 Mira is learning {petName}
+            </div>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.65 }}>
+              Complete {petName}'s Soul Profile to get real scored picks. Mira already knows {currentPet?.breed || 'Indie'} traits — your profile adds the personal layer.
+            </div>
+            <button
+              data-testid="learn-soul-profile-cta"
+              onClick={() => navigate('/soul-builder')}
+              style={{ marginTop:12, width:'100%', padding:'11px 16px', background:`linear-gradient(135deg,${G.mid},${G.purple})`, borderRadius:12, border:'none', color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer' }}>
+              Complete {petName}'s Profile →
+            </button>
           </div>
         )}
 
