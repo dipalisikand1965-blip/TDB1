@@ -50,7 +50,8 @@
      These are updated by ResizeObserver in useMiraShell.js
      DO NOT hardcode - let JavaScript measure and set these
      ═══════════════════════════════════════════════════════════════════════════ */
-  --mira-header-h: 0px;
+/* ━━ Header height — written dynamically by ResizeObserver in useMiraShell.js ━━ */
+  --mira-header-h: 64px;   /* Fallback — 0px caused initial-render bleed-through */
   --mira-interaction-footer-h: 0px;
   
   /* Fallback heights (used before measurement) */
@@ -119,9 +120,9 @@
     var(--mira-bg-violet) 100%
   );
   
-  /* Padding for content */
+  /* Padding — top uses measured header height so first message never hides behind it */
   padding: var(--space-xl) var(--space-xl);
-  padding-top: 24px;
+  padding-top: max(24px, var(--mira-header-h, 64px));
   /* Just enough for compact input bar (~60px) */
   padding-bottom: 70px;
   

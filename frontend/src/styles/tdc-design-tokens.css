@@ -1031,6 +1031,23 @@ body {
   display: none;
 }
 
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   15. HEADER HEIGHT TOKEN
+   Set statically here, overridden dynamically by
+   ResizeObserver in useMiraShell.js via:
+   document.documentElement.style.setProperty('--header-height', px)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  --header-height: 64px;        /* Desktop fallback */
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-height: 60px;      /* Mobile fallback */
+  }
+}
+
+
 /* ============================================================
    17. DEPRECATED — WHAT TO REPLACE
    Tell Aditya to grep and replace these with tdc-* equivalents:
