@@ -241,7 +241,7 @@
 .mira-os-tabs {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
   justify-content: center;
   overflow-x: auto;
@@ -695,13 +695,13 @@
   }
   
   .mira-os-tabs {
-    gap: 4px;
+    gap: 7px;
     flex: none;
   }
   
   .mira-os-tab {
-    padding: 6px 10px;
-    font-size: 11px;
+    padding: 6px 9px;
+    font-size: 10px;
   }
   
   .mira-temp-display {
