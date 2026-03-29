@@ -156,6 +156,7 @@ const resolveFooterModeForTab = (tab, thread, modal) => {
 const syncLayoutVars = (headerHeight, footerHeight) => {
   if (typeof document !== 'undefined') {
     document.documentElement.style.setProperty('--mira-header-h', `${headerHeight}px`);
+    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`); // canonical token
     document.documentElement.style.setProperty('--mira-interaction-footer-h', `${footerHeight}px`);
   }
 };
