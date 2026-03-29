@@ -182,7 +182,7 @@ const AwaitingCard = memo(({ ticket, onAction, onSelect, isUnread = false }) => 
           <div className="flex items-center gap-2 mb-1">
             <IconComponent className={`w-4 h-4 ${colors.text} flex-shrink-0`} />
             <h4 className="text-sm font-medium text-white truncate">
-              {ticket.title || ticket.service_type}
+              {ticket.subject || ticket.title || ticket.service_type || ticket.intent_primary || 'Concierge® Request'}
             </h4>
             {/* NEW badge - Instagram DM style */}
             {isUnread && (
@@ -232,7 +232,7 @@ const RequestCard = memo(({ ticket, onSelect }) => {
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <h4 className="text-sm text-white truncate">
-            {ticket.title || ticket.service_type}
+            {ticket.subject || ticket.title || ticket.service_type || ticket.intent_primary || 'Concierge® Request'}
           </h4>
           <p className="text-xs text-slate-500 truncate">
             {ticket.pet_display}
