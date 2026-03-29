@@ -189,10 +189,12 @@ const SoulKnowledgeTicker = ({
     }
   }, [onSoulQuestionClick, onKnowledgeItemClick]);
   
-  // Dedup then triplicate for seamless CSS loop
-  const uniqueItems = items.filter((item, idx, arr) =>
-    arr.findIndex(i => (i.text || i.label || i.id) === (item.text || item.label || item.id)) === idx
-  );
+  // Dedup then triplicate for seamless CSS loop; strip out 'none' placeholder values
+  const uniqueItems = items.filter((item, idx, arr) => {
+    const val = (item.text || item.label || '').trim().toLowerCase();
+    if (!val || val === 'none' || val === 'null' || val === 'undefined') return false;
+    return arr.findIndex(i => (i.text || i.label || i.id) === (item.text || item.label || item.id)) === idx;
+  });
   const tickerItems = uniqueItems.length > 0 ? [...uniqueItems, ...uniqueItems, ...uniqueItems] : [];
   
   if (items.length === 0) {

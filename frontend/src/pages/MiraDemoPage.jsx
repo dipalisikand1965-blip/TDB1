@@ -1374,7 +1374,7 @@ const MiraDemoPage = () => {
     lastActivityRef.current = Date.now();
     
     console.log(`[MIRA] Conversation archived: ${reason}`);
-  }, [conversationHistory, pet.name, pet.id, clearPicks]);
+  }, [conversationHistory, pet?.name, pet?.id, clearPicks]);
   
   // Check for inactivity and archive conversation
   useEffect(() => {
@@ -1883,9 +1883,9 @@ const MiraDemoPage = () => {
     // Show starter chips after new chat
     setShowStarterChips(true);
     
-    console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet.name);
+    console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet?.name);
     return newSessionId;
-  }, [baseStartNewSession, pet.name, clearPicks]);
+  }, [baseStartNewSession, pet?.name, clearPicks]);
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // NEW CHAT FLOW - Smart handler with confirmation if draft/awaiting exists
@@ -2082,7 +2082,7 @@ const MiraDemoPage = () => {
   useEffect(() => {
     const fetchProactiveAlerts = async () => {
       // Guard: Skip if still loading pets or using demo pet
-      if (isLoadingPets || !pet.id || pet.id.startsWith('demo')) return;
+      if (isLoadingPets || !pet?.id || pet.id.startsWith('demo')) return;
       
       try {
         // Fetch celebrations, health reminders, health vault status, weather, bundles, AND new proactive alerts
@@ -2233,11 +2233,11 @@ const MiraDemoPage = () => {
     };
     
     fetchProactiveAlerts();
-  }, [pet.id, isLoadingPets]);
+  }, [pet?.id, isLoadingPets]);
   
   // MULTI-PET: Switch to a different pet
   const switchPet = async (newPet) => {
-    if (newPet.id === pet.id) {
+    if (newPet.id === pet?.id) {
       setShowPetSelector(false);
       return;
     }
@@ -3978,6 +3978,25 @@ const MiraDemoPage = () => {
     };
     return colors[intent] || 'bg-gray-500/20 text-gray-300';
   };
+
+  // Guard: don't render until real pet data loads (prevents Buddy flash)
+  if (!pet) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: '#0d0d0d',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'rgba(255,255,255,0.5)',
+        flexDirection: 'column',
+        gap: '12px'
+      }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(168,85,247,0.5)', borderTopColor: '#a855f7', animation: 'spin 0.8s linear infinite' }} />
+        <span style={{ fontSize: 14 }}>Loading Mira...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="mira-prod">
