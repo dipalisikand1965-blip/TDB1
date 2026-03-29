@@ -5018,10 +5018,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           {/* Conversation — merge ALL sources: conversation (soul_made/concierge), thread (concierge replies), messages (legacy) */}
                           {(() => {
                             // Helper: extract inline photo URLs from text (Cloudinary / external images)
-                            const extractPhotoUrls = (text) => {
-                              if (!text) return [];
-                              const matches = text.match(/https?:\/\/[^\s,)]+\.(jpg|jpeg|png|gif|webp)/gi) || [];
-                              return [...new Set(matches)];
+                            const extractPhotoUrls = (text, msgImageUrl) => {
+                              const urls = [];
+                              // Direct image_url field (backend saves this for soul_made photos)
+                              if (msgImageUrl) urls.push(msgImageUrl);
+                              if (!text) return [...new Set(urls)];
+                              // URLs ending in image extension
+                              const byExt = text.match(/https?:\/\/[^\s,)]+\.(jpg|jpeg|png|gif|webp)/gi) || [];
+                              // Cloudinary upload URLs (no extension required)
+                              const cloudinary = text.match(/https?:\/\/res\.cloudinary\.com\/[^\s,)"']+/gi) || [];
+                              return [...new Set([...urls, ...byExt, ...cloudinary])];
                             };
                             // Helper: strip photo URLs from text for clean display
                             const stripPhotoUrls = (text) => {
@@ -5060,9 +5066,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               })),
                             ]
                               .filter((m, i, arr) => {
-                                // Deduplicate by timestamp+sender combo
-                                const key = `${m.sender}|${m.timestamp || m.created_at}`;
-                                return arr.findIndex(x => `${x.sender}|${x.timestamp || x.created_at}` === key) === i;
+                                // Deduplicate by timestamp+sender+text combo (photo messages share timestamp with initial msg)
+                                const key = `${m.sender}|${m.timestamp || m.created_at}|${(m.text || m.content || '').slice(0, 40)}`;
+                                return arr.findIndex(x => `${x.sender}|${x.timestamp || x.created_at}|${(x.text || x.content || '').slice(0, 40)}` === key) === i;
                               })
                               .sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
 
@@ -5071,7 +5077,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             const isAgent = !isMira && (msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge');
                             const hasAttachments = msg.attachments?.length > 0;
                             const rawText = msg._text || '';
-                            const photoUrls = extractPhotoUrls(rawText);
+                            const photoUrls = extractPhotoUrls(rawText, msg.image_url);
                             const cleanText = stripPhotoUrls(rawText);
                             const htmlContent = msg.content || msg.message || '';
                             const petDisplayName = selectedTicket.pet_info?.name
