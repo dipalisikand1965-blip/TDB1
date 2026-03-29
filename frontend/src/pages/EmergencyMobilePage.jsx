@@ -7,6 +7,7 @@
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { DimExpanded, getEmergDims, DIM_CAT } from './EmergencySoulPage';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
@@ -96,6 +97,7 @@ export default function EmergencyMobilePage() {
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  useScrollLock(showEmergencyPlan || conciergeBuilderOpen || !!openDim || conciergeOpen);
   const [selectedSvc, setSelectedSvc] = useState(null);
 
   useEffect(() => {

@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useScrollLock } from '../hooks/useScrollLock';
 import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -253,6 +254,7 @@ const AdoptSoulPage = () => {
   const [openDim, setOpenDim] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
+  useScrollLock(drawerOpen || conciergeOpen || soulMadeOpen || !!openDim);
 
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
