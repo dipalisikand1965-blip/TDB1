@@ -405,13 +405,13 @@ export default function MobileMenu({
               <span>Pawrent Journey</span>
             </div>
 
-            <div className="tdc-nav-link" onClick={() => go("/paw-points")}>
+            <div className="tdc-nav-link" onClick={() => go("/dashboard")}>
               <div style={{ width:32, height:32, borderRadius:10, background:"#FFFBF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🏆</div>
               <span>Paw Points</span>
               {pawPoints > 0 && <div style={{ marginLeft: "auto", fontSize: 12, fontWeight: 700, color: "#C9973A" }}>{pawPoints.toLocaleString()} pts</div>}
             </div>
 
-            <div className="tdc-nav-link" onClick={() => go("/cart")}>
+            <div className="tdc-nav-link" onClick={() => go("/shop")}>
               <div style={{ width:32, height:32, borderRadius:10, background:"#F0FFF4", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>🛒</div>
               <span>My Cart</span>
             </div>
@@ -424,7 +424,7 @@ export default function MobileMenu({
 
             <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "4px 0" }}/>
 
-            <div className="tdc-nav-link" onClick={() => go("/account")}>
+            <div className="tdc-nav-link" onClick={() => go("/dashboard")}>
               <div style={{ width:32, height:32, borderRadius:10, background:"#F8FAFC", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>👤</div>
               <span style={{ color: "#64748B" }}>Account Settings</span>
             </div>
