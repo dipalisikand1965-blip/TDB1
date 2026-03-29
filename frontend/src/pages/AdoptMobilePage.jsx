@@ -283,20 +283,20 @@ export default function AdoptMobilePage() {
                 {/* panel header separator */}
                 <div style={{ height:1, background:'rgba(212,83,126,0.15)', margin:'0 0 16px' }} />
 
-                {/* READY? — Guided paths + readiness */}
+                {/* READY? — Readiness checklist + breed advisory */}
                 {openDim === 'thinking' && (
                   <>
-                    {currentPet && <GuidedAdoptPaths pet={currentPet} />}
-                    {currentPet && <div style={{ marginTop:16 }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+                    <FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" />
+                    <div style={{ marginTop:16 }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:12 }}>📚 Breed Advisory</div>
+                      <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
+                    </div>
                   </>
                 )}
 
-                {/* ADOPTING — Services */}
+                {/* ADOPTING — Rescue network + paperwork + home assessment */}
                 {openDim === 'ready' && (
-                  <>
-                    {currentPet && <div style={{ marginBottom:16 }}><GuidedAdoptPaths pet={currentPet} /></div>}
-                    <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
-                  </>
+                  <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
                 )}
 
                 {/* FIND MATCH — Rescue near me */}
@@ -323,6 +323,33 @@ export default function AdoptMobilePage() {
                       ))}
                     </div>
                   ) : <div style={{ textAlign:'center', padding:'24px 0', color:'#9CA3AF', fontSize:13 }}>Add a pet profile to see personalised adoption picks</div>
+                )}
+
+                {/* BREEDS — breed-specific products */}
+                {openDim === 'breed' && (
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                    {products.filter(p => {
+                      const breed = (currentPet?.breed||'').toLowerCase().split('(')[0].trim();
+                      return (p.breed_tags||[]).some(t => (t||'').toLowerCase().includes(breed)) ||
+                             (p.name||'').toLowerCase().includes(breed);
+                    }).slice(0,12).map(p => (
+                      <SharedProductCard key={p.id||p._id} product={p} pillar="adopt" selectedPet={currentPet}
+                        onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
+                    ))}
+                  </div>
+                )}
+
+                {/* BOOK — ConciergeRequestBuilder */}
+                {openDim === 'guidance' && (
+                  <div style={{ textAlign:'center', padding:'8px 0 16px' }}>
+                    <div style={{ fontSize:14, color:G.mutedText, marginBottom:16, lineHeight:1.6 }}>
+                      Tell Mira what you need — we figure it out and get it done.
+                    </div>
+                    <button onClick={() => { setOpenDim(null); setConciergeBuilderOpen(true); }}
+                      style={{ width:'100%', minHeight:52, borderRadius:16, border:'none', background:'linear-gradient(135deg,#0A0A14,#4A0E2E)', color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                      ✦ Talk to Concierge® →
+                    </button>
+                  </div>
                 )}
 
                 {/* COMING HOME — Essentials */}
