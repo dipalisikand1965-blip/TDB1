@@ -1,0 +1,122 @@
+{
+  "summary": "Audit/exploration test of /mira-os page as dipali@clubconcierge.in. Login works, page loads correctly, all 6 tabs functional. Mira AI chat responds with personalized answers. Core experience is WORKING with a few minor issues flagged.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "Unknown (console log: 'Failed to load resource: 500')",
+        "issue": "One endpoint returns HTTP 500. Seen in console but exact endpoint not identified. Possibly a pet fetch or notification endpoint.",
+        "priority": "MEDIUM"
+      },
+      {
+        "endpoint": "/api/pets or fetchUserPets",
+        "issue": "Two 'Failed to fetch pets' TypeErrors (network-level) appear on page load — but pet data (Mojo) still renders, suggesting a fallback or duplicate fetch path. Possibly the hook-level fetch is hitting a bad URL while another fetch path works.",
+        "priority": "LOW"
+      },
+      {
+        "endpoint": "WebSocket (socket.io)",
+        "issue": "[GLOBAL SOCKET] Connection error: timeout. WebSocket to wss://pet-soul-ranking.preview.emergentagent.com/socket.io fails. May affect real-time features.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "TodayPanel - Birthday reminder card",
+        "issue": "Birthday card shows 'They're turning 0!' — Mojo's age is calculated as 0. DOB may not be set or the age calculation is wrong (e.g., DOB stored as future date or missing).",
+        "selector": "text='turning 0'",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "SoulKnowledgeTicker",
+        "issue": "Soul chips in the scrolling ticker show duplicate entries: the same sequence 'Loves Wild Salmon Treats, Loves Salmon Training Treats, Loves Salmon treats, Playful nature, none' repeats 3+ times. Likely the ticker array is being concatenated multiple times for scroll loop effect without deduplication.",
+        "selector": "soul-chips ticker row",
+        "priority": "LOW"
+      },
+      {
+        "component": "ServicesPanel - Active Requests list (SERVICES tab drawer)",
+        "issue": "Several request rows show no title text (just 'Placed' badge). Only 2 out of ~50 show pet names (Mojo, Coco). Ticket subject/title not rendering for most rows.",
+        "selector": "Services drawer Active Requests list",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "OnboardingTooltip / NewChatConfirmDialog",
+        "issue": "An onboarding dialog ('Chat is where you ask. When Concierge® replies or handles your request, you'll find it in Services.') appears every page load blocking Concierge and Picks panels. It should only show once (localStorage flag). 'Got it' button is hard to dismiss programmatically — selector is plain text button.",
+        "selector": "text='Got it'",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "CONCIERGE® tab",
+        "issues": [
+          "ConciergeHomePanel appears as dark modal over blurred background. The background dims fully to black when Concierge tab is active, making navigation hard to see. Header with tabs becomes very dim/invisible when Concierge panel is open."
+        ]
+      }
+    ]
+  },
+  "test_results": {
+    "login": "PASS — dipali@clubconcierge.in / test123 logs in, redirects to /pet-home, then /mira-os accessible",
+    "mira_os_loads": "PASS — Page loads correctly with dark purple theme",
+    "pet_shown": "PASS — Mojo shown with 100% SOUL score, avatar with concentric rings, 'For Mojo' heading",
+    "tab_today": "PASS — TODAY tab shows 'For Mojo - Curated for Mojo today', reminders, proactive alert cards (Birthday reminder, Health check), soul traits, starter chips",
+    "tab_picks": "PASS — PICKS tab opens 'Picks for Mojo' panel with category filters (Celebrate, Dine, Care, Go, Play, Learn, etc.) and Concierge® Product/Service cards with pink CTA buttons",
+    "tab_services": "PASS — SERVICES tab opens drawer with '2new' badge, Quick Actions grid (Grooming, Training, Boarding, Vet Visit, Walking, Photography, Party Setup, Travel), Active Requests (50 total: 29 Placed, 21 In Progress)",
+    "tab_learn": "PASS — LEARN tab opens full-screen panel with search bar, category chips (Grooming, Health, Food, Behaviour, Travel, Boarding, Puppies, Senior, Seasonal), 'For Mojo' personalized articles and 'Start Here' section",
+    "tab_concierge": "PASS — CONCIERGE® tab opens panel: 'C° Concierge®' header, '● Live Now' badge, 'All pets' filter, 'What can we help with today?' textarea, 'Upload Docs' button, Active Requests list (Birthday Party, Dog Walker entries for Mojo)",
+    "chat_message_send": "PASS — User message typed in 'Ask Mira anything...' input, sent via Enter key, message bubble appears",
+    "mira_response": "PASS — Mira responds with personalized answer: 'Oh, Mojo absolutely LOVES salmon treats! 🐟' — correctly references Mojo's allergies to beef and chicken. Also shows follow-up 'Finding that for Mojo...' loading product picks",
+    "concierge_reply_banner": "PASS — Purple banner 'Concierge® replied about Mojo — 2 messages waiting in Services / Open Services' visible",
+    "dietary_context_chip": "PASS — Shows 'Mojo 2 avoids — Strict avoids: beef, chicken' chip before AI response",
+    "concierge_textarea": "PASS — Textarea in Concierge panel accepts text input: 'I need a birthday party setup for Mojo'",
+    "soul_chips": "PASS — Scrolling soul chips ticker visible with traits: Loves Wild Salmon Treats, Loves Salmon Training Treats, Playful nature (NOTE: duplicates visible)"
+  },
+  "console_errors": {
+    "total": 7,
+    "breakdown": {
+      "500_errors": 1,
+      "failed_to_fetch": 2,
+      "websocket_errors": 2,
+      "react_warnings": 2
+    },
+    "react_warnings": [
+      "Each child in a list should have a unique 'key' prop — in PetHomePage render method",
+      "Received 'true' for a non-boolean attribute in JSX"
+    ]
+  },
+  "test_report_links": ["/app/test_reports/iteration_245.json"],
+  "action_items": [
+    "Fix birthday age '0': Mojo shows 'They're turning 0!' — check DOB field in pet record and age calculation logic in TodayPanel/ProactiveAlertsBanner",
+    "Fix duplicate soul chips in ticker: same entries repeat 3x in the SoulKnowledgeTicker array",
+    "Fix blank titles in SERVICES drawer Active Requests list: 48/50 rows show no subject/title, only the badge",
+    "Fix 'Failed to fetch pets' (TypeError: Failed to fetch): Two separate pet fetch calls fail on page load. One path succeeds (data renders), one fails. Check fetchUserPets and fetchPets for URL differences",
+    "Fix React 'key' prop warning in PetHomePage list render",
+    "Fix React boolean attribute warning (passing true for non-boolean JSX attribute)",
+    "Investigate 500 server error (one endpoint returning 500 on page load)",
+    "Investigate WebSocket socket.io connection timeout (real-time features may be affected)",
+    "Onboarding dialog ('Chat is where you ask') should persist dismissal via localStorage — currently shows every page load"
+  ],
+  "critical_code_review_comments": [
+    "TodayPanel/birthday card: age shown as 0 — likely `new Date().getFullYear() - new Date(pet.date_of_birth).getFullYear()` when DOB is null or in future. Should guard with null check and show 'a big milestone' instead of '0'.",
+    "SoulKnowledgeTicker: chips array likely triplicated for CSS infinite scroll effect without dedup — unique entries should be deduped first, then triplicated for animation.",
+    "SERVICES drawer: ticket.subject or ticket.title not rendering — check if API response field name matches what the component reads.",
+    "fetchPets vs fetchUserPets: two separate fetch paths both firing, one failing with network error. Consolidate into single source of truth.",
+    "MiraDemoPage.jsx is 5511 lines — exceeds 700-line guideline by 8x. Major refactor needed for maintainability."
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "88% (13/15 features working, 4 minor bugs found)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123",
+    "admin": "aditya / lola4304 (from prev context)"
+  },
+  "seed_data_creation": "None — no new data created during this test run",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Full /mira-os exploration done as dipali@clubconcierge.in. OVERALL: PARTIALLY WORKING — core UX works (chat, picks, services, learn, concierge tabs all open and function). Known issues: (1) birthday age '0', (2) soul chips duplicate in ticker, (3) SERVICES drawer blank request titles, (4) onboarding dialog repeats on every load, (5) 500 error + fetch failures in console. Mira AI chat WORKS — responds with personalized pet-aware answers. Concierge panel shows Live Now + Active Requests list. No critical blockers found.",
+  "overall_state": "PARTIALLY WORKING — Core experience functional (login, chat, all 6 tabs, Mira AI responses). Minor UI bugs present. No critical blockers."
+}
