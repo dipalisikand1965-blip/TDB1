@@ -4,7 +4,7 @@
  * Colour: Purple #7C3AED
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -281,6 +281,12 @@ export default function LearnMobilePage() {
   const [loading, setLoading] = useState(true);
   const [openDim, setOpenDim] = useState(null);        // null = collapsed; dim.id = expanded
   const [mainTab, setMainTab] = useState('learn');
+  const dimExpandedRef = useRef(null);
+  useEffect(() => {
+    if (openDim && dimExpandedRef.current) {
+      dimExpandedRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [openDim]);
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -289,22 +295,18 @@ export default function LearnMobilePage() {
   const [showLearnPlan, setShowLearnPlan] = useState(false);
   const [apiProducts, setApiProducts] = useState({});
 
-  // Fetch products — same structure as desktop LearnSoulPage (source of truth)
+  // Fetch products — mirrors desktop LearnSoulPage exactly (source of truth)
+  // apiProducts keyed by p.category, which matches DIM_ID_TO_CATEGORY values
   useEffect(() => {
     if (!currentPet) return;
-    const petBreed = (currentPet?.breed || 'indie').toLowerCase().trim();
     fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=600`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (!data?.products?.length) return;
         const grouped = {};
         data.products.forEach(p => {
-          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
-          // Map to same category keys DimExpanded expects (DIM_ID_TO_CATEGORY values)
-          const rawDim = (p.dimension || p.pillar_category || p.sub_category || '').toLowerCase().trim();
-          const catMap = { foundations:'training', behaviour:'behavior', tricks:'fun skills', breed:'breed intelligence', soul:'soul learning', mira:'mira learn picks', youtube:'watch & learn' };
-          const categoryKey = DIM_ID_TO_CATEGORY[rawDim] || catMap[rawDim] || p.dimension || '';
+          // Key by category — same as desktop (DIM_ID_TO_CATEGORY values map to category names)
+          const categoryKey = p.category || '';
           const sub = p.sub_category || 'Other';
           if (!categoryKey) return;
           if (!grouped[categoryKey]) grouped[categoryKey] = {};
@@ -498,7 +500,7 @@ export default function LearnMobilePage() {
 
         {/* DimExpanded — same component as desktop (source of truth). Opens below chips when tapped. */}
         {activeDimObj && (
-          <div style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
+          <div ref={dimExpandedRef} style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
             <DimExpanded
               dim={activeDimObj}
               pet={currentPet}
