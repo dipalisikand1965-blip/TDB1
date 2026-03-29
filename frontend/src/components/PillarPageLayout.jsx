@@ -493,7 +493,7 @@ const PillarPageLayout = ({
           border: `1.5px solid ${accent.border}`,
           fontSize: 13, fontWeight: 800, cursor: 'pointer',
           boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          alignItems: 'center', justifyContent: 'center',
           letterSpacing: '-0.02em',
         }}
       >
