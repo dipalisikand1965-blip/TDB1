@@ -234,7 +234,7 @@ function applyMiraIntelligence(products, allergies, loves, healthCondition, nutr
 }
 
 // ── Dimensions ────────────────────────────────────────────────
-const DIMS = [
+export const DINE_DIMS = [
   { id:'meals',       icon:'🐟', name:'Daily Meals',     sub:'Main nourishment',    badge:'Personalised',  bg:'linear-gradient(135deg,#FFF8F0,#FFF0E0)', color:'#FF8C42', category:'Daily Meals',       tabs:['All','Wet Food','Dry Kibble','Raw','Fresh Cooked'] },
   { id:'treats',      icon:'🦴', name:'Treats & Chews',  sub:'Safe reward picks',   badge:'Allergen-safe', bg:'linear-gradient(135deg,#FFF3E0,#FFE8D0)', color:'#FF8C42', category:'Treats & Rewards',   tabs:['All','Soft Chews','Crunchy','Dental','Training'] },
   { id:'supplements', icon:'💊', name:'Supplements',      sub:'Health & vitality',   badge:'Vet-checked',   bg:'linear-gradient(135deg,#F0FFF4,#E0F7E9)', color:'#27AE60', category:'Supplements',        tabs:['All','Joints','Skin & Coat','Digestion','Immunity'] },
@@ -481,7 +481,7 @@ function DineProductCard({ product, onAdd, onTap }) {
 }
 
 // ── Dimensions Rail (FULL — real tabs, no cap) ─────────────────
-function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, onTap }) {
+export function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, onTap }) {
   const [activeTab, setActiveTab] = useState('All');
   const name = pet?.name || 'your dog';
   const allergies = getAllergies(pet);
@@ -1085,7 +1085,7 @@ function DineMobilePage() {
         <>
             {/* ── Dimensions Rail (real tabs, no cap) ── */}
             <DineDimensionsRail
-              dims={DIMS}
+              dims={DINE_DIMS}
               openDim={openDim}
               onSelect={setOpenDim}
               pet={currentPet}
