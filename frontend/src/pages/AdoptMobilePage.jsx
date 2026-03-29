@@ -448,6 +448,12 @@ export default function AdoptMobilePage() {
         pillar="adopt"
         token={token}
       />
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 }
