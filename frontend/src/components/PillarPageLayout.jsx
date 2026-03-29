@@ -508,7 +508,7 @@ const PillarPageLayout = ({
               <div style={{ fontSize:17, fontWeight:800, color:'#1A0A2E' }}>✦ How can Concierge® help?</div>
               <button onClick={() => setPillarCardsOpen(false)} style={{ background:'#F3F4F6', border:'none', borderRadius:20, padding:'6px 14px', fontSize:12, fontWeight:700, cursor:'pointer', color:'#6B7280' }}>Close ✕</button>
             </div>
-            <PillarConciergeCards pillar={pillar} pet={activePet} token={token} />
+            <PillarConciergeCards pillar={pillar} pet={activePet} token={token} onSheetClose={() => setPillarCardsOpen(false)} />
           </div>
         </div>
       )}
