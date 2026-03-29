@@ -100,8 +100,9 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
           const transformedPets = data.pets.map(transformPetData);
           setAllPets(transformedPets);
           
-          // Set first pet as active if no pet selected yet
-          if (!pet || pet.id === 'demo-pet') {
+          // Set first pet as active if no real pet selected yet
+          const DEMO_IDS = ['demo-pet', 'pet-2'];
+          if (!pet || DEMO_IDS.includes(pet.id)) {
             setPet(transformedPets[0]);
           }
           
@@ -187,12 +188,17 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
   
   // Check if pet is a demo/fake pet
   const isRealPet = useCallback(() => {
-    return pet?.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
+    // Real pets: IDs like 'pet-mojo-7327ad56' (name + hash); demo: 'demo-pet', 'pet-2'
+    const DEMO_IDS = ['demo-pet', 'pet-2'];
+    return pet?.id && !DEMO_IDS.includes(pet.id);
   }, [pet?.id]);
   
-  // Auto-mark petLoaded when pet switches from DEMO_PET to a real pet
+  // Auto-mark petLoaded when pet switches from DEMO_PET to a real API pet
+  // Real pet IDs: 'pet-mojo-7327ad56' (have name + hash suffix)
+  // Demo pet IDs: 'demo-pet', 'pet-2' (short/synthetic, no hash)
   useEffect(() => {
-    if (pet && pet.id !== 'demo-pet' && !pet.id.startsWith('pet-')) {
+    const DEMO_IDS = ['demo-pet', 'pet-2'];
+    if (pet && pet.id && !DEMO_IDS.includes(pet.id)) {
       setPetLoaded(true);
     }
   }, [pet?.id]); // eslint-disable-line react-hooks/exhaustive-deps
