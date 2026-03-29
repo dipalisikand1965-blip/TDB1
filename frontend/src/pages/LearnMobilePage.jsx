@@ -3,6 +3,7 @@
  * 7 dimension pills + dimTab (Products / Videos / Book) per dimension
  * Colour: Purple #7C3AED
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -385,6 +386,7 @@ export default function LearnMobilePage() {
         {/* Services Tab */}
         {mainTab === 'services' && (
           <>
+            <PillarConciergeCards pillar="learn" pet={currentPet} token={token} />
 
       {/* Concierge® Request Builder */}
       <div style={{ padding:'0 16px 16px' }}>

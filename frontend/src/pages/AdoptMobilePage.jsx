@@ -3,6 +3,7 @@
  * 3-tab layout: Find Your Dog | Book Guidance | Find Rescue
  * Colour: Deep Mauve #4A0E2E + Rose #D4537E
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -386,6 +387,7 @@ export default function AdoptMobilePage() {
         {/* TAB 2: Book Guidance */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px 16px 24px' }}>
+            <PillarConciergeCards pillar="adopt" pet={currentPet} token={token} />
             <div style={{ paddingBottom:16 }}>
               <button onClick={() => setConciergeBuilderOpen(true)} data-testid="adopt-concierge-builder-btn"
                 style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
