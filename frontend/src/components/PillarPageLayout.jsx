@@ -464,7 +464,8 @@ const PillarPageLayout = ({
             data-testid="concierge-builder-float-btn"
             style={{
               position: 'fixed', bottom: 160, right: 24, zIndex: 2147483640,
-              display: 'flex', alignItems: 'center', gap: 8, padding: '12px 20px',
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: window.innerWidth < 768 ? '12px 16px' : '12px 20px',
               background: accent.bg, color: accent.text,
               borderRadius: 999, border: '1px solid ' + accent.border,
               fontSize: 13, fontWeight: 700, cursor: 'pointer',
@@ -472,7 +473,11 @@ const PillarPageLayout = ({
               fontFamily: 'inherit',
             }}
           >
-            <span>✦</span> Concierge® Requests
+            {window.innerWidth < 768 ? (
+              <span style={{ fontSize: 15 }}>✦ C°</span>
+            ) : (
+              <><span>✦</span> Concierge® Requests</>
+            )}
           </button>
         {pillarCardsOpen && (
           <div style={{
