@@ -572,9 +572,9 @@ export default function LearnMobilePage() {
         const learnPlanCards = getLearnPlanCards(currentPet);
         const petName = currentPet?.name || 'your dog';
         return (
-          <div style={{ position:'fixed', inset:0, zIndex:999, background:'rgba(0,0,0,0.85)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}
+          <div style={{ position:'fixed', inset:0, zIndex:999, background:'rgba(0,0,0,0.85)', display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}
             onClick={e => { if(e.target===e.currentTarget) setShowLearnPlan(false); }}>
-            <div style={{ background:G.dark, borderRadius:'24px 24px 0 0', padding:'24px 16px 48px', maxHeight:'90vh', overflowY:'auto' }}>
+            <div style={{ background:G.dark, borderRadius:'24px 24px 0 0', padding:'24px 16px 48px', paddingTop:'env(safe-area-inset-top, 0px)', maxHeight:'90vh', overflowY:'auto' }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
                 <div>
                   <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:4 }}>✦ MIRA'S PERSONALISED LEARNING PLAN</div>

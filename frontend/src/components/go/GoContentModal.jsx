@@ -434,7 +434,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
-          style={{ position: 'fixed', inset: 0, zIndex: 10010, background: 'rgba(0,0,0,0.68)', display: 'flex', alignItems: isDesktop ? 'center' : 'flex-end', justifyContent: 'center', padding: isDesktop ? 24 : 0 }}
+          style={{ position: 'fixed', inset: 0, zIndex: 10010, background: 'rgba(0,0,0,0.68)', display: 'flex', alignItems: isDesktop ? 'center' : 'flex-end', justifyContent: 'center', padding: isDesktop ? 24 : 0, touchAction: 'none' }}
           onClick={onClose}
         >
           <motion.div
@@ -451,6 +451,7 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
               display: 'flex',
               flexDirection: 'column',
               boxShadow: '0 32px 80px rgba(0,0,0,0.35)',
+              paddingTop: isDesktop ? undefined : 'env(safe-area-inset-top, 0px)',
             }}
             onClick={e => e.stopPropagation()}
           >

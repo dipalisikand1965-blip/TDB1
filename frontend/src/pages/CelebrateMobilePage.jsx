@@ -192,8 +192,8 @@ function CelebrateIntakeSheet({ pet, onClose, onSend }) {
   };
 
   return (
-    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:500, display:'flex', alignItems:'flex-end' }}>
-      <div onClick={e => e.stopPropagation()} style={{ width:'100%', maxHeight:'88vh', overflowY:'auto', background:C.card, borderRadius:'24px 24px 0 0', padding:'12px 20px calc(32px + env(safe-area-inset-bottom))', animation:'cp-sheet 0.3s ease' }}>
+    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:500, display:'flex', alignItems:'flex-end', touchAction:'none' }}>
+      <div onClick={e => e.stopPropagation()} style={{ width:'100%', maxHeight:'88vh', overflowY:'auto', background:C.card, borderRadius:'24px 24px 0 0', padding:'12px 20px calc(32px + env(safe-area-inset-bottom))', paddingTop:'env(safe-area-inset-top, 0px)', animation:'cp-sheet 0.3s ease' }}>
         <div style={{ width:48, height:5, borderRadius:999, background:C.border, margin:'0 auto 20px' }} />
         {sent ? (
           <div style={{ textAlign:'center', padding:'24px 0' }}>
@@ -487,8 +487,8 @@ export default function CelebrateMobilePage() {
           </div>
         )}
         {miraPicksOpen && miraProducts.length > 0 && (
-          <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end' }} onClick={() => setMiraPicksOpen(false)}>
-            <div style={{ background:'#1a1028', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'85vh', overflow:'auto', padding:'24px 16px 40px' }} onClick={e => e.stopPropagation()}>
+          <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'flex-end', touchAction:'none' }} onClick={() => setMiraPicksOpen(false)}>
+            <div style={{ background:'#1a1028', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'85vh', overflow:'auto', padding:'24px 16px 40px', paddingTop:'env(safe-area-inset-top, 0px)' }} onClick={e => e.stopPropagation()}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
                 <div style={{ fontSize:18, fontWeight:700, color:'#fff' }}>Celebrate Picks for {petName}</div>
                 <button onClick={() => setMiraPicksOpen(false)} style={{ background:'none', border:'none', color:'rgba(255,255,255,0.6)', fontSize:24, cursor:'pointer' }}>✕</button>

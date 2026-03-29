@@ -154,8 +154,8 @@ export default function PlayMobilePage() {
 
         {/* Mira Picks bottom-sheet — kept as fallback */}
         {showMiraPicks && (
-          <div onClick={() => setShowMiraPicks(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', padding:'8px 0 32px' }}>
+          <div onClick={() => setShowMiraPicks(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', padding:'8px 0 32px', paddingTop:'env(safe-area-inset-top, 0px)' }}>
               <div style={{ width:36, height:4, background:'#ddd', borderRadius:2, margin:'8px auto 16px' }} />
               <MiraPicksSection pet={currentPet} />
               <button onClick={() => setShowMiraPicks(false)} style={{ display:'block', margin:'16px auto 0', padding:'10px 32px', borderRadius:999, border:'none', background:G.orange, color:'#fff', fontWeight:700, fontSize:14, cursor:'pointer' }}>Close</button>
