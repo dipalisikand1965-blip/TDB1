@@ -503,9 +503,9 @@ const PillarPageLayout = ({
           )}
 
           {/* Bottom sheet */}
-          {pillarCardsOpen && (
-            <div style={{ position:'fixed', inset:0, zIndex:100001, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
-              <div onClick={() => setPillarCardsOpen(false)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.55)', backdropFilter:'blur(8px)' }} />
+          {pillarCardsOpen && (console.log('SHEET RENDERING') ||
+            <div style={{ position:'fixed', top:0, right:0, bottom:0, left:0, zIndex:2147483647, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+              <div onClick={() => setPillarCardsOpen(false)} style={{ position:'absolute', top:0, right:0, bottom:0, left:0, background:'rgba(0,0,0,0.55)', backdropFilter:'blur(8px)' }} />
               <div style={{ position:'relative', background:'#fff', borderRadius:'24px 24px 0 0', padding:'24px 24px 40px', maxHeight:'80vh', overflowY:'auto', zIndex:1, maxWidth:600, margin:'0 auto', width:'100%' }}>
                 <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
                   <div style={{ fontSize:17, fontWeight:800, color:'#1A0A2E' }}>✦ How can Concierge® help?</div>
