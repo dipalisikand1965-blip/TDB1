@@ -47,6 +47,7 @@ const G = {
   purple:'#7C3AED', mid:'#5B21B6', deep:'#2E1065', light:'#DDD6FE',
   pale:'#EDE9FE', cream:'#F5F3FF', dark:'#0F0A23',
   darkText:'#2E1065', mutedText:'#7C3AED', border:'rgba(124,58,237,0.18)',
+  violet:'#7C3AED', borderLight:'rgba(124,58,237,0.10)',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
 .learn-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
