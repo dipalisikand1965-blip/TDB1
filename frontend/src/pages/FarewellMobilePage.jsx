@@ -5,7 +5,7 @@
  * The most sacred pillar. For Mystique, and every beloved dog.
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -79,6 +79,10 @@ export default function FarewellMobilePage() {
   const [loading, setLoading] = useState(true);
   const [showFarewellPlan, setShowFarewellPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("farewell");
+  const contentRef = useRef(null);   // scroll to content when category strip chip clicked
+  useEffect(() => {
+    if (contentRef.current) setTimeout(() => contentRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  }, [activeTab]);
   const [farewellMode, setFarewellMode] = useState('here'); // 'here' | 'time'
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [prodTab, setProdTab] = useState(PROD_TABS[0]);
@@ -224,6 +228,9 @@ export default function FarewellMobilePage() {
             </button>
           ))}
         </div>
+
+        {/* Tab content — scrolls into view when category strip chip is tapped */}
+        <div ref={contentRef} style={{ scrollMarginTop: 72 }}>
 
         {/* TAB 1: Memorial & Grief */}
         {activeTab === 'farewell' && (
@@ -407,6 +414,7 @@ export default function FarewellMobilePage() {
         pillar="farewell"
         token={token}
       />
+    </div>{/* end contentRef wrapper */}
     </PillarPageLayout>
   );
 }

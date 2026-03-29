@@ -5,7 +5,7 @@
  * Colour: Teal #0D9488
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
-import { DimExpanded, getPaperworkDims, DIM_ID_TO_CATEGORY as PW_DIM_CAT } from './PaperworkSoulPage';
+import { DimExpanded, getPaperworkDims, PaperworkContentModal } from './PaperworkSoulPage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -217,16 +217,8 @@ export default function PaperworkMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [showPaperworkPlan, setShowPaperworkPlan] = useState(false);
-  const [openDim, setOpenDim] = useState(null);        // null = collapsed; dim.id = expanded
+  const [catModal, setCatModal] = useState(null);   // opens PaperworkContentModal (same as desktop)
   const [mainTab, setMainTab] = useState('paperwork');
-  const dimExpandedRef = useRef(null);
-  useEffect(() => {
-    if (openDim && dimExpandedRef.current) {
-      setTimeout(() => {
-        dimExpandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  }, [openDim]);
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -275,9 +267,10 @@ export default function PaperworkMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const pwDims = getPaperworkDims(currentPet)?.length > 0 ? getPaperworkDims(currentPet) : PW_DIMS;
-  const activeDimObj = pwDims.find(d => d.id === openDim);
+  // pwDims drives the dim card grid
 
   return (
+    <>
     <PillarPageLayout pillar="paperwork" hideHero hideNavigation>
       <div className="pw-m mobile-page-container" data-testid="paperwork-mobile">
         <style>{CSS}</style>
@@ -310,11 +303,11 @@ export default function PaperworkMobilePage() {
           )}
         </div>
 
-        {/* Paperwork Category Strip — always visible above tabs */}
+        {/* Paperwork Category Strip — opens PaperworkContentModal exactly like desktop */}
         <PillarCategoryStrip
           categories={PW_STRIP_CATS}
-          activeId={openDim}
-          onSelect={id => { if (id) { vibe(); setOpenDim(id === openDim ? null : id); setMainTab('paperwork'); } }}
+          activeId={catModal}
+          onSelect={id => { if (id) { vibe(); setCatModal(id === catModal ? null : id); } }}
           accentColor={G.teal}
         />
 
@@ -411,36 +404,50 @@ export default function PaperworkMobilePage() {
           </button>
         </div>
 
-        {/* 7 Dimension Pills */}
+        {/* 7 Dimension Cards — 2-column grid, same design as Learn desktop. Tap → PaperworkContentModal */}
         <div style={{ padding:'0 16px 8px' }}>
-          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10 }}>Choose a Document Category</div>
-          <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-            {pwDims.map(dim => (
-              <button key={dim.id} onClick={() => { vibe(); setOpenDim(dim.id === openDim ? null : dim.id); }}
-                data-testid={`paperwork-dim-${dim.id}`}
-                style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
-                  padding:'10px 12px', borderRadius:16, minWidth:72,
-                  border:`2px solid ${openDim===dim.id?dim.accent:G.border}`,
-                  background:openDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
-                <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:9, fontWeight:700, color:openDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
-              </button>
-            ))}
+          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:6 }}>
+            <span style={{ color:G.teal }}>{petName}'s</span> Documents
+          </div>
+          <style>{`.pw-dims-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;}`}</style>
+          <div className="pw-dims-grid">
+            {pwDims.map(dim => {
+              const isActive = catModal === dim.id;
+              return (
+                <div
+                  key={dim.id}
+                  data-testid={`paperwork-dim-${dim.id}`}
+                  onClick={() => { vibe(); setCatModal(dim.id); }}
+                  style={{ background:'#fff', borderRadius:16, cursor:'pointer', overflow:'hidden',
+                    border:`2px solid ${isActive ? G.teal : G.border}`,
+                    boxShadow: dim.glow ? `0 4px 18px ${dim.glowColor}` : '0 2px 8px rgba(0,0,0,0.06)',
+                    transition:'all 0.2s' }}>
+                  <div style={{ height:5, background: isActive ? G.teal : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
+                  <div style={{ padding:'10px 10px 8px' }}>
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:8 }}>
+                      <span style={{ fontSize:22 }}>{dim.icon}</span>
+                      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:3 }}>
+                        <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 7px',
+                          background:`${dim.badgeBg}20`, color:dim.badgeBg, border:`1px solid ${dim.badgeBg}40` }}>
+                          {dim.badge}
+                        </span>
+                        {dim.glow && <div style={{ width:7, height:7, borderRadius:'50%', background:G.teal }} />}
+                      </div>
+                    </div>
+                    <div style={{ fontSize:12, fontWeight:800, color:G.darkText, marginBottom:3, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
+                      {dim.label}
+                    </div>
+                    <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.4, marginBottom:6,
+                      display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                      {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
+                    </div>
+                    <span style={{ fontSize:11, color:G.teal, fontWeight:700 }}>Explore →</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-
-        {/* DimExpanded — desktop source of truth component. Opens/closes on chip tap. */}
-        {activeDimObj && (
-          <div ref={dimExpandedRef} style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
-            <DimExpanded
-              dim={activeDimObj}
-              pet={currentPet}
-              onClose={() => setOpenDim(null)}
-              apiProducts={apiProducts}
-              onBook={svcName => setConciergeBuilderOpen(true)}
-            />
-          </div>
-        )}
 
         {/* Guided Paths */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><GuidedPaperworkPaths pet={currentPet} /></div>}
@@ -475,5 +482,15 @@ export default function PaperworkMobilePage() {
         token={token}
       />
     </PillarPageLayout>
+    {/* PaperworkContentModal — same centered overlay as desktop. Source: PaperworkSoulPage */}
+    {catModal && (
+      <PaperworkContentModal
+        isOpen={!!catModal}
+        onClose={() => setCatModal(null)}
+        category={catModal}
+        pet={currentPet}
+      />
+    )}
+  </>
   );
 }
