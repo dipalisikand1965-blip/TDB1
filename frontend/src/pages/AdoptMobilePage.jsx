@@ -31,11 +31,11 @@ import '../styles/mobile-design-system.css';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const ADOPT_STRIP_CATS = [
-  { id:"thinking",   icon:"💭", label:"Am I Ready?",      iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
-  { id:"ready",      icon:"✅", label:"Ready to Adopt",   iconBg:"linear-gradient(135deg,#F0FDF4,#BBF7D0)" },
-  { id:"looking",    icon:"🔍", label:"Find a Match",     iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
-  { id:"matched",    icon:"❤️", label:"We Matched!",       iconBg:"linear-gradient(135deg,#FDF2F8,#FBCFE8)" },
-  { id:"home",       icon:"🏠", label:"Coming Home",       iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
+  { id:"thinking",   icon:"💭", label:"Ready?",        iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
+  { id:"ready",      icon:"✅", label:"Adopting",      iconBg:"linear-gradient(135deg,#F0FDF4,#BBF7D0)" },
+  { id:"looking",    icon:"🔍", label:"Find Match",    iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
+  { id:"matched",    icon:"❤️", label:"Matched!",       iconBg:"linear-gradient(135deg,#FDF2F8,#FBCFE8)" },
+  { id:"home",       icon:"🏠", label:"Coming Home",   iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
   { id:"breed",      icon:"📚", label:"Breed Guide",       iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
   { id:"guidance",   icon:"💌", label:"Book Guidance",     iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
 ];
