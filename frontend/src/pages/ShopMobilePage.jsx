@@ -4,7 +4,7 @@
  * Colour: Gold #4A2800 → #C9973A
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
-import ConciergeRequestBuilder from '../components/ConciergeRequestBuilder';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
