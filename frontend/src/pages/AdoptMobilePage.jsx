@@ -85,13 +85,22 @@ export default function AdoptMobilePage() {
   const [showAdoptPlan, setShowAdoptPlan] = useState(false);
   const [activeTab, setActiveTab] = useState("adopt");
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
-  const [adoptStage, setAdoptStage] = useState("thinking");
-  const stageContentRef = useRef(null);
+  const [openDim, setOpenDim] = useState(null);          // Care-style dim toggle
+  const dimExpandedRef = useRef(null);                   // auto-scroll target
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [selectedSvc, setSelectedSvc] = useState(null);
+
+  // Auto-scroll into expanded dim panel whenever a dim opens — exact Care pattern
+  useEffect(() => {
+    if (openDim && dimExpandedRef.current) {
+      setTimeout(() => {
+        dimExpandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 80);
+    }
+  }, [openDim]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -204,9 +213,8 @@ export default function AdoptMobilePage() {
             vibe();
             if (id === 'guidance') { setActiveTab('services'); }
             else {
-              setAdoptStage(id);
+              setOpenDim(prev => prev === id ? null : id);
               setActiveTab('adopt');
-              setTimeout(() => stageContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
             }
           }}
           accentColor={G.rose}
@@ -251,10 +259,10 @@ export default function AdoptMobilePage() {
               <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (
-                  <button key={s.id} onClick={() => { vibe(); setAdoptStage(s.id); setTimeout(() => stageContentRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 80); }}
-                    style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'8px 12px', borderRadius:14, border:`2px solid ${adoptStage===s.id?G.rose:G.border}`, background:adoptStage===s.id?G.pale:'#fff', cursor:'pointer', minWidth:68 }}>
+                  <button key={s.id} onClick={() => { vibe(); setOpenDim(prev => prev === s.id ? null : s.id); }}
+                    style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'8px 12px', borderRadius:14, border:`2px solid ${openDim===s.id?G.rose:G.border}`, background:openDim===s.id?G.pale:'#fff', cursor:'pointer', minWidth:68 }}>
                     <span style={{ fontSize:18 }}>{s.emoji}</span>
-                    <span style={{ fontSize:14, fontWeight:700, color:adoptStage===s.id?G.rose:G.darkText }}>{s.label}</span>
+                    <span style={{ fontSize:14, fontWeight:700, color:openDim===s.id?G.rose:G.darkText }}>{s.label}</span>
                   </button>
                 ))}
               </div>
@@ -267,90 +275,77 @@ export default function AdoptMobilePage() {
               <button className="adopt-cta" onClick={() => { vibe('medium'); setShowAdoptPlan(true); }}>Build {petName}'s Adoption Plan →</button>
             </div>
 
-            {/* ── Stage-gated content (switches on adoptStage pill) ── */}
-            <div ref={stageContentRef} style={{ scrollMarginTop: 16 }}>
-
-            {/* THINKING — Am I ready? */}
-            {adoptStage === 'thinking' && (
-              <>
-                {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
-                {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
-              </>
-            )}
-
-            {/* ADOPTING — Committed, breed match */}
-            {adoptStage === 'ready' && (
-              <>
-                {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedAdoptPaths pet={currentPet} /></div>}
-                <div style={{ padding:'0 16px 24px' }}>
-                  <div style={{ fontSize:18, fontWeight:700, marginBottom:16, color:'#1A0A2E' }}>Mira's adoption services for you</div>
-                  <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
+            {/* ── Dim Expanded Panel — Care pattern ── */}
+            {openDim && (
+              <div ref={dimExpandedRef} style={{ margin:'0 16px 16px', background:'#fff', border:`2px solid ${G.rose}`, borderRadius:20, padding:20 }}>
+                {/* Header */}
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16, paddingBottom:12, borderBottom:`1px solid ${G.paleRose}` }}>
+                  <span style={{ fontSize:26 }}>{JOURNEY_STAGES.find(s=>s.id===openDim)?.icon || ADOPT_STAGES.find(s=>s.id===openDim)?.emoji}</span>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:15, fontWeight:800, color:G.darkText }}>{JOURNEY_STAGES.find(s=>s.id===openDim)?.label || ADOPT_STAGES.find(s=>s.id===openDim)?.label}</div>
+                    <div style={{ fontSize:11, color:'#888' }}>Personalised for {petName}</div>
+                  </div>
+                  <button onClick={() => setOpenDim(null)} style={{ background:G.pale, border:'none', borderRadius:20, padding:'4px 12px', fontSize:11, fontWeight:700, color:G.rose, cursor:'pointer' }}>Close ✕</button>
                 </div>
-              </>
-            )}
 
-            {/* FIND MATCH — Rescue centres near me */}
-            {adoptStage === 'looking' && (
-              <div style={{ padding:'0 16px 24px' }}>
-                <AdoptNearMe pet={currentPet} onBook={shelter => {
-                  tdc.request(`Adoption enquiry: ${shelter}`, { pillar:'adopt', channel:'adopt_nearme', pet:currentPet });
-                }} />
-              </div>
-            )}
+                {/* READY? — Guided paths + readiness */}
+                {openDim === 'thinking' && (
+                  <>
+                    {currentPet && <GuidedAdoptPaths pet={currentPet} />}
+                    {currentPet && <div style={{ marginTop:16 }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+                  </>
+                )}
 
-            {/* MATCHED — Prep products */}
-            {adoptStage === 'matched' && (
-              <div style={{ padding:'0 16px 24px' }}>
-                <div style={{ fontSize:18, fontWeight:700, marginBottom:16, color:'#1A0A2E' }}>Get ready for {petName}'s new sibling</div>
-                {adoptSections.length > 0 ? (
-                  <div style={{ display:'flex', flexDirection:'column', gap:24 }}>
-                    {adoptSections.map(section => (
-                      <div key={section.id}>
-                        <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12 }}>
-                          <span style={{ fontSize:20 }}>{section.icon}</span>
-                          <span style={{ fontSize:16, fontWeight:800, color:'#1A0A2E' }}>{section.label}</span>
-                          <span style={{ fontSize:12, color:'#6B7280', marginLeft:4 }}>({section.products.length})</span>
+                {/* ADOPTING — Services */}
+                {openDim === 'ready' && (
+                  <>
+                    {currentPet && <div style={{ marginBottom:16 }}><GuidedAdoptPaths pet={currentPet} /></div>}
+                    <PillarServiceSection pillar="adopt" pet={currentPet} title="" accentColor={G.rose} darkColor={G.dark} isMobile />
+                  </>
+                )}
+
+                {/* FIND MATCH — Rescue near me */}
+                {openDim === 'looking' && (
+                  <AdoptNearMe pet={currentPet} onBook={shelter => {
+                    tdc.request(`Adoption enquiry: ${shelter}`, { pillar:'adopt', channel:'adopt_nearme', pet:currentPet });
+                  }} />
+                )}
+
+                {/* MATCHED! — Product sections */}
+                {openDim === 'matched' && (
+                  adoptSections.length > 0 ? (
+                    <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+                      {adoptSections.map(section => (
+                        <div key={section.id}>
+                          <div style={{ fontSize:15, fontWeight:800, color:G.darkText, marginBottom:10 }}>{section.icon} {section.label}</div>
+                          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                            {section.products.slice(0, 6).map(p => (
+                              <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
+                                onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
+                            ))}
+                          </div>
                         </div>
-                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                          {section.products.slice(0, 6).map(p => (
-                            <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
-                              onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
-                          ))}
-                        </div>
+                      ))}
+                    </div>
+                  ) : <div style={{ textAlign:'center', padding:'24px 0', color:'#9CA3AF', fontSize:13 }}>Add a pet profile to see personalised adoption picks</div>
+                )}
+
+                {/* COMING HOME — Essentials */}
+                {openDim === 'home' && (
+                  <>
+                    {currentPet && <div style={{ marginBottom:16 }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
+                    {products.length > 0 ? (
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                        {products.slice(0, 12).map(p => (
+                          <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
+                            onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ textAlign:'center', padding:'32px 0', color:'#9CA3AF', fontSize:14 }}>
-                    Products loading — add a pet profile to see personalised picks
-                  </div>
+                    ) : <div style={{ textAlign:'center', padding:'24px 0', color:'#9CA3AF', fontSize:13 }}>Loading week-one essentials…</div>}
+                  </>
                 )}
               </div>
             )}
-
-            {/* COMING HOME — Arrival essentials */}
-            {adoptStage === 'home' && (
-              <>
-                {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#D4537E" /></div>}
-                <div style={{ padding:'16px 16px 24px' }}>
-                  <div style={{ fontSize:18, fontWeight:700, marginBottom:16, color:'#1A0A2E' }}>Everything for week one</div>
-                  {products.length > 0 ? (
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                      {products.slice(0, 20).map(p => (
-                        <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="adopt" selectedPet={currentPet}
-                          onAddToCart={() => handleAddToCart(p)} onClick={() => { vibe(); setSelectedProduct(p); }} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div style={{ textAlign:'center', padding:'32px 0', color:'#9CA3AF', fontSize:14 }}>
-                      Loading arrival essentials for you...
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-
-            </div>{/* end stage-gated wrapper */}
 
             {/* Mira Imagines — always shown */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="adopt" token={token} /></div>}
