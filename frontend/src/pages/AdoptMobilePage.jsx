@@ -33,7 +33,7 @@ import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuil
 const ADOPT_STRIP_CATS = [
   { id:"thinking",   icon:"💭", label:"Ready?",        iconBg:"linear-gradient(135deg,#FFF7ED,#FED7AA)" },
   { id:"ready",      icon:"✅", label:"Adopting",      iconBg:"linear-gradient(135deg,#F0FDF4,#BBF7D0)" },
-  { id:"looking",    icon:"🔍", label:"Find Match",    iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
+  { id:"looking",    icon:"🔍", label:"Find My Dog",    iconBg:"linear-gradient(135deg,#EFF6FF,#BFDBFE)" },
   { id:"matched",    icon:"❤️", label:"Matched!",       iconBg:"linear-gradient(135deg,#FDF2F8,#FBCFE8)" },
   { id:"home",       icon:"🏠", label:"Coming Home",   iconBg:"linear-gradient(135deg,#ECFDF5,#A7F3D0)" },
   { id:"breed",      icon:"📚", label:"Breed Guide",       iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
