@@ -33,6 +33,8 @@ import { DINE_DIMS, DineDimensionsRail,
   DineProfileSheet, DineSegmentedSwitch, DineSectionHeading,
   DineProductCard, DineMiraBar, DineMiraPicksSheet,
   DineSoulMadeInlineCard, DineConciergeCard, DineIntakeSheet,
+  vibe, getAllergies, getLoves, getFavourite, getHealthCondition,
+  getNutritionGoal, applyMiraIntelligence, normCard,
 } from './DineSoulPage';
 import '../styles/mobile-design-system.css';
 
