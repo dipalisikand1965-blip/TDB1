@@ -137,11 +137,9 @@ async function fireIntent({
         },
         body: JSON.stringify({
           ticket_id: existingTicketId,
-          message: {
-            sender: "system",
-            text: message,
-            metadata: { query, entity_name, auto_tracked: true },
-          },
+          sender: "system",
+          text: message,
+          meta: { query, entity_name, auto_tracked: true },
         }),
       });
       if (appendRes.ok) return existingTicketId;
