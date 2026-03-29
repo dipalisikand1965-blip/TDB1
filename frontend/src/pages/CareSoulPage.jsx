@@ -2389,28 +2389,20 @@ export default function CareSoulPage() {
                 )}
               </div>
 
-              {/* Section header */}
-              <div style={{ marginBottom:16 }}>
-                <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
-                  How would <span style={{ color:G.sage }}>{petData.name}</span> love to be cared for?
-                </h2>
-                <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6 }}>
-                  Choose a dimension — everything inside is personalised to {petData.name}'s wellness profile.{" "}
-                  <span style={{ color:G.deepMid, fontWeight:600 }}>Glowing ones match what {petData.name} needs most.</span>
-                </p>
-              </div>
-
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
 
               {/* Soul Made handled inside PersonalisedBreedSection */}
 
-              {/* "Care & Nourish" label — mirrors "Eat & Nourish" in DineSoulPage */}
-              <div style={{ fontSize:"clamp(1.125rem,2.5vw,1.375rem)", fontWeight:800, color:G.darkText, marginBottom:4, fontFamily:"Georgia,serif" }}>
-                Care for <span style={{ color:G.sage }}>{petData.name}</span>
-              </div>
-              <div style={{ fontSize:12, color:"#888", marginBottom:16 }}>
-                8 dimensions, matched to {petData.name}'s coat and health
+              {/* Section heading — directly above dimension grid */}
+              <div style={{ marginBottom:16, marginTop:8 }}>
+                <h2 style={{ fontSize:"clamp(1.375rem,3vw,1.875rem)", fontWeight:800, color:G.darkText, marginBottom:6, fontFamily:"Georgia,serif", lineHeight:1.2 }}>
+                  How would <span style={{ color:G.sage }}>{petData.name}</span> love to be cared for?
+                </h2>
+                <p style={{ fontSize:13, color:G.mutedText, lineHeight:1.6 }}>
+                  9 dimensions, matched to {petData.name}'s coat and health.{" "}
+                  <span style={{ color:G.deepMid, fontWeight:600 }}>Glowing ones match what {petData.name} needs most.</span>
+                </p>
               </div>
 
               {/* Dimension grid — cards only (mirrors DineSoulPage pattern) */}

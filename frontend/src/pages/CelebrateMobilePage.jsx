@@ -544,6 +544,30 @@ export default function CelebrateMobilePage() {
           <GuidedCelebratePaths pet={currentPet} />
         </div>
 
+        {/* Portraits & Memory Books — two dim cards */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 16px' }}>
+            <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10 }}>
+              CELEBRATE &amp; PRESERVE
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {[
+                { id:'portraits', emoji:'📸', label:'Portraits &amp; Photoshoots', sub:'Capture this milestone beautifully' },
+                { id:'memory_books', emoji:'📖', label:'Memory Books', sub:"A lifetime in one beautiful book" },
+              ].map(dim => (
+                <div key={dim.id}
+                  data-testid={`celebrate-dim-${dim.id}`}
+                  onClick={() => { vibe('light'); setCelebrateCatModal({ id: dim.id }); }}
+                  style={{ background:'linear-gradient(135deg,rgba(155,89,182,0.08),rgba(233,30,140,0.05))', border:'1px solid rgba(155,89,182,0.2)', borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center' }}>
+                  <div style={{ fontSize:24, marginBottom:8 }}>{dim.emoji}</div>
+                  <div style={{ fontSize:12, fontWeight:700, color:'#1A1A2E', lineHeight:1.3, marginBottom:4 }}>{dim.label}</div>
+                  <div style={{ fontSize:10, color:'#888', lineHeight:1.4 }}>{dim.sub}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Celebrate Personally — Service Grid */}
         <div style={{ padding:'0 16px 24px' }}>
           <CelebrateServiceGrid pet={currentPet} />
