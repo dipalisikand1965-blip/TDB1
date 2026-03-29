@@ -4,7 +4,7 @@
  * Rule: Desktop is always the source of truth. Mobile changes layout, never content.
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
-import { BookingModal } from './ServicesSoulPage';
+import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -317,7 +317,7 @@ export default function ServicesMobilePage() {
 
       {/* BookingModal — intake style, no prices (same as desktop ServicesSoulPage) */}
       {svcBooking && (
-        <BookingModal
+        <ServiceConciergeModal
           service={svcBooking}
           pet={currentPet}
           user={user}
