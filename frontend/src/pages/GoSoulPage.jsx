@@ -125,6 +125,7 @@ export function getGoDims(pet) {
       id: "safety", icon: "🛡️", label: "Safety & Security",
       sub: size ? `${cap(size)} dog · GPS, harness, ID tags` : "GPS, harness & crash-tested gear",
       badge: "Essential", badgeBg: G.deepMid, glowColor: "rgba(26,188,156,0.25)", glow: true,
+      ytQuery: "dog travel safety harness GPS tracker tips",
       mira: size
         ? `Everything here is sized for a ${size.toLowerCase()} dog like {name}. I've prioritised the crash-tested harness and GPS tracker.`
         : `These are the safety essentials I'd insist on for every trip with {name}.`,
@@ -135,6 +136,7 @@ export function getGoDims(pet) {
       badge: anxious ? "High priority" : "Comfort",
       badgeBg: anxious ? "#AD1457" : "#00695C",
       glowColor: "rgba(0,105,92,0.22)", glow: anxious,
+      ytQuery: "dog travel anxiety calming tips car trips",
       mira: anxious
         ? `{name} has travel anxiety — I've put the most effective calming options first. The spray + chew combination works best.`
         : `These calming products help {name} stay relaxed during car, train, or air travel.`,
@@ -144,6 +146,7 @@ export function getGoDims(pet) {
       sub: size ? `IATA-approved, sized for ${size.toLowerCase()} dogs` : "Cabin-ready, IATA-approved",
       badge: size ? `${cap(size)} dog` : "IATA approved",
       badgeBg: G.teal, glowColor: "rgba(26,188,156,0.22)", glow: true,
+      ytQuery: "dog travel carrier crate review IATA airline approved",
       mira: size
         ? `I've filtered to carriers sized for ${size.toLowerCase()} dogs. Everything here is IATA-compliant for cabin or cargo.`
         : `These carriers are IATA-approved and accepted on most domestic and international flights.`,
@@ -152,6 +155,7 @@ export function getGoDims(pet) {
       id: "feeding", icon: "🥣", label: "Feeding & Hydration",
       sub: "Collapsible bowls, water bottles, food containers",
       badge: "Travel essential", badgeBg: G.gold, glowColor: "rgba(201,151,58,0.22)", glow: true,
+      ytQuery: "dog travel feeding hydration collapsible bowl tips",
       mira: `Hydration is critical on long journeys. These are the feeding and water essentials I'd pack for {name}.`,
     },
     {
@@ -160,6 +164,7 @@ export function getGoDims(pet) {
       badge: condition ? "Health priority" : "Be prepared",
       badgeBg: condition ? "#AD1457" : "#1565C0",
       glowColor: "rgba(21,101,192,0.18)", glow: !!condition,
+      ytQuery: "dog travel first aid kit vet documents motion sickness",
       mira: condition
         ? `I've made sure everything here is safe for {name}'s ${condition}. The travel first aid kit is non-negotiable.`
         : `Travel health essentials — first aid, motion sickness, and document organiser for {name}'s records.`,
@@ -168,6 +173,7 @@ export function getGoDims(pet) {
       id: "stay", icon: "🏡", label: "Stay & Board",
       sub: "Boarding, daycare, pet sitting & hotel discovery",
       badge: "Explore", badgeBg: "rgba(0,0,0,0.07)", glowColor: "rgba(0,0,0,0.05)", glow: false,
+      ytQuery: "dog boarding kennel pet hotel what to look for",
       mira: `When you travel, {name} needs the right stay. I can find boarding, arrange a sitter at home, or discover pet-friendly hotels.`,
     },
   ];
@@ -925,6 +931,32 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
   const tabList   = ["All", ...Object.keys(rawByTab)];
   const [activeTab, setActiveTab] = useState("All");
   const [dimTab, setDimTab] = useState("products");
+
+  // ── YouTube Watch & Learn ─────────────────────────────────
+  const [videos, setVideos] = useState([]);
+  const [videosLoading, setVideosLoading] = useState(false);
+  const [videosFetched, setVideosFetched] = useState(false);
+
+  useEffect(() => {
+    if (dimTab !== "videos" || videosFetched || !dim.ytQuery) return;
+    setVideosLoading(true);
+    const breed = pet?.breed || "";
+    const q = breed ? `${breed} ${dim.ytQuery}` : dim.ytQuery;
+    fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(q)}&max_results=6`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d?.videos || d?.items || d?.results || []).map(v => ({
+          id: v.videoId || v.id?.videoId || v.id,
+          title: v.title || v.snippet?.title || "",
+          thumbnail: v.thumbnail || v.snippet?.thumbnails?.medium?.url || "",
+          url: `https://www.youtube.com/watch?v=${v.videoId || v.id?.videoId || v.id}`,
+        }));
+        setVideos(list);
+      })
+      .catch(() => {})
+      .finally(() => { setVideosLoading(false); setVideosFetched(true); });
+  }, [dimTab, videosFetched, dim.ytQuery, pet?.breed]);
+
   const miraCtx   = { includeText: "Add to Cart" };
 
   const products = activeTab === "All"
@@ -954,9 +986,13 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
         </div>
       </div>
 
-      {/* Products / Personalised tab toggle */}
+      {/* Products / Personalised / Watch & Learn tab toggle */}
       <div style={{ display:"flex", borderBottom:`1px solid ${G.light}40`, marginBottom:14 }}>
-        {[["products","🎯 All Products"],["personalised","✦ Personalised"]].map(([tid,label]) => (
+        {[
+          ["products","🎯 All Products"],
+          ["personalised","✦ Personalised"],
+          ...(dim.ytQuery ? [["videos","🎬 Watch"]] : []),
+        ].map(([tid,label]) => (
           <button key={tid} onClick={() => setDimTab(tid)} data-testid={`go-dim-tab-${tid}`}
             style={{ flex:1, padding:"9px 0", background:"none", border:"none", borderBottom:dimTab===tid?`2.5px solid ${G.teal}`:"2.5px solid transparent", color:dimTab===tid?G.teal:"#888", fontSize:12, fontWeight:dimTab===tid?700:400, cursor:"pointer" }}>
             {label}
@@ -967,6 +1003,43 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
       {dimTab === "personalised" ? (
         <div>
           <PersonalisedBreedSection pet={pet} pillar="go" />
+        </div>
+      ) : dimTab === "videos" ? (
+        /* ── Watch & Learn ── */
+        <div>
+          {videosLoading && (
+            <div style={{ textAlign:"center", padding:"24px 0", color:G.mutedText, fontSize:13 }}>
+              Loading videos for {petName}…
+            </div>
+          )}
+          {!videosLoading && videos.length === 0 && videosFetched && (
+            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
+              No videos found right now — try again later.
+            </div>
+          )}
+          {videos.length > 0 && (
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              {videos.map((v, i) => (
+                <div key={v.id || i} onClick={() => window.open(v.url, "_blank")}
+                  data-testid={`go-dim-video-${i}`}
+                  style={{ cursor:"pointer", borderRadius:12, overflow:"hidden", border:`1px solid ${G.border}`, background:"#fff", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+                  <div style={{ position:"relative", paddingTop:"56.25%", background:G.pale }}>
+                    {v.thumbnail && <img src={v.thumbnail} alt={v.title} style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />}
+                    <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.22)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ width:36, height:36, borderRadius:"50%", background:"rgba(0,0,0,0.65)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <span style={{ color:"#fff", fontSize:14, marginLeft:2 }}>▶</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding:"8px 10px" }}>
+                    <div style={{ fontSize:11, fontWeight:600, color:G.darkText, lineHeight:1.4 }}>
+                      {(v.title||"").slice(0,60)}{v.title?.length > 60 ? "…" : ""}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <>
