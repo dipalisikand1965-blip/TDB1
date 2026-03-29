@@ -874,7 +874,7 @@ const MiraOSPage = () => {
   // RENDER
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="mira-os-page mp-container mira-os-layout" data-testid="mira-os-page">
+    <div className="mira-os-page mp-container" data-testid="mira-os-page">
       {/* MEMORY WHISPER - Global overlay */}
       <MemoryWhisper 
         memoryContext={activeMemoryContext}
@@ -884,7 +884,7 @@ const MiraOSPage = () => {
       />
       
       {/* MAIN HEADER - spans full width on desktop */}
-      <header className="mp-header sticky top-0 z-50 mira-unified-header">
+      <header className="mp-header sticky top-0 z-50">
         <div className="mp-header-inner">
           {/* Left: Mira Logo */}
           <div className="mp-logo">
@@ -912,20 +912,17 @@ const MiraOSPage = () => {
       </header>
       
       {/* ════════════════════════════════════════════════════════════════════
-          HEADER SHELL — sidebar on desktop, tab bar on mobile
+          HEADER SHELL - 7 Dimension Tabs
           ════════════════════════════════════════════════════════════════════ */}
-      <div className="mira-os-sidebar">
-        <MiraHeaderShell
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          badges={tabBadges}
-        />
-      </div>
+      <MiraHeaderShell
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        badges={tabBadges}
+      />
       
       {/* ════════════════════════════════════════════════════════════════════
-          MAIN CONTENT — all tab content areas
+          TAB CONTENT AREAS - Each dimension
           ════════════════════════════════════════════════════════════════════ */}
-      <main className="mira-os-main">
       {/* ══════════════════════════════════════════════════════════════════
           1. MOJO TAB (Context Layer)
           Who the system is thinking about
@@ -2030,7 +2027,6 @@ const MiraOSPage = () => {
           show={conversationHistory.length > 3}
         />
       )}
-      </main>
     </div>
   );
 };
