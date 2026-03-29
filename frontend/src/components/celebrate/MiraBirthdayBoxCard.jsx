@@ -271,16 +271,16 @@ const MiraBirthdayBoxCard = ({
               
               {/* Preview items */}
               <div className="flex flex-wrap gap-2 mb-3">
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/80 rounded-full text-xs text-gray-700 shadow-sm">
+                <span className="tdc-chip" style={{ background:'rgba(255,255,255,0.85)', color:'#374151', borderColor:'rgba(0,0,0,0.1)' }}>
                   {cakeSuggestion.emoji} Breed Cake
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/80 rounded-full text-xs text-gray-700 shadow-sm">
+                <span className="tdc-chip" style={{ background:'rgba(255,255,255,0.85)', color:'#374151', borderColor:'rgba(0,0,0,0.1)' }}>
                   ☕ Custom Mug
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/80 rounded-full text-xs text-gray-700 shadow-sm">
+                <span className="tdc-chip" style={{ background:'rgba(255,255,255,0.85)', color:'#374151', borderColor:'rgba(0,0,0,0.1)' }}>
                   🎀 Bandana
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-white/80 rounded-full text-xs text-gray-700 shadow-sm">
+                <span className="tdc-chip" style={{ background:'rgba(255,255,255,0.85)', color:'#374151', borderColor:'rgba(0,0,0,0.1)' }}>
                   +2 more
                 </span>
               </div>
