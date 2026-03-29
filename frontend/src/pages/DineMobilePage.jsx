@@ -1,3 +1,46 @@
+/**
+ * DineMobilePage.jsx — /dine (mobile)
+ * Extracted from DineSoulPage.jsx — Session 96, March 29 2026
+ * Desktop source of truth: DineSoulPage.jsx (DineSoulPageDesktopLegacy)
+ * Colour: Orange #FF8C42 · Dark #3d1200
+ */
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Loader2, Sparkles, X, Check } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { usePillarContext } from '../context/PillarContext';
+import { useConcierge } from '../hooks/useConcierge';
+import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
+import { tdc } from '../utils/tdc_intent';
+import { API_URL } from '../utils/api';
+import PillarPageLayout from '../components/PillarPageLayout';
+import PillarSoulProfile from '../components/PillarSoulProfile';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+import SoulMadeModal from '../components/SoulMadeModal';
+import DineCategoryStrip from '../components/dine/DineCategoryStrip';
+import DineConciergeSection from '../components/dine/DineConciergeSection';
+import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
+import MealBoxCard from '../components/dine/MealBoxCard';
+import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
+import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import { DINE_DIMS, DineDimensionsRail } from './DineSoulPage';
+import '../styles/mobile-design-system.css';
+
+// ── Design tokens (copied from DineSoulPage) ──────────────────────────────
+const C = {
+  orange:'#FF8C42', dark:'#3d1200', mid:'#7a2800', deep:'#c44400',
+  cream:'#FFF8F0', pale:'#FFF3E8', taupe:'#8B6B4A',
+  chipBg:'rgba(255,140,66,0.10)', chipBorder:'rgba(255,140,66,0.25)',
+  red:'#FF6B64', green:'#27AE60', amber:'#F9A825',
+};
+const CTAGrad  = `linear-gradient(135deg,${C.mid},${C.deep})`;
+const DarkGrad = `linear-gradient(160deg,#3d1200 0%,#7a2800 50%,#c44400 100%)`;
+
 export default function DineMobilePage() {
   const { token } = useAuth();
   const navigate = useNavigate();
