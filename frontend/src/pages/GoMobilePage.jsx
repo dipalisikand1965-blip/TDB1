@@ -207,27 +207,28 @@ export default function GoMobilePage() {
 
         {/* ── Hero — simple, matches Care pattern ── */}
         <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'40px 20px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
             <div>
               <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.55)', letterSpacing:'0.14em', marginBottom:4 }}>THE DOGGY COMPANY</div>
               <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>✈️ Go</div>
             </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer',
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
-                      color:'#fff', fontFamily:'inherit', transition:'all 0.15s' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Flights, road trips, boarding, pet-friendly stays.</div>
+          {/* Pet selector — horizontal scroll row */}
+          {contextPets?.length > 1 && (
+            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch', scrollbarWidth:'none', marginTop:12, paddingBottom:2 }}>
+              {contextPets.map(p => (
+                <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
+                  style={{ flexShrink:0, padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700, cursor:'pointer',
+                    border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
+                    background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                    color:'#fff', fontFamily:'inherit', transition:'all 0.15s', whiteSpace:'nowrap' }}>
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ══ 3. Tab Bar ══ */}
