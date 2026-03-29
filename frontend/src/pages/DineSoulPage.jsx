@@ -265,7 +265,7 @@ const normCard = (p, petName) => ({
 // MICRO COMPONENTS
 // ─────────────────────────────────────────────────────────────
 
-function DineLoadingState() {
+export function DineLoadingState() {
   return (
     <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:C.cream }}>
       <div style={{ textAlign:'center' }}>
@@ -276,7 +276,7 @@ function DineLoadingState() {
   );
 }
 
-function DineEmptyState({ onAddPet }) {
+export function DineEmptyState({ onAddPet }) {
   return (
     <div style={{ padding:'24px 16px', textAlign:'center' }}>
       <div className="dp-card" style={{ padding:'32px 20px' }}>
@@ -292,7 +292,7 @@ function DineEmptyState({ onAddPet }) {
 }
 
 // ── Pet Profile Card ───────────────────────────────────────────
-function DinePetProfileCard({ pet, onOpen }) {
+export function DinePetProfileCard({ pet, onOpen }) {
   const name      = pet?.name || 'your dog';
   const breed     = pet?.breed || 'mixed breed';
   const score     = Math.round(pet?.overall_score || pet?.soul_score || 0);
@@ -338,7 +338,7 @@ function DinePetProfileCard({ pet, onOpen }) {
 }
 
 // ── Profile Sheet ──────────────────────────────────────────────
-function DineProfileSheet({ pet, onClose, onConcierge }) {
+export function DineProfileSheet({ pet, onClose, onConcierge }) {
   const name       = pet?.name || 'your dog';
   const score      = Math.round(pet?.overall_score || pet?.soul_score || 0);
   const allergies  = getAllergies(pet);
@@ -419,7 +419,7 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
 }
 
 // ── Segmented Switch ───────────────────────────────────────────
-function DineSegmentedSwitch({ mode, onChange }) {
+export function DineSegmentedSwitch({ mode, onChange }) {
   return (
     <div style={{ margin:'0 16px 24px', background:C.border, borderRadius:14, padding:3, display:'flex', gap:3 }}>
       {[{ id:'eat', label:'🍲 Eat & Nourish' }, { id:'out', label:'🍽️ Dine Out' }].map(tab => (
@@ -432,7 +432,7 @@ function DineSegmentedSwitch({ mode, onChange }) {
 }
 
 // ── Section Heading ────────────────────────────────────────────
-function DineSectionHeading({ title, helper }) {
+export function DineSectionHeading({ title, helper }) {
   return (
     <div style={{ padding:'0 16px 16px' }}>
       <div style={{ fontSize:28, fontWeight:700, lineHeight:1.1, marginBottom:6 }}>{title}</div>
@@ -442,7 +442,7 @@ function DineSectionHeading({ title, helper }) {
 }
 
 // ── Product Card ───────────────────────────────────────────────
-function DineProductCard({ product, onAdd, onTap }) {
+export function DineProductCard({ product, onAdd, onTap }) {
   const [added, setAdded] = useState(false);
   return (
     <div
@@ -614,7 +614,7 @@ export function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, 
 }
 
 // ── Mira Bar ───────────────────────────────────────────────────
-function DineMiraBar({ pet, onOpen }) {
+export function DineMiraBar({ pet, onOpen }) {
   const allergies = getAllergies(pet);
   const name = pet?.name || 'your dog';
   const loves = getLoves(pet);
@@ -634,7 +634,7 @@ function DineMiraBar({ pet, onOpen }) {
 }
 
 // ── Mira Picks Sheet ───────────────────────────────────────────
-function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConcierge, onAdd, onTap }) {
+export function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConcierge, onAdd, onTap }) {
   const name = pet?.name || 'your dog';
   return (
     <div onClick={onClose} style={{ position:'fixed', inset:0, zIndex:500, background:'rgba(0,0,0,0.45)', display:'flex', alignItems:'flex-end' }}>
@@ -666,7 +666,7 @@ function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConc
 }
 
 // ── Soul Made Inline Card ──────────────────────────────────────
-function DineSoulMadeInlineCard({ pet, onOpen }) {
+export function DineSoulMadeInlineCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
     <div style={{ padding:'0 16px 24px' }}>
@@ -686,7 +686,7 @@ function DineSoulMadeInlineCard({ pet, onOpen }) {
 }
 
 // ── Concierge® Card ─────────────────────────────────────────────
-function DineConciergeCard({ pet, onOpen }) {
+export function DineConciergeCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
     <div style={{ margin:'0 16px 24px', background:C.brown, borderRadius:24, padding:20 }}>
@@ -701,7 +701,7 @@ function DineConciergeCard({ pet, onOpen }) {
 }
 
 // ── Intake Sheet ───────────────────────────────────────────────
-function DineIntakeSheet({ pet, onClose, onSend, prefillVenue }) {
+export function DineIntakeSheet({ pet, onClose, onSend, prefillVenue }) {
   const [occasion, setOccasion] = useState(prefillVenue ? 'Reservation Assistance' : 'Restaurant Discovery');
   const [notes, setNotes] = useState(prefillVenue ? `Venue: ${prefillVenue}` : '');
   const [sending, setSending] = useState(false);
