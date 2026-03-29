@@ -88,7 +88,7 @@ const EMERGENCY_QUESTIONS = [
   { id:"emergency_card",      chapter:"📋 Info Card", pts:10, type:"single", question:"Do you have an emergency info card for {name}?",    options:["Yes — in wallet + collar","Collar only","No card","In progress"] },
 ];
 
-function getEmergDims(pet) {
+export function getEmergDims(pet) {
   const missing=getMissingItems(pet); const breed=pet?.breed||"";
   return [
     { id:"firstaid",  icon:"🩺", label:"First Aid",            sub:"Home kit + immediate response protocol",        badge:"Act fast",   badgeBg:G.crimson, glow:missing.includes("No first aid kit"),   glowColor:"rgba(220,38,38,0.40)", mira:`The first minutes in any emergency determine the outcome for {name}. I have the protocol ready.` },
@@ -100,7 +100,7 @@ function getEmergDims(pet) {
   ];
 }
 
-const DIM_CAT = { firstaid:"First Aid", lostpet:"Lost Pet", emergvet:"Vet Emergency", transport:"Vet Emergency", insurance:"First Aid", soul:"Soul Emergency" };
+export const DIM_CAT = { firstaid:"First Aid", lostpet:"Lost Pet", emergvet:"Vet Emergency", transport:"Vet Emergency", insurance:"First Aid", soul:"Soul Emergency" };
 
 // ── EMERGENCY PROFILE (collapsed → modal) ───────────────────
 function EmergencyProfile({ pet, token }) {
@@ -236,7 +236,7 @@ function MiraPicksSection({ pet, onOpenService }) {
 }
 
 // ── DIM EXPANDED ─────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=[] }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=[] }) {
   const petName=pet?.name||"your dog";
   const [dimTab,setDimTab]=useState("products");
   const catName=DIM_CAT[dim.id]||"First Aid";
