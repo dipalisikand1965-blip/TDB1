@@ -43,128 +43,8 @@ const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@
 
 function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'?[12]:[6]); }
 
-const SERVICE_GROUPS = [
-  { id:"pamper",    label:"Pamper & Groom",       icon:"✨", colour:"#40916C", pillars:["care"],                        desc:"Grooming, spa, coat care — for every breed and comfort level" },
-  { id:"health",    label:"Health & Vet",          icon:"🏥", colour:"#DC2626", pillars:["care","emergency"],            desc:"Vet consultations, emergency support, first aid" },
-  { id:"learn",     label:"Train & Learn",         icon:"🎓", colour:"#7C3AED", pillars:["learn","play"],               desc:"Training, behaviour, enrichment, puppy foundations" },
-  { id:"celebrate", label:"Celebrate",             icon:"🎉", colour:"#9B59B6", pillars:["celebrate"],                  desc:"Birthday parties, photography, special occasions" },
-  { id:"fitness",   label:"Fitness & Walks",       icon:"🏃", colour:"#E76F51", pillars:["fit","play"],                 desc:"Dog walking, fitness plans, hydrotherapy" },
-  { id:"travel",    label:"Travel & Paperwork",    icon:"✈️", colour:"#1ABC9C", pillars:["go","travel","paperwork"],    desc:"Pet passports, microchipping, travel docs, flight coordination" },
-  { id:"life",      label:"Life Events",           icon:"🌷", colour:"#6366F1", pillars:["adopt","farewell","dine"],    desc:"Adoption support, farewell services, dining, social events" },
-];
 
-function ServiceGroupCard({ group, pet, token, onBook }) {
-  const [expanded, setExpanded] = useState(false);
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [fetched, setFetched] = useState(false);
 
-  const toggle = () => {
-    vibe();
-    if (!expanded && !fetched) {
-      setLoading(true);
-      // Fetch from the first pillar in the group
-      const pillar = group.pillars[0];
-      fetch(`${API_URL}/api/service-box/services?pillar=${pillar}&limit=12&is_active=true`, {
-        headers: token ? { Authorization:`Bearer ${token}` } : {}
-      })
-        .then(r => r.ok ? r.json() : null)
-        .then(d => {
-          setServices(d?.services || []);
-          setLoading(false);
-          setFetched(true);
-        })
-        .catch(() => { setLoading(false); setFetched(true); });
-    }
-    setExpanded(e => !e);
-  };
-
-  const petName = pet?.name || 'your dog';
-
-  return (
-    <div style={{ background:'#fff', borderRadius:18, border:`1.5px solid ${G.border}`, overflow:'hidden', marginBottom:12 }}
-      data-testid={`service-group-${group.id}`}>
-      {/* Group Header */}
-      <button onClick={toggle}
-        style={{ width:'100%', display:'flex', alignItems:'center', gap:12, padding:'16px', background:'none', border:'none', cursor:'pointer', textAlign:'left' }}>
-        <div style={{ width:44, height:44, borderRadius:14, background:`${group.colour}15`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
-          {group.icon}
-        </div>
-        <div style={{ flex:1 }}>
-          <div style={{ fontSize:16, fontWeight:700, color:G.dark, marginBottom:2 }}>{group.label}</div>
-          <div style={{ fontSize:14, color:G.taupe }}>{group.desc}</div>
-        </div>
-        <div style={{ fontSize:20, color:G.taupe, transform:expanded?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s', flexShrink:0 }}>
-          ›
-        </div>
-      </button>
-
-      {/* Expanded Services */}
-      {expanded && (
-        <div style={{ borderTop:`1px solid ${G.border}`, padding:'0 16px 16px' }}>
-          {loading && (
-            <div style={{ textAlign:'center', padding:'24px 0', color:'#888' }}>
-              <div style={{ fontSize:24, marginBottom:8 }}>{group.icon}</div>
-              <div style={{ fontSize:14 }}>Loading {group.label} services…</div>
-            </div>
-          )}
-
-          {!loading && services.length === 0 && fetched && (
-            <div style={{ padding:'16px 0' }}>
-              <div style={{ fontSize:14, color:G.taupe, marginBottom:12, fontStyle:'italic' }}>
-                {group.label} services available via Concierge®
-              </div>
-              <button onClick={() => onBook({ name:group.label, icon:group.icon, colour:group.colour })}
-                style={{ width:'100%', minHeight:44, borderRadius:12, border:'none', background:`linear-gradient(135deg,${group.colour},${G.navyL})`, color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                Book {group.label} via Concierge® →
-              </button>
-            </div>
-          )}
-
-          {!loading && services.length > 0 && (
-            <div style={{ marginTop:12 }}>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-                {services.map((svc, i) => {
-                  const img = svc.watercolour_image || svc.watercolor_image || svc.image_url || svc.image || null;
-                  return (
-                    <div key={svc.id || svc._id || i}
-                      onClick={() => onBook(svc)}
-                      data-testid={`svc-card-${group.id}-${i}`}
-                      style={{ background:'#fff', borderRadius:14, border:`1px solid ${group.colour}20`, overflow:'hidden', cursor:'pointer', boxShadow:`0 2px 8px ${group.colour}10` }}>
-                      {/* Watercolour image */}
-                      <div style={{ position:'relative', width:'100%', aspectRatio:'4/3', background:`${group.colour}10`, overflow:'hidden' }}>
-                        {img
-                          ? <img src={img} alt={svc.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} loading="lazy" />
-                          : <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:32, background:`linear-gradient(135deg,${group.colour}15,${group.colour}25)` }}>
-                              {group.icon}
-                            </div>
-                        }
-                        <div style={{ position:'absolute', bottom:0, left:0, right:0, height:40, background:`linear-gradient(transparent,rgba(255,255,255,0.95))` }} />
-                      </div>
-                      {/* Info */}
-                      <div style={{ padding:'10px 10px 12px' }}>
-                        <div style={{ fontSize:12, fontWeight:700, color:G.dark, lineHeight:1.3, marginBottom:3, display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{svc.name}</div>
-                        <div style={{ fontSize:10, fontWeight:600, color:group.colour, letterSpacing:'0.05em', marginBottom:8 }}>PRICE ON REQUEST</div>
-                        <button onClick={e => { e.stopPropagation(); onBook(svc); }}
-                          style={{ width:'100%', padding:'7px', borderRadius:20, border:'none', background:`linear-gradient(135deg,${group.colour},${G.navyL})`, color:'#fff', fontSize:12, fontWeight:700, cursor:'pointer' }}>
-                          Book via Concierge® →
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button onClick={() => onBook({ name:`${group.label} — All Services`, icon:group.icon, colour:group.colour })}
-                style={{ marginTop:12, width:'100%', minHeight:44, borderRadius:12, border:`1.5px solid ${group.colour}`, background:'#fff', fontSize:14, fontWeight:600, color:group.colour, cursor:'pointer' }}>
-                Explore all {group.label} via Concierge® →
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function ServicesMobilePage() {
   const { token } = useAuth();
@@ -291,15 +171,6 @@ export default function ServicesMobilePage() {
         <div style={{ padding:'0 16px 8px' }}>
           <div style={{ fontSize:20, fontWeight:700, marginBottom:4 }}>Concierge® Services for {petName}</div>
           <div style={{ fontSize:14, color:G.taupe, marginBottom:16 }}>Mira's handpicked experts. One message and it's arranged.</div>
-          {SERVICE_GROUPS.map(group => (
-            <ServiceGroupCard
-              key={group.id}
-              group={group}
-              pet={currentPet}
-              token={token}
-              onBook={handleBook}
-            />
-          ))}
         </div>
 
         <div style={{ padding:'0 16px 24px' }}>
