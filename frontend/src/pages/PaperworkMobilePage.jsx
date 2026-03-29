@@ -6,7 +6,7 @@
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { DimExpanded, getPaperworkDims, DIM_ID_TO_CATEGORY as PW_DIM_CAT } from './PaperworkSoulPage';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -219,6 +219,12 @@ export default function PaperworkMobilePage() {
   const [showPaperworkPlan, setShowPaperworkPlan] = useState(false);
   const [openDim, setOpenDim] = useState(null);        // null = collapsed; dim.id = expanded
   const [mainTab, setMainTab] = useState('paperwork');
+  const dimExpandedRef = useRef(null);
+  useEffect(() => {
+    if (openDim && dimExpandedRef.current) {
+      dimExpandedRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [openDim]);
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -423,7 +429,7 @@ export default function PaperworkMobilePage() {
 
         {/* DimExpanded — desktop source of truth component. Opens/closes on chip tap. */}
         {activeDimObj && (
-          <div style={{ padding:'0 16px 16px' }}>
+          <div ref={dimExpandedRef} style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
             <DimExpanded
               dim={activeDimObj}
               pet={currentPet}

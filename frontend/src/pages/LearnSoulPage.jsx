@@ -193,6 +193,8 @@ export function getLearnDims(pet) {
 }
 
 export const DIM_ID_TO_CATEGORY = {
+  foundations: "training",
+  behaviour:   "behavior",
   training:    "training",
   tricks:      "tricks",
   enrichment:  "enrichment",
@@ -693,7 +695,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                   <p style={{fontSize:11,fontWeight:700,color:G.mutedText,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:12}}>Mira's Scored Products for {petName}</p>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
                     {products.map(p=>(
-                      <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                      <SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn"
                         onViewDetails={()=>setSelProd(p)} accentColor={G.violet}/>
                     ))}
                   </div>
@@ -767,7 +769,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
           {!loading && category !== "mira" && category !== "bundles" && category !== "soul_made" && products.length > 0 && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
               {products.map(p => (
-                <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                <SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn"
                   onViewDetails={() => setSelProd(p)} accentColor={catCfg.accent||G.violet}/>
               ))}
             </div>
@@ -846,7 +848,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
               {products.length > 0 ? (
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
                   {products.map(p => (
-                    <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                    <SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn"
                       onViewDetails={() => setSelProd(p)} accentColor={G.violet}/>
                   ))}
                 </div>
