@@ -20,7 +20,7 @@
   
   /* Shared Base Colors */
   --color-dark-bg: #0B1628;
-  --color-gold: #D4A853;
+  /* --color-gold removed: use --color-gold from tdc-design-tokens.css as single source of truth */
   --color-surface: #FFFFFF;
   --color-surface-secondary: #F8F9FA;
   
