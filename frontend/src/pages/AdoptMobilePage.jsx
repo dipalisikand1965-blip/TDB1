@@ -3,7 +3,7 @@
  * 3-tab layout: Find Your Dog | Book Guidance | Find Rescue
  * Colour: Deep Mauve #4A0E2E + Rose #D4537E
  */
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -86,6 +86,7 @@ export default function AdoptMobilePage() {
   const [activeTab, setActiveTab] = useState("adopt");
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [adoptStage, setAdoptStage] = useState("thinking");
+  const stageContentRef = useRef(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -202,7 +203,11 @@ export default function AdoptMobilePage() {
           onSelect={id => {
             vibe();
             if (id === 'guidance') { setActiveTab('services'); }
-            else { setAdoptStage(id); setActiveTab('adopt'); }
+            else {
+              setAdoptStage(id);
+              setActiveTab('adopt');
+              setTimeout(() => stageContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+            }
           }}
           accentColor={G.rose}
         />
@@ -246,7 +251,7 @@ export default function AdoptMobilePage() {
               <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Where are you on the journey?</div>
               <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom:4 }}>
                 {ADOPT_STAGES.map(s => (
-                  <button key={s.id} onClick={() => { vibe(); setAdoptStage(s.id); }}
+                  <button key={s.id} onClick={() => { vibe(); setAdoptStage(s.id); setTimeout(() => stageContentRef.current?.scrollIntoView({ behavior:'smooth', block:'start' }), 80); }}
                     style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'8px 12px', borderRadius:14, border:`2px solid ${adoptStage===s.id?G.rose:G.border}`, background:adoptStage===s.id?G.pale:'#fff', cursor:'pointer', minWidth:68 }}>
                     <span style={{ fontSize:18 }}>{s.emoji}</span>
                     <span style={{ fontSize:14, fontWeight:700, color:adoptStage===s.id?G.rose:G.darkText }}>{s.label}</span>
@@ -263,6 +268,7 @@ export default function AdoptMobilePage() {
             </div>
 
             {/* ── Stage-gated content (switches on adoptStage pill) ── */}
+            <div ref={stageContentRef} style={{ scrollMarginTop: 16 }}>
 
             {/* THINKING — Am I ready? */}
             {adoptStage === 'thinking' && (
@@ -343,6 +349,8 @@ export default function AdoptMobilePage() {
                 </div>
               </>
             )}
+
+            </div>{/* end stage-gated wrapper */}
 
             {/* Mira Imagines — always shown */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><MiraImaginesBreed pet={currentPet} pillar="adopt" token={token} /></div>}
