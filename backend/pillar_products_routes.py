@@ -40,6 +40,12 @@ KNOWN_BREED_NAMES = sorted([
     "flat coated retriever", "nova scotia duck tolling retriever",
     "coton de tulear", "rhodesian ridgeback",
     "leonberger", "newfoundland",
+    # Breeds found in product catalogue — must be here for name detection
+    "american bully", "labradoodle", "goldendoodle", "cockapoo", "cavapoo",
+    "alaskan malamute", "malamute", "miniature schnauzer", "giant schnauzer",
+    "miniature poodle", "toy poodle", "standard poodle",
+    "english springer spaniel", "springer spaniel",
+    "fawn", "brindle",
 ], key=len, reverse=True)  # Longest first so "golden retriever" beats "retriever"
 
 
