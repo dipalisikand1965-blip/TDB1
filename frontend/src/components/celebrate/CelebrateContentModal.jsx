@@ -51,10 +51,13 @@ const getBreedDisplay = (pet) => {
 
 const getCelebratePetId = (pet) => pet?.id || pet?._id;
 
+const SOUL_MADE_FOOD_KEYWORDS = ['trail mix', 'adventure bite', 'freeze-dried', 'freeze dried', 'kibble', 'wet food', 'dry food', 'supplement', 'probiotic', 'vitamin', 'raw diet'];
 const filterCelebrateSoulMadeProducts = (items = []) => items.filter((p) => {
   const pillar = String(p?.pillar || '').toLowerCase();
   const text = `${p?.name || ''} ${p?.category || ''} ${p?.sub_category || ''}`.toLowerCase();
   if (pillar && pillar !== 'celebrate') return false;
+  // Exclude food/treat products — Soul Made should be pet-illustrated merchandise only
+  if (SOUL_MADE_FOOD_KEYWORDS.some(kw => text.includes(kw))) return false;
   return !['welcome home', 'adoption', 'pet loss', 'grief', 'farewell'].some((bad) => text.includes(bad));
 });
 
