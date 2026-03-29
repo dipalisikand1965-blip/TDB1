@@ -348,11 +348,18 @@ const MiraUnifiedHeader = ({
   onLocationClick = null, // Callback to change location
 }) => {
   const [showPetSwitcher, setShowPetSwitcher] = useState(false);
+  const navigate = useNavigate();
   
   return (
     <header className="mira-unified-header">
-      {/* LEFT: Mira Logo */}
-      <div className="mira-logo-section">
+      {/* LEFT: Mira Logo — click to go back to Pet Home */}
+      <div 
+        className="mira-logo-section" 
+        onClick={() => { hapticFeedback.buttonTap(); navigate('/pet-home'); }}
+        style={{ cursor: 'pointer' }}
+        title="Back to Home"
+        data-testid="mira-logo-home-btn"
+      >
         <div className="mira-logo-icon">
           <Sparkles />
         </div>

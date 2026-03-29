@@ -2964,7 +2964,7 @@ const MiraDemoPage = () => {
       return [
         { text: 'Just the cake', value: 'Just the cake for now.' },
         { text: 'Cake + activities', value: 'I want help with cake and activities.' },
-        { text: 'Show me cake ideas', value: 'Show me some birthday cake ideas for Buddy.' }
+        { text: 'Show me cake ideas', value: `Show me some birthday cake ideas for ${pet?.name || 'my dog'}.` }
       ];
     }
     
@@ -3022,7 +3022,7 @@ const MiraDemoPage = () => {
       console.error('[QUICK REPLIES] Error extracting quick replies:', error);
       return [];
     }
-  }, []);
+  }, [pet]);
   
   // Helper: Split message to highlight the question part
   // Returns { mainText, questionText } for separate rendering
