@@ -216,7 +216,9 @@ export default function EmergencyMobilePage() {
           <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>{petName}'s Emergency Centre</div>
           <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>First aid kit, emergency services, and 24hr vet finder.</div>
           {contextPets?.length > 1 && (
-            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch', scrollbarWidth:'none', marginTop:12, paddingBottom:2 }}>
+            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch',
+              scrollbarWidth:'none', marginTop:12, paddingBottom:2,
+              touchAction:'pan-x', overscrollBehaviorX:'contain' }}>
               {contextPets.map(p => (
                 <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
                   style={{ flexShrink:0, padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
