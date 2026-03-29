@@ -74,6 +74,7 @@ function SoulChip({ icon, label, value }) {
 
 function AdoptProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useScrollLock(drawerOpen);
   const [answers, setAnswers]       = useState({});
   const [saved,   setSaved]         = useState({});
   const [submitting, setSubmitting] = useState({});
@@ -254,7 +255,7 @@ const AdoptSoulPage = () => {
   const [openDim, setOpenDim] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
-  useScrollLock(drawerOpen || conciergeOpen || soulMadeOpen || !!openDim);
+  useScrollLock(conciergeOpen || soulMadeOpen || !!openDim);
 
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
