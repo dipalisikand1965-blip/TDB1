@@ -97,7 +97,7 @@ export default function AdoptMobilePage() {
   useEffect(() => {
     if (openDim && dimExpandedRef.current) {
       setTimeout(() => {
-        dimExpandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        dimExpandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 80);
     }
   }, [openDim]);
@@ -268,14 +268,7 @@ export default function AdoptMobilePage() {
               </div>
             </div>
 
-            {/* Mira Bar */}
-            <div style={{ margin:'0 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(249,168,201,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON ADOPTION</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>"The right match between a dog and their family changes two lives forever. I make sure it's the right one."</div>
-              <button className="adopt-cta" onClick={() => { vibe('medium'); setShowAdoptPlan(true); }}>Build {petName}'s Adoption Plan →</button>
-            </div>
-
-            {/* ── Dim Expanded Panel — Care pattern ── */}
+            {/* ── Dim Expanded Panel — opens immediately below strip ── */}
             {openDim && (
               <div ref={dimExpandedRef} style={{ margin:'0 16px 16px', background:'#fff', border:`2px solid ${G.rose}`, borderRadius:20, padding:20 }}>
                 {/* Header */}
