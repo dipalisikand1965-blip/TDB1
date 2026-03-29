@@ -123,6 +123,7 @@ class AttachOrCreateTicketRequest(BaseModel):
     status: Optional[str] = None
     force_new: bool = False  # ← when True, always creates a new ticket (no dedup)
     initial_message: Optional[InitialMessage] = None
+    metadata: Dict[str, Any] = {}  # ← soul_made photo_url, product_name, etc.
 
 class AttachOrCreateTicketResponse(BaseModel):
     ticket_id: str
@@ -691,6 +692,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "intent_secondary": request.intent_secondary,
         "life_state": request.life_state,
         "channel": request.channel,
+        "metadata": request.metadata or {},
         "status": "open_mira_only",
         "handoff_to_concierge": False,
         "concierge_queue": None,
@@ -702,6 +704,18 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "created_at": now.isoformat(),
         "updated_at": now.isoformat()
     }
+
+    # If a soul_made photo was uploaded, append it as a visible image message
+    soul_photo_url = (request.metadata or {}).get("photo_url")
+    if soul_photo_url:
+        ticket_doc["conversation"].append({
+            "sender": "parent",
+            "source": request.channel,
+            "text": f"📸 Pet photo uploaded: {soul_photo_url}",
+            "image_url": soul_photo_url,
+            "timestamp": now.isoformat(),
+            "is_soul_made_photo": True,
+        })
     
     await db.mira_conversations.insert_one(ticket_doc)
 
@@ -730,6 +744,8 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "user_phone":    member_obj.get("phone"),
         "mira_briefing": mira_briefing,
         "life_state":    request.life_state,
+        "metadata":      request.metadata or {},
+        "soul_made_photo": soul_photo_url,
         "created_at":    now.isoformat(),
         "updated_at":    now.isoformat(),
         "assigned_to":   None,
