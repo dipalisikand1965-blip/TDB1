@@ -381,6 +381,20 @@ export default function PaperworkMobilePage() {
           </div>
         )}
 
+        {/* Open Full Vault shortcut */}
+        {currentPet && (
+          <div
+            data-testid="open-full-vault-btn"
+            onClick={() => navigate(`/pet-vault/${currentPet?.id}`)}
+            style={{ margin:'0 16px 12px', padding:'14px 18px', background:'linear-gradient(135deg,#0D9488,#14B8A6)', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer' }}>
+            <div>
+              <div style={{ fontSize:13, fontWeight:700, color:'#fff' }}>📁 {petName}'s Full Document Vault</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.7)' }}>Upload, view and manage all documents</div>
+            </div>
+            <span style={{ color:'#fff', fontSize:18 }}>→</span>
+          </div>
+        )}
+
         {/* Mira Bar */}
         <div style={{ margin:'8px 16px 16px', background:G.dark, borderRadius:20, padding:16 }}>
           <div style={{ fontSize:14, fontWeight:700, color:`rgba(153,246,228,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S DOCUMENTS</div>

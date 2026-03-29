@@ -4422,6 +4422,32 @@ const MiraDemoPage = () => {
             />
           )}
           
+          {/* LIFE VISION GREETING — Mira's daily north-star nudge */}
+          {pet && conversationHistory.length === 0 && pet.doggy_soul_answers?.life_vision && (
+            <div
+              data-testid="life-vision-greeting"
+              style={{
+                margin: '0 0 12px',
+                padding: '12px 16px',
+                background: 'linear-gradient(135deg,rgba(139,92,246,0.1),rgba(233,30,140,0.07))',
+                border: '1px solid rgba(139,92,246,0.18)',
+                borderRadius: 14,
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginBottom: 3, letterSpacing: '0.05em' }}>
+                🌟 {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}
+              </div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.55, fontStyle: 'italic' }}>
+                &ldquo;Today, let&apos;s make that{' '}
+                <span style={{ color: '#C084FC', fontStyle: 'normal', fontWeight: 600 }}>
+                  {pet.doggy_soul_answers.life_vision}
+                </span>{' '}
+                for {pet.name} a little closer.&rdquo;
+              </div>
+            </div>
+          )}
+
           {/* SOUL KNOWLEDGE TICKER - "What Mira Knows" about the pet */}
           {/* Shows soul traits, favorites, allergies - builds trust and engagement */}
           {pet && conversationHistory.length === 0 && (
