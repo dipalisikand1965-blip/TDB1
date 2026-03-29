@@ -874,7 +874,7 @@ const MiraOSPage = () => {
   // RENDER
   // ═══════════════════════════════════════════════════════════════════════════
   return (
-    <div className="mira-os-page mp-container" data-testid="mira-os-page">
+    <div className="mira-os-page mp-container mira-os-layout" data-testid="mira-os-page">
       {/* MEMORY WHISPER - Global overlay */}
       <MemoryWhisper 
         memoryContext={activeMemoryContext}
@@ -883,8 +883,8 @@ const MiraOSPage = () => {
         autoDismissDelay={8000}
       />
       
-      {/* MAIN HEADER - Always visible */}
-      <header className="mp-header sticky top-0 z-50">
+      {/* MAIN HEADER - spans full width on desktop */}
+      <header className="mp-header sticky top-0 z-50 mira-unified-header">
         <div className="mp-header-inner">
           {/* Left: Mira Logo */}
           <div className="mp-logo">
@@ -912,18 +912,20 @@ const MiraOSPage = () => {
       </header>
       
       {/* ════════════════════════════════════════════════════════════════════
-          HEADER SHELL - 7 Dimension Tabs
+          HEADER SHELL — sidebar on desktop, tab bar on mobile
           ════════════════════════════════════════════════════════════════════ */}
-      <MiraHeaderShell
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        badges={tabBadges}
-      />
+      <div className="mira-os-sidebar">
+        <MiraHeaderShell
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          badges={tabBadges}
+        />
+      </div>
       
       {/* ════════════════════════════════════════════════════════════════════
-          TAB CONTENT AREAS - Each dimension
+          MAIN CONTENT — all tab content areas
           ════════════════════════════════════════════════════════════════════ */}
-      
+      <main className="mira-os-main">
       {/* ══════════════════════════════════════════════════════════════════
           1. MOJO TAB (Context Layer)
           Who the system is thinking about
@@ -2028,6 +2030,7 @@ const MiraOSPage = () => {
           show={conversationHistory.length > 3}
         />
       )}
+      </main>
     </div>
   );
 };

@@ -149,7 +149,7 @@ const SystemEventChip = ({ event }) => {
 
   return (
     <div className="flex justify-center my-3">
-      <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getEventStyle()}`}>
+      <div className={`tdc-chip tdc-chip-interactive ${getEventStyle()}`}>
         {getEventText()}
       </div>
     </div>
@@ -679,7 +679,10 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">🛒</span>
                   <span className={`text-sm font-semibold ${isSplitMode ? 'text-gray-800' : 'text-white'}`}>Your Order</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ml-auto ${isSplitMode ? 'bg-green-100 text-green-700' : 'bg-green-500/20 text-green-400'}`}>
+                  <span className={`tdc-chip ml-auto ${isSplitMode ? '' : 'tdc-chip-dark'}`} style={
+                    isSplitMode ? { background:'#dcfce7', color:'#15803d', borderColor:'#bbf7d0' }
+                    : { background:'rgba(34,197,94,0.2)', color:'#4ade80', borderColor:'rgba(34,197,94,0.3)' }
+                  }>
                     {ticket.status || 'open'}
                   </span>
                 </div>
