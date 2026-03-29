@@ -6,7 +6,7 @@
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { DimExpanded, getEmergDims, DIM_CAT } from './EmergencySoulPage';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
@@ -82,6 +82,12 @@ export default function EmergencyMobilePage() {
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState("products");
   const [openDim, setOpenDim] = useState(null);       // null = flat view; dim.id = DimExpanded open
+  const dimExpandedRef = useRef(null);
+  useEffect(() => {
+    if (openDim && dimExpandedRef.current) {
+      dimExpandedRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [openDim]);
   const [apiProducts, setApiProducts] = useState({});
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -318,7 +324,7 @@ export default function EmergencyMobilePage() {
 
                 {/* DimExpanded — opens below chips on tap, mirrors desktop exactly */}
                 {activeDimObj ? (
-                  <div style={{ padding:'0 16px 16px' }}>
+                  <div ref={dimExpandedRef} style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
                     <DimExpanded
                       dim={activeDimObj}
                       pet={currentPet}
