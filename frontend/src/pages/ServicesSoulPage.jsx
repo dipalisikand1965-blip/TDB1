@@ -35,6 +35,7 @@ import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ServicesMobilePage from './ServicesMobilePage';
+import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
 
 // ── Colour — clean slate, every pillar's colour shows through ─
 const G = {
@@ -111,109 +112,8 @@ const SERVICE_GROUPS = [
 ];
 
 // ── Booking modal — uses same flow as ConciergeIntakeModal ───
-import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
 // Adapts Q1 options based on service pillar.
 // Uses bookViaConcierge() for ticket creation → admin notification + service desk.
-const PILLAR_OPTIONS = {
-  celebrate: [
-    { id: 'birthday_party', label: 'Birthday' },
-    { id: 'gotcha_day', label: 'Gotcha Day' },
-    { id: 'milestone', label: 'Milestone' },
-    { id: 'photography', label: 'Photoshoot' },
-    { id: 'surprise_delivery', label: 'Surprise' },
-    { id: 'pawty', label: 'Pawty' },
-    { id: 'custom_cake', label: 'Cake Consultation' },
-    { id: 'venue', label: 'Venue Booking' },
-    { id: 'just_because', label: 'Just because' },
-  ],
-  care: [
-    { id: 'grooming', label: 'Grooming' },
-    { id: 'spa', label: 'Spa & Wellness' },
-    { id: 'coat_care', label: 'Coat Care' },
-    { id: 'dental', label: 'Dental' },
-    { id: 'health_check', label: 'Health Check' },
-    { id: 'general_care', label: 'General Care' },
-  ],
-  emergency: [
-    { id: 'vet_consult', label: 'Vet Consult' },
-    { id: 'emergency_visit', label: 'Emergency Visit' },
-    { id: 'first_aid', label: 'First Aid' },
-    { id: 'specialist', label: 'Specialist Referral' },
-  ],
-  learn: [
-    { id: 'basic_training', label: 'Basic Training' },
-    { id: 'behaviour', label: 'Behaviour' },
-    { id: 'puppy_foundation', label: 'Puppy Foundation' },
-    { id: 'enrichment', label: 'Enrichment' },
-    { id: 'socialisation', label: 'Socialisation' },
-  ],
-  play: [
-    { id: 'playdate', label: 'Playdate' },
-    { id: 'dog_park', label: 'Dog Park' },
-    { id: 'agility', label: 'Agility' },
-    { id: 'enrichment', label: 'Enrichment' },
-  ],
-  fit: [
-    { id: 'dog_walking', label: 'Dog Walking' },
-    { id: 'fitness_plan', label: 'Fitness Plan' },
-    { id: 'hydrotherapy', label: 'Hydrotherapy' },
-    { id: 'swimming', label: 'Swimming' },
-  ],
-  go: [
-    { id: 'travel_planning', label: 'Travel Planning' },
-    { id: 'pet_passport', label: 'Pet Passport' },
-    { id: 'flight_coordination', label: 'Flight Coordination' },
-    { id: 'pet_taxi', label: 'Pet Taxi' },
-  ],
-  travel: [
-    { id: 'travel_planning', label: 'Travel Planning' },
-    { id: 'flight_coordination', label: 'Flight' },
-    { id: 'documents', label: 'Documents' },
-  ],
-  paperwork: [
-    { id: 'microchipping', label: 'Microchipping' },
-    { id: 'registration', label: 'Registration' },
-    { id: 'insurance', label: 'Insurance' },
-    { id: 'documents', label: 'Documents' },
-  ],
-  adopt: [
-    { id: 'adoption_support', label: 'Adoption Help' },
-    { id: 'home_prep', label: 'Home Prep' },
-    { id: 'puppy_starter', label: 'Puppy Starter' },
-  ],
-  farewell: [
-    { id: 'memorial', label: 'Memorial' },
-    { id: 'cremation', label: 'Cremation' },
-    { id: 'grief_support', label: 'Grief Support' },
-    { id: 'keepsake', label: 'Keepsake' },
-  ],
-  dine: [
-    { id: 'nutrition_consult', label: 'Nutrition Consult' },
-    { id: 'custom_diet', label: 'Custom Diet' },
-    { id: 'treats', label: 'Treats & Cakes' },
-  ],
-  enjoy: [
-    { id: 'social_event', label: 'Social Event' },
-    { id: 'community', label: 'Community' },
-    { id: 'outing', label: 'Outing' },
-  ],
-};
-
-const PILLAR_QUESTIONS = {
-  celebrate: "What should {pet}'s celebration feel like?",
-  care:      "What does {pet} need?",
-  emergency: "How can we help {pet}?",
-  learn:     "What should {pet} learn?",
-  play:      "What kind of fun for {pet}?",
-  fit:       "What fitness does {pet} need?",
-  go:        "Where is {pet} going?",
-  travel:    "Where is {pet} travelling?",
-  paperwork: "What paperwork does {pet} need?",
-  adopt:     "How can we help with adoption?",
-  farewell:  "How should we honour {pet}?",
-  dine:      "What does {pet} need for dining?",
-  enjoy:     "What experience for {pet}?",
-};
 
 export function BookingModal(props) {
   return <ServiceConciergeModal {...props} />;
