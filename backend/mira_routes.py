@@ -27445,3 +27445,37 @@ concierge=true means it needs to be arranged via The Doggy Company Concierge. No
         logger.warning(f"[MIRA_PLAN] Claude plan failed: {e} — returning empty for frontend fallback")
         return {"cards": [], "pet": "", "pillar": pillar}
 
+
+# ─── Quick Prompts Endpoint ─────────────────────────────────────────────────
+# Called by MiraChatWidget and MiraAI to get pillar-specific suggested prompts
+# These appear as quick-tap chips in the Mira chat interface
+
+QUICK_PROMPTS = {
+    "care": ["What should I feed Mojo?", "Find a vet near me", "Grooming schedule for my breed", "Vaccination reminders"],
+    "dine": ["Best food for my breed", "Allergy-safe options", "Raw vs kibble for my dog", "Feeding schedule help"],
+    "celebrate": ["Plan a birthday party", "Custom birthday cake", "Photo shoot for my dog", "Birthday outfit ideas"],
+    "go": ["Dog-friendly hotels near me", "Travel checklist for my dog", "Book a cab with my dog", "Pet passport help"],
+    "play": ["Dog parks near me", "Find a dog walker", "Playgroup for my breed", "Training classes nearby"],
+    "learn": ["Training tips for my breed", "Puppy basics course", "Behaviour problems help", "Find a trainer near me"],
+    "paperwork": ["Pet insurance options", "Microchipping my dog", "Health certificate for travel", "Registration help"],
+    "emergency": ["Emergency vet near me", "Is this symptom serious?", "Poison helpline", "After-hours vet"],
+    "farewell": ["Memory portrait for my dog", "Paw print keepsake", "Rainbow bridge ceremony", "Grief support"],
+    "adopt": ["Find the right breed for me", "Rescue dogs near me", "Home readiness checklist", "First week with new dog"],
+    "shop": ["Best products for my breed", "Recommended by Mira", "New arrivals", "Gifts for dog lovers"],
+    "stay": ["Dog-friendly stays near me", "Luxury pet hotels", "Book a staycation", "Pet boarding options"],
+    "general": ["What can Mira help with?", "Find products for my dog", "Book a service", "Talk to Concierge®"],
+}
+
+@router.get("/quick-prompts/{pillar}")
+async def get_quick_prompts(pillar: str):
+    """
+    Returns pillar-specific quick prompt chips for the Mira chat interface.
+    Called on every pillar page load by MiraChatWidget and MiraAI.
+    Falls back to 'general' if pillar not recognised.
+    """
+    prompts = QUICK_PROMPTS.get(pillar.lower(), QUICK_PROMPTS["general"])
+    return {
+        "pillar": pillar,
+        "prompts": prompts,
+        "count": len(prompts)
+    }
