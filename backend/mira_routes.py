@@ -3149,6 +3149,10 @@ async def understand_with_llm(
         personality_tag = pet_context.get('personality_tag', '')
         energy_level = pet_context.get('energy_level', '')
         handling_sensitivity = pet_context.get('handling_sensitivity', '')
+
+        # ─── LIFE VISION — the parent's north star for this pet ───────────
+        soul_answers = pet_context.get('doggy_soul_answers') or pet_context.get('soul_answers') or {}
+        life_vision = soul_answers.get('life_vision', '') or ''
         
         # Determine what's missing
         missing_data = []
@@ -3163,6 +3167,15 @@ async def understand_with_llm(
         
         # Build PET-FIRST context (individual pet data BEFORE breed data)
         # Now includes FULL BEHAVIORAL DATA from Pet Soul
+        # Pre-compute life vision block to avoid complex f-string expression
+        life_vision_block = f"""
+🌟 LIFE VISION — THE NORTH STAR (MANDATORY CONTEXT FOR ALL RESPONSES):
+"{life_vision}"
+→ Every product, service, and advice MUST move {pet_name} closer to this vision.
+→ Reference it naturally: "This brings {pet_name} closer to the life you want for them..."
+→ When the parent seems unsure, remind them of their vision for {pet_name}.
+""" if life_vision else ""
+
         pet_info = f"""
 ═══════════════════════════════════════════════════════════
 🐾 THIS PET (USE THIS FIRST - NOT BREED GENERALIZATIONS):
@@ -3170,7 +3183,7 @@ async def understand_with_llm(
 Name: {pet_name}
 Age: {pet_context.get('age', 'Unknown')}
 Soul Score: {pet_context.get('soul_score', 'Unknown')}%
-
+{life_vision_block}
 🔹 PERSONALITY & BEHAVIOR (USE THIS DATA!):
 - Personality traits: {', '.join(traits) if traits else 'Still learning about them'}
 - Personality tag: {personality_tag or 'Unknown'}
