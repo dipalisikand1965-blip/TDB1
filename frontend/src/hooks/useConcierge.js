@@ -106,8 +106,8 @@ export function useConcierge({ pet, pillar } = {}) {
         pet_name:     petName,
         pet_breed:    pet?.breed,
         parent_id:    user?.id   || user?.email,
-        parent_email: user?.email,
-        parent_name:  user?.name,
+        parent_email: user?.email || '',
+        parent_name:  user?.name  || user?.full_name || user?.email?.split('@')[0] || '',
 
         // Intent
         intent_primary: intentType,
