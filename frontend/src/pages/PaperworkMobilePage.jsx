@@ -443,13 +443,17 @@ export default function PaperworkMobilePage() {
         {/* PersonalisedBreedSection */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><PersonalisedBreedSection pet={currentPet} pillar="paperwork" token={token} /></div>}
 
-        {/* MiraImaginesCard */}
+        {/* MiraImaginesCard — 2-column side by side */}
         {currentPet && (
           <div style={{ padding:'0 16px 16px' }}>
-            {[
-              { id:'pw-1', emoji:'🪪', name:`${petName}'s Complete Document Folder`, description:`All documents in one place — microchip, vaccination, passport, insurance — beautifully organised.` },
-              { id:'pw-2', emoji:'💡', name:'Expert Advisory Session', description:`1-on-1 with Mira's advisory team — complete life planning for ${petName}.` },
-            ].map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="paperwork" />)}
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {[
+                { id:'pw-1', emoji:'🪪', name:`${petName}'s Complete Document Folder`, description:`All documents in one place — microchip, vaccination, passport, insurance — beautifully organised.` },
+                { id:'pw-2', emoji:'💡', name:'Expert Advisory Session', description:`1-on-1 with Mira's advisory team — complete life planning for ${petName}.` },
+              ].map(item => (
+                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="paperwork" style={{ width:'100%', flexShrink:1 }} />
+              ))}
+            </div>
           </div>
         )}
 
