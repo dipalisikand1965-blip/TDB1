@@ -905,14 +905,19 @@ const TodayPanel = ({
     const dob = pet.birthday || pet.dob || soulAnswers.dob;
     if (dob) {
       const bday = new Date(dob);
-      const today = new Date();
-      let thisYearBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
-      if (thisYearBday < today) {
-        thisYearBday.setFullYear(today.getFullYear() + 1);
-      }
-      const daysUntilBday = Math.ceil((thisYearBday - today) / (1000 * 60 * 60 * 24));
-      if (daysUntilBday <= 30) {
-        birthday = { daysUntil: daysUntilBday };
+      // Guard: skip if DOB is invalid or produces age = 0
+      const isValidDob = !isNaN(bday.getTime()) && bday.getFullYear() > 2000;
+      if (isValidDob) {
+        const today = new Date();
+        let thisYearBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
+        if (thisYearBday < today) {
+          thisYearBday.setFullYear(today.getFullYear() + 1);
+        }
+        const daysUntilBday = Math.ceil((thisYearBday - today) / (1000 * 60 * 60 * 24));
+        const petAge = today.getFullYear() - bday.getFullYear();
+        if (daysUntilBday <= 30 && petAge > 0) {
+          birthday = { daysUntil: daysUntilBday, age: petAge };
+        }
       }
     }
     
