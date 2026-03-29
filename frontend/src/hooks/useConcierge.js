@@ -127,8 +127,8 @@ export function useConcierge({ pet, pillar } = {}) {
         product_name: item?.name || name,
         price:        item?.price,
 
-        // Extra metadata
-        ...metadata,
+        // Send metadata as proper nested object (Pydantic reads request.metadata.photo_url etc.)
+        metadata,
 
         // Force create even if similar ticket exists
         force_new: true, // always notify admin
