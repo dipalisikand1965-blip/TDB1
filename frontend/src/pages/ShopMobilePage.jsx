@@ -3,6 +3,7 @@
  * Full desktop parity: Category Strip, Mira Picks, Breed Collection, Bakery, Browse
  * Colour: Gold #4A2800 → #C9973A
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -670,6 +671,7 @@ export default function ShopMobilePage() {
 
         {/* Concierge® CTA */}
         <div style={{ margin: '0 16px 24px', background: S.dark, borderRadius: 24, padding: 20 }}>
+          <PillarConciergeCards pillar="shop" pet={currentPet} token={token} />
           <div style={{ display: 'inline-flex', background: 'rgba(232,184,75,0.2)', border: '1px solid rgba(232,184,75,0.4)', borderRadius: 999, padding: '5px 14px', color: S.goldXL, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>🛍️ Shop Concierge®</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', lineHeight: 1.2, marginBottom: 10, fontFamily: 'Georgia,serif' }}>Can't find what you need for {petName}?</div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 16 }}>Tell us what you're looking for. Concierge® will source it.</div>

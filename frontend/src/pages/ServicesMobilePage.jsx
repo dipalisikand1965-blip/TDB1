@@ -3,6 +3,7 @@
  * 7 expandable service group cards — mirrors desktop SERVICE_GROUPS
  * Each group fetches from /api/service-box/services?pillar=X lazily (on expand)
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -258,6 +259,7 @@ export default function ServicesMobilePage() {
         />
 
         <div style={{ padding:'0 16px 8px' }}>
+          <PillarConciergeCards pillar="services" pet={currentPet} token={token} />
           <PillarSoulProfile pet={currentPet} pillar="services" token={token} />
         </div>
 

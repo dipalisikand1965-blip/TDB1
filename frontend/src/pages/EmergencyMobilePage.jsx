@@ -4,6 +4,7 @@
  * Colour: Crimson #DC2626
  * URGENT CTA always pinned above tabs
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -331,6 +332,7 @@ export default function EmergencyMobilePage() {
         {/* TAB 2: Book Help */}
         {activeTab === 'services' && (
           <>
+            <PillarConciergeCards pillar="emergency" pet={currentPet} token={token} />
 
       {/* Concierge® Request Builder */}
       <div style={{ padding:'0 16px 16px' }}>

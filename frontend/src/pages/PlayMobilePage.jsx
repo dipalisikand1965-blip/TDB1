@@ -4,6 +4,7 @@
  * Products tab: dimTab (Products/Personalised) + sub-category pills
  * Colour: Orange #E76F51
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -305,6 +306,7 @@ export default function PlayMobilePage() {
         {/* TAB 2: Services */}
         {activeTab === 'services' && (
           <>
+            <PillarConciergeCards pillar="play" pet={currentPet} token={token} />
 
       {/* Concierge® Request Builder */}
       <div style={{ padding:'0 16px 16px' }}>

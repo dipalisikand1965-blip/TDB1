@@ -4,6 +4,7 @@
  * Products tab: dimTab (Products/Personalised) + sub-category pills
  * Colour: Teal #1ABC9C
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -338,6 +339,7 @@ export default function GoMobilePage() {
         {/* TAB 3: Book a Service */}
         {activeTab === 'services' && (
           <>
+            <PillarConciergeCards pillar="go" pet={currentPet} token={token} />
 
       {/* Concierge® Request Builder */}
       <div style={{ padding:'0 16px 16px' }}>
