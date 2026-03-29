@@ -496,40 +496,44 @@ export default function LearnMobilePage() {
                   onClick={() => { vibe(); setCatModal(dim.id); }}
                   data-testid={`learn-dim-${dim.id}`}
                   style={{
-                    background:'#fff',
-                    borderRadius: 16,
-                    cursor:'pointer',
-                    position:'relative',
-                    border: isActive ? `2px solid ${G.purple}` : `2px solid ${G.border}`,
-                    boxShadow: dim.glow ? `0 4px 20px ${dim.glowColor}` : '0 2px 8px rgba(0,0,0,0.06)',
+                    background:'#fff', borderRadius:16, cursor:'pointer',
+                    position:'relative', overflow:'hidden',
+                    border: isActive ? `2px solid ${G.violet}` : `2px solid ${G.borderLight}`,
+                    boxShadow: dim.glow && !isActive ? `0 4px 24px ${dim.glowColor}40` : '0 2px 8px rgba(0,0,0,0.06)',
                     transition:'all 0.2s',
-                    overflow:'hidden',
                   }}>
-                  {/* Coloured top bar */}
-                  <div style={{ height:5, background: isActive ? G.purple : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
-                  <div style={{ padding:'12px 12px 10px' }}>
-                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:10 }}>
-                      <div style={{ width:40, height:40, borderRadius:12,
-                        background: dim.glow ? `linear-gradient(135deg,${dim.glowColor}22,${dim.glowColor}44)` : '#F3F4F6',
-                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>
+                  {/* Coloured top bar — exact desktop height */}
+                  <div style={{ height:6, background: isActive ? G.violet : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
+                  <div style={{ padding:'16px 16px 14px' }}>
+                    {/* Icon + badges row */}
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
+                      <div style={{ width:48, height:48, borderRadius:14,
+                        background: dim.glow ? `linear-gradient(135deg,${dim.glowColor}22,${dim.glowColor}44)` : G.pale,
+                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>
                         {dim.icon}
                       </div>
-                      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:3 }}>
-                        <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 8px',
+                      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
+                        <span style={{ fontSize:10, fontWeight:700, borderRadius:20, padding:'3px 10px',
                           background:`${dim.badgeBg}20`, color:dim.badgeBg, border:`1px solid ${dim.badgeBg}40` }}>
                           {dim.badge}
                         </span>
-                        {dim.glow && <div style={{ width:7, height:7, borderRadius:'50%', background:G.purple }} />}
+                        {dim.glow && <div style={{ width:8, height:8, borderRadius:'50%', background:G.light }} />}
                       </div>
                     </div>
-                    <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:4, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
+                    {/* Title */}
+                    <h3 style={{ fontSize:15, fontWeight:800, color:G.darkText, marginBottom:6, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
                       {dim.label}
-                    </div>
-                    <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.45, marginBottom:8,
+                    </h3>
+                    {/* Description */}
+                    <p style={{ fontSize:12, color:G.mutedText, lineHeight:1.55, marginBottom:14,
                       display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
                       {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
+                    </p>
+                    {/* CTA — exact desktop text */}
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                      <span style={{ fontSize:12, color:G.violet, fontWeight:700 }}>Explore →</span>
+                      <span style={{ fontSize:11, color:'#aaa' }}>{dim.ytQuery ? 'Products · Videos · Book' : 'Products · Book'}</span>
                     </div>
-                    <span style={{ fontSize:11, color:G.purple, fontWeight:700 }}>Explore →</span>
                   </div>
                 </div>
               );
