@@ -766,7 +766,7 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       } : {
         position: 'fixed', left: 0, right: 0, bottom: 0,
         maxHeight: '93vh', borderTopLeftRadius: 24, borderTopRightRadius: 24,
-        overflowY: 'auto', zIndex: 56,
+        overflowY: 'auto', zIndex: 65,
       }}
       data-testid={`dine-modal-${category}`}
     >
@@ -1110,15 +1110,15 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         <>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50" style={{ zIndex: 55 }}
+            className="fixed inset-0 bg-black/50" style={{ zIndex: 63 }}
             onClick={onClose}
           />
           {isDesktop ? (
-            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 56 }}>
+            <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 65 }}>
               {ModalContent}
             </div>
           ) : (
-            <div style={{ zIndex: 56, position: 'fixed', inset: 0, pointerEvents: 'none' }}>
+            <div style={{ zIndex: 65, position: 'fixed', inset: 0, pointerEvents: 'none' }}>
               <div style={{ pointerEvents: 'auto' }}>{ModalContent}</div>
             </div>
           )}

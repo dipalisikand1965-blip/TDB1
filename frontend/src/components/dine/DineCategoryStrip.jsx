@@ -143,7 +143,7 @@ const DineCategoryStrip = ({ pet, onCategorySelect }) => {
                 className="flex flex-col items-center flex-shrink-0"
                 style={{
                   minWidth: 82,
-                  height: 82,
+                  height: 90,
                   padding: '10px 12px',
                   cursor: 'pointer',
                   background: 'transparent',
