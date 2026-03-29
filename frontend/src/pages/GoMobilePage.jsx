@@ -288,8 +288,8 @@ export default function GoMobilePage() {
                       {openDim && (() => {
                         const activeDim = goDims.find(d => d.id === openDim);
                         return activeDim ? (
-                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
-                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
+                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', paddingTop:'env(safe-area-inset-top, 0px)' }}>
                               <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={Object.fromEntries(
                                 ['safety','calming','carriers','feeding','health','stay'].map(dimId => {
                                   const keywords = {

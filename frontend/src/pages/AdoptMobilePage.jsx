@@ -431,8 +431,8 @@ export default function AdoptMobilePage() {
 
         {/* Concierge® Confirmation Toast */}
         {conciergeOpen && selectedSvc && (
-          <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px' }}>
+          <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end', touchAction:'none' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px', paddingTop:'env(safe-area-inset-top, 0px)' }}>
               <div style={{ fontSize:28, textAlign:'center', marginBottom:12 }}>{selectedSvc.icon}</div>
               <div style={{ fontSize:18, fontWeight:700, color:G.darkText, textAlign:'center', marginBottom:8 }}>{selectedSvc.name}</div>
               <div style={{ fontSize:14, color:'#555', textAlign:'center', lineHeight:1.6, marginBottom:20 }}>Concierge® will contact you within 48 hours to guide you through this service.</div>

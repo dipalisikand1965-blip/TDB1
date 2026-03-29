@@ -572,9 +572,19 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
     setLoading(true);
     if (category === "soul_made") {
       const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
-      fetch(`${API_URL}/api/mockups/breed-products?breed=${breedParam}&pillar=learn`)
+      fetch(`${API_URL}/api/mockups/breed-products?breed=${breedParam}&limit=24`)
         .then(r => r.ok ? r.json() : { products: [] })
-        .then(data => setProducts(data.products || []))
+        .then(data => {
+          // Dedup by id to prevent duplicate cards
+          const seen = new Set();
+          const unique = (data.products || []).filter(p => {
+            const key = p.id || p._id;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          setProducts(unique);
+        })
         .catch(() => setProducts([]))
         .finally(() => setLoading(false));
       return;
