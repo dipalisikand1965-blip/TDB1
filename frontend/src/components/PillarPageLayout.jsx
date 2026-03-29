@@ -468,7 +468,7 @@ const PillarPageLayout = ({
           {/* Desktop pill button */}
           {isWide && (
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); console.log("CONCIERGE BUTTON CLICKED", pillarCardsOpen); setPillarCardsOpen(true); }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
               data-testid="concierge-builder-float-btn"
               style={{
                 position: 'fixed', bottom: 96, right: 24, zIndex: 100000,
