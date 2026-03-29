@@ -342,7 +342,7 @@ function LearnProfile({ pet, token }) {
       {drawerOpen && (
         <div onClick={() => setDrawerOpen(false)}
           style={{ position:"fixed", inset:0, zIndex:10002, background:"rgba(0,0,0,0.72)",
-            display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+            display:"flex", alignItems:"center", justifyContent:"center", padding:16, touchAction:"none" }}>
           <div onClick={e => e.stopPropagation()} data-testid="learn-profile-drawer"
             style={{ width:"min(780px,100%)", maxHeight:"90vh", overflowY:"auto",
               borderRadius:24, background:"#fff",
@@ -656,7 +656,7 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
   if (!isOpen) return null;
   return (
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",
-      display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      display:"flex",alignItems:"center",justifyContent:"center",padding:16, touchAction:"none"}}>
       <div onClick={e=>e.stopPropagation()} data-testid={`learn-cat-modal-${category}`}
         style={{width:"min(700px,100%)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,
           background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column"}}>
@@ -1571,7 +1571,7 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
   return (
     <div onClick={handleClose}
       style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:10006,
-        display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
+        display:'flex', alignItems:'center', justifyContent:'center', padding:16, touchAction:'none' }}>
       <div onClick={e=>e.stopPropagation()}
         style={{ background:'#fff', borderRadius:20, padding:32, maxWidth:480, width:'100%',
           maxHeight:'90vh', overflowY:'auto', position:'relative' }}>
