@@ -483,11 +483,13 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
 
   const panelStyle = isDesktop ? {
     background: '#fff', borderRadius: 20, width: '100%', maxWidth: 860,
-    maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+    maxHeight: '90vh', overflowY: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none',
+    boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
     position: 'relative',
   } : {
     background: '#fff', borderRadius: '20px 20px 0 0', width: '100%',
-    maxHeight: '92vh', overflowY: 'auto',
+    maxHeight: '92vh', overflowY: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none',
+    paddingTop: 'env(safe-area-inset-top, 0px)',
   };
 
   return createPortal(
@@ -498,7 +500,7 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={onClose}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 8999 }}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 8999, touchAction: 'none' }}
           />
           {/* Panel */}
           <div style={modalStyle}>

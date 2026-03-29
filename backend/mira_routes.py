@@ -3149,6 +3149,10 @@ async def understand_with_llm(
         personality_tag = pet_context.get('personality_tag', '')
         energy_level = pet_context.get('energy_level', '')
         handling_sensitivity = pet_context.get('handling_sensitivity', '')
+
+        # ─── LIFE VISION — the parent's north star for this pet ───────────
+        soul_answers = pet_context.get('doggy_soul_answers') or pet_context.get('soul_answers') or {}
+        life_vision = soul_answers.get('life_vision', '') or ''
         
         # Determine what's missing
         missing_data = []
@@ -3163,6 +3167,15 @@ async def understand_with_llm(
         
         # Build PET-FIRST context (individual pet data BEFORE breed data)
         # Now includes FULL BEHAVIORAL DATA from Pet Soul
+        # Pre-compute life vision block to avoid complex f-string expression
+        life_vision_block = f"""
+🌟 LIFE VISION — THE NORTH STAR (MANDATORY CONTEXT FOR ALL RESPONSES):
+"{life_vision}"
+→ Every product, service, and advice MUST move {pet_name} closer to this vision.
+→ Reference it naturally: "This brings {pet_name} closer to the life you want for them..."
+→ When the parent seems unsure, remind them of their vision for {pet_name}.
+""" if life_vision else ""
+
         pet_info = f"""
 ═══════════════════════════════════════════════════════════
 🐾 THIS PET (USE THIS FIRST - NOT BREED GENERALIZATIONS):
@@ -3170,7 +3183,7 @@ async def understand_with_llm(
 Name: {pet_name}
 Age: {pet_context.get('age', 'Unknown')}
 Soul Score: {pet_context.get('soul_score', 'Unknown')}%
-
+{life_vision_block}
 🔹 PERSONALITY & BEHAVIOR (USE THIS DATA!):
 - Personality traits: {', '.join(traits) if traits else 'Still learning about them'}
 - Personality tag: {personality_tag or 'Unknown'}
@@ -21551,13 +21564,17 @@ async def get_personalization_stats(pet_id: str):
     # ═══════════════════════════════════════════════════════════════════
     # doggy_soul already defined above for score calculation
     
-    # Favorite treats
-    if doggy_soul.get("favorite_treats"):
-        treats = doggy_soul["favorite_treats"]
-        if isinstance(treats, list) and treats:
-            add_knowledge("🦴", f"{pet_name} loves {treats[0]}", "diet", 8)
-        elif isinstance(treats, str) and treats:
-            add_knowledge("🦴", f"{pet_name} loves {treats}", "diet", 8)
+    # Favorite treats — check doggy_soul first, then root-level fields
+    treats_raw = (
+        doggy_soul.get("favorite_treats")
+        or pet.get("favorite_treats")           # root-level (e.g. set by Mira chat)
+        or doggy_soul.get("treat_preference")   # SoulBuilder canonical field
+    )
+    if treats_raw:
+        if isinstance(treats_raw, list) and treats_raw:
+            add_knowledge("🦴", f"{pet_name} loves {treats_raw[0]}", "diet", 8)
+        elif isinstance(treats_raw, str) and treats_raw:
+            add_knowledge("🦴", f"{pet_name} loves {treats_raw}", "diet", 8)
     
     # Food preferences
     if doggy_soul.get("food_preferences"):
@@ -21582,6 +21599,14 @@ async def get_personalization_stats(pet_id: str):
     if doggy_soul.get("walk_duration"):
         duration = doggy_soul["walk_duration"]
         add_knowledge("🚶", f"Enjoys {duration} walks", "activity", 6)
+    
+    # Life vision — north-star sentence set during SoulBuilder
+    if doggy_soul.get("life_vision"):
+        vision = doggy_soul["life_vision"]
+        if isinstance(vision, str) and vision.strip():
+            # Show first 60 chars so it fits the ticker
+            short = vision.strip()[:60] + ("..." if len(vision.strip()) > 60 else "")
+            add_knowledge("🌟", short, "soul", 9)
     
     # Personality traits from describe_3_words
     if doggy_soul.get("describe_3_words"):
@@ -27445,3 +27470,37 @@ concierge=true means it needs to be arranged via The Doggy Company Concierge. No
         logger.warning(f"[MIRA_PLAN] Claude plan failed: {e} — returning empty for frontend fallback")
         return {"cards": [], "pet": "", "pillar": pillar}
 
+
+# ─── Quick Prompts Endpoint ─────────────────────────────────────────────────
+# Called by MiraChatWidget and MiraAI to get pillar-specific suggested prompts
+# These appear as quick-tap chips in the Mira chat interface
+
+QUICK_PROMPTS = {
+    "care": ["What should I feed Mojo?", "Find a vet near me", "Grooming schedule for my breed", "Vaccination reminders"],
+    "dine": ["Best food for my breed", "Allergy-safe options", "Raw vs kibble for my dog", "Feeding schedule help"],
+    "celebrate": ["Plan a birthday party", "Custom birthday cake", "Photo shoot for my dog", "Birthday outfit ideas"],
+    "go": ["Dog-friendly hotels near me", "Travel checklist for my dog", "Book a cab with my dog", "Pet passport help"],
+    "play": ["Dog parks near me", "Find a dog walker", "Playgroup for my breed", "Training classes nearby"],
+    "learn": ["Training tips for my breed", "Puppy basics course", "Behaviour problems help", "Find a trainer near me"],
+    "paperwork": ["Pet insurance options", "Microchipping my dog", "Health certificate for travel", "Registration help"],
+    "emergency": ["Emergency vet near me", "Is this symptom serious?", "Poison helpline", "After-hours vet"],
+    "farewell": ["Memory portrait for my dog", "Paw print keepsake", "Rainbow bridge ceremony", "Grief support"],
+    "adopt": ["Find the right breed for me", "Rescue dogs near me", "Home readiness checklist", "First week with new dog"],
+    "shop": ["Best products for my breed", "Recommended by Mira", "New arrivals", "Gifts for dog lovers"],
+    "stay": ["Dog-friendly stays near me", "Luxury pet hotels", "Book a staycation", "Pet boarding options"],
+    "general": ["What can Mira help with?", "Find products for my dog", "Book a service", "Talk to Concierge®"],
+}
+
+@router.get("/quick-prompts/{pillar}")
+async def get_quick_prompts(pillar: str):
+    """
+    Returns pillar-specific quick prompt chips for the Mira chat interface.
+    Called on every pillar page load by MiraChatWidget and MiraAI.
+    Falls back to 'general' if pillar not recognised.
+    """
+    prompts = QUICK_PROMPTS.get(pillar.lower(), QUICK_PROMPTS["general"])
+    return {
+        "pillar": pillar,
+        "prompts": prompts,
+        "count": len(prompts)
+    }

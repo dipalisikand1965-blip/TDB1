@@ -28,6 +28,7 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ConciergeOnlyProductDetailModal } from "../components/ProductCard";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
+import PillarServiceSection from "../components/PillarServiceSection";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import ConciergeToast from "../components/common/ConciergeToast";
 import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
@@ -94,7 +95,7 @@ function getMissingDocs(pet) {
 }
 
 // ─── DIM CONFIG ────────────────────────────────────────────
-function getPaperworkDims(pet) {
+export function getPaperworkDims(pet) {
   const senior  = isSenior(pet);
   const puppy   = isPuppy(pet);
   const multi   = isMultiPet(pet);
@@ -178,7 +179,7 @@ function getPaperworkDims(pet) {
   ];
 }
 
-const DIM_ID_TO_CATEGORY = {
+export const DIM_ID_TO_CATEGORY = {
   identity:  "Identity & Safety",
   health:    "Health Records",
   travel:    "Travel Documents",
@@ -407,7 +408,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
 }
 
 // ─── DIM EXPANDED ──────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, onViewDetails }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, onViewDetails }) {
   const petName = pet?.name||"your dog";
   const miraCtx = { includeText:"Add" };
   const [dimTab,    setDimTab]    = useState("products");
@@ -428,7 +429,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
 
   const tabs = [
     { id:"products",  label:"📦 Products" },
-    { id:"services",  label:"📋 Services" },
+    { id:"services",  label:"🐕 Services" },
     ...( dim.id!=="soul" ? [{ id:"advisory", label:"💡 Advisory" }] : [] ),
   ];
 
@@ -522,7 +523,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, o
 // ─── LOADING / NO PET ──────────────────────────────────────
 
 // ─── PAPERWORK CONTENT MODAL (category pill → products) ──────
-function PaperworkContentModal({ isOpen, onClose, category, pet }) {
+export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
   const [products,setProducts]=useState([]); const [loading,setLoading]=useState(false); const [selProd,setSelProd]=useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const { token } = useAuth();
@@ -937,28 +938,13 @@ const PaperworkSoulPage = () => {
         {activeTab==="advisory" && (
           <div style={{marginTop:24}}>
             {activeService&&<ServiceBookingModal service={activeService} pet={petData} onClose={()=>setActiveService(null)}/>}
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:6,fontFamily:"Georgia,serif"}}>
-              Expert guidance for <span style={{color:G.teal}}>{petName}</span>'s life
-            </h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Life planning, housing rules, multi-pet households, breed education — Mira advises.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>
-              {PAPER_SERVICES.map(svc=>(
-                <div key={svc.id} onClick={()=>setActiveService(svc)}
-                  style={{background:"#fff",borderRadius:16,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s"}}
-                  onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
-                  onMouseLeave={e=>e.currentTarget.style.transform="none"}>
-                  <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:40}}>{svc.icon}</div>
-                  <div style={{padding:"11px 13px 13px"}}>
-                    <div style={{fontSize:10,color:G.mutedText,marginBottom:2}}>{t(svc.tagline,petName)}</div>
-                    <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4}}>{svc.name}</div>
-                    <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-                      <button data-testid={`paperwork-advisory-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <PillarServiceSection
+              pillar="paperwork"
+              pet={petData}
+              title="Paperwork, Personally"
+              accentColor={G.teal}
+              darkColor={G.darkText}
+            />
           </div>
         )}
 

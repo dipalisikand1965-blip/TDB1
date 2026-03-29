@@ -359,7 +359,7 @@ const PetSoulTraits = ({ pet, soulData, token }) => {
     <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3">
       {/* Syncing indicator */}
       {isSyncing && (
-        <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full text-[10px] sm:text-xs text-amber-400">
+        <div className="tdc-chip tdc-chip-gold" style={{ background:'rgba(245,158,11,0.1)', color:'#fbbf24', borderColor:'rgba(245,158,11,0.2)' }}>
           <RefreshCw className="w-3 h-3 animate-spin" />
           <span>syncing</span>
         </div>
@@ -378,11 +378,11 @@ const PetSoulTraits = ({ pet, soulData, token }) => {
       {traits.map((trait, idx) => (
         <div 
           key={idx} 
-          className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs ${
-            trait.isHealth 
-              ? 'bg-green-500/20 border border-green-500/30 text-green-400'
-              : 'bg-white/10 backdrop-blur-sm text-white/80'
-          }`}
+          className={`tdc-chip tdc-chip-dark ${trait.isHealth ? 'tdc-chip-interactive' : ''}`}
+          style={trait.isHealth
+            ? { background:'rgba(34,197,94,0.2)', color:'#4ade80', borderColor:'rgba(34,197,94,0.3)' }
+            : { background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.8)', borderColor:'rgba(255,255,255,0.1)' }
+          }
         >
           {trait.isHealth && <Shield className="w-3 h-3" />}
           <span>{trait.icon}</span>
@@ -393,7 +393,8 @@ const PetSoulTraits = ({ pet, soulData, token }) => {
       {/* Suppressed tags indicator */}
       {hasConflicts && suppressedTags && suppressedTags.length > 0 && (
         <div 
-          className="flex items-center gap-1.5 px-2 sm:px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] sm:text-xs text-white/40 cursor-help"
+          className="tdc-chip tdc-chip-dark"
+          style={{ background:'rgba(255,255,255,0.05)', color:'rgba(255,255,255,0.4)', borderColor:'rgba(255,255,255,0.1)', cursor:'help' }}
           title={`${suppressedTags.length} preference(s) hidden due to health restrictions:\n${suppressedTags.map(t => `• ${t.content}`).join('\n')}`}
         >
           <AlertTriangle className="w-3 h-3 text-amber-400" />
@@ -473,7 +474,7 @@ const PetHero = ({ pet, soulData, onPetSwitch, pets, token }) => {
           
           {/* Content */}
           <div className="text-center md:text-left flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs sm:text-sm text-white/80 mb-2 sm:mb-3">
+            <div className="tdc-chip tdc-chip-dark mb-2 sm:mb-3" style={{ background:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.8)', borderColor:'rgba(255,255,255,0.15)' }}>
               <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400" />
               <span>Pet Soul™ {soulScore}% Complete</span>
             </div>

@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Package, Wrench, PawPrint } from 'lucide-react';
 import { API_URL } from '../utils/api';
@@ -22,6 +23,8 @@ import UnifiedHero from './UnifiedHero';
 import PillarNav from './PillarNav';
 import SEOHead from './SEOHead';
 import MiraChatWidget from './MiraChatWidget';
+import ConciergeRequestBuilder from './services/ConciergeRequestBuilder';
+import PillarConciergeCards from './common/PillarConciergeCards';
 // MobileMenu removed — Navbar from MainLayout handles mobile navigation
 
 // Pillar subcategories configuration - with REAL product images from Shopify
@@ -236,6 +239,11 @@ const PillarPageLayout = ({
   // Get subcategories for current pillar
   const subcategories = PILLAR_SUBCATEGORIES[pillar] || [];
   
+  // Concierge Request Builder state (desktop floating button)
+  const [conciergeLayoutOpen, setConciergeLayoutOpen] = useState(false);
+  const [prefilledIntent, setPrefilledIntent] = useState('');
+  const [pillarCardsOpen, setPillarCardsOpen] = useState(false);
+  
   // Get pillar-specific gradient for bottom section
   const PILLAR_BG = {
     celebrate: 'from-pink-50',
@@ -254,8 +262,26 @@ const PillarPageLayout = ({
   };
   
   const bgGradient = PILLAR_BG[pillar] || 'from-gray-50';
+
+  // Pillar-specific accent colours for the Concierge® floating button
+  const PILLAR_ACCENT = {
+    celebrate : { text: '#F9A8D4', border: 'rgba(249,168,212,0.40)', bg: 'linear-gradient(135deg,#1A0010,#3D0025)' },
+    dine      : { text: '#FCD34D', border: 'rgba(252,211,77,0.40)',   bg: 'linear-gradient(135deg,#1A0E00,#3D2200)' },
+    care      : { text: '#6EE7B7', border: 'rgba(110,231,183,0.40)',  bg: 'linear-gradient(135deg,#00160D,#003322)' },
+    go        : { text: '#93C5FD', border: 'rgba(147,197,253,0.40)',  bg: 'linear-gradient(135deg,#00082A,#001A4D)' },
+    play      : { text: '#C4B5FD', border: 'rgba(196,181,253,0.40)',  bg: 'linear-gradient(135deg,#0D001A,#220038)' },
+    learn     : { text: '#7DD3FC', border: 'rgba(125,211,252,0.40)',  bg: 'linear-gradient(135deg,#00101A,#002438)' },
+    paperwork : { text: '#D1D5DB', border: 'rgba(209,213,219,0.40)',  bg: 'linear-gradient(135deg,#0D0D0D,#1F1F1F)' },
+    emergency : { text: '#FCA5A5', border: 'rgba(252,165,165,0.40)',  bg: 'linear-gradient(135deg,#1A0000,#3D0000)' },
+    farewell  : { text: '#A5B4FC', border: 'rgba(165,180,252,0.40)',  bg: 'linear-gradient(135deg,#04001A,#0D0040)' },
+    adopt     : { text: '#FBCFE8', border: 'rgba(251,207,232,0.40)',  bg: 'linear-gradient(135deg,#1A0010,#3D0030)' },
+    shop      : { text: '#FED7AA', border: 'rgba(254,215,170,0.40)',  bg: 'linear-gradient(135deg,#1A0800,#3D1A00)' },
+    services  : { text: '#C9973A', border: 'rgba(201,151,58,0.35)',   bg: 'linear-gradient(135deg,#1C0A00,#3D1A00)' },
+  };
+  const accent = PILLAR_ACCENT[pillar] || PILLAR_ACCENT.services;
   
   return (
+    <>
     <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
       {/* ── Mobile nav header — REMOVED: Navbar from MainLayout handles this ───────────── */}
       {/* Back button only on mobile, subtly placed below Navbar */}
@@ -428,7 +454,85 @@ const PillarPageLayout = ({
       
       {/* Mira Chat Widget - hidden when page uses MiraOSTrigger */}
       {!hideMiraWidget && <MiraChatWidget pillar={pillar} />}
+
+
     </div>
+    {ReactDOM.createPortal(
+      <>
+        <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(v => !v); }}
+            data-testid="concierge-builder-float-btn"
+            style={{
+              position: 'fixed', bottom: 160, right: 24, zIndex: 2147483640,
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: window.innerWidth < 768 ? '12px 16px' : '12px 20px',
+              background: accent.bg, color: accent.text,
+              borderRadius: 999, border: '1px solid ' + accent.border,
+              fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.30)',
+              fontFamily: 'inherit',
+            }}
+          >
+            {window.innerWidth < 768 ? (
+              <span style={{ fontSize: 15 }}>✦ C°</span>
+            ) : (
+              <><span>✦</span> Concierge® Requests</>
+            )}
+          </button>
+        {pillarCardsOpen && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            zIndex: 2147483645,
+            display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+            background: 'rgba(0,0,0,0.6)',
+          }}
+            onClick={() => setPillarCardsOpen(false)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#fff',
+                borderRadius: '24px 24px 0 0',
+                padding: '24px 20px 48px',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                width: '100%',
+                maxWidth: 600,
+                margin: '0 auto',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+                <div style={{ fontSize: 17, fontWeight: 800, color: '#1A0A2E' }}>✦ How can Concierge® help?</div>
+                <button
+                  onClick={() => setPillarCardsOpen(false)}
+                  style={{ background: '#F3F4F6', border: 'none', borderRadius: 20, padding: '6px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', color: '#6B7280' }}
+                >Close ✕</button>
+              </div>
+              <PillarConciergeCards
+                pillar={pillar}
+                pet={activePet}
+                token={token}
+                onSheetClose={() => setPillarCardsOpen(false)}
+                onCardSelect={(intent) => {
+                  setPillarCardsOpen(false);
+                  setPrefilledIntent(intent);
+                  setConciergeLayoutOpen(true);
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </>,
+      document.body
+    )}
+    <ConciergeRequestBuilder
+      pet={activePet}
+      token={token}
+      isOpen={conciergeLayoutOpen}
+      onClose={() => { setConciergeLayoutOpen(false); setPrefilledIntent(''); }}
+      prefilledText={prefilledIntent}
+    />
+  </>
   );
 };
 

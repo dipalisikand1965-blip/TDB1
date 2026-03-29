@@ -587,6 +587,7 @@ export default function MiraImaginesBreed({
   pillar = "shop",
   onConcierge,
   colour = "#9B59B6",
+  limit,
 }) {
   const petName    = pet?.name || "your dog";
   const rawBreed   = (pet?.breed || pet?.doggy_soul_answers?.breed || "").toLowerCase().trim();
@@ -624,8 +625,16 @@ export default function MiraImaginesBreed({
   return (
     <div style={{ marginBottom: 32 }}>
 
-      {/* Header */}
-      <div style={{ marginBottom: 20 }}>
+      {/* Header — light frosted card ensures dark text readable on any parent bg */}
+      <div style={{
+        marginBottom: 16,
+        background: 'rgba(255,255,255,0.92)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: 14,
+        padding: '14px 16px',
+        boxShadow: '0 1px 6px rgba(0,0,0,0.07)',
+        border: '1px solid rgba(0,0,0,0.06)',
+      }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
           <div style={{
             width: 36, height: 36, borderRadius: "50%",
@@ -641,7 +650,7 @@ export default function MiraImaginesBreed({
             }}>
               Mira Imagines for <span style={{ color: colour }}>{petName}</span>
             </div>
-            <div style={{ fontSize: 12, color: "#666", marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}>
               {isKnown
                 ? `Mira knows ${breedDisplay}s. She's imagining what ${petName} needs while she scores your picks.`
                 : `Mira hasn't met many ${breedDisplay || "dogs of this breed"} yet — but she's already thinking about ${petName}.`
@@ -652,7 +661,7 @@ export default function MiraImaginesBreed({
 
         {/* Breed trait chips — shown if breed is known */}
         {isKnown && traits && (
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10 }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
             {traits.traits.map(t => (
               <span key={t} style={{
                 background: `${colour}18`,
@@ -666,13 +675,13 @@ export default function MiraImaginesBreed({
             ))}
             <span style={{
               background: "#f0f0f0", borderRadius: 20,
-              padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#666",
+              padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#444",
             }}>
               {traits.coat} coat
             </span>
             <span style={{
               background: "#f0f0f0", borderRadius: 20,
-              padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#666",
+              padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#444",
             }}>
               {traits.energy} energy
             </span>
@@ -683,11 +692,11 @@ export default function MiraImaginesBreed({
       {/* Imagine cards */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill,minmax(min(240px,100%),1fr))",
+        gridTemplateColumns: (limit === 2) ? "1fr 1fr" : "repeat(auto-fill,minmax(min(240px,100%),1fr))",
         gap: 16,
         marginBottom: 20,
       }}>
-        {cards.map((card, i) => (
+        {cards.slice(0, limit || cards.length).map((card, i) => (
           <ImagineCard
             key={i}
             card={card}

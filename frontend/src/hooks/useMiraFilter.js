@@ -49,7 +49,7 @@ const BREED_SYNONYMS = {
   labrador:         ['labrador', 'lab', 'labrador retriever'],
   golden:           ['golden', 'golden retriever'],
   german_shepherd:  ['german shepherd', 'german_shepherd', 'gsd', 'alsatian'],
-  indie:            ['indie', 'indian', 'indian pariah', 'desi', 'indie dog', 'street dog', 'mixed', 'desi dog'],
+  indie:            ['indie', 'indian pariah', 'desi', 'indie dog', 'street dog', 'mixed', 'desi dog'],
   poodle:           ['poodle', 'toy poodle', 'miniature poodle', 'standard poodle'],
   beagle:           ['beagle'],
   bulldog:          ['bulldog', 'english bulldog', 'french bulldog', 'frenchie'],
@@ -71,6 +71,8 @@ const BREED_SYNONYMS = {
   schnoodle:        ['schnoodle', 'shnoodle'],
   saint_bernard:    ['saint bernard', 'st bernard', 'st. bernard', 'st_bernard'],
   jack_russell:     ['jack russell', 'jack russell terrier', 'jack_russell'],
+  alaskan_malamute: ['alaskan malamute', 'malamute', 'alaskan_malamute'],
+  indian_spitz:     ['indian spitz', 'indian_spitz'],
 };
 
 // Breeds with no product catalog match → treat as universal (show for all pets)
@@ -561,11 +563,14 @@ export const KNOWN_BREEDS = [
   'saint bernard','st bernard','jack russell',
   // Universal-fallback breeds (no dedicated catalog but valid breed names)
   'akita','american bully','australian shepherd',
+  'alaskan malamute','malamute',
   'basenji','basset hound','bichon frise','dalmatian',
   'great dane','greyhound','maltipoo','mastiff','pekingese',
   'samoyed','springer spaniel','vizsla','weimaraner',
   'scottish terrier','bernese mountain','havanese','boston terrier',
   'chow chow',
+  // Doodle / mixed breeds found in product catalog
+  'labradoodle','goldendoodle','cockapoo','cavapoo','schnoodle','maltipoo',
   // Additional breeds found in product catalog — MUST be here to block cross-breed contamination
   'corgi','pembroke corgi','cardigan corgi','welsh corgi',
   'spitz','indian spitz','german spitz',

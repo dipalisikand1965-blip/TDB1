@@ -25,6 +25,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import FarewellMobilePage from './FarewellMobilePage';
 import { filterBreedProducts } from '../hooks/useMiraFilter';
@@ -241,7 +242,7 @@ const FarewellSoulPage = () => {
 
   const [loading,  setLoading]  = useState(true);
   const [activeTab, setActiveTab] = useState("farewell");
-  const [prodTab,  setProdTab]  = useState("Memorial & Legacy");
+  const [prodTab,  setProdTab]  = useState("memorial");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
   const [breedProds,  setBreedProds]  = useState([]);
@@ -254,11 +255,12 @@ const FarewellSoulPage = () => {
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
   useEffect(()=>{
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=100`).then(r=>r.ok?r.json():null).then(d=>{
+    const breedParam = petData?.breed ? `&breed=${encodeURIComponent(petData.breed)}` : '';
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=500${breedParam}`).then(r=>r.ok?r.json():null).then(d=>{
       const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});setApiProducts(grouped);
     }).catch(()=>{});
     fetch(`${API_URL}/api/service-box/services?pillar=farewell`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
-  },[]);
+  },[petData?.breed]);
 
   // Fetch breed-specific farewell products from breed_products collection
   useEffect(()=>{
@@ -292,7 +294,8 @@ const FarewellSoulPage = () => {
   // Mobile detection
   if (!isDesktop) return <FarewellMobilePage />;
 
-  if(loading) return <PillarPageLayout pillar="farewell" hideHero hideNavigation><LoadingState/></PillarPageLayout>;
+  if(loading) return <PillarPageLayout pillar="farewell" hideHero hideNavigation><LoadingState/>
+      </PillarPageLayout>;
 
   return (
     <>
@@ -378,9 +381,9 @@ const FarewellSoulPage = () => {
             {/* Product category tabs */}
             {(() => {
               const FAREWELL_TABS = [
-                { id:"Memorial & Legacy",   label:"🌷 Memorial",   icon:"🌷" },
-                { id:"Grief & Healing",     label:"💙 Grief",      icon:"💙" },
-                { id:"Cremation & Burial",  label:"🌿 Cremation",  icon:"🌿" },
+                { id:"memorial",   label:"🌷 Memorial",   icon:"🌷" },
+                { id:"soul_made",  label:"✨ Soul Made",   icon:"✨" },
+                { id:"all",        label:"🐾 All Items",   icon:"🐾" },
               ];
 
               // Flatten all farewell products with breed filter
@@ -389,9 +392,18 @@ const FarewellSoulPage = () => {
                 petData?.breed
               );
 
+              const nameOf = p => (p.name || '').toLowerCase();
+              const catOf  = p => (p.category || '').toLowerCase();
               const tabProds = prodTab === "breed"
                 ? breedProds.slice(0, 12)
-                : allProds.filter(p => (p.category||"") === prodTab).slice(0, 12);
+                : allProds.filter(p => {
+                    const n = nameOf(p), c = catOf(p);
+                    if (prodTab === "memorial")
+                      return c === "memorial" || c.includes("memorial") || n.includes("memorial") || n.includes("portrait") || n.includes("paw") || n.includes("frame") || n.includes("ornament") || n.includes("memory") || n.includes("urn") || n.includes("keepsake");
+                    if (prodTab === "soul_made")
+                      return c.startsWith("breed-") || n.includes("breed") || n.includes("indie") || n.includes("custom");
+                    return true; // "all"
+                  }).slice(0, 12);
 
               return (
                 <>
@@ -410,12 +422,12 @@ const FarewellSoulPage = () => {
                       <p style={{fontWeight:600,marginBottom:8}}>
                         {prodTab==="breed"
                           ? `${breed||petName}-specific farewell pieces being created`
-                          : "Memorial products being curated with love"}
+                          : "Memorial products being arranged with love"}
                       </p>
                       <p style={{fontSize:13,marginBottom:16}}>
                         {prodTab==="breed"
                           ? `We're designing farewell keepsakes just for ${breed||petName}s.`
-                          : `Mira is sourcing ${breed||petName}-specific items for this category.`}
+                          : `Mira is hand-picking the right keepsakes for ${petName}.`}
                       </p>
                       <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.indigo},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"10px 24px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Ask Mira for guidance →</button>
                     </div>
@@ -435,38 +447,14 @@ const FarewellSoulPage = () => {
         {/* Get Support tab */}
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Support for <span style={{color:G.indigo}}>{petName}</span>'s family</h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>All services arranged with gentleness — no rush, no pressure.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {FAREWELL_SERVICES.map(svc=>{
-                const dbSvc = services.find(s=>s.name===svc.name||s.id===svc.id)||{};
-                const img = dbSvc.watercolor_image||dbSvc.image_url||null;
-                return(<div key={svc.id}
-                  onClick={()=>{
-                    tdc.request({ text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_services_card" });
-                    setConciergeSvc(svc.name); setConciergeOpen(true);
-                  }}
-                  style={{background:"#fff",borderRadius:16,border:`2px solid rgba(99,102,241,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                  {img
-                    ? <img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
-                    : <span style={{fontSize:38}}>{svc.icon}</span>}
-                </div>
-                <div style={{padding:"14px 16px 16px"}}>
-                  <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
-                  <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
-                  <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
-                  <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.indigo}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{t(svc.miraKnows,petName)}</span></div>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-                    <button onClick={()=>{
-                      tdc.request({ text: svc.name, pillar: "farewell", pet: petData, channel: "farewell_services_card" });
-                      setConciergeSvc(svc.name);setConciergeOpen(true);
-                    }}
-                    style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:'pointer'}}>Arrange for {petName} →</button>
-                  </div>
-                </div>
-              </div>);})}
-            </div>
+            <PillarServiceSection
+              pillar="farewell"
+              pet={petData}
+              title="Farewell Support, Personally"
+              accentColor={G.indigo}
+              darkColor={G.darkText}
+              preloadedServices={services}
+            />
           </div>
         )}
 

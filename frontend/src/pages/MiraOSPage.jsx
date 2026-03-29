@@ -883,7 +883,7 @@ const MiraOSPage = () => {
         autoDismissDelay={8000}
       />
       
-      {/* MAIN HEADER - Always visible */}
+      {/* MAIN HEADER - spans full width on desktop */}
       <header className="mp-header sticky top-0 z-50">
         <div className="mp-header-inner">
           {/* Left: Mira Logo */}
@@ -923,7 +923,6 @@ const MiraOSPage = () => {
       {/* ════════════════════════════════════════════════════════════════════
           TAB CONTENT AREAS - Each dimension
           ════════════════════════════════════════════════════════════════════ */}
-      
       {/* ══════════════════════════════════════════════════════════════════
           1. MOJO TAB (Context Layer)
           Who the system is thinking about

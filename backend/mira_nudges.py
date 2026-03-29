@@ -488,3 +488,36 @@ async def process_all_pets():
         "pets_processed": processed,
         "total_nudges_generated": total_nudges
     }
+
+
+
+@router.post("/process-overdue")
+async def process_overdue_nudges():
+    """
+    Admin endpoint: expire stale nudges (>3 days overdue).
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    from datetime import datetime, timezone, timedelta
+
+    now = datetime.now(timezone.utc)
+    stale_cutoff = (now - timedelta(days=3)).isoformat()
+    recent_cutoff = now.isoformat()
+
+    expired_result = await db.nudge_schedules.update_many(
+        {"status": "pending", "scheduled_for": {"$lt": stale_cutoff}},
+        {"$set": {"status": "expired", "expired_at": now.isoformat()}}
+    )
+
+    fresh_pending = await db.nudge_schedules.count_documents({
+        "status": "pending",
+        "scheduled_for": {"$lt": recent_cutoff, "$gte": stale_cutoff}
+    })
+
+    return {
+        "status": "success",
+        "expired": expired_result.modified_count,
+        "fresh_pending": fresh_pending,
+        "message": f"Expired {expired_result.modified_count} stale nudges. {fresh_pending} fresh nudges remain pending."
+    }

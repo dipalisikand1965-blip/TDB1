@@ -564,7 +564,14 @@ async def get_breed_products(
     if product_type:
         query["product_type"] = product_type
     if pillar:
-        query["pillars"] = {"$in": [pillar]}
+        # Support both 'pillar' (singular) and 'pillars' (array) field names
+        pillar_or = [{"pillars": {"$in": [pillar]}}, {"pillar": pillar}]
+        if "$or" in query:
+            breed_or = query.pop("$or")
+            query.setdefault("$and", [])
+            query["$and"].extend([{"$or": breed_or}, {"$or": pillar_or}])
+        else:
+            query["$or"] = pillar_or
     if has_mockup is not None:
         if has_mockup:
             query["mockup_url"] = {"$ne": None}

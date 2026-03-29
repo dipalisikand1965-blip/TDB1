@@ -7,8 +7,9 @@
  * Architecture: Full Care/Learn parity (Session 83n)
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { filterBreedProducts } from '../hooks/useMiraFilter';
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useScrollLock } from '../hooks/useScrollLock';
+import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
@@ -24,8 +25,10 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import AdoptMobilePage from './AdoptMobilePage';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -38,11 +41,13 @@ const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 function t(str, name) { return str ? str.replace(/{name}/g, name||"your dog") : ""; }
 
 const ADOPT_STAGES = [
-  { id:"thinking",  label:"Thinking",   emoji:"💭", desc:"Exploring the idea of adopting" },
-  { id:"ready",     label:"Ready",      emoji:"✅", desc:"Decided — ready to find the right dog" },
-  { id:"looking",   label:"Looking",    emoji:"🔍", desc:"Actively searching and meeting dogs" },
-  { id:"matched",   label:"Matched",    emoji:"❤️", desc:"Found the one — finalising adoption" },
-  { id:"home",      label:"Home",       emoji:"🏠", desc:"They're home — settling in" },
+  { id:"thinking",  label:"Ready?",      emoji:"💭", desc:"Exploring the idea of adopting" },
+  { id:"ready",     label:"Adopting",    emoji:"✅", desc:"Decided — ready to find the right dog" },
+  { id:"looking",   label:"Find Match",  emoji:"🔍", desc:"Actively searching and meeting dogs" },
+  { id:"matched",   label:"Matched!",    emoji:"❤️", desc:"Found the one — finalising adoption" },
+  { id:"home",      label:"Coming Home", emoji:"🏠", desc:"They're home — settling in" },
+  { id:"breed",     label:"Breeds",      emoji:"📚", desc:"Breed-specific products for your dog" },
+  { id:"guidance",  label:"Book",        emoji:"💌", desc:"Talk to Mira's concierge team" },
 ];
 
 const ADOPT_QUESTIONS = [
@@ -69,6 +74,7 @@ function SoulChip({ icon, label, value }) {
 
 function AdoptProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useScrollLock(drawerOpen);
   const [answers, setAnswers]       = useState({});
   const [saved,   setSaved]         = useState({});
   const [submitting, setSubmitting] = useState({});
@@ -182,6 +188,7 @@ function MiraPicksSection({ pet, onOpenService }) {
       </div>
       <p style={{fontSize:13,color:"#888",marginBottom:16}}>{gentleSubtitle}</p>
       {!picksLoading&&picks.length===0&&<div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>{imagines.map(item=><MiraImaginesCard key={item.id} item={item} pet={pet} token={token} pillar="adopt"/>)}</div>}
+      <div style={{padding:"0 0 16px"}}><FirstTimePawrent pet={pet} token={token} accentColor="#D4537E" /></div>
       {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.rose}}/><span style={{fontSize:12}}>Mira is preparing adoption picks…</span></div>}
       {!picksLoading&&picks.length>0&&(<div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>{picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?G.rose:"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return<div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}} onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}><div style={{width:"100%",height:130,background:G.pale,overflow:"hidden"}}>{img?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.rose})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,24)}</div>}</div><div style={{padding:"10px 11px 12px"}}><div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>{isService?(<p style={{fontSize:11,color:G.mid,lineHeight:1.45,margin:'0 0 8px'}}>Compassionate concierge support for your adoption journey.</p>):(<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}><div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div><span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span></div>)}<button onClick={(e)=>{e.stopPropagation();if(isService){tdc.book({service:pick.name,pillar:'adopt',pet,channel:'adopt_mira_picks_service'});onOpenService?.(pick.name);}else{setSelPick(pick);}}} style={{width:'100%',background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>{isService?'Talk to Mira →':'View details →'}</button></div></div>;})})</div>)}
       {selPick&&<ProductDetailModal product={selPick} pillar="adopt" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
@@ -240,21 +247,28 @@ const AdoptSoulPage = () => {
   const [activeTab, setActiveTab] = useState("adopt");
   const [petData,  setPetData]  = useState(null);
   const [apiProducts, setApiProducts] = useState({});
+  const [rawProducts, setRawProducts] = useState([]);
   const [services,    setServices]    = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [conciergeSvc,  setConciergeSvc]  = useState("");
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [openDim, setOpenDim] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastSvc, setToastSvc] = useState("");
+  useScrollLock(conciergeOpen || soulMadeOpen || !!openDim);
 
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
   useEffect(()=>{
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=100`).then(r=>r.ok?r.json():null).then(d=>{
-      const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});setApiProducts(grouped);
+    const breedParam = petData?.breed ? `&breed=${encodeURIComponent(petData.breed)}` : '';
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=200${breedParam}`).then(r=>r.ok?r.json():null).then(d=>{
+      const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});
+      setApiProducts(grouped);
+      const miraFiltered = petData ? applyMiraFilter(filterBreedProducts(d?.products||[], petData?.breed||''), petData) : (d?.products||[]);
+      setRawProducts(miraFiltered);
     }).catch(()=>{});
     fetch(`${API_URL}/api/service-box/services?pillar=adopt`).then(r=>r.ok?r.json():null).then(d=>{if(d?.services)setServices(d.services);}).catch(()=>{});
-  },[]);
+  },[petData?.breed]);
 
   const petName = petData?.name || "you";
   const breed   = petData?.breed||"";
@@ -263,6 +277,25 @@ const AdoptSoulPage = () => {
     setConciergeSvc(serviceName);
     setConciergeOpen(true);
   }, [petData]);
+
+  // ── Adopt Product Sections (mirrors AdoptMobilePage) ──────────────────────
+  const adoptSections = useMemo(() => {
+    if (!rawProducts?.length) return [];
+    const breedSlug = (petData?.breed || '').toLowerCase().replace(/\s+/g, '-').split('(')[0].trim();
+    const breedSpecific = rawProducts.filter(p =>
+      (p.sub_category || '').toLowerCase().includes('-adopt') &&
+      (p.sub_category || '').toLowerCase().includes(breedSlug)
+    );
+    const essentials = rawProducts.filter(p => (p.sub_category || '') === 'essentials');
+    const readiness  = rawProducts.filter(p => ['readiness', 'discover'].includes(p.sub_category || ''));
+    const enrichment = rawProducts.filter(p => ['adopt-enrichment', 'behaviour', 'soul'].includes(p.sub_category || ''));
+    return [
+      breedSpecific.length ? { id:'breed',      icon:'🐾', label:`${petData?.breed?.split('(')[0].trim() || 'Breed'} Essentials`, products: breedSpecific } : null,
+      essentials.length    ? { id:'essentials', icon:'🏠', label:'Arrival Essentials',   products: essentials  } : null,
+      readiness.length     ? { id:'readiness',  icon:'📋', label:'Home Readiness',        products: readiness   } : null,
+      enrichment.length    ? { id:'enrichment', icon:'🎾', label:'Enrichment & Bonding',  products: enrichment  } : null,
+    ].filter(Boolean);
+  }, [rawProducts, petData]);
 
   // Mobile detection
   if (!isDesktop) return <AdoptMobilePage />;
@@ -278,16 +311,20 @@ const AdoptSoulPage = () => {
       <div style={{background:`linear-gradient(160deg,${G.deep} 0%,${G.mid} 55%,#BE185D 100%)`,padding:"28px 20px 0",position:"relative",overflow:"hidden",textAlign:"center",boxSizing:"border-box",width:"100%"}}>
         <div style={{position:"absolute",top:20,right:20,width:44,height:44,borderRadius:"50%",background:MIRA_ORB,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:"0 0 24px rgba(212,83,126,0.50)"}}>✦</div>
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginBottom:12}}>
-          <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${G.light},${G.rose})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,border:"3px solid rgba(255,255,255,0.30)"}}>🐾</div>
+          <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${G.light},${G.rose})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:44,border:"3px solid rgba(255,255,255,0.30)",overflow:"hidden"}}>
+            {petData?.photo_url
+              ? <img src={petData.photo_url} alt={petData?.name||"pet"} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%"}} onError={e=>{e.target.style.display="none";e.target.parentNode.innerHTML="🐾";}}/>
+              : "🐾"}
+          </div>
           <div style={{marginTop:-8,background:`linear-gradient(135deg,${G.deep},${G.rose})`,borderRadius:20,padding:"3px 10px",fontSize:9,fontWeight:700,color:"#fff",border:"1.5px solid rgba(255,255,255,0.25)"}}>Adoption Ready</div>
         </div>
         <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(249,168,201,0.18)",borderRadius:20,padding:"4px 14px",marginBottom:14}}>
           <span style={{fontSize:11,color:G.light,fontWeight:700}}>✦ Find your perfect dog — Mira guides every step</span>
         </div>
         <h1 style={{fontSize:"clamp(1.875rem,4vw,2.5rem)",fontWeight:900,color:"#fff",marginBottom:8,lineHeight:1.15,fontFamily:"Georgia,'Times New Roman',serif"}}>
-          Every dog deserves<br/><span style={{color:G.light}}>the right home</span>
+          Bring home<br/><span style={{color:G.light}}>your new best friend</span>
         </h1>
-        <p style={{fontSize:14,color:"rgba(255,255,255,0.72)",marginBottom:16,maxWidth:480,margin:"0 auto 16px",lineHeight:1.6}}>Breed matching, home readiness, rescue connections and first-year support — all guided by Mira.</p>
+        <p style={{fontSize:14,color:"rgba(255,255,255,0.72)",marginBottom:16,maxWidth:480,margin:"0 auto 16px",lineHeight:1.6}}>Whether from a rescue, a breeder, or the street — every dog deserves a forever home prepared with love.</p>
         <div style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,marginBottom:16}}>
           <SoulChip value="🐾 Find your match"/>
           <SoulChip value="❤️ Rescue network"/>
@@ -312,7 +349,7 @@ const AdoptSoulPage = () => {
         </div>
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
-          {[{id:"adopt",label:"🐾 Find Your Dog"},{id:"services",label:"💌 Book Guidance"},{id:"find",label:"📍 Find Rescue"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.rose}`:"3px solid transparent",color:a?G.rose:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
+          {[{id:"adopt",label:"🐾 Every Dog"},{id:"services",label:"🐕 Services"},{id:"find",label:"📍 Find a Dog"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.rose}`:"3px solid transparent",color:a?G.rose:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
         </div>
 
         {/* Stage tracker */}
@@ -320,17 +357,132 @@ const AdoptSoulPage = () => {
           <>
             <div style={{background:"#fff",border:`1.5px solid ${G.borderLight}`,borderRadius:14,padding:"16px 20px",marginBottom:20}}>
               <p style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:12}}>Where are you on the journey?</p>
-              <div style={{display:"flex",gap:0,overflowX:"auto",scrollbarWidth:"none"}}>
-                {ADOPT_STAGES.map((s,i)=><div key={s.id} style={{flex:1,minWidth:80,textAlign:"center",padding:"8px 4px",position:"relative"}}>
-                  {i>0&&<div style={{position:"absolute",left:0,top:20,height:2,width:"50%",background:G.borderLight}}/>}
-                  {i<ADOPT_STAGES.length-1&&<div style={{position:"absolute",right:0,top:20,height:2,width:"50%",background:G.borderLight}}/>}
-                  <div style={{width:40,height:40,borderRadius:"50%",background:G.pale,border:`2px solid ${G.rose}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,margin:"0 auto 6px",position:"relative",zIndex:1}}>{s.emoji}</div>
-                  <div style={{fontSize:10,fontWeight:600,color:G.darkText}}>{s.label}</div>
-                </div>)}
+              <div style={{display:"flex",gap:8,overflowX:"auto",scrollbarWidth:"none",paddingBottom:4}}>
+                {ADOPT_STAGES.map(s=>(
+                  <button key={s.id}
+                    onClick={()=>{ if(s.id==='guidance'){setConciergeOpen(true);}else{setOpenDim(prev=>prev===s.id?null:s.id);} }}
+                    style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:5,padding:"10px 14px",borderRadius:16,border:`2px solid ${openDim===s.id?G.rose:G.border}`,background:openDim===s.id?G.pale:"#fff",cursor:"pointer",minWidth:76,minHeight:78,transition:"all 0.15s"}}>
+                    <span style={{fontSize:22}}>{s.emoji}</span>
+                    <span style={{fontSize:11,fontWeight:700,color:openDim===s.id?G.rose:G.darkText,textAlign:"center",lineHeight:1.25,whiteSpace:"normal",maxWidth:64}}>{s.label}</span>
+                  </button>
+                ))}
               </div>
+
+              {/* ── Dim Expanded Panel ── */}
+              {openDim && (
+                <div style={{marginTop:16,background:"#fff",border:`2px solid ${G.rose}`,borderRadius:20,padding:20}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+                    <span style={{fontSize:26}}>{ADOPT_STAGES.find(s=>s.id===openDim)?.emoji}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:15,fontWeight:800,color:G.darkText}}>{ADOPT_STAGES.find(s=>s.id===openDim)?.label}</div>
+                      <div style={{fontSize:11,color:"#888"}}>Personalised for {petName}</div>
+                    </div>
+                    <button onClick={()=>setOpenDim(null)} style={{background:G.pale,border:"none",borderRadius:20,padding:"4px 12px",fontSize:11,fontWeight:700,color:G.rose,cursor:"pointer"}}>Close ✕</button>
+                  </div>
+                  <div style={{height:1,background:"rgba(212,83,126,0.15)",margin:"0 0 16px"}}/>
+
+                  {openDim==="thinking" && (
+                    <>
+                      <FirstTimePawrent pet={petData} token={token} accentColor="#D4537E" />
+                      <div style={{marginTop:16}}>
+                        <div style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:12}}>📚 Breed Advisory</div>
+                        <PillarServiceSection pillar="adopt" pet={petData} title="" accentColor={G.rose} darkColor={G.darkText} />
+                      </div>
+                    </>
+                  )}
+
+                  {openDim==="ready" && (
+                    <PillarServiceSection pillar="adopt" pet={petData} title="" accentColor={G.rose} darkColor={G.darkText} />
+                  )}
+
+                  {openDim==="looking" && (
+                    <>
+                      <div style={{background:`linear-gradient(135deg,rgba(212,83,126,0.08),rgba(212,83,126,0.14))`,borderRadius:14,padding:"14px 16px",marginBottom:16}}>
+                        <div style={{fontSize:15,fontWeight:700,color:G.darkText,marginBottom:4}}>
+                          Finding the right {(petData?.breed||"dog").split("(")[0].trim()}
+                        </div>
+                        <div style={{fontSize:13,color:G.mutedText,lineHeight:1.6}}>
+                          Mira matches breed energy, size and temperament to your lifestyle — before you meet one dog. Rescues, breeders and street dogs all verified.
+                        </div>
+                      </div>
+                      <AdoptNearMe pet={petData} onBook={shelter=>{tdc.request(`Adoption enquiry: ${shelter}`,{pillar:"adopt",channel:"adopt_nearme",pet:petData});}} />
+                    </>
+                  )}
+
+                  {openDim==="matched" && adoptSections.length>0 && (
+                    <div style={{display:"flex",flexDirection:"column",gap:20}}>
+                      {adoptSections.map(section=>(
+                        <div key={section.id}>
+                          <div style={{fontSize:15,fontWeight:800,color:G.darkText,marginBottom:10}}>{section.icon} {section.label}</div>
+                          <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>
+                            {section.products.slice(0,8).map(p=>(
+                              <div key={p.id||p._id} style={{flexShrink:0,width:168}}>
+                                <SharedProductCard product={p} pillar="adopt" selectedPet={petData} compact />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {openDim==="home" && (
+                    <>
+                      <FirstTimePawrent pet={petData} token={token} accentColor="#D4537E" />
+                      <div style={{marginTop:16,display:"flex",gap:14,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>
+                        {rawProducts.slice(0,12).map(p=>(
+                          <div key={p.id||p._id} style={{flexShrink:0,width:168}}>
+                            <SharedProductCard product={p} pillar="adopt" selectedPet={petData} compact />
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {openDim==="breed" && (
+                    <div>
+                      <div style={{fontSize:13,color:G.mutedText,marginBottom:12,lineHeight:1.5}}>
+                        Products made specifically for {(petData?.breed||"").split("(")[0].trim()} dogs — from breed guides to welcome kits.
+                      </div>
+                      <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:8,scrollbarWidth:"none"}}>
+                        {rawProducts.filter(p=>{
+                          const breed=(petData?.breed||"").toLowerCase().split("(")[0].trim();
+                          return (p.breed_tags||[]).some(t=>(t||"").toLowerCase().includes(breed))||(p.name||"").toLowerCase().includes(breed);
+                        }).slice(0,12).map(p=>(
+                          <div key={p.id||p._id} style={{flexShrink:0,width:168}}>
+                            <SharedProductCard product={p} pillar="adopt" selectedPet={petData} compact />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div style={{marginBottom:20}}><AdoptProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData} onOpenService={(serviceName)=>openAdoptConcierge(serviceName||'Adoption support')}/>
+
+            {/* ── Sectioned Products (Breed Essentials, Arrival Essentials, etc.) ── */}
+            {adoptSections.length > 0 && (
+              <div style={{marginBottom:28}}>
+                <h3 style={{fontSize:"clamp(1rem,2.5vw,1.25rem)",fontWeight:800,color:G.darkText,marginBottom:20,fontFamily:"Georgia,serif"}}>Mira's Adoption Picks for {petName}</h3>
+                {adoptSections.map(section => (
+                  <div key={section.id} style={{marginBottom:28}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+                      <span style={{fontSize:18}}>{section.icon}</span>
+                      <h4 style={{fontSize:15,fontWeight:700,color:G.darkText,margin:0}}>{section.label}</h4>
+                    </div>
+                    <div style={{display:'flex',gap:14,overflowX:'auto',paddingBottom:8,scrollbarWidth:'none'}}>
+                      {section.products.slice(0,8).map(p => (
+                        <div key={p.id||p._id} style={{flexShrink:0,width:168}}>
+                          <SharedProductCard product={p} pillar="adopt" selectedPet={petData} compact />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             {/* ✦ Soul Made™ trigger */}
             <div data-testid="adopt-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
@@ -348,7 +500,7 @@ const AdoptSoulPage = () => {
             <GuidedAdoptPaths pet={petData}/>
             <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"24px 28px",marginBottom:24,textAlign:"center"}}>
               <p style={{fontSize:18,fontWeight:800,color:"#fff",fontFamily:"Georgia,serif",marginBottom:8}}>Ready to start? Mira finds your perfect dog.</p>
-              <p style={{fontSize:13,color:"rgba(255,255,255,0.70)",marginBottom:16}}>Breed match, rescue connections, home readiness — all in one conversation with Mira.</p>
+              <p style={{fontSize:13,color:"rgba(255,255,255,0.70)",marginBottom:16}}>From rescue to breeder to street dog — I'll prepare everything for your new arrival.</p>
               <button onClick={()=>openAdoptConcierge('Adoption support')} style={{background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>✦ Start with Mira →</button>
             </div>
           </>
@@ -357,28 +509,14 @@ const AdoptSoulPage = () => {
         {/* Book Guidance tab */}
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Expert adoption guidance — <span style={{color:G.rose}}>gentle and concierge-led</span></h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>Mira guides every stage of your adoption journey.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {ADOPT_SERVICES.map(svc=>{
-                const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
-                const img=dbSvc.watercolor_image||dbSvc.image_url||null;
-                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(212,83,126,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                  {img?<img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span style={{fontSize:38}}>{svc.icon}</span>}
-                </div>
-                <div style={{padding:"14px 16px 16px"}}>
-                  <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
-                  <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
-                  <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{svc.desc}</div>
-                  <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8}}><span style={{fontSize:10,color:G.rose}}>✦ </span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows}</span></div>
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <span style={{fontSize:11,color:G.rose,fontStyle:'italic'}}>Price on WhatsApp</span>
-                    <button onClick={()=>openAdoptConcierge(svc.name)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
-                  </div>
-                </div>
-              </div>);})}
-            </div>
+            <PillarServiceSection
+              pillar="adopt"
+              pet={petData}
+              title="Adoption Guidance, Personally"
+              accentColor={G.rose}
+              darkColor={G.darkText}
+              preloadedServices={services}
+            />
           </div>
         )}
 

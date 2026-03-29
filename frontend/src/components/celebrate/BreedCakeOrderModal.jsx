@@ -59,6 +59,10 @@ const CSS = `
   }
   .cbc-textarea::placeholder { color: rgba(245,240,232,0.25); }
   .cbc-textarea:focus { border-color: rgba(201,151,58,0.4); }
+  .cbc-breed-row { scrollbar-width: thin; scrollbar-color: rgba(168,85,247,0.7) rgba(255,255,255,0.06); }
+  .cbc-breed-row::-webkit-scrollbar { height: 5px; }
+  .cbc-breed-row::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 3px; }
+  .cbc-breed-row::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.7); border-radius: 3px; }
   @keyframes cbc-slide { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
   @keyframes cbc-fade  { from{opacity:0} to{opacity:1} }
   @keyframes cbc-pop   {
@@ -261,6 +265,13 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
           channel:        'doggy_bakery_order',
           urgency:        'normal',
           pet_id:         pet?.id,
+          metadata: {
+            image_url:          illusUrl || undefined,
+            illustration_name:  selIllus?.name || selIllus?.colour_label || undefined,
+            breed_cake:         true,
+            flavour:            selectedFlavour?.label || flavour,
+            base:               selectedBase?.label,
+          },
           initial_message: {
             sender: 'parent',
             source: 'breed_cake_order',
@@ -296,7 +307,7 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
         onClick={e => e.stopPropagation()}
         style={{
           width:'100%', maxWidth:'min(760px, 98vw)',
-          maxHeight:'92vh', overflowY:'auto',
+          maxHeight:'92vh', overflowY:'auto', scrollbarWidth:'none', msOverflowStyle:'none',
           background:'#0F0A1E',
           borderRadius:'24px',
           fontFamily:"'DM Sans',sans-serif",
@@ -367,10 +378,10 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
                 </button>
               </div>
 
-              <div style={{
+              <div className="cbc-breed-row" style={{
                 display:'flex', gap:6, flexWrap: showBreeds ? 'wrap' : 'nowrap',
                 overflowX: showBreeds ? 'visible' : 'auto',
-                marginBottom:20, paddingBottom:4,
+                marginBottom:20, paddingBottom:8,
               }}>
                 {(showBreeds ? orderedBreeds : orderedBreeds.slice(0, 12)).map(b => {
                   const isPetBreed = b === defaultBreed;

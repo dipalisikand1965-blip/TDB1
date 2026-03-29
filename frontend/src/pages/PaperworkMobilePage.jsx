@@ -4,7 +4,9 @@
  * + DocumentVault at top + SoulMadeCollection
  * Colour: Teal #0D9488
  */
-import { useState, useEffect, useCallback } from 'react';
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import { DimExpanded, getPaperworkDims, PaperworkContentModal } from './PaperworkSoulPage';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -25,7 +27,23 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PaperworkNearMe from '../components/paperwork/PaperworkNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+
+const PW_STRIP_CATS = [
+  { id:"identity",  icon:"🪪", label:"Identity",      iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+  { id:"health",    icon:"🏥", label:"Health",        iconBg:"linear-gradient(135deg,#E0F2FE,#BAE6FD)" },
+  { id:"travel",    icon:"✈️",  label:"Travel",        iconBg:"linear-gradient(135deg,#DCFCE7,#BBF7D0)" },
+  { id:"insurance", icon:"🛡️", label:"Insurance",     iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
+  { id:"breeds",    icon:"📚", label:"Breed Guides",  iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
+  { id:"advisory",  icon:"💡", label:"Advisory",      iconBg:"linear-gradient(135deg,#CCFBF1,#99F6E4)" },
+  { id:"soul",      icon:"🌟", label:"Soul Docs",     iconBg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)" },
+  { id:"soul_made", icon:"✦",  label:"Soul Made™",   iconBg:"linear-gradient(135deg,#EDE9FE,#C4B5FD)" },
+];
 
 const G = {
   teal:'#0D9488', mid:'#0F766E', deep:'#134E4A', light:'#99F6E4',
@@ -199,10 +217,34 @@ export default function PaperworkMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
-  const [activeDim, setActiveDim] = useState(PW_DIMS[0].id);
+  const [showPaperworkPlan, setShowPaperworkPlan] = useState(false);
+  const [catModal, setCatModal] = useState(null);   // opens PaperworkContentModal (same as desktop)
   const [mainTab, setMainTab] = useState('paperwork');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [apiProducts, setApiProducts] = useState({});
+
+  // Fetch products — mirrors desktop PaperworkSoulPage (source of truth)
+  useEffect(() => {
+    if (!currentPet) return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&limit=400`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          const rawDim = (p.dimension || p.pillar_category || '').toLowerCase().trim();
+          const catKey = Object.entries(PW_DIM_CAT).find(([k]) => k === rawDim)?.[1] || p.dimension || '';
+          const sub = p.sub_category || 'Other';
+          if (!catKey) return;
+          if (!grouped[catKey]) grouped[catKey] = {};
+          if (!grouped[catKey][sub]) grouped[catKey][sub] = [];
+          grouped[catKey][sub].push(p);
+        });
+        setApiProducts(grouped);
+      }).catch(() => {});
+  }, [currentPet]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -214,13 +256,22 @@ export default function PaperworkMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>📋</div><div>Loading paperwork…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
   const petName = currentPet?.name || 'your dog';
-  const currentDim = PW_DIMS.find(d => d.id === activeDim) || PW_DIMS[0];
+  const pwDims = getPaperworkDims(currentPet)?.length > 0 ? getPaperworkDims(currentPet) : PW_DIMS;
+  // pwDims drives the dim card grid
 
   return (
+    <>
     <PillarPageLayout pillar="paperwork" hideHero hideNavigation>
       <div className="pw-m mobile-page-container" data-testid="paperwork-mobile">
         <style>{CSS}</style>
@@ -229,59 +280,33 @@ export default function PaperworkMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.teal} />}
 
         {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>📋 Paperwork</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>{petName}'s Documents & Advisory</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Identity, health, travel, insurance — all organised</div>
-        </div>
+        <PillarHero
+          pillar="paperwork"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`}
+          title="📋 Paperwork"
+          subtitle={`${petName}'s Documents & Advisory`}
+          tagline="Identity, health, travel, insurance — all organised"
+        />
 
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="paperwork" token={token} /></div>}
+        {/* Paperwork Category Strip — opens PaperworkContentModal exactly like desktop */}
+        <PillarCategoryStrip
+          categories={PW_STRIP_CATS}
+          activeId={catModal}
+          onSelect={id => { if (id) { vibe(); setCatModal(id === catModal ? null : id); } }}
+          accentColor={G.teal}
+        />
 
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(99,179,237,0.14),rgba(99,179,237,0.20))', border:'1px solid rgba(99,179,237,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#0284C7' }}>{currentPet?.name || 'your dog'}</span> love to stay organised?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Documents, insurance, vaccination — all handled by Concierge® for {currentPet?.name || 'your dog'}.
-            </div>
-          </div>
-        )}
-
-        {/* Pawrent Journey First Steps */}
-        {currentPet && (
-          <div style={{ padding:'0 16px 8px' }}>
-            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="paperwork" />
-          </div>
-        )}
-
-        {/* Main Tab Bar: Paperwork | Near Me */}
-        <div style={{ display:'flex', margin:'8px 16px 0', background:'#F0FDFA', borderRadius:12, padding:4 }}>
-          {[{id:'paperwork',label:'📋 Paperwork'},{id:'nearme',label:'📍 Near Me'}].map(t => (
-            <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
+        {/* Main Tab Bar — sticky */}
+        <div className="ios-tab-bar">
+          {[{id:'paperwork',label:'📋 Paperwork'},{id:'services',label:'🐕 Services'},{id:'nearme',label:'📍 Near Me'}].map(t => (
+            <button key={t.id}
+              className={`ios-tab${mainTab===t.id?' active':''}`}
+              style={mainTab===t.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`pw-tab-${t.id}`}
-              style={{ flex:1, padding:'9px 0', borderRadius:9, fontSize:13, fontWeight:700, border:'none', cursor:'pointer',
-                background: mainTab===t.id ? G.teal : 'transparent',
-                color: mainTab===t.id ? '#fff' : G.darkText, transition:'all 0.15s' }}>
+              onClick={() => { vibe(); setMainTab(t.id); }}>
               {t.label}
             </button>
           ))}
@@ -294,11 +319,79 @@ export default function PaperworkMobilePage() {
           </div>
         )}
 
+        {/* Services Tab */}
+        {mainTab === 'services' && (
+          <>
+            <PillarConciergeCards pillar="paperwork" pet={currentPet} token={token} />
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
+          <div style={{ padding:'16px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#002220', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Insurance, travel docs, health certs — all paperwork handled for {petName} through Concierge®.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="paperwork-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(20,184,166,0.35)', background:'linear-gradient(135deg,#002220,#004D40)', color:'#5EEAD4', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
+            <PillarServiceSection
+              pillar="paperwork"
+              pet={currentPet}
+              title="Paperwork, Personally"
+              accentColor={G.teal}
+              darkColor={G.dark}
+              isMobile
+            />
+          </div>
+          </>
+        )}
+
         {mainTab === 'paperwork' && <>
+        {/* Soul Profile + CTA + Pawrent — inside tab, same as Play/Care */}
+        {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="paperwork" token={token} /></div>}
+        {currentPet && (
+          <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(99,179,237,0.14),rgba(99,179,237,0.20))', border:'1px solid rgba(99,179,237,0.35)', borderRadius:18, padding:'16px' }}>
+            <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+              How would <span style={{ color:'#0D9488' }}>{petName}</span> love to stay organised?
+            </div>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+              Documents, insurance, vaccination — all handled by Concierge® for {petName}.
+            </div>
+          </div>
+        )}
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="paperwork" /></div>}
         {/* Document Vault */}
         {currentPet && (
           <div style={{ padding:'16px 16px 8px' }}>
             <DocumentVault pet={currentPet} token={token} />
+          </div>
+        )}
+
+        {/* Open Full Vault shortcut */}
+        {currentPet && (
+          <div
+            data-testid="open-full-vault-btn"
+            onClick={() => navigate(`/pet-vault/${currentPet?.id}`)}
+            style={{ margin:'0 16px 12px', padding:'14px 18px', background:'linear-gradient(135deg,#0D9488,#14B8A6)', borderRadius:14, display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer' }}>
+            <div>
+              <div style={{ fontSize:13, fontWeight:700, color:'#fff' }}>📁 {petName}'s Full Document Vault</div>
+              <div style={{ fontSize:11, color:'rgba(255,255,255,0.7)' }}>Upload, view and manage all documents</div>
+            </div>
+            <span style={{ color:'#fff', fontSize:18 }}>→</span>
           </div>
         )}
 
@@ -308,38 +401,54 @@ export default function PaperworkMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "Every responsible pet parent needs {petName}'s documents organised. Choose a category to start."
           </div>
-          <button className="pw-cta" onClick={() => { vibe('medium'); request('Paperwork review', { channel:'paperwork_mira_cta' }); }}>
-            Organise {petName}'s Documents →
+          <button className="pw-cta" onClick={() => { vibe('medium'); setShowPaperworkPlan(true); }}>
+            Build {petName}'s Paperwork Plan →
           </button>
         </div>
 
-        {/* 7 Dimension Pills */}
+        {/* 7 Dimension Cards — 2-column grid, same design as Learn desktop. Tap → PaperworkContentModal */}
         <div style={{ padding:'0 16px 8px' }}>
-          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10 }}>Choose a Document Category</div>
-          <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-            {PW_DIMS.map(dim => (
-              <button key={dim.id} onClick={() => { vibe(); setActiveDim(dim.id); }}
-                data-testid={`paperwork-dim-${dim.id}`}
-                style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
-                  padding:'10px 12px', borderRadius:16, minWidth:72,
-                  border:`2px solid ${activeDim===dim.id?dim.accent:G.border}`,
-                  background:activeDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
-                <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:9, fontWeight:700, color:activeDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
-              </button>
-            ))}
+          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:6 }}>
+            <span style={{ color:G.teal }}>{petName}'s</span> Documents
           </div>
-        </div>
-
-        {/* Active Dimension Panel */}
-        <div style={{ padding:'0 16px 16px' }}>
-          <PwDimPanel
-            dim={currentDim}
-            pet={currentPet}
-            token={token}
-            addToCart={addToCart}
-            onProductClick={p => { vibe(); setSelectedProduct(p); }}
-          />
+          <style>{`.pw-dims-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;}`}</style>
+          <div className="pw-dims-grid">
+            {pwDims.map(dim => {
+              const isActive = catModal === dim.id;
+              return (
+                <div
+                  key={dim.id}
+                  data-testid={`paperwork-dim-${dim.id}`}
+                  onClick={() => { vibe(); setCatModal(dim.id); }}
+                  style={{ background:'#fff', borderRadius:16, cursor:'pointer', overflow:'hidden',
+                    border:`2px solid ${isActive ? G.teal : G.border}`,
+                    boxShadow: dim.glow ? `0 4px 18px ${dim.glowColor}` : '0 2px 8px rgba(0,0,0,0.06)',
+                    transition:'all 0.2s' }}>
+                  <div style={{ height:5, background: isActive ? G.teal : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
+                  <div style={{ padding:'10px 10px 8px' }}>
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:8 }}>
+                      <span style={{ fontSize:22 }}>{dim.icon}</span>
+                      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:3 }}>
+                        <span style={{ fontSize:9, fontWeight:700, borderRadius:20, padding:'2px 7px',
+                          background:`${dim.badgeBg}20`, color:dim.badgeBg, border:`1px solid ${dim.badgeBg}40` }}>
+                          {dim.badge}
+                        </span>
+                        {dim.glow && <div style={{ width:7, height:7, borderRadius:'50%', background:G.teal }} />}
+                      </div>
+                    </div>
+                    <div style={{ fontSize:12, fontWeight:800, color:G.darkText, marginBottom:3, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
+                      {dim.label}
+                    </div>
+                    <div style={{ fontSize:10, color:G.mutedText, lineHeight:1.4, marginBottom:6,
+                      display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                      {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
+                    </div>
+                    <span style={{ fontSize:11, color:G.teal, fontWeight:700 }}>Explore →</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Guided Paths */}
@@ -348,13 +457,17 @@ export default function PaperworkMobilePage() {
         {/* PersonalisedBreedSection */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><PersonalisedBreedSection pet={currentPet} pillar="paperwork" token={token} /></div>}
 
-        {/* MiraImaginesCard */}
+        {/* MiraImaginesCard — 2-column side by side */}
         {currentPet && (
           <div style={{ padding:'0 16px 16px' }}>
-            {[
-              { id:'pw-1', emoji:'🪪', name:`${petName}'s Complete Document Folder`, description:`All documents in one place — microchip, vaccination, passport, insurance — beautifully organised.` },
-              { id:'pw-2', emoji:'💡', name:'Expert Advisory Session', description:`1-on-1 with Mira's advisory team — complete life planning for ${petName}.` },
-            ].map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="paperwork" />)}
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {[
+                { id:'pw-1', emoji:'🪪', name:`${petName}'s Complete Document Folder`, description:`All documents in one place — microchip, vaccination, passport, insurance — beautifully organised.` },
+                { id:'pw-2', emoji:'💡', name:'Expert Advisory Session', description:`1-on-1 with Mira's advisory team — complete life planning for ${petName}.` },
+              ].map(item => (
+                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="paperwork" style={{ width:'100%', flexShrink:1 }} />
+              ))}
+            </div>
           </div>
         )}
 
@@ -366,6 +479,24 @@ export default function PaperworkMobilePage() {
         </div>
         </>}
       </div>
+    
+      <MiraPlanModal
+        isOpen={showPaperworkPlan}
+        onClose={() => setShowPaperworkPlan(false)}
+        pet={currentPet}
+        pillar="paperwork"
+        token={token}
+      />
     </PillarPageLayout>
+    {/* PaperworkContentModal — same centered overlay as desktop. Source: PaperworkSoulPage */}
+    {catModal && (
+      <PaperworkContentModal
+        isOpen={!!catModal}
+        onClose={() => setCatModal(null)}
+        category={catModal}
+        pet={currentPet}
+      />
+    )}
+  </>
   );
 }

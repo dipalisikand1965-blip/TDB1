@@ -15,7 +15,7 @@
  * They emit intents, and MiraAppShell decides what to render.
  */
 
-import { useReducer, useCallback, useEffect, useRef } from 'react';
+import { useReducer, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS (as JSDoc for JavaScript)
@@ -156,6 +156,7 @@ const resolveFooterModeForTab = (tab, thread, modal) => {
 const syncLayoutVars = (headerHeight, footerHeight) => {
   if (typeof document !== 'undefined') {
     document.documentElement.style.setProperty('--mira-header-h', `${headerHeight}px`);
+    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`); // canonical token
     document.documentElement.style.setProperty('--mira-interaction-footer-h', `${footerHeight}px`);
   }
 };
@@ -592,9 +593,16 @@ export const useMiraShell = (initialTab = 'today') => {
 
   // ─────────────────────────────────────────────────────────────────────────
   // ResizeObserver for header
+  // useLayoutEffect fires synchronously before browser paint — fixes first-render bleed-through
   // ─────────────────────────────────────────────────────────────────────────
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!headerRef.current) return;
+
+    // Immediate measurement — before first paint, so padding is already correct
+    const immediateHeight = headerRef.current.getBoundingClientRect().height;
+    if (immediateHeight > 0) {
+      dispatch({ type: 'MEASUREMENTS_UPDATED', payload: { headerHeight: immediateHeight } });
+    }
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {

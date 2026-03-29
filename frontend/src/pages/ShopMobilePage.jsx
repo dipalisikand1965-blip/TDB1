@@ -3,6 +3,8 @@
  * Full desktop parity: Category Strip, Mira Picks, Breed Collection, Bakery, Browse
  * Colour: Gold #4A2800 → #C9973A
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -19,6 +21,9 @@ import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 const S = { gold:'#4A2800', goldL:'#C9973A', goldXL:'#E8B84B', cream:'#FFFBF5', border:'#F5E6C8', dark:'#1A0E00', taupe:'#7A6A4A' };
@@ -49,6 +54,7 @@ const SHOP_CATS = [
 function MiraPicksSection({ pet, token, onConcierge }) {
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showShopPlan, setShowShopPlan] = useState(false);
   const [selected, setSelected] = useState(null);
   const petName = pet?.name || 'your dog';
 
@@ -426,13 +432,23 @@ export default function ShopMobilePage() {
   const [loading, setLoading] = useState(true);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [mainTab, setMainTab] = useState('mira');
+  const [conciergeOpen, setConciergeOpen] = useState(false);
   const [showMiraPicks, setShowMiraPicks] = useState(false);
+  const [showShopPlan, setShowShopPlan] = useState(false);
   const miraPicksRef = useRef(null);
+  const contentRef = useRef(null);   // scrolls to content when category chip is tapped
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
   }, [contextPets, currentPet, setCurrentPet]);
+
+  // Scroll to content when a shop category changes
+  useEffect(() => {
+    if (mainTab && contentRef.current) {
+      setTimeout(() => contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [mainTab]);
 
   const handleSeePicks = useCallback(() => {
     vibe('medium');
@@ -446,6 +462,14 @@ export default function ShopMobilePage() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}><div style={{ fontSize: 36, marginBottom: 12 }}>🛍️</div><div>Loading your shop…</div></div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showShopPlan}
+        onClose={() => setShowShopPlan(false)}
+        pet={currentPet}
+        pillar="shop"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -461,6 +485,14 @@ export default function ShopMobilePage() {
           </div>
         </div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showShopPlan}
+        onClose={() => setShowShopPlan(false)}
+        pet={currentPet}
+        pillar="shop"
+        token={token}
+      />
     </PillarPageLayout>
   );
 
@@ -474,50 +506,37 @@ export default function ShopMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="shop" pillarColor={S.goldL} pillarLabel="Shop" onClose={() => setSoulMadeOpen(false)} />}
 
         {/* Hero */}
-        <div style={{ background: `linear-gradient(160deg,${S.dark} 0%,${S.gold} 50%,${S.goldL} 100%)`, padding: '32px 16px 20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', marginBottom: 2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>🛍️ Shop</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding: '6px 16px', borderRadius: 999, fontSize: 13, fontWeight: 700,
-                      border: currentPet?.id === p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id === p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color: '#fff', cursor: 'pointer', transition: 'all 0.15s' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 52, height: 52, borderRadius: '50%', flexShrink: 0, background: 'rgba(255,255,255,0.15)', border: '2px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <span style={{ fontSize: 22 }}>🐾</span>}
-            </div>
-            <div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Shop for {petName}</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{breed ? `${breed} · ` : ''}5,358 breed-matched products</div>
-            </div>
-          </div>
-        </div>
+        <PillarHero
+          pillar="shop"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${S.dark} 0%,${S.gold} 50%,${S.goldL} 100%)`}
+          title="🛍️ Shop"
+          subtitle={`Shop for ${petName}`}
+          tagline={`${breed ? `${breed} · ` : ''}5,358 breed-matched products`}
+        />
 
         <div style={{ padding: '0 16px 8px' }}>
           <PillarSoulProfile pet={currentPet} pillar="shop" token={token} />
         </div>
 
         {/* Soul Pillar CTA */}
-        <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(232,184,75,0.14),rgba(232,184,75,0.20))', border:'1px solid rgba(232,184,75,0.35)', borderRadius:18, padding:'18px 16px' }}>
-          <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
+        <div style={{ margin:'0 16px 12px', background:'linear-gradient(135deg,rgba(232,184,75,0.14),rgba(232,184,75,0.20))', border:'1px solid rgba(232,184,75,0.35)', borderRadius:18, padding:'16px' }}>
+          <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
             What would <span style={{ color:'#B45309' }}>{petName}</span> love?
           </div>
           <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
             Every product is filtered to {petName}'s breed, size and allergen profile.
           </div>
         </div>
+
+        {/* Pawrent Journey First Steps */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 8px' }}>
+            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="shop" />
+          </div>
+        )}
 
         {/* Category Strip */}
         <div className="no-sb" style={{ padding: '12px 16px 4px', display: 'flex', gap: 8, paddingBottom: 8 }}>
@@ -549,10 +568,14 @@ export default function ShopMobilePage() {
           <button className="shop-cta" onClick={handleSeePicks} data-testid="see-mira-picks-btn">
             See Mira's Shop Picks →
           </button>
+          <button className="shop-cta" onClick={() => { vibe('medium'); setShowShopPlan(true); }} style={{ marginTop:8 }}>
+            Build {petName}'s Shop Plan →
+          </button>
         </div>
 
         {/* Main Content — tab-switched */}
-        <div style={{ padding: '20px 16px 24px' }}>
+        {/* Scrolls here when a category chip is tapped */}
+        <div ref={contentRef} style={{ padding: '20px 16px 24px' }}>
           {/* MIRA PICKS TAB (was for_pet) */}
           {(mainTab === 'mira') && (
             <div ref={miraPicksRef}>
@@ -638,17 +661,39 @@ export default function ShopMobilePage() {
           )}
         </div>
 
+        {/* Concierge® Cards */}
+        <div style={{ margin: '0 16px 8px' }}>
+          <PillarConciergeCards pillar="shop" pet={currentPet} token={token} />
+        </div>
+
         {/* Concierge® CTA */}
         <div style={{ margin: '0 16px 24px', background: S.dark, borderRadius: 24, padding: 20 }}>
           <div style={{ display: 'inline-flex', background: 'rgba(232,184,75,0.2)', border: '1px solid rgba(232,184,75,0.4)', borderRadius: 999, padding: '5px 14px', color: S.goldXL, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>🛍️ Shop Concierge®</div>
           <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', lineHeight: 1.2, marginBottom: 10, fontFamily: 'Georgia,serif' }}>Can't find what you need for {petName}?</div>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: 16 }}>Tell us what you're looking for. Concierge® will source it.</div>
-          <button onClick={() => { vibe('medium'); request(`Shop concierge for ${petName}`, { channel: 'shop_cta' }); }}
+          <button onClick={() => { vibe('medium'); setConciergeOpen(true); }}
+            data-testid="shop-ask-concierge-btn"
             style={{ width: '100%', minHeight: 48, borderRadius: 14, border: 'none', background: `linear-gradient(135deg,${S.goldL},${S.goldXL})`, color: S.dark, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
             🛍️ Ask Concierge® →
           </button>
         </div>
       </div>
+    
+      <MiraPlanModal
+        isOpen={showShopPlan}
+        onClose={() => setShowShopPlan(false)}
+        pet={currentPet}
+        pillar="shop"
+        token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeOpen}
+        onClose={() => setConciergeOpen(false)}
+        prefilledText="I'm looking for something specific for my dog"
+      />
     </PillarPageLayout>
   );
 }

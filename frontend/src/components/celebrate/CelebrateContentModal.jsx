@@ -51,10 +51,13 @@ const getBreedDisplay = (pet) => {
 
 const getCelebratePetId = (pet) => pet?.id || pet?._id;
 
+const SOUL_MADE_FOOD_KEYWORDS = ['trail mix', 'adventure bite', 'freeze-dried', 'freeze dried', 'kibble', 'wet food', 'dry food', 'supplement', 'probiotic', 'vitamin', 'raw diet'];
 const filterCelebrateSoulMadeProducts = (items = []) => items.filter((p) => {
   const pillar = String(p?.pillar || '').toLowerCase();
   const text = `${p?.name || ''} ${p?.category || ''} ${p?.sub_category || ''}`.toLowerCase();
   if (pillar && pillar !== 'celebrate') return false;
+  // Exclude food/treat products — Soul Made should be pet-illustrated merchandise only
+  if (SOUL_MADE_FOOD_KEYWORDS.some(kw => text.includes(kw))) return false;
   return !['welcome home', 'adoption', 'pet loss', 'grief', 'farewell'].some((bad) => text.includes(bad));
 });
 
@@ -169,6 +172,14 @@ const CATEGORY_API = {
   'soul-picks':      [],  // handled separately with breed endpoint
   'soul_made':       [],  // handled separately with breed endpoint
   'miras-picks':     [{ url: '/api/products?category=cakes&limit=60', key: 'products' }], // breed-filtered client-side
+  'portraits':       [
+    { url: '/api/products?category=portraits&limit=20&pillar=celebrate', key: 'products' },
+    { url: '/api/products?category=memory_books&limit=20&pillar=celebrate', key: 'products' },
+  ],
+  'memory_books':    [
+    { url: '/api/products?category=memory_books&limit=20&pillar=celebrate', key: 'products' },
+    { url: '/api/products?category=portraits&limit=10&pillar=celebrate', key: 'products' },
+  ],
 };
 
 // Fallback if primary category yields nothing
@@ -188,6 +199,8 @@ const MIRA_WHISPERS = {
   'soul-picks':     (n) => `✨ Soul picks — made just for ${n}`,
   'soul_made':      (n) => `✦ Want something truly unique for ${n}? Upload a photo — Concierge® creates it.`,
   'miras-picks':    (n) => `🌟 Mira curated these just for ${n}`,
+  'portraits':      (n) => `📸 Capture this moment with ${n} — portraits & photoshoots, beautifully done`,
+  'memory_books':   (n) => `📖 Create something ${n}'s family will treasure forever`,
 };
 
 const CTA_LABELS = {
@@ -219,7 +232,7 @@ const BundleDetailSheet = ({ bundle, pet, onClose }) => {
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 bg-white"
-        style={{ zIndex: 71, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85vh', overflowY: 'auto' }}
+        style={{ zIndex: 71, borderTopLeftRadius: 20, borderTopRightRadius: 20, maxHeight: '85vh', overflowY: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {/* Header with drag handle + X */}
         <div className="sticky top-0 bg-white flex items-center justify-between px-4 pt-3 pb-2"
@@ -244,8 +257,8 @@ const BundleDetailSheet = ({ bundle, pet, onClose }) => {
           </div>
         )}
         <div className="p-6">
-          <div className="inline-block rounded-full text-white text-xs font-bold mb-3"
-            style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', padding: '3px 12px' }}>
+          <div className="tdc-chip tdc-chip-gold mb-3"
+            style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', color:'#fff', borderColor:'transparent' }}>
             Curated for {petName}
           </div>
           <h3 className="font-extrabold text-2xl mb-2" style={{ color: '#1A0A00' }}>{bundle.name}</h3>
@@ -318,8 +331,8 @@ const BundleCard = ({ bundle, pet }) => {
         )}
         <div className="p-3">
           {bundle.badge && (
-            <span className="inline-block rounded-full text-xs font-bold mb-1"
-              style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', color: 'white', padding: '2px 8px' }}>
+            <span className="tdc-chip tdc-chip-gold mb-1"
+              style={{ background: 'linear-gradient(135deg, #C44DFF, #FF6B9D)', color: 'white', borderColor:'transparent' }}>
               {bundle.badge}
             </span>
           )}
@@ -333,8 +346,8 @@ const BundleCard = ({ bundle, pet }) => {
             <span className="font-extrabold text-sm" style={{ color: '#1A0A00' }}>
               ₹{price.toLocaleString('en-IN')}
             </span>
-            <span className="text-xs rounded-full px-2 py-0.5"
-              style={{ background: 'rgba(196,77,255,0.10)', color: '#7C3AED', fontWeight: 600 }}>
+            <span className="tdc-chip"
+              style={{ background: 'rgba(196,77,255,0.10)', color: '#7C3AED', borderColor:'rgba(196,77,255,0.2)' }}>
               View
             </span>
           </div>
@@ -359,8 +372,8 @@ const SoulPickCard = ({ product, pet, overrideImageUrl, artStyleLabel }) => {
         artStyleLabel={artStyleLabel}
       />
       <span
-        className="absolute top-2 left-2 text-white text-xs font-bold rounded-full px-2 py-0.5 pointer-events-none"
-        style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', fontSize: 10, zIndex: 1 }}>
+        className="tdc-chip absolute top-2 left-2 pointer-events-none"
+        style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', color:'#fff', borderColor:'transparent', fontSize: 10, zIndex: 1 }}>
         For {petName}
       </span>
     </div>
@@ -441,11 +454,11 @@ const MiraImaginesCard = ({ flavor, pet }) => {
       data-testid={`mira-imagines-${isObject ? flavor.type : flavor}`}
     >
       {/* Mira badge */}
-      <div className="absolute top-2 right-2 text-white text-xs font-bold rounded-full px-2 py-0.5"
+      <div className="tdc-chip absolute top-2 right-2"
         style={{
           background: isOnboarding ? 'rgba(100,200,255,0.6)' : 'rgba(196,77,255,0.6)',
-          backdropFilter: 'blur(4px)',
-          fontSize: 9
+          color: '#fff', borderColor: 'transparent',
+          backdropFilter: 'blur(4px)', fontSize: 9
         }}>
         {isOnboarding ? 'Grow the Soul' : 'Mira Imagines'}
       </div>
@@ -598,8 +611,8 @@ const SoulQuestionCard = ({ question, petName, onAnswered }) => {
             {question.folder_name}
           </span>
         </div>
-        <span className="rounded-full px-2 py-0.5 text-xs font-bold"
-          style={{ background: 'rgba(196,77,255,0.18)', color: '#D47FFF', fontSize: 9, border: '1px solid rgba(196,77,255,0.3)' }}>
+        <span className="tdc-chip"
+          style={{ background: 'rgba(196,77,255,0.18)', color: '#D47FFF', fontSize: 9, borderColor: 'rgba(196,77,255,0.3)' }}>
           +{question.weight || 3} pts
         </span>
       </div>
@@ -1107,6 +1120,16 @@ export const CATEGORY_CONFIG = {
     emoji: '🌟', label: "Mira's Picks",
     miraLabel: 'Soul-curated by Mira',
     emptyText: 'Mira is curating your picks!'
+  },
+  'portraits': {
+    emoji: '📸', label: 'Portraits & Photoshoots',
+    miraLabel: 'Capture this moment beautifully',
+    emptyText: 'Portraits & photoshoot packages coming soon!'
+  },
+  'memory_books': {
+    emoji: '📖', label: 'Memory Books & Keepsakes',
+    miraLabel: 'A lifetime of memories, beautifully bound',
+    emptyText: 'Memory books and keepsakes coming soon!'
   },
 };
 
@@ -1637,8 +1660,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                         style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
                         ✦ Made for {petName} — {getBreedDisplay(pet) || pet?.breed || 'your breed'}
                       </p>
-                      <span className="text-xs rounded-full px-2 py-0.5 font-semibold"
-                        style={{ background: 'rgba(255,140,66,0.12)', color: '#FF8C42' }}>
+                      <span className="tdc-chip"
+                        style={{ background: 'rgba(255,140,66,0.12)', color: '#FF8C42', borderColor: 'rgba(255,140,66,0.25)' }}>
                         Made for {petName}
                       </span>
                     </div>
@@ -1741,8 +1764,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                         style={{ color: '#A855F7', letterSpacing: '0.06em' }}>
                         ✦ Made for {petName} — {getBreedDisplay(pet) || pet?.breed || 'your breed'}
                       </p>
-                      <span className="text-xs rounded-full px-2 py-0.5 font-semibold"
-                        style={{ background: 'rgba(168,85,247,0.12)', color: '#A855F7' }}>
+                      <span className="tdc-chip"
+                        style={{ background: 'rgba(168,85,247,0.12)', color: '#A855F7', borderColor: 'rgba(168,85,247,0.25)' }}>
                         Made for {petName}
                       </span>
                     </div>
@@ -1915,8 +1938,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
                             style={{ color: '#FF8C42', letterSpacing: '0.06em' }}>
                             ✦ {petName}'s Breed
                           </span>
-                          <span className="rounded-full text-xs font-bold text-white px-2 py-0.5"
-                            style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
+                          <span className="tdc-chip tdc-chip-gold"
+                            style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)', color:'#fff', borderColor:'transparent' }}>
                             Mira's picks
                           </span>
                         </div>

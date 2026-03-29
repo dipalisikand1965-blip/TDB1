@@ -137,7 +137,7 @@ const DineDimensionExpanded = ({ dimension, pet, token, onClose }) => {
         </div>
 
         {/* Product grid */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth:'none', msOverflowStyle:'none', padding: '16px' }}>
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
               <Loader2 size={28} color={dimension.color} className="animate-spin" />

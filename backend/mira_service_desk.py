@@ -123,6 +123,7 @@ class AttachOrCreateTicketRequest(BaseModel):
     status: Optional[str] = None
     force_new: bool = False  # ← when True, always creates a new ticket (no dedup)
     initial_message: Optional[InitialMessage] = None
+    metadata: Dict[str, Any] = {}  # ← soul_made photo_url, product_name, etc.
 
 class AttachOrCreateTicketResponse(BaseModel):
     ticket_id: str
@@ -691,6 +692,9 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "intent_secondary": request.intent_secondary,
         "life_state": request.life_state,
         "channel": request.channel,
+        "metadata": request.metadata or {},
+        "photo_url":     (request.metadata or {}).get("photo_url", "") or (request.metadata or {}).get("image_url", ""),
+        "soul_made":     (request.metadata or {}).get("soul_made", False),
         "status": "open_mira_only",
         "handoff_to_concierge": False,
         "concierge_queue": None,
@@ -702,6 +706,20 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "created_at": now.isoformat(),
         "updated_at": now.isoformat()
     }
+
+    # Append any uploaded photo/image from metadata as a visible message (works for soul_made, breed_cake, etc.)
+    media_url = (request.metadata or {}).get("photo_url") or (request.metadata or {}).get("image_url") or (request.metadata or {}).get("document_url") or (request.metadata or {}).get("file_url")
+    soul_photo_url = media_url  # keep alias for admin_ticket fields below
+    if media_url:
+        media_label = "📸 Pet photo uploaded" if (request.metadata or {}).get("photo_url") else "🖼️ Image attached"
+        ticket_doc["conversation"].append({
+            "sender": "parent",
+            "source": request.channel,
+            "text": f"{media_label}: {media_url}",
+            "image_url": media_url,
+            "timestamp": now.isoformat(),
+            "is_soul_made_photo": bool((request.metadata or {}).get("photo_url")),
+        })
     
     await db.mira_conversations.insert_one(ticket_doc)
 
@@ -730,6 +748,10 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "user_phone":    member_obj.get("phone"),
         "mira_briefing": mira_briefing,
         "life_state":    request.life_state,
+        "metadata":      request.metadata or {},
+        "soul_made_photo": soul_photo_url,
+        "photo_url":     (request.metadata or {}).get("photo_url", "") or (request.metadata or {}).get("image_url", ""),
+        "soul_made":     (request.metadata or {}).get("soul_made", False),
         "created_at":    now.isoformat(),
         "updated_at":    now.isoformat(),
         "assigned_to":   None,
@@ -853,6 +875,16 @@ async def append_message(request: AppendMessageRequest):
     mira_tickets_result = await db.mira_tickets.update_one(
         {"ticket_id": request.ticket_id},
         mira_tickets_ops
+    )
+
+    # ── CRITICAL: Also sync to service_desk_tickets (admin inbox) ──────────
+    # Without this, Mira widget conversations are invisible in the Service Desk
+    await db.service_desk_tickets.update_one(
+        {"ticket_id": request.ticket_id},
+        {
+            "$push": {"conversation": message_entry},
+            "$set": {"updated_at": now.isoformat()}
+        }
     )
     
     if result.matched_count == 0 and mira_tickets_result.matched_count == 0:
@@ -1192,16 +1224,22 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
 
 @service_desk_router.get("/ticket/{ticket_id}")
 async def get_ticket(ticket_id: str):
-    """Get a ticket by ID with full conversation history."""
+    """Get a ticket by ID with full conversation history. Checks all collections."""
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
     
-    ticket = await db.mira_conversations.find_one(
-        {"ticket_id": ticket_id},
-        {"_id": 0}
-    )
+    # Check mira_conversations first (concierge/soul-made tickets)
+    ticket = await db.mira_conversations.find_one({"ticket_id": ticket_id}, {"_id": 0})
     
+    # Fall back to service_desk_tickets (shop orders, admin-created tickets)
+    if not ticket:
+        ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    
+    # Fall back to mira_tickets
+    if not ticket:
+        ticket = await db.mira_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+
     if not ticket:
         raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
     

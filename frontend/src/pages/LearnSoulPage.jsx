@@ -110,7 +110,7 @@ function getEnergy(pet) { return pet?.doggy_soul_answers?.energy_level||null; }
 function isRescue(pet)  { return !!(pet?.doggy_soul_answers?.is_rescue||(""+pet?.origin).toLowerCase().includes("rescue")); }
 
 // ─── DIM CONFIG ──────────────────────────────────────────────
-function getLearnDims(pet) {
+export function getLearnDims(pet) {
   const health = getHealth(pet);
   const senior = isSenior(pet);
   const puppy  = isPuppy(pet);
@@ -192,7 +192,7 @@ function getLearnDims(pet) {
   ];
 }
 
-const DIM_ID_TO_CATEGORY = {
+export const DIM_ID_TO_CATEGORY = {
   foundations: "training",
   behaviour:   "behavior",
   training:    "training",
@@ -342,7 +342,7 @@ function LearnProfile({ pet, token }) {
       {drawerOpen && (
         <div onClick={() => setDrawerOpen(false)}
           style={{ position:"fixed", inset:0, zIndex:10002, background:"rgba(0,0,0,0.72)",
-            display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+            display:"flex", alignItems:"center", justifyContent:"center", padding:16, touchAction:"none" }}>
           <div onClick={e => e.stopPropagation()} data-testid="learn-profile-drawer"
             style={{ width:"min(780px,100%)", maxHeight:"90vh", overflowY:"auto",
               borderRadius:24, background:"#fff",
@@ -508,12 +508,12 @@ function LearnProfile({ pet, token }) {
 
 // ─── LEARN CATEGORY CONFIG (strip pills + content modal) ────────────────────
 // dbCategory must match actual 'category' field in MongoDB (not dimension, which is unset until DB scripts run)
-const LEARN_CATS = [
+export const LEARN_CATS = [
   { id:"foundations", icon:"🎓", label:"Foundations",    dbCategory:"training",                bg:"#EDE9FE", accent:"#7C3AED" },
   { id:"behaviour",   icon:"🧠", label:"Behaviour",      dbCategory:"behavior",                bg:"#FFF3E0", accent:"#F57C00" },
   { id:"training",    icon:"🏆", label:"Training",       dbCategory:"training",                bg:"#E3F2FD", accent:"#1565C0" },
   { id:"tricks",      icon:"✨", label:"Tricks & Fun",   dbCategory:"tricks",                  bg:"#FCE4EC", accent:"#C2185B" },
-  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dbCategory:"classes",                 bg:"#E8F5E9", accent:"#2E7D32" },
+  { id:"enrichment",  icon:"🧩", label:"Enrichment",     dbCategory:"enrichment",              bg:"#E8F5E9", accent:"#2E7D32" },
   { id:"breed",       icon:"📚", label:"Know Your Breed",dbCategory:"breed-training_logs",     bg:"#FFF8E1", accent:"#FF8F00" },
   { id:"soul",        icon:"🌟", label:"Soul Learn",     dbCategory:"breed-treat_pouchs",      bg:"#F3E5F5", accent:"#7B1FA2" },
   { id:"bundles",     icon:"🎁", label:"Bundles",        dbCategory:"bundles",                 bg:"#E8F5E9", accent:"#2E7D32" },
@@ -534,13 +534,22 @@ const LEARN_MIRA_QUOTES = {
 };
 
 // ─── LEARN CONTENT MODAL (opens from category strip pill) ───────────────────
-function LearnContentModal({ isOpen, onClose, category, pet }) {
+export function LearnContentModal({ isOpen, onClose, category, pet }) {
   const [products, setProducts]   = useState([]);
   const [loading,  setLoading]    = useState(false);
   const [selProd,  setSelProd]    = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [guidedPath, setGuidedPath] = useState(null);
   const { token } = useAuth();
+  // ── Scroll lock: prevent background page from scrolling when modal is open ──
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
   const catCfg = LEARN_CATS.find(c => c.id === category) || {};
   const petName = pet?.name || "your dog";
   const breed   = pet?.breed ? pet.breed.split("(")[0].trim() : "";
@@ -556,14 +565,26 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
     enrichment: "enrichment",
   };
 
+  // ── 5-Tab state removed — dimmodal shows products only (like Paperwork) ──
+
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
     if (category === "soul_made") {
       const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
-      fetch(`${API_URL}/api/mockups/breed-products?breed=${breedParam}&pillar=learn`)
+      fetch(`${API_URL}/api/mockups/breed-products?breed=${breedParam}&limit=24`)
         .then(r => r.ok ? r.json() : { products: [] })
-        .then(data => setProducts(data.products || []))
+        .then(data => {
+          // Dedup by id to prevent duplicate cards
+          const seen = new Set();
+          const unique = (data.products || []).filter(p => {
+            const key = p.id || p._id;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          setProducts(unique);
+        })
         .catch(() => setProducts([]))
         .finally(() => setLoading(false));
       return;
@@ -620,7 +641,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
       return;
     }
     // Use larger limit for breed-specific categories so filterBreedProducts finds the right breed
-    const breedLimit = ["breed-training_logs","breed-treat_pouchs","breed-treat_jars","breed-care-guide"].includes(catCfg.dbCategory) ? 100 : 12;
+    const breedLimit = ["breed-training_logs","breed-treat_pouchs","breed-treat_jars","breed-care-guide"].includes(catCfg.dbCategory) ? 100 : 80;
     const params = new URLSearchParams({ pillar:"learn", category:catCfg.dbCategory, limit:breedLimit });
     // Don't pass breed to API — filterBreedProducts handles it client-side by product name
     fetch(`${API_URL}/api/admin/pillar-products?${params}`, {
@@ -635,7 +656,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
   if (!isOpen) return null;
   return (
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",
-      display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      display:"flex",alignItems:"center",justifyContent:"center",padding:16, touchAction:"none"}}>
       <div onClick={e=>e.stopPropagation()} data-testid={`learn-cat-modal-${category}`}
         style={{width:"min(700px,100%)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,
           background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column"}}>
@@ -665,7 +686,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
             <p style={{fontSize:12,color:"rgba(255,255,255,0.80)",fontStyle:"italic",margin:0,lineHeight:1.5}}>{quote}</p>
           </div>
         </div>
-        {/* Body */}
+        {/* Body — products only, matching Paperwork pattern */}
         <div style={{padding:"18px 20px"}}>
           {loading && (
             <div style={{textAlign:"center",padding:"32px 0"}}>
@@ -695,7 +716,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                   <p style={{fontSize:11,fontWeight:700,color:G.mutedText,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:12}}>Mira's Scored Products for {petName}</p>
                   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
                     {products.map(p=>(
-                      <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                      <SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn"
                         onViewDetails={()=>setSelProd(p)} accentColor={G.violet}/>
                     ))}
                   </div>
@@ -769,7 +790,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
           {!loading && category !== "mira" && category !== "bundles" && category !== "soul_made" && products.length > 0 && (
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
               {products.map(p => (
-                <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                <SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn"
                   onViewDetails={() => setSelProd(p)} accentColor={catCfg.accent||G.violet}/>
               ))}
             </div>
@@ -848,7 +869,7 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
               {products.length > 0 ? (
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
                   {products.map(p => (
-                    <SharedProductCard key={p.id||p._id} product={p} pet={pet}
+                    <SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn"
                       onViewDetails={() => setSelProd(p)} accentColor={G.violet}/>
                   ))}
                 </div>
@@ -891,8 +912,10 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
               {soulMadeOpen && <SoulMadeModal pet={pet} pillar="learn" pillarColor={G.violet} pillarLabel="Learning" onClose={() => setSoulMadeOpen(false)} />}
             </>
           )}
+
+          {/* ── Videos Tab ── */}
         </div>
-        {/* ── Footer CTA — category-specific guided path (mirrors Play pattern) ── */}
+        {/* ── Footer CTA — category-specific guided path ── */}
         {!['bundles', 'soul', 'mira', 'soul_made', 'breed'].includes(category) && (
           <div style={{flexShrink:0, padding:'14px 20px', borderTop:`1px solid ${G.borderLight}`, background:'#FAFAFE', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
             <p style={{fontSize:12, color:'#888', margin:0}}>Personalised for {petName}</p>
@@ -904,7 +927,6 @@ function LearnContentModal({ isOpen, onClose, category, pet }) {
                   const match = paths.find(p => p.id === pathId);
                   if (match) { setGuidedPath(match); return; }
                 }
-                // Fallback: fire concierge and close
                 tdc.book({ service: catCfg.label, pillar: 'learn', pet, channel: 'learn_content_modal_footer' });
                 onClose();
               }}
@@ -957,7 +979,7 @@ function VideoCard({ video, onPlay }) {
 }
 
 // ─── DIM EXPANDED ─────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook }) {
   const petName   = pet?.name || "your dog";
   const allergies = getAllergies(pet);
   const miraCtx   = { includeText:"Add to Cart" };
@@ -1027,7 +1049,7 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook })
     ...( dim.ytQuery ? [{ id:"videos", label:"🎬 Videos" }] : [] ),
     { id:"personalised",label:"✦ Personalised" },
     ...( dim.id !== "soul" ? [{ id:"find", label:"📍 Find" }] : [] ),
-    { id:"services",    label:"📋 Book" },
+    { id:"services",    label:"🐕 Services" },
   ];
 
   return (
@@ -1348,7 +1370,7 @@ function MiraLearnImagineCard({ item, pet, token }) {
   );
 }
 
-function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet }) {
   const [picks,       setPicks]       = useState([]);
   const [picksLoading,setPicksLoading]= useState(true);
   const [selectedPick,setSelectedPick]= useState(null);
@@ -1549,7 +1571,7 @@ function LearnConciergeModal({ isOpen, onClose, serviceType, petName, petId, tok
   return (
     <div onClick={handleClose}
       style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:10006,
-        display:'flex', alignItems:'center', justifyContent:'center', padding:16 }}>
+        display:'flex', alignItems:'center', justifyContent:'center', padding:16, touchAction:'none' }}>
       <div onClick={e=>e.stopPropagation()}
         style={{ background:'#fff', borderRadius:20, padding:32, maxWidth:480, width:'100%',
           maxHeight:'90vh', overflowY:'auto', position:'relative' }}>
@@ -2096,7 +2118,7 @@ const LearnSoulPage = () => {
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[
             {id:"learn",        label:"🎓 Learn & Products"},
-            {id:"services",     label:"📋 Book a Session"},
+            {id:"services",     label:"🐕 Services"},
             {id:"find-learn",   label:"📍 Find Learn"},
           ].map(tab=>{
             const a=activeTab===tab.id;

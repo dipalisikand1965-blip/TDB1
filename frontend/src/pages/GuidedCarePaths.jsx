@@ -23,7 +23,8 @@
  *   body: { petId, pathId, selections }
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useScrollLock } from '../hooks/useScrollLock';
 import { tdc } from "../utils/tdc_intent";
 
 // ─────────────────────────────────────────────────────────────
@@ -481,6 +482,7 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 // PATH FLOW MODAL
 // ─────────────────────────────────────────────────────────────
 function PathFlowModal({ path, pet, onClose }) {
+  useScrollLock(true); // always locked — only mounted when modal is open
   const [currentStep,    setCurrentStep]    = useState(1);
   const [completedSteps, setCompletedSteps] = useState([]);
   const [selections,     setSelections]     = useState({ step1:[], step2:null, step3:[], step4:null });
@@ -671,12 +673,13 @@ function ModalShell({ onClose, children, noPadding }) {
       <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.55)" }} />
       <div
         onClick={e => e.stopPropagation()}
+        className="no-sb"
         style={{
           position:"fixed", zIndex:10000,
           top:"50%", left:"50%", transform:"translate(-50%,-50%)",
           background:"#fff", borderRadius:20,
           width:"min(720px,calc(100vw - 40px))", maxHeight:"90vh",
-          overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.20)",
+          overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none", boxShadow:"0 24px 80px rgba(0,0,0,0.20)",
           padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0"
         }}
       >

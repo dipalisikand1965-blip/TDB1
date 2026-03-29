@@ -261,7 +261,7 @@ const TabContent = ({ tab, boxPreview, swaps, onSwap, allergies, petBreed, pet, 
             <p className="text-sm font-bold text-white truncate">{miraPickSlot.itemName || miraPickSlot.chipLabel}</p>
           </div>
           {currentSwap && (
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(196,77,255,0.20)', color: '#E0AAFF' }}>
+            <span className="tdc-chip" style={{ background: 'rgba(196,77,255,0.20)', color: '#E0AAFF', borderColor: 'rgba(196,77,255,0.3)' }}>
               Swapped
             </span>
           )}

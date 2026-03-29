@@ -149,7 +149,7 @@ const SystemEventChip = ({ event }) => {
 
   return (
     <div className="flex justify-center my-3">
-      <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getEventStyle()}`}>
+      <div className={`tdc-chip tdc-chip-interactive ${getEventStyle()}`}>
         {getEventText()}
       </div>
     </div>
@@ -668,16 +668,84 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
       
       {/* Messages Area */}
       <div className={`flex-1 overflow-y-auto px-4 py-4 ${isSplitMode ? 'bg-[#FAFAF7]' : ''}`}>
-        {/* Request summary card */}
-        {ticket?.description && (
-          <div className={`${isSplitMode ? 'bg-[#FAF7F2] border-[#E8DFD3]' : 'bg-gray-800/30 border-gray-700/30'} rounded-xl p-3 mb-4 border`}>
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4 text-[#C96D9E]" />
-              <span className="text-xs font-medium text-[#C96D9E]">Your Request</span>
-            </div>
-            <p className={`text-sm ${isSplitMode ? 'text-gray-600' : 'text-gray-300'}`}>{ticket.description}</p>
-          </div>
-        )}
+        {/* ── Your Request — beautiful structured summary ── */}
+        {ticket && (ticket.description || ticket.items || ticket.request_type) && (() => {
+          const isOrder = ticket.request_type === 'product_order' || ticket.channel === 'shop' || (ticket.items && ticket.items.length > 0);
+          
+          if (isOrder) {
+            // Beautiful order summary card
+            return (
+              <div className={`${isSplitMode ? 'bg-[#FAF7F2] border-[#E8DFD3]' : 'bg-gray-800/20 border-gray-700/30'} rounded-2xl p-4 mb-4 border`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-lg">🛒</span>
+                  <span className={`text-sm font-semibold ${isSplitMode ? 'text-gray-800' : 'text-white'}`}>Your Order</span>
+                  <span className={`tdc-chip ml-auto ${isSplitMode ? '' : 'tdc-chip-dark'}`} style={
+                    isSplitMode ? { background:'#dcfce7', color:'#15803d', borderColor:'#bbf7d0' }
+                    : { background:'rgba(34,197,94,0.2)', color:'#4ade80', borderColor:'rgba(34,197,94,0.3)' }
+                  }>
+                    {ticket.status || 'open'}
+                  </span>
+                </div>
+                
+                {/* Items */}
+                {ticket.items && ticket.items.length > 0 && (
+                  <div className="space-y-2 mb-3">
+                    {ticket.items.map((item, i) => (
+                      <div key={i} className={`flex justify-between text-sm ${isSplitMode ? 'text-gray-700' : 'text-gray-200'}`}>
+                        <span>{item.name} × {item.quantity}</span>
+                        <span className={isSplitMode ? 'text-gray-500' : 'text-gray-400'}>₹{item.price * (item.quantity || 1)}</span>
+                      </div>
+                    ))}
+                    <div className={`flex justify-between text-sm font-bold pt-2 border-t ${isSplitMode ? 'border-gray-200 text-gray-800' : 'border-gray-700 text-white'}`}>
+                      <span>Total</span>
+                      <span className="text-[#C96D9E]">₹{ticket.total || '—'}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Details row */}
+                <div className={`space-y-1.5 text-xs ${isSplitMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  {ticket.pet_name && (
+                    <div className="flex items-center gap-1.5"><span>🐾</span><span>For {ticket.pet_name} ({ticket.pet_breed || 'dog'})</span></div>
+                  )}
+                  {ticket.delivery?.address && (
+                    <div className="flex items-center gap-1.5"><span>📍</span><span>{ticket.delivery.address}, {ticket.delivery.city}</span></div>
+                  )}
+                  {ticket.delivery?.date && (
+                    <div className="flex items-center gap-1.5"><span>📅</span><span>Delivery: {ticket.delivery.date}</span></div>
+                  )}
+                  {ticket.is_gift && (
+                    <div className="flex items-center gap-1.5"><span>🎁</span><span>Gift — {ticket.gift_message || 'Wrapped as a gift'}</span></div>
+                  )}
+                  {ticket.special_instructions && (
+                    <div className="flex items-center gap-1.5"><span>📝</span><span>{ticket.special_instructions}</span></div>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          // Concierge / soul_made tickets — formatted text
+          if (ticket.description) {
+            // Show only the member-facing part (strip the admin ━━━ header blocks)
+            const cleanDesc = ticket.description
+              .replace(/━+/g, '—')
+              .replace(/\n{3,}/g, '\n\n')
+              .trim();
+            return (
+              <div className={`${isSplitMode ? 'bg-[#FAF7F2] border-[#E8DFD3]' : 'bg-gray-800/30 border-gray-700/30'} rounded-xl p-3 mb-4 border`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-[#C96D9E]" />
+                  <span className="text-xs font-medium text-[#C96D9E]">Your Request</span>
+                </div>
+                <p className={`text-sm whitespace-pre-wrap leading-relaxed ${isSplitMode ? 'text-gray-600' : 'text-gray-300'}`}>
+                  {cleanDesc}
+                </p>
+              </div>
+            );
+          }
+          return null;
+        })()}
         
         {/* Messages (including optimistic pending messages) */}
         {allMessages.length === 0 ? (

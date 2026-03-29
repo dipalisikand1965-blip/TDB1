@@ -484,7 +484,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
                 {artStyleLabel && (
                   <div style={{
                     position:'absolute', bottom:6, left:6,
-                    background:'rgba(0,0,0,0.60)', borderRadius:999,
+                    background:'rgba(0,0,0,0.65)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)', borderRadius:999,
                     padding:'3px 9px', fontSize:9, fontWeight:700,
                     color:'#fff', letterSpacing:'0.04em', pointerEvents:'none',
                   }}>
@@ -581,37 +581,68 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             </p>
           )}
           
-          {/* CTA — opens modal; modal handles Concierge® for services */}
-          {/* Mira explains why — expandable soul profile reasoning */}
-          {product.mira_hint && product.mira_hint !== 'For specific breeds' && (
-            <div onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setMiraExpanded(x => !x); }}
-                data-testid={`mira-explains-${product.id}`}
-                style={{
-                  display:'flex', alignItems:'center', gap:4,
-                  background:'none', border:'none', cursor:'pointer',
-                  padding:'3px 0', width:'100%', textAlign:'left',
-                }}
-              >
-                <span style={{ fontSize:9, fontWeight:800, color:'#9B59B6', letterSpacing:'0.08em', lineHeight:1 }}>✦ MIRA'S PICK</span>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ flexShrink:0, transition:'transform 0.2s', transform: miraExpanded ? 'rotate(180deg)' : 'none', color:'#9B59B6' }}>
-                  <path d="M2 3.5L5 6.5L8 3.5" stroke="#9B59B6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-              {miraExpanded && (
-                <div style={{
-                  fontSize:11, color:'#555', lineHeight:1.55,
-                  padding:'6px 8px', borderRadius:6, marginTop:2,
-                  background:'rgba(155,89,182,0.07)',
-                  borderLeft:'2px solid #9B59B6',
-                  animation:'fadeIn 0.18s ease',
-                }}>
-                  {product.mira_hint}
-                </div>
-              )}
-            </div>
-          )}
+          {/* ✦ MIRA EXPLAINS WHY — show when product has mira_score or mira_hint */}
+          {(() => {
+            const miraText = product.mira_hint || productMiraTip ||
+              (product.mira_score >= 80 ? `Top pick for ${product.name?.split(' ')[0]} — scored ${product.mira_score} by Mira` :
+               product.mira_score >= 60 ? `Mira scored this ${product.mira_score} for your dog's profile` : '');
+            if (!miraText) return null;
+            const previewText = miraText.replace(/^✨\s*/, '');
+            return (
+              <div onClick={(e) => e.stopPropagation()} style={{ marginTop:4 }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setMiraExpanded(x => !x); }}
+                  data-testid={`mira-explains-${product.id}`}
+                  style={{
+                    display:'flex', alignItems:'center', gap:5,
+                    background: miraExpanded ? 'rgba(155,89,182,0.12)' : 'rgba(155,89,182,0.07)',
+                    border: '1px solid rgba(155,89,182,0.22)',
+                    borderRadius: miraExpanded ? '8px 8px 0 0' : 8,
+                    cursor:'pointer', padding:'5px 8px', width:'100%', textAlign:'left',
+                    transition:'all 0.18s ease',
+                  }}
+                >
+                  <span style={{ fontSize:9, fontWeight:900, color:'#9B59B6', letterSpacing:'0.1em', lineHeight:1, flexShrink:0 }}>✦ MIRA</span>
+                  <span style={{ fontSize:10, fontWeight:600, color:'#9B59B6', lineHeight:1.2, flex:1 }}>
+                    {previewText.length > 38 ? previewText.slice(0,38)+'…' : previewText}
+                  </span>
+                  <svg width="11" height="11" viewBox="0 0 10 10" fill="none" style={{ flexShrink:0, transition:'transform 0.2s', transform: miraExpanded ? 'rotate(180deg)' : 'none' }}>
+                    <path d="M2 3.5L5 6.5L8 3.5" stroke="#9B59B6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                {miraExpanded && (
+                  <div style={{
+                    fontSize:11, lineHeight:1.6,
+                    padding:'8px 10px 10px',
+                    background:'rgba(155,89,182,0.05)',
+                    border:'1px solid rgba(155,89,182,0.22)',
+                    borderTop:'none',
+                    borderRadius:'0 0 8px 8px',
+                    animation:'fadeIn 0.18s ease',
+                  }}>
+                    <div style={{ color:'#7D3C98', fontWeight:700, fontSize:10, letterSpacing:'0.06em', marginBottom:4 }}>✦ WHY MIRA PICKED THIS</div>
+                    <div style={{ color:'#5D3A6E' }}>
+                      {miraText}
+                      {product._miraRank && product._miraRank <= 2 && (
+                        <span style={{ display:'inline-block', marginLeft:6, fontSize:9, fontWeight:800, background:'#F3E8FF', color:'#7D3C98', borderRadius:4, padding:'1px 5px' }}>
+                          #{product._miraRank} Match
+                        </span>
+                      )}
+                    </div>
+                    {product.tags && product.tags.length > 0 && (
+                      <div style={{ marginTop:5, display:'flex', flexWrap:'wrap', gap:3 }}>
+                        {product.tags.slice(0,4).map((tag,i) => (
+                          <span key={i} style={{ fontSize:9, background:'#EDE7F6', color:'#6A0DAD', borderRadius:4, padding:'2px 5px' }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           {/* CTA — opens modal; modal handles Concierge® for services */}
           <button
             onClick={(e) => { e.stopPropagation(); openDetails(); }}
@@ -670,7 +701,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]" style={{ backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)' }} onClick={onClose}>
-      <div className="bg-white w-full max-w-3xl max-h-[88dvh] overflow-y-auto shadow-2xl relative" style={{ borderRadius:'28px 28px 0 0', animation:'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }} onClick={(e) => e.stopPropagation()} data-testid={`paperwork-product-modal-${product.id || 'item'}`}>
+      <div className="bg-white w-full max-w-3xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative" style={{ borderRadius:'28px 28px 0 0', animation:'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }} onClick={(e) => e.stopPropagation()} data-testid={`paperwork-product-modal-${product.id || 'item'}`}>
         <div style={{ width:40, height:5, background:'#E5E7EB', borderRadius:999, margin:'12px auto 0' }} />
         <button
           className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
@@ -703,7 +734,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
             </h2>
             <p className="text-sm text-slate-500 mb-4">Curated for {petName}. Pricing is shared by Concierge® after review.</p>
 
-            {product.mira_hint && (
+            {(product.mira_hint || product.mira_score > 0) && (
               <div className="rounded-xl border border-teal-100 bg-teal-50 p-4 mb-4">
                 <p className="text-xs font-semibold text-teal-800 mb-1">Why Mira picked this</p>
                 <p className="text-sm text-teal-700">{product.mira_hint}</p>
@@ -1116,20 +1147,30 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     fetchRelated();
   }, [product.id, pillar]);
 
-  // For celebrate pillar: fetch breed-specific soul made products (bandanas, mugs, etc.)
+  // All pillars: fetch breed-specific soul made products for "✦ SOUL MADE™" section
   React.useEffect(() => {
-    if (pillar !== 'celebrate') return;
     if (!selectedPet?.breed) return;
     const breedKey = (selectedPet.breed || '').toLowerCase().replace(/\s+/g, '_').replace(/[()]/g, '');
     const fetchBreedSoul = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=8`);
+        // First try pillar-specific, fall back to celebrate (richest soul_made catalogue)
+        const res = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=${pillar}&limit=4`);
         if (res.ok) {
           const data = await res.json();
-          const prods = (data.products || []).filter(p =>
+          let prods = (data.products || []).filter(p =>
             p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
           );
-          setCelebrateSoulProducts(prods.slice(0, 4));
+          // If pillar has no breed products, fall back to celebrate soul_made
+          if (!prods.length && pillar !== 'celebrate') {
+            const fallback = await fetch(`${API_URL}/api/mockups/breed-products?breed=${encodeURIComponent(breedKey)}&pillar=celebrate&limit=4`);
+            if (fallback.ok) {
+              const fb = await fallback.json();
+              prods = (fb.products || []).filter(p =>
+                p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
+              );
+            }
+          }
+          setCelebrateSoulProducts(prods.slice(0, 3));
         }
       } catch (e) { /* silent */ }
     };
@@ -1419,7 +1460,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       onClick={handleBackdropClick}
     >
       <div 
-        className="bg-white w-full max-w-2xl max-h-[88dvh] overflow-y-auto shadow-2xl relative"
+        className="bg-white w-full max-w-2xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative"
         style={{ borderRadius: '28px 28px 0 0', animation: 'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -1847,7 +1888,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             )}
 
             {/* Why Mira suggests this — shown when mira_hint is set (e.g. from DimExpanded intelligence) */}
-            {product.mira_hint && (
+            {(product.mira_hint || product.mira_score > 0) && (
               <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
                 <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">✦</div>
                 <div>
@@ -2063,51 +2104,43 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
         </div>
 
-        {/* Complete the Celebration — breed soul made products take priority over generic related */}
+        {/* ✦ SOUL MADE™ — breed-specific products, shown on every pillar */}
         {(celebrateSoulProducts.length > 0 || relatedProducts.length > 0) && (
-          <div className="border-t bg-gradient-to-r from-purple-50 to-pink-50 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-5 h-5 text-purple-600" />
-              <h3 className="font-bold text-gray-900">{PILLAR_CROSS_SELL_TITLES[pillar] || PILLAR_CROSS_SELL_TITLES.default}</h3>
-              {celebrateSoulProducts.length > 0 && selectedPet?.breed && (
-                <span className="text-xs rounded-full px-2 py-0.5 font-bold text-white"
-                  style={{ background: 'linear-gradient(135deg, #FF8C42, #FF6B9D)' }}>
-                  Made for {selectedPet.name || selectedPet.breed}
-                </span>
-              )}
+          <div style={{ background: '#0A0A14', borderTop: '1px solid rgba(201,151,58,0.15)', padding: '20px 16px 24px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#C9973A', letterSpacing: '0.14em', marginBottom: 3 }}>
+                  ✦ SOUL MADE™ · JUST FOR {(selectedPet?.name || 'YOUR DOG').toUpperCase()}
+                </div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
+                  {selectedPet?.breed ? `Made for ${selectedPet.breed.split('(')[0].trim()}s` : 'Personalised for your dog'}
+                </div>
+              </div>
+              <button
+                onClick={() => window.location.href = '/celebrate'}
+                style={{ fontSize: 12, fontWeight: 700, color: '#C9973A', background: 'none', border: '1px solid rgba(201,151,58,0.30)', borderRadius: 999, padding: '6px 14px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Explore Soul Made →
+              </button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {(celebrateSoulProducts.length > 0 ? celebrateSoulProducts : relatedProducts).map((item, idx) => {
-                const img = item.mockup_url || item.cloudinary_url || item.image_url || item.image;
-                const name = item.product_name || item.name;
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+              {(celebrateSoulProducts.length > 0 ? celebrateSoulProducts : relatedProducts.slice(0, 3)).map((item, idx) => {
+                const img = item.mockup_url || item.watercolor_image || item.cloudinary_url || item.image_url || item.image;
+                const name = item.product_name || item.name || item.title;
                 const price = item.price || item.minPrice || 0;
                 return (
-                  <div 
-                    key={item.id || idx} 
-                    className="bg-white rounded-lg p-2 shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <div className="aspect-square rounded-md overflow-hidden mb-2">
-                      <img 
-                        src={img} 
-                        alt={name}
-                        className="w-full h-full object-cover"
-                        onError={e => { e.target.style.display='none'; }}
-                      />
+                  <div key={item.id || idx} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }}
+                    onClick={() => handleQuickAdd(item)}>
+                    <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#111' }}>
+                      {img ? (
+                        <img src={img} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={e => { e.target.style.display = 'none'; }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🐾</div>
+                      )}
                     </div>
-                    <p className="text-xs font-medium text-gray-900 line-clamp-2">{name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs font-bold text-purple-600">
-                        {price > 0 ? `₹${price}` : 'Custom'}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-6 w-6 p-0 hover:bg-purple-100"
-                        onClick={() => handleQuickAdd(celebrateSoulProducts.length > 0 ? { ...item, name, price } : item)}
-                        data-testid={`quick-add-${item.id || idx}`}
-                      >
-                        <Plus className="w-4 h-4 text-purple-600" />
-                      </Button>
+                    <div style={{ padding: '8px 8px 10px' }}>
+                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontWeight: 600, lineHeight: 1.35, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{name}</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#C9973A' }}>{price > 0 ? `₹${price}` : 'Custom'}</div>
                     </div>
                   </div>
                 );

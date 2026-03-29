@@ -18,6 +18,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useScrollLock } from '../hooks/useScrollLock';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
@@ -98,7 +99,7 @@ function isSenior(pet)  { return getAge(pet) >= 7; }
 // ─────────────────────────────────────────────────────────────
 // PLAY DIMENSION CONFIG
 // ─────────────────────────────────────────────────────────────
-function getPlayDims(pet) {
+export function getPlayDims(pet) {
   const size    = getSize(pet);
   const energy  = getEnergy(pet);
   const health  = getHealth(pet);
@@ -279,7 +280,7 @@ function MiraImagineCard({ card, pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // MIRA PICKS SECTION
 // ─────────────────────────────────────────────────────────────
-function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet }) {
   const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]       = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -289,6 +290,7 @@ function MiraPicksSection({ pet }) {
   const [conciergeSent, setConciergeSent]       = useState(false);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
+  useScrollLock(!!conciergeService);
   const energy  = getEnergy(pet);
   const size    = getSize(pet);
   const senior  = isSenior(pet);
@@ -570,6 +572,7 @@ const ACTIVITY_QUESTIONS_FALLBACK = [
 // ─────────────────────────────────────────────────────────────
 function ActivityProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useScrollLock(drawerOpen);
   const petScore = pet?.overall_score ?? pet?.soul_score ?? pet?.activity_score ?? pet?.soulScore ?? null;
   const initScore = petScore !== null ? Math.round(petScore > 1 ? petScore : petScore * 100) : null;
   const [liveScore, setLiveScore]   = useState(initScore);
@@ -867,7 +870,7 @@ function ActivityProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // DIM EXPANDED — inline panel (exactly mirrors DineSoulPage DimExpanded)
 // ─────────────────────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = false }) {
   const petName = pet?.name || "your dog";
 
   // Use pre-fetched products from parent — no internal fetch (same as Dine)
@@ -1342,7 +1345,7 @@ function PlayTabBar({ active, onChange }) {
   const tabs = [
     { id: "play",      label: "🌳 Play & Explore" },
     { id: "find-play", label: "📍 Find Play" },
-    { id: "services",  label: "💪 Book a Service" },
+    { id: "services",  label: "🐕 Services" },
   ];
   return (
     <div style={{ background:"#fff", borderBottom:"1px solid #F0F0F0", display:"flex", justifyContent:"center", position:"sticky", top:58, zIndex:100, overflowX:"auto" }}>
@@ -1375,6 +1378,7 @@ const PlaySoulPage = () => {
   const [openDim, setOpenDim]         = useState(null);
   const [playConciergOpen, setPlayConciergOpen] = useState(false);
   const [modalCategory, setModalCategory]     = useState(null); // PlayContentModal category
+  useScrollLock(playConciergOpen || !!openDim || !!modalCategory);
   const [petData, setPetData]         = useState(null);
   const [soulScore, setSoulScore]     = useState(0);
   const [apiProducts, setApiProducts] = useState({});

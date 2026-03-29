@@ -143,7 +143,7 @@ const DineCategoryStrip = ({ pet, onCategorySelect }) => {
                 className="flex flex-col items-center flex-shrink-0"
                 style={{
                   minWidth: 82,
-                  height: 72,
+                  height: 90,
                   padding: '10px 12px',
                   cursor: 'pointer',
                   background: 'transparent',
@@ -173,10 +173,14 @@ const DineCategoryStrip = ({ pet, onCategorySelect }) => {
                     fontSize: 11,
                     fontWeight: 500,
                     color: isActive ? '#C44400' : '#555',
-                    whiteSpace: 'nowrap',
-                    maxWidth: 84,
+                    whiteSpace: 'normal',
+                    maxWidth: 82,
+                    lineHeight: 1.25,
+                    wordBreak: 'break-word',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                    textOverflow: 'ellipsis',
                   }}
                 >
                   {cat.name}

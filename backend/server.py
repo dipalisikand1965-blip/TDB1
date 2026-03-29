@@ -15799,9 +15799,8 @@ async def get_pet_photo_public(pet_id: str):
 
 @api_router.post("/pets/{pet_id}/photo")
 async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
-    import base64
-    import os
-    
+    import base64, os, cloudinary, cloudinary.uploader
+
     # Validate pet exists
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
@@ -15811,41 +15810,58 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     if not photo.content_type or not photo.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
     
-    # Read file content
+    # Read file content (already compressed by frontend, typically < 800KB)
     content = await photo.read()
     
-    # Validate file size (max 2MB for base64 storage)
-    if len(content) > 2 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Image must be less than 2MB")
-    
-    # Get file extension and content type
-    file_ext = photo.filename.split('.')[-1].lower() if '.' in photo.filename else 'jpg'
+    # Generous backend limit — frontend compresses, so 8MB here is safe headroom
+    if len(content) > 8 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be less than 8MB. Please compress or resize first.")
+
     content_type = photo.content_type or 'image/jpeg'
+    photo_url = None
+
+    # ── Try Cloudinary first ───────────────────────────────────────────────
+    cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
+    cloud_key  = os.getenv("CLOUDINARY_API_KEY")
+    cloud_sec  = os.getenv("CLOUDINARY_API_SECRET")
     
-    # Convert to base64 for database storage (persists across deployments)
-    photo_base64 = base64.b64encode(content).decode('utf-8')
-    
-    # Generate URL using API route that will serve from database
-    photo_url = f"/api/pet-photo/{pet_id}"
-    
-    # Update pet record with both URL and base64 data
+    if cloud_name and cloud_key and cloud_sec:
+        try:
+            cloudinary.config(cloud_name=cloud_name, api_key=cloud_key, api_secret=cloud_sec)
+            # Upload bytes directly (no temp file needed)
+            result = cloudinary.uploader.upload(
+                content,
+                folder="pet_profiles",
+                public_id=f"pet_{pet_id}",
+                overwrite=True,
+                resource_type="image",
+                transformation=[{"width": 800, "height": 800, "crop": "fill", "gravity": "face", "quality": "auto", "fetch_format": "auto"}]
+            )
+            photo_url = result.get("secure_url")
+            logger.info(f"✅ Pet photo uploaded to Cloudinary: {photo_url}")
+        except Exception as cloud_err:
+            logger.warning(f"Cloudinary upload failed ({cloud_err}), falling back to base64 storage")
+
+    # ── Fallback: base64 in MongoDB (works without Cloudinary) ────────────
+    if not photo_url:
+        photo_base64 = base64.b64encode(content).decode('utf-8')
+        photo_url = f"/api/pet-photo/{pet_id}"
+        await db.pets.update_one(
+            {"id": pet_id},
+            {"$set": {"photo_base64": photo_base64, "photo_content_type": content_type}}
+        )
+
+    # Update pet record with final URL
     await db.pets.update_one(
         {"id": pet_id},
-        {"$set": {
-            "photo_url": photo_url, 
-            "photo_base64": photo_base64,
-            "photo_content_type": content_type,
-            "updated_at": get_utc_timestamp()
-        }}
+        {"$set": {"photo_url": photo_url, "updated_at": get_utc_timestamp()}}
     )
-    
-    # Also update in member's pets array
     await db.members.update_one(
         {"pets.id": pet_id},
         {"$set": {"pets.$.photo_url": photo_url}}
     )
-    
-    logger.info(f"Pet photo uploaded for {pet_id}, size: {len(content)} bytes")
+
+    logger.info(f"Pet photo saved for {pet_id} ({len(content)} bytes) → {photo_url[:60]}")
     return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
 
 

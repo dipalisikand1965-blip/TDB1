@@ -309,17 +309,10 @@ const MiraPage = lazy(() => import("./pages/MiraPage"));
 const MiraConciergeEmbed = lazy(() => import("./pages/MiraConciergeEmbed"));
 // MiraDemoPage - Lazy loaded to prevent browser crash (142KB file)
 const MiraDemoPage = lazy(() => import("./pages/MiraDemoPage"));
-const MiraDemoOriginalPage = lazy(() => import("./pages/MiraDemoOriginalPage"));
-// MiraDemoBackupPage - UNTOUCHED BACKUP for comparison during refactoring
-const MiraDemoBackupPage = lazy(() => import("./pages/MiraDemoBackupPage"));
-// MiraPurePage - Clean soulful AI without hardcoded logic
-const MiraPurePage = lazy(() => import("./pages/MiraPurePage"));
 // MiraPureOSPage - Full OS with tabs and pet selector
 const MiraPureOSPage = lazy(() => import("./pages/MiraPureOSPage"));
 // MiraOSPage - New Header Shell navigation page
 const MiraOSPage = lazy(() => import("./pages/MiraOSPage"));
-// MiraPillarSandbox - Test page for unified Mira on pillar pages
-const MiraPillarSandbox = lazy(() => import("./pages/MiraPillarSandbox"));
 const ConciergeDashboard = lazy(() => import("./pages/ConciergeDashboard"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
@@ -424,29 +417,22 @@ function AppRouter() {
         {/* MIRA OS SHELL - New header shell navigation (experimental) */}
         <Route path="/mira-os-shell" element={<ProtectedRoute requireMembership={true}><MiraOSPage /></ProtectedRoute>} />
         
-        {/* MIRA OS CLASSIC - Legacy alias, same as /mira-os */}
-        <Route path="/mira-os-classic" element={<ProtectedRoute requireMembership={true}><MiraDemoPage /></ProtectedRoute>} />
         
         {/* Redirect old /mira-demo to /mira-os */}
         <Route path="/mira-demo" element={<MiraDemoRedirect />} />
         
         {/* MIRA OS ORIGINAL - Day 1 clean version for comparison */}
-        <Route path="/mira-os-original" element={<ProtectedRoute requireMembership={true}><MiraDemoOriginalPage /></ProtectedRoute>} />
         
         {/* MIRA OS BACKUP - UNTOUCHED version for comparison during refactoring */}
-        <Route path="/mira-os-backup" element={<ProtectedRoute requireMembership={true}><MiraDemoBackupPage /></ProtectedRoute>} />
         
         {/* MIRA PURE - Clean soulful AI test page (no hardcoded logic) */}
-        <Route path="/mira-pure" element={<MiraPurePage />} />
         
         {/* MIRA PURE OS - Full OS with tabs, pet selector (no hardcoded logic) */}
-        <Route path="/mira-pure-os" element={<MiraPureOSPage />} />
         
         {/* MIRA OS - New Header Shell Navigation Page (kept as backup reference) */}
         {/* Route already defined above - remove duplicate */}
         
         {/* Mira Pillar Sandbox - Test page for unified Mira experience */}
-        <Route path="/mira-pillar-sandbox" element={<MiraPillarSandbox />} />
         
         {/* Membership Landing Page - NO navbar/footer for clean entry */}
         <Route path="/membership" element={<MembershipPage />} />

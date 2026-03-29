@@ -105,7 +105,8 @@ const FitBadges = ({ pick, pet }) => {
         return (
           <span 
             key={badge.id}
-            className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded-full border ${badge.color}`}
+            className={`tdc-chip tdc-chip-pillar ${badge.color}`}
+            style={{ '--chip-color': 'currentColor' }}
           >
             <Icon className="w-2.5 h-2.5" />
             {badge.label}
@@ -126,6 +127,8 @@ const PILLARS = [
   { id: 'learn', name: 'Learn', emoji: '📚', icon: GraduationCap, gradient: 'from-indigo-400 to-purple-500' },
   { id: 'paperwork', name: 'Paperwork', emoji: '📋', icon: Info, gradient: 'from-violet-400 to-purple-500' },
   { id: 'shop', name: 'Shop', emoji: '🛍️', icon: Scissors, gradient: 'from-cyan-400 to-blue-500' },
+  { id: 'farewell', name: 'Farewell', emoji: '🕊️', icon: Leaf, gradient: 'from-slate-400 to-gray-500' },
+  { id: 'adopt', name: 'Adopt', emoji: '🐾', icon: Heart, gradient: 'from-emerald-400 to-teal-500' },
   { id: 'services', name: 'Services', emoji: '✂️', icon: Scissors, gradient: 'from-emerald-400 to-green-500' },
   { id: 'emergency', name: 'Emergency', emoji: '🚨', icon: HeartPulse, gradient: 'from-red-500 to-orange-500' },
 ];
@@ -201,7 +204,7 @@ const ExpandablePickCard = ({
         <div className="p-4">
           {/* Badge row */}
           <div className="flex items-center justify-between mb-3">
-            <span className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-medium rounded-full">
+            <span className="tdc-chip tdc-chip-gold" style={{ background:'linear-gradient(135deg,#ec4899,#8b5cf6)', color:'#fff', borderColor:'transparent' }}>
               {pick.seasonal ? '☆ Seasonal' : 'Concierge® Pick'}
             </span>
             <button 
@@ -235,7 +238,7 @@ const ExpandablePickCard = ({
           {/* Spec Chip */}
           {pick.spec_chip && (
             <div className="flex justify-center mb-3">
-              <span className="px-3 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full border border-pink-500/30">
+              <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.2)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                 {pick.spec_chip}
               </span>
             </div>
@@ -422,12 +425,12 @@ const ExpandablePickCard = ({
             {/* Category + Brand */}
             <div className="flex flex-wrap gap-1 mb-2">
               {pick.category && (
-                <span className="px-2 py-0.5 bg-gray-700/50 text-gray-400 text-xs rounded-full">
+                <span className="tdc-chip tdc-chip-dark">
                   {pick.category}
                 </span>
               )}
               {pick.brand && (
-                <span className="px-2 py-0.5 bg-gray-700/50 text-gray-400 text-xs rounded-full">
+                <span className="tdc-chip tdc-chip-dark">
                   {pick.brand}
                 </span>
               )}
@@ -526,7 +529,7 @@ const CollapsibleSection = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-0.5 ${styles.countBg} ${styles.countColor} text-xs rounded-full`}>
+          <span className={`tdc-chip ${styles.countBg} ${styles.countColor}`}>
             {count}
           </span>
           <ChevronDown 
@@ -1063,6 +1066,41 @@ const PersonalizedPicksPanel = ({
     });
   };
   
+  // "Anything else" — direct send to Concierge® without going through cart
+  const handleAnythingElseSend = async () => {
+    const text = customRequest.trim();
+    if (!text || isSending) return;
+    hapticFeedback.success();
+    setIsSending(true);
+    try {
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          pet_id: pet?.id,
+          pet_name: pet?.name,
+          pillar: activePillar || 'general',
+          source: 'picks_anything_else',
+          intent: 'custom_request',
+          customer_message: text,
+        }),
+      });
+      toast.success(`Received ✓ Your Concierge® is on it for ${pet?.name || 'your pet'}`, {
+        icon: '🐾',
+        duration: 4000,
+      });
+      setCustomRequest('');
+    } catch (err) {
+      console.error('[Picks] Anything else send failed:', err);
+      toast.error('Could not send — please try again');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   // Flow single pick to chat - creates ticket and adds message to chat
   // UNIFIED SERVICE FLOW: Always creates a service ticket for concierge
   const flowPickToChat = async (pick, pickType = 'catalogue') => {
@@ -1512,13 +1550,13 @@ const PersonalizedPicksPanel = ({
                     </span>
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">
-                    <span className="px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full text-[10px]">
+                    <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(139,92,246,0.2)', color:'#c4b5fd', borderColor:'rgba(139,92,246,0.3)' }}>
                       Pet profile matched
                     </span>
-                    <span className="px-2 py-0.5 bg-green-500/20 text-green-300 rounded-full text-[10px]">
+                    <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(34,197,94,0.2)', color:'#86efac', borderColor:'rgba(34,197,94,0.3)' }}>
                       Safety checked
                     </span>
-                    <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded-full text-[10px]">
+                    <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(59,130,246,0.2)', color:'#93c5fd', borderColor:'rgba(59,130,246,0.3)' }}>
                       Ranked by relevance
                     </span>
                   </div>
@@ -2145,12 +2183,12 @@ const PersonalizedPicksPanel = ({
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
+                                  <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.3)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                                     Concierge® Pick
                                   </span>
                                   {/* Task Status Badge */}
                                   {getTaskStatus(pick) && (
-                                    <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                    <span className={`tdc-chip tdc-chip-dark ${
                                       getTaskStatus(pick) === 'scheduled' 
                                         ? 'bg-green-500/30 text-green-300' 
                                         : getTaskStatus(pick) === 'in_progress'
@@ -2295,7 +2333,7 @@ const PersonalizedPicksPanel = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
+                            <span className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.3)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                               Arranged for {pet?.name}
                             </span>
                           </div>
@@ -2334,31 +2372,29 @@ const PersonalizedPicksPanel = ({
                 </p>
               </div>
               
+              {/* "Anything else" — direct send to Concierge + Enter key support */}
               <div className="relative">
                 <textarea
                   value={customRequest}
                   onChange={(e) => setCustomRequest(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                      e.preventDefault();
+                      handleAnythingElseSend();
+                    }
+                  }}
                   placeholder={`What would you like for ${pet?.name}? A surprise treat? Special arrangement? Just ask...`}
                   className="w-full bg-gray-800/80 border border-gray-700 rounded-2xl p-4 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none"
                   rows={3}
                 />
                 {customRequest.trim() && (
                   <button
-                    onClick={() => {
-                      hapticFeedback.success();
-                      const customItem = {
-                        id: `custom-${Date.now()}`,
-                        name: customRequest.trim().slice(0, 50) + (customRequest.length > 50 ? '...' : ''),
-                        full_request: customRequest.trim(),
-                        type: 'custom_request',
-                        pick_type: 'custom'
-                      };
-                      setSelectedItems(prev => [...prev, customItem]);
-                      setCustomRequest('');
-                    }}
-                    className="absolute bottom-3 right-3 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+                    onClick={handleAnythingElseSend}
+                    disabled={isSending}
+                    data-testid="anything-else-send-btn"
+                    className="absolute bottom-3 right-3 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
-                    Add Request
+                    {isSending ? 'Sending...' : 'Send to Concierge®'}
                   </button>
                 )}
               </div>

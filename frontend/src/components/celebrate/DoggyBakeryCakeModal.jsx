@@ -325,9 +325,9 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   const TIME_SLOTS = ['10am – 12pm', '12pm – 2pm', '2pm – 4pm', '4pm – 6pm', '6pm – 8pm'];
 
   const orderPanel = orderProduct && (
-    <div style={{ position:'fixed', inset:0, zIndex:9300, display:'flex', alignItems:'flex-end', justifyContent:'center' }}>
+    <div style={{ position:'fixed', inset:0, zIndex:9300, display:'flex', alignItems:'flex-end', justifyContent:'center', touchAction:'none' }}>
       <div onClick={() => setOrderProduct(null)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.5)' }} />
-      <div style={{ position:'relative', width:'100%', maxWidth:560, background:'#FFFBFF', borderRadius:'20px 20px 0 0', padding:'24px 20px 40px', maxHeight:'90vh', overflowY:'auto', boxShadow:'0 -16px 60px rgba(155,89,182,0.2)' }}>
+      <div style={{ position:'relative', width:'100%', maxWidth:560, background:'#FFFBFF', borderRadius:'20px 20px 0 0', padding:'24px 20px 40px', paddingTop:'env(safe-area-inset-top, 0px)', maxHeight:'90vh', overflowY:'auto', boxShadow:'0 -16px 60px rgba(155,89,182,0.2)' }}>
 
         {/* Header */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>

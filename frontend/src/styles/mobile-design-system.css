@@ -9,18 +9,18 @@
   --font-serif: 'Cormorant Garamond', serif;
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
   
-  /* iOS Type Scale */
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-base: 16px; /* Minimum body size for iOS readability */
-  --text-lg: 18px;
-  --text-xl: 22px;
-  --text-2xl: 28px;
-  --text-3xl: 34px;
+  /* iOS Type Scale — bumped for iOS readability (Apple HIG minimum 17px body) */
+  --text-xs: 13px;   /* was 12px — used for chips, badges */
+  --text-sm: 15px;   /* was 14px — used for secondary text, captions */
+  --text-base: 17px; /* was 16px — Apple's standard body size */
+  --text-lg: 20px;   /* was 18px */
+  --text-xl: 23px;   /* was 22px */
+  --text-2xl: 30px;  /* was 28px */
+  --text-3xl: 36px;  /* was 34px */
   
   /* Shared Base Colors */
   --color-dark-bg: #0B1628;
-  --color-gold: #D4A853;
+  /* --color-gold removed: use --color-gold from tdc-design-tokens.css as single source of truth */
   --color-surface: #FFFFFF;
   --color-surface-secondary: #F8F9FA;
   
@@ -75,13 +75,13 @@
 .ios-tab-bar {
   display: flex;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   position: sticky;
-  top: 0;
-  z-index: 10;
+  top: 0; /* sticks at top of viewport (above hero, covers navbar when scrolled) */
+  z-index: 60; /* above navbar z-50 */
   padding: 8px 16px;
   gap: 8px;
   overflow-x: auto;
@@ -222,7 +222,7 @@
 /* ========== LETTER SPACING IMPROVEMENTS ========== */
 .ios-eyebrow {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -232,5 +232,197 @@
 @media (max-width: 768px) {
   input, textarea, select {
     font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
+  }
+}
+
+/* ========== MOBILE FONT SIZE FLOOR ========== */
+/* Catches hardcoded inline fontSize: 11/12/13/14 values throughout mobile pages.
+   Applied only inside .mobile-page-container so desktop is never affected. */
+@media (max-width: 768px) {
+  .mobile-page-container [style*="font-size: 10px"],
+  .mobile-page-container [style*="font-size: 11px"] { font-size: 13px !important; }
+
+  .mobile-page-container [style*="font-size: 12px"] { font-size: 13px !important; }
+
+  .mobile-page-container [style*="font-size: 13px"] { font-size: 15px !important; }
+
+  .mobile-page-container [style*="font-size: 14px"] { font-size: 16px !important; }
+}
+
+/* Eyebrow labels — bump from 11px */
+.ios-eyebrow { font-size: 12px; }
+
+/* ========== DARK MODAL OVERLAYS ========== */
+/* All fixed overlays get consistent dark treatment */
+@media (max-width: 768px) {
+  .mobile-page-container ~ div[style*="rgba(0,0,0"],
+  div[style*="position: fixed"][style*="rgba(0,0,0"],
+  div[style*="position:fixed"][style*="rgba(0,0,0"] {
+    background: rgba(0,0,0,0.78) !important;
+  }
+}
+
+/* ========== MODAL CONTENT SCROLLBARS — hide without killing page scroll ========== */
+/* Targets only modal inner containers with maxHeight + overflowY */
+[style*="maxHeight"][style*="overflowY"]::-webkit-scrollbar,
+[style*="max-height"][style*="overflow-y"]::-webkit-scrollbar {
+  display: none;
+  width: 0;
+}
+/* NEVER use * { scrollbar: none } — kills ALL page scrolling */
+.no-sb,
+[style*="overflow-x: auto"],
+[style*="overflow-x:auto"] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-sb::-webkit-scrollbar,
+[style*="overflow-x: auto"]::-webkit-scrollbar,
+[style*="overflow-x:auto"]::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========== PREMIUM iOS FONT & SPACING UPGRADE ========== */
+/* Dipali's Golden Phone Audit — larger, breathable, premium */
+
+/* Base font size bump for all mobile pages */
+@media (max-width: 768px) {
+  .mobile-page-container {
+    font-size: 17px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  /* Hero section — bigger, bolder */
+  .mobile-page-container > div:first-child {
+    padding: 40px 20px 28px !important;
+  }
+
+  /* All section headings */
+  .mobile-page-container h1,
+  .mobile-page-container h2,
+  .mobile-page-container h3 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Mira dark bar — more breathing room */
+  .mobile-page-container [style*="borderRadius:20"][style*="padding:16"] {
+    padding: 20px !important;
+  }
+
+  /* Tab bar pills — bigger touch targets */
+  .ios-tab {
+    padding: 12px 22px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Product cards — more padding */
+  .mobile-page-container [style*="gridTemplateColumns:'1fr 1fr'"] > div,
+  .mobile-page-container [style*='gridTemplateColumns:"1fr 1fr"'] > div {
+    border-radius: 16px !important;
+  }
+
+  /* Buttons — proper Apple touch targets (min 48px) */
+  .mobile-page-container button {
+    min-height: 44px;
+    font-size: 16px !important;
+  }
+
+  /* CTA buttons — even bigger */
+  .mobile-page-container [class*="-cta"] {
+    min-height: 52px !important;
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    border-radius: 16px !important;
+  }
+
+  /* Cards — more generous padding */
+  .mobile-page-container [style*="padding:'14px"] {
+    padding: 18px !important;
+  }
+  .mobile-page-container [style*='padding:"14px'] {
+    padding: 18px !important;
+  }
+
+  /* Dim tiles — bigger */
+  .mobile-page-container [style*="minHeight:130"],
+  .mobile-page-container [style*="minHeight: 130"] {
+    min-height: 150px !important;
+  }
+
+  /* Pet switcher buttons in hero */
+  .mobile-page-container [style*="borderRadius:999"][style*="fontSize:13"] {
+    font-size: 15px !important;
+    padding: 8px 20px !important;
+  }
+
+  /* Soul profile card */
+  .mobile-page-container [data-testid*="soul-profile"] {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+
+  /* Section labels */
+  .mobile-page-container [style*="fontSize:14"][style*="fontWeight:700"],
+  .mobile-page-container [style*='fontSize:"14'][style*='fontWeight:"700'] {
+    font-size: 16px !important;
+  }
+
+  /* Mira quote text */
+  .mobile-page-container [style*="fontStyle:'italic'"],
+  .mobile-page-container [style*='fontStyle:"italic"'] {
+    font-size: 16px !important;
+    line-height: 1.7 !important;
+  }
+
+  /* Badge chips */
+  .mobile-page-container [style*="fontSize:9"],
+  .mobile-page-container [style*='fontSize:"9"'],
+  .mobile-page-container [style*="fontSize:10"],
+  .mobile-page-container [style*='fontSize:"10"'] {
+    font-size: 12px !important;
+  }
+
+  /* Eyebrow labels like "THE DOGGY COMPANY" */
+  .mobile-page-container [style*="letterSpacing:'0.1em'"],
+  .mobile-page-container [style*='letterSpacing:"0.1em"'] {
+    font-size: 13px !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  /* Service cards */
+  .mobile-page-container [style*="borderRadius:16"][style*="padding:'14px"] {
+    padding: 18px 16px !important;
+  }
+
+  /* Spacing between sections */
+  .mobile-page-container [style*="margin:'0 16px"],
+  .mobile-page-container [style*='margin:"0 16px'] {
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+  }
+}
+
+/* ========== PREMIUM DESKTOP UPGRADE ========== */
+@media (min-width: 769px) {
+  /* Soul pages — more generous spacing */
+  [class*="SoulPage"],
+  [data-testid*="-desktop"] {
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  /* All cards on desktop */
+  [style*="borderRadius:18"],
+  [style*='borderRadius:"18"'] {
+    border-radius: 20px !important;
+  }
+
+  /* Section headings */
+  [style*="fontSize:22"][style*="fontWeight:700"],
+  [style*='fontSize:"22"'] {
+    font-size: 24px !important;
   }
 }

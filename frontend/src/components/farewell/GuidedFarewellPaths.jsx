@@ -18,7 +18,8 @@
  * WIRING: POST /api/concierge/farewell-path
  * TONE:   Gentle. Unhurried. Never clinical.
  */
-import { useState } from "react";
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { guidedPathComplete } from "../../utils/MiraCardActions";
 
 const G = { deep:"#1A1A2E", mid:"#2D2D4E", indigo:"#6366F1", light:"#A5B4FC", pale:"#EEF2FF", cream:"#F5F7FF", darkText:"#1A1A2E", mutedText:"#4338CA" };
@@ -303,7 +304,39 @@ function OptionRow({ option, selected, onSelect, accentColor }) {
 }
 
 function ModalShell({ onClose, children, noPadding }) {
-  return (<div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:300, background:"rgba(0,0,0,0.50)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}><div onClick={e=>e.stopPropagation()} style={{ background:"#fff", borderRadius:20, width:"min(720px,100%)", maxHeight:"90vh", overflowY:"auto", boxShadow:"0 24px 80px rgba(0,0,0,0.20)", padding:noPadding?0:"28px 28px 24px", border:"2px solid #F0E8E0" }}>{children}</div></div>);
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  return createPortal(
+    <>
+      <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9999, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }} />
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position:"fixed", zIndex:10000,
+          top:"50%", left:"50%", transform:"translate(-50%,-50%)",
+          background:"#fff", borderRadius:20,
+          width:"min(720px,calc(100vw - 40px))", maxHeight:"90vh",
+          overflowY:"auto", scrollbarWidth:"none", msOverflowStyle:"none",
+          boxShadow:"0 24px 80px rgba(0,0,0,0.35)",
+          padding: noPadding ? 0 : "28px 28px 24px", border:"2px solid #F0E8E0"
+        }}
+      >
+        {children}
+      </div>
+    </>,
+    document.body
+  );
 }
 
 function PathFlowModal({ path, pet, onClose }) {
@@ -352,7 +385,7 @@ function PathCard({ path, pet, onOpen }) {
         {(path.stepLabels||[]).map((label,i)=>(
           <div key={i} style={{flex:1}}>
             <div style={{height:3,borderRadius:3,marginBottom:3,background:i===0?path.accentColor:'rgba(99,102,241,0.15)'}}/>
-            <div style={{fontSize:9,color:'#aaa',textAlign:'center',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{label}</div>
+            <div style={{fontSize:9,color:'#aaa',textAlign:'center',lineHeight:1.3,wordBreak:'break-word',overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical'}}>{label}</div>
           </div>
         ))}
       </div>

@@ -26,7 +26,7 @@ const PILLAR_STYLE = {
   default:   { bg:"linear-gradient(135deg,#1F2937,#111827)", accent:"#6B7280", badge:"#6B7280" },
 };
 
-export default function MiraImaginesCard({ item, pet, token, pillar = "learn" }) {
+export default function MiraImaginesCard({ item, pet, token, pillar = "learn", style: outerStyle = {} }) {
   const [state,  setState]  = useState("idle");
   const [imgUrl, setImgUrl] = useState(null);
 
@@ -99,6 +99,7 @@ export default function MiraImaginesCard({ item, pet, token, pillar = "learn" })
         cursor: "pointer",
         flexShrink: 0,
         width: 190,
+        ...outerStyle,
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = "translateY(-2px)";

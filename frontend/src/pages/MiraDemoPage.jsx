@@ -311,7 +311,8 @@ const DietaryContextChip = ({ pet, isExpanded, onToggle, onEdit }) => {
             {allergies.map((allergen, i) => (
               <span 
                 key={i}
-                className="px-2 py-0.5 text-xs bg-red-500/20 text-red-300 rounded-full border border-red-500/30"
+                className="tdc-chip tdc-chip-dark"
+                style={{ background:'rgba(239,68,68,0.2)', color:'#fca5a5', borderColor:'rgba(239,68,68,0.3)' }}
               >
                 {allergen}
               </span>
@@ -372,7 +373,8 @@ const MiraDemoPage = () => {
     showPetSelector,
     setShowPetSelector,
     isLoadingPets,
-    isRealPet
+    isRealPet,
+    petLoaded
   } = usePet({ user, token });
   
   // ═══════════════════════════════════════════════════════════════════════════════
@@ -2964,7 +2966,7 @@ const MiraDemoPage = () => {
       return [
         { text: 'Just the cake', value: 'Just the cake for now.' },
         { text: 'Cake + activities', value: 'I want help with cake and activities.' },
-        { text: 'Show me cake ideas', value: 'Show me some birthday cake ideas for Buddy.' }
+        { text: 'Show me cake ideas', value: `Show me some birthday cake ideas for ${pet?.name || 'my dog'}.` }
       ];
     }
     
@@ -3022,7 +3024,7 @@ const MiraDemoPage = () => {
       console.error('[QUICK REPLIES] Error extracting quick replies:', error);
       return [];
     }
-  }, []);
+  }, [pet]);
   
   // Helper: Split message to highlight the question part
   // Returns { mainText, questionText } for separate rendering
@@ -3979,6 +3981,25 @@ const MiraDemoPage = () => {
     return colors[intent] || 'bg-gray-500/20 text-gray-300';
   };
 
+  // Guard: don't render until real pet data loads (prevents Buddy flash)
+  if (!petLoaded) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: '#0d0d0d',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'rgba(255,255,255,0.5)',
+        flexDirection: 'column',
+        gap: '12px'
+      }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid rgba(168,85,247,0.5)', borderTopColor: '#a855f7', animation: 'spin 0.8s linear infinite' }} />
+        <span style={{ fontSize: 14 }}>Loading Mira...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="mira-prod">
       {/* ═══════════════════════════════════════════════════════════════════
@@ -3986,8 +4007,8 @@ const MiraDemoPage = () => {
           All navigation elements in one clean horizontal row
           ═══════════════════════════════════════════════════════════════════ */}
       <div className="mira-sticky-header" ref={shellRefs.headerRef}>
-        {/* Back to Pillar - Shows when user came from a pillar page, or Pet Home fallback */}
-        {(returnUrl || sourcePillar) ? (
+        {/* Back to Pillar - only shows when user navigated from a pillar page */}
+        {(returnUrl || sourcePillar) && (
           <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-b border-purple-200/30">
             <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between">
               <button
@@ -3997,19 +4018,6 @@ const MiraDemoPage = () => {
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span>Back to {PILLAR_NAMES[sourcePillar] || 'browsing'}</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="border-b border-white/5">
-            <div className="max-w-4xl mx-auto px-4 py-1.5 flex items-center">
-              <button
-                onClick={() => navigate('/pet-home')}
-                className="flex items-center gap-1.5 text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
-                data-testid="mira-os-back-btn"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Pet Home</span>
               </button>
             </div>
           </div>
@@ -4414,6 +4422,32 @@ const MiraDemoPage = () => {
             />
           )}
           
+          {/* LIFE VISION GREETING — Mira's daily north-star nudge */}
+          {pet && conversationHistory.length === 0 && pet.doggy_soul_answers?.life_vision && (
+            <div
+              data-testid="life-vision-greeting"
+              style={{
+                margin: '0 0 12px',
+                padding: '12px 16px',
+                background: 'linear-gradient(135deg,rgba(139,92,246,0.1),rgba(233,30,140,0.07))',
+                border: '1px solid rgba(139,92,246,0.18)',
+                borderRadius: 14,
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', marginBottom: 3, letterSpacing: '0.05em' }}>
+                🌟 {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}
+              </div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.55, fontStyle: 'italic' }}>
+                &ldquo;Today, let&apos;s make that{' '}
+                <span style={{ color: '#C084FC', fontStyle: 'normal', fontWeight: 600 }}>
+                  {pet.doggy_soul_answers.life_vision}
+                </span>{' '}
+                for {pet.name} a little closer.&rdquo;
+              </div>
+            </div>
+          )}
+
           {/* SOUL KNOWLEDGE TICKER - "What Mira Knows" about the pet */}
           {/* Shows soul traits, favorites, allergies - builds trust and engagement */}
           {pet && conversationHistory.length === 0 && (
@@ -5380,7 +5414,7 @@ const MiraDemoPage = () => {
                       <div className="text-sm text-white/50">{p.breed}</div>
                     </div>
                     {soulScore > 0 && (
-                      <span className="px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+                      <span className="tdc-chip tdc-chip-gold" style={{ background:'linear-gradient(135deg,#f59e0b,#ea580c)', color:'#fff', borderColor:'transparent' }}>
                         {Math.round(soulScore)}%
                       </span>
                     )}

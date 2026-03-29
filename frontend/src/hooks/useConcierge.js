@@ -106,8 +106,8 @@ export function useConcierge({ pet, pillar } = {}) {
         pet_name:     petName,
         pet_breed:    pet?.breed,
         parent_id:    user?.id   || user?.email,
-        parent_email: user?.email,
-        parent_name:  user?.name,
+        parent_email: user?.email || '',
+        parent_name:  user?.name  || user?.full_name || user?.email?.split('@')[0] || '',
 
         // Intent
         intent_primary: intentType,
@@ -127,8 +127,8 @@ export function useConcierge({ pet, pillar } = {}) {
         product_name: item?.name || name,
         price:        item?.price,
 
-        // Extra metadata
-        ...metadata,
+        // Send metadata as proper nested object (Pydantic reads request.metadata.photo_url etc.)
+        metadata,
 
         // Force create even if similar ticket exists
         force_new: true, // always notify admin

@@ -698,6 +698,7 @@ const MiraAI = () => {
 
   // Fetch pillar-specific quick prompts
   const fetchQuickPrompts = async (pillar) => {
+    if (!pillar || pillar === 'null') return;
     try {
       const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
       if (response.ok) {

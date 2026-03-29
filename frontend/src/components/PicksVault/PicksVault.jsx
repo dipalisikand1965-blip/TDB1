@@ -272,8 +272,8 @@ const PicksVault = ({
                 <span className="pv-pick-price">
                   {product.price ? `₹${product.price}` : 'Get Quote'}
                 </span>
-                {product.why_for_pet && (
-                  <span className="pv-pick-why">{product.why_for_pet}</span>
+                {(product.why_for_pet || product.why_reason || product.why_it_fits || product.reason) && (
+                  <span className="pv-pick-why">{product.why_for_pet || product.why_reason || product.why_it_fits || product.reason}</span>
                 )}
               </div>
 

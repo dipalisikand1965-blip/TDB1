@@ -4,7 +4,9 @@
  * Products tab: dimTab (Products/Personalised) + sub-category pills
  * Colour: Orange #E76F51
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -19,6 +21,8 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
 import PlayNearMe from '../components/play/PlayNearMe';
+import PlayCategoryStrip from '../components/play/PlayCategoryStrip';
+import PlayContentModal from '../components/play/PlayContentModal';
 import BuddyMeetup from '../components/play/BuddyMeetup';
 import GuidedPlayPaths from '../components/play/GuidedPlayPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -28,7 +32,10 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import { getPlayDims, MiraPicksSection } from './PlaySoulPage';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const G = {
   orange:'#E76F51', mid:'#C25B3D', deep:'#7A2E1A', light:'#FBD8CE',
@@ -82,13 +89,16 @@ export default function PlayMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('play');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState('products');
-  const [subCat, setSubCat] = useState('All');
+  const [modalCategory, setModalCategory] = useState(null);
+  const [showMiraPicks, setShowMiraPicks] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
   const [showPlayPlan, setShowPlayPlan] = useState(false);
+  useScrollLock(showMiraPicks || svcBooking.isOpen || showPlayPlan || conciergeBuilderOpen);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -97,7 +107,7 @@ export default function PlayMobilePage() {
 
   useEffect(() => {
     if (!currentPet?.id) return;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=600&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
       .catch(() => {});
@@ -112,21 +122,18 @@ export default function PlayMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🎾</div><div>Loading play products…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
   const petName = currentPet?.name || 'your dog';
   const allergies = getAllergies(currentPet);
-  // Safety wrapper - never crash the page
-  let intelligent = [];
-  try {
-    intelligent = applyMiraFilter(allRaw, currentPet) || [];
-  } catch (e) {
-    intelligent = allRaw || [];
-  }
-  const subCats = ['All', ...new Set(intelligent.map(p => p.sub_category).filter(Boolean))];
-  const products = subCat === 'All' ? intelligent : intelligent.filter(p => p.sub_category === subCat);
-  const miraPick = products.find(p => p.miraPick) || products[0] || null;
 
   return (
     <PillarPageLayout pillar="play" hideHero hideNavigation>
@@ -136,56 +143,50 @@ export default function PlayMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.orange} />}
 
-        {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎾 Play</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Play, Joy & Enrichment</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Toys, enrichment, playgroups, dog walkers</div>
-        </div>
+        {/* PlayContentModal — same as desktop, opened by PlayCategoryStrip chip */}
+        <PlayContentModal
+          isOpen={!!modalCategory}
+          category={modalCategory}
+          pet={currentPet}
+          onClose={() => setModalCategory(null)}
+          onNavigateToNearMe={() => { setModalCategory(null); setActiveTab('find-play'); }}
+        />
 
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
-
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(251,146,60,0.14),rgba(251,146,60,0.20))', border:'1px solid rgba(251,146,60,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#C2410C' }}>{petName}</span> love to play?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Enrichment, activities, toys and services matched to {petName}'s soul profile.
+        {/* Mira Picks bottom-sheet — kept as fallback */}
+        {showMiraPicks && (
+          <div onClick={() => setShowMiraPicks(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', padding:'8px 0 32px', paddingTop:'env(safe-area-inset-top, 0px)' }}>
+              <div style={{ width:36, height:4, background:'#ddd', borderRadius:2, margin:'8px auto 16px' }} />
+              <MiraPicksSection pet={currentPet} />
+              <button onClick={() => setShowMiraPicks(false)} style={{ display:'block', margin:'16px auto 0', padding:'10px 32px', borderRadius:999, border:'none', background:G.orange, color:'#fff', fontWeight:700, fontSize:14, cursor:'pointer' }}>Close</button>
             </div>
           </div>
         )}
 
+        {/* Hero */}
+        <PillarHero
+          pillar="play"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`}
+          title="🎾 Play"
+          subtitle="Play, Joy & Enrichment"
+          tagline="Toys, enrichment, playgroups, dog walkers"
+        />
+
         {/* Tab Bar */}
-        {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" />}
-        <div style={{ display:'flex', background:'#fff', borderBottom:`1px solid ${G.border}`, position:'sticky', top:0, zIndex:100 }}>
+        <div className="ios-tab-bar">
           {[
-            { id:'play',      label:'🎾 Play & Products' },
+            { id:'play',      label:'🎾 Play' },
             { id:'services',  label:'🐕 Services' },
             { id:'find-play', label:'📍 Find Play' },
           ].map(tab => (
-            <button key={tab.id} className={`play-tab${activeTab===tab.id?' active':''}`}
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`play-tab-${tab.id}`}
-              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
+              onClick={() => { vibe(); setActiveTab(tab.id); }}>
               {tab.label}
             </button>
           ))}
@@ -194,6 +195,30 @@ export default function PlayMobilePage() {
         {/* TAB 1: Play & Products */}
         {activeTab === 'play' && (
           <div>
+            {/* PlayCategoryStrip — inside Play tab (moved from above tab bar) */}
+            {currentPet && (
+              <PlayCategoryStrip
+                pet={currentPet}
+                openDim={modalCategory}
+                onSelect={id => { vibe(); setModalCategory(id); }}
+                onMiraPicks={() => { vibe(); setModalCategory('miras-picks'); }}
+              />
+            )}
+
+            {/* Soul Profile + CTA — inside tab, same as Care */}
+            {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
+            {currentPet && (
+              <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(251,146,60,0.14),rgba(251,146,60,0.20))', border:'1px solid rgba(251,146,60,0.35)', borderRadius:18, padding:'16px' }}>
+                <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+                  How would <span style={{ color:'#C2410C' }}>{petName}</span> love to play?
+                </div>
+                <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+                  Enrichment, activities, toys and services matched to {petName}'s soul profile.
+                </div>
+              </div>
+            )}
+            {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="play" /></div>}
+
             {/* Mira Bar */}
             <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
               <div style={{ fontSize:14, fontWeight:700, color:`rgba(251,216,206,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S JOY</div>
@@ -205,10 +230,10 @@ export default function PlayMobilePage() {
               </button>
             </div>
 
-            {/* dimTab */}
-            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
-              {[{ id:'products', label:'🎯 All Products' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
-                <button key={t.id} onClick={() => { setDimTab(t.id); setSubCat('All'); }}
+            {/* dimTab toggle */}
+            <div style={{ display:'flex', margin:'12px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
+              {[{ id:'products', label:'🎯 Dimensions' }, { id:'personalised', label:'✦ Personalised' }].map(t => (
+                <button key={t.id} onClick={() => { setDimTab(t.id); }}
                   style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
                     background:dimTab===t.id?G.orange:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
                   {t.label}
@@ -223,69 +248,46 @@ export default function PlayMobilePage() {
               </div>
             ) : (
               <div style={{ padding:'16px' }}>
-                {/* Sub-category pills */}
-                {subCats.length > 1 && (
-                  <div style={{ display:'flex', gap:6, overflowX:'auto', marginBottom:12, paddingBottom:4 }}>
-                    {subCats.map(cat => (
-                      <button key={cat} onClick={() => setSubCat(cat)}
-                        style={{ flexShrink:0, padding:'6px 14px', borderRadius:20, fontSize:14, fontWeight:600,
-                          border:`1.5px solid ${subCat===cat?G.orange:G.border}`,
-                          background:subCat===cat?G.orange:'#fff',
-                          color:subCat===cat?'#fff':G.darkText, cursor:'pointer' }}>
-                        {cat.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                {/* Mira Picks section */}
+                <MiraPicksSection pet={currentPet} />
 
-                {/* Mira's pick callout */}
-                {miraPick && (
-                  <div style={{ background:'linear-gradient(135deg,rgba(255,140,66,0.1),rgba(196,77,255,0.06))', border:'1px solid rgba(255,140,66,0.3)', borderRadius:12, padding:'10px 14px', display:'flex', alignItems:'center', gap:10, marginBottom:12 }}>
-                    <div style={{ width:26, height:26, borderRadius:'50%', background:'linear-gradient(135deg,#FF8C42,#C44DFF)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#fff', flexShrink:0 }}>✦</div>
-                    <div style={{ fontSize:14, color:'#3D1A00', lineHeight:1.4 }}>
-                      <strong>Mira's pick:</strong> {miraPick.name}
-                      {miraPick.mira_hint && <span style={{ color:'#888', marginLeft:5 }}>— {miraPick.mira_hint}</span>}
-                    </div>
-                  </div>
-                )}
+                {/* 7 Play Dimensions grid — tapping any card opens PlayContentModal (same as desktop) */}
+                {(() => {
+                  const playDims = getPlayDims(currentPet);
+                  return (
+                    <>
+                      <div style={{ marginBottom:4, marginTop:4 }}>
+                        <span style={{ fontSize:20, fontWeight:900, color:G.darkText }}>Play </span>
+                        <span style={{ fontSize:20, fontWeight:900, color:G.orange }}>for {petName}</span>
+                      </div>
+                      <div style={{ fontSize:13, color:G.mutedText, marginBottom:12 }}>
+                        {playDims.length} dimensions matched to {petName}'s energy and play profile
+                      </div>
+                      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+                        {playDims.map(dim => (
+                          <div key={dim.id}
+                            data-testid={`play-dim-card-${dim.id}`}
+                            onClick={() => { vibe(); setModalCategory(dim.id); }}
+                            style={{ background: dim.glow ? G.pale : '#fff', border:`1.5px solid ${modalCategory===dim.id ? G.orange : G.border}`, borderRadius:14, padding:'14px 12px', cursor:'pointer', textAlign:'center', boxShadow: dim.glow ? `0 4px 16px rgba(231,111,81,0.15)` : 'none', position:'relative' }}>
+                            {dim.glow && <div style={{ position:'absolute', top:8, right:8, width:7, height:7, borderRadius:'50%', background:G.orange, boxShadow:`0 0 6px ${G.orange}` }} />}
+                            <div style={{ fontSize:26, marginBottom:6 }}>{dim.icon}</div>
+                            <div style={{ fontSize:13, fontWeight:800, color:G.darkText, marginBottom:3 }}>{dim.label}</div>
+                            <div style={{ fontSize:11, color:G.mutedText, lineHeight:1.3 }}>{typeof dim.sub==='string' ? dim.sub.replace(/{name}/g, petName) : ''}</div>
+                            {dim.badge && <div style={{ display:'inline-flex', marginTop:6, background:dim.badgeBg, color:'#fff', borderRadius:20, padding:'2px 8px', fontSize:9, fontWeight:700 }}>{dim.badge}</div>}
+                          </div>
+                        ))}
+                      </div>
 
-                {products.length === 0 ? (
-                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    {allergies.length > 0 ? (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🛡️</div>
-                        <div>Mira filtered everything for {petName}&apos;s allergies. Ask Concierge® for alternatives.</div>
-                      </>
-                    ) : (
-                      <>
-                        <div style={{ fontSize:32, marginBottom:8 }}>🎾</div>
-                        <div>Loading play products for {petName}…</div>
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                      {products.slice(0, 40).map(p => (
-                        <div key={p.id||p._id||p.name} style={{ opacity: p._dimmed ? 0.55 : 1 }}>
-                          <SharedProductCard product={p} pillar="play" selectedPet={currentPet}
-                            onAddToCart={() => handleAddToCart(p)}
-                            onClick={() => { vibe(); setSelectedProduct(p); }} />
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ borderTop:`1px solid ${G.border}`, paddingTop:10, marginTop:4, fontSize:14, color:'#888' }}>
-                      Filtered for {petName}{allergies.length > 0 ? ` · ${allergies.slice(0,2).join(' & ')}-free` : ''}
-                    </div>
-                <div style={{ marginTop:16 }}><GuidedPlayPaths pet={currentPet} /></div>
+                      <div style={{ marginTop:8 }}><GuidedPlayPaths pet={currentPet} /></div>
 
-                <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
-                  <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · PLAY GEAR FOR {petName.toUpperCase()}</div>
-                  <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom bandanas, toys and play accessories.</div>
-                  <button className="play-cta">Explore Soul Made →</button>
-                </div>
-                  </>
-                )}
+                      <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18, cursor:'pointer' }} onClick={() => setSoulMadeOpen(true)}>
+                        <div style={{ fontSize:14, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:8 }}>✦ SOUL MADE™ · PLAY GEAR FOR {petName.toUpperCase()}</div>
+                        <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>Custom bandanas, toys and play accessories.</div>
+                        <button className="play-cta">Explore Soul Made →</button>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -293,7 +295,33 @@ export default function PlayMobilePage() {
 
         {/* TAB 2: Services */}
         {activeTab === 'services' && (
+          <>
+            <PillarConciergeCards pillar="play" pet={currentPet} token={token} />
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
           <div style={{ padding:'16px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#0D0500', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Custom play sessions, trainer matching, group classes — arranged for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="play-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(245,158,11,0.3)', background:'linear-gradient(135deg,#1F0A04,#3D1500)', color:'#F59E0B', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <div style={{ fontSize:20, fontWeight:700, marginBottom:4, color:G.darkText }}>Play Services for {petName}</div>
             <div style={{ fontSize:14, color:G.mutedText, marginBottom:16 }}>Dog walkers, playgroups, training, hydrotherapy.</div>
             <BuddyMeetup pet={currentPet} />
@@ -301,6 +329,7 @@ export default function PlayMobilePage() {
               <PlayConciergeSection pet={currentPet} />
             </div>
           </div>
+          </>
         )}
 
         {/* TAB 3: Find Play */}

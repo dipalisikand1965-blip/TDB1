@@ -186,15 +186,22 @@ const shouldShowProducts = (responseText) => {
 const PILLAR_PATHS = [
   '/dine', '/care', '/go', '/play', '/learn', '/celebrate-soul', '/celebrate',
   '/shop', '/services', '/paperwork', '/emergency', '/farewell', '/adopt',
-  '/cakes', '/treats', '/meals', '/breed-cakes', '/product/'
+  '/cakes', '/treats', '/meals', '/breed-cakes', '/product/',
+  // Member account & utility pages — widget lives inside these, don't show FAB
+  '/pet-home', '/my-pets', '/dashboard', '/notifications', '/profile',
+  '/my-requests', '/orders', '/rewards', '/checkout', '/tickets',
+  '/soul-builder', '/paw-points', '/documents', '/addresses', '/membership',
+  '/pet-profile', '/wrapped', '/login', '/register', '/onboarding',
+  '/mira', '/admin',
 ];
 
 const MiraChatWidget = ({ 
-  pillar = 'general',
+  pillar: pillarProp = 'general',
   onProductClick = null,
   className = '',
   hideMiraChatOnPillarPages = false
 }) => {
+  const pillar = pillarProp || 'general';
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
@@ -250,6 +257,7 @@ const MiraChatWidget = ({
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const voiceEnabledRef = useRef(true); // always-current ref for async closures
   const [speechSupported, setSpeechSupported] = useState(false);
   const [useElevenLabs, setUseElevenLabs] = useState(true); // Prefer ElevenLabs
   const recognitionRef = useRef(null);
@@ -258,6 +266,23 @@ const MiraChatWidget = ({
   
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Keep voiceEnabledRef in sync with state, and stop audio immediately on toggle-off
+  useEffect(() => {
+    voiceEnabledRef.current = voiceEnabled;
+    if (!voiceEnabled) {
+      // Stop any playing ElevenLabs audio
+      if (audioRef.current) {
+        try { audioRef.current.pause(); audioRef.current.currentTime = 0; } catch(e) {}
+        audioRef.current = null;
+      }
+      // Stop Web Speech
+      if (synthRef.current) {
+        try { synthRef.current.cancel(); } catch(e) {}
+      }
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled]);
   
   // Mira Signal tracking for passive learning & personalization
   const miraSignal = useMiraSignal() || {};
@@ -382,6 +407,7 @@ const MiraChatWidget = ({
     trackPillarVisit(pillar);
 
     const fetchQuickPrompts = async () => {
+      if (!pillar || pillar === 'null') return;
       try {
         const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
         if (!cancelled && response.ok) {
@@ -679,7 +705,7 @@ const MiraChatWidget = ({
       addFollowUpOrWelcome();
       
       // Speak welcome greeting when widget opens (if voice is enabled)
-      if (synthRef.current && voiceEnabled) {
+      if (synthRef.current && voiceEnabledRef.current) {
         setTimeout(() => {
           const synth = synthRef.current;
           if (!synth) return;
@@ -866,7 +892,7 @@ const MiraChatWidget = ({
   };
 
   const speakWithElevenLabs = useCallback(async (text) => {
-    if (!voiceEnabled) return false;
+    if (!voiceEnabledRef.current) return false;
     const apiKey = getNextElevenKey();
     if (!apiKey) return false;
 
@@ -920,7 +946,7 @@ const MiraChatWidget = ({
   
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback(async (text) => {
-    if (!voiceEnabled) return;
+    if (!voiceEnabledRef.current) return;
     
     // Try ElevenLabs first for premium voice
     if (useElevenLabs) {
@@ -1302,7 +1328,7 @@ const MiraChatWidget = ({
           }
 
           // ── ElevenLabs / TTS — speak the FULL completed text once ──
-          if (voiceEnabled && fullText) {
+          if (voiceEnabledRef.current && fullText) {
             speakText(fullText);
           }
 
@@ -1384,7 +1410,7 @@ const MiraChatWidget = ({
               serviceType: action.action_type || pillar
             }]);
             
-            if (voiceEnabled && !streamingWorked) {
+            if (voiceEnabledRef.current && !streamingWorked) {
               speakText(data.response);
             }
             setIsSending(false);
@@ -1511,7 +1537,7 @@ const MiraChatWidget = ({
           }, 800);
         }
         
-        if (voiceEnabled && !streamingWorked) {
+        if (voiceEnabledRef.current && !streamingWorked) {
           speakText(data.response);
         }
       } else {

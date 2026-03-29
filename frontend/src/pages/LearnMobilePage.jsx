@@ -3,7 +3,9 @@
  * 7 dimension pills + dimTab (Products / Videos / Book) per dimension
  * Colour: Purple #7C3AED
  */
-import { useState, useEffect, useCallback } from 'react';
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -24,12 +26,30 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import LearnNearMe from '../components/learn/LearnNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
+import { getLearnDims, MiraPicksSection, LearnContentModal } from './LearnSoulPage';
+import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
+import PillarServiceSection from '../components/PillarServiceSection';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+
+const LEARN_STRIP_CATS = [
+  { id:"foundations", icon:"🎓", label:"Foundations",    iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
+  { id:"behaviour",   icon:"🧠", label:"Behaviour",      iconBg:"linear-gradient(135deg,#FFF3E0,#FFE0B2)" },
+  { id:"training",    icon:"🏆", label:"Training",       iconBg:"linear-gradient(135deg,#E3F2FD,#BBDEFB)" },
+  { id:"tricks",      icon:"✨", label:"Tricks & Fun",   iconBg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)" },
+  { id:"enrichment",  icon:"🧩", label:"Enrichment",     iconBg:"linear-gradient(135deg,#E8F5E9,#C8E6C9)" },
+  { id:"breed",       icon:"📚", label:"Know Breed",     iconBg:"linear-gradient(135deg,#FFF8E1,#FFECB3)" },
+  { id:"soul",        icon:"🌟", label:"Soul Learn",     iconBg:"linear-gradient(135deg,#F3E5F5,#E1BEE7)" },
+  { id:"bundles",     icon:"🎁", label:"Bundles",        iconBg:"linear-gradient(135deg,#E8F5E9,#A5D6A7)" },
+  { id:"mira",        icon:"✦",  label:"Mira's Picks",  iconBg:"linear-gradient(135deg,#FCE4EC,#FF6B9D)" },
+];
 
 const G = {
   purple:'#7C3AED', mid:'#5B21B6', deep:'#2E1065', light:'#DDD6FE',
   pale:'#EDE9FE', cream:'#F5F3FF', dark:'#0F0A23',
   darkText:'#2E1065', mutedText:'#7C3AED', border:'rgba(124,58,237,0.18)',
+  violet:'#7C3AED', borderLight:'rgba(124,58,237,0.10)',
 };
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
 .learn-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
@@ -262,13 +282,39 @@ export default function LearnMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
-  const [activeDim, setActiveDim] = useState(LEARN_DIMS[0].id);
-  const [mainTab, setMainTab] = useState('learn'); // 'learn' | 'nearme'
+  const [catModal, setCatModal] = useState(null);       // opens LearnContentModal (same as desktop category strip)
+  const [mainTab, setMainTab] = useState('learn');
+  const dimExpandedRef = useRef(null); // kept for PaperworkMobilePage pattern parity
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
   const [learnServices, setLearnServices] = useState([]);
   const [showLearnPlan, setShowLearnPlan] = useState(false);
+  useScrollLock(showLearnPlan); // catModal handled by LearnContentModal's own scroll lock
+  const [apiProducts, setApiProducts] = useState({});
+
+  // Fetch products — mirrors desktop LearnSoulPage exactly (source of truth)
+  // apiProducts keyed by p.category, which matches DIM_ID_TO_CATEGORY values
+  useEffect(() => {
+    if (!currentPet) return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=600`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          // Key by category — same as desktop (DIM_ID_TO_CATEGORY values map to category names)
+          const categoryKey = p.category || '';
+          const sub = p.sub_category || 'Other';
+          if (!categoryKey) return;
+          if (!grouped[categoryKey]) grouped[categoryKey] = {};
+          if (!grouped[categoryKey][sub]) grouped[categoryKey][sub] = [];
+          grouped[categoryKey][sub].push(p);
+        });
+        setApiProducts(grouped);
+      }).catch(() => {});
+  }, [currentPet]);
 
   // Fetch services from Service Box — used by all dim Book tabs
   useEffect(() => {
@@ -290,13 +336,22 @@ export default function LearnMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🎓</div><div>Loading learn…</div></div>
       </div>
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
     </PillarPageLayout>
   );
 
   const petName = currentPet?.name || 'your dog';
-  const currentDim = LEARN_DIMS.find(d => d.id === activeDim) || LEARN_DIMS[0];
+  const learnDims = getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS;
+  // activeDimObj is now used inline inside each card's isOpen check
 
   return (
+    <>
     <PillarPageLayout pillar="learn" hideHero hideNavigation>
       <div className="learn-m mobile-page-container" data-testid="learn-mobile">
         <style>{CSS}</style>
@@ -305,59 +360,33 @@ export default function LearnMobilePage() {
         {selectedProduct && <ProductDetailModal product={selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.purple} />}
 
         {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'32px 16px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🎓 Learn</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Learn & Train with {petName}</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Foundations, behaviour, tricks, soul learning</div>
-        </div>
+        <PillarHero
+          pillar="learn"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`}
+          title="🎓 Learn"
+          subtitle={`Learn & Train with ${petName}`}
+          tagline="Foundations, behaviour, tricks, soul learning"
+        />
 
-        {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="learn" token={token} /></div>}
+        {/* Learn Category Strip — opens LearnContentModal exactly like desktop */}
+        <PillarCategoryStrip
+          categories={LEARN_STRIP_CATS}
+          activeId={catModal}
+          onSelect={id => { if (id) { vibe(); setCatModal(id === catModal ? null : id); } }}
+          accentColor={G.purple}
+        />
 
-        {/* Soul Pillar CTA */}
-        {currentPet && (
-          <div style={{ margin:'0 16px 20px', background:'linear-gradient(135deg,rgba(167,139,250,0.14),rgba(167,139,250,0.20))', border:'1px solid rgba(167,139,250,0.35)', borderRadius:18, padding:'18px 16px' }}>
-            <div style={{ fontSize:20, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:5 }}>
-              How would <span style={{ color:'#7C3AED' }}>{currentPet?.name || 'your dog'}</span> love to learn?
-            </div>
-            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
-              Training, skills and enrichment tailored to {currentPet?.name || 'your dog'}'s intelligence and soul profile.
-            </div>
-          </div>
-        )}
-
-        {/* Pawrent Journey First Steps */}
-        {currentPet && (
-          <div style={{ padding:'0 16px 8px' }}>
-            <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="learn" />
-          </div>
-        )}
-
-        {/* Main Tab Bar: Learn | Near Me */}
-        <div style={{ display:'flex', margin:'8px 16px 0', background:'#F3F0FF', borderRadius:12, padding:4 }}>
-          {[{id:'learn',label:'📚 Learn'},{id:'nearme',label:'📍 Near Me'}].map(t => (
-            <button key={t.id} onClick={() => { vibe(); setMainTab(t.id); }}
+        {/* Main Tab Bar: Learn | Services | Near Me — sticky */}
+        <div className="ios-tab-bar">
+          {[{id:'learn',label:'🎓 Learn'},{id:'services',label:'🐕 Services'},{id:'nearme',label:'📍 Find Classes'}].map(t => (
+            <button key={t.id}
+              className={`ios-tab${mainTab===t.id?' active':''}`}
+              style={mainTab===t.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
               data-testid={`learn-tab-${t.id}`}
-              style={{ flex:1, padding:'9px 0', borderRadius:9, fontSize:13, fontWeight:700, border:'none', cursor:'pointer',
-                background: mainTab===t.id ? G.purple : 'transparent',
-                color: mainTab===t.id ? '#fff' : G.darkText, transition:'all 0.15s' }}>
+              onClick={() => { vibe(); setMainTab(t.id); }}>
               {t.label}
             </button>
           ))}
@@ -370,7 +399,61 @@ export default function LearnMobilePage() {
           </div>
         )}
 
+        {/* Services Tab */}
+        {mainTab === 'services' && (
+          <>
+            <PillarConciergeCards pillar="learn" pet={currentPet} token={token} />
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
+          <div style={{ padding:'16px' }}>
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#0F0A23', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Training, behaviour consultations, breed education — arranged personally for {petName}.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="learn-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'1px solid rgba(139,92,246,0.3)', background:'linear-gradient(135deg,#0F0A23,#2D1B69)', color:'#A78BFA', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
+            <PillarServiceSection
+              pillar="learn"
+              pet={currentPet}
+              title="Learn, Personally"
+              accentColor={G.purple}
+              darkColor={G.dark}
+              isMobile
+            />
+          </div>
+          </>
+        )}
+
         {mainTab === 'learn' && <>
+        {/* Soul Profile + CTA + Pawrent — inside tab, same as Play/Care */}
+        {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="learn" token={token} /></div>}
+        {currentPet && (
+          <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(167,139,250,0.14),rgba(167,139,250,0.20))', border:'1px solid rgba(167,139,250,0.35)', borderRadius:18, padding:'16px' }}>
+            <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
+              How would <span style={{ color:'#7C3AED' }}>{petName}</span> love to learn?
+            </div>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.5 }}>
+              Training, skills and enrichment tailored to {petName}'s intelligence and soul profile.
+            </div>
+          </div>
+        )}
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="learn" /></div>}
         {/* Mira Bar */}
         <div style={{ margin:'16px 16px 0', background:G.dark, borderRadius:20, padding:16 }}>
           <div style={{ fontSize:14, fontWeight:700, color:`rgba(221,214,254,0.9)`, letterSpacing:'0.1em', marginBottom:8 }}>✦ MIRA ON {petName.toUpperCase()}'S LEARNING</div>
@@ -382,35 +465,71 @@ export default function LearnMobilePage() {
           </button>
         </div>
 
-        {/* 7 Dimension Pills */}
+        {/* 7 Dimension Cards — 2-column grid matching desktop design exactly */}
         <div style={{ padding:'16px 16px 8px' }}>
-          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10 }}>Choose a Learning Dimension</div>
-          <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-            {LEARN_DIMS.map(dim => (
-              <button key={dim.id} onClick={() => { vibe(); setActiveDim(dim.id); }}
-                data-testid={`learn-dim-${dim.id}`}
-                style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
-                  padding:'10px 12px', borderRadius:16, minWidth:72,
-                  border:`2px solid ${activeDim===dim.id?dim.accent:G.border}`,
-                  background:activeDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
-                <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:14, fontWeight:700, color:activeDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
-              </button>
-            ))}
+          <MiraPicksSection pet={currentPet} />
+          <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10, marginTop:16 }}>
+            How does <span style={{ color:G.purple }}>{petName}</span> love to learn?
           </div>
-        </div>
-
-        {/* Active Dimension Panel */}
-        <div style={{ padding:'0 16px 16px' }}>
-          <LearnDimPanel
-            dim={currentDim}
-            pet={currentPet}
-            token={token}
-            addToCart={addToCart}
-            allServices={learnServices}
-            onProductClick={p => { vibe(); setSelectedProduct(p); }}
-            onBook={svcName => { setSvcBooking({ isOpen: true, serviceType: guessServiceType(svcName) }); }}
-          />
+          <p style={{ fontSize:12, color:G.mutedText, marginBottom:14, lineHeight:1.5 }}>
+            Choose a dimension — products, videos, and sessions matched to {petName}'s level. <strong style={{ color:G.darkText }}>Glowing ones match most.</strong>
+          </p>
+          <style>{`
+            .learn-dims-grid-mobile{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;}
+            @media(min-width:480px){.learn-dims-grid-mobile{grid-template-columns:repeat(3,1fr);}}
+          `}</style>
+          <div className="learn-dims-grid-mobile">
+            {learnDims.map(dim => {
+              const isActive = catModal === dim.id;
+              return (
+                <div
+                  key={dim.id}
+                  onClick={() => { vibe(); setCatModal(dim.id); }}
+                  data-testid={`learn-dim-${dim.id}`}
+                  style={{
+                    background:'#fff', borderRadius:16, cursor:'pointer',
+                    position:'relative', overflow:'hidden',
+                    border: isActive ? `2px solid ${G.violet}` : `2px solid ${G.borderLight}`,
+                    boxShadow: dim.glow && !isActive ? `0 4px 24px ${dim.glowColor}40` : '0 2px 8px rgba(0,0,0,0.06)',
+                    transition:'all 0.2s',
+                  }}>
+                  {/* Coloured top bar — exact desktop height */}
+                  <div style={{ height:6, background: isActive ? G.violet : (dim.glowColor || G.mid), borderRadius:'16px 16px 0 0' }} />
+                  <div style={{ padding:'16px 16px 14px' }}>
+                    {/* Icon + badges row */}
+                    <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:14 }}>
+                      <div style={{ width:48, height:48, borderRadius:14,
+                        background: dim.glow ? `linear-gradient(135deg,${dim.glowColor}22,${dim.glowColor}44)` : G.pale,
+                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:26, flexShrink:0 }}>
+                        {dim.icon}
+                      </div>
+                      <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:4 }}>
+                        <span style={{ fontSize:10, fontWeight:700, borderRadius:20, padding:'3px 10px',
+                          background:`${dim.badgeBg}20`, color:dim.badgeBg, border:`1px solid ${dim.badgeBg}40` }}>
+                          {dim.badge}
+                        </span>
+                        {dim.glow && <div style={{ width:8, height:8, borderRadius:'50%', background:G.light }} />}
+                      </div>
+                    </div>
+                    {/* Title */}
+                    <h3 style={{ fontSize:15, fontWeight:800, color:G.darkText, marginBottom:6, lineHeight:1.25, fontFamily:'Georgia,serif' }}>
+                      {dim.label}
+                    </h3>
+                    {/* Description */}
+                    <p style={{ fontSize:12, color:G.mutedText, lineHeight:1.55, marginBottom:14,
+                      display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
+                      {dim.sub?.replace ? dim.sub.replace(/{name}/g, petName) : dim.sub}
+                    </p>
+                    {/* CTA — exact desktop text */}
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                      <span style={{ fontSize:12, color:G.violet, fontWeight:700 }}>Explore →</span>
+                      <span style={{ fontSize:11, color:'#aaa' }}>{dim.ytQuery ? 'Products · Videos · Book' : 'Products · Book'}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Guided Paths */}
@@ -419,16 +538,38 @@ export default function LearnMobilePage() {
         {/* PersonalisedBreedSection */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><PersonalisedBreedSection pet={currentPet} pillar="learn" token={token} /></div>}
 
-        {/* Mira Imagines */}
-        {currentPet && <div style={{ padding:'0 16px 16px' }}><MiraImaginesBreed pet={currentPet} pillar="learn" token={token} /></div>}
+        {/* Mira Imagines — 2 cards max, 2-column grid */}
+        {currentPet && <div style={{ padding:'0 16px 8px' }}><MiraImaginesBreed pet={currentPet} pillar="learn" token={token} limit={2} /></div>}
 
-        {/* MiraImaginesCard */}
+        {/* MiraImaginesCard — illustration cards in 2-col grid */}
         {currentPet && (
-          <div style={{ padding:'0 16px 24px' }}>
-            {[
-              { id:'l-1', emoji:'📚', name:'Training Handbook Bundle', description:`The complete training guide set for ${petName}'s breed — from puppy to senior.` },
-              { id:'l-2', emoji:'🎬', name:'Video Masterclass Access', description:'12-month access to The Doggy Company training video library — 200+ sessions.' },
-            ].map(item => <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" />)}
+          <div style={{ padding:'0 16px 8px' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              {[
+                { id:'l-1', emoji:'📚', name:'Training Handbook Bundle', description:`The complete training guide set for ${petName}'s breed — from puppy to senior.` },
+                { id:'l-2', emoji:'🎬', name:'Video Masterclass Access', description:'12-month access to The Doggy Company training video library — 200+ sessions.' },
+              ].map(item => (
+                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" style={{ width:'100%', flexShrink:1 }} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mira is learning — soul profile CTA */}
+        {currentPet && (
+          <div style={{ margin:'4px 16px 16px', padding:'16px', background:'linear-gradient(135deg,rgba(124,58,237,0.08),rgba(124,58,237,0.04))', border:'1px solid rgba(124,58,237,0.18)', borderRadius:16 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:G.purple, marginBottom:6, letterSpacing:'0.04em' }}>
+              🧠 Mira is learning {petName}
+            </div>
+            <div style={{ fontSize:13, color:'#4B5563', lineHeight:1.65 }}>
+              Complete {petName}'s Soul Profile to get real scored picks. Mira already knows {currentPet?.breed || 'Indie'} traits — your profile adds the personal layer.
+            </div>
+            <button
+              data-testid="learn-soul-profile-cta"
+              onClick={() => navigate('/soul-builder')}
+              style={{ marginTop:12, width:'100%', padding:'11px 16px', background:`linear-gradient(135deg,${G.mid},${G.purple})`, borderRadius:12, border:'none', color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer' }}>
+              Complete {petName}'s Profile →
+            </button>
           </div>
         )}
 
@@ -453,9 +594,9 @@ export default function LearnMobilePage() {
         const learnPlanCards = getLearnPlanCards(currentPet);
         const petName = currentPet?.name || 'your dog';
         return (
-          <div style={{ position:'fixed', inset:0, zIndex:999, background:'rgba(0,0,0,0.85)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}
+          <div style={{ position:'fixed', inset:0, zIndex:999, background:'rgba(0,0,0,0.85)', display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}
             onClick={e => { if(e.target===e.currentTarget) setShowLearnPlan(false); }}>
-            <div style={{ background:G.dark, borderRadius:'24px 24px 0 0', padding:'24px 16px 48px', maxHeight:'90vh', overflowY:'auto' }}>
+            <div style={{ background:G.dark, borderRadius:'24px 24px 0 0', padding:'24px 16px 48px', paddingTop:'env(safe-area-inset-top, 0px)', maxHeight:'90vh', overflowY:'auto' }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
                 <div>
                   <div style={{ fontSize:10, letterSpacing:'0.14em', color:G.light, fontWeight:700, marginBottom:4 }}>✦ MIRA'S PERSONALISED LEARNING PLAN</div>
@@ -467,9 +608,34 @@ export default function LearnMobilePage() {
               <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', marginBottom:20, lineHeight:1.5 }}>
                 Mira has analysed {petName}'s breed intelligence, energy level, and soul profile to build this learning roadmap.
               </div>
-              {learnPlanCards.map(item => (
-                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" />
-              ))}
+              {/* 2×2 grid of plan cards */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16 }}>
+                {learnPlanCards.map(item => (
+                  <div key={item.id}
+                    style={{
+                      borderRadius:14, overflow:'hidden',
+                      background:'linear-gradient(135deg,#0A0A3C,#1A1363)',
+                      border:'1.5px solid rgba(255,255,255,0.12)',
+                      display:'flex', flexDirection:'column',
+                    }}>
+                    {/* Image / emoji area */}
+                    <div style={{ height:90, background:'rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:34 }}>
+                      {item.emoji}
+                    </div>
+                    {/* Content */}
+                    <div style={{ padding:'10px 12px 14px', display:'flex', flexDirection:'column', flex:1 }}>
+                      <span style={{ fontSize:9, fontWeight:700, color:'#A78BFA', textTransform:'uppercase', letterSpacing:'0.1em', background:'rgba(124,58,237,0.18)', borderRadius:20, padding:'2px 8px', display:'inline-block', marginBottom:6, alignSelf:'flex-start' }}>Mira Imagines</span>
+                      <div style={{ fontWeight:800, color:'#fff', fontSize:12, lineHeight:1.3, marginBottom:6 }}>{item.name}</div>
+                      <div style={{ fontSize:10, color:'rgba(255,255,255,0.55)', lineHeight:1.45, fontStyle:'italic', marginBottom:10, flex:1, display:'-webkit-box', WebkitLineClamp:4, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{item.description}</div>
+                      <button
+                        onClick={e => { e.stopPropagation(); setShowLearnPlan(false); request(`${item.name} for ${petName}`, { channel:'learn_plan_card' }); }}
+                        style={{ width:'100%', padding:'8px 10px', borderRadius:20, border:'none', background:'rgba(124,58,237,0.85)', color:'#fff', fontSize:10, fontWeight:700, cursor:'pointer', letterSpacing:'0.02em' }}>
+                        Tap — Concierge® →
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
               <button
                 className="learn-cta"
                 style={{ width:'100%', marginTop:8 }}
@@ -481,5 +647,16 @@ export default function LearnMobilePage() {
         );
       })()}
     </PillarPageLayout>
+
+      {/* LearnContentModal — opened by category strip (same as desktop). Source: LearnSoulPage.jsx */}
+      {catModal && (
+        <LearnContentModal
+          isOpen={!!catModal}
+          onClose={() => setCatModal(null)}
+          category={catModal}
+          pet={currentPet}
+        />
+      )}
+    </>
   );
 }

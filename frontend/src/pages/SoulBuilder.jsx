@@ -224,9 +224,11 @@ const CHAPTERS = [
       // NON-SCORING: main_wish (Mira context)
       { id: 'main_wish', question: "What do you want most for {pet}?", type: 'multi_select', options: ['Good health', 'More training', 'More travel experiences', 'More social time with other dogs'], weight: 0, scoring: false },
       // NON-SCORING: celebration_preferences (Mira context)
-      { id: 'celebration_preferences', question: "Which celebrations would you like to celebrate?", type: 'multi_select', options: ['Birthday', 'Gotcha Day', 'Diwali', 'Holi', 'Christmas', 'New Year', "Valentine's Day", 'Raksha Bandhan'], weight: 0, scoring: false }
+      { id: 'celebration_preferences', question: "Which celebrations would you like to celebrate?", type: 'multi_select', options: ['Birthday', 'Gotcha Day', 'Diwali', 'Holi', 'Christmas', 'New Year', "Valentine's Day", 'Raksha Bandhan'], weight: 0, scoring: false },
+      // SCORING: life_vision = 8 points — the guiding north star for Mira
+      { id: 'life_vision', question: "In one sentence, what kind of life do you want for {pet}?", type: 'text', placeholder: 'e.g. A life full of adventure, love and salmon treats...', weight: 8, scoring: true, canonicalField: 'life_vision' }
     ],
-    confirmation: "Beautiful. This is how we tailor everything to the life you want for {pet}."
+    confirmation: "Beautiful. Everything Mira does for {pet} will be guided by this."
   }
 ];
 
@@ -1960,7 +1962,7 @@ const SoulBuilder = () => {
               <textarea
                 value={textInputValue}
                 onChange={(e) => setTextInputValue(e.target.value)}
-                placeholder={isThreeWordsQuestion ? "Type three words..." : "Type your answer..."}
+                placeholder={question.placeholder || (isThreeWordsQuestion ? "Type three words..." : "Type your answer...")}
                 rows={3}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/50 resize-none"
                 data-testid="text-input"

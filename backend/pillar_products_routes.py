@@ -40,6 +40,11 @@ KNOWN_BREED_NAMES = sorted([
     "flat coated retriever", "nova scotia duck tolling retriever",
     "coton de tulear", "rhodesian ridgeback",
     "leonberger", "newfoundland",
+    # Breeds found in product catalogue — must be here for name detection
+    "american bully", "labradoodle", "goldendoodle", "cockapoo", "cavapoo", "schnoodle",
+    "alaskan malamute", "malamute", "miniature schnauzer", "giant schnauzer",
+    "miniature poodle", "toy poodle", "standard poodle",
+    "english springer spaniel", "springer spaniel",
 ], key=len, reverse=True)  # Longest first so "golden retriever" beats "retriever"
 
 
@@ -154,10 +159,7 @@ async def get_pillar_products(
 
         query = {"$and": conditions} if conditions else {}
 
-        # Fetch more if breed filter is active (post-filter will reduce count)
-        fetch_limit = min(limit * 4, 400) if breed else limit
         total_query = await db.products_master.count_documents(query)
-        skip = (page - 1) * limit
 
         # Sort options
         sort_map = {
@@ -167,17 +169,36 @@ async def get_pillar_products(
         }
         sort_order = sort_map.get(sort_by, [("name", 1)])
 
-        cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(fetch_limit)
-        raw_products = await cursor.to_list(length=fetch_limit)
-
-        # ── STRICT BREED FILTER (Python level) ──────────────────────────────
         if breed:
-            products = [p for p in raw_products if _should_show_for_breed(p, breed)]
+            # ── BREED MODE: fetch ALL products for this pillar, then filter + prioritize ──
+            # We cannot paginate at DB level because breed-specific items may be
+            # anywhere in the sorted list and must always surface to the top.
+            cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order)
+            raw_products = await cursor.to_list(length=10000)
+
+            # Split into breed-specific and universal after strict filter
+            breed_specific = []
+            universal = []
+            for p in raw_products:
+                if not _should_show_for_breed(p, breed):
+                    continue  # belongs to another breed — exclude
+                # Classify: does the product name contain this breed? → breed-specific
+                if _detect_product_breed((p.get("name") or "").lower()) is not None:
+                    breed_specific.append(p)
+                else:
+                    universal.append(p)
+
+            # Breed-specific products always surface first, then universal
+            filtered = breed_specific + universal
+            skip = (page - 1) * limit
+            products = filtered[skip: skip + limit]
+            total = len(filtered)
         else:
-            products = raw_products
-        # Trim to requested limit after breed filter
-        products = products[:limit]
-        total = len(products)  # approximate after breed filter
+            # ── NORMAL MODE: standard DB-level pagination ────────────────────
+            skip = (page - 1) * limit
+            cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(limit)
+            products = await cursor.to_list(length=limit)
+            total = total_query
 
         # Get unique categories for filter
         cat_pipeline = [
@@ -191,10 +212,10 @@ async def get_pillar_products(
 
         return {
             "products": products,
-            "total": total_query,
+            "total": total,
             "page": page,
             "limit": limit,
-            "pages": max(1, -(-total_query // limit)),
+            "pages": max(1, -(-total // limit)),
             "pillar": pillar,
             "categories": categories
         }

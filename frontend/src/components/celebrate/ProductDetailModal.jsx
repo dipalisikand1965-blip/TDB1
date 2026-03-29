@@ -153,6 +153,8 @@ const ProductDetailModal = ({
           maxHeight: isMobile ? '92vh' : '90vh',
           borderRadius: isMobile ? '24px 24px 0 0' : 24,
           overflowY: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
         }}
       >
         {/* Drag handle (mobile) */}
@@ -259,7 +261,7 @@ const ProductDetailModal = ({
                   <span className="font-bold" style={{ fontSize: 18, color: '#C9973A' }}>
                     Concierge® Service
                   </span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
+                  <span className="tdc-chip" style={{ background:'#fef3c7', color:'#92400e', borderColor:'#fde68a' }}>
                     Custom Quote
                   </span>
                 </div>
@@ -373,12 +375,13 @@ const ProductDetailModal = ({
 
       {/* Universal Concierge® Modal for Custom Orders */}
       {showConciergeModal && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.50)",
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.78)",
                       zIndex:9500, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}
              onClick={e => e.target===e.currentTarget && !conciergeSent && setShowConciergeModal(false)}
              data-testid="custom-concierge-modal-overlay">
           <div style={{ background:"#fff", borderRadius:20, padding:32,
                         maxWidth:480, width:"100%", maxHeight:"90vh", overflowY:"auto",
+                        scrollbarWidth:"none", msOverflowStyle:"none",
                         position:"relative", boxShadow:"0 24px 64px rgba(0,0,0,0.20)" }}
                onClick={e => e.stopPropagation()}>
 

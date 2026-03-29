@@ -515,16 +515,18 @@
   margin-top: var(--mira-space-lg);
 }
 
+/* .m10-chip — tdc-chip tdc-chip-default equivalent */
 .m10-chip {
-  padding: var(--mira-space-sm) var(--mira-space-lg);
-  border-radius: var(--mira-radius-full);
+  padding: var(--space-2, 8px) var(--space-5, 21px);
+  border-radius: var(--radius-full, 9999px);
   background: rgba(245, 158, 11, 0.15);
   border: 1px solid rgba(245, 158, 11, 0.3);
   color: #fef3c7;
-  font-size: 14px;
-  font-weight: 500;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm, 15px);
+  font-weight: var(--weight-medium, 500);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-normal, 200ms) var(--ease-out, ease);
 }
 
 .m10-chip:hover {

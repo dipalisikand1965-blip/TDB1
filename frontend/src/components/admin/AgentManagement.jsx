@@ -26,25 +26,20 @@ const CORE_PERMISSIONS = {
   fulfilment: { icon: Truck, name: 'Fulfilment', color: 'bg-orange-100 text-orange-700' }
 };
 
-// Pillar permission icons and info - THE 14 PILLARS
+// Pillar permission icons and info - THE 12 LIVE PILLARS
 const PILLAR_PERMISSIONS = {
-  pillar_celebrate: { icon: PartyPopper, name: 'Celebrate', color: 'bg-pink-100 text-pink-700', emoji: '🎂' },
-  pillar_dine: { icon: UtensilsCrossed, name: 'Dine', color: 'bg-amber-100 text-amber-700', emoji: '🍽️' },
-  pillar_stay: { icon: Building, name: 'Stay', color: 'bg-blue-100 text-blue-700', emoji: '🏨' },
-  pillar_travel: { icon: Plane, name: 'Travel', color: 'bg-cyan-100 text-cyan-700', emoji: '✈️' },
-  pillar_care: { icon: Scissors, name: 'Care', color: 'bg-red-100 text-red-700', emoji: '💊' },
-  pillar_enjoy: { icon: Heart, name: 'Enjoy', color: 'bg-violet-100 text-violet-700', emoji: '🎾' },
-  pillar_fit: { icon: Dumbbell, name: 'Fit', color: 'bg-green-100 text-green-700', emoji: '🏃' },
-  pillar_learn: { icon: GraduationCap, name: 'Learn', color: 'bg-teal-100 text-teal-700', emoji: '🎓' },
-  pillar_paperwork: { icon: Shield, name: 'Paperwork', color: 'bg-slate-100 text-slate-700', emoji: '📄' },
-  pillar_advisory: { icon: GraduationCap, name: 'Advisory', color: 'bg-gray-100 text-gray-700', emoji: '📋' },
-  pillar_emergency: { icon: Bell, name: 'Emergency', color: 'bg-red-100 text-red-700', emoji: '🚨' },
-  pillar_farewell: { icon: Heart, name: 'Farewell', color: 'bg-rose-100 text-rose-700', emoji: '🌈' },
-  pillar_adopt: { icon: PawPrint, name: 'Adopt', color: 'bg-purple-100 text-purple-700', emoji: '🐾' },
-  pillar_shop: { icon: ShoppingBag, name: 'Shop', color: 'bg-orange-100 text-orange-700', emoji: '🛒' },
-  pillar_live_mira: { icon: Headphones, name: 'Live Mira', color: 'bg-fuchsia-100 text-fuchsia-700', emoji: '🤖' },
-  pillar_live_mis: { icon: CloudRain, name: 'Live MIS', color: 'bg-sky-100 text-sky-700', emoji: '📊' },
-  pillar_shipping: { icon: Truck, name: 'Pricing & Shipping', color: 'bg-gray-100 text-gray-700', emoji: '🚚' }
+  pillar_dine:       { icon: UtensilsCrossed, name: 'Dine',      color: 'bg-amber-100 text-amber-700',   emoji: '🍽️' },
+  pillar_care:       { icon: Scissors,        name: 'Care',      color: 'bg-red-100 text-red-700',       emoji: '💊' },
+  pillar_go:         { icon: PawPrint,        name: 'Go',        color: 'bg-green-100 text-green-700',   emoji: '🐕' },
+  pillar_play:       { icon: Heart,           name: 'Play',      color: 'bg-violet-100 text-violet-700', emoji: '🎾' },
+  pillar_learn:      { icon: GraduationCap,   name: 'Learn',     color: 'bg-teal-100 text-teal-700',     emoji: '🎓' },
+  pillar_celebrate:  { icon: PartyPopper,     name: 'Celebrate', color: 'bg-pink-100 text-pink-700',     emoji: '🎂' },
+  pillar_shop:       { icon: ShoppingBag,     name: 'Shop',      color: 'bg-orange-100 text-orange-700', emoji: '🛒' },
+  pillar_services:   { icon: ShieldCheck,     name: 'Services',  color: 'bg-blue-100 text-blue-700',     emoji: '🛎️' },
+  pillar_paperwork:  { icon: Shield,          name: 'Paperwork', color: 'bg-slate-100 text-slate-700',   emoji: '📄' },
+  pillar_emergency:  { icon: Bell,            name: 'Emergency', color: 'bg-red-100 text-red-700',       emoji: '🚨' },
+  pillar_farewell:   { icon: Heart,           name: 'Farewell',  color: 'bg-rose-100 text-rose-700',     emoji: '🌈' },
+  pillar_adopt:      { icon: PawPrint,        name: 'Adopt',     color: 'bg-purple-100 text-purple-700', emoji: '🐾' },
 };
 
 // Combined for badge display

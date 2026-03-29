@@ -360,7 +360,7 @@ const CelebrationAlbum = ({ pet, token, userEmail, onClose, celebration }) => {
           )}
           
           {/* Photo Counter */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/50 rounded-full text-white text-xs">
+          <div className="tdc-chip absolute bottom-2 left-1/2 -translate-x-1/2" style={{ background:'rgba(0,0,0,0.5)', color:'#fff', borderColor:'rgba(255,255,255,0.15)' }}>
             {currentPhotoIndex + 1} / {photos.length}
           </div>
         </div>

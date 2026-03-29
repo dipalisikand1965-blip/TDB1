@@ -18,6 +18,7 @@
  *
  * Service booking uses CARE_SERVICES array + ServiceBookingModal (same as desktop)
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -34,9 +35,81 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
+import MiraPlanModal from '../components/mira/MiraPlanModal';
+import FirstTimePawrent from '../components/common/FirstTimePawrent';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+/* ─── Watch & Learn section ─────────────────────────────────────────────── */
+const CARE_WATCH_QUERIES = [
+  'dog grooming tips at home',
+  'dog health wellness routine',
+  'dog dental care how to',
+  'dog skin coat care tips',
+];
+
+function WatchSection({ pet }) {
+  const [videos, setVideos] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const breed = pet?.breed || 'dog';
+
+  useEffect(() => {
+    const q = `${breed} ${CARE_WATCH_QUERIES[0]}`;
+    fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(q)}&max_results=6`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d?.videos || d?.items || d?.results || []).map(v => ({
+          id: v.videoId || v.id?.videoId || v.id,
+          title: v.title || v.snippet?.title || '',
+          thumbnail: v.thumbnail || v.snippet?.thumbnails?.medium?.url || '',
+          url: `https://www.youtube.com/watch?v=${v.videoId || v.id?.videoId || v.id}`,
+        }));
+        setVideos(list);
+      })
+      .catch(() => {});
+  }, [breed]);
+
+  if (!videos.length) return null;
+  const shown = expanded ? videos : videos.slice(0, 4);
+
+  return (
+    <div style={{ marginTop: 20 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+        <div style={{ fontSize:11, letterSpacing:'0.12em', fontWeight:700, color:'rgba(64,145,108,0.9)', textTransform:'uppercase' }}>
+          ✦ Watch &amp; Learn
+        </div>
+        {videos.length > 4 && (
+          <button onClick={() => setExpanded(e => !e)}
+            style={{ fontSize:11, color:'#40916C', fontWeight:600, background:'none', border:'none', cursor:'pointer', padding:0 }}>
+            {expanded ? 'Show less' : `+${videos.length - 4} more`}
+          </button>
+        )}
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        {shown.map((v, i) => (
+          <div key={v.id || i} onClick={() => window.open(v.url, '_blank')}
+            style={{ cursor:'pointer', borderRadius:12, overflow:'hidden', border:'1px solid rgba(64,145,108,0.18)', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+            <div style={{ position:'relative', paddingTop:'56.25%', background:'#e8f5e9' }}>
+              {v.thumbnail && <img src={v.thumbnail} alt={v.title} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />}
+              <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <span style={{ color:'#fff', fontSize:13, marginLeft:2 }}>▶</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ padding:'8px 10px' }}>
+              <div style={{ fontSize:11, fontWeight:600, color:'#1B4332', lineHeight:1.4 }}>
+                {(v.title||'').slice(0, 55)}{v.title?.length > 55 ? '…' : ''}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const G = {
   sage:'#40916C', deepMid:'#1B4332', mid:'#2D6A4F',
@@ -54,6 +127,7 @@ export default function CareMobilePage() {
   usePlatformTracking({ pillar:'care', pet:currentPet });
 
   const [loading, setLoading]       = useState(true);
+  const [showCarePlan, setShowCarePlan] = useState(false);
   const [activeTab, setActiveTab]   = useState('care');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [svcBooking, setSvcBooking] = useState({ isOpen:false, serviceType:'grooming' });
@@ -130,7 +204,7 @@ export default function CareMobilePage() {
       <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🌿</div><div>Loading…</div></div>
       </div>
-    </PillarPageLayout>
+      </PillarPageLayout>
   );
 
   const petName = currentPet?.name || 'your dog';
@@ -143,47 +217,25 @@ export default function CareMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="care" pillarColor={G.sage} pillarLabel="Care" onClose={() => setSoulMadeOpen(false)} />}
 
         {/* ── Mobile Hero ── */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`, padding:'40px 20px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.55)', letterSpacing:'0.14em', marginBottom:4 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>🌿 Care</div>
-            </div>
-            {/* Pet selector */}
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer',
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
-                      color:'#fff' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Care & Wellness for {petName}</div>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)' }}>Grooming, health, dental, coat — all personalised.</div>
-        </div>
+        <PillarHero
+          pillar="care"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deepMid} 55%,${G.mid} 100%)`}
+          title="🌿 Care"
+          subtitle={`Care & Wellness for ${petName}`}
+          tagline="Grooming, health, dental, coat — all personalised."
+        />
 
-        {/* ── CareCategoryStrip — EXACT DESKTOP COMPONENT ── */}
-        {/* This is Pic 3 — 9 rounded icon squares, each opens CareContentModal */}
-        {currentPet && (
-          <CareCategoryStrip
-            pet={currentPet}
-            onDimSelect={() => {}}
-            activeDim={null}
-            onSoulMade={() => setSoulMadeOpen(true)}
-          />
-        )}
+        {/* First Time Pawrent — emotional centrepiece */}
+        {currentPet && <div style={{ padding:'0 16px 0' }}><FirstTimePawrent pet={currentPet} token={token} accentColor="#40916C" /></div>}
 
         {/* ── Tab Bar ── */}
         <div className="ios-tab-bar" style={{ borderColor:G.greenBorder }}>
           {[
             { id:'care',      label:'🌿 Care' },
-            { id:'services',  label:'✂️ Services' },
+            { id:'services',  label:'🐕 Services' },
             { id:'find-care', label:'📍 Find Care' },
           ].map(tab => (
             <button key={tab.id}
@@ -199,6 +251,16 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 1: Care ══════════ */}
         {activeTab === 'care' && currentPet && (
           <div style={{ padding:'16px' }}>
+
+            {/* CareCategoryStrip — inside Care tab (moved from above tab bar) */}
+            <div style={{ margin:'0 -16px 8px' }}>
+              <CareCategoryStrip
+                pet={currentPet}
+                onDimSelect={() => {}}
+                activeDim={null}
+                onSoulMade={() => setSoulMadeOpen(true)}
+              />
+            </div>
 
             {/* WellnessProfile — EXACT DESKTOP COMPONENT */}
             <WellnessProfile pet={currentPet} token={token} />
@@ -323,6 +385,9 @@ export default function CareMobilePage() {
             {/* Concierge section */}
             <CareConciergeSection pet={currentPet} />
 
+            {/* Watch & Learn — YouTube section */}
+            <WatchSection pet={currentPet} />
+
             {/* Soul Made CTA */}
             <div style={{ marginTop:16, background:G.dark, borderRadius:24, padding:24, cursor:'pointer' }}
               onClick={() => setSoulMadeOpen(true)}>
@@ -330,12 +395,22 @@ export default function CareMobilePage() {
               <div style={{ fontSize:20, fontWeight:800, color:'#fff', marginBottom:16 }}>{petName}'s breed-specific care, curated by Mira.</div>
               <button className="ios-btn-primary" style={{ background:`linear-gradient(135deg,${G.mid},${G.sage})`, fontSize:14 }}>Explore Soul Made →</button>
             </div>
+
+            {/* Mira Care Plan CTA */}
+            <div style={{ marginTop:12, background:`linear-gradient(135deg,rgba(116,198,157,0.12),rgba(116,198,157,0.06))`, border:`1px solid rgba(116,198,157,0.3)`, borderRadius:18, padding:'16px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12 }}>
+              <div>
+                <div style={{ fontSize:13, fontWeight:700, color:G.sage, marginBottom:2 }}>✦ MIRA'S CARE PLAN</div>
+                <div style={{ fontSize:14, color:G.darkText, fontWeight:600 }}>Health & wellness tailored to {petName}</div>
+              </div>
+              <button onClick={() => { vibe('medium'); setShowCarePlan(true); }} style={{ flexShrink:0, padding:'10px 18px', borderRadius:14, border:'none', background:G.sage, color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>Build Plan →</button>
+            </div>
           </div>
         )}
 
         {/* ══════════ TAB 2: Services ══════════ */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
+            <PillarConciergeCards pillar="care" pet={currentPet} token={token} />
             <div style={{ fontSize:22, fontWeight:800, color:G.darkText, marginBottom:4 }}>
               Care Services for <span style={{ color:G.sage }}>{petName}</span>
             </div>
@@ -426,6 +501,14 @@ export default function CareMobilePage() {
         serviceType={svcBooking.serviceType}
         pet={currentPet}
         onBookingComplete={() => setSvcBooking(p => ({ ...p, isOpen:false }))}
+      />
+      
+      <MiraPlanModal
+        isOpen={showCarePlan}
+        onClose={() => setShowCarePlan(false)}
+        pet={currentPet}
+        pillar="care"
+        token={token}
       />
     </PillarPageLayout>
   );

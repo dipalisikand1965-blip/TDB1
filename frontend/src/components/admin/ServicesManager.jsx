@@ -33,6 +33,7 @@ export default function ServicesManager({ token }) {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [pillarFilter, setPillarFilter] = useState('all');
   const [modal, setModal] = useState(null); // null | 'add' | 'edit'
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
@@ -47,8 +48,9 @@ export default function ServicesManager({ token }) {
     setLoading(true);
     setError(null);
     try {
+      // Fetch all services across all pillars (no pillar filter — services pillar has no DB data)
       const res = await fetch(
-        API(`/service-box/services?pillar=services&limit=500`),
+        API(`/service-box/services?limit=500`),
         { headers }
       );
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -68,7 +70,8 @@ export default function ServicesManager({ token }) {
     const matchSearch = !search || s.name?.toLowerCase().includes(search.toLowerCase())
       || s.description?.toLowerCase().includes(search.toLowerCase());
     const matchCat = categoryFilter === 'all' || s.category === categoryFilter;
-    return matchSearch && matchCat;
+    const matchPillar = pillarFilter === 'all' || s.pillar === pillarFilter;
+    return matchSearch && matchCat && matchPillar;
   });
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -189,7 +192,7 @@ export default function ServicesManager({ token }) {
       <div style={s.header}>
         <div>
           <div style={s.title}>🤝 Services Manager</div>
-          <div style={s.stats}>{filtered.length} of {services.length} services · pillar=services · services_master</div>
+          <div style={s.stats}>{filtered.length} of {services.length} services · all pillars · services_master</div>
         </div>
         <button style={s.btnPrimary} onClick={openAdd}>+ Add Service</button>
       </div>
@@ -204,6 +207,12 @@ export default function ServicesManager({ token }) {
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
         />
+        <select style={s.select} value={pillarFilter} onChange={e => { setPillarFilter(e.target.value); setPage(1); }}>
+          <option value="all">All pillars</option>
+          {['care','dine','celebrate','go','play','learn','paperwork','emergency','farewell','adopt','shop'].map(p => (
+            <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>
+          ))}
+        </select>
         <select style={s.select} value={categoryFilter} onChange={e => { setCategoryFilter(e.target.value); setPage(1); }}>
           <option value="all">All categories</option>
           {SERVICE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}

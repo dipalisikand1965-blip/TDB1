@@ -27,7 +27,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
-
+import PillarServiceSection from "../components/PillarServiceSection";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import EmergencyMobilePage from './EmergencyMobilePage';
 import { filterBreedProducts } from '../hooks/useMiraFilter';
@@ -88,7 +88,7 @@ const EMERGENCY_QUESTIONS = [
   { id:"emergency_card",      chapter:"📋 Info Card", pts:10, type:"single", question:"Do you have an emergency info card for {name}?",    options:["Yes — in wallet + collar","Collar only","No card","In progress"] },
 ];
 
-function getEmergDims(pet) {
+export function getEmergDims(pet) {
   const missing=getMissingItems(pet); const breed=pet?.breed||"";
   return [
     { id:"firstaid",  icon:"🩺", label:"First Aid",            sub:"Home kit + immediate response protocol",        badge:"Act fast",   badgeBg:G.crimson, glow:missing.includes("No first aid kit"),   glowColor:"rgba(220,38,38,0.40)", mira:`The first minutes in any emergency determine the outcome for {name}. I have the protocol ready.` },
@@ -100,7 +100,7 @@ function getEmergDims(pet) {
   ];
 }
 
-const DIM_CAT = { firstaid:"First Aid", lostpet:"Lost Pet", emergvet:"Vet Emergency", transport:"Vet Emergency", insurance:"First Aid", soul:"Soul Emergency" };
+export const DIM_CAT = { firstaid:"First Aid", lostpet:"Lost Pet", emergvet:"Vet Emergency", transport:"Vet Emergency", insurance:"First Aid", soul:"Soul Emergency" };
 
 // ── EMERGENCY PROFILE (collapsed → modal) ───────────────────
 function EmergencyProfile({ pet, token }) {
@@ -236,13 +236,12 @@ function MiraPicksSection({ pet, onOpenService }) {
 }
 
 // ── DIM EXPANDED ─────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=[] }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=[] }) {
   const petName=pet?.name||"your dog";
   const [dimTab,setDimTab]=useState("products");
   const catName=DIM_CAT[dim.id]||"First Aid";
   const catData=apiProducts[catName]||{};
   const allRaw=filterBreedProducts(Object.values(catData).flat(),pet?.breed);
-  // Fallback: use breedProducts when pillar-products catalogue is empty
   const displayProducts = allRaw.length > 0 ? allRaw : breedProducts;
   const dimSvcs=EMERG_SERVICES.filter(s=>s.dim===dim.id);
   return (
@@ -252,11 +251,44 @@ function DimExpanded({ dim, pet, onClose, apiProducts={}, onBook, breedProducts=
         <p style={{fontSize:12,color:G.darkText,fontStyle:"italic",margin:0,lineHeight:1.5,flex:1}}>"{t(dim.mira,petName)}"</p>
         <button onClick={onClose} style={{background:"none",border:"none",fontSize:18,color:"#BBB",cursor:"pointer",flexShrink:0,padding:"0 4px"}}>✕</button>
       </div>
+      {/* Products | Services tabs */}
       <div style={{display:"flex",borderBottom:"1px solid #F0F0F0"}}>
-        {[{id:"products",label:"📦 Products"},{id:"services",label:"🚨 Services"}].map(tab=><button key={tab.id} onClick={()=>setDimTab(tab.id)} style={{flex:1,padding:"10px 0",background:"none",border:"none",borderBottom:dimTab===tab.id?`2.5px solid ${G.crimson}`:"2.5px solid transparent",color:dimTab===tab.id?G.mid:"#888",fontSize:12,fontWeight:dimTab===tab.id?700:400,cursor:"pointer"}}>{tab.label}</button>)}
+        {[{id:"products",label:"📦 Products"},{id:"services",label:"🚨 Services"}].map(tab=>(
+          <button key={tab.id} onClick={()=>setDimTab(tab.id)}
+            style={{flex:1,padding:"10px 0",background:"none",border:"none",
+              borderBottom:dimTab===tab.id?`2.5px solid ${G.crimson}`:"2.5px solid transparent",
+              color:dimTab===tab.id?G.mid:"#888",fontSize:12,fontWeight:dimTab===tab.id?700:400,cursor:"pointer"}}>
+            {tab.label}
+          </button>
+        ))}
       </div>
-      {dimTab==="products"&&(<div style={{padding:"12px 16px 20px"}}>{displayProducts.length===0?<div style={{textAlign:"center",padding:"28px 0",color:"#888",fontSize:13}}><div style={{fontSize:28,marginBottom:8}}>📦</div>Products for {petName} being added.</div>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(170px,100%),1fr))",gap:12}}>{displayProducts.map(p=><SharedProductCard key={p.id||p._id} product={p} pillar="emergency" selectedPet={pet}/>)}</div>}</div>)}
-      {dimTab==="services"&&(<div style={{padding:"12px 16px 20px"}}>{dimSvcs.length===0?<button onClick={()=>onBook?.(EMERG_SERVICES[0])} style={{width:"100%",background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"11px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Get Emergency Help →</button>:<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:14}}>{dimSvcs.map(svc=><div key={svc.id} onClick={()=>onBook?.(svc)} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",padding:"14px 16px"}}><div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><span style={{fontSize:28}}>{svc.icon}</span><div><div style={{fontSize:13,fontWeight:700,color:G.darkText}}>{svc.name}</div><div style={{fontSize:11,color:G.mutedText}}>{svc.tagline}</div></div></div><div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}><button style={{background:G.crimson,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Get help now →</button></div></div>)}</div>}</div>)}
+      {dimTab==="products"&&(
+        <div style={{padding:"12px 16px 20px"}}>
+          {displayProducts.length===0
+            ? <div style={{textAlign:"center",padding:"28px 0",color:"#888",fontSize:13}}><div style={{fontSize:28,marginBottom:8}}>📦</div>Products for {petName} being added.</div>
+            : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(170px,100%),1fr))",gap:12}}>{displayProducts.map(p=><SharedProductCard key={p.id||p._id} product={p} pillar="emergency" selectedPet={pet}/>)}</div>
+          }
+        </div>
+      )}
+      {dimTab==="services"&&(
+        <div style={{padding:"12px 16px 20px"}}>
+          {dimSvcs.length===0
+            ? <button onClick={()=>onBook?.(EMERG_SERVICES[0])} style={{width:"100%",background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"11px",fontSize:13,fontWeight:700,cursor:"pointer"}}>Get Emergency Help →</button>
+            : <div style={{display:"flex",flexDirection:"column",gap:12}}>
+                {dimSvcs.map(svc=>(
+                  <div key={svc.id} onClick={()=>onBook?.(svc)} style={{background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,cursor:"pointer",padding:"14px 16px",display:"flex",alignItems:"center",gap:10}}>
+                    <span style={{fontSize:28,flexShrink:0}}>{svc.icon}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:700,color:G.darkText}}>{svc.name}</div>
+                      <div style={{fontSize:11,color:G.mutedText}}>{svc.tagline}</div>
+                    </div>
+                    <button style={{background:G.crimson,color:"#fff",border:"none",borderRadius:20,padding:"6px 14px",fontSize:11,fontWeight:700,cursor:"pointer",flexShrink:0}}>Get help →</button>
+                  </div>
+                ))}
+              </div>
+          }
+        </div>
+      )}
     </div>
   );
 }
@@ -455,7 +487,7 @@ const EmergencySoulPage = () => {
 
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
-          {[{id:"emergency",label:"🚨 Emergency Kit"},{id:"services",label:"📋 Book Help"},{id:"find",label:"📍 Find Vet"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.crimson}`:"3px solid transparent",color:a?G.crimson:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
+          {[{id:"emergency",label:"🚨 Emergency Kit"},{id:"services",label:"🐕 Services"},{id:"find",label:"📍 Find Vet"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.crimson}`:"3px solid transparent",color:a?G.crimson:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
         </div>
 
         {/* Emergency Kit tab */}
@@ -470,15 +502,15 @@ const EmergencySoulPage = () => {
             <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{const map={'Emergency Vet Discovery':'Find emergency vet','After-Hours Care Guidance':'Accident response','24/7 Emergency Helpline Subscription':'Emergency transport','24/7 Emergency Vet Hotline':'Find emergency vet'};openEmergencyService(map[serviceName]||serviceName||'Find emergency vet');}}/>
             {/* ✦ Soul Made™ trigger — custom emergency ID tags, medical alert tags */}
             <div data-testid="emergency-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
-              style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}
-              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 32px rgba(196,77,255,0.32)";}}
-              onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 4px 24px rgba(196,77,255,0.18)";}}>
-              <div style={{position:"absolute",top:-40,right:-40,width:160,height:160,background:"radial-gradient(circle,rgba(196,77,255,0.15) 0%,transparent 70%)",pointerEvents:"none"}}/>
-              <div style={{fontSize:10,fontWeight:800,letterSpacing:"0.15em",color:"#C44DFF",marginBottom:8}}>{`\u2726 SOUL MADE\u2122 \u00B7 SAFETY GEAR FOR ${(petName||"YOUR DOG").toUpperCase()}`}</div>
+              style={{width:"100%",marginBottom:24,padding:"20px 20px 18px",background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 50%,${G.deep} 100%)`,border:`1.5px solid rgba(220,38,38,0.4)`,borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:`0 4px 24px rgba(220,38,38,0.18)`,transition:"transform 0.15s, box-shadow 0.15s"}}
+              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 8px 32px rgba(220,38,38,0.32)`;}}
+              onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=`0 4px 24px rgba(220,38,38,0.18)`;}}>
+              <div style={{position:"absolute",top:-40,right:-40,width:160,height:160,background:`radial-gradient(circle,rgba(220,38,38,0.15) 0%,transparent 70%)`,pointerEvents:"none"}}/>
+              <div style={{fontSize:10,fontWeight:800,letterSpacing:"0.15em",color:G.light,marginBottom:8}}>{`\u2726 SOUL MADE\u2122 \u00B7 SAFETY GEAR FOR ${(petName||"YOUR DOG").toUpperCase()}`}</div>
               <div style={{fontSize:20,fontWeight:800,color:"#F5F0E8",fontFamily:"Georgia,serif",marginBottom:6,lineHeight:1.2}}>Custom safety gear for {petName}.</div>
-              <div style={{fontSize:13,color:"rgba(245,240,232,0.55)",marginBottom:16}}>ID Tag · Medical Alert Collar · Emergency Go-Bag · GPS Tag · and more</div>
+              <div style={{fontSize:13,color:"rgba(245,240,232,0.65)",marginBottom:16}}>ID Tag · Medical Alert Collar · Emergency Go-Bag · GPS Tag · and more</div>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"linear-gradient(135deg,#C44DFF,#9333EA)",borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:"0 4px 16px rgba(196,77,255,0.4)"}}>{`\u2726 Make something only ${petName} has`}</div>
+                <div style={{display:"inline-flex",alignItems:"center",gap:8,background:`linear-gradient(135deg,${G.crimson},${G.mid})`,borderRadius:30,padding:"10px 22px",fontSize:13,fontWeight:700,color:"#fff",boxShadow:`0 4px 16px rgba(220,38,38,0.4)`}}>{`\u2726 Make something only ${petName} has`}</div>
                 <div style={{fontSize:12,color:"rgba(245,240,232,0.35)",fontStyle:"italic",maxWidth:160,textAlign:"right",lineHeight:1.4}}>Upload a photo · Concierge® creates it</div>
               </div>
             </div>
@@ -566,27 +598,14 @@ const EmergencySoulPage = () => {
         {/* Book Help tab */}
         {activeTab==="services" && (
           <div style={{marginTop:24}}>
-            <h2 style={{fontSize:"clamp(1.25rem,3vw,1.5rem)",fontWeight:800,color:G.darkText,marginBottom:4,fontFamily:"Georgia,serif"}}>Get emergency help for <span style={{color:G.crimson}}>{petName}</span></h2>
-            <p style={{fontSize:13,color:"#888",marginBottom:20}}>All services are arranged by Concierge® — immediate, calm, and coordinated.</p>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(240px,100%),1fr))",gap:14}}>
-              {EMERG_SERVICES.map(svc=>{
-                const dbSvc=services.find(s=>s.name===svc.name||s.id===svc.id)||{};
-                const img=dbSvc.image_url||dbSvc.watercolor_image||null;
-                return(<div key={svc.id} style={{background:"#fff",borderRadius:16,border:`2px solid rgba(220,38,38,0.12)`,overflow:"hidden",cursor:"pointer",transition:"all 0.15s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px ${svc.accentColor}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
-                <div style={{height:120,background:`linear-gradient(135deg,${G.pale},${G.cream})`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                  {img?<img src={img} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>:<span style={{fontSize:40}}>{svc.icon}</span>}
-                </div>
-                <div style={{padding:"14px 16px 16px"}}>
-                  <div style={{fontSize:11,color:G.mutedText,marginBottom:3}}>{svc.tagline}</div>
-                  <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:3}}>{svc.name}</div>
-                  <div style={{fontSize:11,color:"#888",lineHeight:1.45,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
-                  {svc.miraKnows&&<div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:8,padding:"6px 10px",marginBottom:8,display:"flex",alignItems:"flex-start",gap:5}}><span style={{fontSize:11,color:G.crimson,flexShrink:0}}>✦</span><span style={{fontSize:10,color:G.mid,lineHeight:1.4}}>{svc.miraKnows.replace(/{petName}/g,petName)}</span></div>}
-                  <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-                    <button onClick={()=>openEmergencyService(svc.name)} style={{background:`linear-gradient(135deg,${svc.accentColor},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"7px 16px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Get help now →</button>
-                  </div>
-                </div>
-              </div>);})}
-            </div>
+            <PillarServiceSection
+              pillar="emergency"
+              pet={petData}
+              title="Emergency Help, Personally"
+              accentColor={G.crimson}
+              darkColor={G.dark}
+              preloadedServices={services}
+            />
           </div>
         )}
 

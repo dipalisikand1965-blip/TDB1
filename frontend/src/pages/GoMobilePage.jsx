@@ -4,6 +4,7 @@
  * Products tab: dimTab (Products/Personalised) + sub-category pills
  * Colour: Teal #1ABC9C
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -32,7 +33,9 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import NearMeConciergeModal from '../components/common/NearMeConciergeModal';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const G = {
   teal:'#1ABC9C', mid:'#0E8A70', deep:'#06503F', light:'#A7F3D0',
@@ -40,6 +43,70 @@ const G = {
   darkText:'#064E3B', mutedText:'#1ABC9C',
   border:'rgba(26,188,156,0.18)',
 };
+
+/* ─── Watch & Learn section ─────────────────────────────────────────────── */
+const GO_WATCH_QUERY = 'dog friendly travel tips pet road trip';
+
+function GoWatchSection({ pet }) {
+  const [videos, setVideos] = useState([]);
+  const [expanded, setExpanded] = useState(false);
+  const breed = pet?.breed || 'dog';
+
+  useEffect(() => {
+    const q = `${breed} ${GO_WATCH_QUERY}`;
+    fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(q)}&max_results=6`)
+      .then(r => r.json())
+      .then(d => {
+        const list = (d?.videos || d?.items || d?.results || []).map(v => ({
+          id: v.videoId || v.id?.videoId || v.id,
+          title: v.title || v.snippet?.title || '',
+          thumbnail: v.thumbnail || v.snippet?.thumbnails?.medium?.url || '',
+          url: `https://www.youtube.com/watch?v=${v.videoId || v.id?.videoId || v.id}`,
+        }));
+        setVideos(list);
+      })
+      .catch(() => {});
+  }, [breed]);
+
+  if (!videos.length) return null;
+  const shown = expanded ? videos : videos.slice(0, 4);
+
+  return (
+    <div style={{ marginTop:20 }}>
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+        <div style={{ fontSize:11, letterSpacing:'0.12em', fontWeight:700, color:'rgba(26,188,156,0.9)', textTransform:'uppercase' }}>
+          ✦ Watch &amp; Learn
+        </div>
+        {videos.length > 4 && (
+          <button onClick={() => setExpanded(e => !e)}
+            style={{ fontSize:11, color:'#1ABC9C', fontWeight:600, background:'none', border:'none', cursor:'pointer', padding:0 }}>
+            {expanded ? 'Show less' : `+${videos.length - 4} more`}
+          </button>
+        )}
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        {shown.map((v, i) => (
+          <div key={v.id || i} onClick={() => window.open(v.url, '_blank')}
+            style={{ cursor:'pointer', borderRadius:12, overflow:'hidden', border:'1px solid rgba(26,188,156,0.18)', background:'#fff', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+            <div style={{ position:'relative', paddingTop:'56.25%', background:'#E0FBF5' }}>
+              {v.thumbnail && <img src={v.thumbnail} alt={v.title} style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />}
+              <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.22)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <div style={{ width:32, height:32, borderRadius:'50%', background:'rgba(0,0,0,0.65)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <span style={{ color:'#fff', fontSize:13, marginLeft:2 }}>▶</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ padding:'8px 10px' }}>
+              <div style={{ fontSize:11, fontWeight:600, color:'#064E3B', lineHeight:1.4 }}>
+                {(v.title||'').slice(0, 55)}{v.title?.length > 55 ? '…' : ''}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 const CSS = `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
 .go-m{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;background:${G.cream};color:${G.dark};min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 .go-cta{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;padding:13px 20px;border-radius:14px;border:none;background:linear-gradient(135deg,${G.mid},${G.teal});color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 0.15s}
@@ -87,6 +154,7 @@ export default function GoMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('go');
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState('products');
   const [subCat, setSubCat] = useState('All');
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -138,69 +206,41 @@ export default function GoMobilePage() {
         {soulMadeOpen && <SoulMadeModal pet={currentPet} pillar="go" pillarColor={G.teal} pillarLabel="Go" onClose={() => setSoulMadeOpen(false)} />}
         {selectedProduct && <ProductDetailModal product={selectedProduct?.raw || selectedProduct} isOpen={!!selectedProduct} onClose={() => setSelectedProduct(null)} petName={petName} pillarColor={G.teal} />}
 
-        {/* ── Hero — simple, matches Care pattern ── */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`, padding:'40px 20px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.55)', letterSpacing:'0.14em', marginBottom:4 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:28, fontWeight:900, color:'#fff', letterSpacing:'-0.5px' }}>✈️ Go</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'nowrap', overflowX:'auto', justifyContent:'flex-end', maxWidth:'55%', scrollbarWidth:'none' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                    style={{ padding:'5px 13px', borderRadius:999, fontSize:12, fontWeight:700, cursor:'pointer', flexShrink:0,
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.2)' : 'transparent',
-                      color:'#fff', fontFamily:'inherit' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>Travel & Go with {petName}</div>
-          <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)', marginBottom:10 }}>Flights, road trips, boarding, pet-friendly stays.</div>
-          {/* Allergy tags */}
-          {currentPet?.allergies?.length > 0 && (
-            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-              {currentPet.allergies.map(a => (
-                <span key={a} style={{ fontSize:11, fontWeight:700, background:'rgba(239,68,68,0.18)', color:'#fca5a5', borderRadius:999, padding:'3px 10px', border:'1px solid rgba(239,68,68,0.3)' }}>
-                  ⚠️ No {a}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* ══ 2. GoCategoryStrip ══ */}
-        <GoCategoryStrip pet={currentPet} />
+        {/* ── Hero ── */}
+        <PillarHero
+          pillar="go"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.deep} 55%,${G.mid} 100%)`}
+          title="✈️ Go"
+          subtitle={`Travel & Go with ${petName}`}
+          tagline="Flights, road trips, boarding, pet-friendly stays."
+        />
 
         {/* ══ 3. Tab Bar ══ */}
-        <div style={{ background:'#fff', borderBottom:`1px solid rgba(26,188,156,0.10)`, padding:'12px 16px 0', display:'flex', gap:8, overflowX:'auto', flexWrap:'nowrap', scrollbarWidth:'none' }}>
+        <div className="ios-tab-bar">
           {[
-            { id:'go',       label:'✈️ Products' },
-            { id:'nearme',   label:'📍 Near Me' },
-            { id:'services', label:'🗺️ Services' },
-          ].map(tab => {
-            const sel = activeTab === tab.id;
-            return (
-              <button key={tab.id} onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}
-                data-testid={`go-tab-${tab.id}`}
-                style={{ padding:'8px 18px', borderRadius:9999, border:'none', flexShrink:0,
-                  background: sel ? `linear-gradient(135deg,${G.teal},${G.mid})` : `rgba(26,188,156,0.08)`,
-                  color: sel ? '#fff' : G.mutedText,
-                  fontSize:13, fontWeight: sel ? 700 : 400,
-                  cursor:'pointer', transition:'all 0.15s', marginBottom:12, fontFamily:'inherit', whiteSpace:'nowrap' }}>
-                {tab.label}
-              </button>
-            );
-          })}
+            { id:'go',       label:'✈️ Go' },
+            { id:'nearme',   label:'📍 Find & Stay' },
+            { id:'services', label:'🐕 Services' },
+          ].map(tab => (
+            <button key={tab.id}
+              className={`ios-tab${activeTab===tab.id?' active':''}`}
+              style={activeTab===tab.id ? { backgroundColor:G.dark, color:'#fff' } : {}}
+              data-testid={`go-tab-${tab.id}`}
+              onClick={() => { vibe(); setActiveTab(tab.id); setSubCat('All'); }}>
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {/* TAB 1: Go & Products */}
         {activeTab === 'go' && (
           <div>
+            {/* GoCategoryStrip — inside Go tab (moved from above tab bar) */}
+            {currentPet && <GoCategoryStrip pet={currentPet} />}
+
             {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
             {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
 
@@ -248,13 +288,13 @@ export default function GoMobilePage() {
                       {openDim && (() => {
                         const activeDim = goDims.find(d => d.id === openDim);
                         return activeDim ? (
-                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
-                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto' }}>
+                          <div onClick={() => setOpenDim(null)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.65)', display:'flex', flexDirection:'column', justifyContent:'flex-end', touchAction:'none' }}>
+                            <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px 20px 0 0', maxHeight:'88vh', overflowY:'auto', paddingTop:'env(safe-area-inset-top, 0px)' }}>
                               <DimExpanded dim={activeDim} pet={currentPet} onClose={() => setOpenDim(null)} apiProducts={Object.fromEntries(
                                 ['safety','calming','carriers','feeding','health','stay'].map(dimId => {
                                   const keywords = {
                                     safety:   ['safety'],
-                                    calming:  ['calm'],
+                                    calming:  ['calm', 'anxiety', 'comfort', 'thunder', 'pheromone'],
                                     carriers: ['carrier'],
                                     feeding:  ['feed'],
                                     health:   ['health'],
@@ -288,6 +328,9 @@ export default function GoMobilePage() {
 
                 {/* GuidedGoPaths — always visible below dims */}
                 <div style={{ marginTop:16 }}><GuidedGoPaths pet={currentPet} /></div>
+
+                {/* Watch & Learn — YouTube section */}
+                <GoWatchSection pet={currentPet} />
 
                 {/* Concierge Banner */}
                 <div style={{ marginTop:16, background:G.dark, borderRadius:20, padding:18 }}>
@@ -350,8 +393,33 @@ export default function GoMobilePage() {
 
         {/* TAB 3: Book a Service */}
         {activeTab === 'services' && (
+          <>
+            <PillarConciergeCards pillar="go" pet={currentPet} token={token} />
+
+      {/* Concierge® Request Builder */}
+      <div style={{ padding:'0 16px 16px' }}>
+        <button
+          onClick={() => setConciergeBuilderOpen(true)}
+          style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+            background:'linear-gradient(135deg,#0A0A14,#1A1A2E)',
+            color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <span style={{ fontSize:18 }}>✦</span>
+          <span>What does {petName} need? Ask Concierge®</span>
+        </button>
+      </div>
           <div style={{ padding:'16px' }}>
-            {/* ── Go, Personally — 8 service tiles ── */}
+            {/* ── Bespoke Concierge Builder CTA ── */}
+            <div style={{ background:'#03140E', borderRadius:20, padding:16, marginBottom:20 }}>
+              <div style={{ fontSize:12, fontWeight:700, color:'rgba(201,151,58,0.9)', letterSpacing:'0.1em', marginBottom:8 }}>✦ BESPOKE REQUESTS</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14 }}>
+                Tell us exactly what {petName} needs. Our Concierge® team arranges every detail of your journey.
+              </div>
+              <button onClick={() => setConciergeBuilderOpen(true)} data-testid="go-concierge-builder-btn"
+                style={{ width:'100%', padding:'13px 20px', borderRadius:14, border:'none', background:'linear-gradient(135deg,#03211A,#1ABC9C33)', color:'#1ABC9C', fontSize:15, fontWeight:700, cursor:'pointer', borderWidth:1, borderStyle:'solid', borderColor:'rgba(26,188,156,0.3)' }}>
+                ✦ Bespoke Requests →
+              </button>
+            </div>
             <div style={{ marginBottom:28 }}>
               <div style={{ fontSize:20, fontWeight:800, color:G.darkText, fontFamily:'Georgia,serif', marginBottom:4 }}>Go, Personally</div>
               <div style={{ fontSize:13, color:G.mutedText, marginBottom:16 }}>
@@ -384,6 +452,7 @@ export default function GoMobilePage() {
             {/* ── Live API services (GoConciergeSection) below ── */}
             <GoConciergeSection pet={currentPet} />
           </div>
+          </>
         )}
       </div>
 
@@ -419,6 +488,13 @@ export default function GoMobilePage() {
         pet={currentPet}
         pillar="go"
         token={token}
+      />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
       />
     </PillarPageLayout>
   );

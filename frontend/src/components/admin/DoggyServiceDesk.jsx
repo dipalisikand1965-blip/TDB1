@@ -5015,34 +5015,181 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             </div>
                           </div>
                           
-                          {/* Conversation — merge thread (concierge replies) + messages (legacy) */}
-                          {[
-                            ...(selectedTicket.thread || []).map(m => ({
-                              ...m,
-                              text: m.text || m.content,
-                              sender: m.sender,
-                              direction: m.sender === 'concierge' ? 'outgoing' : 'incoming',
-                              is_agent_reply: m.sender === 'concierge',
-                              timestamp: m.timestamp || m.created_at,
-                            })),
-                            ...(selectedTicket.messages || []).filter(m => !m.from_thread),
-                          ]
-                            .sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0))
-                            .map((msg, idx) => {
-                            const isAgent = msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge';
+                          {/* Conversation — merge ALL sources: conversation (soul_made/concierge), thread (concierge replies), messages (legacy) */}
+                          {/* Universal Media Attachments — images/docs from metadata, conversation, or message text */}
+                          {(() => {
+                            // Collect ALL media URLs from every ticket source
+                            const IMAGE_EXT = /\.(jpg|jpeg|png|gif|webp)(\?[^\s]*)?$/i;
+                            const CLOUDINARY = /https?:\/\/res\.cloudinary\.com\/[^\s,)"']+/gi;
+                            const ANY_URL = /https?:\/\/[^\s,)"']+/gi;
+                            const seen = new Set();
+                            const mediaItems = [];
+
+                            const addUrl = (url, label = '') => {
+                              if (!url || typeof url !== 'string' || seen.has(url)) return;
+                              if (!url.startsWith('http')) return;
+                              seen.add(url);
+                              const isImage = IMAGE_EXT.test(url) || CLOUDINARY.test(url) || url.includes('/image/') || url.includes('cloudinary');
+                              mediaItems.push({ url, label, isImage });
+                            };
+
+                            // 1. Top-level fields
+                            addUrl(selectedTicket.photo_url, 'Pet Photo');
+                            addUrl(selectedTicket.soul_made_photo, 'Soul Made™ Photo');
+                            addUrl(selectedTicket.image_url, 'Image');
+                            addUrl(selectedTicket.document_url, 'Document');
+
+                            // 2. metadata — scan every value for URLs
+                            const meta = selectedTicket.metadata || {};
+                            Object.entries(meta).forEach(([k, v]) => {
+                              if (typeof v === 'string' && v.startsWith('http')) {
+                                const label = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                                addUrl(v, label);
+                              }
+                            });
+
+                            // 3. All conversation + thread + messages
+                            const allSources = [
+                              ...(selectedTicket.conversation || []),
+                              ...(selectedTicket.thread || []),
+                              ...(selectedTicket.messages || []),
+                            ];
+                            allSources.forEach(m => {
+                              addUrl(m.image_url, '📸 Photo');
+                              addUrl(m.document_url, '📄 Document');
+                              addUrl(m.file_url, '📎 File');
+                              // URLs embedded in message text
+                              const txt = m.text || m.content || m.message || '';
+                              const matches = txt.match(ANY_URL) || [];
+                              matches.forEach(u => {
+                                if (IMAGE_EXT.test(u) || u.includes('cloudinary')) addUrl(u, 'Embedded Image');
+                              });
+                            });
+
+                            if (mediaItems.length === 0) return null;
+                            return (
+                              <div className="mx-4 mb-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+                                <div className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">📎 Attachments ({mediaItems.length})</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {mediaItems.map((item, i) => (
+                                    item.isImage ? (
+                                      <div key={i} className="flex flex-col items-center gap-1">
+                                        <img
+                                          src={item.url}
+                                          alt={item.label}
+                                          className="w-20 h-20 rounded-lg object-cover border border-slate-300 cursor-pointer shadow-sm"
+                                          onClick={() => window.open(item.url, '_blank')}
+                                          onError={e => { e.target.style.display='none'; }}
+                                        />
+                                        <span className="text-[10px] text-slate-500 max-w-[80px] truncate">{item.label}</span>
+                                      </div>
+                                    ) : (
+                                      <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
+                                        className="flex items-center gap-1 px-2 py-1 rounded-lg border border-slate-300 bg-white text-xs text-slate-700 hover:bg-slate-100 cursor-pointer">
+                                        📄 {item.label || 'File'}
+                                      </a>
+                                    )
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
+                          {(() => {
+                            // Helper: extract inline photo URLs from text (Cloudinary / external images)
+                            const extractPhotoUrls = (text, msgImageUrl) => {
+                              const urls = [];
+                              // Direct image_url field (backend saves this for soul_made photos)
+                              if (msgImageUrl) urls.push(msgImageUrl);
+                              if (!text) return [...new Set(urls)];
+                              // URLs ending in image extension
+                              const byExt = text.match(/https?:\/\/[^\s,)]+\.(jpg|jpeg|png|gif|webp)/gi) || [];
+                              // Cloudinary upload URLs (no extension required)
+                              const cloudinary = text.match(/https?:\/\/res\.cloudinary\.com\/[^\s,)"']+/gi) || [];
+                              return [...new Set([...urls, ...byExt, ...cloudinary])];
+                            };
+                            // Helper: strip photo URLs from text for clean display
+                            const stripPhotoUrls = (text) => {
+                              if (!text) return '';
+                              return text.replace(/Photo:\s*https?:\/\/[^\s\n]+/gi, '').replace(/\bhttps?:\/\/[^\s,)]+\.(jpg|jpeg|png|gif|webp)\b/gi, '').trim();
+                            };
+
+                            const allMsgs = [
+                              // PRIMARY: conversation[] — soul_made, concierge, Mira briefing (DB field name)
+                              ...(selectedTicket.conversation || []).map(m => ({
+                                ...m,
+                                _text: m.text || m.content || m.message || '',
+                                sender: m.sender,
+                                direction: (m.sender === 'concierge' || m.sender === 'agent' || m.is_agent_reply) ? 'outgoing' : 'incoming',
+                                is_agent_reply: m.sender === 'concierge' || m.sender === 'agent',
+                                is_mira: m.is_briefing === true || m.sender === 'mira',
+                                timestamp: m.timestamp || m.created_at,
+                                _source: 'conversation',
+                              })),
+                              // SECONDARY: thread[] — live concierge replies
+                              ...(selectedTicket.thread || []).map(m => ({
+                                ...m,
+                                _text: m.text || m.content || m.message || '',
+                                sender: m.sender,
+                                direction: m.sender === 'concierge' ? 'outgoing' : 'incoming',
+                                is_agent_reply: m.sender === 'concierge',
+                                is_mira: false,
+                                timestamp: m.timestamp || m.created_at,
+                                _source: 'thread',
+                              })),
+                              // TERTIARY: messages[] — legacy / order tickets
+                              ...(selectedTicket.messages || []).filter(m => !m.from_thread).map(m => ({
+                                ...m,
+                                _text: m.text || m.content || m.message || '',
+                                _source: 'messages',
+                              })),
+                            ]
+                              .filter((m, i, arr) => {
+                                // Deduplicate by timestamp+sender+text combo (photo messages share timestamp with initial msg)
+                                const key = `${m.sender}|${m.timestamp || m.created_at}|${(m.text || m.content || '').slice(0, 40)}`;
+                                return arr.findIndex(x => `${x.sender}|${x.timestamp || x.created_at}|${(x.text || x.content || '').slice(0, 40)}` === key) === i;
+                              })
+                              .sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
+
+                            return allMsgs.map((msg, idx) => {
+                            const isMira = msg.is_mira;
+                            const isAgent = !isMira && (msg.direction === 'outgoing' || msg.is_agent_reply || msg.sender === 'concierge');
                             const hasAttachments = msg.attachments?.length > 0;
-                            // Golden Standard: Label for message sender - Priority: pet_info > petProfile > pet_names > member name > Member
-                            const petDisplayName = selectedTicket.pet_info?.name 
-                              || petProfile?.name 
-                              || selectedTicket.pet_name 
+                            const rawText = msg._text || '';
+                            const photoUrls = extractPhotoUrls(rawText, msg.image_url);
+                            const cleanText = stripPhotoUrls(rawText);
+                            const htmlContent = msg.content || msg.message || '';
+                            const petDisplayName = selectedTicket.pet_info?.name
+                              || petProfile?.name
+                              || selectedTicket.pet_name
                               || selectedTicket.metadata?.pet_name
                               || selectedTicket.pet_names?.[0]
                               || (selectedTicket.subject?.includes("'s") ? selectedTicket.subject.split("'s")[0] : null);
-                            const senderLabel = isAgent 
-                              ? 'Concierge®' 
-                              : petDisplayName 
-                                ? `🐾 ${petDisplayName}` 
-                                : (selectedTicket.member?.name ? `${selectedTicket.member.name}'s pet` : '(Member)');
+                            const senderLabel = isMira
+                              ? '✨ Mira AI — Soul Briefing'
+                              : isAgent
+                                ? 'Concierge®'
+                                : petDisplayName
+                                  ? `🐾 ${petDisplayName}`
+                                  : (selectedTicket.member?.name ? `${selectedTicket.member.name}'s pet` : '(Member)');
+
+                            // Mira briefing — full-width special card
+                            if (isMira) {
+                              return (
+                                <div key={idx} className="mb-4 w-full" data-message-id={msg.id || idx}>
+                                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                                    <div className="flex items-center gap-2 text-xs font-semibold text-purple-600 mb-2">
+                                      <span className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white text-[9px]">✨</span>
+                                      {senderLabel}
+                                      <span className="ml-auto text-gray-400 font-normal">{formatTime(msg.timestamp || msg.created_at)}</span>
+                                    </div>
+                                    <pre className="text-xs text-purple-900 whitespace-pre-wrap font-mono leading-relaxed bg-white/60 rounded-lg p-3 border border-purple-100 max-h-64 overflow-y-auto">
+                                      {cleanText || rawText}
+                                    </pre>
+                                  </div>
+                                </div>
+                              );
+                            }
+
                             return (
                               <div key={idx} className={`flex gap-3 ${isAgent ? 'flex-row-reverse' : ''}`} data-message-id={msg.id || idx}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 ${
@@ -5051,15 +5198,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                   {isAgent ? 'C®' : (msg.sender_name || 'CU').slice(0, 2).toUpperCase()}
                                 </div>
                                 <div className={`flex-1 ${isAgent ? 'text-right' : ''}`}>
-                                  {/* Golden Standard: Sender label */}
                                   <span className={`text-[10px] mb-1 block ${isAgent ? 'text-purple-500' : 'text-amber-500'}`}>
                                     {senderLabel}
                                   </span>
-                                  <div className={`inline-block rounded-lg p-3 max-w-[85%] ${
+                                  <div className={`inline-block rounded-lg p-3 max-w-[85%] text-left ${
                                     msg.is_internal
-                                      ? 'bg-amber-50 border border-amber-200 text-left'
+                                      ? 'bg-amber-50 border border-amber-200'
                                       : isAgent
-                                        ? 'bg-amber-500 text-white text-left'
+                                        ? 'bg-amber-500 text-white'
                                         : 'bg-gray-100'
                                   }`}>
                                     {msg.is_internal && (
@@ -5067,11 +5213,25 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                         <FileText className="w-3 h-3" /> Internal Note
                                       </div>
                                     )}
-                                    {/* Message content - render HTML if present */}
-                                    <div 
-                                      className={`text-sm ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-800'} prose prose-sm max-w-none ${isAgent && !msg.is_internal ? 'prose-invert' : ''}`}
-                                      dangerouslySetInnerHTML={{ __html: msg.content || msg.message || '' }}
-                                    />
+                                    {/* Render photo URLs as actual images */}
+                                    {photoUrls.length > 0 && (
+                                      <div className="mb-2 flex flex-wrap gap-2">
+                                        {photoUrls.map((url, ui) => (
+                                          <img key={ui} src={url} alt="Attached photo" className="w-32 h-32 rounded-lg object-cover border border-white/30 cursor-pointer shadow-sm" onClick={() => window.open(url, '_blank')} />
+                                        ))}
+                                      </div>
+                                    )}
+                                    {/* Message content — prefer HTML, fallback to clean text */}
+                                    {htmlContent ? (
+                                      <div
+                                        className={`text-sm ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-800'} prose prose-sm max-w-none ${isAgent && !msg.is_internal ? 'prose-invert' : ''}`}
+                                        dangerouslySetInnerHTML={{ __html: htmlContent }}
+                                      />
+                                    ) : (
+                                      <p className={`text-sm whitespace-pre-wrap ${isAgent && !msg.is_internal ? 'text-white' : 'text-gray-800'}`}>
+                                        {cleanText || rawText}
+                                      </p>
+                                    )}
                                     
                                     {/* Attachments in message */}
                                     {hasAttachments && (
@@ -5131,7 +5291,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                 </div>
                               </div>
                             );
-                          })}
+                          }); // end allMsgs.map
+                          })()}
                           <div ref={conversationEndRef} />
                         </div>
                       </div>
@@ -5150,8 +5311,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                             {(petProfile || selectedTicket.pet_info) && (
                               <Card className="p-4 mb-4 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
                                 <div className="flex items-center gap-3 mb-3">
-                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
-                                    <PawPrint className="w-6 h-6 text-white" />
+                                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    {petProfile?.photo_url ? (
+                                      <img src={petProfile.photo_url} alt={petProfile.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      <PawPrint className="w-6 h-6 text-white" />
+                                    )}
                                   </div>
                                   <div>
                                     <h4 className="font-bold text-gray-900">{petProfile?.name || selectedTicket.pet_info?.name}</h4>

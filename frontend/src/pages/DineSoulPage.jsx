@@ -32,6 +32,7 @@ import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
+import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
@@ -48,6 +49,7 @@ import SharedProductCard, { ProductDetailModal } from '../components/ProductCard
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import DineSoulPageDesktopLegacy from './DineSoulPageDesktopLegacy';
+import DineMobilePage from './DineMobilePage';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import '../styles/mobile-design-system.css';
 
@@ -73,7 +75,7 @@ const CTAGrad  = 'linear-gradient(135deg,#F97316,#D97706)';
 const DarkGrad = 'linear-gradient(135deg,#1A0A00,#2D1A00)';
 
 // ── CSS ────────────────────────────────────────────────────────
-const CSS = `
+export const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
   .dp { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
         background:${C.cream}; color:${C.brown}; min-height:100vh;
@@ -101,7 +103,7 @@ const CSS = `
 `;
 
 // ── Haptic ─────────────────────────────────────────────────────
-function vibe(type = 'light') {
+export function vibe(type = 'light') {
   if (!navigator?.vibrate) return;
   if (type === 'success') navigator.vibrate([8, 40, 10]);
   else if (type === 'medium') navigator.vibrate([12]);
@@ -111,7 +113,7 @@ function vibe(type = 'light') {
 // ── Pet data helpers ───────────────────────────────────────────
 const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies|unknown|na|n\/a)$/i;
 
-function getAllergies(pet) {
+export function getAllergies(pet) {
   const s = new Set();
   const add = v => {
     if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(String(x).trim()); });
@@ -124,7 +126,7 @@ function getAllergies(pet) {
   return [...s];
 }
 
-function getLoves(pet) {
+export function getLoves(pet) {
   const loves = [];
   const addLove = item => {
     if (!item) return;
@@ -137,7 +139,7 @@ function getLoves(pet) {
   return [...new Set(loves)].slice(0, 3);
 }
 
-function getFavourite(pet) {
+export function getFavourite(pet) {
   const pick = v => Array.isArray(v) ? v[0] : v;
   const t1 = pick(pet?.doggy_soul_answers?.favourite_treat);
   const t2 = pick(pet?.doggy_soul_answers?.favorite_treats);
@@ -145,37 +147,37 @@ function getFavourite(pet) {
   const s2 = typeof t2 === 'string' ? t2.replace(/_/g, ' ') : '';
   return s1 || s2 || null;
 }
-function getDiet(pet) {
+export function getDiet(pet) {
   const dt = pet?.doggy_soul_answers?.diet_type;
   return typeof dt === 'string' ? dt.replace(/_/g, ' ') : null;
 }
-function getHealthCondition(pet) {
+export function getHealthCondition(pet) {
   const raw = pet?.health?.medical_conditions || pet?.doggy_soul_answers?.health_conditions;
   if (!raw) return null;
   const str = Array.isArray(raw) ? raw.join(', ') : String(raw);
   return str.toLowerCase() === 'none' || str.trim() === '' ? null : str;
 }
-function getFavoriteProtein(pet) {
+export function getFavoriteProtein(pet) {
   return pet?.doggy_soul_answers?.favorite_protein || pet?.doggy_soul_answers?.fav_protein || null;
 }
-function getNutritionGoal(pet) {
+export function getNutritionGoal(pet) {
   return pet?.doggy_soul_answers?.nutrition_goal || pet?.doggy_soul_answers?.weight_goal || null;
 }
 
 // ── Mira Intelligence ──────────────────────────────────────────
-function isSafeFromAllergen(allergen, text, freeText) {
+export function isSafeFromAllergen(allergen, text, freeText) {
   const a = allergen.toLowerCase();
   if (freeText.includes(`${a}-free`) || freeText.includes(`${a} free`)) return true;
   if (text.includes(`${a}-free`) || text.includes(`${a} free`)) return true;
   return false;
 }
-function containsAllergen(allergen, text) {
+export function containsAllergen(allergen, text) {
   const a = allergen.toLowerCase();
   const cleaned = text.replace(new RegExp(`${a}[- ]free`, 'gi'), '');
   return cleaned.includes(a);
 }
 
-function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
+export function applyMiraIntelligence(products, allergies, loves, healthCondition, nutritionGoal, pet) {
   const petName = pet?.name || 'your dog';
   const allergyTerms = allergies.map(a => a.toLowerCase().trim());
   const loveTerms = loves.map(l => l.toLowerCase().trim()).filter(Boolean);
@@ -233,7 +235,7 @@ function applyMiraIntelligence(products, allergies, loves, healthCondition, nutr
 }
 
 // ── Dimensions ────────────────────────────────────────────────
-const DIMS = [
+export const DINE_DIMS = [
   { id:'meals',       icon:'🐟', name:'Daily Meals',     sub:'Main nourishment',    badge:'Personalised',  bg:'linear-gradient(135deg,#FFF8F0,#FFF0E0)', color:'#FF8C42', category:'Daily Meals',       tabs:['All','Wet Food','Dry Kibble','Raw','Fresh Cooked'] },
   { id:'treats',      icon:'🦴', name:'Treats & Chews',  sub:'Safe reward picks',   badge:'Allergen-safe', bg:'linear-gradient(135deg,#FFF3E0,#FFE8D0)', color:'#FF8C42', category:'Treats & Rewards',   tabs:['All','Soft Chews','Crunchy','Dental','Training'] },
   { id:'supplements', icon:'💊', name:'Supplements',      sub:'Health & vitality',   badge:'Vet-checked',   bg:'linear-gradient(135deg,#F0FFF4,#E0F7E9)', color:'#27AE60', category:'Supplements',        tabs:['All','Joints','Skin & Coat','Digestion','Immunity'] },
@@ -242,7 +244,7 @@ const DIMS = [
 ];
 
 // ── Normalise product card ─────────────────────────────────────
-const normCard = (p, petName) => ({
+export const normCard = (p, petName) => ({
   id: p.id || p._id,
   name: p.name,
   desc: p.sub_category?.replace(/_/g, ' ') || `For ${petName}`,
@@ -263,7 +265,7 @@ const normCard = (p, petName) => ({
 // MICRO COMPONENTS
 // ─────────────────────────────────────────────────────────────
 
-function DineLoadingState() {
+export function DineLoadingState() {
   return (
     <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', background:C.cream }}>
       <div style={{ textAlign:'center' }}>
@@ -274,7 +276,7 @@ function DineLoadingState() {
   );
 }
 
-function DineEmptyState({ onAddPet }) {
+export function DineEmptyState({ onAddPet }) {
   return (
     <div style={{ padding:'24px 16px', textAlign:'center' }}>
       <div className="dp-card" style={{ padding:'32px 20px' }}>
@@ -290,7 +292,7 @@ function DineEmptyState({ onAddPet }) {
 }
 
 // ── Pet Profile Card ───────────────────────────────────────────
-function DinePetProfileCard({ pet, onOpen }) {
+export function DinePetProfileCard({ pet, onOpen }) {
   const name      = pet?.name || 'your dog';
   const breed     = pet?.breed || 'mixed breed';
   const score     = Math.round(pet?.overall_score || pet?.soul_score || 0);
@@ -336,7 +338,7 @@ function DinePetProfileCard({ pet, onOpen }) {
 }
 
 // ── Profile Sheet ──────────────────────────────────────────────
-function DineProfileSheet({ pet, onClose, onConcierge }) {
+export function DineProfileSheet({ pet, onClose, onConcierge }) {
   const name       = pet?.name || 'your dog';
   const score      = Math.round(pet?.overall_score || pet?.soul_score || 0);
   const allergies  = getAllergies(pet);
@@ -417,7 +419,7 @@ function DineProfileSheet({ pet, onClose, onConcierge }) {
 }
 
 // ── Segmented Switch ───────────────────────────────────────────
-function DineSegmentedSwitch({ mode, onChange }) {
+export function DineSegmentedSwitch({ mode, onChange }) {
   return (
     <div style={{ margin:'0 16px 24px', background:C.border, borderRadius:14, padding:3, display:'flex', gap:3 }}>
       {[{ id:'eat', label:'🍲 Eat & Nourish' }, { id:'out', label:'🍽️ Dine Out' }].map(tab => (
@@ -430,7 +432,7 @@ function DineSegmentedSwitch({ mode, onChange }) {
 }
 
 // ── Section Heading ────────────────────────────────────────────
-function DineSectionHeading({ title, helper }) {
+export function DineSectionHeading({ title, helper }) {
   return (
     <div style={{ padding:'0 16px 16px' }}>
       <div style={{ fontSize:28, fontWeight:700, lineHeight:1.1, marginBottom:6 }}>{title}</div>
@@ -440,7 +442,7 @@ function DineSectionHeading({ title, helper }) {
 }
 
 // ── Product Card ───────────────────────────────────────────────
-function DineProductCard({ product, onAdd, onTap }) {
+export function DineProductCard({ product, onAdd, onTap }) {
   const [added, setAdded] = useState(false);
   return (
     <div
@@ -480,7 +482,7 @@ function DineProductCard({ product, onAdd, onTap }) {
 }
 
 // ── Dimensions Rail (FULL — real tabs, no cap) ─────────────────
-function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, onTap }) {
+export function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, onTap }) {
   const [activeTab, setActiveTab] = useState('All');
   const name = pet?.name || 'your dog';
   const allergies = getAllergies(pet);
@@ -612,7 +614,7 @@ function DineDimensionsRail({ dims, openDim, onSelect, pet, apiProducts, onAdd, 
 }
 
 // ── Mira Bar ───────────────────────────────────────────────────
-function DineMiraBar({ pet, onOpen }) {
+export function DineMiraBar({ pet, onOpen }) {
   const allergies = getAllergies(pet);
   const name = pet?.name || 'your dog';
   const loves = getLoves(pet);
@@ -632,7 +634,7 @@ function DineMiraBar({ pet, onOpen }) {
 }
 
 // ── Mira Picks Sheet ───────────────────────────────────────────
-function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConcierge, onAdd, onTap }) {
+export function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConcierge, onAdd, onTap }) {
   const name = pet?.name || 'your dog';
   return (
     <div onClick={onClose} style={{ position:'fixed', inset:0, zIndex:500, background:'rgba(0,0,0,0.45)', display:'flex', alignItems:'flex-end' }}>
@@ -664,7 +666,7 @@ function DineMiraPicksSheet({ pet, products = [], services = [], onClose, onConc
 }
 
 // ── Soul Made Inline Card ──────────────────────────────────────
-function DineSoulMadeInlineCard({ pet, onOpen }) {
+export function DineSoulMadeInlineCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
     <div style={{ padding:'0 16px 24px' }}>
@@ -684,7 +686,7 @@ function DineSoulMadeInlineCard({ pet, onOpen }) {
 }
 
 // ── Concierge® Card ─────────────────────────────────────────────
-function DineConciergeCard({ pet, onOpen }) {
+export function DineConciergeCard({ pet, onOpen }) {
   const name = pet?.name || 'your dog';
   return (
     <div style={{ margin:'0 16px 24px', background:C.brown, borderRadius:24, padding:20 }}>
@@ -699,7 +701,7 @@ function DineConciergeCard({ pet, onOpen }) {
 }
 
 // ── Intake Sheet ───────────────────────────────────────────────
-function DineIntakeSheet({ pet, onClose, onSend, prefillVenue }) {
+export function DineIntakeSheet({ pet, onClose, onSend, prefillVenue }) {
   const [occasion, setOccasion] = useState(prefillVenue ? 'Reservation Assistance' : 'Restaurant Discovery');
   const [notes, setNotes] = useState(prefillVenue ? `Venue: ${prefillVenue}` : '');
   const [sending, setSending] = useState(false);
@@ -774,452 +776,3 @@ export default function DineSoulPage() {
   return <DineMobilePage />;
 }
 
-function DineMobilePage() {
-  const { token } = useAuth();
-  const navigate = useNavigate();
-  const { addToCart } = useCart();
-  const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
-  usePlatformTracking({ pillar:'dine', pet:currentPet });
-  const { request, book } = useConcierge({ pet:currentPet, pillar:'dine' });
-
-  const [loading, setLoading] = useState(true);
-  const [mode, setMode] = useState('eat');
-  const [openDim, setOpenDim] = useState(null);
-  const [intakeOpen, setIntakeOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [miraOpen, setMiraOpen] = useState(false);
-  const [soulMadeOpen, setSoulMadeOpen] = useState(false);
-  const [prefillVenue, setPrefillVenue] = useState(null);
-  const [toastMsg, setToastMsg] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(4);
-  const [showDinePlan, setShowDinePlan] = useState(false);
-
-  // Product state
-  const [apiProducts, setApiProducts] = useState({});
-  const [flatProducts, setFlatProducts] = useState([]);
-  const [miraProducts, setMiraProducts] = useState([]);
-  const [miraServices, setMiraServices] = useState([]);
-
-  // Load pets
-  useEffect(() => {
-    if (contextPets !== undefined) setLoading(false);
-    if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
-  }, [contextPets, currentPet, setCurrentPet]);
-
-  // Listen for soul score updates
-  useEffect(() => {
-    const handler = () => {
-      if (currentPet?.id) fetchProducts(currentPet);
-    };
-    window.addEventListener('soulScoreUpdated', handler);
-    return () => window.removeEventListener('soulScoreUpdated', handler);
-  }, [currentPet]);
-
-  // Fetch products
-  const fetchProducts = useCallback(async (pet) => {
-    if (!pet?.id) return;
-    const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
-    try {
-      const results = await Promise.all(
-        FOOD_CATS.map(cat =>
-          fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}`, {
-            headers: token ? { Authorization:`Bearer ${token}` } : {}
-          }).then(r => r.ok ? r.json() : null).catch(() => null)
-        )
-      );
-      const grouped = {};
-      results.forEach(data => {
-        if (!data?.products?.length) return;
-        data.products.forEach(p => {
-          const cat = p.category || '';
-          const sub = p.sub_category || '';
-          if (!grouped[cat]) grouped[cat] = {};
-          if (!grouped[cat][sub]) grouped[cat][sub] = [];
-          grouped[cat][sub].push(p);
-        });
-      });
-      setApiProducts(grouped);
-      const rawFlat = Object.values(grouped).flatMap(subMap => Object.values(subMap).flat());
-      // Apply breed filter + Mira ranking before normCard
-      const breedFiltered = filterBreedProducts(rawFlat, pet.breed);
-      const miraRanked = applyMiraFilter(breedFiltered, pet).map(p => normCard(p, pet.name));
-      setFlatProducts(miraRanked);
-      setVisibleCount(4);
-    } catch {
-      setApiProducts({});
-      setFlatProducts([]);
-    }
-  }, [token]);
-
-  useEffect(() => { fetchProducts(currentPet); }, [currentPet, fetchProducts]);
-
-  // Fetch Mira picks
-  useEffect(() => {
-    if (!token || !currentPet?.id) return;
-    const h = { Authorization:`Bearer ${token}` };
-
-    fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=dine&limit=6&min_score=60&entity_type=product`, { headers:h })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        const raw = (d?.picks || []);
-        // Use centralized breed filter + Mira ranking (replaces old applyMiraIntelligence)
-        const breedFiltered = filterBreedProducts(raw, currentPet.breed);
-        const intelligent = applyMiraFilter(breedFiltered, currentPet);
-        setMiraProducts(intelligent.map(p => normCard(p, currentPet.name)));
-      })
-      .catch(() => {});
-
-    fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=dine&limit=3&min_score=60&entity_type=service`, { headers:h })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        setMiraServices((d?.picks || []).map(s => ({
-          id: s.id || s._id,
-          name: s.name,
-          desc: s.mira_reason || s.description || 'Concierge® dining help',
-          raw: s,
-        })));
-      })
-      .catch(() => {});
-  }, [token, currentPet]);
-
-  const handleAddToCart = useCallback(product => {
-    if (!product?.raw) return;
-    addToCart({
-      id: product.raw.id || product.id,
-      name: product.raw.name || product.name,
-      price: Number(product.raw.price || product.raw.pricing?.selling_price || 0),
-      image: product.raw.cloudinary_url || product.raw.image_url || product.imageUrl,
-      category: product.raw.category || 'dine',
-      pillar: 'dine',
-    }, null, null, 1);
-  }, [addToCart]);
-
-  const handleConcierge = useCallback(async item => {
-    if (!item) return;
-    await book(item.raw || { name:item.name, price:0 }, { channel:'dine_mira_sheet' });
-  }, [book]);
-
-  const handleConciergeRequest = useCallback(async (occasion, notes) => {
-    await request(
-      `Dining concierge request for ${currentPet?.name || 'your dog'}: ${occasion}${notes ? `. Notes: ${notes}` : ''}`,
-      { channel:'dine_intake', metadata:{ occasion, notes } }
-    );
-  }, [request, currentPet]);
-
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 2400);
-  };
-
-  if (loading) {
-    return (
-      <PillarPageLayout pillar="dine" hideHero hideNavigation>
-        <DineLoadingState />
-      </PillarPageLayout>
-    );
-  }
-
-  if (!currentPet) {
-    return (
-      <PillarPageLayout pillar="dine" hideHero hideNavigation>
-        <style>{CSS}</style>
-        <div className="dp">
-          <DineEmptyState onAddPet={() => navigate('/join')} />
-        </div>
-      </PillarPageLayout>
-    );
-  }
-
-  const petName = currentPet.name;
-
-  return (
-    <PillarPageLayout pillar="dine" hideHero hideNavigation>
-      <div className="dp mobile-page-container" data-testid="dine-mobile-v11">
-        <style>{CSS}</style>
-
-        {/* Modals & Sheets */}
-        {profileOpen && (
-          <DineProfileSheet
-            pet={currentPet}
-            onClose={() => setProfileOpen(false)}
-            onConcierge={async card => {
-              await request(`Dine imagine request for ${petName}: ${card?.name}`, { channel:'dine_imagines' });
-              showToast(`Sent to Concierge® for ${petName}`);
-            }}
-          />
-        )}
-        {miraOpen && (
-          <DineMiraPicksSheet
-            pet={currentPet}
-            products={miraProducts}
-            services={miraServices}
-            onClose={() => setMiraOpen(false)}
-            onConcierge={handleConcierge}
-            onAdd={handleAddToCart}
-            onTap={setSelectedProduct}
-          />
-        )}
-        {intakeOpen && (
-          <DineIntakeSheet
-            pet={currentPet}
-            prefillVenue={prefillVenue}
-            onClose={() => { setIntakeOpen(false); setPrefillVenue(null); }}
-            onSend={handleConciergeRequest}
-          />
-        )}
-        {soulMadeOpen && (
-          <SoulMadeModal
-            pet={currentPet}
-            pillar="dine"
-            pillarColor="#D97706"
-            pillarLabel="Dining"
-            onClose={() => setSoulMadeOpen(false)}
-          />
-        )}
-        {selectedProduct && (
-          <ProductDetailModal
-            product={selectedProduct.raw || selectedProduct}
-            isOpen={!!selectedProduct}
-            onClose={() => setSelectedProduct(null)}
-            petName={petName}
-            pillarColor={C.amber}
-          />
-        )}
-
-        {/* Toast */}
-        {toastMsg && (
-          <div style={{ position:'fixed', left:'50%', bottom:'calc(92px + env(safe-area-inset-bottom))', transform:'translateX(-50%)', zIndex:9000, background:C.dark, color:'#fff', padding:'10px 16px', borderRadius:999, fontSize:14, fontWeight:600, boxShadow:'0 12px 28px rgba(0,0,0,0.24)', whiteSpace:'nowrap' }}>
-            {toastMsg}
-          </div>
-        )}
-
-        {/* ── 1. Dim Modal — dark hero (always above tabs) ── */}
-        <div style={{ background:'linear-gradient(160deg,#3d1200 0%,#7a2800 50%,#c44400 100%)', padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(255,140,66,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🍽️ Dine</div>
-            </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe('light'); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s', fontFamily:'inherit' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-            <div
-              onClick={() => { vibe('light'); setProfileOpen(true); }}
-              style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', cursor:'pointer' }}
-              data-testid="dine-mobile-profile-avatar"
-            >
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <span style={{ fontSize:22 }}>🐾</span>}
-            </div>
-            <div onClick={() => { vibe('light'); setProfileOpen(true); }} style={{ cursor:'pointer' }}>
-              <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Food & Nourishment</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName} · <span style={{ fontSize:13, color:'rgba(255,208,128,0.8)' }}>View Profile →</span></div>
-            </div>
-          </div>
-
-          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-            {getAllergies(currentPet).map(a => (
-              <div key={a} style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFB3B0', fontWeight:500 }}>⚠️ No {a}</div>
-            ))}
-            {getFavourite(currentPet) && (
-              <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,208,128,0.12)', border:'1px solid rgba(255,208,128,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFD080', fontWeight:500 }}>💚 Loves {getFavourite(currentPet)}</div>
-            )}
-          </div>
-        </div>
-
-        {/* ── 2. Category Strip (outside tabs) ── */}
-        <DineCategoryStrip pet={currentPet} />
-
-        {/* ── 3. Tab Bar / Segmented Switch ── */}
-        <DineSegmentedSwitch mode={mode} onChange={setMode} />
-
-        {/* ── 4. Food Profile + Pawrent Journey inside Eat tab ── */}
-        {mode === 'eat' && (
-          <>
-            <div style={{ padding:'12px 16px 0' }}>
-              <PillarSoulProfile pet={currentPet} pillar="dine" token={token} />
-            </div>
-            <div style={{ padding:'8px 16px 0' }}>
-              <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="dine" defaultCollapsed={true} />
-            </div>
-          </>
-        )}
-
-        {/* ════════════════════════════════════
-            EAT & NOURISH
-        ════════════════════════════════════ */}
-        {mode === 'eat' && (
-          <>
-            {/* ── Dimensions Rail (real tabs, no cap) ── */}
-            <DineDimensionsRail
-              dims={DIMS}
-              openDim={openDim}
-              onSelect={setOpenDim}
-              pet={currentPet}
-              apiProducts={apiProducts}
-              onAdd={handleAddToCart}
-              onTap={setSelectedProduct}
-            />
-
-            {/* ── Mira Bar ── */}
-            <DineMiraBar pet={currentPet} onOpen={() => setMiraOpen(true)} />
-
-            {/* ── Build Food Plan CTA ── */}
-            <div style={{ padding:'0 16px 8px 16px' }}>
-              <button
-                onClick={() => setShowDinePlan(true)}
-                style={{
-                  width:'100%', padding:'14px 20px', borderRadius:16,
-                  background:'linear-gradient(135deg,#C8873A,#E8A85A)',
-                  border:'none', color:'#fff', fontSize:15, fontWeight:700,
-                  cursor:'pointer', letterSpacing:'0.01em',
-                  boxShadow:'0 4px 20px rgba(200,135,58,0.4)',
-                }}
-                data-testid="dine-build-plan-btn"
-              >
-                Build {petName}'s Food Plan →
-              </button>
-            </div>
-
-            {/* ── MealBoxCard ── */}
-            <div style={{ padding:'0 16px 24px' }}>
-              <MealBoxCard />
-            </div>
-
-            {/* ── All products (intelligence sorted, 4 at a time) ── */}
-            {flatProducts.length > 0 ? (
-              <div style={{ padding:'0 16px 24px' }}>
-                <div style={{ fontSize:18, fontWeight:700, marginBottom:14 }}>
-                  {getAllergies(currentPet).length > 0
-                    ? `Safe for ${petName} — Mira filtered`
-                    : `Products for ${petName}`}
-                </div>
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                  {applyMiraIntelligence(
-                    flatProducts.map(p => p.raw || p),
-                    getAllergies(currentPet),
-                    getLoves(currentPet),
-                    getHealthCondition(currentPet),
-                    getNutritionGoal(currentPet),
-                    currentPet
-                  ).slice(0, visibleCount).map(p => {
-                    const card = normCard(p, petName);
-                    return <DineProductCard key={card.id} product={card} onAdd={handleAddToCart} onTap={() => setSelectedProduct(p)} />;
-                  })}
-                </div>
-
-                {/* Quiet load more — no numbers */}
-                {visibleCount < flatProducts.length && (
-                  <div style={{ textAlign:'center', marginTop:18 }}>
-                    <button
-                      onClick={() => setVisibleCount(c => c + 4)}
-                      data-testid="dine-load-more"
-                      style={{
-                        background:'none', border:'1.5px solid #D9770640',
-                        borderRadius:999, padding:'8px 28px',
-                        fontSize:13, fontWeight:600, color:'#D97706',
-                        cursor:'pointer', letterSpacing:'0.03em',
-                      }}
-                    >
-                      see more
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div style={{ padding:'0 16px 24px' }}>
-                <MiraEmptyRequest
-                  pet={currentPet}
-                  pillar="dine"
-                  categoryName="Food & Nutrition"
-                  accentColor="#D97706"
-                  onRequest={async (msg) => {
-                    await request(msg, { channel:'dine_empty_products', metadata:{ petName } });
-                    showToast(`Sent to Mira for ${petName}`);
-                  }}
-                />
-              </div>
-            )}
-
-            {/* ── MiraImaginesBreed ── */}
-            <div style={{ padding:'0 16px 24px' }}>
-              <MiraImaginesBreed pet={currentPet} pillar="dine" token={token} />
-            </div>
-
-            {/* ── Soul Made ── */}
-            <DineSoulMadeInlineCard pet={currentPet} onOpen={() => setSoulMadeOpen(true)} />
-
-            {/* ── Guided Nutrition Paths ── */}
-            <div style={{ padding:'0 16px 24px' }}>
-              <GuidedNutritionPaths pet={currentPet} />
-            </div>
-
-            {/* ── Dine, Personally (services section) ── */}
-            <div style={{ padding:'0 16px 24px' }}>
-              <DineConciergeSection pet={currentPet} />
-            </div>
-          </>
-        )}
-
-        {/* ════════════════════════════════════
-            DINE OUT
-        ════════════════════════════════════ */}
-        {mode === 'out' && (
-          <>
-            {/* Book Dine Concierge® CTA */}
-            <div style={{ padding:'16px 16px 20px' }}>
-              <button
-                className="dp-cta"
-                onClick={() => { vibe('medium'); setIntakeOpen(true); }}
-                style={{ background:DarkGrad, fontSize:15 }}
-              >
-                ✦ Book Dine Concierge® →
-              </button>
-            </div>
-            <div style={{ padding:'0 16px 24px' }}>
-              <PetFriendlySpots
-                pet={currentPet}
-                onReserve={venueName => {
-                  tdc.request(`Reserve dining venue for ${petName}: ${venueName}`, {
-                    pillar:'dine', channel:'dine_nearme', pet:currentPet,
-                    metadata:{ venue:venueName }
-                  });
-                  setPrefillVenue(venueName);
-                  setIntakeOpen(true);
-                }}
-              />
-            </div>
-          </>
-        )}
-
-        {/* ── Concierge® CTA ── */}
-        <DineConciergeCard pet={currentPet} onOpen={() => setIntakeOpen(true)} />
-
-      </div>
-
-      {/* MiraPlanModal — Food Plan */}
-      <MiraPlanModal
-        isOpen={showDinePlan}
-        onClose={() => setShowDinePlan(false)}
-        pet={currentPet}
-        pillar="dine"
-        token={token}
-      />
-
-    </PillarPageLayout>
-  );
-}

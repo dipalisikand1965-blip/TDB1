@@ -62,9 +62,8 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   const [voiceEnabled, setVoiceEnabledState] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('mira_voice_enabled');
-      // Default to FALSE (off) - Voice should be opt-in, not forced
-      // User can enable it, preference persists
-      return saved !== null ? saved === 'true' : false;
+      // Default to TRUE (on) — ElevenLabs Eloise, opt-out instead of opt-in
+      return saved !== null ? saved === 'true' : true;
     }
     return true;
   });
@@ -246,17 +245,25 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
         body: JSON.stringify({
           text: cleanText,
           model_id: 'eleven_turbo_v2',
-          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+          output_format: 'mp3_44100_128', // explicit — never let it default
+          voice_settings: { stability: 0.35, similarity_boost: 0.75, style: 0.25, speed: 0.95 },
         }),
       }
     );
     if (!response.ok) throw new Error(`ElevenLabs ${response.status}`);
     const audioBlob = await response.blob();
-    const audio = new Audio(URL.createObjectURL(audioBlob));
-    audio.onended = () => setIsSpeaking(false);
-    audio.onerror = () => setIsSpeaking(false);
+
+    // Unified approach — works on iOS Safari + all browsers
+    // iOS Safari needs audio.load() before .play() for blob URLs
+    const blobUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(blobUrl);
+    audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(blobUrl); };
+    audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(blobUrl); };
     audioRef.current = audio;
-    audio.play();
+    if (audio.paused) {
+      audio.load(); // iOS Safari requires this before .play() on blob URLs
+    }
+    audio.play().catch(() => setIsSpeaking(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Speak text with Mira's voice (TTS)

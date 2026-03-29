@@ -19,6 +19,8 @@ import BuddyMeetup from './BuddyMeetup';
 import { useConcierge } from '../../hooks/useConcierge';
 import { tdc } from '../../utils/tdc_intent';
 import { buildPaths, PathFlowModal } from './GuidedPlayPaths';
+import PersonalisedBreedSection from '../common/PersonalisedBreedSection';
+import { MiraPicksSection } from '../../pages/PlaySoulPage';
 
 const getApiUrl = () => API_URL;
 
@@ -205,6 +207,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
   const [imagines, setImagines] = useState([]);
   const [loading,  setLoading]  = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [dimTab,    setDimTab]    = useState('products');
   const [tabs,      setTabs]     = useState([]);
   const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -464,6 +467,31 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
         </div>
       </div>
 
+      {/* ── Products / Personalised toggle ── */}
+      {!['bundles','soul','miras-picks'].includes(category) && (
+        <div style={{ display:'flex', borderBottom:'1px solid #F0E8E0', flexShrink:0 }}>
+          {[['products','🎯 Products'],['personalised','✦ Personalised']].map(([tid,label]) => (
+            <button key={tid} onClick={() => setDimTab(tid)}
+              style={{ flex:1, padding:'10px 0', background:'none', border:'none',
+                borderBottom:dimTab===tid?`2.5px solid ${G.orange}`:'2.5px solid transparent',
+                color:dimTab===tid?G.mid:'#888', fontSize:12,
+                fontWeight:dimTab===tid?700:400, cursor:'pointer' }}>
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {dimTab === 'personalised' && !['bundles','soul','miras-picks'].includes(category) ? (
+        <div style={{ padding:'16px', flex:1, overflowY:'auto' }}>
+          <PersonalisedBreedSection pet={pet} pillar="play" />
+        </div>
+      ) : category === 'miras-picks' ? (
+        <div style={{ padding:'16px', flex:1, overflowY:'auto' }}>
+          <MiraPicksSection pet={pet} />
+        </div>
+      ) : (<>
+
       {/* ── Sub-category tabs ────────────────────────────────────────────────── */}
       {tabs.length > 1 && (
         <div style={{ display:'flex', gap:8, overflowX:'auto', padding:'12px 16px 4px', flexShrink:0, scrollbarWidth:'none' }}>
@@ -634,6 +662,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
           </div>
         )}
       </div>
+      </>)}
 
       {soulMadeOpen && <SoulMadeModal pet={pet} pillar="play" pillarColor={G.orange} pillarLabel="Play" onClose={() => setSoulMadeOpen(false)} />}
 
@@ -689,7 +718,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.50)', zIndex:700 }} />
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }} onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.65)', backdropFilter:'blur(12px)', WebkitBackdropFilter:'blur(12px)', zIndex:700 }} />
           {isDesktop ? (
             <div style={{ position:'fixed', inset:0, display:'flex', alignItems:'center', justifyContent:'center', zIndex:701 }}>
               {ModalContent}

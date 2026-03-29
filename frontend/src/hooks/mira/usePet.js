@@ -78,8 +78,9 @@ const transformPetData = (apiPet) => ({
  * @returns {Object} Pet state and controls
  */
 const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
-  const [pet, setPet] = useState(DEMO_PET);
+  const [pet, setPet] = useState(DEMO_PET);    // keeps codebase safe (no null crashes)
   const [allPets, setAllPets] = useState(ALL_DEMO_PETS);
+  const [petLoaded, setPetLoaded] = useState(false); // true once REAL pet arrives from API
   const [showPetSelector, setShowPetSelector] = useState(false);
   const [isLoadingPets, setIsLoadingPets] = useState(false);
   
@@ -99,11 +100,13 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
           const transformedPets = data.pets.map(transformPetData);
           setAllPets(transformedPets);
           
-          // Set first pet as active if no pet selected
-          if (pet.id === 'demo-pet') {
+          // Set first pet as active if no real pet selected yet
+          const DEMO_IDS = ['demo-pet', 'pet-2'];
+          if (!pet || DEMO_IDS.includes(pet.id)) {
             setPet(transformedPets[0]);
           }
           
+          setPetLoaded(true); // real pet is now available
           console.log('[usePet] Loaded', transformedPets.length, 'pets');
           return transformedPets;
         }
@@ -114,7 +117,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
       setIsLoadingPets(false);
     }
     return [];
-  }, [user?.id, token, pet.id]);
+  }, [user?.id, token, pet?.id]);
   
   // Fetch all pets (alternative endpoint)
   const fetchAllPets = useCallback(async () => {
@@ -132,11 +135,12 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
           setAllPets(formattedPets);
           
           // Keep current pet or select first
-          const currentPetExists = formattedPets.find(p => p.id === pet.id);
+          const currentPetExists = formattedPets.find(p => p.id === pet?.id);
           if (!currentPetExists && formattedPets.length > 0) {
             setPet(formattedPets[0]);
           }
           
+          setPetLoaded(true);
           return formattedPets;
         }
       }
@@ -144,7 +148,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
       console.error('[usePet] Error fetching pets:', error);
     }
     return [];
-  }, [token, pet.id]);
+  }, [token, pet?.id]);
   
   // Fetch specific pet details
   const fetchPetDetails = useCallback(async (petId) => {
@@ -167,7 +171,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
   
   // Switch to a different pet
   const switchPet = useCallback(async (newPet) => {
-    if (newPet.id === pet.id) {
+    if (pet && newPet.id === pet.id) {
       setShowPetSelector(false);
       return;
     }
@@ -180,13 +184,25 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     if (onPetSwitch) {
       await onPetSwitch(newPet);
     }
-  }, [pet.id, onPetSwitch]);
+  }, [pet?.id, onPetSwitch]);
   
   // Check if pet is a demo/fake pet
   const isRealPet = useCallback(() => {
-    return pet.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
-  }, [pet.id]);
+    // Real pets: IDs like 'pet-mojo-7327ad56' (name + hash); demo: 'demo-pet', 'pet-2'
+    const DEMO_IDS = ['demo-pet', 'pet-2'];
+    return pet?.id && !DEMO_IDS.includes(pet.id);
+  }, [pet?.id]);
   
+  // Auto-mark petLoaded when pet switches from DEMO_PET to a real API pet
+  // Real pet IDs: 'pet-mojo-7327ad56' (have name + hash suffix)
+  // Demo pet IDs: 'demo-pet', 'pet-2' (short/synthetic, no hash)
+  useEffect(() => {
+    const DEMO_IDS = ['demo-pet', 'pet-2'];
+    if (pet && pet.id && !DEMO_IDS.includes(pet.id)) {
+      setPetLoaded(true);
+    }
+  }, [pet?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Load pets on user change (only if autoLoad is enabled)
   // Note: MiraDemoPage has its own pet-loading logic, so autoLoad is disabled there
   useEffect(() => {
@@ -194,6 +210,17 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
       loadUserPets();
     }
   }, [autoLoad, user?.id, loadUserPets]);
+
+  // Safety fallback: after 4s with no user, mark as loaded so UI doesn't hang
+  useEffect(() => {
+    if (petLoaded) return;
+    const timer = setTimeout(() => {
+      if (!user?.id) {
+        setPetLoaded(true); // guest/unauthenticated — show DEMO_PET
+      }
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [petLoaded, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   
   // Find pet by ID
   const getPetById = useCallback((petId) => {
@@ -215,6 +242,7 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     
     // Loading state
     isLoadingPets,
+    petLoaded,        // true once real pet arrives (use for render guard vs DEMO_PET)
     
     // Actions
     loadUserPets,

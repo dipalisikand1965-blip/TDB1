@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-27 (Session 17 — Pet Selector Unification + DoggyBakeryCakeModal Order Form)
+## Last Updated: 2026-03-29 (Session 33 — life_vision in Mira AI + Learn mobile layout + CelebrateMobilePage verified)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -57,6 +57,7 @@ PillarSoulPage.jsx (parent)
 |---|---|---|
 | `frontend/src/pages/*SoulPage.jsx` | Desktop pillar pages | 🔒 LOCKED |
 | `frontend/src/pages/*MobilePage.jsx` | Mobile pillar pages | ✅ All 12 done |
+| `frontend/src/components/PillarHero.jsx` | Unified mobile hero (pet avatar, soul ring, pet switcher) | ✅ Wired to all 12 mobile pages |
 | `frontend/src/hooks/useMiraFilter.js` | AI product ranking | ✅ Breed/size/life-stage |
 | `frontend/src/components/admin/PillarManager.jsx` | Go+Play admin base | ✅ 7 tabs + Quick Add |
 | `frontend/src/components/admin/UnifiedProductBox.jsx` | Product CRUD | ✅ Save fix applied |
@@ -216,8 +217,46 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 
 ## 9. PENDING TASKS (Priority for next session)
 
-### P0 — Next Session (Full Audit)
-1. Full audit of all 12 pillars — user will provide audit checklist
+### SESSION 29 — (2026-03-29) 5 Bug Fixes (/mira-os + Admin)
+
+1. ✅ **PicksVault.jsx** — `why_for_pet` field didn't exist in API. Now maps `why_reason || why_it_fits || reason` across all pick types (catalogue/concierge/personalized).
+2. ✅ **ConciergePanel.jsx** — Textarea for "Anything else" now always visible (was conditional on Learn context only). WhatsApp message uses edited textarea text.
+3. ✅ **MiraUnifiedHeader.jsx** — Mira logo now clickable → navigates to `/pet-home` (back button behavior).
+4. ✅ **MiraDemoPage.jsx** — Hardcoded `'Buddy'` in quick reply chip replaced with `pet?.name || 'my dog'`. `extractQuickReplies` useCallback dependency updated to include `pet`.
+5. ✅ **ServicesManager.jsx** — Was stuck on "Loading services..." because `pillar=services` returns 0 DB results. Now fetches all services with no pillar filter + pillar dropdown for client-side filtering.
+
+### P0 — Remaining (Onboarding dialog)
+- `OnboardingTooltip` already has localStorage `hasBeenDismissed()` — only shows once per user. No fix needed.
+
+### SESSION 29.1 — (2026-03-29) Bugs A–D + Pet Loading Fix (Bug 7)
+1. ✅ **Bug A** — `SoulKnowledgeTicker.jsx`: filter strips `none`, `null`, `undefined` values from Soul chips
+2. ✅ **Bug B (Pet loading)** — `usePet.js`: `petLoaded` flag added (false until API returns real pet). `MiraDemoPage.jsx`: renders loading spinner until `petLoaded=true`. No Buddy flash.
+3. ✅ **Bug C** — `PersonalizedPicksPanel.jsx` PILLARS extended: farewell (🕊️) + adopt (🐾)
+4. ✅ **Bug D** — `useVoice.js` default → `true` (ElevenLabs ON by default, opt-out not opt-in)
+
+### P1 — Upcoming
+1. Watch & Learn YouTube sections (Care + Go)
+2. Add LearnNearMe, PaperworkNearMe, GoNearMe components to mobile pages
+3. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
+
+### P2 — Future
+1. Production DB (Atlas IP whitelist)
+2. Refactor Admin.jsx (7k lines), server.py (24k lines), MiraDemoPage.jsx (5.5k lines)
+3. Build Love pillar
+
+
+
+1. ✅ **Farewell products loading** — Removed `if (!currentPet?.id) return` guard from FarewellMobilePage useEffect. Products now fetch at mount with breed filter applied client-side. Added 3s safety timeout for guest users. 16 memorial products now visible on /farewell without pet selection.
+2. ✅ **Mira explains why expand row** — ProductCard.jsx was conditioned on `product.mira_hint` (DB field, almost never set). Changed to `product.mira_hint || productMiraTip` where productMiraTip is always computed (e.g. "✨ Makes celebrations special"). All product cards now show clickable ✦ MIRA expand button.
+3. ✅ **Cart orders in My Requests** — Added 🛍️ Orders tab to MyRequestsPage filtering by `request_type==='product_order'` or `order_id` present or `category==='shop'`. Subtitle updated to "Your concierge requests & shop orders".
+
+### SESSION 28.6 — (2026-03-28) Farewell Tone Rewrite
+
+1. ✅ **"Legacy & Memorial" → "Memorial & Grief"** — All 3 product sub-tabs renamed: Memorial & Grief / Keepsakes / Final Care
+2. ✅ **Mira bar "while here" rewritten** — Removed "celebrate everything {petName} means to you". Now: "Every day with {petName} is a gift. When you're ready, we'll help you capture their memory — in paw prints, portraits, and pieces that last forever."
+3. ✅ **CTA card rewritten** — Removed "celebrations of life". Now: "Honouring {petName} — every memory held gently. Urns, paw prints, memorial portraits and keepsakes."
+4. ✅ **Services tab intro** — "Celebrating {petName}'s life today" → "Honouring {petName}'s life, gently"
+5. ✅ **Keepsakes filter expanded** — Now includes frame + ornament in product matching
 2. Add Mira's Memory card to MiraOS dashboard (Overview/Mojo tab)
 3. Generate Full Migration Package Report (no code changes, just text report)
 
@@ -413,3 +452,96 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 
 ### SESSION 18 — Soul Chapter Score Fix
 1. ✅ **Soul Chapter Scores fixed** — `GET /pets/{pet_id}/soul` was counting keys starting with "q1/q2/q3" (always 0). Now returns `category_scores` from `calculate_pet_soul_score()`. Buddy: safety=100, personality=100, lifestyle=75, nutrition=33. Zero false zeros.
+
+
+### SESSION 19 — (2026-03-28) Mobile Parity Sprint: CategoryStrips + PawrentFirstStepsTab
+
+1. ✅ **PillarCategoryStrip created** — `/app/frontend/src/components/common/PillarCategoryStrip.jsx` — generic horizontally-scrollable icon chip strip. Props: `categories[]`, `activeId`, `onSelect(id)`, `accentColor`. All chips have `data-testid="strip-cat-{id}"`.
+
+2. ✅ **CategoryStrips added to 6 mobile pages** (was missing before this session):
+   - **Learn**: `LEARN_STRIP_CATS` (Foundations / Behaviour / Training / Tricks / Enrichment / Know Breed / Soul Learn / Bundles / Mira's Picks) → clicking chip sets `activeDim` + switches to learn tab.
+   - **Paperwork**: `PW_STRIP_CATS` (Identity / Health / Travel / Insurance / Breed Guides / Advisory / Soul Docs / Soul Made™) → clicking chip sets `activeDim`.
+   - **Emergency**: `EMERG_STRIP_CATS` (First Aid Kit / 24hr Vets / Poison / Lost Pet / Transport / First Aid Course / Safety Plan) — after urgent CTA bar.
+   - **Farewell**: `FAREWELL_STRIP_CATS` (End of Life / Support / Cremation / Memorial / Ceremony / Grief Support / Soul Made™).
+   - **Adopt**: `ADOPT_STRIP_CATS` (Am I Ready? / Ready / Find a Match / We Matched! / Coming Home / Breed Guide / Book Guidance) → chips sync with `adoptStage` state.
+   - **Services**: `SVC_STRIP_CATS` (Pamper / Health & Vet / Train / Celebrate / Fitness / Travel / Life Events).
+
+3. ✅ **Section order fixed** — PillarSoulProfile + CTA card + PawrentFirstStepsTab moved INSIDE Tab 1 content (was before tab bar) for: Learn, Paperwork, Farewell, Adopt pages. Now matches Play/Care gold standard.
+
+4. ✅ **Tab bars made sticky** — Learn and Paperwork tab bars now use `position:'sticky', top:0, zIndex:100` with border-bottom style (was pill-style, non-sticky).
+
+5. ✅ **PawrentFirstStepsTab added to Emergency, Farewell, Shop, Services** — component placed in JSX for all 4 pages.
+
+6. ✅ **FIRST_STEPS entries added** to `PawrentJourney.jsx` for 4 new pillars:
+   - `emergency`: Build First Aid Kit / Register Emergency Vet / Create Safety Plan
+   - `farewell`: End-of-Life Care Plan / Plan a Memorial / Grief Support
+   - `shop`: See Mira's Shop Picks / Explore Breed Collection
+   - `services`: Book First Groom / Book Vet Consultation
+
+7. ✅ **Shop page crash fixed** (by testing agent) — `showShopPlan` state was missing from ShopMobilePage useState declarations.
+
+8. ✅ **MiraPlanModal placement fixed** in PaperworkMobilePage — was incorrectly nested inside loading state JSX.
+
+**Test Results (iteration_237.json):** 80% → 100% after FIRST_STEPS fix. All 7 CategoryStrips render. Sticky tab bars confirmed. Soul Profile inside Tab 1 confirmed. PawrentFirstStepsTab now renders on all 11 applicable pillar pages.
+
+
+### SESSION 20 — (2026-03-28) Emotional UX Sprint
+
+1. ✅ **FirstTimePawrent.jsx** created — collapsible week-one checklist card on Adopt (pink) and Care (green). CTA opens ConciergeRequestBuilder with `preselect="lifestage"`.
+2. ✅ **ConciergeRequestBuilder** upgraded:
+   - `preselect` prop — auto-jumps to a service category (used by FirstTimePawrent)
+   - Soul profile pre-fill pill — shows breed + allergies in Step 0 header
+   - Allergen-aware message — `allergyLabel` appended to every ticket message
+   - Added `parseAllergyString()` fallback to extract allergies from health description strings (handles "chicken, beef allergy — otherwise healthy" text format)
+3. ✅ **Adopt mobile copy rewrite** — Hero: "Every dog deserves the right home". Mira bar: "The right match between a dog and their family changes two lives forever."
+4. ✅ **Farewell toggle** — "While {name} is here" / "When the time comes" pill toggle. Changes Mira bar copy + CTA button label + Services tab intro text dynamically.
+5. ✅ **Desktop floating button cluster** — Concierge® button moved to `bottom: 96px` (stacks cleanly above Mira orb at `bottom: 24px`). Added hover micro-animation.
+
+1. ✅ **AdoptSoulPage.jsx** — Hero pet avatar: replaced hardcoded `🐾` with `petData.photo_url ? <img/> : 🐾` fallback.
+2. ✅ **ServicesSoulPage.jsx** — Hero orb: replaced hardcoded Mira ✦ orb with `petData.photo_url ? <img/> : ✦` fallback.
+3. ✅ **GoMobilePage.jsx** — Pet selector buttons aligned to match all other pillars: `flexWrap:'wrap'`, `padding:'6px 16px'`, `fontSize:13`, removed `maxWidth:'55%'`. Also removed allergy tags from hero.
+4. ✅ **ServicesMobilePage.jsx** — Hero aligned: replaced pet-avatar + text flex layout with standard two-line subtitle text (matches all other pillars).
+5. ✅ **ServicesMobilePage.jsx** — Bottom "Book via Concierge® →" CTA now calls `setSvcBooking({ isOpen:true })` opening the full 4-step ServiceBookingModal (was calling `request()` which showed a toast instead).
+
+### SESSION 22 — (2026-03-28) Parity Sprint + Bug Fixes
+
+**Bugs Fixed:**
+1. ✅ **Double navigation rows** — CategoryStrips (DineCategoryStrip, CareCategoryStrip, GoCategoryStrip, PlayCategoryStrip) were rendering ABOVE the ios-tab-bar. Moved all of them INSIDE their respective first tab content (Dine/Care/Go/Play tab). Only one row of navigation tabs now shows at the top.
+2. ✅ **PillarSoulProfile drawer going under navbar** — Root cause: App's `overflow-x: hidden` wrapper creates CSS containment that clips `position: fixed` z-index on iOS Safari. Fix: Profile modal now uses `ReactDOM.createPortal` to render directly in `document.body` with zIndex: 100000 + frosted glass backdrop. Bypasses all ancestor stacking contexts.
+3. ✅ **ios-tab-bar top changed from 56px to 0** — Tab bar now sticks at viewport top. Eliminates profile card going under header issue.
+4. ✅ **Desktop scrollbars in modals** — Added global `.no-sb` CSS rules to `App.css` (was only in mobile-design-system.css). Added `[style*="overflow-y: auto"]` webkit scrollbar hide rule. Added `className="no-sb"` to GuidedCarePaths (both components/ and pages/ versions).
+
+**Desktop Parity Features Added:**
+5. ✅ **Services tab standardisation** — All desktop soul pages now use `🐕 Services` label:
+   - CareSoulPage: ✂️ Care Services → 🐕 Services
+   - GoSoulPage: 🗺️ Book a Service → 🐕 Services
+   - DineSoulPageDesktopLegacy: Added 3rd tab (🐕 Services), DineConciergeSection moved there
+   - LearnSoulPage: 📋 Book / 📋 Book a Session → 🐕 Services
+   - PlaySoulPage: 💪 Book a Service → 🐕 Services
+   - EmergencySoulPage: 📋 Book Help → 🐕 Services
+   - PaperworkSoulPage: 📋 Services → 🐕 Services
+6. ✅ **Adopt sectioned products on desktop (AdoptSoulPage)** — Added `rawProducts` state, `applyMiraFilter` import, `useMemo` for `adoptSections` (Breed Essentials, Arrival Essentials, Home Readiness, Enrichment & Bonding). Sectioned product display added to adopt tab below MiraPicksSection.
+
+**Test Results (iteration_239.json):** 17/17 tests passing (100%)
+
+### SESSION 23 — (2026-03-29) Design Token System Integration Sprint
+
+**P0 — Design Token System:**
+1. ✅ **tdc-design-tokens.css created** at `/app/frontend/src/styles/tdc-design-tokens.css` (1044 lines). Single source of truth for all visual decisions: typography (SF Pro, Cormorant Garamond), spacing (golden ratio 4px–89px), colors, chips, buttons, cards, Mira OS desktop layout.
+2. ✅ **Imported FIRST in index.css** (line 1 — `@import "./styles/tdc-design-tokens.css"`) before all other styles, making it the cascade origin.
+3. ✅ **CSS deprecated chip classes updated** in `mira-chat.css` and `mira-10x.css` to use token variables (`--radius-full`, `--text-xs`, `--font-sans`, `--color-text-inv`, `--space-*`, `--duration-fast`).
+4. ✅ **Full chip sweep** — Replaced inline tailwind pill patterns (`px-2 py-0.5 rounded-full text-xs`) with `tdc-chip` + variant classes across 10+ files: PersonalizedPicksPanel, MiraDemoPage, MiraPureOSPage, ServicesPage, TicketThread, TicketDetailPanel, TopPicksPanel (53 total `tdc-chip` usages).
+5. ✅ **CSS gold token conflict fixed** — Removed `--color-gold` override from `mobile-design-system.css` (was overriding tdc-design-tokens.css's canonical value).
+
+**P1 — Watch & Learn YouTube:**
+6. ✅ **CareMobilePage.jsx** — Added `WatchSection` component. Fetches breed-specific YouTube videos via `/api/test/youtube`. Shows 2-column grid of video thumbnails with play button overlay after CareConciergeSection.
+7. ✅ **GoMobilePage.jsx** — Added `GoWatchSection` component. Fetches dog travel YouTube videos. Shows after GuidedGoPaths in the 'go' tab.
+
+**P1 — MiraOSPage Desktop Layout:**
+8. ✅ **MiraOSPage.jsx** (at `/mira-os-shell`) — Added `mira-os-layout` class (2-column grid: 320px sidebar + 1fr main on 1024px+). Header has `mira-unified-header` (full width). MiraHeaderShell wrapped in `mira-os-sidebar`. Tab contents wrapped in `<main class="mira-os-main">`.
+
+**P1 — Watch & Learn YouTube in Desktop DimExpanded (Session 24):**
+9. ✅ **CareSoulPage.jsx** — Added `ytQuery` to all 9 care dims (grooming, dental, coat, wellness, senior, supplements, soul, mira, soul_made). Added 3rd "🎬 Watch" tab to `DimExpanded` (lazy-loaded YouTube videos on tab activation). Breed + dim-specific query. 2-column video grid with play button overlay.
+10. ✅ **GoSoulPage.jsx** — Same pattern. Added `ytQuery` to all 6 go dims (safety, calming, carriers, feeding, health, stay). 3rd "🎬 Watch" tab in `DimExpanded`.
+
+**Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
