@@ -693,7 +693,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "life_state": request.life_state,
         "channel": request.channel,
         "metadata": request.metadata or {},
-        "photo_url":     (request.metadata or {}).get("photo_url", ""),
+        "photo_url":     (request.metadata or {}).get("photo_url", "") or (request.metadata or {}).get("image_url", ""),
         "soul_made":     (request.metadata or {}).get("soul_made", False),
         "status": "open_mira_only",
         "handoff_to_concierge": False,
@@ -707,16 +707,18 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "updated_at": now.isoformat()
     }
 
-    # If a soul_made photo was uploaded, append it as a visible image message
-    soul_photo_url = (request.metadata or {}).get("photo_url")
-    if soul_photo_url:
+    # Append any uploaded photo/image from metadata as a visible message (works for soul_made, breed_cake, etc.)
+    media_url = (request.metadata or {}).get("photo_url") or (request.metadata or {}).get("image_url") or (request.metadata or {}).get("document_url") or (request.metadata or {}).get("file_url")
+    soul_photo_url = media_url  # keep alias for admin_ticket fields below
+    if media_url:
+        media_label = "📸 Pet photo uploaded" if (request.metadata or {}).get("photo_url") else "🖼️ Image attached"
         ticket_doc["conversation"].append({
             "sender": "parent",
             "source": request.channel,
-            "text": f"📸 Pet photo uploaded: {soul_photo_url}",
-            "image_url": soul_photo_url,
+            "text": f"{media_label}: {media_url}",
+            "image_url": media_url,
             "timestamp": now.isoformat(),
-            "is_soul_made_photo": True,
+            "is_soul_made_photo": bool((request.metadata or {}).get("photo_url")),
         })
     
     await db.mira_conversations.insert_one(ticket_doc)
@@ -748,7 +750,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "life_state":    request.life_state,
         "metadata":      request.metadata or {},
         "soul_made_photo": soul_photo_url,
-        "photo_url":     (request.metadata or {}).get("photo_url", ""),
+        "photo_url":     (request.metadata or {}).get("photo_url", "") or (request.metadata or {}).get("image_url", ""),
         "soul_made":     (request.metadata or {}).get("soul_made", False),
         "created_at":    now.isoformat(),
         "updated_at":    now.isoformat(),
