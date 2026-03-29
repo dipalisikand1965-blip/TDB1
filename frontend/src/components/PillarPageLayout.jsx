@@ -23,6 +23,7 @@ import PillarNav from './PillarNav';
 import SEOHead from './SEOHead';
 import MiraChatWidget from './MiraChatWidget';
 import ConciergeRequestBuilder from './services/ConciergeRequestBuilder';
+import PillarConciergeCards from './common/PillarConciergeCards';
 // MobileMenu removed — Navbar from MainLayout handles mobile navigation
 
 // Pillar subcategories configuration - with REAL product images from Shopify
@@ -239,6 +240,7 @@ const PillarPageLayout = ({
   
   // Concierge Request Builder state (desktop floating button)
   const [conciergeLayoutOpen, setConciergeLayoutOpen] = useState(false);
+  const [pillarCardsOpen, setPillarCardsOpen] = useState(false);
   
   // Get pillar-specific gradient for bottom section
   const PILLAR_BG = {
@@ -452,7 +454,7 @@ const PillarPageLayout = ({
 
       {/* Concierge® Request Builder — desktop floating trigger, stacked above Mira orb */}
       <button
-        onClick={() => setConciergeLayoutOpen(true)}
+        onClick={() => setPillarCardsOpen(true)}
         data-testid="concierge-builder-float-btn"
         className="hidden md:flex"
         style={{
@@ -475,6 +477,20 @@ const PillarPageLayout = ({
         <span style={{ fontSize: 14 }}>✦</span>
         Concierge® Requests
       </button>
+
+      {/* Pillar-specific cards sheet — opens when floating button clicked */}
+      {pillarCardsOpen && (
+        <div style={{ position:'fixed', inset:0, zIndex:10000, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
+          <div onClick={() => setPillarCardsOpen(false)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.55)' }} />
+          <div style={{ position:'relative', background:'#fff', borderRadius:'24px 24px 0 0', padding:'24px 24px 40px', maxHeight:'80vh', overflowY:'auto', zIndex:1 }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
+              <div style={{ fontSize:17, fontWeight:800, color:'#1A0A2E' }}>✦ How can Concierge® help?</div>
+              <button onClick={() => setPillarCardsOpen(false)} style={{ background:'#F3F4F6', border:'none', borderRadius:20, padding:'6px 14px', fontSize:12, fontWeight:700, cursor:'pointer', color:'#6B7280' }}>Close ✕</button>
+            </div>
+            <PillarConciergeCards pillar={pillar} pet={activePet} token={token} />
+          </div>
+        </div>
+      )}
 
       <ConciergeRequestBuilder
         pet={activePet}
