@@ -19,7 +19,6 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
-import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
@@ -154,9 +153,6 @@ export default function ServicesMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'grooming' });
-  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
-  const [prefilledIntent, setPrefilledIntent] = useState('');
-  const [selectedSvc, setSelectedSvc] = useState(null);
   const [showSvcPlan, setShowSvcPlan] = useState(false);
   const [allServices, setAllServices] = useState([]);
   const [svcLoading, setSvcLoading] = useState(true);
@@ -185,10 +181,8 @@ export default function ServicesMobilePage() {
   const handleBook = useCallback((svc) => {
     vibe('medium');
     tdc.book({ service:svc.name || svc.label, pillar:'services', pet:currentPet, channel:'services_group_card' });
-    const intent = `Book ${svc.name || svc.label} for ${currentPet?.name || 'my dog'}`;
-    setPrefilledIntent(intent);
-    setSelectedSvc(svc);
-    setConciergeBuilderOpen(true);
+    const type = guessServiceType(svc.name || svc.label || '');
+    setSvcBooking({ isOpen: true, serviceType: type });
   }, [currentPet]);
 
   // Group services exactly like desktop
@@ -283,7 +277,7 @@ export default function ServicesMobilePage() {
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.75)', lineHeight:1.6, marginBottom:14, fontStyle:'italic' }}>
             "I know {petName}'s breed and health history. Every service here is matched to what they actually need."
           </div>
-          <button className="svc-cta" onClick={() => { vibe('medium'); setConciergeBuilderOpen(true); }}>
+          <button className="svc-cta" onClick={() => { vibe('medium'); setSvcBooking({ isOpen:true, serviceType:'grooming' }); }}>
             See Mira's Service Picks →
           </button>
         </div>
@@ -315,20 +309,13 @@ export default function ServicesMobilePage() {
           <div style={{ display:'inline-flex', background:'rgba(91,127,212,0.2)', border:'1px solid rgba(91,127,212,0.4)', borderRadius:999, padding:'5px 14px', color:G.navyXL, fontSize:14, fontWeight:600, marginBottom:12 }}>🤝 Concierge®</div>
           <div style={{ fontSize:22, fontWeight:700, color:'#fff', lineHeight:1.2, marginBottom:10, fontFamily:'Georgia,serif' }}>Every service arranged by your Concierge®.</div>
           <div style={{ fontSize:14, color:'rgba(255,255,255,0.6)', lineHeight:1.7, marginBottom:16 }}>Vets, groomers, trainers, nutritionists. One message and it's done.</div>
-          <button onClick={() => { vibe('medium'); setConciergeBuilderOpen(true); }}
+          <button onClick={() => { vibe('medium'); setSvcBooking({ isOpen:true, serviceType:'grooming' }); }}
             style={{ width:'100%', minHeight:48, borderRadius:14, border:'none', background:`linear-gradient(135deg,${G.navyL},${G.navyXL})`, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
             Book via Concierge® →
           </button>
         </div>
       </div>
 
-      <ConciergeRequestBuilder
-        pet={currentPet}
-        token={token}
-        isOpen={conciergeBuilderOpen}
-        onClose={() => { setConciergeBuilderOpen(false); setPrefilledIntent(''); }}
-        prefilledText={prefilledIntent}
-      />
       {/* Service Booking Modal — full 4-step flow */}
       <ServiceBookingModal
         isOpen={svcBooking.isOpen}
