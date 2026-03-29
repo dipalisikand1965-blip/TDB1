@@ -49,8 +49,8 @@ const PetSelector = ({
         data-testid="pet-selector-btn"
       >
         <div className="mp-pet-avatar">
-          {currentPet?.photo ? (
-            <img src={currentPet.photo} alt={currentPet.name} />
+          {currentPet?.photo_url || currentPet?.photo ? (
+            <img src={currentPet.photo_url || currentPet.photo} alt={currentPet.name} />
           ) : (
             <PawPrint />
           )}
@@ -65,7 +65,7 @@ const PetSelector = ({
         <div className="mp-pet-dropdown" data-testid="pet-dropdown">
           {allPets.map((p) => {
             const soulScore = Number(p.soulScore) || 0;
-            const hasPhoto = p.photo || p.image;
+            const hasPhoto = p.photo_url || p.photo || p.image;
             
             return (
               <button 
