@@ -222,7 +222,9 @@ export default function PaperworkMobilePage() {
   const dimExpandedRef = useRef(null);
   useEffect(() => {
     if (openDim && dimExpandedRef.current) {
-      dimExpandedRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setTimeout(() => {
+        dimExpandedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   }, [openDim]);
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
