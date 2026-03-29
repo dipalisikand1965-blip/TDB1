@@ -245,6 +245,7 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
         body: JSON.stringify({
           text: cleanText,
           model_id: 'eleven_turbo_v2',
+          output_format: 'mp3_44100_128', // explicit format for cross-browser compat
           voice_settings: { stability: 0.35, similarity_boost: 0.75, style: 0.25, speed: 0.95 },
         }),
       }
@@ -255,13 +256,16 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
     // iOS Safari: use AudioContext + decodeAudioData (avoids blob URL autoplay restrictions)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (isIOS) {
-      const ArrayBufferData = await audioBlob.arrayBuffer();
+      const arrayBuffer = await audioBlob.arrayBuffer();
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) throw new Error('AudioContext not supported');
       const audioCtx = new AudioCtx();
       // Resume context in case it was suspended (iOS requirement)
       if (audioCtx.state === 'suspended') await audioCtx.resume();
-      const audioBuffer = await audioCtx.decodeAudioData(ArrayBufferData);
+      // Use callback-based API wrapped in Promise for older Safari compatibility
+      const audioBuffer = await new Promise((resolve, reject) => {
+        audioCtx.decodeAudioData(arrayBuffer, resolve, reject);
+      });
       const source = audioCtx.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(audioCtx.destination);

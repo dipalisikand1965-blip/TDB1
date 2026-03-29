@@ -1,0 +1,58 @@
+{
+  "summary": "Tested all 3 sprint fixes on Services mobile page (390px viewport): (1) iOS audio in useVoice.js, (2) PillarConciergeCards onCardSelect prop opening ConciergeRequestBuilder, (3) MobileServiceCard + MobileServiceGroup watercolour accordion components. All 5 test scenarios pass at 100%.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "test_1_seven_service_groups_present": {
+      "status": "PASS",
+      "details": "All 7 data-testid='service-group-{id}' accordions found: pamper, health, learn, celebrate, fitness, travel, life. Labels verified: Pamper & Groom, Health & Vet, Train & Learn, Celebrate, Fitness & Walks, Travel & Paperwork, Life Events. Service counts: pamper=31, health=58, learn=83, celebrate=33, fitness=50."
+    },
+    "test_2_accordion_expand_collapse": {
+      "status": "PASS",
+      "details": "Tapping accordion header expands group (4 service cards appear with watercolour images). Second tap collapses (0 cards visible). ▼ indicator rotates 180deg on expand. Each card has data-testid='mobile-service-card-{id}'."
+    },
+    "test_3_pillar_concierge_cards_onCardSelect": {
+      "status": "PASS",
+      "details": "Clicking PillarConciergeCards card 'Help me choose the right service' fires onCardSelect prop, sets prefilledIntent='Help me choose the right service', opens ConciergeRequestBuilder modal with that text pre-filled in the freetext textarea. Confirmed via textarea.input_value()."
+    },
+    "test_4_service_card_book_button_prefilled": {
+      "status": "PASS",
+      "details": "Clicking 'Book via Concierge® →' on a MobileServiceCard triggers handleBook() → setPrefilledIntent('Book Premium Grooming Session for Mojo') → opens ConciergeRequestBuilder modal with that exact text in textarea. Confirmed via textarea.input_value()."
+    },
+    "test_5_category_strip_chip_scroll_expand": {
+      "status": "PASS",
+      "details": "Tapping 'Train' chip in PillarCategoryStrip executes document.querySelector('[data-testid=\"service-group-learn\"] button').click() + scrollIntoView. Confirmed learn group expands (4 watercolour cards appear: New Pet Parent Onboarding, Breed Education Session, Puppy Transition Guidance, etc.)."
+    },
+    "test_6_regression_hero_pet_selector_soul": {
+      "status": "PASS",
+      "details": "Hero gradient (linear-gradient) present. Pet selector: overflowX=auto, flexWrap=nowrap (horizontal scroll). Soul profile content in page. Zero error elements. Page loads clean at 390px."
+    },
+    "test_7_ios_audio_useVoice": {
+      "status": "PASS",
+      "details": "useVoice.js line 248: output_format:'mp3_44100_128' confirmed. Lines 266-267: callback-based decodeAudioData wrapped in new Promise((resolve,reject)=>{audioCtx.decodeAudioData(arrayBuffer,resolve,reject)}) for older Safari compat confirmed. iOS branch checks /iPad|iPhone|iPod/.test(navigator.userAgent)."
+    }
+  },
+  "test_report_links": ["/app/test_reports/iteration_249.json"],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only test)",
+    "frontend": "100% (7/7 tests pass)"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 3 sprint fixes verified at 390px mobile viewport. (1) iOS audio: useVoice.js output_format='mp3_44100_128' + callback-based decodeAudioData in Promise at lines 237-288. (2) PillarConciergeCards onCardSelect prop lifts intent → prefilledIntent state → ConciergeRequestBuilder opens at 'freetext' step with text pre-filled. (3) All 7 MobileServiceGroup accordions render with watercolour MobileServiceCard components — tap header expands, 'Book via Concierge®' on card also opens builder with prefilled text. Category strip chips scroll-to+expand working. Prior outstanding item: CelebrateMobilePage.jsx line ~396 still has flexWrap:'wrap' pet selector (not fixed in this sprint). Credentials: dipali@clubconcierge.in / test123.",
+  "rca_of_issues": {}
+}
