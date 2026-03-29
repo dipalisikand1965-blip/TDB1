@@ -5016,6 +5016,22 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           </div>
                           
                           {/* Conversation — merge ALL sources: conversation (soul_made/concierge), thread (concierge replies), messages (legacy) */}
+                          {/* Soul Made photo banner — shown if ticket has top-level photo_url */}
+                          {(selectedTicket.photo_url || selectedTicket.soul_made_photo) && (
+                            <div className="mx-4 mb-3 p-3 rounded-xl border border-amber-200 bg-amber-50 flex items-center gap-3">
+                              <img
+                                src={selectedTicket.photo_url || selectedTicket.soul_made_photo}
+                                alt="Soul Made pet photo"
+                                className="w-20 h-20 rounded-lg object-cover border border-amber-300 cursor-pointer shadow-sm flex-shrink-0"
+                                onClick={() => window.open(selectedTicket.photo_url || selectedTicket.soul_made_photo, '_blank')}
+                              />
+                              <div>
+                                <div className="text-xs font-semibold text-amber-700 mb-1">📸 Soul Made™ Photo</div>
+                                <div className="text-xs text-amber-600">Pet photo attached by member for custom product</div>
+                                <button className="mt-1 text-xs text-amber-700 underline" onClick={() => window.open(selectedTicket.photo_url || selectedTicket.soul_made_photo, '_blank')}>Open full size →</button>
+                              </div>
+                            </div>
+                          )}
                           {(() => {
                             // Helper: extract inline photo URLs from text (Cloudinary / external images)
                             const extractPhotoUrls = (text, msgImageUrl) => {
