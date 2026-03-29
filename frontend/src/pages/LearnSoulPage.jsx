@@ -192,9 +192,7 @@ export function getLearnDims(pet) {
   ];
 }
 
-const DIM_ID_TO_CATEGORY = {
-  foundations: "training",
-  behaviour:   "behavior",
+export const DIM_ID_TO_CATEGORY = {
   training:    "training",
   tricks:      "tricks",
   enrichment:  "enrichment",
@@ -957,7 +955,7 @@ function VideoCard({ video, onPlay }) {
 }
 
 // ─── DIM EXPANDED ─────────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook }) {
   const petName   = pet?.name || "your dog";
   const allergies = getAllergies(pet);
   const miraCtx   = { includeText:"Add to Cart" };

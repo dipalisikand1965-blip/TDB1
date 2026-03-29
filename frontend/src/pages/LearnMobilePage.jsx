@@ -25,7 +25,7 @@ import SoulMadeModal from '../components/SoulMadeModal';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import LearnNearMe from '../components/learn/LearnNearMe';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
-import { getLearnDims, MiraPicksSection } from './LearnSoulPage';
+import { getLearnDims, MiraPicksSection, DimExpanded, DIM_ID_TO_CATEGORY } from './LearnSoulPage';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
@@ -279,14 +279,41 @@ export default function LearnMobilePage() {
   const { addToCart } = useCart();
 
   const [loading, setLoading] = useState(true);
-  const [activeDim, setActiveDim] = useState(LEARN_DIMS[0].id);
+  const [openDim, setOpenDim] = useState(null);        // null = collapsed; dim.id = expanded
   const [mainTab, setMainTab] = useState('learn');
-  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false); // 'learn' | 'nearme'
+  const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
   const [learnServices, setLearnServices] = useState([]);
   const [showLearnPlan, setShowLearnPlan] = useState(false);
+  const [apiProducts, setApiProducts] = useState({});
+
+  // Fetch products — same structure as desktop LearnSoulPage (source of truth)
+  useEffect(() => {
+    if (!currentPet) return;
+    const petBreed = (currentPet?.breed || 'indie').toLowerCase().trim();
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=600`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
+          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+          // Map to same category keys DimExpanded expects (DIM_ID_TO_CATEGORY values)
+          const rawDim = (p.dimension || p.pillar_category || p.sub_category || '').toLowerCase().trim();
+          const catMap = { foundations:'training', behaviour:'behavior', tricks:'fun skills', breed:'breed intelligence', soul:'soul learning', mira:'mira learn picks', youtube:'watch & learn' };
+          const categoryKey = DIM_ID_TO_CATEGORY[rawDim] || catMap[rawDim] || p.dimension || '';
+          const sub = p.sub_category || 'Other';
+          if (!categoryKey) return;
+          if (!grouped[categoryKey]) grouped[categoryKey] = {};
+          if (!grouped[categoryKey][sub]) grouped[categoryKey][sub] = [];
+          grouped[categoryKey][sub].push(p);
+        });
+        setApiProducts(grouped);
+      }).catch(() => {});
+  }, [currentPet]);
 
   // Fetch services from Service Box — used by all dim Book tabs
   useEffect(() => {
@@ -320,7 +347,8 @@ export default function LearnMobilePage() {
 
   const petName = currentPet?.name || 'your dog';
   const learnDims = getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS;
-  const currentDim = learnDims.find(d => d.id === activeDim) || learnDims[0];
+  const learnDims = getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS;
+  const activeDimObj = learnDims.find(d => d.id === openDim);
 
   return (
     <PillarPageLayout pillar="learn" hideHero hideNavigation>
@@ -358,8 +386,8 @@ export default function LearnMobilePage() {
         {/* Learn Category Strip — always visible above tabs */}
         <PillarCategoryStrip
           categories={LEARN_STRIP_CATS}
-          activeId={activeDim}
-          onSelect={id => { if (id) { vibe(); setActiveDim(id); setMainTab('learn'); } }}
+          activeId={openDim}
+          onSelect={id => { if (id) { vibe(); setOpenDim(id === openDim ? null : id); setMainTab('learn'); } }}
           accentColor={G.purple}
         />
 
@@ -454,33 +482,34 @@ export default function LearnMobilePage() {
           <MiraPicksSection pet={currentPet} />
           <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10, marginTop:16 }}>Choose a Learning Dimension</div>
           <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-            {(getLearnDims(currentPet).length > 0 ? getLearnDims(currentPet) : LEARN_DIMS).map(dim => (
-              <button key={dim.id} onClick={() => { vibe(); setActiveDim(dim.id); }}
+            {learnDims.map(dim => (
+              <button key={dim.id} onClick={() => { vibe(); setOpenDim(dim.id === openDim ? null : dim.id); }}
                 data-testid={`learn-dim-${dim.id}`}
                 style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
                   padding:'10px 12px', borderRadius:16, minWidth:72,
-                  border:`2px solid ${activeDim===dim.id?(dim.accent||G.purple):G.border}`,
-                  background:activeDim===dim.id?(dim.bg||'#EDE9FE'):'#fff', cursor:'pointer' }}>
+                  border:`2px solid ${openDim===dim.id?(dim.accent||G.purple):G.border}`,
+                  background:openDim===dim.id?(dim.bg||'#EDE9FE'):'#fff', cursor:'pointer' }}>
                 <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:14, fontWeight:700, color:activeDim===dim.id?(dim.accent||G.purple):G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
+                <span style={{ fontSize:14, fontWeight:700, color:openDim===dim.id?(dim.accent||G.purple):G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
                 {dim.badge && <span style={{ fontSize:9, fontWeight:700, color:'#fff', background:dim.badgeBg||dim.accent||G.purple, borderRadius:20, padding:'2px 6px' }}>{dim.badge}</span>}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Active Dimension Panel */}
-        <div style={{ padding:'0 16px 16px' }}>
-          <LearnDimPanel
-            dim={currentDim}
-            pet={currentPet}
-            token={token}
-            addToCart={addToCart}
-            allServices={learnServices}
-            onProductClick={p => { vibe(); setSelectedProduct(p); }}
-            onBook={svcName => { setSvcBooking({ isOpen: true, serviceType: guessServiceType(svcName) }); }}
-          />
-        </div>
+        {/* DimExpanded — same component as desktop (source of truth). Opens below chips when tapped. */}
+        {activeDimObj && (
+          <div style={{ padding:'0 16px 16px', scrollMarginTop:72 }}>
+            <DimExpanded
+              dim={activeDimObj}
+              pet={currentPet}
+              onClose={() => setOpenDim(null)}
+              apiProducts={apiProducts}
+              services={learnServices}
+              onBook={svcName => { setSvcBooking({ isOpen: true, serviceType: guessServiceType(svcName) }); }}
+            />
+          </div>
+        )}
 
         {/* Guided Paths */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><GuidedLearnPaths pet={currentPet} /></div>}
