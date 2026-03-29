@@ -5,6 +5,7 @@
  * Colour: Teal #0D9488
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import { DimExpanded, getPaperworkDims, DIM_ID_TO_CATEGORY as PW_DIM_CAT } from './PaperworkSoulPage';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -216,11 +217,33 @@ export default function PaperworkMobilePage() {
 
   const [loading, setLoading] = useState(true);
   const [showPaperworkPlan, setShowPaperworkPlan] = useState(false);
-  const [activeDim, setActiveDim] = useState(PW_DIMS[0].id);
+  const [openDim, setOpenDim] = useState(null);        // null = collapsed; dim.id = expanded
   const [mainTab, setMainTab] = useState('paperwork');
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [apiProducts, setApiProducts] = useState({});
+
+  // Fetch products — mirrors desktop PaperworkSoulPage (source of truth)
+  useEffect(() => {
+    if (!currentPet) return;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&limit=400`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          const rawDim = (p.dimension || p.pillar_category || '').toLowerCase().trim();
+          const catKey = Object.entries(PW_DIM_CAT).find(([k]) => k === rawDim)?.[1] || p.dimension || '';
+          const sub = p.sub_category || 'Other';
+          if (!catKey) return;
+          if (!grouped[catKey]) grouped[catKey] = {};
+          if (!grouped[catKey][sub]) grouped[catKey][sub] = [];
+          grouped[catKey][sub].push(p);
+        });
+        setApiProducts(grouped);
+      }).catch(() => {});
+  }, [currentPet]);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -243,7 +266,8 @@ export default function PaperworkMobilePage() {
   );
 
   const petName = currentPet?.name || 'your dog';
-  const currentDim = PW_DIMS.find(d => d.id === activeDim) || PW_DIMS[0];
+  const pwDims = getPaperworkDims(currentPet)?.length > 0 ? getPaperworkDims(currentPet) : PW_DIMS;
+  const activeDimObj = pwDims.find(d => d.id === openDim);
 
   return (
     <PillarPageLayout pillar="paperwork" hideHero hideNavigation>
@@ -281,8 +305,8 @@ export default function PaperworkMobilePage() {
         {/* Paperwork Category Strip — always visible above tabs */}
         <PillarCategoryStrip
           categories={PW_STRIP_CATS}
-          activeId={activeDim}
-          onSelect={id => { if (id) { vibe(); setActiveDim(id); setMainTab('paperwork'); } }}
+          activeId={openDim}
+          onSelect={id => { if (id) { vibe(); setOpenDim(id === openDim ? null : id); setMainTab('paperwork'); } }}
           accentColor={G.teal}
         />
 
@@ -383,30 +407,32 @@ export default function PaperworkMobilePage() {
         <div style={{ padding:'0 16px 8px' }}>
           <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:10 }}>Choose a Document Category</div>
           <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
-            {PW_DIMS.map(dim => (
-              <button key={dim.id} onClick={() => { vibe(); setActiveDim(dim.id); }}
+            {pwDims.map(dim => (
+              <button key={dim.id} onClick={() => { vibe(); setOpenDim(dim.id === openDim ? null : dim.id); }}
                 data-testid={`paperwork-dim-${dim.id}`}
                 style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
                   padding:'10px 12px', borderRadius:16, minWidth:72,
-                  border:`2px solid ${activeDim===dim.id?dim.accent:G.border}`,
-                  background:activeDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
+                  border:`2px solid ${openDim===dim.id?dim.accent:G.border}`,
+                  background:openDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
                 <span style={{ fontSize:20 }}>{dim.icon}</span>
-                <span style={{ fontSize:9, fontWeight:700, color:activeDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
+                <span style={{ fontSize:9, fontWeight:700, color:openDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Active Dimension Panel */}
-        <div style={{ padding:'0 16px 16px' }}>
-          <PwDimPanel
-            dim={currentDim}
-            pet={currentPet}
-            token={token}
-            addToCart={addToCart}
-            onProductClick={p => { vibe(); setSelectedProduct(p); }}
-          />
-        </div>
+        {/* DimExpanded — desktop source of truth component. Opens/closes on chip tap. */}
+        {activeDimObj && (
+          <div style={{ padding:'0 16px 16px' }}>
+            <DimExpanded
+              dim={activeDimObj}
+              pet={currentPet}
+              onClose={() => setOpenDim(null)}
+              apiProducts={apiProducts}
+              onBook={svcName => setConciergeBuilderOpen(true)}
+            />
+          </div>
+        )}
 
         {/* Guided Paths */}
         {currentPet && <div style={{ padding:'0 16px 16px' }}><GuidedPaperworkPaths pet={currentPet} /></div>}

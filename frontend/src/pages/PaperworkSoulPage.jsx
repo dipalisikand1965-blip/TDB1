@@ -95,7 +95,7 @@ function getMissingDocs(pet) {
 }
 
 // ─── DIM CONFIG ────────────────────────────────────────────
-function getPaperworkDims(pet) {
+export function getPaperworkDims(pet) {
   const senior  = isSenior(pet);
   const puppy   = isPuppy(pet);
   const multi   = isMultiPet(pet);
@@ -179,7 +179,7 @@ function getPaperworkDims(pet) {
   ];
 }
 
-const DIM_ID_TO_CATEGORY = {
+export const DIM_ID_TO_CATEGORY = {
   identity:  "Identity & Safety",
   health:    "Health Records",
   travel:    "Travel Documents",
@@ -408,7 +408,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
 }
 
 // ─── DIM EXPANDED ──────────────────────────────────────────
-function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, onViewDetails }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], onBook, onViewDetails }) {
   const petName = pet?.name||"your dog";
   const miraCtx = { includeText:"Add" };
   const [dimTab,    setDimTab]    = useState("products");

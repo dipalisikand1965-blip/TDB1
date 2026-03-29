@@ -5,6 +5,7 @@
  * URGENT CTA always pinned above tabs
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
+import { DimExpanded, getEmergDims, DIM_CAT } from './EmergencySoulPage';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -80,6 +81,8 @@ export default function EmergencyMobilePage() {
   const [activeTab, setActiveTab] = useState("emergency");
   const [conciergeBuilderOpen, setConciergeBuilderOpen] = useState(false);
   const [dimTab, setDimTab] = useState("products");
+  const [openDim, setOpenDim] = useState(null);       // null = flat view; dim.id = DimExpanded open
+  const [apiProducts, setApiProducts] = useState({});
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -98,6 +101,23 @@ export default function EmergencyMobilePage() {
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setProducts(applyMiraFilter(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed), currentPet)); })
       .catch(() => {});
+    // Build apiProducts for DimExpanded (mirrors desktop source of truth)
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=emergency&limit=400`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.products?.length) return;
+        const grouped = {};
+        data.products.forEach(p => {
+          const rawDim = (p.dimension || p.pillar_category || '').toLowerCase().trim();
+          const catKey = DIM_CAT[rawDim] || p.dimension || '';
+          const sub = p.sub_category || 'Other';
+          if (!catKey) return;
+          if (!grouped[catKey]) grouped[catKey] = {};
+          if (!grouped[catKey][sub]) grouped[catKey][sub] = [];
+          grouped[catKey][sub].push(p);
+        });
+        setApiProducts(grouped);
+      }).catch(() => {});
     // Fetch emergency services from service-box
     fetch(`${API_URL}/api/service-box/services?pillar=emergency&limit=20`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
@@ -274,55 +294,94 @@ export default function EmergencyMobilePage() {
             {/* Pawrent Journey First Steps */}
             {currentPet && <div style={{ padding:'8px 16px 0' }}><PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="emergency" /></div>}
 
-            {/* Products / Services dimTab */}
-            <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
-              {[{ id:'products', label:'📦 Products' }, { id:'services', label:'🩺 Services' }].map(t => (
-                <button key={t.id} onClick={() => setDimTab(t.id)}
-                  style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
-                    background:dimTab===t.id?G.crimson:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-
-            {dimTab === 'products' && (
-              <div style={{ padding:'16px 16px 24px' }}>
-                {products.length > 0 ? (
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                    {products.slice(0, 20).map(p => (
-                      <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="emergency" selectedPet={currentPet}
-                        onAddToCart={() => handleAddToCart(p)}
-                        onClick={() => { vibe(); setSelectedProduct(p); }} />
+            {/* Dim Chips — same pattern as desktop EmergencySoulPage (source of truth) */}
+            {(() => {
+              const emergDims = getEmergDims(currentPet);
+              const activeDimObj = emergDims.find(d => d.id === openDim);
+              return (<>
+                <div style={{ padding:'16px 16px 4px' }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:10 }}>Emergency Categories</div>
+                  <div style={{ display:'flex', gap:8, overflowX:'auto', paddingBottom:4 }}>
+                    {emergDims.map(dim => (
+                      <button key={dim.id} onClick={() => { vibe(); setOpenDim(dim.id === openDim ? null : dim.id); }}
+                        data-testid={`emergency-dim-${dim.id}`}
+                        style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', gap:4,
+                          padding:'10px 12px', borderRadius:16, minWidth:72,
+                          border:`2px solid ${openDim===dim.id?dim.accent:G.border}`,
+                          background:openDim===dim.id?dim.bg:'#fff', cursor:'pointer' }}>
+                        <span style={{ fontSize:20 }}>{dim.icon}</span>
+                        <span style={{ fontSize:10, fontWeight:700, color:openDim===dim.id?dim.accent:G.darkText, textAlign:'center', lineHeight:1.2 }}>{dim.label}</span>
+                      </button>
                     ))}
                   </div>
-                ) : (
-                  <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
-                    <div style={{ fontSize:32, marginBottom:8 }}>📦</div>
-                    <div style={{ fontSize:14 }}>Emergency kit products loading…</div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {dimTab === 'services' && (
-              <div style={{ padding:'16px 16px 24px' }}>
-                <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
-                  {(services.length ? services : EMERG_SERVICES).slice(0, 6).map((svc, i) => (
-                    <div key={svc.id || i} onClick={() => handleBookService(svc)}
-                      style={{ background:'#fff', borderRadius:16, border:`1.5px solid ${G.border}`, padding:'14px 16px', cursor:'pointer', display:'flex', alignItems:'center', gap:12 }}>
-                      <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon || '🩺'}</div>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
-                        <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || svc.description || ''}</div>
-                      </div>
-                      <button style={{ flexShrink:0, background:G.crimson, border:'none', borderRadius:20, padding:'6px 12px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer' }}>
-                        Now →
-                      </button>
-                    </div>
-                  ))}
                 </div>
-              </div>
-            )}
+
+                {/* DimExpanded — opens below chips on tap, mirrors desktop exactly */}
+                {activeDimObj ? (
+                  <div style={{ padding:'0 16px 16px' }}>
+                    <DimExpanded
+                      dim={activeDimObj}
+                      pet={currentPet}
+                      onClose={() => setOpenDim(null)}
+                      apiProducts={apiProducts}
+                      onBook={svcName => { handleBookService({ name: svcName }); }}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {/* Products / Services dimTab (fallback when no dim selected) */}
+                    <div style={{ display:'flex', margin:'16px 16px 0', background:G.pale, borderRadius:12, padding:4 }}>
+                      {[{ id:'products', label:'📦 Products' }, { id:'services', label:'🩺 Services' }].map(t => (
+                        <button key={t.id} onClick={() => setDimTab(t.id)}
+                          style={{ flex:1, padding:'9px', borderRadius:10, border:'none', fontSize:14, fontWeight:600, cursor:'pointer',
+                            background:dimTab===t.id?G.crimson:G.pale, color:dimTab===t.id?'#fff':G.mutedText }}>
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {dimTab === 'products' && (
+                      <div style={{ padding:'16px 16px 24px' }}>
+                        {products.length > 0 ? (
+                          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                            {products.slice(0, 20).map(p => (
+                              <SharedProductCard key={p.id||p._id||p.name} product={p} pillar="emergency" selectedPet={currentPet}
+                                onAddToCart={() => handleAddToCart(p)}
+                                onClick={() => { vibe(); setSelectedProduct(p); }} />
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ textAlign:'center', padding:'32px 0', color:'#888' }}>
+                            <div style={{ fontSize:32, marginBottom:8 }}>📦</div>
+                            <div style={{ fontSize:14 }}>Emergency kit products loading…</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {dimTab === 'services' && (
+                      <div style={{ padding:'16px 16px 24px' }}>
+                        <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                          {(services.length ? services : EMERG_SERVICES).slice(0, 6).map((svc, i) => (
+                            <div key={svc.id || i} onClick={() => handleBookService(svc)}
+                              style={{ background:'#fff', borderRadius:16, border:`1.5px solid ${G.border}`, padding:'14px 16px', cursor:'pointer', display:'flex', alignItems:'center', gap:12 }}>
+                              <div style={{ width:44, height:44, borderRadius:14, background:G.pale, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, flexShrink:0 }}>{svc.icon || '🩺'}</div>
+                              <div style={{ flex:1 }}>
+                                <div style={{ fontSize:14, fontWeight:700, color:G.darkText }}>{svc.name}</div>
+                                <div style={{ fontSize:14, color:G.mutedText }}>{svc.tagline || svc.description || ''}</div>
+                              </div>
+                              <button style={{ flexShrink:0, background:G.crimson, border:'none', borderRadius:20, padding:'6px 12px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer' }}>
+                                Now →
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>);
+            })()}
 
             {/* Guided Paths */}
             {currentPet && <div style={{ padding:'0 16px 24px' }}><GuidedEmergencyPaths pet={currentPet} /></div>}
