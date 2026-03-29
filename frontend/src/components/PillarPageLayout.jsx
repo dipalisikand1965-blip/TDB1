@@ -478,6 +478,27 @@ const PillarPageLayout = ({
         Concierge® Requests
       </button>
 
+
+      {/* Mobile floating C® button — pillar colour, above bottom nav */}
+      <button
+        onClick={() => setPillarCardsOpen(true)}
+        className="flex md:hidden"
+        data-testid="concierge-mobile-float-btn"
+        style={{
+          position: 'fixed', bottom: 88, right: 16, zIndex: 900,
+          width: 48, height: 48,
+          background: accent.bg,
+          color: accent.text,
+          borderRadius: '50%',
+          border: `1.5px solid ${accent.border}`,
+          fontSize: 13, fontWeight: 800, cursor: 'pointer',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          letterSpacing: '-0.02em',
+        }}
+      >
+        C®
+      </button>
       {/* Pillar-specific cards sheet — opens when floating button clicked */}
       {pillarCardsOpen && (
         <div style={{ position:'fixed', inset:0, zIndex:10000, display:'flex', flexDirection:'column', justifyContent:'flex-end' }}>
