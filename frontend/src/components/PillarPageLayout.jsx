@@ -467,8 +467,9 @@ const PillarPageLayout = ({
         {isWide ? (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(v => !v); }}
+            data-testid="concierge-builder-float-btn"
             style={{
-              position: 'fixed', bottom: 96, right: 24, zIndex: 2147483640,
+              position: 'fixed', bottom: 112, right: 24, zIndex: 2147483640,
               display: 'flex', alignItems: 'center', gap: 8, padding: '12px 20px',
               background: accent.bg, color: accent.text,
               borderRadius: 999, border: '1px solid ' + accent.border,
@@ -482,8 +483,9 @@ const PillarPageLayout = ({
         ) : (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(v => !v); }}
+            data-testid="concierge-mobile-float-btn"
             style={{
-              position: 'fixed', bottom: 88, right: 16, zIndex: 2147483640,
+              position: 'fixed', bottom: 100, right: 16, zIndex: 2147483640,
               display: 'flex', width: 48, height: 48,
               alignItems: 'center', justifyContent: 'center',
               background: accent.bg, color: accent.text,
