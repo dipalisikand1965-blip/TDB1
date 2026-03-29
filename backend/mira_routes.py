@@ -21551,13 +21551,17 @@ async def get_personalization_stats(pet_id: str):
     # ═══════════════════════════════════════════════════════════════════
     # doggy_soul already defined above for score calculation
     
-    # Favorite treats
-    if doggy_soul.get("favorite_treats"):
-        treats = doggy_soul["favorite_treats"]
-        if isinstance(treats, list) and treats:
-            add_knowledge("🦴", f"{pet_name} loves {treats[0]}", "diet", 8)
-        elif isinstance(treats, str) and treats:
-            add_knowledge("🦴", f"{pet_name} loves {treats}", "diet", 8)
+    # Favorite treats — check doggy_soul first, then root-level fields
+    treats_raw = (
+        doggy_soul.get("favorite_treats")
+        or pet.get("favorite_treats")           # root-level (e.g. set by Mira chat)
+        or doggy_soul.get("treat_preference")   # SoulBuilder canonical field
+    )
+    if treats_raw:
+        if isinstance(treats_raw, list) and treats_raw:
+            add_knowledge("🦴", f"{pet_name} loves {treats_raw[0]}", "diet", 8)
+        elif isinstance(treats_raw, str) and treats_raw:
+            add_knowledge("🦴", f"{pet_name} loves {treats_raw}", "diet", 8)
     
     # Food preferences
     if doggy_soul.get("food_preferences"):
@@ -21582,6 +21586,14 @@ async def get_personalization_stats(pet_id: str):
     if doggy_soul.get("walk_duration"):
         duration = doggy_soul["walk_duration"]
         add_knowledge("🚶", f"Enjoys {duration} walks", "activity", 6)
+    
+    # Life vision — north-star sentence set during SoulBuilder
+    if doggy_soul.get("life_vision"):
+        vision = doggy_soul["life_vision"]
+        if isinstance(vision, str) and vision.strip():
+            # Show first 60 chars so it fits the ticker
+            short = vision.strip()[:60] + ("..." if len(vision.strip()) > 60 else "")
+            add_knowledge("🌟", short, "soul", 9)
     
     # Personality traits from describe_3_words
     if doggy_soul.get("describe_3_words"):
