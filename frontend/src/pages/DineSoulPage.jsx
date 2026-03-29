@@ -24,7 +24,6 @@
  * COLOURS: #FCF7F1 cream · #2B170B cocoa · #D97706 amber · #F97316 orange
  */
 
-import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Sparkles, X, Check } from 'lucide-react';
@@ -1187,8 +1186,6 @@ function DineMobilePage() {
             <div style={{ padding:'0 16px 24px' }}>
               <GuidedNutritionPaths pet={currentPet} />
             </div>
-
-            <PillarConciergeCards pillar="dine" pet={currentPet} token={token} />
             {/* ── Dine, Personally (services section) ── */}
             <div style={{ padding:'0 16px 24px' }}>
               <DineConciergeSection pet={currentPet} />

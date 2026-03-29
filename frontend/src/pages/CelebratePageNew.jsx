@@ -16,7 +16,6 @@
  * IMPORTANT: Mira widget and Concierge® button remain visible throughout
  */
 
-import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -561,7 +560,6 @@ const CelebratePageNew = () => {
         </div>
 
         {/* 5. CELEBRATE CONCIERGE® */}
-        <PillarConciergeCards pillar="celebrate" pet={selectedPet} token={token} />
         <CelebrateConcierge 
           pet={selectedPet}
           onTalkToConcierge={handleTalkToConcierge}
