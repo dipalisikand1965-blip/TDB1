@@ -596,9 +596,34 @@ export default function LearnMobilePage() {
               <div style={{ fontSize:12, color:'rgba(255,255,255,0.45)', marginBottom:20, lineHeight:1.5 }}>
                 Mira has analysed {petName}'s breed intelligence, energy level, and soul profile to build this learning roadmap.
               </div>
-              {learnPlanCards.map(item => (
-                <MiraImaginesCard key={item.id} item={item} pet={currentPet} token={token} pillar="learn" />
-              ))}
+              {/* 2×2 grid of plan cards */}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16 }}>
+                {learnPlanCards.map(item => (
+                  <div key={item.id}
+                    style={{
+                      borderRadius:14, overflow:'hidden',
+                      background:'linear-gradient(135deg,#0A0A3C,#1A1363)',
+                      border:'1.5px solid rgba(255,255,255,0.12)',
+                      display:'flex', flexDirection:'column',
+                    }}>
+                    {/* Image / emoji area */}
+                    <div style={{ height:90, background:'rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:34 }}>
+                      {item.emoji}
+                    </div>
+                    {/* Content */}
+                    <div style={{ padding:'10px 12px 14px', display:'flex', flexDirection:'column', flex:1 }}>
+                      <span style={{ fontSize:9, fontWeight:700, color:'#A78BFA', textTransform:'uppercase', letterSpacing:'0.1em', background:'rgba(124,58,237,0.18)', borderRadius:20, padding:'2px 8px', display:'inline-block', marginBottom:6, alignSelf:'flex-start' }}>Mira Imagines</span>
+                      <div style={{ fontWeight:800, color:'#fff', fontSize:12, lineHeight:1.3, marginBottom:6 }}>{item.name}</div>
+                      <div style={{ fontSize:10, color:'rgba(255,255,255,0.55)', lineHeight:1.45, fontStyle:'italic', marginBottom:10, flex:1, display:'-webkit-box', WebkitLineClamp:4, WebkitBoxOrient:'vertical', overflow:'hidden' }}>{item.description}</div>
+                      <button
+                        onClick={e => { e.stopPropagation(); setShowLearnPlan(false); request(`${item.name} for ${petName}`, { channel:'learn_plan_card' }); }}
+                        style={{ width:'100%', padding:'8px 10px', borderRadius:20, border:'none', background:'rgba(124,58,237,0.85)', color:'#fff', fontSize:10, fontWeight:700, cursor:'pointer', letterSpacing:'0.02em' }}>
+                        Tap — Concierge® →
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
               <button
                 className="learn-cta"
                 style={{ width:'100%', marginTop:8 }}
