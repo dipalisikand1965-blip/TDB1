@@ -87,7 +87,8 @@ export default function PersonalisedBreedSection({
     });
   };
   const C        = PILLAR_COLORS[pillar] || PILLAR_COLORS.play;
-  const isConciergeMode = conciergeMode || pillar === 'paperwork';
+  // Only use concierge mode when explicitly passed — never force it based on pillar
+  const isConciergeMode = conciergeMode;
 
   useEffect(() => {
     if (!breed) { setLoading(false); return; }
@@ -109,8 +110,18 @@ export default function PersonalisedBreedSection({
                  filename.includes("watercolor") || (p.watercolor_image && p.watercolor_image.startsWith("http"));
         });
         const pool = withImages.length ? withImages : breedFiltered;
+        // Step 2.5 — merchandise filter: Soul Made is about pet illustration items,
+        // not food, treats, or supplements. Exclude those categories.
+        const FOOD_KEYWORDS = ['treat', 'food', 'snack', 'freeze', 'bite', 'meal', 'supplement', 'nutrition', 'jerky', 'chew'];
+        const merchandisePool = pool.filter(p => {
+          const cat  = (p.product_type || p.category || p.type || '').toLowerCase();
+          const name = (p.name || '').toLowerCase();
+          return !FOOD_KEYWORDS.some(t => cat.includes(t) || name.includes(t));
+        });
+        // Fall back to full pool only if merchandise filtering leaves < 2 items
+        const finalPool = merchandisePool.length >= 2 ? merchandisePool : pool;
         // Step 3 — sort: current pillar first, then others alphabetically
-        const sorted = [...pool].sort((a, b) => {
+        const sorted = [...finalPool].sort((a, b) => {
           const aHasPillar = (a.pillars || []).includes(pillar) ? 0 : 1;
           const bHasPillar = (b.pillars || []).includes(pillar) ? 0 : 1;
           return aHasPillar - bHasPillar;
