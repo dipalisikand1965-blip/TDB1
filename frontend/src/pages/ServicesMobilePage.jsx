@@ -149,7 +149,7 @@ function MobileServiceGroup({ group, services, onBook }) {
 }
 
 export default function ServicesMobilePage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar:'services', pet:currentPet });
