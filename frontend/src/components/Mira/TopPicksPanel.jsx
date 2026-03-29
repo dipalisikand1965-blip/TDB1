@@ -463,15 +463,15 @@ const TopPicksPanel = ({
             {picksData?.filters_applied && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {picksData.filters_applied.allergies?.length > 0 && (
-                  <span className="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full flex items-center gap-1">
+                  <span className="tdc-chip tdc-chip-error" style={{ background:'#fef2f2', color:'#dc2626', borderColor:'#fecaca' }}>
                     <AlertCircle className="w-3 h-3" />
                     Avoiding: {picksData.filters_applied.allergies.join(', ')}
                   </span>
                 )}
-                <span className="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">
+                <span className="tdc-chip tdc-chip-default">
                   🐕 {picksData.filters_applied.breed || 'All breeds'}
                 </span>
-                <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                <span className="tdc-chip tdc-chip-default">
                   📏 {picksData.filters_applied.size || 'All sizes'}
                 </span>
               </div>

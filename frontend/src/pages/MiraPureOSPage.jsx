@@ -285,7 +285,7 @@ const MojoProfileModal = ({ pet, isOpen, onClose }) => {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {personality.map((trait, i) => (
-                  <span key={i} className="px-3 py-1 bg-pink-500/20 text-pink-300 rounded-full text-xs">
+                  <span key={i} className="tdc-chip tdc-chip-dark" style={{ background:'rgba(236,72,153,0.2)', color:'#f9a8d4', borderColor:'rgba(236,72,153,0.3)' }}>
                     {trait}
                   </span>
                 ))}
@@ -302,7 +302,7 @@ const MojoProfileModal = ({ pet, isOpen, onClose }) => {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {allergies.map((allergy, i) => (
-                  <span key={i} className="px-3 py-1 bg-red-500/20 text-red-300 rounded-full text-xs border border-red-500/30">
+                  <span key={i} className="tdc-chip tdc-chip-dark" style={{ background:'rgba(239,68,68,0.2)', color:'#fca5a5', borderColor:'rgba(239,68,68,0.3)' }}>
                     {allergy}
                   </span>
                 ))}
@@ -319,7 +319,7 @@ const MojoProfileModal = ({ pet, isOpen, onClose }) => {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {preferences.favorite_activities.map((activity, i) => (
-                  <span key={i} className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-xs">
+                  <span key={i} className="tdc-chip tdc-chip-dark" style={{ background:'rgba(234,179,8,0.2)', color:'#fde047', borderColor:'rgba(234,179,8,0.3)' }}>
                     {activity}
                   </span>
                 ))}
@@ -452,11 +452,14 @@ const ServicesModal = ({ pet, services, isOpen, onClose }) => {
                       <p className="text-sm font-medium text-white">{service.ticket_id}</p>
                       <p className="text-xs text-slate-400">{service.service_type?.replace(/_/g, ' ')}</p>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      service.status === 'pending' ? 'bg-amber-500/20 text-amber-300' :
-                      service.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-300' :
-                      'bg-slate-500/20 text-slate-300'
-                    }`}>
+                    <span className={`tdc-chip tdc-chip-dark ${
+                      service.status === 'pending' ? '' :
+                      service.status === 'confirmed' ? '' : ''
+                    }`} style={
+                      service.status === 'pending' ? { background:'rgba(245,158,11,0.2)', color:'#fcd34d', borderColor:'rgba(245,158,11,0.3)' } :
+                      service.status === 'confirmed' ? { background:'rgba(16,185,129,0.2)', color:'#6ee7b7', borderColor:'rgba(16,185,129,0.3)' } :
+                      { background:'rgba(100,116,139,0.2)', color:'#cbd5e1', borderColor:'rgba(100,116,139,0.3)' }
+                    }>
                       {service.status}
                     </span>
                   </div>

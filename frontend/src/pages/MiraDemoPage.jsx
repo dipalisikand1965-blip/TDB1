@@ -311,7 +311,8 @@ const DietaryContextChip = ({ pet, isExpanded, onToggle, onEdit }) => {
             {allergies.map((allergen, i) => (
               <span 
                 key={i}
-                className="px-2 py-0.5 text-xs bg-red-500/20 text-red-300 rounded-full border border-red-500/30"
+                className="tdc-chip tdc-chip-dark"
+                style={{ background:'rgba(239,68,68,0.2)', color:'#fca5a5', borderColor:'rgba(239,68,68,0.3)' }}
               >
                 {allergen}
               </span>
@@ -5400,7 +5401,7 @@ const MiraDemoPage = () => {
                       <div className="text-sm text-white/50">{p.breed}</div>
                     </div>
                     {soulScore > 0 && (
-                      <span className="px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-amber-500 to-orange-600 text-white">
+                      <span className="tdc-chip tdc-chip-gold" style={{ background:'linear-gradient(135deg,#f59e0b,#ea580c)', color:'#fff', borderColor:'transparent' }}>
                         {Math.round(soulScore)}%
                       </span>
                     )}
