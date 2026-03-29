@@ -74,6 +74,14 @@ function getSessionTicket(pillar) {
   return getSessionTickets()[pillar] || null;
 }
 
+function clearSessionTicket(pillar) {
+  try {
+    const tickets = getSessionTickets();
+    delete tickets[pillar];
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(tickets));
+  } catch {}
+}
+
 // ── Auth helper ────────────────────────────────────────────────────────
 function getAuth() {
   try {
@@ -121,7 +129,7 @@ async function fireIntent({
     // If we have an existing ticket for this pillar this session,
     // append to it rather than creating a new one
     if (existingTicketId) {
-      await fetch(`${API_URL}/api/service_desk/append_message`, {
+      const appendRes = await fetch(`${API_URL}/api/service_desk/append_message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +144,9 @@ async function fireIntent({
           },
         }),
       });
-      return existingTicketId;
+      if (appendRes.ok) return existingTicketId;
+      // Stale ticket — clear it and fall through to create a new one
+      clearSessionTicket(pillar);
     }
 
     // New ticket
