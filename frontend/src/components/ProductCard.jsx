@@ -581,7 +581,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             </p>
           )}
           
-          {/* ✦ MIRA EXPLAINS WHY — show when product has mira_score or mira_hint */
+          {/* ✦ MIRA EXPLAINS WHY — show when product has mira_score or mira_hint */}
           {(() => {
             const miraText = product.mira_hint || productMiraTip ||
               (product.mira_score >= 80 ? `Top pick for ${product.name?.split(' ')[0]} — scored ${product.mira_score} by Mira` :
