@@ -433,11 +433,19 @@ export default function ShopMobilePage() {
   const [showMiraPicks, setShowMiraPicks] = useState(false);
   const [showShopPlan, setShowShopPlan] = useState(false);
   const miraPicksRef = useRef(null);
+  const contentRef = useRef(null);   // scrolls to content when category chip is tapped
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
     if (contextPets?.length > 0 && !currentPet) setCurrentPet(contextPets[0]);
   }, [contextPets, currentPet, setCurrentPet]);
+
+  // Scroll to content when a shop category changes
+  useEffect(() => {
+    if (mainTab && contentRef.current) {
+      setTimeout(() => contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [mainTab]);
 
   const handleSeePicks = useCallback(() => {
     vibe('medium');
@@ -583,7 +591,8 @@ export default function ShopMobilePage() {
         </div>
 
         {/* Main Content — tab-switched */}
-        <div style={{ padding: '20px 16px 24px' }}>
+        {/* Scrolls here when a category chip is tapped */}
+        <div ref={contentRef} style={{ padding: '20px 16px 24px' }}>
           {/* MIRA PICKS TAB (was for_pet) */}
           {(mainTab === 'mira') && (
             <div ref={miraPicksRef}>
