@@ -42,14 +42,15 @@ const EMERG_SERVICES = [
 ];
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
+// ── Category strip — EXACT match to desktop EmergencySoulPage EMERG_CATS ──────
 const EMERG_STRIP_CATS = [
-  { id:"kit",       icon:"📦", label:"First Aid Kit",   iconBg:"linear-gradient(135deg,#FEE2E2,#FECACA)" },
-  { id:"vets",      icon:"🏥", label:"24hr Vets",       iconBg:"linear-gradient(135deg,#E0F2FE,#BAE6FD)" },
-  { id:"poison",    icon:"☠️", label:"Poison Response", iconBg:"linear-gradient(135deg,#FEF3C7,#FDE68A)" },
-  { id:"lost",      icon:"📍", label:"Lost Pet",        iconBg:"linear-gradient(135deg,#DCFCE7,#BBF7D0)" },
-  { id:"transport", icon:"🚐", label:"Transport",       iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
-  { id:"course",    icon:"📚", label:"First Aid Course",iconBg:"linear-gradient(135deg,#FCE4EC,#F8BBD0)" },
-  { id:"plan",      icon:"🛡️", label:"Safety Plan",     iconBg:"linear-gradient(135deg,#F1F5F9,#E2E8F0)" },
+  { id:"firstaid",  icon:"🩺", label:"First Aid",       iconBg:"#FEF2F2" },
+  { id:"lostpet",   icon:"📍", label:"Lost Pet",         iconBg:"#FFF3E0" },
+  { id:"emergvet",  icon:"🏥", label:"Emergency Vet",    iconBg:"#FFE8E8" },
+  { id:"transport", icon:"🚐", label:"Transport",        iconBg:"#FEF2F2" },
+  { id:"insurance", icon:"🛡️", label:"Insurance",        iconBg:"#FFF8F0" },
+  { id:"soul",      icon:"🌟", label:"Soul Emergency",   iconBg:"#FEF2F2" },
+  { id:"mira",      icon:"✦",  label:"Mira's Picks",    iconBg:"#FFF5F5" },
 ];
 
 const G = {
@@ -243,14 +244,19 @@ export default function EmergencyMobilePage() {
           </button>
         </div>
 
-        {/* Emergency Category Strip — always visible above tabs */}
+        {/* Emergency Category Strip — same 7 categories as desktop, opens DimExpanded */}
         <PillarCategoryStrip
           categories={EMERG_STRIP_CATS}
-          activeId={null}
+          activeId={openDim}
           onSelect={id => {
-            if (id === 'vets') { vibe(); setActiveTab('find'); }
-            else if (id === 'plan') { vibe('medium'); setShowEmergencyPlan(true); }
-            else { vibe(); setActiveTab('emergency'); setDimTab('services'); }
+            if (!id) { setOpenDim(null); return; }
+            vibe();
+            setActiveTab('emergency');        // ensure Emergency tab is active
+            if (id === 'mira') {
+              setOpenDim(null);               // no dim for Mira's Picks — just shows kit
+            } else {
+              setOpenDim(id === openDim ? null : id);
+            }
           }}
           accentColor={G.crimson}
         />
