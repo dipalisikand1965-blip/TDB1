@@ -454,7 +454,7 @@ const PillarPageLayout = ({
 
       {/* Concierge® Request Builder — desktop floating trigger, stacked above Mira orb */}
       <button
-        onClick={() => setPillarCardsOpen(true)}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
         data-testid="concierge-builder-float-btn"
         className="hidden md:flex"
         style={{
@@ -481,7 +481,7 @@ const PillarPageLayout = ({
 
       {/* Mobile floating C® button — pillar colour, above bottom nav */}
       <button
-        onClick={() => setPillarCardsOpen(true)}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(true); }}
         className="flex md:hidden"
         data-testid="concierge-mobile-float-btn"
         style={{
