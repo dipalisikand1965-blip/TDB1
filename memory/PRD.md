@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-29 (Session 29 — iOS Audio, Chip Colors, Concierge Label, Pet Selector consistency, Mira header bleed fix, Shop white text, Services mobile watercolour parity)
+## Last Updated: 2026-03-29 (Session 30 — Unified PillarHero component wired across all 12 mobile pillar pages)
 ## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
 
 ---
@@ -57,6 +57,7 @@ PillarSoulPage.jsx (parent)
 |---|---|---|
 | `frontend/src/pages/*SoulPage.jsx` | Desktop pillar pages | 🔒 LOCKED |
 | `frontend/src/pages/*MobilePage.jsx` | Mobile pillar pages | ✅ All 12 done |
+| `frontend/src/components/PillarHero.jsx` | Unified mobile hero (pet avatar, soul ring, pet switcher) | ✅ Wired to all 12 mobile pages |
 | `frontend/src/hooks/useMiraFilter.js` | AI product ranking | ✅ Breed/size/life-stage |
 | `frontend/src/components/admin/PillarManager.jsx` | Go+Play admin base | ✅ 7 tabs + Quick Add |
 | `frontend/src/components/admin/UnifiedProductBox.jsx` | Product CRUD | ✅ Save fix applied |

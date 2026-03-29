@@ -20,6 +20,7 @@ import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 // ── Service groups — identical to desktop (source of truth) ──────────────────
@@ -226,30 +227,16 @@ export default function ServicesMobilePage() {
         <style>{CSS}</style>
 
         {/* Hero */}
-        <div style={{ background:`linear-gradient(160deg,${G.dark} 0%,${G.navy} 50%,${G.navyL} 100%)`, padding:'32px 16px 20px' }}>
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🤝 Services</div>
-            </div>
-          </div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>Expert Services for {petName}</div>
-          <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)' }}>Every service arranged by Concierge® · Matched to {petName}'s soul</div>
-          {/* Pet selector — horizontal scroll row, matches all other pillar pages */}
-          {contextPets?.length > 1 && (
-            <div style={{ display:'flex', gap:8, overflowX:'auto', WebkitOverflowScrolling:'touch', scrollbarWidth:'none', marginTop:14, paddingBottom:2 }}>
-              {contextPets.map(p => (
-                <button key={p.id} onClick={() => { vibe(); setCurrentPet(p); }}
-                  style={{ flexShrink:0, padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                    border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                    background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                    color:'#fff', cursor:'pointer', transition:'all 0.15s', whiteSpace:'nowrap' }}>
-                  {p.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <PillarHero
+          pillar="services"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe(); setCurrentPet(p); }}
+          gradient={`linear-gradient(160deg,${G.dark} 0%,${G.navy} 50%,${G.navyL} 100%)`}
+          title="🤝 Services"
+          subtitle={`Expert Services for ${petName}`}
+          tagline={`Every service arranged by Concierge® · Matched to ${petName}'s soul`}
+        />
 
         {/* Services Category Strip — always visible above content */}
         <PillarCategoryStrip

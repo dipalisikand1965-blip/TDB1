@@ -36,6 +36,7 @@ import { DINE_DIMS, DineDimensionsRail,
   vibe, getAllergies, getLoves, getFavourite, getHealthCondition,
   getNutritionGoal, applyMiraIntelligence, normCard, CSS,
 } from './DineSoulPage';
+import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 
 // ── Design tokens (copied from DineSoulPage) ──────────────────────────────
@@ -270,52 +271,24 @@ export default function DineMobilePage() {
           </div>
         )}
 
-        {/* ── 1. Dim Modal — dark hero (always above tabs) ── */}
-        <div style={{ background:'linear-gradient(160deg,#3d1200 0%,#7a2800 50%,#c44400 100%)', padding:'20px 16px 24px', position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:-60, right:-40, width:200, height:200, background:'radial-gradient(circle,rgba(255,140,66,0.2) 0%,transparent 70%)', borderRadius:'50%', pointerEvents:'none' }} />
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div>
-              <div style={{ fontSize:14, fontWeight:700, color:'rgba(255,255,255,0.5)', letterSpacing:'0.1em', marginBottom:2 }}>THE DOGGY COMPANY</div>
-              <div style={{ fontSize:22, fontWeight:700, color:'#fff' }}>🍽️ Dine</div>
+        {/* ── 1. Hero ── */}
+        <PillarHero
+          pillar="dine"
+          pet={currentPet}
+          allPets={contextPets || []}
+          onSwitchPet={p => { vibe('light'); setCurrentPet(p); }}
+          gradient="linear-gradient(160deg,#3d1200 0%,#7a2800 50%,#c44400 100%)"
+          title="🍽️ Dine"
+          subtitle="Food & Nourishment"
+          tagline={`for ${petName}`}
+          allergies={getAllergies(currentPet)}
+        >
+          {getFavourite(currentPet) && (
+            <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,208,128,0.12)', border:'1px solid rgba(255,208,128,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFD080', fontWeight:500, marginTop:6 }}>
+              💚 Loves {getFavourite(currentPet)}
             </div>
-            {contextPets?.length > 1 && (
-              <div style={{ display:'flex', gap:6, flexWrap:'wrap', justifyContent:'flex-end' }}>
-                {contextPets.map(p => (
-                  <button key={p.id} onClick={() => { vibe('light'); setCurrentPet(p); }}
-                    style={{ padding:'6px 16px', borderRadius:999, fontSize:13, fontWeight:700,
-                      border: currentPet?.id===p.id ? '2px solid rgba(255,255,255,0.9)' : '2px solid rgba(255,255,255,0.3)',
-                      background: currentPet?.id===p.id ? 'rgba(255,255,255,0.22)' : 'transparent',
-                      color:'#fff', cursor:'pointer', transition:'all 0.15s', fontFamily:'inherit' }}>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-            <div
-              onClick={() => { vibe('light'); setProfileOpen(true); }}
-              style={{ width:52, height:52, borderRadius:'50%', flexShrink:0, background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)', display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', cursor:'pointer' }}
-              data-testid="dine-mobile-profile-avatar"
-            >
-              {currentPet?.photo_url ? <img src={currentPet.photo_url} alt={petName} style={{ width:'100%', height:'100%', objectFit:'cover' }} /> : <span style={{ fontSize:22 }}>🐾</span>}
-            </div>
-            <div onClick={() => { vibe('light'); setProfileOpen(true); }} style={{ cursor:'pointer' }}>
-              <div style={{ fontSize:20, fontWeight:700, color:'#fff', lineHeight:1.1 }}>Food & Nourishment</div>
-              <div style={{ fontSize:15, color:'rgba(255,255,255,0.7)', marginTop:2 }}>for {petName} · <span style={{ fontSize:13, color:'rgba(255,208,128,0.8)' }}>View Profile →</span></div>
-            </div>
-          </div>
-
-          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
-            {getAllergies(currentPet).map(a => (
-              <div key={a} style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,107,100,0.15)', border:'1px solid rgba(255,107,100,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFB3B0', fontWeight:500 }}>⚠️ No {a}</div>
-            ))}
-            {getFavourite(currentPet) && (
-              <div style={{ display:'inline-flex', alignItems:'center', background:'rgba(255,208,128,0.12)', border:'1px solid rgba(255,208,128,0.3)', borderRadius:999, padding:'5px 12px', fontSize:14, color:'#FFD080', fontWeight:500 }}>💚 Loves {getFavourite(currentPet)}</div>
-            )}
-          </div>
-        </div>
+          )}
+        </PillarHero>
 
         {/* ── 3. Main 3-Tab Bar ── */}
         <div className="ios-tab-bar">
