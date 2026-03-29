@@ -565,47 +565,7 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
     enrichment: "enrichment",
   };
 
-  // ── 5-Tab state ──────────────────────────────────────────────
-  const [catTab, setCatTab]               = useState("products");
-  const [videos, setVideos]               = useState([]);
-  const [videoLoading, setVideoLoading]   = useState(false);
-  const [modalServices, setModalServices] = useState([]);
-  const dimObj  = getLearnDims(pet).find(d => d.id === category);
-  const ytQuery = dimObj?.ytQuery || null;
-  const modalTabs = [
-    { id:"products",     label:"📦 Products" },
-    ...(ytQuery ? [{ id:"videos",  label:"🎬 Videos" }] : []),
-    { id:"personalised", label:"✦ Personalised" },
-    ...(category !== "soul" ? [{ id:"find", label:"📍 Find" }] : []),
-    { id:"services",     label:"🐕 Services" },
-  ];
-  useEffect(() => { setCatTab("products"); setVideos([]); }, [category]);
-  useEffect(() => {
-    if (!isOpen) return;
-    fetch(`${API_URL}/api/services?pillar=learn&limit=50`, {
-      headers: token ? { Authorization:`Bearer ${token}` } : {}
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d?.services) setModalServices(d.services); })
-      .catch(() => {});
-  }, [isOpen, token]);
-  const fetchVideos = useCallback(async () => {
-    if (!ytQuery || videos.length > 0) return;
-    setVideoLoading(true);
-    try {
-      const r = await fetch(`${API_URL}/api/test/youtube?query=${encodeURIComponent(`${pet?.breed||""} ${ytQuery}`)}&max_results=6`);
-      const d = r.ok ? await r.json() : null;
-      setVideos((d?.videos||d?.items||d?.results||[]).map(v=>({
-        id:v.videoId||v.id?.videoId||v.id,
-        title:v.title||v.snippet?.title||"",
-        thumbnail:v.thumbnail||v.snippet?.thumbnails?.medium?.url||"",
-        channel:v.channelTitle||v.snippet?.channelTitle||"",
-        url:`https://www.youtube.com/watch?v=${v.videoId||v.id?.videoId||v.id}`,
-      })));
-    } catch { setVideos([]); }
-    setVideoLoading(false);
-  }, [ytQuery, pet?.breed, videos.length]);
-  useEffect(() => { if (catTab==="videos") fetchVideos(); }, [catTab, fetchVideos]);
+  // ── 5-Tab state removed — dimmodal shows products only (like Paperwork) ──
 
   useEffect(() => {
     if (!isOpen) return;
@@ -688,12 +648,12 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",
       display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
       <div onClick={e=>e.stopPropagation()} data-testid={`learn-cat-modal-${category}`}
-        style={{width:"min(700px,100%)",maxHeight:"88vh",overflow:"hidden",borderRadius:20,
+        style={{width:"min(700px,100%)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,
           background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column"}}>
         {/* Header */}
         <div style={{borderRadius:"20px 20px 0 0",padding:"20px 22px 16px",
           background:`linear-gradient(135deg,#1A1363 0%,${G.deep} 70%,${G.mid} 100%)`,
-          flexShrink:0}}>
+          flexShrink:0,position:"sticky",top:0,zIndex:2}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <div style={{width:38,height:38,borderRadius:10,background:catCfg.bg||"#EDE9FE",
@@ -716,22 +676,8 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
             <p style={{fontSize:12,color:"rgba(255,255,255,0.80)",fontStyle:"italic",margin:0,lineHeight:1.5}}>{quote}</p>
           </div>
         </div>
-        {/* 5-Tab Bar */}
-        <div style={{display:"flex",borderBottom:`1px solid ${G.borderLight}`,background:"#fff",flexShrink:0,overflowX:"auto",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
-          {modalTabs.map(tab=>(
-            <button key={tab.id} onClick={()=>setCatTab(tab.id)}
-              style={{flex:1,minWidth:60,padding:"10px 4px",background:"none",border:"none",
-                borderBottom:catTab===tab.id?`2.5px solid ${G.violet}`:"2.5px solid transparent",
-                color:catTab===tab.id?G.mid:"#888",fontSize:11,fontWeight:catTab===tab.id?700:400,
-                cursor:"pointer",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        {/* Body */}
-        <div style={{padding:"18px 20px",flex:1,overflowY:"auto"}}>
-          {/* ── Products Tab ── */}
-          {catTab==="products" && <>
+        {/* Body — products only, matching Paperwork pattern */}
+        <div style={{padding:"18px 20px"}}>
           {loading && (
             <div style={{textAlign:"center",padding:"32px 0"}}>
               <Loader2 size={24} style={{color:G.violet,animation:"spin 1s linear infinite"}}/>
@@ -956,76 +902,11 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
               {soulMadeOpen && <SoulMadeModal pet={pet} pillar="learn" pillarColor={G.violet} pillarLabel="Learning" onClose={() => setSoulMadeOpen(false)} />}
             </>
           )}
-          </>} {/* ── end products tab ── */}
 
           {/* ── Videos Tab ── */}
-          {catTab==="videos" && (
-            videoLoading
-              ? <div style={{textAlign:"center",padding:"32px 0"}}><Loader2 size={24} style={{color:G.violet,animation:"spin 1s linear infinite"}}/></div>
-              : videos.length===0
-                ? <div style={{textAlign:"center",padding:"32px 0",color:"#888",fontSize:13}}>
-                    <div style={{fontSize:28,marginBottom:10}}>🎬</div>
-                    <p style={{margin:0}}>No videos found — tap again to retry.</p>
-                  </div>
-                : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(220px,100%),1fr))",gap:12}}>
-                    {videos.map((v,i)=><VideoCard key={v.id||i} video={v} onPlay={vid=>window.open(vid.url,"_blank")}/>)}
-                  </div>
-          )}
-
-          {/* ── Personalised Tab ── */}
-          {catTab==="personalised" && (
-            <div>
-              <div style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:14,padding:"14px 18px",marginBottom:18}}>
-                <p style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:6}}>
-                  ✦ Personalised for {petName}{breed?` · ${breed}`:""}
-                </p>
-                <p style={{fontSize:13,color:"rgba(255,255,255,0.85)",lineHeight:1.55,margin:0,fontStyle:"italic"}}>
-                  {dimObj?.mira?.replace(/{name}/g,petName)||`Every product here is chosen for ${petName}.`}
-                </p>
-              </div>
-              {products.length>0
-                ? <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))",gap:12}}>
-                    {products.map(p=><SharedProductCard key={p.id||p._id} product={p} pet={pet} pillar="learn" onViewDetails={()=>setSelProd(p)} accentColor={catCfg.accent||G.violet}/>)}
-                  </div>
-                : <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
-                    <div style={{fontSize:28,marginBottom:10}}>✦</div>
-                    <p style={{margin:0}}>Mira is preparing personalised picks for {petName}.</p>
-                  </div>
-              }
-            </div>
-          )}
-
-          {/* ── Find Tab ── */}
-          {catTab==="find" && <LearnNearMe pet={pet}/>}
-
-          {/* ── Services Tab ── */}
-          {catTab==="services" && (
-            <div style={{display:"flex",flexDirection:"column",gap:12}}>
-              {modalServices.length===0
-                ? <div style={{textAlign:"center",padding:"24px 0",color:"#888",fontSize:13}}>
-                    <div style={{fontSize:28,marginBottom:10}}>🐕</div>
-                    <p style={{margin:0}}>No services found — book a bespoke session.</p>
-                    <button onClick={()=>{tdc.book({service:catCfg.label,pillar:"learn",pet,channel:"learn_modal_svc"});onClose();}}
-                      style={{marginTop:12,padding:"10px 22px",borderRadius:12,border:"none",background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer"}}>
-                      Book via Concierge® →
-                    </button>
-                  </div>
-                : modalServices.map(svc=>(
-                    <div key={svc.id||svc._id} style={{background:"#FAFAFE",borderRadius:14,border:`1px solid ${G.borderLight}`,padding:"14px 16px"}}>
-                      <div style={{fontWeight:700,fontSize:14,color:G.darkText,marginBottom:4}}>{svc.name}</div>
-                      <div style={{fontSize:12,color:"#666",lineHeight:1.5,marginBottom:10}}>{svc.description||svc.desc||""}</div>
-                      <button onClick={()=>{tdc.book({service:svc.name,pillar:"learn",pet,channel:"learn_modal_svc"});onClose();}}
-                        style={{padding:"9px 18px",borderRadius:12,border:"none",background:`linear-gradient(135deg,${G.violet},${G.mid})`,color:"#fff",fontSize:13,fontWeight:700,cursor:"pointer"}}>
-                        Book via Concierge® →
-                      </button>
-                    </div>
-                  ))
-              }
-            </div>
-          )}
         </div>
-        {/* ── Footer CTA — category-specific guided path (only on products tab) ── */}
-        {catTab==="products" && !['bundles', 'soul', 'mira', 'soul_made', 'breed'].includes(category) && (
+        {/* ── Footer CTA — category-specific guided path ── */}
+        {!['bundles', 'soul', 'mira', 'soul_made', 'breed'].includes(category) && (
           <div style={{flexShrink:0, padding:'14px 20px', borderTop:`1px solid ${G.borderLight}`, background:'#FAFAFE', display:'flex', alignItems:'center', justifyContent:'space-between'}}>
             <p style={{fontSize:12, color:'#888', margin:0}}>Personalised for {petName}</p>
             <button
@@ -1036,7 +917,6 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
                   const match = paths.find(p => p.id === pathId);
                   if (match) { setGuidedPath(match); return; }
                 }
-                // Fallback: fire concierge and close
                 tdc.book({ service: catCfg.label, pillar: 'learn', pet, channel: 'learn_content_modal_footer' });
                 onClose();
               }}
