@@ -18,6 +18,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useScrollLock } from '../hooks/useScrollLock';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
@@ -377,6 +378,7 @@ export function MiraPicksSection({ pet }) {
   const [conciergeSent, setConciergeSent]       = useState(false);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
+  useScrollLock(!!conciergeService);
   const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
   const intelligenceLine = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
 
@@ -805,6 +807,7 @@ function generateWellnessImagines(pet) {
 // ─────────────────────────────────────────────────────────────
 export function WellnessProfile({ pet, token }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useScrollLock(drawerOpen);
   const [liveScore, setLiveScore]   = useState(null);
   const [questions, setQuestions]   = useState([]);
   const [qLoading, setQLoading]     = useState(false);
@@ -2086,6 +2089,7 @@ export function CareServiceFlowModal({ service, pet, onClose }) {
 export function CareConcierge({ pet }) {
   const [activeService, setActiveService] = useState(null);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  useScrollLock(!!activeService || conciergeOpen);
   return (
     <div style={{ background:`linear-gradient(135deg,${G.cream},#E8F5EE)`, borderRadius:20, border:`1px solid ${G.border}`, padding:24, marginBottom:32 }} data-testid="care-concierge">
       {activeService && (

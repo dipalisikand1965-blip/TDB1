@@ -7,6 +7,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -267,6 +268,7 @@ export default function CelebrateMobilePage() {
   const [toastMsg, setToastMsg] = useState(null);
   const [miraPicksOpen, setMiraPicksOpen] = useState(false);
   const [celebrateCatModal, setCelebrateCatModal] = useState(null);
+  useScrollLock(miraPicksOpen || showCelebratePlan || !!celebrateCatModal);
   const [breedCakeOpen, setBreedCakeOpen] = useState(false);
   const [birthdayCakesOpen, setBirthdayCakesOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('celebrate');

@@ -6,6 +6,7 @@
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -96,6 +97,7 @@ export default function PlayMobilePage() {
   const [allRaw, setAllRaw] = useState([]);
   const [svcBooking, setSvcBooking] = useState({ isOpen: false, serviceType: 'training' });
   const [showPlayPlan, setShowPlayPlan] = useState(false);
+  useScrollLock(showMiraPicks || svcBooking.isOpen || showPlayPlan || conciergeBuilderOpen);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
