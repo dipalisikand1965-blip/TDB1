@@ -28,6 +28,16 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import '../styles/mobile-design-system.css';
+
+// ── Emergency services — mirrors EmergencySoulPage (source of truth) ─────────
+const EMERG_SERVICES = [
+  { id:"emerg_vet",     icon:"🏥", name:"Emergency Vet Finder",        tagline:"Nearest 24hr vet — now",      price:"Free",   steps:2, dim:"emergvet",  accentColor:"#DC2626", desc:"Mira finds the nearest 24-hour emergency vet right now — no searching, no panic." },
+  { id:"afterhours",    icon:"📞", name:"After-Hours Care Guidance",   tagline:"Out-of-hours guidance",       price:"Free",   steps:2, dim:"emergvet",  accentColor:"#991B1B", desc:"Out-of-hours guidance — what to do, whether to go to emergency or wait." },
+  { id:"accident",      icon:"🩺", name:"Accident & Poison Response",  tagline:"Act in the first 10 minutes", price:"Free",   steps:2, dim:"firstaid",  accentColor:"#DC2626", desc:"Step-by-step response for accidents, poisoning, or sudden illness." },
+  { id:"lostpet",       icon:"📍", name:"Lost Pet Response",           tagline:"Start immediately",           price:"Free",   steps:2, dim:"lostpet",   accentColor:"#991B1B", desc:"Immediate lost pet protocol — posts, alerts, microchip tracing, local network." },
+  { id:"transport",     icon:"🚐", name:"Emergency Transport",         tagline:"Safe, fast, arranged now",    price:"₹1,500", steps:2, dim:"transport", accentColor:"#DC2626", desc:"Emergency pet transport to the nearest 24-hour vet — immediate dispatch." },
+  { id:"firstaidcourse",icon:"📚", name:"Pet First Aid Course",        tagline:"Be ready before it happens",  price:"₹1,999", steps:2, dim:"firstaid",  accentColor:"#7F1D1D", desc:"Certified course — CPR, wound care, choking, poisoning response." },
+];
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
 
 const EMERG_STRIP_CATS = [
