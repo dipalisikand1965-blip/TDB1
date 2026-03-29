@@ -193,8 +193,6 @@ export function getLearnDims(pet) {
 }
 
 export const DIM_ID_TO_CATEGORY = {
-  foundations: "training",
-  behaviour:   "behavior",
   training:    "training",
   tricks:      "tricks",
   enrichment:  "enrichment",
@@ -508,7 +506,7 @@ function LearnProfile({ pet, token }) {
 
 // ─── LEARN CATEGORY CONFIG (strip pills + content modal) ────────────────────
 // dbCategory must match actual 'category' field in MongoDB (not dimension, which is unset until DB scripts run)
-const LEARN_CATS = [
+export const LEARN_CATS = [
   { id:"foundations", icon:"🎓", label:"Foundations",    dbCategory:"training",                bg:"#EDE9FE", accent:"#7C3AED" },
   { id:"behaviour",   icon:"🧠", label:"Behaviour",      dbCategory:"behavior",                bg:"#FFF3E0", accent:"#F57C00" },
   { id:"training",    icon:"🏆", label:"Training",       dbCategory:"training",                bg:"#E3F2FD", accent:"#1565C0" },
@@ -534,7 +532,7 @@ const LEARN_MIRA_QUOTES = {
 };
 
 // ─── LEARN CONTENT MODAL (opens from category strip pill) ───────────────────
-function LearnContentModal({ isOpen, onClose, category, pet }) {
+export function LearnContentModal({ isOpen, onClose, category, pet }) {
   const [products, setProducts]   = useState([]);
   const [loading,  setLoading]    = useState(false);
   const [selProd,  setSelProd]    = useState(null);
