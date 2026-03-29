@@ -121,9 +121,10 @@
   );
   
   /* Padding — top uses measured header height so first message never hides behind it */
+  /* 64px is hardcoded minimum; useLayoutEffect sets --mira-header-h before first paint */
   padding: var(--space-xl) var(--space-xl);
-  padding-top: max(24px, var(--mira-header-h, 64px));
-  /* Just enough for compact input bar (~60px) */
+  padding-top: 64px;                               /* safe fallback — always applied */
+  padding-top: max(64px, var(--mira-header-h));    /* overrides when JS has measured */
   padding-bottom: 70px;
   
   /* Disable elastic/spring-back scrolling */
@@ -140,6 +141,9 @@
 @media (max-width: 768px) {
   .mp-messages {
     padding: var(--space-md) var(--space-md);
+    /* Override top padding AFTER the shorthand — must use max() to stay header-aware */
+    padding-top: 64px;                               /* safe fallback — always applied */
+    padding-top: max(64px, var(--mira-header-h));    /* overrides when JS has measured */
     /* Just enough to clear compact input bar */
     padding-bottom: 65px;
   }

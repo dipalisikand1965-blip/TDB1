@@ -137,7 +137,7 @@ export default function PillarConciergeCards({ pillar, pet, token, onSheetClose,
 
   return (
     <div style={{ padding:'0 0 8px' }}>
-      <div style={{ fontSize:14, color:'#6B7280', marginBottom:16, lineHeight:1.6, fontStyle:'italic' }}>
+      <div style={{ fontSize:14, color:'rgba(255,255,255,0.65)', marginBottom:16, lineHeight:1.6, fontStyle:'italic' }}>
         {intro}
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
@@ -145,22 +145,22 @@ export default function PillarConciergeCards({ pillar, pet, token, onSheetClose,
           <button key={i} onClick={() => handleCard(card)}
             style={{ display:'flex', flexDirection:'column', alignItems:'flex-start',
               padding:'14px', borderRadius:16, cursor:'pointer', textAlign:'left',
-              background: color + '12', border: '1.5px solid ' + color + '30',
+              background: color + '22', border: '1.5px solid ' + color + '50',
               transition:'all 0.15s', width:'100%' }}>
             <span style={{ fontSize:20, marginBottom:8 }}>{card.icon}</span>
-            <div style={{ fontSize:13, fontWeight:700, color:'#1A0A2E', lineHeight:1.3, marginBottom:6 }}>
+            <div style={{ fontSize:13, fontWeight:700, color:'rgba(255,255,255,0.92)', lineHeight:1.3, marginBottom:6 }}>
               {card.title.replace('my dog', petName).replace('My dog', petName)}
             </div>
-            <div style={{ fontSize:11, color:'#6B7280', lineHeight:1.4, marginBottom:10 }}>
+            <div style={{ fontSize:11, color:'rgba(255,255,255,0.55)', lineHeight:1.4, marginBottom:10 }}>
               {card.sub.replace('your dog', petName)}
             </div>
             <div style={{
               marginTop: 'auto',
               display: 'inline-flex', alignItems: 'center',
               fontSize: 10, fontWeight: 700, color: color,
-              background: color + '15', borderRadius: 6, padding: '3px 8px',
+              background: color + '25', borderRadius: 6, padding: '3px 8px',
               letterSpacing: '0.01em', whiteSpace: 'nowrap',
-              border: `1px solid ${color}30`,
+              border: `1px solid ${color}50`,
             }}>
               C®
             </div>
