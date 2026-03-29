@@ -1,607 +1,789 @@
 /**
- * MiraUnifiedHeader — Complete CSS Rewrite
- * ==========================================
- * Replaces ALL existing .mira-unified-header styles
- * 100% built on tdc-design-tokens.css variables
- *
- * HOW TO APPLY:
- * Find the existing .mira-unified-header block in mira-chat.css (or wherever
- * the header styles currently live) and replace the entire block with this file.
- *
- * ALSO: Remove the floating "< Pet Home" element from MiraDemoPage.jsx —
- * the Mira logo click already handles /pet-home navigation.
- *
- * Built for Mystique. Built for May 15.
+ * mira-unified-header.css
+ * ======================
+ * Styles for Mira OS single top bar header
+ * 
+ * Layout: [Mira Logo] [Pet Identity → MOJO] [OS Tabs] [Temp] [Pet Switcher → Dropdown]
  */
 
-/* ============================================================
-   1. THE HEADER BAR
-   ============================================================ */
-
+/* ========================================
+   UNIFIED HEADER CONTAINER
+   ======================================== */
 .mira-unified-header {
-  /* Layout */
   display: flex;
   align-items: center;
-  gap: var(--space-2);                          /* 8px between sections */
-  padding: 0 var(--space-5);                    /* 21px sides */
-  height: 64px;
-  width: 100%;
-
-  /* Background — frosted glass on dark */
-  background: rgba(10, 10, 20, 0.96);
+  gap: 16px;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, 
+    rgba(15, 7, 32, 0.98) 0%, 
+    rgba(26, 15, 53, 0.95) 100%
+  );
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-
-  /* Sticky at top */
-  position: sticky;
-  top: 0;
-  z-index: var(--z-nav);                        /* 200 */
-
-  /* Font — SF Pro everywhere */
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+  min-height: 72px;
+  position: relative;
+  z-index: 50;
 }
 
-/* ============================================================
-   2. MIRA LOGO (left — clickable → /pet-home)
-   ============================================================ */
-
+/* ========================================
+   MIRA LOGO SECTION (Far Left)
+   ======================================== */
 .mira-logo-section {
   display: flex;
   align-items: center;
-  gap: var(--space-2);                          /* 8px */
+  gap: 10px;
   flex-shrink: 0;
-  cursor: pointer;
-  padding: var(--space-1) var(--space-2);       /* 4px 8px */
-  border-radius: var(--radius-md);              /* 14px */
-  transition: opacity var(--duration-fast) var(--ease-out);
-  text-decoration: none;
-}
-
-.mira-logo-section:hover {
-  opacity: 0.80;
-}
-
-.mira-logo-section:active {
-  transform: scale(0.97);
 }
 
 .mira-logo-icon {
-  width: 34px;
-  height: 34px;
-  background: linear-gradient(135deg, #7c3aed, #d946ef);
-  border-radius: var(--radius-sm);              /* 8px */
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(217, 70, 239, 0.30);
+  color: white;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4);
 }
 
 .mira-logo-icon svg {
-  width: 18px;
-  height: 18px;
-  color: white;
+  width: 24px;
+  height: 24px;
 }
 
 .mira-logo-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
 }
 
 .logo-title {
-  font-family: var(--font-sans);
-  font-size: var(--text-base);                  /* 17px */
-  font-weight: var(--weight-bold);              /* 700 */
+  font-size: 24px;
+  font-weight: 700;
   color: white;
-  line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.5px;
 }
 
 .logo-subtitle {
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: var(--weight-medium);            /* 500 */
-  color: var(--color-text-inv-muted);           /* rgba(255,255,255,0.55) */
-  line-height: 1;
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
 }
 
-/* ============================================================
-   3. PET IDENTITY SECTION (Mojo chip — opens MOJO modal)
-   ============================================================ */
-
+/* ========================================
+   PET IDENTITY SECTION (Left - opens MOJO)
+   ======================================== */
 .mira-pet-identity {
   display: flex;
   align-items: center;
-  gap: var(--space-2);                          /* 8px */
-  padding: var(--space-1) var(--space-3);       /* 4px 13px */
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: var(--radius-full);            /* pill */
+  gap: 8px;
   cursor: pointer;
-  flex-shrink: 0;
-  min-height: 44px;                             /* iOS tap target */
-  transition: all var(--duration-fast) var(--ease-out);
-  font-family: var(--font-sans);
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
 .mira-pet-identity:hover {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
 }
 
-.mira-pet-identity:active {
-  transform: scale(0.97);
-}
-
-/* Pet photo inside identity chip */
-.pet-identity-photo {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
-}
-
-/* Soul score badge (100% SOUL) */
-.pet-identity-soul-badge {
+/* Pet Avatar with Soul Ring */
+.pet-identity-avatar {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   flex-shrink: 0;
 }
 
-.pet-identity-soul-badge img,
-.pet-identity-soul-badge .pet-photo {
-  width: 30px;
-  height: 30px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
+.pet-avatar-glow {
   position: absolute;
-  top: 3px;
-  left: 3px;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+.pet-soul-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.pet-avatar-photo {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2d1f42, #1a1025);
+  border: 2px solid rgba(245, 158, 11, 0.5);
+}
+
+.pet-avatar-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pet-avatar-photo span {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* Heart icon overlay */
+.pet-avatar-heart {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #ec4899, #f472b6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(15, 7, 32, 0.8);
+}
+
+.pet-avatar-heart .heart-icon {
+  width: 10px;
+  height: 10px;
+  color: white;
+  fill: white;
+}
+
+/* Soul Score Badge */
+.pet-soul-badge {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-radius: 10px;
+  border: 2px solid rgba(15, 7, 32, 0.8);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+.pet-soul-badge .soul-percent {
+  font-size: 11px;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+.pet-soul-badge .soul-label {
+  font-size: 6px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.5px;
+}
+
+/* Pet Name + Arrow */
+.pet-identity-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 4px;
 }
 
 .pet-identity-name {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);                    /* 15px */
-  font-weight: var(--weight-semibold);          /* 600 */
-  color: var(--color-text-inv);                 /* rgba(255,255,255,0.92) */
-  line-height: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
 }
 
 .pet-identity-arrow {
   width: 14px;
   height: 14px;
-  color: var(--color-text-inv-muted);
-  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: -2px;
 }
 
-/* ============================================================
-   4. OS NAVIGATION TABS (CENTER)
-   ============================================================ */
+/* Notification Badge */
+.pet-notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-radius: 10px;
+  border: 2px solid rgba(15, 7, 32, 0.8);
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+/* ========================================
+   OS NAVIGATION TABS (Center)
+   ======================================== */
 .mira-os-tabs {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
   flex: 1;
   justify-content: center;
   overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 var(--space-2);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+  scroll-snap-type: x mandatory;
 }
+.mira-os-tabs::-webkit-scrollbar { display: none; }
 
-.mira-os-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-/* Individual OS tab */
 .mira-os-tab {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: var(--space-2) var(--space-3);       /* 8px 13px */
-  border-radius: var(--radius-full);
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
-  min-height: 36px;
+  padding: 8px 12px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
-  position: relative;
-
-  /* Typography */
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);                    /* 13px */
-  font-weight: var(--weight-semibold);          /* 600 */
-  letter-spacing: var(--tracking-wide);         /* 0.08em */
-  color: var(--color-text-inv-muted);           /* rgba(255,255,255,0.55) */
-
-  transition: all var(--duration-fast) var(--ease-out);
+  scroll-snap-align: start;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .mira-os-tab:hover {
-  color: var(--color-text-inv);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.mira-os-tab:active {
-  transform: scale(0.97);
-}
-
-/* Tab icon */
-.mira-os-tab svg {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-}
-
-/* ACTIVE tab */
-.mira-os-tab.active,
-.mira-os-tab[data-active="true"] {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
   color: white;
 }
 
-/* CONCIERGE® tab — always gold accent */
-.mira-os-tab.concierge,
-.mira-os-tab[data-layer="concierge"] {
-  border-color: rgba(201, 151, 58, 0.35);
-  color: var(--color-gold-light);               /* #E8B84B */
+.mira-os-tab.active {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(139, 92, 246, 0.2));
+  border-color: rgba(236, 72, 153, 0.5);
+  color: white;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
 }
 
-.mira-os-tab.concierge.active,
-.mira-os-tab[data-layer="concierge"].active {
-  background: var(--color-gold-pale);
-  border-color: var(--color-gold-border);
-  color: var(--color-gold-light);
+.mira-os-tab.pulse {
+  animation: tab-pulse 1.5s ease-in-out infinite;
+  background: rgba(236, 72, 153, 0.25) !important;
+  border: 2px solid rgba(236, 72, 153, 0.8) !important;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.5), inset 0 0 10px rgba(236, 72, 153, 0.2) !important;
+  transform: scale(1.05);
 }
 
-/* SERVICES tab — pulse when there's an active ticket */
-.mira-os-tab.services-pulse {
-  border-color: rgba(217, 70, 239, 0.45);
-  color: #d946ef;
-  animation: mira-services-glow 2.5s ease-in-out infinite;
+@keyframes tab-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.3), inset 0 0 5px rgba(236, 72, 153, 0.1);
+    background: rgba(236, 72, 153, 0.2);
+    transform: scale(1.02);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.8), 0 0 50px rgba(236, 72, 153, 0.4), inset 0 0 15px rgba(236, 72, 153, 0.3);
+    background: rgba(236, 72, 153, 0.35);
+    transform: scale(1.08);
+  }
 }
 
-@keyframes mira-services-glow {
-  0%, 100% { box-shadow: none; }
-  50% { box-shadow: 0 0 14px rgba(217, 70, 239, 0.30); }
+.mira-os-tab .tab-icon {
+  width: 16px;
+  height: 16px;
 }
 
-/* Tab badge (notification count) */
-.mira-tab-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
+.mira-os-tab .tab-label {
+  text-transform: uppercase;
+}
+
+.mira-os-tab .tab-badge {
+  min-width: 20px;
   height: 18px;
-  padding: 0 5px;
-  border-radius: var(--radius-full);
-  background: #d946ef;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  border-radius: 9px;
   color: white;
-  font-family: var(--font-sans);
   font-size: 10px;
-  font-weight: var(--weight-bold);
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* Tab icon state indicators */
-.mira-os-tab .tab-icon-pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: #d946ef;
-  animation: mira-services-glow 1.5s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-/* ============================================================
-   5. TEMPERATURE DISPLAY
-   ============================================================ */
-
-.mira-temp-display {
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: var(--space-2) var(--space-3);       /* 8px 13px */
+  justify-content: center;
+}
+
+.mira-os-tab .tab-badge.badge-pulse {
+  animation: badge-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(236, 72, 153, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.8); }
+}
+
+/* ========================================
+   TEMPERATURE DISPLAY
+   ======================================== */
+.mira-temp-display {
+  padding: 8px 14px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-full);
-  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   flex-shrink: 0;
-  min-height: 36px;
-
-  font-family: var(--font-sans);
-  font-size: var(--text-xs);                    /* 13px */
-  font-weight: var(--weight-medium);
-  color: var(--color-text-inv-muted);           /* rgba(255,255,255,0.55) */
-
-  transition: all var(--duration-fast) var(--ease-out);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
 }
 
 .mira-temp-display:hover {
-  background: rgba(255, 255, 255, 0.09);
-  color: var(--color-text-inv);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.mira-temp-display svg {
-  width: 13px;
-  height: 13px;
+.mira-temp-display .temp-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
 }
 
-/* ============================================================
-   6. NOTIFICATION BELL
-   ============================================================ */
+.mira-temp-display .temp-city {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+}
 
+/* ========================================
+   NOTIFICATION BELL
+   ======================================== */
 .mira-notification-bell {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-full);
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
+  width: 44px;
+  height: 44px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 50%;
   cursor: pointer;
-  position: relative;
+  transition: all 0.2s ease;
   flex-shrink: 0;
-  color: var(--color-text-inv-muted);
-  transition: all var(--duration-fast) var(--ease-out);
 }
 
 .mira-notification-bell:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--color-text-inv);
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: scale(1.05);
 }
 
-.mira-notification-bell:active {
-  transform: scale(0.95);
-}
-
-.bell-icon {
+.mira-notification-bell .bell-icon {
   width: 20px;
   height: 20px;
+  color: #a78bfa;
 }
 
-/* Bell notification badge */
-.bell-badge {
+.mira-notification-bell .bell-badge {
   position: absolute;
-  top: 7px;
-  right: 7px;
-  background: #d946ef;
+  top: -4px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-radius: 10px;
+  border: 2px solid rgba(15, 7, 32, 0.9);
+  font-size: 10px;
+  font-weight: 700;
   color: white;
-  font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: var(--weight-bold);
-  min-width: 16px;
-  height: 16px;
-  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
-  border: 1.5px solid #0A0A14;
-  line-height: 1;
+  animation: bell-badge-pulse 2s ease-in-out infinite;
 }
 
-/* ============================================================
-   7. PET SWITCHER (right — avatar dropdown)
-   ============================================================ */
+@keyframes bell-badge-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+}
 
+/* ========================================
+   PET SWITCHER (Right - opens dropdown)
+   ======================================== */
 .mira-pet-switcher {
   position: relative;
   flex-shrink: 0;
 }
 
-.mira-pet-switcher-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-full);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  overflow: hidden;
+.pet-switcher-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 8px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.1));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 24px;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.pet-switcher-btn:hover,
+.pet-switcher-btn.active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.2));
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Pet Count Badge */
+.pet-count-badge {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #ec4899, #d946ef);
+  border-radius: 11px;
+  border: 2px solid rgba(15, 7, 32, 0.9);
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color var(--duration-fast) var(--ease-out);
-  padding: 0;
-  flex-shrink: 0;
 }
 
-.mira-pet-switcher-btn:hover {
-  border-color: rgba(255, 255, 255, 0.30);
+.switcher-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2d1f42, #1a1025);
+  border: 2px solid rgba(139, 92, 246, 0.4);
 }
 
-.mira-pet-switcher-btn:active {
-  transform: scale(0.95);
-}
-
-.mira-pet-switcher-btn img {
+.switcher-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-full);
 }
 
-/* Pet switcher notification dot */
-.mira-pet-switcher-dot {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-full);
-  background: #d946ef;
-  border: 2px solid #0A0A14;
-}
-
-/* Dropdown panel */
-.mira-pet-switcher-dropdown {
-  position: absolute;
-  top: calc(100% + var(--space-2));
-  right: 0;
-  background: rgba(20, 10, 40, 0.97);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  border-radius: var(--radius-lg);              /* 20px */
-  padding: var(--space-2);
-  min-width: 200px;
-  box-shadow: var(--shadow-dark);
-  z-index: var(--z-overlay);                    /* 1000 */
-  animation: mira-dropdown-in var(--duration-fast) var(--ease-out);
-}
-
-@keyframes mira-dropdown-in {
-  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Individual pet option in dropdown */
-.mira-pet-option {
+.switcher-photo span {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  gap: var(--space-3);                          /* 13px */
-  padding: var(--space-3) var(--space-3);       /* 13px */
-  border-radius: var(--radius-md);              /* 14px */
+  justify-content: center;
+  font-size: 18px;
+}
+
+.switcher-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Dropdown */
+.pet-switcher-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 280px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: linear-gradient(145deg, rgba(88, 28, 135, 0.98), rgba(59, 7, 100, 0.98));
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  z-index: 1000;
+  animation: dropdown-slide 0.2s ease-out;
+}
+
+/* Mobile pet dropdown - slides up from bottom */
+@media (max-width: 768px) {
+  .pet-switcher-dropdown {
+    position: fixed;
+    top: initial !important; /* Reset to initial value (auto) */
+    inset: auto 0 0 0; /* Shorthand: top auto, right 0, bottom 0, left 0 */
+    min-width: 100%;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: 20px 20px 0 0;
+    z-index: 9999;
+    padding: 16px;
+    padding-bottom: 40px;
+    animation: dropdown-slide-up 0.3s ease-out;
+  }
+}
+
+@keyframes dropdown-slide-up {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dropdown-slide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.switcher-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
-  font-family: var(--font-sans);
+  transition: all 0.15s ease;
+  margin-bottom: 4px;
 }
 
-.mira-pet-option:hover {
-  background: rgba(255, 255, 255, 0.07);
+.switcher-item:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.mira-pet-option.active {
-  background: rgba(217, 70, 239, 0.10);
-  border: 1px solid rgba(217, 70, 239, 0.20);
+.switcher-item.selected {
+  background: rgba(168, 85, 247, 0.2);
 }
 
-.mira-pet-option img {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
+.item-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   flex-shrink: 0;
 }
 
-.mira-pet-option-name {
-  font-size: var(--text-sm);                    /* 15px */
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-inv);
-  line-height: 1;
+.item-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.mira-pet-option-score {
-  font-size: var(--text-xs);                    /* 13px */
-  color: var(--color-text-inv-muted);
-  margin-top: 2px;
+.item-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 
-/* ============================================================
-   8. SOUL SCORE RING (around pet photo in header)
-   ============================================================ */
-
-.soul-score-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-full);
-  border: 2.5px solid #d946ef;
-  box-shadow: 0 0 8px rgba(217, 70, 239, 0.40);
+.item-info {
+  flex: 1;
+  text-align: left;
 }
 
-.soul-score-badge {
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #d946ef;
+.item-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
   color: white;
-  font-family: var(--font-sans);
-  font-size: 8px;
-  font-weight: var(--weight-bold);
-  padding: 1px 5px;
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-  border: 1px solid #0A0A14;
-  line-height: 1.3;
 }
 
-/* ============================================================
-   9. RESPONSIVE — MOBILE ADJUSTMENTS
-   ============================================================ */
+.item-breed {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
 
-@media (max-width: 768px) {
+.item-score {
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+}
+
+.item-new {
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}
+
+.item-check {
+  width: 18px;
+  height: 18px;
+  color: #a855f7;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+@media (max-width: 1024px) {
   .mira-unified-header {
-    padding: 0 var(--space-4);                  /* 16px on mobile */
-    gap: var(--space-1);                        /* 4px */
-    height: 60px;
+    padding: 10px 16px;
+    gap: 12px;
   }
-
-  /* Hide logo subtitle on small screens */
-  .logo-subtitle {
+  
+  .mira-logo-text {
     display: none;
   }
-
-  /* Tabs scroll horizontally — hide on very small screens if needed */
-  .mira-os-tabs {
-    gap: 1px;
-  }
-
+  
   .mira-os-tab {
-    padding: var(--space-2) var(--space-2);     /* 8px on mobile */
-    font-size: 11px;
+    padding: 8px 12px;
   }
-
-  /* Hide tab labels on mobile — icon only */
+  
   .mira-os-tab .tab-label {
     display: none;
   }
-
-  /* CONCIERGE® tab — keep visible but compact */
-  .mira-os-tab.concierge .tab-label {
+  
+  .mira-os-tab.active .tab-label {
     display: inline;
-    font-size: 10px;
   }
+}
 
-  /* Temperature — hide city name on mobile */
-  .mira-temp-city {
+@media (max-width: 768px) {
+  .mira-unified-header {
+    padding: 8px 12px;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .mira-unified-header::-webkit-scrollbar {
     display: none;
+  }
+  
+  .mira-logo-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .mira-logo-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .pet-identity-avatar {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .pet-identity-name {
+    font-size: 12px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .mira-os-tabs {
+    gap: 4px;
+    flex: none;
+  }
+  
+  .mira-os-tab {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .mira-temp-display {
+    padding: 6px 10px;
+  }
+  
+  .mira-temp-display .temp-value {
+    font-size: 12px;
+  }
+  
+  .switcher-name {
+    display: none;
+  }
+  
+  .pet-switcher-btn {
+    padding: 6px;
+  }
+  
+  .switcher-photo {
+    width: 36px;
+    height: 36px;
+  }
+  
+  /* Mobile pet switcher dropdown - Full modal style for 768px and below */
+  .mira-pet-switcher {
+    position: static !important;
+  }
+  
+  .pet-switcher-dropdown {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: auto !important; /* Reset height calculation */
+    max-height: 70vh !important;
+    min-width: 100% !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    z-index: 9999 !important;
+    padding: 16px !important;
+    padding-bottom: 40px !important;
+    transform: none !important;
+  }
+  
+  @keyframes dropdown-slide-up {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
 @media (max-width: 480px) {
   .mira-unified-header {
-    height: 56px;
+    min-height: 60px;
   }
-
-  /* On very small screens, hide temperature entirely */
-  .mira-temp-display {
+  
+  .pet-identity-info {
     display: none;
   }
-}
-
-/* ============================================================
-   10. REMOVE THE FLOATING "< Pet Home" ELEMENT
-   This selector targets the back button that floats above the
-   header — now redundant since logo click handles /pet-home
-   ============================================================ */
-
-.mira-back-to-home,
-.mira-pet-home-back,
-[data-testid="pet-home-back"],
-.pet-home-breadcrumb {
-  display: none !important;
+  
+  .mira-pet-identity {
+    padding: 6px;
+  }
+  
+  .mira-os-tab .tab-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Mobile pet switcher dropdown - Full screen modal style */
+  .pet-switcher-dropdown {
+    position: fixed !important;
+    top: unset !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-height: 70vh;
+    min-width: 100% !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0;
+    z-index: 9999 !important;
+    padding: 16px;
+    padding-bottom: 40px;
+  }
 }
