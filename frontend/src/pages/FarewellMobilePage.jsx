@@ -68,6 +68,202 @@ const FAREWELL_SERVICES = [
 
 const PROD_TABS = ["Memorial & Grief", "Keepsakes", "Final Care"];
 
+// ─── FarewellContentModal ──────────────────────────────────────────────────
+// Opens when category strip pill is tapped
+// Each category shows: products + services + Concierge® CTA
+function FarewellContentModal({ isOpen, onClose, category, pet, token, services, onBook }) {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState('products');
+  const [selProd, setSelProd] = useState(null);
+  const petName = pet?.name || 'your dog';
+
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  useEffect(() => { setTab('products'); setProducts([]); }, [category]);
+
+  const CAT_MAP = {
+    memorial:  'memorial',
+    tribute:   'memorial',
+    grief:     'Grief & Healing',
+    cremation: 'Cremation & Burial',
+    eol:       'memorial',
+    support:   'memorial',
+    ceremony:  'memorial',
+  };
+
+  const MIRA_QUOTES = {
+    memorial:  `Every detail of ${petName}'s memorial is handled with the love they deserve.`,
+    tribute:   `A tribute as unique as ${petName} — made by hand, kept forever.`,
+    grief:     `Your grief is real. Losing ${petName} is losing unconditional love. You don't have to do this alone.`,
+    cremation: `Concierge® handles everything with complete dignity — collection, service, and the return of ${petName}.`,
+    eol:       `I'll help you navigate this time with ${petName} — gently, honestly, and without pressure.`,
+    support:   `Whatever ${petName} needs right now — comfort, care, or just someone to talk to — I'm here.`,
+    ceremony:  `A gentle send-off for ${petName}, held with love — at home or at a partner location.`,
+  };
+
+  const SVC_MAP = {
+    cremation: ['cremation'],
+    ceremony:  ['ceremony', 'rainbow'],
+    grief:     ['grief'],
+    eol:       ['eol', 'euthanasia'],
+    support:   ['eol', 'euthanasia', 'grief'],
+    memorial:  ['memorial'],
+    tribute:   ['memorial'],
+  };
+
+  const catCfg = FAREWELL_STRIP_CATS.find(c => c.id === category) || {};
+  const dbCat = CAT_MAP[category] || 'memorial';
+  const miraQuote = MIRA_QUOTES[category] || `For ${petName}, with love.`;
+  const svcKeys = SVC_MAP[category] || [];
+  const dimServices = services.filter(s =>
+    svcKeys.some(k => (s.id||'').includes(k) || (s.name||'').toLowerCase().includes(k))
+  );
+
+  useEffect(() => {
+    if (!isOpen || !category) return;
+    setLoading(true);
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&category=${encodeURIComponent(dbCat)}&limit=60`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setProducts(filterBreedProducts(d?.products || [], pet?.breed)))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
+  }, [isOpen, category, pet?.breed]);
+
+  if (!isOpen) return null;
+
+  const tabs = [
+    { id:'products', label:'🎁 Products' },
+    { id:'services', label:'🐕 Services' },
+    { id:'find',     label:'📍 Find Care' },
+  ];
+
+  return (
+    <div onClick={onClose}
+      style={{ position:'fixed', inset:0, zIndex:9999,
+        background:'rgba(0,0,0,0.72)', display:'flex',
+        flexDirection:'column', justifyContent:'flex-end' }}>
+      <div onClick={e => e.stopPropagation()}
+        style={{ background:'#fff', borderRadius:'24px 24px 0 0',
+          maxHeight:'88vh', display:'flex', flexDirection:'column',
+          overflowY:'hidden' }}>
+
+        {/* Header */}
+        <div style={{ background:`linear-gradient(135deg,${G.dark},${G.mid})`,
+          borderRadius:'24px 24px 0 0', padding:'20px 20px 16px', flexShrink:0 }}>
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:12 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+              <div style={{ width:44, height:44, borderRadius:12,
+                background:'rgba(255,255,255,0.12)', display:'flex',
+                alignItems:'center', justifyContent:'center', fontSize:22 }}>
+                {catCfg.icon}
+              </div>
+              <div>
+                <div style={{ fontSize:18, fontWeight:800, color:'#fff', lineHeight:1.1 }}>{catCfg.label}</div>
+                <div style={{ fontSize:13, color:'rgba(255,255,255,0.6)', marginTop:2 }}>For {petName}</div>
+              </div>
+            </div>
+            <button onClick={onClose}
+              style={{ background:'rgba(255,255,255,0.12)', border:'none',
+                borderRadius:'50%', width:32, height:32, display:'flex',
+                alignItems:'center', justifyContent:'center',
+                color:'rgba(255,255,255,0.8)', fontSize:16, cursor:'pointer' }}>✕</button>
+          </div>
+          <div style={{ display:'flex', gap:8, background:'rgba(255,255,255,0.08)', borderRadius:12, padding:'10px 12px' }}>
+            <div style={{ width:20, height:20, borderRadius:'50%',
+              background:'linear-gradient(135deg,#6366F1,#8B5CF6)',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              fontSize:9, color:'#fff', flexShrink:0, marginTop:1 }}>✦</div>
+            <p style={{ fontSize:13, color:'rgba(255,255,255,0.8)', fontStyle:'italic', margin:0, lineHeight:1.5 }}>
+              "{miraQuote}"
+            </p>
+          </div>
+        </div>
+
+        {/* Tab bar */}
+        <div style={{ display:'flex', borderBottom:`1px solid ${G.border}`, background:'#fff', flexShrink:0 }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{ flex:1, padding:'11px 4px', background:'none', border:'none',
+                borderBottom:tab===t.id?`2.5px solid ${G.indigo}`:'2.5px solid transparent',
+                color:tab===t.id?G.indigo:'#888', fontSize:12,
+                fontWeight:tab===t.id?700:400, cursor:'pointer' }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Body */}
+        <div style={{ flex:1, overflowY:'auto', padding:'16px 16px 32px',
+          overscrollBehavior:'contain', WebkitOverflowScrolling:'touch' }}>
+
+          {tab === 'products' && (
+            <>
+              {loading && <div style={{ textAlign:'center', padding:'32px 0', color:G.mutedText }}>Loading…</div>}
+              {!loading && products.length === 0 && (
+                <div style={{ textAlign:'center', padding:'32px 0' }}>
+                  <div style={{ fontSize:32, marginBottom:12 }}>🌷</div>
+                  <div style={{ fontSize:14, color:G.mutedText }}>Products for {catCfg.label} are being added — check back soon.</div>
+                  <button onClick={() => { onClose(); onBook({ name:`${catCfg.label} arrangement`, id:category }); }}
+                    style={{ marginTop:16, padding:'12px 24px', borderRadius:14, border:'none',
+                      background:`linear-gradient(135deg,${G.mid},${G.indigo})`,
+                      color:'#fff', fontSize:14, fontWeight:700, cursor:'pointer' }}>
+                    Ask Concierge® to arrange →
+                  </button>
+                </div>
+              )}
+              {!loading && products.length > 0 && (
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(min(160px,100%),1fr))', gap:12 }}>
+                  {products.map(p => (
+                    <SharedProductCard key={p.id||p._id} product={p} pillar="farewell"
+                      selectedPet={pet} onViewDetails={() => setSelProd(p)} />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {tab === 'services' && (
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              {(dimServices.length === 0 ? FAREWELL_SERVICES : dimServices).map(svc => (
+                <div key={svc.id}
+                  style={{ background:G.pale, borderRadius:16, padding:'16px 18px', border:`1px solid ${G.border}` }}>
+                  <div style={{ display:'flex', alignItems:'flex-start', gap:12 }}>
+                    <div style={{ fontSize:24, flexShrink:0 }}>{svc.icon}</div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:3 }}>{svc.name}</div>
+                      <div style={{ fontSize:12, color:G.mutedText, lineHeight:1.5, marginBottom:10 }}>
+                        {svc.desc || svc.description || svc.tagline}
+                      </div>
+                      <button onClick={() => onBook(svc)}
+                        style={{ padding:'9px 18px', borderRadius:12, border:'none',
+                          background:`linear-gradient(135deg,${G.mid},${G.indigo})`,
+                          color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer' }}>
+                        Arrange for {petName} →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {tab === 'find' && <FarewellNearMe currentPet={pet} />}
+        </div>
+      </div>
+
+      {selProd && (
+        <ProductDetailModal product={selProd} pillar="farewell"
+          selectedPet={pet} onClose={() => setSelProd(null)} />
+      )}
+    </div>
+  );
+}
+
 export default function FarewellMobilePage() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -91,6 +287,7 @@ export default function FarewellMobilePage() {
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [catModal, setCatModal] = useState(null);
   const [selectedSvc, setSelectedSvc] = useState(null);
 
   useEffect(() => {
@@ -204,10 +401,7 @@ export default function FarewellMobilePage() {
           activeId={null}
           onSelect={id => {
             vibe();
-            if (id === 'memorial' || id === 'tribute') { setActiveTab('farewell'); setProdTab('Memorial & Grief'); }
-            else if (id === 'grief') { setActiveTab('farewell'); setProdTab('Keepsakes'); }
-            else if (id === 'eol' || id === 'cremation' || id === 'ceremony' || id === 'support') { setActiveTab('services'); }
-            else setActiveTab('farewell');
+            setCatModal(id);
           }}
           accentColor={G.indigo}
         />
@@ -415,6 +609,16 @@ export default function FarewellMobilePage() {
         token={token}
       />
     </div>{/* end contentRef wrapper */}
+
+    <FarewellContentModal
+      isOpen={!!catModal}
+      onClose={() => setCatModal(null)}
+      category={catModal}
+      pet={currentPet}
+      token={token}
+      services={services}
+      onBook={handleBookService}
+    />
     </PillarPageLayout>
   );
 }
