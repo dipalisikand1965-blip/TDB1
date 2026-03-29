@@ -196,11 +196,12 @@ const PILLAR_PATHS = [
 ];
 
 const MiraChatWidget = ({ 
-  pillar = 'general',
+  pillar: pillarProp = 'general',
   onProductClick = null,
   className = '',
   hideMiraChatOnPillarPages = false
 }) => {
+  const pillar = pillarProp || 'general';
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
@@ -406,6 +407,7 @@ const MiraChatWidget = ({
     trackPillarVisit(pillar);
 
     const fetchQuickPrompts = async () => {
+      if (!pillar || pillar === 'null') return;
       try {
         const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
         if (!cancelled && response.ok) {
