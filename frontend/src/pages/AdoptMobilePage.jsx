@@ -208,7 +208,7 @@ export default function AdoptMobilePage() {
         {/* Adopt Category Strip — always visible above tabs */}
         <PillarCategoryStrip
           categories={ADOPT_STRIP_CATS}
-          activeId={adoptStage}
+          activeId={openDim}
           onSelect={id => {
             vibe();
             if (id === 'guidance') { setActiveTab('services'); }
