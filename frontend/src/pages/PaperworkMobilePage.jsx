@@ -4,6 +4,7 @@
  * + DocumentVault at top + SoulMadeCollection
  * Colour: Teal #0D9488
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -308,6 +309,7 @@ export default function PaperworkMobilePage() {
         {/* Services Tab */}
         {mainTab === 'services' && (
           <>
+            <PillarConciergeCards pillar="paperwork" pet={currentPet} token={token} />
 
       {/* Concierge® Request Builder */}
       <div style={{ padding:'0 16px 16px' }}>

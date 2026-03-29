@@ -4,6 +4,7 @@
  * Colour: Deep Midnight #1A1A2E + Soft Indigo #6366F1
  * The most sacred pillar. For Mystique, and every beloved dog.
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -327,6 +328,7 @@ export default function FarewellMobilePage() {
         {/* TAB 2: Get Support */}
         {activeTab === 'services' && (
           <>
+          <PillarConciergeCards pillar="farewell" pet={currentPet} token={token} />
           {/* Mode-aware services intro */}
           <div style={{ padding:'16px 16px 8px' }}>
             <div style={{ fontSize:15, fontWeight:700, color:G.darkText, marginBottom:4 }}>

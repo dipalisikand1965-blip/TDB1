@@ -16,6 +16,7 @@
  * IMPORTANT: Mira widget and Concierge® button remain visible throughout
  */
 
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -488,6 +489,7 @@ const CelebratePageNew = () => {
       {/* Main content area with consistent max-width + padding for centering */}
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         {/* Soul Profile bar — pet/breed info + questions */}
+        <PillarConciergeCards pillar="celebrate" pet={selectedPet} token={token} />
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={selectedPet} token={token} pillar="celebrate" color="#E11D48" />
         </div>

@@ -120,7 +120,7 @@ const G = {
 
 function vibe(t = 'light') { if (navigator?.vibrate) navigator.vibrate(t === 'medium' ? [12] : [6]); }
 
-export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, preselect }) {
+export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, preselect, prefilledText }) {
   const [step, setStep] = useState(0); // 0=select service, 1=q1, 2=q2, 3=sending, 4=done, 'freetext'
   const [selectedService, setSelectedService] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -149,13 +149,18 @@ export default function ConciergeRequestBuilder({ pet, token, isOpen, onClose, p
   const allergyLabel = allergies.length > 0 ? ` · allergic to ${allergies.join(', ')}` : '';
 
   // Auto-select service when preselect prop is provided
+  // Auto-fill freetext when prefilledText prop is provided
   useEffect(() => {
     if (isOpen && preselect) {
       const svc = SERVICES.find(s => s.id === preselect);
       if (svc) { setSelectedService(svc); setStep(1); }
     }
+    if (isOpen && prefilledText) {
+      setFreeText(prefilledText);
+      setStep('freetext');
+    }
     if (!isOpen) { setStep(0); setSelectedService(null); setAnswers({}); setFreeText(''); }
-  }, [isOpen, preselect]);
+  }, [isOpen, preselect, prefilledText]);
 
   const reset = () => { setStep(0); setSelectedService(null); setAnswers({}); setFreeText(''); };
   const handleClose = () => { reset(); onClose(); };

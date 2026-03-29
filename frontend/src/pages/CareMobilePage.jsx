@@ -18,6 +18,7 @@
  *
  * Service booking uses CARE_SERVICES array + ServiceBookingModal (same as desktop)
  */
+import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -350,6 +351,7 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 2: Services ══════════ */}
         {activeTab === 'services' && (
           <div style={{ padding:'16px' }}>
+            <PillarConciergeCards pillar="care" pet={currentPet} token={token} />
             <div style={{ fontSize:22, fontWeight:800, color:G.darkText, marginBottom:4 }}>
               Care Services for <span style={{ color:G.sage }}>{petName}</span>
             </div>
