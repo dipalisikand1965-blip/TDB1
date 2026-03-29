@@ -569,6 +569,8 @@ export const KNOWN_BREEDS = [
   'samoyed','springer spaniel','vizsla','weimaraner',
   'scottish terrier','bernese mountain','havanese','boston terrier',
   'chow chow',
+  // Doodle / mixed breeds found in product catalog
+  'labradoodle','goldendoodle','cockapoo','cavapoo','schnoodle','maltipoo',
   // Additional breeds found in product catalog — MUST be here to block cross-breed contamination
   'corgi','pembroke corgi','cardigan corgi','welsh corgi',
   'spitz','indian spitz','german spitz',

@@ -41,7 +41,7 @@ KNOWN_BREED_NAMES = sorted([
     "coton de tulear", "rhodesian ridgeback",
     "leonberger", "newfoundland",
     # Breeds found in product catalogue — must be here for name detection
-    "american bully", "labradoodle", "goldendoodle", "cockapoo", "cavapoo",
+    "american bully", "labradoodle", "goldendoodle", "cockapoo", "cavapoo", "schnoodle",
     "alaskan malamute", "malamute", "miniature schnauzer", "giant schnauzer",
     "miniature poodle", "toy poodle", "standard poodle",
     "english springer spaniel", "springer spaniel",
