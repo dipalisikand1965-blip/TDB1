@@ -193,6 +193,8 @@ export function getLearnDims(pet) {
 }
 
 export const DIM_ID_TO_CATEGORY = {
+  foundations: "training",
+  behaviour:   "behavior",
   training:    "training",
   tricks:      "tricks",
   enrichment:  "enrichment",
@@ -539,6 +541,15 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [guidedPath, setGuidedPath] = useState(null);
   const { token } = useAuth();
+  // ── Scroll lock: prevent background page from scrolling when modal is open ──
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
   const catCfg = LEARN_CATS.find(c => c.id === category) || {};
   const petName = pet?.name || "your dog";
   const breed   = pet?.breed ? pet.breed.split("(")[0].trim() : "";
