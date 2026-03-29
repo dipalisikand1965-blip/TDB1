@@ -1121,6 +1121,16 @@ export const CATEGORY_CONFIG = {
     miraLabel: 'Soul-curated by Mira',
     emptyText: 'Mira is curating your picks!'
   },
+  'portraits': {
+    emoji: '📸', label: 'Portraits & Photoshoots',
+    miraLabel: 'Capture this moment beautifully',
+    emptyText: 'Portraits & photoshoot packages coming soon!'
+  },
+  'memory_books': {
+    emoji: '📖', label: 'Memory Books & Keepsakes',
+    miraLabel: 'A lifetime of memories, beautifully bound',
+    emptyText: 'Memory books and keepsakes coming soon!'
+  },
 };
 
 // ── Main Modal ──────────────────────────────────────────────────────────────
