@@ -565,7 +565,7 @@ const SoulProductCard = ({ product, petName, isFirst, isConcierge, onAddToCart, 
           ? <img src={image} alt={product.name} className="w-full h-full object-cover" />
           : <span style={{ fontSize: 40 }}>🎁</span>}
         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
-          <span className="text-xs text-white bg-black/50 px-2 py-1 rounded-full">View details</span>
+          <span className="tdc-chip" style={{ background:'rgba(0,0,0,0.5)', color:'#fff', borderColor:'rgba(255,255,255,0.2)' }}>View details</span>
         </div>
       </div>
       {/* Info */}

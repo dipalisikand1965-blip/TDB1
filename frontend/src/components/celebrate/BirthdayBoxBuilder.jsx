@@ -62,14 +62,14 @@ const SlotRow = ({ slot, index }) => {
       </div>
 
       {slot.isAllergySafe && (
-        <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
-          style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac', fontSize: '10px' }}>
+        <span className="tdc-chip flex-shrink-0"
+          style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac', borderColor: 'rgba(34,197,94,0.3)', fontSize: '10px' }}>
           Safe
         </span>
       )}
       {slot.hiddenUntilDelivery && (
-        <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-semibold"
-          style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF', fontSize: '10px' }}>
+        <span className="tdc-chip flex-shrink-0"
+          style={{ background: 'rgba(196,77,255,0.18)', color: '#E0AAFF', borderColor: 'rgba(196,77,255,0.3)', fontSize: '10px' }}>
           Surprise
         </span>
       )}
@@ -170,8 +170,8 @@ const StepAllergyCheck = ({ boxData, petName, onBack, onConfirm, isOrdering }) =
               <p className="text-sm font-semibold text-white">{healthSlot.itemName || healthSlot.chipLabel}</p>
               <p className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>{healthSlot.description}</p>
             </div>
-            <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
-              style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}>
+            <span className="tdc-chip"
+              style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac', borderColor: 'rgba(34,197,94,0.3)' }}>
               Allergy-safe
             </span>
           </div>
@@ -300,8 +300,8 @@ const StepConciergeHandoff = ({ petName, ticketId, boxData, onClose }) => {
           </p>
         </div>
         {ticketId && (
-          <span className="ml-auto text-xs font-mono px-2 py-0.5 rounded-full flex-shrink-0"
-            style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac' }}>
+          <span className="tdc-chip ml-auto flex-shrink-0"
+            style={{ background: 'rgba(34,197,94,0.18)', color: '#86efac', borderColor: 'rgba(34,197,94,0.3)', fontFamily: 'monospace' }}>
             {ticketId}
           </span>
         )}

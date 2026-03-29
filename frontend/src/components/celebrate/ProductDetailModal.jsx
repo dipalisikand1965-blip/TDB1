@@ -261,7 +261,7 @@ const ProductDetailModal = ({
                   <span className="font-bold" style={{ fontSize: 18, color: '#C9973A' }}>
                     Concierge® Service
                   </span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
+                  <span className="tdc-chip" style={{ background:'#fef3c7', color:'#92400e', borderColor:'#fde68a' }}>
                     Custom Quote
                   </span>
                 </div>

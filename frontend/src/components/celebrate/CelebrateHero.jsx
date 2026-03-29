@@ -35,7 +35,7 @@ const SoulChip = ({ icon, label, value, chipStyle }) => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.3 }}
-    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-white"
+    className="tdc-chip"
     style={chipStyle}
   >
     <span>{icon}</span>
