@@ -241,6 +241,7 @@ const PillarPageLayout = ({
   
   // Concierge Request Builder state (desktop floating button)
   const [conciergeLayoutOpen, setConciergeLayoutOpen] = useState(false);
+  const [prefilledIntent, setPrefilledIntent] = useState('');
   const [pillarCardsOpen, setPillarCardsOpen] = useState(false);
   
   // Get pillar-specific gradient for bottom section
@@ -507,6 +508,11 @@ const PillarPageLayout = ({
                 pet={activePet}
                 token={token}
                 onSheetClose={() => setPillarCardsOpen(false)}
+                onCardSelect={(intent) => {
+                  setPillarCardsOpen(false);
+                  setPrefilledIntent(intent);
+                  setConciergeLayoutOpen(true);
+                }}
               />
             </div>
           </div>
@@ -518,7 +524,8 @@ const PillarPageLayout = ({
       pet={activePet}
       token={token}
       isOpen={conciergeLayoutOpen}
-      onClose={() => setConciergeLayoutOpen(false)}
+      onClose={() => { setConciergeLayoutOpen(false); setPrefilledIntent(''); }}
+      prefilledText={prefilledIntent}
     />
   </>
   );

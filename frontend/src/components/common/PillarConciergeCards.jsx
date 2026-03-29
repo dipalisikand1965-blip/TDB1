@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import ConciergeRequestBuilder from '../services/ConciergeRequestBuilder';
 
 const PILLAR_CARDS = {
@@ -124,66 +123,50 @@ const PILLAR_CARDS = {
   ]},
 };
 
-export default function PillarConciergeCards({ pillar, pet, token, onSheetClose }) {
-  const [builderOpen, setBuilderOpen] = useState(false);
-  const [preselectedIntent, setPreselectedIntent] = useState('');
+export default function PillarConciergeCards({ pillar, pet, token, onSheetClose, onCardSelect }) {
   const config = PILLAR_CARDS[pillar] || PILLAR_CARDS.services;
   const { color, intro, cards } = config;
   const petName = pet?.name || 'your dog';
 
   const handleCard = (card) => {
-    setPreselectedIntent(card.title.replace('my dog', petName).replace('My dog', petName));
-    // Close the parent sheet first, then open builder
-    if (onSheetClose) onSheetClose();
-    setBuilderOpen(true);
+    const intent = card.title.replace('my dog', petName).replace('My dog', petName);
+    if (onCardSelect) {
+      onCardSelect(intent);   // lift intent to PillarPageLayout — builder opens there
+    }
   };
 
   return (
-    <>
-      <div style={{ padding:'0 0 8px' }}>
-        <div style={{ fontSize:14, color:'#6B7280', marginBottom:16, lineHeight:1.6, fontStyle:'italic' }}>
-          {intro}
-        </div>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-          {cards.map((card, i) => (
-            <button key={i} onClick={() => handleCard(card)}
-              style={{ display:'flex', flexDirection:'column', alignItems:'flex-start',
-                padding:'14px', borderRadius:16, cursor:'pointer', textAlign:'left',
-                background: color + '12', border: '1.5px solid ' + color + '30',
-                transition:'all 0.15s', width:'100%' }}>
-              <span style={{ fontSize:20, marginBottom:8 }}>{card.icon}</span>
-              <div style={{ fontSize:13, fontWeight:700, color:'#1A0A2E', lineHeight:1.3, marginBottom:6 }}>
-                {card.title.replace('my dog', petName).replace('My dog', petName)}
-              </div>
-              <div style={{ fontSize:11, color:'#6B7280', lineHeight:1.4, marginBottom:10 }}>
-                {card.sub.replace('your dog', petName)}
-              </div>
-              <div style={{
-                marginTop: 'auto',
-                display: 'inline-flex',
-                alignItems: 'center',
-                fontSize: 10,
-                fontWeight: 700,
-                color: color,
-                background: color + '15',
-                borderRadius: 6,
-                padding: '3px 8px',
-                letterSpacing: '0.01em',
-                whiteSpace: 'nowrap',
-                border: `1px solid ${color}30`,
-              }}>
-                C®
-              </div>
-            </button>
-          ))}
-        </div>
+    <div style={{ padding:'0 0 8px' }}>
+      <div style={{ fontSize:14, color:'#6B7280', marginBottom:16, lineHeight:1.6, fontStyle:'italic' }}>
+        {intro}
       </div>
-      <ConciergeRequestBuilder
-        pet={pet} token={token}
-        isOpen={builderOpen}
-        onClose={() => setBuilderOpen(false)}
-        prefilledText={preselectedIntent}
-      />
-    </>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        {cards.map((card, i) => (
+          <button key={i} onClick={() => handleCard(card)}
+            style={{ display:'flex', flexDirection:'column', alignItems:'flex-start',
+              padding:'14px', borderRadius:16, cursor:'pointer', textAlign:'left',
+              background: color + '12', border: '1.5px solid ' + color + '30',
+              transition:'all 0.15s', width:'100%' }}>
+            <span style={{ fontSize:20, marginBottom:8 }}>{card.icon}</span>
+            <div style={{ fontSize:13, fontWeight:700, color:'#1A0A2E', lineHeight:1.3, marginBottom:6 }}>
+              {card.title.replace('my dog', petName).replace('My dog', petName)}
+            </div>
+            <div style={{ fontSize:11, color:'#6B7280', lineHeight:1.4, marginBottom:10 }}>
+              {card.sub.replace('your dog', petName)}
+            </div>
+            <div style={{
+              marginTop: 'auto',
+              display: 'inline-flex', alignItems: 'center',
+              fontSize: 10, fontWeight: 700, color: color,
+              background: color + '15', borderRadius: 6, padding: '3px 8px',
+              letterSpacing: '0.01em', whiteSpace: 'nowrap',
+              border: `1px solid ${color}30`,
+            }}>
+              C®
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
