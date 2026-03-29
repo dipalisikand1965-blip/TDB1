@@ -532,6 +532,13 @@ export default function CelebrateMobilePage() {
 
         <div style={{ padding:'0 16px 24px' }}><PersonalisedBreedSection pet={currentPet} pillar="celebrate" /></div>
 
+        {/* Mira Soul Nudge — surface unanswered soul questions in celebration context */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 12px' }}>
+            <MiraSoulNudge pet={currentPet} token={token} context="celebrate" limit={3} />
+          </div>
+        )}
+
         {/* Guided paths */}
         <div style={{ padding:'0 16px 24px' }}>
           <GuidedCelebratePaths pet={currentPet} />
