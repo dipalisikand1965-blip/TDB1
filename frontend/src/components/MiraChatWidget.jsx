@@ -1786,9 +1786,9 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
-  // If hideMiraChatOnPillarPages=true, don't render on pages that have their own pillar widget
-  // This check is AFTER all hooks to comply with React rules of hooks
-  if (hideMiraChatOnPillarPages && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
+  // On mobile pillar pages — hide global FAB (those pages have their own inline Mira)
+  // On DESKTOP — always show the floating panel, even on pillar pages
+  if (hideMiraChatOnPillarPages && isMobile && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
     return null;
   }
 
