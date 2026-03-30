@@ -141,9 +141,45 @@ export default function ServiceConciergeModal({ service, pet, user, onClose, onB
     setLoading(true);
     try {
       const token = localStorage.getItem('tdb_auth_token');
-      const dateNote = notSureDate ? '' : (serviceDate ? ` Date: ${serviceDate}.` : '');
-      const notesNote = notes.trim() ? ` Notes: ${notes.trim()}` : '';
       const serviceDesc = selectedType || service?.name || 'a service';
+      const allergies   = pet?.allergies || [];
+      const lifeVision  = pet?.doggy_soul_answers?.life_vision || '';
+
+      const briefingLines = [
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '🐾 PET',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Name:      ${petName}`,
+        `Breed:     ${pet?.breed || '—'}`,
+        `Allergies: ${allergies.length ? '⚠️ NO ' + allergies.join(', NO ') : 'None known'}`,
+        lifeVision ? `North Star: "${lifeVision}"` : '',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '👤 PET PARENT',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Name:      ${user?.name || user?.full_name || '—'}`,
+        `Phone:     ${user?.phone || user?.whatsapp || '—'}`,
+        `Email:     ${user?.email || '—'}`,
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '📋 REQUEST',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Intent:    Service booking`,
+        `Pillar:    ${pillar}`,
+        `Service:   ${service?.name || serviceDesc}`,
+        selectedType && selectedType !== service?.name ? `Type:      ${selectedType}` : '',
+        !notSureDate && serviceDate ? `Delivery:  ${serviceDate}` : 'Delivery:  Date TBC',
+        notes.trim() ? `Notes:     ${notes.trim()}` : '',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '⚡ ACTION REQUIRED',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        allergies.length ? `🔴 ALLERGY ALERT: No ${allergies.join(', ')} in ANY product` : '',
+        lifeVision ? `🌟 NORTH STAR: ${lifeVision}` : '',
+        'Please confirm service availability and pricing via WhatsApp within 2 hours.',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      ].filter(l => l !== '').join('\n');
+
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
         method: 'POST',
         headers: {
@@ -151,18 +187,40 @@ export default function ServiceConciergeModal({ service, pet, user, onClose, onB
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          parent_id:       user?.id || user?.email || 'guest',
-          pet_id:          pet?.id || pet?._id || 'unknown',
+          parent_id:     user?.id || user?.email || 'guest',
+          parent_email:  user?.email || '',
+          parent_name:   user?.name || user?.full_name || '',
+          parent_phone:  user?.phone || user?.whatsapp || '',
+          pet_id:        pet?.id || pet?._id || 'unknown',
+          pet_name:      petName,
+          pet_breed:     pet?.breed || '',
+          pet_allergies: allergies,
+          life_vision:   lifeVision,
           pillar,
-          intent_primary:  'booking_intent',
-          channel:         'services_page',
-          life_state:      'PLAN',
-          urgency:         'high',
-          status:          'open',
-          force_new:       true,
+          intent_primary: 'booking_intent',
+          channel:        'services_concierge_modal',
+          urgency:        'high',
+          status:         'open',
+          force_new:      true,
+          subject:        `Service Booking: ${service?.name || serviceDesc} for ${petName}`,
           initial_message: {
             sender: 'parent',
-            text:   `${petName}'s parent wants to book: ${service?.name || serviceDesc} (${serviceDesc}) via services page.${dateNote}${notesNote}`,
+            text:   briefingLines,
+          },
+          metadata: {
+            pet_name:      petName,
+            pet_breed:     pet?.breed || '',
+            pet_allergies: allergies,
+            life_vision:   lifeVision,
+            parent_phone:  user?.phone || user?.whatsapp || '',
+            parent_email:  user?.email || '',
+            parent_name:   user?.name || user?.full_name || '',
+            service_name:  service?.name || serviceDesc,
+            pillar,
+            channel:       'services_concierge_modal',
+            delivery_date: notSureDate ? '' : serviceDate,
+            notes:         notes.trim(),
+            urgency:       'high',
           },
         }),
       });
