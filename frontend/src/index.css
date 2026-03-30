@@ -224,6 +224,15 @@ select {
    TOUCH TARGET SIZES - iOS 44px, Android 48px
    ============================================ */
 button,
+
+/* iOS fix — buttons inside pan-y scroll containers need this to fire clicks */
+.mira-chat-messages button,
+.mira-chat-messages a {
+  -webkit-user-select: auto;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
 [role="button"],
 a.btn,
 .touchable {
