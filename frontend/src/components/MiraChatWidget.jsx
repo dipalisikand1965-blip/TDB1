@@ -149,6 +149,8 @@ const PILLAR_OPENING_LINES = {
   farewell:  (pn, gr) => `${gr}. This is one of the hardest times. I'm here with you and ${pn}.`,
   adopt:     (pn, gr) => `${gr}. Thinking about bringing a new friend home? I can help you find the right match.`,
   shop:      (pn, gr) => `${gr}. Looking for something for ${pn}? I'll point you to the best.`,
+  go:        (pn, gr) => `${gr}. I know all the best spots for ${pn}. Where are we going today — a park, trail, or somewhere new?`,
+  play:      (pn, gr) => `${gr}. ${pn} is ready to play! What are we doing today — dog park, trail, or outdoor adventure?`,
   general:   (pn, gr) => `${gr}! How can I help${pn ? ` with ${pn}` : ''} today? 🐾`,
 };
 
@@ -168,6 +170,8 @@ const PILLAR_CHIPS = {
   farewell:  ['💕 Help me plan {petName}\'s farewell', '✦ Talk to Mira'],
   adopt:     ['🐾 Help me find the right pet', '✦ Are we ready to adopt?'],
   shop:      ['🛒 What does {petName} need from the shop?', '✦ Best sellers for {petName}'],
+  go:        ['🗺️ Find dog-friendly spots for {petName}', '✦ Plan a trip with {petName}'],
+  play:      ['🌳 Find a dog park near me', '✦ What should {petName} play today?'],
   general:   ['✦ How is {petName} today?', '📋 What\'s on {petName}\'s plan?'],
 };
 
@@ -320,7 +324,8 @@ const MiraChatWidget = ({
     farewell: { icon: '🌈', name: 'Farewell', color: 'from-indigo-400 to-purple-400' },
     adopt: { icon: '🐾', name: 'Adopt', color: 'from-green-500 to-emerald-500' },
     shop: { icon: '🛒', name: 'Shop', color: 'from-indigo-500 to-purple-500' },
-    play: { icon: '🌳', name: 'Play', color: 'from-orange-500 to-red-800' }
+    play: { icon: '🌳', name: 'Play', color: 'from-orange-500 to-red-800' },
+    go:   { icon: '🗺️', name: 'Go',   color: 'from-teal-500 to-cyan-600' }
   };
   
   const config = pillarConfig[pillar] || pillarConfig.general;
@@ -1838,7 +1843,7 @@ const MiraChatWidget = ({
         `}
         style={{ 
           maxHeight: '100dvh',
-          overflow: 'hidden' // CRITICAL: Container doesn't scroll
+          overflowX: 'hidden' // clip horizontal for rounded corners; Zone B owns vertical scroll
         }}
       >
         {/* ═══════════════════════════════════════════════════════════════════
