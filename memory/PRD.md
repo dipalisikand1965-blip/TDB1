@@ -566,7 +566,17 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 **Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
 
 
-### SESSION 34 — (2026-03-30) Design Bible v2 + Cake Cart Flow
+### SESSION 35 — (2026-03-30) Cake Modal Z-index Fix + Cart Safety Guards + PillarPageLayout Header Fix
+
+1. ✅ **DoggyBakeryCakeModal.jsx** — Raised z-index to max (`2147483640/641/642`) for backdrop, modal container, and order panel. This fixes the modal going behind page content.
+2. ✅ **Order panel scroll** — Fixed bottom sheet: `maxHeight:'92vh'`, `overflowY:'auto'`, `WebkitOverflowScrolling:'touch'`, `paddingBottom: env(safe-area-inset-bottom)`. Form fields now fully accessible.
+3. ✅ **CartSidebar.jsx** — Added `String()` coercions to all `customDetails` renders (date, flavour, shape, name, allergies, lifeVision). Prevents "Objects are not valid as a React child" Date crashes.
+4. ✅ **Checkout.jsx** — Added `String()` guards on `petSoulInsights.answers.diet_type` and `favorite_treats` renders to prevent object crashes from raw MongoDB data.
+5. ✅ **PillarPageLayout.jsx** — Changed pillar sub-nav from `sticky top-0 z-40` to `sticky top-16 z-40`. Prevents pillar nav overlapping main Navbar on scroll.
+
+---
+
+## SESSION 34 — (2026-03-30) Design Bible v2 + Cake Cart Flow
 
 **Design Bible v2 (tdc-design-tokens (1).css — Session 97 master):**
 

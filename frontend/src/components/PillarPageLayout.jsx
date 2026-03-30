@@ -313,7 +313,7 @@ const PillarPageLayout = ({
       
       {/* Navigation Bar - Subcategories Only (Removed clinical Products/Services toggle) */}
       {!hideNavigation && (
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 overflow-hidden">
+      <div className="bg-white border-b border-gray-100 sticky top-16 z-40 overflow-hidden">
         <div className="max-w-6xl mx-auto overflow-hidden">
           {/* Subcategories Row - Now the primary navigation */}
           {showSubcategories && subcategories.length > 0 && (

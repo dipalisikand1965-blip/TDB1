@@ -369,9 +369,9 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   const TIME_SLOTS = ['10am – 12pm', '12pm – 2pm', '2pm – 4pm', '4pm – 6pm', '6pm – 8pm'];
 
   const orderPanel = orderProduct && (
-    <div style={{ position:'fixed', inset:0, zIndex:9300, display:'flex', alignItems:'flex-end', justifyContent:'center', touchAction:'none' }}>
-      <div onClick={() => setOrderProduct(null)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.5)' }} />
-      <div style={{ position:'relative', width:'100%', maxWidth:560, background:'#FFFBFF', borderRadius:'20px 20px 0 0', padding:'24px 20px 40px', paddingTop:'env(safe-area-inset-top, 0px)', maxHeight:'90vh', overflowY:'auto', boxShadow:'0 -16px 60px rgba(155,89,182,0.2)' }}>
+    <div style={{ position:'fixed', inset:0, zIndex:2147483642, display:'flex', alignItems:'flex-end', justifyContent:'center', touchAction:'none' }}>
+      <div onClick={() => setOrderProduct(null)} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.6)' }} />
+      <div style={{ position:'relative', width:'100%', maxWidth:560, background:'#FFFBFF', borderRadius:'20px 20px 0 0', padding:'24px 20px 40px', maxHeight:'92vh', overflowY:'auto', overflowX:'hidden', WebkitOverflowScrolling:'touch', boxShadow:'0 -16px 60px rgba(155,89,182,0.25)', paddingBottom:'max(40px, env(safe-area-inset-bottom, 40px))' }}>
 
         {/* Header */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:18 }}>
@@ -517,23 +517,23 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
       {/* Backdrop */}
       <div
         onClick={handleClose}
-        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 9200 }}
+        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 2147483640 }}
       />
 
       {/* Modal */}
       <div
         data-testid="doggy-bakery-cake-modal"
         style={{
-          position: 'fixed', inset: 0, zIndex: 9201,
+          position: 'fixed', inset: 0, zIndex: 2147483641,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '16px', pointerEvents: 'none',
+          padding: '16px', pointerEvents: 'none', overflow: 'hidden',
         }}
       >
         <div
           onClick={e => e.stopPropagation()}
           style={{
             width: '100%', maxWidth: 620,
-            maxHeight: '90vh', overflowY: 'auto',
+            maxHeight: '90dvh', maxHeight: '90vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch',
             background: '#FFFBFF', borderRadius: 20,
             boxShadow: '0 24px 80px rgba(155,89,182,0.25)',
             pointerEvents: 'all',
