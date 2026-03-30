@@ -1291,9 +1291,10 @@ const MiraChatWidget = ({
           // ── Post-stream product fetch — smart query-matched picks ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
           const _activePillar = currentPillar || pillar;
-          if (_streamPetId && _activePillar) {
+          if (_streamPetId) {
             const _queryParam = encodeURIComponent(messageToSend || '');
-            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?pillar=${_activePillar}&limit=4&query=${_queryParam}`)
+            const _pillarParam = _activePillar ? `&pillar=${_activePillar}` : '';
+            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?limit=4&query=${_queryParam}${_pillarParam}`)
               .then(r => r.json())
               .then(d => {
                 const picks = d.picks || d.products || [];
