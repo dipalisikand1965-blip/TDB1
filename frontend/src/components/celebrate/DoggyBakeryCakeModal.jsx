@@ -15,6 +15,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import SoulMadeModal from '../SoulMadeModal';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -115,6 +116,7 @@ function validImg(url) {
 
 export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onCloseProp }) {
   const { token } = useAuth();
+  const { addToCart } = useCart();
   const [isOpen, setIsOpen] = useState(!!petProp);
   const [pet, setPet] = useState(petProp || null);
 
@@ -141,9 +143,6 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   const [cakeMessage,    setCakeMessage]    = useState('');
   const [errors,         setErrors]         = useState({});
   const [orderSending,   setOrderSending]   = useState(false);
-  const [orderConfirmed, setOrderConfirmed] = useState(false);
-  const [orderId,        setOrderId]        = useState('');
-  const [ticketId,       setTicketId]       = useState('');
 
   // Modals
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
@@ -204,9 +203,6 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
     setDeliveryType('');
     setCakeMessage('');
     setErrors({});
-    setOrderConfirmed(false);
-    setOrderId('');
-    setTicketId('');
   }, [pet]);
 
   // Validate — every field compulsory
@@ -223,58 +219,104 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
     return Object.keys(e).length === 0;
   }, [selectedFlavour, selectedBase, selectedSize, petNameOnCake, deliveryDate, deliveryTime, deliveryType]);
 
-  // Confirm order: POST to /api/celebrate/cake-order
+  // Confirm order: 1) add to cart immediately  2) fire service desk ticket in background
   const handleConfirmOrder = useCallback(async () => {
     if (!validate()) return;
     setOrderSending(true);
     try {
-      const res = await fetch(`${API_URL}/api/celebrate/cake-order`, {
+      // Resolve the best product image (TDC priority order from design bible)
+      const productImage = orderProduct?.watercolor_image
+        || orderProduct?.cloudinary_url
+        || orderProduct?.mockup_url
+        || orderProduct?.primary_image
+        || orderProduct?.image_url
+        || orderProduct?.image
+        || '';
+
+      const cakeShape = orderProduct?.tags?.find(
+        t => ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)
+      ) || '';
+
+      // ── 1. Add to cart immediately ───────────────────────────────────────
+      addToCart(
+        {
+          id:    orderProduct?.id || `cake-${Date.now()}`,
+          name:  orderProduct?.name || 'Custom Birthday Cake',
+          price: totalPrice,
+          image: productImage,
+          pillar: 'celebrate',
+          isCakeOrder: true,
+          customDetails: {
+            // Taste
+            flavour:      selectedFlavour,
+            base:         selectedBase,
+            size:         selectedSize,
+            shape:        cakeShape,
+            // Personalisation
+            customName:   petNameOnCake,
+            message:      cakeMessage || '',
+            // Delivery
+            date:         deliveryDate,
+            deliveryTime: deliveryTime,
+            deliveryType: deliveryType,
+            // Pet
+            petId:        pet?.id,
+            petName:      petName,
+            petBreed:     pet?.breed || '',
+            petAllergies: allergies,
+            // North star / soul
+            lifeVision:   pet?.doggy_soul_answers?.life_vision || '',
+            // Product meta
+            productName:  orderProduct?.name,
+            productPrice: orderProduct?.original_price,
+            pillar:       'celebrate',
+            source:       'doggy_bakery_cake_modal',
+          },
+        },
+        selectedSize,
+        selectedFlavour,
+        1
+      );
+
+      // ── 2. Fire service desk ticket in background (non-blocking) ─────────
+      fetch(`${API_URL}/api/celebrate/cake-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          // Pet details
-          pet_id:            pet?.id,
-          pet_name:          petName,
-          pet_breed:         pet?.breed || '',
-          pet_allergies:     allergies,
-          // Product
-          product_name:      orderProduct?.name,
-          product_id:        orderProduct?.id,
-          product_image:     orderProduct?.image_url,
-          product_price:     orderProduct?.original_price,
-          // Customisation — ALL compulsory
-          flavour:           selectedFlavour,
-          base:              selectedBase,
-          size:              selectedSize,
-          shape:             orderProduct?.tags?.find(t => ['Circle','Bone','Heart','Square','Star','Paw'].includes(t)) || '',
-          pet_name_on_cake:  petNameOnCake,
-          message_on_cake:   cakeMessage || '',
-          // Delivery — ALL compulsory
-          delivery_date:     deliveryDate,
-          delivery_time:     deliveryTime,
-          delivery_type:     deliveryType,
-          // Pricing
-          total_price:       totalPrice,
-          // Source
-          source:            'doggy_bakery_cake_modal',
+          pet_id:           pet?.id,
+          pet_name:         petName,
+          pet_breed:        pet?.breed || '',
+          pet_allergies:    allergies,
+          product_name:     orderProduct?.name,
+          product_id:       orderProduct?.id,
+          product_image:    productImage,
+          product_price:    orderProduct?.original_price,
+          flavour:          selectedFlavour,
+          base:             selectedBase,
+          size:             selectedSize,
+          shape:            cakeShape,
+          pet_name_on_cake: petNameOnCake,
+          message_on_cake:  cakeMessage || '',
+          delivery_date:    deliveryDate,
+          delivery_time:    deliveryTime,
+          delivery_type:    deliveryType,
+          total_price:      totalPrice,
+          life_vision:      pet?.doggy_soul_answers?.life_vision || '',
+          source:           'doggy_bakery_cake_modal',
         }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOrderConfirmed(true);
-        setOrderId(data.cake_order_id || '');
-        setTicketId(data.ticket_id || '');
-      } else {
-        throw new Error(data.message || 'Order failed');
-      }
+      }).catch(e => console.warn('[DoggyBakeryCakeModal] ticket fire failed (non-critical):', e));
+
+      // ── 3. Close modal — cart is now open ────────────────────────────────
+      onCloseProp?.();
+
     } catch (e) {
-      console.error('[DoggyBakeryCakeModal] order failed', e);
+      console.error('[DoggyBakeryCakeModal] addToCart failed', e);
     }
     setOrderSending(false);
-  }, [validate, orderProduct, selectedFlavour, selectedBase, selectedSize, petNameOnCake, deliveryDate, deliveryTime, deliveryType, cakeMessage, allergies, totalPrice, pet, petName, token]);
+  }, [validate, addToCart, orderProduct, selectedFlavour, selectedBase, selectedSize, petNameOnCake, deliveryDate, deliveryTime, deliveryType, cakeMessage, allergies, totalPrice, pet, petName, token, onCloseProp]);
 
   // ── Breed match row ───────────────────────────────────────────────────────
   const matchedBreedCakes = breedCakes.filter(p => {
@@ -340,28 +382,8 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
           </button>
         </div>
 
-        {/* ── Confirmation screen ───────────────────────────────────────── */}
-        {orderConfirmed ? (
-          <div style={{ textAlign:'center', padding:'40px 24px', background:'linear-gradient(135deg,#1A0A2E,#4A1B6D)', borderRadius:20, color:'#fff' }}>
-            <div style={{ fontSize:56, marginBottom:16 }}>🎂</div>
-            <div style={{ fontSize:22, fontWeight:800, marginBottom:8 }}>Order placed for {petName}!</div>
-            <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginBottom:8 }}>Order ID: {orderId}</div>
-            <div style={{ fontSize:14, color:'rgba(255,255,255,0.7)', marginBottom:20, lineHeight:1.6 }}>
-              {selectedFlavour} · {selectedBase} base · {selectedSize}<br/>
-              Delivery: {deliveryDate} · {deliveryTime}<br/>
-              Name on cake: {petNameOnCake}
-            </div>
-            <div style={{ background:'rgba(255,255,255,0.1)', borderRadius:12, padding:'12px 16px', fontSize:13, color:'rgba(255,255,255,0.8)', marginBottom:20 }}>
-              ✦ Your Concierge® will confirm within 2 hours.<br/>
-              Reference: {ticketId}
-            </div>
-            <button onClick={() => setOrderProduct(null)} style={{ background:'rgba(255,255,255,0.15)', border:'1px solid rgba(255,255,255,0.3)', color:'#fff', borderRadius:20, padding:'10px 28px', fontSize:14, fontWeight:700, cursor:'pointer' }}>
-              Done
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* ── CAKE FLAVOUR ─────────────────────────────────────────── */}
+        {/* ── Order form ────────────────────────────────────────────────── */}
+          {/* ── CAKE FLAVOUR ─────────────────────────────────────────── */}
             <div style={{ fontSize:11, fontWeight:700, color:'#9B59B6', letterSpacing:'0.08em', marginBottom:10 }}>CAKE FLAVOUR *</div>
             <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:4 }}>
               {FLAVOURS.map(f => {
@@ -485,7 +507,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
               {orderSending ? 'Placing order…' : 'Confirm Order →'}
             </button>
           </>
-        )}
+        </div>
       </div>
     </div>
   );
