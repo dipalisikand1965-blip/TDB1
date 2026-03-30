@@ -1,6 +1,13 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-29 (Session 33 — life_vision in Mira AI + Learn mobile layout + CelebrateMobilePage verified)
-## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
+## Last Updated: 2026-03-30 (Session 34 — Stock Photo Purge)
+
+## IRON RULE: NO STOCK PHOTOS (Added Session 34)
+- **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
+- Pet photos → `pet.photo_url` from DB
+- Product images → `cloudinary_url || mockup_url || image_url` from DB
+- Hero/banner images → TDC branded CSS gradients (`#1A0A2E`, `#2D1B69`, gold `#D4A840`)
+- Empty states → gradient cards with emoji + pillar accent color
+- This rule was enforced on 2026-03-30: 206 Unsplash URLs removed from server.py; 31 removed from frontend JSX files
 
 ---
 

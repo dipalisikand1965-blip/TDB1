@@ -56,7 +56,7 @@ const HERO_IMAGES = {
   default: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/84cb230bb28acc363cdf69d0a236b1efac3ec8bf0b82c9c8648399580ada71e2.png',
   // Fish/salmon based - clearly NOT chicken
   noChicken: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/04c6413f93f0795b99ecf949db068eff7fda67337520ee7eeb58f6568ef825be.png',
-  noMeat: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&q=80' // Vegetarian option
+  noMeat: 'https://static.prod-images.emergentagent.com/jobs/99ab70cf-a57b-46c1-987d-9e895d2af777/images/84cb230bb28acc363cdf69d0a236b1efac3ec8bf0b82c9c8648399580ada71e2.png' // Use TDC default branded image
 };
 
 const CARD_IMAGES = {
@@ -771,15 +771,9 @@ const MealsPage = () => {
           </div>
         </>
       ) : (
-        /* Non-logged in users: Show original hero */
-        <div className="relative bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white py-12 sm:py-20 px-4 overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
-            <img 
-              src="https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=1200"
-              alt="Fresh Pet Food"
-              className="w-full h-full object-cover"
-            />
-          </div>
+        /* Non-logged in users: Show branded gradient hero */
+        <div className="relative bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 text-white py-12 sm:py-20 px-4 overflow-hidden">
+          <div className="absolute inset-0 opacity-10" style={{background:'linear-gradient(135deg,rgba(255,255,255,0.2) 0%,transparent 60%)'}} />
           
           {/* Mobile Back Button */}
           <button 
