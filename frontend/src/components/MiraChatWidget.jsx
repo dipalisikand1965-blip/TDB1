@@ -1850,7 +1850,7 @@ const MiraChatWidget = ({
             ZONE A: STICKY TOP STACK (Header + Tabs + Quick Actions)
             These stay fixed at the top, never scroll
             ═══════════════════════════════════════════════════════════════════ */}
-        <div className="flex-none" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+        <div className="flex-none" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', position: 'relative', zIndex: 2 }}>
           {/* Header */}
           <div 
             className={`bg-gradient-to-r ${config.color} text-white p-3 sm:p-4 cursor-pointer flex items-center justify-between`}
@@ -2382,7 +2382,6 @@ const MiraChatWidget = ({
                                 )}
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
-                                  {svcPrice > 0 && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>From ₹{svcPrice.toLocaleString()}</div>}
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
                               </button>

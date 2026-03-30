@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-30 (Session 37 — Mira Chat Widget Product Cards Fixed)
+## Last Updated: 2026-03-30 (Session 38 — Mira Widget UI Fixes: Zone A z-index, C° FAB hidden on mobile, service chip prices removed)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service

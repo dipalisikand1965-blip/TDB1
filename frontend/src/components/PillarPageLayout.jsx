@@ -464,7 +464,7 @@ const PillarPageLayout = ({
             data-testid="concierge-builder-float-btn"
             style={{
               position: 'fixed', bottom: 160, right: 24, zIndex: 2147483640,
-              display: 'flex', alignItems: 'center', gap: 8,
+              display: window.innerWidth < 768 ? 'none' : 'flex', alignItems: 'center', gap: 8,
               padding: window.innerWidth < 768 ? '12px 16px' : '12px 20px',
               background: accent.bg, color: accent.text,
               borderRadius: 999, border: '1px solid ' + accent.border,
