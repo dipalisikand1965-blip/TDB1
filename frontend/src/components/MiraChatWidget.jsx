@@ -1289,13 +1289,10 @@ const MiraChatWidget = ({
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
 
-          // ── Open the product-card render gate for streaming messages ──
-          // (fallback path does this at line ~1584; streaming path was missing this entirely)
-          if (shouldShowProducts(fullText)) {
-            setTimeout(() => {
-              setVisibleProducts(prev => new Set([...prev, streamMsgId]));
-            }, 900);
-          }
+          // ── Open the product-card render gate — always, no suppression ──
+          setTimeout(() => {
+            setVisibleProducts(prev => new Set([...prev, streamMsgId]));
+          }, 900);
 
           // ── Post-stream product fetch — claude-picks (same engine as pillar page Mira Picks) ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
@@ -1320,6 +1317,25 @@ const MiraChatWidget = ({
                 }
               })
               .catch(() => {}); // fire-and-forget — never block the UI
+          }
+
+          // ── Service chips fetch — when Mira's response mentions a bookable service ──
+          const _SERVICE_WORDS = ['groom', 'vet', 'walk', 'train', 'board', 'session', 'appointment',
+            'book', 'spa', 'bath', 'nail', 'dental', 'vaccin', 'checkup', 'consult'];
+          const _hasServiceIntent = _SERVICE_WORDS.some(w => fullText.toLowerCase().includes(w));
+          if (_hasServiceIntent && _streamPetId && _activePillar &&
+              !['emergency', 'paperwork', 'farewell'].includes(_activePillar)) {
+            fetch(`${getApiUrl()}/api/service-box/services?pillar=${_activePillar}&limit=3`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => {
+                const svcs = d?.services || [];
+                if (svcs.length > 0) {
+                  setMessages(prev => prev.map(m =>
+                    m.id === streamMsgId ? { ...m, services: svcs } : m
+                  ));
+                }
+              })
+              .catch(() => {});
           }
 
           // ── NearMe intent detection ──
@@ -2293,6 +2309,66 @@ const MiraChatWidget = ({
                                   <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{chipName}</div>
                                   {chipPrice > 0 && <div style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>₹{chipPrice}</div>}
                                 </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* SERVICE CHIPS — bookable services when Mira mentions grooming/vet/etc */}
+                      {msg.services && Array.isArray(msg.services) && msg.services.length > 0 && (
+                        <div style={{ marginTop: 12 }}>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px 0' }}>
+                            BOOK A SERVICE
+                          </p>
+                          {msg.services.slice(0, 3).map((svc, sIdx) => {
+                            const svcName = svc.name || svc.title || 'Service';
+                            const svcPrice = svc.price || svc.base_price || svc.original_price;
+                            const svcImg = svc.cloudinary_url || svc.image_url || svc.image;
+                            return (
+                              <button
+                                key={svc.id || sIdx}
+                                onClick={async () => {
+                                  try {
+                                    await fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                      },
+                                      body: JSON.stringify({
+                                        type: 'service_request',
+                                        pillar: _activePillar || currentPillar || pillar,
+                                        title: `Book: ${svcName}`,
+                                        description: `${selectedPet?.name || 'Pet'} — ${svcName}`,
+                                        pet_id: selectedPet?.id,
+                                        pet_name: selectedPet?.name,
+                                        service_id: svc.id,
+                                        source: 'mira_chat',
+                                        channel: 'chat'
+                                      })
+                                    });
+                                    toast.success(`Request sent for ${svcName}!`);
+                                  } catch { toast.error('Could not send request'); }
+                                }}
+                                style={{
+                                  display: 'flex', alignItems: 'center', gap: 10,
+                                  width: '100%', background: '#F0FDF4',
+                                  border: '1.5px solid #BBF7D0', borderRadius: 14,
+                                  padding: '10px 14px', marginBottom: 8,
+                                  cursor: 'pointer', textAlign: 'left'
+                                }}
+                              >
+                                {svcImg ? (
+                                  <img src={svcImg} alt={svcName} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} onError={e => { e.target.style.display = 'none'; }} />
+                                ) : (
+                                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#D1FAE5', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🐕</div>
+                                )}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
+                                  {svcPrice > 0 && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>₹{svcPrice}</div>}
+                                </div>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
                               </button>
                             );
                           })}
