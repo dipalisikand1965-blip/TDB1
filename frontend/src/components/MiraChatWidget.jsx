@@ -172,11 +172,12 @@ const PILLAR_CHIPS = {
 };
 
 // ── Product card suppress logic (Mira_Widget_MASTER.docx Section 3) ──────────
+// Only suppress products for genuine grief/critical-medical contexts
+// Do NOT include common words (gentle, feel, happy, comfortable) — they appear in every food/care response
 const SUPPRESS_PRODUCT_KEYWORDS = [
-  'lymphoma', 'treatment', 'illness', 'diagnosis', 'medication',
-  'happy', 'happiness', 'feel', 'feeling', 'mind', 'anxiety',
-  'separation', 'gentle', 'comfortable', 'cuddle', 'close',
-  'miss', 'grief', 'loss', 'passing', 'heaven', 'remember'
+  'lymphoma', 'chemotherapy', 'terminal', 'euthanasia',
+  'rainbow bridge', 'passed away', 'put to sleep', 'put him to sleep', 'put her to sleep',
+  'grief counseling', 'cremation', 'final moments'
 ];
 const shouldShowProducts = (responseText) => {
   if (!responseText || typeof responseText !== 'string') return false;
@@ -1287,6 +1288,14 @@ const MiraChatWidget = ({
           setMessages(prev => prev.map(m =>
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
+
+          // ── Open the product-card render gate for streaming messages ──
+          // (fallback path does this at line ~1576; streaming path was missing this entirely)
+          if (shouldShowProducts(fullText)) {
+            setTimeout(() => {
+              setVisibleProducts(prev => new Set([...prev, streamMsgId]));
+            }, 800);
+          }
 
           // ── Post-stream product fetch — smart query-matched picks ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
