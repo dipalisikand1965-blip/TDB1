@@ -2242,7 +2242,18 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                     </div>
                     <div style={{ padding: '8px 8px 10px' }}>
                       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontWeight: 600, lineHeight: 1.35, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{name}</div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#C9973A' }}>{price > 0 ? `₹${price}` : 'Custom'}</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#C9973A', marginBottom: 6 }}>{price > 0 ? `₹${price}` : 'Custom'}</div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleQuickAdd(item); }}
+                        style={{
+                          width: '100%', padding: '5px 0', fontSize: 10, fontWeight: 700,
+                          background: 'linear-gradient(135deg,#7C3AED,#4F46E5)',
+                          color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer',
+                          letterSpacing: '0.03em'
+                        }}
+                      >
+                        + Add to Cart
+                      </button>
                     </div>
                   </div>
                 );
