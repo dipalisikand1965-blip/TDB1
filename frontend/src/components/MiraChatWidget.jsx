@@ -1288,10 +1288,11 @@ const MiraChatWidget = ({
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
 
-          // ── Post-stream product fetch — always show pillar-relevant picks after Mira responds ──
+          // ── Post-stream product fetch — show pillar-relevant picks after Mira responds ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
-          if (_streamPetId && pillar && pillar !== 'general') {
-            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?pillar=${pillar}&limit=4`)
+          const _activePillar = currentPillar || pillar;
+          if (_streamPetId && _activePillar) {
+            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?pillar=${_activePillar}&limit=4`)
               .then(r => r.json())
               .then(d => {
                 const picks = d.picks || d.products || [];
