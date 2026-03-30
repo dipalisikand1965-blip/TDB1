@@ -36,6 +36,15 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+// ─── URL safety helper ───────────────────────────────────────────────────────
+const isValidUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  if (!url.startsWith('http')) return false;
+  if (url.includes('emergentagent.com')) return false;
+  if (url.includes('ai_generated')) return false;
+  return true;
+};
+
 // ─── Mira Conversational Memory helpers (mirrored from useChatSubmit) ───────
 const MEMORY_TRIGGERS = {
   health:     ['infection', 'bacteria', 'itch', 'scratch', 'bite', 'vet',
