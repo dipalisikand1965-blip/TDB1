@@ -33,6 +33,7 @@ import CuratedConciergeSection from './CuratedConciergeSection';
 import { ProductDetailModal } from '../ProductCard';
 import { createPortal } from 'react-dom';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import useUniversalServiceCommand from '../../hooks/useUniversalServiceCommand';
 
 /**
  * FitBadges - Subtle safety/fit indicators for picks

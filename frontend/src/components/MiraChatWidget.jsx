@@ -2338,7 +2338,7 @@ const MiraChatWidget = ({
                                       },
                                       body: JSON.stringify({
                                         type: 'service_request',
-                                        pillar: _activePillar || currentPillar || pillar,
+                                        pillar: currentPillar || pillar,
                                         title: `Book: ${svcName}`,
                                         description: `${selectedPet?.name || 'Pet'} — ${svcName}`,
                                         pet_id: selectedPet?.id,
