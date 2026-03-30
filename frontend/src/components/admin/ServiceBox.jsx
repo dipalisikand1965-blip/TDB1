@@ -69,6 +69,9 @@ function serviceToProduct(s) {
     pillar,
     category: s.category || '',
     sub_category: s.sub_category || '',
+    // approval_status drives the "Status in Pillar" dropdown in ProductBoxEditor
+    approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
+    commerce_ops: { approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused') },
     visibility: { is_active: s.is_active !== false, status: s.is_active !== false ? 'active' : 'inactive' },
     image_url: s.image_url || s.image || s.watercolor_image || '',
     image: s.image_url || s.image || '',
@@ -84,15 +87,20 @@ function serviceToProduct(s) {
 
 // Extract service-relevant fields from ProductBoxEditor state
 function productToServicePatch(p) {
+  // Resolve status: approval_status is the source of truth from the dropdown
+  const approvalStatus = p.approval_status || p.commerce_ops?.approval_status || 'live';
+  const isActive = ['live', 'active'].includes(approvalStatus);
   return {
     name: p.basics?.name || p.name || '',
-    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
+    base_price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
+    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0), // legacy alias
     category: p.category || '',
     sub_category: p.sub_category || '',
     pillar: p.primary_pillar || p.pillar || '',
     description: p.basics?.description || p.description || '',
     long_description: p.basics?.description || p.description || '',
-    is_active: p.visibility?.is_active !== false,
+    is_active: isActive,
+    approval_status: approvalStatus,
     tags: p.tags || [],
     image_url: p.image_url || p.media?.primary_image || '',
     image: p.image_url || p.media?.primary_image || '',
