@@ -466,7 +466,7 @@ const AdoptManager = ({ authHeaders }) => {
                 <Card key={pet.pet_id} className="p-4">
                   <div className="flex gap-4">
                     <img
-                      src={pet.photos?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&q=80'}
+                      src={pet.photos?.[0] || ''}
                       alt={pet.name}
                       className="w-20 h-20 rounded-lg object-cover"
                     />

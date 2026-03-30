@@ -168,7 +168,7 @@ const QuickProductTile = ({ product, onTap }) => {
       {/* Image */}
       <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50">
         <img
-          src={product.image_url || product.image || product.images?.[0] || 'https://via.placeholder.com/200?text=🎂'}
+          src={product.image_url || product.image || product.images?.[0] || ''}
           alt={product.name || product.title}
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           loading="lazy"

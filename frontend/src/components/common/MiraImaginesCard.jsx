@@ -13,6 +13,7 @@
  */
 import { useState, useEffect } from "react";
 import { API_URL } from "../../utils/api";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
 
 // Pillar-specific fallback gradient + accent colour
 const PILLAR_STYLE = {
@@ -61,24 +62,13 @@ export default function MiraImaginesCard({ item, pet, token, pillar = "learn", s
   const send = async () => {
     setState("sending");
     try {
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          parent_id:     storedUser?.id || storedUser?.email || "guest",
-          pet_id:        pet?.id || "unknown",
-          pillar,
-          intent_primary: "mira_imagines_request",
-          channel:       `${pillar}_mira_picks_imagines`,
-          initial_message: {
-            sender: "parent",
-            text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!`,
-          },
-        }),
+      await bookViaConcierge({
+        service:  item.name,
+        pillar,
+        pet,
+        token,
+        channel:  `${pillar}_mira_picks_imagines`,
+        notes:    `Mira imagined this — please help source it`,
       });
     } catch {}
     setState("sent");

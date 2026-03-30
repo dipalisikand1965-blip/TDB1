@@ -128,7 +128,7 @@ const ShareablePetCard = ({ pet, isOpen, onClose }) => {
               <div className="flex justify-center mb-4">
                 <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white/30 shadow-lg">
                   <img
-                    src={pet.photo_url || `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}`}
+                    src={pet.photo_url || ''}
                     alt={pet.name}
                     className="w-full h-full object-cover"
                   />

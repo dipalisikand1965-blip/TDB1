@@ -954,9 +954,9 @@ async def auto_seed_critical_data():
         if collection_count == 0:
             logger.info("Seeding Collections...")
             sample_collections = [
-                {"id": "col-valentine", "name": "Valentine's Day Special", "slug": "valentines-day", "description": "Celebrate love with your furry friend!", "image": "https://images.unsplash.com/photo-1518882605630-8eb723e8e0b4?w=800", "status": "active", "is_featured": True, "products": [], "created_at": get_utc_timestamp()},
-                {"id": "col-birthday", "name": "Birthday Celebration", "slug": "birthday-celebration", "description": "Make every birthday special with treats and cakes!", "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800", "status": "active", "is_featured": True, "products": [], "created_at": get_utc_timestamp()},
-                {"id": "col-healthy", "name": "Healthy Bites", "slug": "healthy-bites", "description": "Nutritious treats for health-conscious pet parents", "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800", "status": "active", "is_featured": False, "products": [], "created_at": get_utc_timestamp()},
+                {"id": "col-valentine", "name": "Valentine's Day Special", "slug": "valentines-day", "description": "Celebrate love with your furry friend!", "image": "", "status": "active", "is_featured": True, "products": [], "created_at": get_utc_timestamp()},
+                {"id": "col-birthday", "name": "Birthday Celebration", "slug": "birthday-celebration", "description": "Make every birthday special with treats and cakes!", "image": "", "status": "active", "is_featured": True, "products": [], "created_at": get_utc_timestamp()},
+                {"id": "col-healthy", "name": "Healthy Bites", "slug": "healthy-bites", "description": "Nutritious treats for health-conscious pet parents", "image": "", "status": "active", "is_featured": False, "products": [], "created_at": get_utc_timestamp()},
             ]
             for col in sample_collections:
                 await db.enhanced_collections.update_one({"id": col["id"]}, {"$set": col}, upsert=True)
@@ -992,7 +992,7 @@ async def auto_seed_all_services():
             "price": 2499,
             "duration": "90 min",
             "features": ["Body Condition Score", "Mobility Assessment", "Custom Exercise Plan", "Nutrition Tips"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1004,7 +1004,7 @@ async def auto_seed_all_services():
             "price": 7999,
             "duration": "8 weeks",
             "features": ["16 Sessions", "Progress Tracking", "Home Exercises", "Trainer Support"],
-            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1016,7 +1016,7 @@ async def auto_seed_all_services():
             "price": 5999,
             "duration": "12 weeks",
             "features": ["Diet Plan", "Weekly Weigh-ins", "Exercise Routine", "Progress Reports"],
-            "image": "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1028,7 +1028,7 @@ async def auto_seed_all_services():
             "price": 1499,
             "duration": "45 min",
             "features": ["Heated Pool", "Professional Therapist", "Joint-Friendly", "All Ages Welcome"],
-            "image": "https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1040,7 +1040,7 @@ async def auto_seed_all_services():
             "price": 4999,
             "duration": "Monthly",
             "features": ["Low Impact", "Pain Management", "Flexibility Focus", "Home Visits Available"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1052,7 +1052,7 @@ async def auto_seed_all_services():
             "price": 3999,
             "duration": "8 weeks",
             "features": ["Growth-Safe Exercises", "Socialisation", "Basic Commands", "Play Groups"],
-            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1064,7 +1064,7 @@ async def auto_seed_all_services():
             "price": 4499,
             "duration": "6 weeks",
             "features": ["Equipment Training", "Confidence Building", "Fun Obstacles", "Competition Prep"],
-            "image": "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1076,7 +1076,7 @@ async def auto_seed_all_services():
             "price": 799,
             "duration": "60 min",
             "features": ["Breathing Exercises", "Gentle Stretches", "Bonding Time", "Stress Relief"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         }
     ]
@@ -1092,7 +1092,7 @@ async def auto_seed_all_services():
             "price": 1499,
             "duration": "2-3 hours",
             "features": ["Bath & Dry", "Breed-Specific Cut", "Nail Trim", "Ear Cleaning"],
-            "image": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1104,7 +1104,7 @@ async def auto_seed_all_services():
             "price": 1999,
             "duration": "45-60 min",
             "features": ["Home Visit", "Basic Check-up", "Prescription if Needed", "Follow-up Call"],
-            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1116,7 +1116,7 @@ async def auto_seed_all_services():
             "price": 799,
             "duration": "8 hours",
             "features": ["Feeding", "Walks", "Playtime", "Photo Updates"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         # Feed & Nutrition Services (NEW)
@@ -1129,7 +1129,7 @@ async def auto_seed_all_services():
             "price": 1499,
             "duration": "60 min",
             "features": ["Diet Assessment", "Custom Meal Plan", "Supplement Advice", "Follow-up Support"],
-            "image": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1141,7 +1141,7 @@ async def auto_seed_all_services():
             "price": 3999,
             "duration": "8 weeks",
             "features": ["Initial Assessment", "Custom Diet Plan", "Weekly Check-ins", "Progress Reports", "Meal Prep Guide"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1153,7 +1153,7 @@ async def auto_seed_all_services():
             "price": 2499,
             "duration": "Ongoing",
             "features": ["Allergy Testing Review", "Elimination Diet Guide", "Safe Food List", "Recipe Suggestions"],
-            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1165,7 +1165,7 @@ async def auto_seed_all_services():
             "price": 1999,
             "duration": "6 months",
             "features": ["Growth Stage Plans", "Portion Guides", "Supplement Recommendations", "Milestone Check-ins"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1177,7 +1177,7 @@ async def auto_seed_all_services():
             "price": 1999,
             "duration": "Ongoing",
             "features": ["Senior Diet Assessment", "Joint Support Foods", "Digestive Health", "Cognitive Support"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1189,7 +1189,7 @@ async def auto_seed_all_services():
             "price": 999,
             "duration": "Ongoing",
             "features": ["Vet Coordination", "Diet Sourcing", "Transition Support", "Compliance Tracking"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         }
     ]
@@ -1205,7 +1205,7 @@ async def auto_seed_all_services():
             "price": 4999,
             "duration": "Full Day",
             "features": ["Venue Coordination", "Custom Cake", "Decorations", "Guest Invitations", "Party Games", "Photo Documentation"],
-            "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1217,7 +1217,7 @@ async def auto_seed_all_services():
             "price": 3499,
             "duration": "2 hours",
             "features": ["Professional Photographer", "20 Edited Photos", "Props Included", "Location Choice", "Digital Album"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1229,7 +1229,7 @@ async def auto_seed_all_services():
             "price": 499,
             "duration": "30 min",
             "features": ["Design Consultation", "Flavor Tasting", "Photo Preview", "Dietary Customization"],
-            "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1241,7 +1241,7 @@ async def auto_seed_all_services():
             "price": 9999,
             "duration": "Full Day",
             "features": ["Custom Cake", "Treat Platter", "2-Hour Photoshoot", "Premium Decorations", "Party Coordination", "Digital Album", "Celebration Hamper"],
-            "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1253,7 +1253,7 @@ async def auto_seed_all_services():
             "price": 2499,
             "duration": "Half Day",
             "features": ["Gotcha Day Cake", "Celebration Treats", "Photo Session", "Adoption Story Frame"],
-            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1265,7 +1265,7 @@ async def auto_seed_all_services():
             "price": 1499,
             "duration": "Same Day",
             "features": ["Gift Wrapped Package", "Personalized Card", "Surprise Treats", "Same Day Delivery", "Video Message Option"],
-            "image": "https://images.unsplash.com/photo-1518882605630-8eb723e8e0b4?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1277,7 +1277,7 @@ async def auto_seed_all_services():
             "price": 1999,
             "duration": "Delivered",
             "features": ["Milestone Cake", "Achievement Badge", "Photo Props", "Celebration Treats", "Memory Card"],
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1289,7 +1289,7 @@ async def auto_seed_all_services():
             "price": 999,
             "duration": "Booking Service",
             "features": ["Venue Search", "Pet Policy Check", "Booking Coordination", "Vendor Management"],
-            "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+            "image": "",
             "is_active": True
         }
     ]
@@ -1305,7 +1305,7 @@ async def auto_seed_all_services():
             "price": 0,
             "duration": "24-48 hours",
             "features": ["Multiple Provider Quotes", "Coverage Comparison", "Expert Recommendations", "No Obligation"],
-            "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1317,7 +1317,7 @@ async def auto_seed_all_services():
             "price": 499,
             "duration": "2-3 days",
             "features": ["Coverage Analysis", "Gap Identification", "Upgrade Recommendations", "Cost Optimization"],
-            "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1329,7 +1329,7 @@ async def auto_seed_all_services():
             "price": 299,
             "duration": "Same day",
             "features": ["Document Preparation", "Claim Submission", "Status Tracking", "Appeal Support"],
-            "image": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1341,7 +1341,7 @@ async def auto_seed_all_services():
             "price": 199,
             "duration": "Annual",
             "features": ["Renewal Reminders", "Rate Comparison", "Auto-Renewal Setup", "Coverage Updates"],
-            "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800",
+            "image": "",
             "is_active": True
         },
         {
@@ -1353,7 +1353,7 @@ async def auto_seed_all_services():
             "price": 999,
             "duration": "Annual",
             "features": ["Quote Comparison", "Policy Setup", "Claims Assistance", "Renewal Management", "24/7 Support"],
-            "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+            "image": "",
             "is_active": True
         }
     ]
@@ -1645,9 +1645,9 @@ async def lifespan(app: FastAPI):
                     "Milestone Celebration Kit": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/e7a11005e785d5b3b29639030764bc2bd86582d31521d3b849b2bbab3f952960.png",
                     "Custom Cake Consultation": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/f467fd13355a348bfdc9c2353aab9e643bfd8af401a86a63066b494ea71ce5f4.png",
                     "Life Moment Tracking": "https://static.prod-images.emergentagent.com/jobs/b6abcc1b-6413-431e-bf32-8399a0ee6fd9/images/5e764b728058c7d1d1e70fcfc12209c4c39850590de3100b5349c41681f5187c.png",
-                    "Festive Celebration Planning": "https://images.unsplash.com/photo-1512568400610-62da28bc8a13?w=800",
-                    "Surprise Coordination": "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?w=800",
-                    "Surprise Delivery Service": "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1?w=800",
+                    "Festive Celebration Planning": "",
+                    "Surprise Coordination": "",
+                    "Surprise Delivery Service": "",
                     "Pawty Package (Full Celebration)": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773564989/doggy/services/celebrate/svc-celebrate-pawty-package.png",
                     "Pet-Friendly Venue Booking": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773333778/doggy/services/celebrate/svc-celebrate-venue.png",
                     "Birthday Party Planning": "https://res.cloudinary.com/duoapcx1p/image/upload/v1773564145/doggy/services/celebrate/svc-celebrate-party.png",
@@ -2845,34 +2845,34 @@ async def seed_initial_products():
         # Sample products for each category (fallback only)
         sample_products = [
             # Cakes
-            {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 899}, {"name": "Medium (1kg)", "price": 1499}], "flavors": ["Peanut Butter"], "tags": ["birthday", "celebration"], "available": True},
-            {"id": "cake-002", "name": "Banana Bliss Cake", "description": "Healthy banana cake with natural ingredients", "price": 799, "originalPrice": 799, "image": "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 799}, {"name": "Medium (1kg)", "price": 1299}], "flavors": ["Banana"], "tags": ["healthy", "natural"], "available": True},
-            {"id": "cake-003", "name": "Carrot Delight Cake", "description": "Nutritious carrot cake packed with vitamins", "price": 949, "originalPrice": 949, "image": "https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 949}, {"name": "Medium (1kg)", "price": 1599}], "flavors": ["Carrot"], "tags": ["healthy", "vitamins"], "available": True},
-            {"id": "cake-004", "name": "Chicken Supreme Cake", "description": "Savory chicken cake for meat lovers", "price": 1099, "originalPrice": 1099, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 1099}, {"name": "Medium (1kg)", "price": 1799}], "flavors": ["Chicken"], "tags": ["protein", "savory"], "available": True},
-            {"id": "cake-005", "name": "Apple Cinnamon Cake", "description": "Sweet apple cake with a hint of cinnamon", "price": 849, "originalPrice": 849, "image": "https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 849}, {"name": "Medium (1kg)", "price": 1399}], "flavors": ["Apple", "Cinnamon"], "tags": ["sweet", "festive"], "available": True},
+            {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 899}, {"name": "Medium (1kg)", "price": 1499}], "flavors": ["Peanut Butter"], "tags": ["birthday", "celebration"], "available": True},
+            {"id": "cake-002", "name": "Banana Bliss Cake", "description": "Healthy banana cake with natural ingredients", "price": 799, "originalPrice": 799, "image": "", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 799}, {"name": "Medium (1kg)", "price": 1299}], "flavors": ["Banana"], "tags": ["healthy", "natural"], "available": True},
+            {"id": "cake-003", "name": "Carrot Delight Cake", "description": "Nutritious carrot cake packed with vitamins", "price": 949, "originalPrice": 949, "image": "", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 949}, {"name": "Medium (1kg)", "price": 1599}], "flavors": ["Carrot"], "tags": ["healthy", "vitamins"], "available": True},
+            {"id": "cake-004", "name": "Chicken Supreme Cake", "description": "Savory chicken cake for meat lovers", "price": 1099, "originalPrice": 1099, "image": "", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 1099}, {"name": "Medium (1kg)", "price": 1799}], "flavors": ["Chicken"], "tags": ["protein", "savory"], "available": True},
+            {"id": "cake-005", "name": "Apple Cinnamon Cake", "description": "Sweet apple cake with a hint of cinnamon", "price": 849, "originalPrice": 849, "image": "", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 849}, {"name": "Medium (1kg)", "price": 1399}], "flavors": ["Apple", "Cinnamon"], "tags": ["sweet", "festive"], "available": True},
             
             # Treats
-            {"id": "treat-001", "name": "Chicken Jerky Strips", "description": "Crunchy chicken jerky treats", "price": 349, "originalPrice": 349, "image": "https://images.unsplash.com/photo-1582798244350-8b8e9e4f0b91?w=600", "category": "treats", "sizes": [{"name": "100g Pack", "price": 349}, {"name": "250g Pack", "price": 749}], "flavors": ["Chicken"], "tags": ["protein", "crunchy"], "available": True},
-            {"id": "treat-002", "name": "Peanut Butter Biscuits", "description": "Crunchy peanut butter flavored biscuits", "price": 299, "originalPrice": 299, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "treats", "sizes": [{"name": "150g Pack", "price": 299}, {"name": "300g Pack", "price": 549}], "flavors": ["Peanut Butter"], "tags": ["crunchy", "training"], "available": True},
-            {"id": "treat-003", "name": "Sweet Potato Chews", "description": "Natural sweet potato chew treats", "price": 399, "originalPrice": 399, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "treats", "sizes": [{"name": "100g Pack", "price": 399}], "flavors": ["Sweet Potato"], "tags": ["natural", "chewy"], "available": True},
+            {"id": "treat-001", "name": "Chicken Jerky Strips", "description": "Crunchy chicken jerky treats", "price": 349, "originalPrice": 349, "image": "", "category": "treats", "sizes": [{"name": "100g Pack", "price": 349}, {"name": "250g Pack", "price": 749}], "flavors": ["Chicken"], "tags": ["protein", "crunchy"], "available": True},
+            {"id": "treat-002", "name": "Peanut Butter Biscuits", "description": "Crunchy peanut butter flavored biscuits", "price": 299, "originalPrice": 299, "image": "", "category": "treats", "sizes": [{"name": "150g Pack", "price": 299}, {"name": "300g Pack", "price": 549}], "flavors": ["Peanut Butter"], "tags": ["crunchy", "training"], "available": True},
+            {"id": "treat-003", "name": "Sweet Potato Chews", "description": "Natural sweet potato chew treats", "price": 399, "originalPrice": 399, "image": "", "category": "treats", "sizes": [{"name": "100g Pack", "price": 399}], "flavors": ["Sweet Potato"], "tags": ["natural", "chewy"], "available": True},
             
             # Pupcakes
-            {"id": "pupcake-001", "name": "Pupcake Box (6 pcs)", "description": "Assorted mini cupcakes for dogs", "price": 599, "originalPrice": 599, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "sizes": [{"name": "Box of 6", "price": 599}, {"name": "Box of 12", "price": 999}], "flavors": ["Assorted"], "tags": ["party", "mini"], "available": True},
+            {"id": "pupcake-001", "name": "Pupcake Box (6 pcs)", "description": "Assorted mini cupcakes for dogs", "price": 599, "originalPrice": 599, "image": "", "category": "cakes", "sizes": [{"name": "Box of 6", "price": 599}, {"name": "Box of 12", "price": 999}], "flavors": ["Assorted"], "tags": ["party", "mini"], "available": True},
             
             # Dognuts
-            {"id": "dognut-001", "name": "Glazed Dognuts (4 pcs)", "description": "Doggy-safe glazed donuts", "price": 449, "originalPrice": 449, "image": "https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=600", "category": "dognuts", "sizes": [{"name": "Box of 4", "price": 449}], "flavors": ["Glazed"], "tags": ["fun", "party"], "available": True},
+            {"id": "dognut-001", "name": "Glazed Dognuts (4 pcs)", "description": "Doggy-safe glazed donuts", "price": 449, "originalPrice": 449, "image": "", "category": "dognuts", "sizes": [{"name": "Box of 4", "price": 449}], "flavors": ["Glazed"], "tags": ["fun", "party"], "available": True},
             
             # Frozen Treats
-            {"id": "frozen-001", "name": "Pup Ice Cream - Peanut Butter", "description": "Frozen peanut butter treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=600", "category": "frozen-treats", "sizes": [{"name": "100ml Cup", "price": 199}], "flavors": ["Peanut Butter"], "tags": ["summer", "cooling"], "available": True},
-            {"id": "frozen-002", "name": "Pup Ice Cream - Banana", "description": "Frozen banana treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", "category": "frozen-treats", "sizes": [{"name": "100ml Cup", "price": 199}], "flavors": ["Banana"], "tags": ["summer", "cooling"], "available": True},
+            {"id": "frozen-001", "name": "Pup Ice Cream - Peanut Butter", "description": "Frozen peanut butter treat", "price": 199, "originalPrice": 199, "image": "", "category": "frozen-treats", "sizes": [{"name": "100ml Cup", "price": 199}], "flavors": ["Peanut Butter"], "tags": ["summer", "cooling"], "available": True},
+            {"id": "frozen-002", "name": "Pup Ice Cream - Banana", "description": "Frozen banana treat", "price": 199, "originalPrice": 199, "image": "", "category": "frozen-treats", "sizes": [{"name": "100ml Cup", "price": 199}], "flavors": ["Banana"], "tags": ["summer", "cooling"], "available": True},
             
             # Hampers
-            {"id": "hamper-001", "name": "Birthday Bash Box", "description": "Complete birthday celebration kit", "price": 1999, "originalPrice": 2499, "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600", "category": "hampers", "sizes": [{"name": "Standard", "price": 1999}], "flavors": [], "tags": ["birthday", "gift", "celebration"], "available": True},
-            {"id": "hamper-002", "name": "Welcome Home Box", "description": "Perfect welcome gift for new pet parents", "price": 1499, "originalPrice": 1799, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "hampers", "sizes": [{"name": "Standard", "price": 1499}], "flavors": [], "tags": ["gift", "new pet"], "available": True},
+            {"id": "hamper-001", "name": "Birthday Bash Box", "description": "Complete birthday celebration kit", "price": 1999, "originalPrice": 2499, "image": "", "category": "hampers", "sizes": [{"name": "Standard", "price": 1999}], "flavors": [], "tags": ["birthday", "gift", "celebration"], "available": True},
+            {"id": "hamper-002", "name": "Welcome Home Box", "description": "Perfect welcome gift for new pet parents", "price": 1499, "originalPrice": 1799, "image": "", "category": "hampers", "sizes": [{"name": "Standard", "price": 1499}], "flavors": [], "tags": ["gift", "new pet"], "available": True},
             
             # Custom Cakes
-            {"id": "custom-001", "name": "Custom Photo Cake", "description": "Personalized cake with your pet's photo", "price": 1499, "originalPrice": 1499, "image": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600", "category": "custom", "sizes": [{"name": "Small (500g)", "price": 1499}, {"name": "Medium (1kg)", "price": 2499}], "flavors": ["Peanut Butter", "Banana", "Chicken"], "tags": ["custom", "personalized", "photo"], "available": True},
-            {"id": "custom-002", "name": "Custom Theme Cake", "description": "Themed cake designed to your specifications", "price": 1799, "originalPrice": 1799, "image": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600", "category": "custom", "sizes": [{"name": "Small (500g)", "price": 1799}, {"name": "Medium (1kg)", "price": 2999}], "flavors": ["Peanut Butter", "Banana", "Carrot", "Chicken"], "tags": ["custom", "themed", "special"], "available": True},
+            {"id": "custom-001", "name": "Custom Photo Cake", "description": "Personalized cake with your pet's photo", "price": 1499, "originalPrice": 1499, "image": "", "category": "custom", "sizes": [{"name": "Small (500g)", "price": 1499}, {"name": "Medium (1kg)", "price": 2499}], "flavors": ["Peanut Butter", "Banana", "Chicken"], "tags": ["custom", "personalized", "photo"], "available": True},
+            {"id": "custom-002", "name": "Custom Theme Cake", "description": "Themed cake designed to your specifications", "price": 1799, "originalPrice": 1799, "image": "", "category": "custom", "sizes": [{"name": "Small (500g)", "price": 1799}, {"name": "Medium (1kg)", "price": 2999}], "flavors": ["Peanut Butter", "Banana", "Carrot", "Chicken"], "tags": ["custom", "themed", "special"], "available": True},
         ]
         
         # Add timestamps
@@ -5130,7 +5130,7 @@ async def force_seed_all_products():
         
         for p in stay_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["stay"] = len(stay_products)
         
@@ -5145,7 +5145,7 @@ async def force_seed_all_products():
         
         for p in travel_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["travel"] = len(travel_products)
         
@@ -5168,7 +5168,7 @@ async def force_seed_all_products():
         
         for p in care_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["care"] = len(care_products)
         
@@ -5182,7 +5182,7 @@ async def force_seed_all_products():
         
         for p in fit_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["fit"] = len(fit_products)
         
@@ -5195,7 +5195,7 @@ async def force_seed_all_products():
         
         for p in enjoy_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["enjoy"] = len(enjoy_products)
         
@@ -5208,7 +5208,7 @@ async def force_seed_all_products():
         
         for p in learn_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["learn"] = len(learn_products)
         
@@ -5223,7 +5223,7 @@ async def force_seed_all_products():
         
         for p in insure_products:
             p["created_at"] = get_utc_timestamp()
-            p["image"] = "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"
+            p["image"] = ""
             await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["insure"] = len(insure_products)
         
@@ -5286,7 +5286,7 @@ async def force_seed_all_products():
         for b in nutrition_bundles:
             b["created_at"] = get_utc_timestamp()
             b["active"] = True
-            b["image"] = "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=800"
+            b["image"] = ""
             await db.care_bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
         results["seeded"]["nutrition_bundles"] = len(nutrition_bundles)
         
@@ -5349,7 +5349,7 @@ async def force_seed_all_products():
         for b in insure_bundles:
             b["created_at"] = get_utc_timestamp()
             b["active"] = True
-            b["image"] = "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"
+            b["image"] = ""
             await db.paperwork_bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
         results["seeded"]["insure_bundles"] = len(insure_bundles)
         
@@ -5712,18 +5712,18 @@ async def seed_pet_friendly_stays(username: str = Depends(verify_admin)):
     """Seed pet-friendly stays from curated data."""
     
     stays_data = [
-        {"name": "Wildernest Nature Resort", "city": "Chorao", "state": "Goa", "type": "Resort", "description": "Pet-friendly nature resort with cottage stays", "image_url": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800", "website": "https://wildernest.in", "phone": None, "address": "Chorao Island, Goa", "pet_policy": "Dogs welcome, size restrictions may apply", "price_range": "₹5,000-15,000", "amenities": "Nature trails, Bird watching, Cottages"},
-        {"name": "Shaam-e-Sarhad Village Resort", "city": "Hodka", "state": "Gujarat", "type": "Homestay", "description": "Traditional Kutchi bhunga stays with pet-friendly policies", "image_url": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800", "website": "https://hodkavillage.com", "phone": None, "address": "Hodka Village, Kutch", "pet_policy": "Pets welcome with prior notice", "price_range": "₹3,000-8,000", "amenities": "Traditional stays, Cultural experience, Open spaces"},
-        {"name": "The Paul Bangalore", "city": "Bangalore", "state": "Karnataka", "type": "Hotel", "description": "Luxury urban hotel welcoming pets", "image_url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800", "website": "https://thepaul.in", "phone": None, "address": "Domlur, Bangalore", "pet_policy": "Pet-friendly rooms available", "price_range": "₹8,000-20,000", "amenities": "City hotel, Room service, Garden"},
-        {"name": "Reni Pani Jungle Lodge", "city": "Satpura", "state": "Madhya Pradesh", "type": "Resort", "description": "Safari lodge with pet-friendly cottages", "image_url": "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=800", "website": "https://renipanijunglelodge.com", "phone": None, "address": "Satpura Tiger Reserve", "pet_policy": "Dogs welcome in designated cottages", "price_range": "₹15,000-30,000", "amenities": "Safari, Nature walks, Pool"},
-        {"name": "The Postcard Gir", "city": "Gir", "state": "Gujarat", "type": "Resort", "description": "Luxury wildlife resort near Gir National Park", "image_url": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800", "website": "https://postcard.in", "phone": None, "address": "Near Gir National Park", "pet_policy": "Pet-friendly with restrictions", "price_range": "₹20,000-50,000", "amenities": "Wildlife safari, Spa, Fine dining"},
-        {"name": "Zostel Mukteshwar", "city": "Mukteshwar", "state": "Uttarakhand", "type": "Hostel", "description": "Budget-friendly hostel with mountain views", "image_url": "https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800", "website": "https://zostel.com", "phone": None, "address": "Mukteshwar, Uttarakhand", "pet_policy": "Pets welcome in private rooms", "price_range": "₹1,500-4,000", "amenities": "Mountain views, Common areas, Budget stays"},
-        {"name": "SaffronStays Himalaica", "city": "Jibhi", "state": "Himachal Pradesh", "type": "Villa", "description": "Cozy mountain villa with pet-friendly policies", "image_url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800", "website": "https://saffronstays.com", "phone": None, "address": "Jibhi, Tirthan Valley", "pet_policy": "Dogs welcome", "price_range": "₹6,000-12,000", "amenities": "Mountain views, Bonfire, Trekking"},
-        {"name": "Ahilya Fort", "city": "Maheshwar", "state": "Madhya Pradesh", "type": "Heritage", "description": "Historic fort hotel on the Narmada river", "image_url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800", "website": "https://ahilyafort.com", "phone": None, "address": "Maheshwar, MP", "pet_policy": "Pet-friendly with advance notice", "price_range": "₹25,000-50,000", "amenities": "River views, Heritage architecture, Spa"},
-        {"name": "Barefoot at Havelock", "city": "Havelock", "state": "Andaman", "type": "Resort", "description": "Beach resort with pet-friendly cottages", "image_url": "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800", "website": "https://barefoot-andaman.com", "phone": None, "address": "Radhanagar Beach, Havelock", "pet_policy": "Pets welcome in select cottages", "price_range": "₹15,000-35,000", "amenities": "Beach access, Diving, Restaurant"},
-        {"name": "Evolve Back Coorg", "city": "Coorg", "state": "Karnataka", "type": "Resort", "description": "Luxury plantation resort", "image_url": "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=800", "website": "https://evolveback.com", "phone": None, "address": "Karadigodu, Coorg", "pet_policy": "Pet-friendly villas available", "price_range": "₹30,000-60,000", "amenities": "Plantation tours, Spa, Pool"},
-        {"name": "TUTC Kohima Camp", "city": "Kohima", "state": "Nagaland", "type": "Camp", "description": "Luxury camping during Hornbill Festival", "image_url": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800", "website": "https://tutc.in", "phone": None, "address": "Kisama, Kohima", "pet_policy": "Pets allowed with prior approval", "price_range": "₹20,000-40,000", "amenities": "Luxury tents, Cultural events, Dining"},
-        {"name": "Dune Eco Village", "city": "Pondicherry", "state": "Tamil Nadu", "type": "Resort", "description": "Eco-friendly beach resort", "image_url": "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800", "website": "https://duneecogroup.com", "phone": None, "address": "Pudhukuppam, Pondicherry", "pet_policy": "Pet-friendly cottages", "price_range": "₹8,000-18,000", "amenities": "Beach, Yoga, Organic food"},
+        {"name": "Wildernest Nature Resort", "city": "Chorao", "state": "Goa", "type": "Resort", "description": "Pet-friendly nature resort with cottage stays", "image_url": "", "website": "https://wildernest.in", "phone": None, "address": "Chorao Island, Goa", "pet_policy": "Dogs welcome, size restrictions may apply", "price_range": "₹5,000-15,000", "amenities": "Nature trails, Bird watching, Cottages"},
+        {"name": "Shaam-e-Sarhad Village Resort", "city": "Hodka", "state": "Gujarat", "type": "Homestay", "description": "Traditional Kutchi bhunga stays with pet-friendly policies", "image_url": "", "website": "https://hodkavillage.com", "phone": None, "address": "Hodka Village, Kutch", "pet_policy": "Pets welcome with prior notice", "price_range": "₹3,000-8,000", "amenities": "Traditional stays, Cultural experience, Open spaces"},
+        {"name": "The Paul Bangalore", "city": "Bangalore", "state": "Karnataka", "type": "Hotel", "description": "Luxury urban hotel welcoming pets", "image_url": "", "website": "https://thepaul.in", "phone": None, "address": "Domlur, Bangalore", "pet_policy": "Pet-friendly rooms available", "price_range": "₹8,000-20,000", "amenities": "City hotel, Room service, Garden"},
+        {"name": "Reni Pani Jungle Lodge", "city": "Satpura", "state": "Madhya Pradesh", "type": "Resort", "description": "Safari lodge with pet-friendly cottages", "image_url": "", "website": "https://renipanijunglelodge.com", "phone": None, "address": "Satpura Tiger Reserve", "pet_policy": "Dogs welcome in designated cottages", "price_range": "₹15,000-30,000", "amenities": "Safari, Nature walks, Pool"},
+        {"name": "The Postcard Gir", "city": "Gir", "state": "Gujarat", "type": "Resort", "description": "Luxury wildlife resort near Gir National Park", "image_url": "", "website": "https://postcard.in", "phone": None, "address": "Near Gir National Park", "pet_policy": "Pet-friendly with restrictions", "price_range": "₹20,000-50,000", "amenities": "Wildlife safari, Spa, Fine dining"},
+        {"name": "Zostel Mukteshwar", "city": "Mukteshwar", "state": "Uttarakhand", "type": "Hostel", "description": "Budget-friendly hostel with mountain views", "image_url": "", "website": "https://zostel.com", "phone": None, "address": "Mukteshwar, Uttarakhand", "pet_policy": "Pets welcome in private rooms", "price_range": "₹1,500-4,000", "amenities": "Mountain views, Common areas, Budget stays"},
+        {"name": "SaffronStays Himalaica", "city": "Jibhi", "state": "Himachal Pradesh", "type": "Villa", "description": "Cozy mountain villa with pet-friendly policies", "image_url": "", "website": "https://saffronstays.com", "phone": None, "address": "Jibhi, Tirthan Valley", "pet_policy": "Dogs welcome", "price_range": "₹6,000-12,000", "amenities": "Mountain views, Bonfire, Trekking"},
+        {"name": "Ahilya Fort", "city": "Maheshwar", "state": "Madhya Pradesh", "type": "Heritage", "description": "Historic fort hotel on the Narmada river", "image_url": "", "website": "https://ahilyafort.com", "phone": None, "address": "Maheshwar, MP", "pet_policy": "Pet-friendly with advance notice", "price_range": "₹25,000-50,000", "amenities": "River views, Heritage architecture, Spa"},
+        {"name": "Barefoot at Havelock", "city": "Havelock", "state": "Andaman", "type": "Resort", "description": "Beach resort with pet-friendly cottages", "image_url": "", "website": "https://barefoot-andaman.com", "phone": None, "address": "Radhanagar Beach, Havelock", "pet_policy": "Pets welcome in select cottages", "price_range": "₹15,000-35,000", "amenities": "Beach access, Diving, Restaurant"},
+        {"name": "Evolve Back Coorg", "city": "Coorg", "state": "Karnataka", "type": "Resort", "description": "Luxury plantation resort", "image_url": "", "website": "https://evolveback.com", "phone": None, "address": "Karadigodu, Coorg", "pet_policy": "Pet-friendly villas available", "price_range": "₹30,000-60,000", "amenities": "Plantation tours, Spa, Pool"},
+        {"name": "TUTC Kohima Camp", "city": "Kohima", "state": "Nagaland", "type": "Camp", "description": "Luxury camping during Hornbill Festival", "image_url": "", "website": "https://tutc.in", "phone": None, "address": "Kisama, Kohima", "pet_policy": "Pets allowed with prior approval", "price_range": "₹20,000-40,000", "amenities": "Luxury tents, Cultural events, Dining"},
+        {"name": "Dune Eco Village", "city": "Pondicherry", "state": "Tamil Nadu", "type": "Resort", "description": "Eco-friendly beach resort", "image_url": "", "website": "https://duneecogroup.com", "phone": None, "address": "Pudhukuppam, Pondicherry", "pet_policy": "Pet-friendly cottages", "price_range": "₹8,000-18,000", "amenities": "Beach, Yoga, Organic food"},
     ]
     
     inserted = 0
@@ -5745,7 +5745,7 @@ async def seed_pet_friendly_stays(username: str = Depends(verify_admin)):
             "state": stay["state"],
             "property_type": stay["type"],
             "description": stay["description"],
-            "photos": [stay["image_url"]] if stay["image_url"] else ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"],
+            "photos": [stay["image_url"]] if stay["image_url"] else [""],
             "website": stay["website"],
             "phone": stay["phone"],
             "address": stay["address"],
@@ -5779,18 +5779,18 @@ async def seed_pet_friendly_cafes(username: str = Depends(verify_admin)):
     """Seed pet-friendly cafes/restaurants from curated data."""
     
     cafes_data = [
-        {"name": "Third Wave Coffee", "city": "Bangalore", "state": "Karnataka", "type": "Cafe", "description": "Popular coffee chain with pet-friendly outdoor seating", "image_url": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800", "website": "https://thirdwavecoffee.in", "phone": None, "address": "Multiple locations, Bangalore", "pet_policy": "Dogs welcome in outdoor area", "cuisine": "Coffee, Light bites", "price_range": "₹300-600"},
-        {"name": "Cafe Duco", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Pet-friendly cafe in Hauz Khas", "image_url": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800", "website": None, "phone": None, "address": "Hauz Khas Village, Delhi", "pet_policy": "All pets welcome", "cuisine": "Continental, Italian", "price_range": "₹500-1,000"},
-        {"name": "Dyu Art Cafe", "city": "Bangalore", "state": "Karnataka", "type": "Cafe", "description": "Art cafe with pet-friendly garden", "image_url": "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800", "website": None, "phone": None, "address": "Koramangala, Bangalore", "pet_policy": "Dogs welcome in garden area", "cuisine": "Cafe, Light meals", "price_range": "₹400-800"},
-        {"name": "Smoke House Deli", "city": "Mumbai", "state": "Maharashtra", "type": "Restaurant", "description": "Popular deli with outdoor pet seating", "image_url": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800", "website": "https://smokehousedeli.in", "phone": None, "address": "Multiple locations, Mumbai", "pet_policy": "Pets welcome outdoors", "cuisine": "Continental, Deli", "price_range": "₹800-1,500"},
-        {"name": "Diggin", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Charming cafe with pet-friendly seating", "image_url": "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=800", "website": None, "phone": None, "address": "Chanakyapuri, Delhi", "pet_policy": "Dogs welcome", "cuisine": "Italian, Continental", "price_range": "₹600-1,200"},
-        {"name": "Cafe Zoe", "city": "Mumbai", "state": "Maharashtra", "type": "Cafe", "description": "Industrial-style cafe welcoming pets", "image_url": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800", "website": None, "phone": None, "address": "Parel, Mumbai", "pet_policy": "Pet-friendly outdoor seating", "cuisine": "European, Fusion", "price_range": "₹700-1,400"},
-        {"name": "Blue Tokai Coffee", "city": "Multiple", "state": "Pan India", "type": "Cafe", "description": "Specialty coffee chain with select pet-friendly locations", "image_url": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800", "website": "https://bluetokaicoffee.com", "phone": None, "address": "Multiple cities", "pet_policy": "Pets welcome in outdoor seating", "cuisine": "Coffee, Bakery", "price_range": "₹300-600"},
-        {"name": "The Fatty Bao", "city": "Bangalore", "state": "Karnataka", "type": "Restaurant", "description": "Asian restaurant with pet-friendly patio", "image_url": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800", "website": None, "phone": None, "address": "Indiranagar, Bangalore", "pet_policy": "Dogs welcome on patio", "cuisine": "Asian, Pan-Asian", "price_range": "₹800-1,500"},
-        {"name": "Artsy Cafe", "city": "Pune", "state": "Maharashtra", "type": "Cafe", "description": "Creative cafe space welcoming pets", "image_url": "https://images.unsplash.com/photo-1513267048331-5611cad62e41?w=800", "website": None, "phone": None, "address": "Koregaon Park, Pune", "pet_policy": "All pets welcome", "cuisine": "Cafe, Snacks", "price_range": "₹400-800"},
-        {"name": "Mocha", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Hookah cafe with pet-friendly outdoor area", "image_url": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=800", "website": None, "phone": None, "address": "GK-2, Delhi", "pet_policy": "Pets allowed in outdoor section", "cuisine": "Cafe, Middle Eastern", "price_range": "₹500-1,000"},
-        {"name": "Effingut", "city": "Pune", "state": "Maharashtra", "type": "Restaurant", "description": "Brewpub with pet-friendly seating", "image_url": "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800", "website": "https://effingut.com", "phone": None, "address": "Koregaon Park, Pune", "pet_policy": "Dogs welcome in designated areas", "cuisine": "Brewery, Continental", "price_range": "₹800-1,600"},
-        {"name": "The Brew Room", "city": "Goa", "state": "Goa", "type": "Cafe", "description": "Beachside cafe welcoming pets", "image_url": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800", "website": None, "phone": None, "address": "Anjuna, Goa", "pet_policy": "Pet-friendly beach cafe", "cuisine": "Cafe, Cocktails", "price_range": "₹400-900"},
+        {"name": "Third Wave Coffee", "city": "Bangalore", "state": "Karnataka", "type": "Cafe", "description": "Popular coffee chain with pet-friendly outdoor seating", "image_url": "", "website": "https://thirdwavecoffee.in", "phone": None, "address": "Multiple locations, Bangalore", "pet_policy": "Dogs welcome in outdoor area", "cuisine": "Coffee, Light bites", "price_range": "₹300-600"},
+        {"name": "Cafe Duco", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Pet-friendly cafe in Hauz Khas", "image_url": "", "website": None, "phone": None, "address": "Hauz Khas Village, Delhi", "pet_policy": "All pets welcome", "cuisine": "Continental, Italian", "price_range": "₹500-1,000"},
+        {"name": "Dyu Art Cafe", "city": "Bangalore", "state": "Karnataka", "type": "Cafe", "description": "Art cafe with pet-friendly garden", "image_url": "", "website": None, "phone": None, "address": "Koramangala, Bangalore", "pet_policy": "Dogs welcome in garden area", "cuisine": "Cafe, Light meals", "price_range": "₹400-800"},
+        {"name": "Smoke House Deli", "city": "Mumbai", "state": "Maharashtra", "type": "Restaurant", "description": "Popular deli with outdoor pet seating", "image_url": "", "website": "https://smokehousedeli.in", "phone": None, "address": "Multiple locations, Mumbai", "pet_policy": "Pets welcome outdoors", "cuisine": "Continental, Deli", "price_range": "₹800-1,500"},
+        {"name": "Diggin", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Charming cafe with pet-friendly seating", "image_url": "", "website": None, "phone": None, "address": "Chanakyapuri, Delhi", "pet_policy": "Dogs welcome", "cuisine": "Italian, Continental", "price_range": "₹600-1,200"},
+        {"name": "Cafe Zoe", "city": "Mumbai", "state": "Maharashtra", "type": "Cafe", "description": "Industrial-style cafe welcoming pets", "image_url": "", "website": None, "phone": None, "address": "Parel, Mumbai", "pet_policy": "Pet-friendly outdoor seating", "cuisine": "European, Fusion", "price_range": "₹700-1,400"},
+        {"name": "Blue Tokai Coffee", "city": "Multiple", "state": "Pan India", "type": "Cafe", "description": "Specialty coffee chain with select pet-friendly locations", "image_url": "", "website": "https://bluetokaicoffee.com", "phone": None, "address": "Multiple cities", "pet_policy": "Pets welcome in outdoor seating", "cuisine": "Coffee, Bakery", "price_range": "₹300-600"},
+        {"name": "The Fatty Bao", "city": "Bangalore", "state": "Karnataka", "type": "Restaurant", "description": "Asian restaurant with pet-friendly patio", "image_url": "", "website": None, "phone": None, "address": "Indiranagar, Bangalore", "pet_policy": "Dogs welcome on patio", "cuisine": "Asian, Pan-Asian", "price_range": "₹800-1,500"},
+        {"name": "Artsy Cafe", "city": "Pune", "state": "Maharashtra", "type": "Cafe", "description": "Creative cafe space welcoming pets", "image_url": "", "website": None, "phone": None, "address": "Koregaon Park, Pune", "pet_policy": "All pets welcome", "cuisine": "Cafe, Snacks", "price_range": "₹400-800"},
+        {"name": "Mocha", "city": "Delhi", "state": "Delhi", "type": "Cafe", "description": "Hookah cafe with pet-friendly outdoor area", "image_url": "", "website": None, "phone": None, "address": "GK-2, Delhi", "pet_policy": "Pets allowed in outdoor section", "cuisine": "Cafe, Middle Eastern", "price_range": "₹500-1,000"},
+        {"name": "Effingut", "city": "Pune", "state": "Maharashtra", "type": "Restaurant", "description": "Brewpub with pet-friendly seating", "image_url": "", "website": "https://effingut.com", "phone": None, "address": "Koregaon Park, Pune", "pet_policy": "Dogs welcome in designated areas", "cuisine": "Brewery, Continental", "price_range": "₹800-1,600"},
+        {"name": "The Brew Room", "city": "Goa", "state": "Goa", "type": "Cafe", "description": "Beachside cafe welcoming pets", "image_url": "", "website": None, "phone": None, "address": "Anjuna, Goa", "pet_policy": "Pet-friendly beach cafe", "cuisine": "Cafe, Cocktails", "price_range": "₹400-900"},
     ]
     
     inserted = 0
@@ -5812,7 +5812,7 @@ async def seed_pet_friendly_cafes(username: str = Depends(verify_admin)):
             "state": cafe.get("state"),
             "type": cafe["type"],
             "description": cafe["description"],
-            "image": cafe["image_url"] or "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800",
+            "image": cafe["image_url"] or "",
             "photos": [cafe["image_url"]] if cafe["image_url"] else [],
             "website": cafe["website"],
             "phone": cafe["phone"],
@@ -5879,10 +5879,10 @@ async def seed_pet_boarding(username: str = Depends(verify_admin)):
     
     # Stock images for boarding types
     type_images = {
-        "Home-style": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800",
-        "Premium": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
-        "Private": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800",
-        "Luxury": "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=800"
+        "Home-style": "",
+        "Premium": "",
+        "Private": "",
+        "Luxury": ""
     }
     
     for boarding in boarding_data:
@@ -5977,7 +5977,7 @@ async def create_boarding_facility(
         "phone": facility.get("phone", ""),
         "email": facility.get("email", ""),
         "website": facility.get("website", ""),
-        "image": facility.get("image", "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"),
+        "image": facility.get("image", ""),
         "photos": facility.get("photos", []),
         "paw_score": facility.get("paw_score", 4.0),
         "price_range": facility.get("price_range", "₹800-1,500/night"),
@@ -7345,28 +7345,28 @@ async def get_site_content(username: str = Depends(verify_admin)):
                 {
                     "id": "1",
                     "title": "Behind the Scenes: Baking with Love",
-                    "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600",
+                    "thumbnail": "",
                     "description": "Watch how we craft each cake with care in our kitchen",
                     "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 },
                 {
                     "id": "2",
                     "title": "Customer Celebrations",
-                    "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600",
+                    "thumbnail": "",
                     "description": "Real celebrations from our happy customers",
                     "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 },
                 {
                     "id": "3",
                     "title": "How to Store Your Cake",
-                    "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600",
+                    "thumbnail": "",
                     "description": "Tips for keeping treats fresh and delicious",
                     "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 },
                 {
                     "id": "4",
                     "title": "Meet Our Team",
-                    "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600",
+                    "thumbnail": "",
                     "description": "The passionate team behind The Doggy Company",
                     "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 }
@@ -7376,14 +7376,14 @@ async def get_site_content(username: str = Depends(verify_admin)):
                     "title": "Unconditional Love",
                     "subtitle": "Deserves Exceptional Treats",
                     "description": "Premium, freshly baked treats crafted with love for your furry family",
-                    "image": "https://images.unsplash.com/flagged/photo-1553802922-28e2f719977d?w=1200",
+                    "image": "",
                     "cta": "Explore Cakes"
                 },
                 {
                     "title": "Meet Mira AI",
                     "subtitle": "Your Celebration Concierge®",
                     "description": "Get personalized recommendations, party ideas, and expert guidance",
-                    "image": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=1200",
+                    "image": "",
                     "cta": "Chat with Mira"
                 }
             ],
@@ -7853,10 +7853,10 @@ async def get_public_videos():
         return {"videos": content["videos"]}
     # Default videos
     return {"videos": [
-        {"id": "1", "title": "Behind the Scenes", "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600", "description": "Watch how we craft each cake", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
-        {"id": "2", "title": "Customer Celebrations", "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600", "description": "Real celebrations", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
-        {"id": "3", "title": "How to Store Your Cake", "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600", "description": "Tips for keeping treats fresh", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
-        {"id": "4", "title": "Meet Our Team", "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "description": "The passionate team", "videoUrl": "https://www.instagram.com/thedoggycompany/"}
+        {"id": "1", "title": "Behind the Scenes", "thumbnail": "", "description": "Watch how we craft each cake", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
+        {"id": "2", "title": "Customer Celebrations", "thumbnail": "", "description": "Real celebrations", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
+        {"id": "3", "title": "How to Store Your Cake", "thumbnail": "", "description": "Tips for keeping treats fresh", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
+        {"id": "4", "title": "Meet Our Team", "thumbnail": "", "description": "The passionate team", "videoUrl": "https://www.instagram.com/thedoggycompany/"}
     ]}
 
 
@@ -12543,7 +12543,7 @@ async def seed_meal_products(
             "original_price": 399,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai", "hyderabad"],
@@ -12573,7 +12573,7 @@ async def seed_meal_products(
             "original_price": 499,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr"],
@@ -12603,7 +12603,7 @@ async def seed_meal_products(
             "original_price": 549,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai"],
@@ -12634,7 +12634,7 @@ async def seed_meal_products(
             "original_price": 349,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai", "hyderabad", "pune"],
@@ -12664,7 +12664,7 @@ async def seed_meal_products(
             "original_price": 329,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai"],
@@ -12695,7 +12695,7 @@ async def seed_meal_products(
             "original_price": 249,
             "category": "meal-toppers",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["topper", "broth", "chicken", "joint", "kibble-enhancer"],
@@ -12722,7 +12722,7 @@ async def seed_meal_products(
             "original_price": 399,
             "category": "meal-toppers",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["topper", "liver", "freeze-dried", "training", "sprinkle"],
@@ -12750,7 +12750,7 @@ async def seed_meal_products(
             "original_price": 429,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr"],
@@ -12781,7 +12781,7 @@ async def seed_meal_products(
             "original_price": 479,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai"],
@@ -12812,7 +12812,7 @@ async def seed_meal_products(
             "original_price": 399,
             "category": "fresh-meals",
             "pillar": "dine",
-            "image": "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": False,
             "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr"],
@@ -12872,7 +12872,7 @@ async def seed_travel_products(
             "original_price": 3499,
             "category": "travel-carriers",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["carrier", "airline", "flight", "cabin"],
@@ -12897,7 +12897,7 @@ async def seed_travel_products(
             "original_price": 4299,
             "category": "travel-safety",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["car-seat", "road-trip", "safety", "elevated"],
@@ -12923,7 +12923,7 @@ async def seed_travel_products(
             "original_price": 2299,
             "category": "travel-safety",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["harness", "car-safety", "crash-tested"],
@@ -12948,7 +12948,7 @@ async def seed_travel_products(
             "original_price": 5999,
             "category": "travel-tech",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["gps", "tracker", "safety", "tech"],
@@ -12974,7 +12974,7 @@ async def seed_travel_products(
             "original_price": 999,
             "category": "travel-health",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["motion-sickness", "health", "calming", "natural"],
@@ -12999,7 +12999,7 @@ async def seed_travel_products(
             "original_price": 1599,
             "category": "travel-health",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["first-aid", "emergency", "safety", "health"],
@@ -13025,7 +13025,7 @@ async def seed_travel_products(
             "original_price": 799,
             "category": "travel-accessories",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["bowl", "collapsible", "portable", "silicone"],
@@ -13050,7 +13050,7 @@ async def seed_travel_products(
             "original_price": 599,
             "category": "travel-accessories",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["water-bottle", "portable", "hydration"],
@@ -13075,7 +13075,7 @@ async def seed_travel_products(
             "original_price": 1999,
             "category": "travel-accessories",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["bag", "organizer", "travel", "storage"],
@@ -13101,7 +13101,7 @@ async def seed_travel_products(
             "original_price": 2499,
             "category": "travel-comfort",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["bed", "portable", "memory-foam", "comfort"],
@@ -13126,7 +13126,7 @@ async def seed_travel_products(
             "original_price": 899,
             "category": "travel-health",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["calming", "spray", "anxiety", "pheromone"],
@@ -13152,7 +13152,7 @@ async def seed_travel_products(
             "original_price": 1199,
             "category": "travel-docs",
             "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400",
+            "image": "",
             "available": True,
             "is_pan_india_shippable": True,
             "tags": ["passport", "documents", "organizer", "ID"],
@@ -18949,7 +18949,7 @@ async def seed_production_data():
             "name": "Valentine's Day Collection",
             "title": "Valentine's Day Treats",
             "description": "Show your furry valentine some love with our special Valentine's Day collection! Heart-shaped treats, pink frosted cakes, and love-themed goodies.",
-            "banner_image": "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200",
+            "banner_image": "",
             "is_active": True,
             "display_order": 1,
             "products": [],
@@ -18964,7 +18964,7 @@ async def seed_production_data():
             "name": "Birthday Celebration",
             "title": "Pawsome Birthday Treats",
             "description": "Make your pet's birthday unforgettable with our celebration collection. Custom cakes, party treats, and special hampers!",
-            "banner_image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200",
+            "banner_image": "",
             "is_active": True,
             "display_order": 2,
             "products": [],
@@ -18977,7 +18977,7 @@ async def seed_production_data():
             "name": "Healthy Bites",
             "title": "Nutritious & Delicious",
             "description": "Health-conscious treats for fitness-focused pets. Low-calorie, grain-free, and packed with nutrition.",
-            "banner_image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200",
+            "banner_image": "",
             "is_active": True,
             "display_order": 3,
             "products": [],
@@ -18990,7 +18990,7 @@ async def seed_production_data():
             "name": "Diwali Special",
             "title": "Festival of Lights Treats",
             "description": "Celebrate Diwali with pet-safe sweets and festive hampers. Traditional flavors made safe for your furry friends!",
-            "banner_image": "https://images.unsplash.com/photo-1574672280600-4accfa5b6f98?w=1200",
+            "banner_image": "",
             "is_active": True,
             "display_order": 4,
             "products": [],
@@ -19894,11 +19894,11 @@ async def seed_about_content(username: str = Depends(verify_admin)):
     ]
     
     featured_dogs = [
-        {"id": "dog-lola", "name": "Lola", "breed": "Golden Retriever", "role": "Chief Taste Tester & Office Supervisor", "story": "Lola has been with us since Day 1. She's tasted every recipe, rejected a few (we listened!), and approved the ones you love. When she's not working, she's supervising belly rub sessions.", "image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=400&fit=crop", "emoji": "👑", "order": 1, "is_active": True},
-        {"id": "dog-bruno", "name": "Bruno", "breed": "Labrador", "role": "Quality Assurance Manager", "story": "Bruno joined as a rescue and became our most dedicated employee. He personally tests every batch for 'enthusiastic consumption potential' - his tail wags are our 5-star rating.", "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop", "emoji": "🏆", "order": 2, "is_active": True},
-        {"id": "dog-cookie", "name": "Cookie", "breed": "Beagle", "role": "Sniff Inspector & Treat Detective", "story": "With the most powerful nose in the office, Cookie ensures every ingredient meets her exacting standards. She's caught more 'suspicious' treats than we can count (mostly in her own bowl).", "image": "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400&h=400&fit=crop", "emoji": "🔍", "order": 3, "is_active": True},
-        {"id": "dog-max", "name": "Max", "breed": "German Shepherd", "role": "Head of Security & Delivery Greeter", "story": "Max takes his job very seriously - no delivery person enters without a thorough inspection and mandatory pets. He's also our unofficial morale officer, always ready with a comforting presence.", "image": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400&h=400&fit=crop", "emoji": "🛡️", "order": 4, "is_active": True},
-        {"id": "dog-street-heroes", "name": "Street Heroes", "breed": "Mixed Breeds", "role": "The Reason We Do This", "story": "Through our Streats program, 10% of every sale feeds and cares for street dogs. These unsung heroes remind us daily why we started - because every dog deserves love, not just those with homes.", "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=400&fit=crop", "emoji": "💛", "order": 5, "is_active": True}
+        {"id": "dog-lola", "name": "Lola", "breed": "Golden Retriever", "role": "Chief Taste Tester & Office Supervisor", "story": "Lola has been with us since Day 1. She's tasted every recipe, rejected a few (we listened!), and approved the ones you love. When she's not working, she's supervising belly rub sessions.", "image": "", "emoji": "👑", "order": 1, "is_active": True},
+        {"id": "dog-bruno", "name": "Bruno", "breed": "Labrador", "role": "Quality Assurance Manager", "story": "Bruno joined as a rescue and became our most dedicated employee. He personally tests every batch for 'enthusiastic consumption potential' - his tail wags are our 5-star rating.", "image": "", "emoji": "🏆", "order": 2, "is_active": True},
+        {"id": "dog-cookie", "name": "Cookie", "breed": "Beagle", "role": "Sniff Inspector & Treat Detective", "story": "With the most powerful nose in the office, Cookie ensures every ingredient meets her exacting standards. She's caught more 'suspicious' treats than we can count (mostly in her own bowl).", "image": "", "emoji": "🔍", "order": 3, "is_active": True},
+        {"id": "dog-max", "name": "Max", "breed": "German Shepherd", "role": "Head of Security & Delivery Greeter", "story": "Max takes his job very seriously - no delivery person enters without a thorough inspection and mandatory pets. He's also our unofficial morale officer, always ready with a comforting presence.", "image": "", "emoji": "🛡️", "order": 4, "is_active": True},
+        {"id": "dog-street-heroes", "name": "Street Heroes", "breed": "Mixed Breeds", "role": "The Reason We Do This", "story": "Through our Streats program, 10% of every sale feeds and cares for street dogs. These unsung heroes remind us daily why we started - because every dog deserves love, not just those with homes.", "image": "", "emoji": "💛", "order": 5, "is_active": True}
     ]
     
     await db.team_members.delete_many({})
@@ -20747,66 +20747,66 @@ async def initialize_database():
         if product_count == 0:
             sample_products = [
                 # CAKES (15 products)
-                {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "available": True},
-                {"id": "cake-002", "name": "Banana Bliss Cake", "description": "Healthy banana cake with natural ingredients", "price": 799, "originalPrice": 799, "image": "https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=600", "category": "cakes", "available": True},
-                {"id": "cake-003", "name": "Carrot Delight Cake", "description": "Nutritious carrot cake packed with vitamins", "price": 949, "originalPrice": 949, "image": "https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600", "category": "cakes", "available": True},
-                {"id": "cake-004", "name": "Chicken Supreme Cake", "description": "Savory chicken cake for meat lovers", "price": 1099, "originalPrice": 1099, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "cakes", "available": True},
-                {"id": "cake-005", "name": "Apple Cinnamon Cake", "description": "Sweet apple cake with cinnamon", "price": 849, "originalPrice": 849, "image": "https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=600", "category": "cakes", "available": True},
-                {"id": "cake-006", "name": "Beef & Sweet Potato Cake", "description": "Hearty beef cake with sweet potato", "price": 1199, "originalPrice": 1199, "image": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=600", "category": "cakes", "available": True},
-                {"id": "cake-007", "name": "Blueberry Yogurt Cake", "description": "Refreshing blueberry cake with yogurt frosting", "price": 999, "originalPrice": 999, "image": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600", "category": "cakes", "available": True},
-                {"id": "cake-008", "name": "Pumpkin Spice Cake", "description": "Seasonal pumpkin cake with spices", "price": 899, "originalPrice": 899, "image": "https://images.unsplash.com/photo-1509461399763-ae67a981b254?w=600", "category": "cakes", "available": True},
-                {"id": "cake-009", "name": "Lamb & Rice Cake", "description": "Premium lamb cake for sensitive tummies", "price": 1299, "originalPrice": 1299, "image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600", "category": "cakes", "available": True},
-                {"id": "cake-010", "name": "Oatmeal Honey Cake", "description": "Wholesome oatmeal cake with honey drizzle", "price": 849, "originalPrice": 849, "image": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600", "category": "cakes", "available": True},
-                {"id": "cake-011", "name": "Golden Retriever Birthday Cake", "description": "Special cake shaped like a Golden Retriever", "price": 1499, "originalPrice": 1499, "image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=600", "category": "breed", "available": True},
-                {"id": "cake-012", "name": "Labrador Love Cake", "description": "Chocolate-free cake for Lab lovers", "price": 1499, "originalPrice": 1499, "image": "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=600", "category": "breed", "available": True},
-                {"id": "cake-013", "name": "Pug Party Cake", "description": "Adorable pug-themed birthday cake", "price": 1299, "originalPrice": 1299, "image": "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=600", "category": "breed", "available": True},
-                {"id": "cake-014", "name": "Beagle Birthday Bash Cake", "description": "Fun beagle-shaped celebration cake", "price": 1399, "originalPrice": 1399, "image": "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=600", "category": "breed", "available": True},
-                {"id": "cake-015", "name": "German Shepherd Glory Cake", "description": "Majestic GSD-themed cake", "price": 1599, "originalPrice": 1599, "image": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=600", "category": "breed", "available": True},
+                {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-002", "name": "Banana Bliss Cake", "description": "Healthy banana cake with natural ingredients", "price": 799, "originalPrice": 799, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-003", "name": "Carrot Delight Cake", "description": "Nutritious carrot cake packed with vitamins", "price": 949, "originalPrice": 949, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-004", "name": "Chicken Supreme Cake", "description": "Savory chicken cake for meat lovers", "price": 1099, "originalPrice": 1099, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-005", "name": "Apple Cinnamon Cake", "description": "Sweet apple cake with cinnamon", "price": 849, "originalPrice": 849, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-006", "name": "Beef & Sweet Potato Cake", "description": "Hearty beef cake with sweet potato", "price": 1199, "originalPrice": 1199, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-007", "name": "Blueberry Yogurt Cake", "description": "Refreshing blueberry cake with yogurt frosting", "price": 999, "originalPrice": 999, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-008", "name": "Pumpkin Spice Cake", "description": "Seasonal pumpkin cake with spices", "price": 899, "originalPrice": 899, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-009", "name": "Lamb & Rice Cake", "description": "Premium lamb cake for sensitive tummies", "price": 1299, "originalPrice": 1299, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-010", "name": "Oatmeal Honey Cake", "description": "Wholesome oatmeal cake with honey drizzle", "price": 849, "originalPrice": 849, "image": "", "category": "cakes", "available": True},
+                {"id": "cake-011", "name": "Golden Retriever Birthday Cake", "description": "Special cake shaped like a Golden Retriever", "price": 1499, "originalPrice": 1499, "image": "", "category": "breed", "available": True},
+                {"id": "cake-012", "name": "Labrador Love Cake", "description": "Chocolate-free cake for Lab lovers", "price": 1499, "originalPrice": 1499, "image": "", "category": "breed", "available": True},
+                {"id": "cake-013", "name": "Pug Party Cake", "description": "Adorable pug-themed birthday cake", "price": 1299, "originalPrice": 1299, "image": "", "category": "breed", "available": True},
+                {"id": "cake-014", "name": "Beagle Birthday Bash Cake", "description": "Fun beagle-shaped celebration cake", "price": 1399, "originalPrice": 1399, "image": "", "category": "breed", "available": True},
+                {"id": "cake-015", "name": "German Shepherd Glory Cake", "description": "Majestic GSD-themed cake", "price": 1599, "originalPrice": 1599, "image": "", "category": "breed", "available": True},
                 
                 # TREATS (10 products)
-                {"id": "treat-001", "name": "Chicken Jerky Strips", "description": "Crunchy chicken jerky treats", "price": 349, "originalPrice": 349, "image": "https://images.unsplash.com/photo-1582798244350-8b8e9e4f0b91?w=600", "category": "treats", "available": True},
-                {"id": "treat-002", "name": "Peanut Butter Biscuits", "description": "Crunchy peanut butter flavored biscuits", "price": 299, "originalPrice": 299, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "treats", "available": True},
-                {"id": "treat-003", "name": "Sweet Potato Chews", "description": "Natural sweet potato chew treats", "price": 399, "originalPrice": 399, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "treats", "available": True},
-                {"id": "treat-004", "name": "Salmon Skin Rolls", "description": "Omega-rich salmon skin treats", "price": 449, "originalPrice": 449, "image": "https://images.unsplash.com/photo-1568702846914-96b305d2uj8b?w=600", "category": "treats", "available": True},
-                {"id": "treat-005", "name": "Dental Chew Sticks", "description": "Teeth-cleaning dental sticks", "price": 299, "originalPrice": 299, "image": "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=600", "category": "treats", "available": True},
-                {"id": "treat-006", "name": "Liver Training Treats", "description": "Small liver treats for training", "price": 249, "originalPrice": 249, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "treats", "available": True},
-                {"id": "treat-007", "name": "Duck Breast Strips", "description": "Premium duck breast jerky", "price": 499, "originalPrice": 499, "image": "https://images.unsplash.com/photo-1582798244350-8b8e9e4f0b91?w=600", "category": "treats", "available": True},
-                {"id": "treat-008", "name": "Cheese Puffs", "description": "Light and crispy cheese treats", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "treats", "available": True},
-                {"id": "treat-009", "name": "Veggie Crunch Mix", "description": "Mixed vegetable crunchy treats", "price": 279, "originalPrice": 279, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "treats", "available": True},
-                {"id": "treat-010", "name": "Rabbit Ear Chews", "description": "Natural rabbit ear chews", "price": 549, "originalPrice": 549, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "treats", "available": True},
+                {"id": "treat-001", "name": "Chicken Jerky Strips", "description": "Crunchy chicken jerky treats", "price": 349, "originalPrice": 349, "image": "", "category": "treats", "available": True},
+                {"id": "treat-002", "name": "Peanut Butter Biscuits", "description": "Crunchy peanut butter flavored biscuits", "price": 299, "originalPrice": 299, "image": "", "category": "treats", "available": True},
+                {"id": "treat-003", "name": "Sweet Potato Chews", "description": "Natural sweet potato chew treats", "price": 399, "originalPrice": 399, "image": "", "category": "treats", "available": True},
+                {"id": "treat-004", "name": "Salmon Skin Rolls", "description": "Omega-rich salmon skin treats", "price": 449, "originalPrice": 449, "image": "", "category": "treats", "available": True},
+                {"id": "treat-005", "name": "Dental Chew Sticks", "description": "Teeth-cleaning dental sticks", "price": 299, "originalPrice": 299, "image": "", "category": "treats", "available": True},
+                {"id": "treat-006", "name": "Liver Training Treats", "description": "Small liver treats for training", "price": 249, "originalPrice": 249, "image": "", "category": "treats", "available": True},
+                {"id": "treat-007", "name": "Duck Breast Strips", "description": "Premium duck breast jerky", "price": 499, "originalPrice": 499, "image": "", "category": "treats", "available": True},
+                {"id": "treat-008", "name": "Cheese Puffs", "description": "Light and crispy cheese treats", "price": 199, "originalPrice": 199, "image": "", "category": "treats", "available": True},
+                {"id": "treat-009", "name": "Veggie Crunch Mix", "description": "Mixed vegetable crunchy treats", "price": 279, "originalPrice": 279, "image": "", "category": "treats", "available": True},
+                {"id": "treat-010", "name": "Rabbit Ear Chews", "description": "Natural rabbit ear chews", "price": 549, "originalPrice": 549, "image": "", "category": "treats", "available": True},
                 
                 # PUPCAKES & DOGNUTS (5 products)
-                {"id": "pupcake-001", "name": "Pupcake Box (6 pcs)", "description": "Assorted mini cupcakes for dogs", "price": 599, "originalPrice": 599, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "pupcakes", "available": True},
-                {"id": "pupcake-002", "name": "Pupcake Box (12 pcs)", "description": "Party pack of assorted pupcakes", "price": 999, "originalPrice": 1099, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "pupcakes", "available": True},
-                {"id": "dognut-001", "name": "Glazed Dognuts (4 pcs)", "description": "Doggy-safe glazed donuts", "price": 449, "originalPrice": 449, "image": "https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=600", "category": "dognuts", "available": True},
-                {"id": "dognut-002", "name": "Sprinkle Dognuts (4 pcs)", "description": "Fun sprinkle-topped dognuts", "price": 499, "originalPrice": 499, "image": "https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=600", "category": "dognuts", "available": True},
-                {"id": "dognut-003", "name": "Carob Dognuts (4 pcs)", "description": "Carob-dipped dognuts", "price": 549, "originalPrice": 549, "image": "https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=600", "category": "dognuts", "available": True},
+                {"id": "pupcake-001", "name": "Pupcake Box (6 pcs)", "description": "Assorted mini cupcakes for dogs", "price": 599, "originalPrice": 599, "image": "", "category": "pupcakes", "available": True},
+                {"id": "pupcake-002", "name": "Pupcake Box (12 pcs)", "description": "Party pack of assorted pupcakes", "price": 999, "originalPrice": 1099, "image": "", "category": "pupcakes", "available": True},
+                {"id": "dognut-001", "name": "Glazed Dognuts (4 pcs)", "description": "Doggy-safe glazed donuts", "price": 449, "originalPrice": 449, "image": "", "category": "dognuts", "available": True},
+                {"id": "dognut-002", "name": "Sprinkle Dognuts (4 pcs)", "description": "Fun sprinkle-topped dognuts", "price": 499, "originalPrice": 499, "image": "", "category": "dognuts", "available": True},
+                {"id": "dognut-003", "name": "Carob Dognuts (4 pcs)", "description": "Carob-dipped dognuts", "price": 549, "originalPrice": 549, "image": "", "category": "dognuts", "available": True},
                 
                 # FROZEN TREATS (5 products)
-                {"id": "frozen-001", "name": "Pup Ice Cream - Peanut Butter", "description": "Frozen peanut butter treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=600", "category": "frozen-treats", "available": True},
-                {"id": "frozen-002", "name": "Pup Ice Cream - Banana", "description": "Frozen banana treat", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", "category": "frozen-treats", "available": True},
-                {"id": "frozen-003", "name": "Pup Ice Cream - Strawberry", "description": "Frozen strawberry delight", "price": 199, "originalPrice": 199, "image": "https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=600", "category": "frozen-treats", "available": True},
-                {"id": "frozen-004", "name": "Frozen Yogurt Bites", "description": "Bite-sized frozen yogurt treats", "price": 249, "originalPrice": 249, "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", "category": "frozen-treats", "available": True},
-                {"id": "frozen-005", "name": "Pupsicle Variety Pack", "description": "4 assorted frozen pupsicles", "price": 399, "originalPrice": 449, "image": "https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=600", "category": "frozen-treats", "available": True},
+                {"id": "frozen-001", "name": "Pup Ice Cream - Peanut Butter", "description": "Frozen peanut butter treat", "price": 199, "originalPrice": 199, "image": "", "category": "frozen-treats", "available": True},
+                {"id": "frozen-002", "name": "Pup Ice Cream - Banana", "description": "Frozen banana treat", "price": 199, "originalPrice": 199, "image": "", "category": "frozen-treats", "available": True},
+                {"id": "frozen-003", "name": "Pup Ice Cream - Strawberry", "description": "Frozen strawberry delight", "price": 199, "originalPrice": 199, "image": "", "category": "frozen-treats", "available": True},
+                {"id": "frozen-004", "name": "Frozen Yogurt Bites", "description": "Bite-sized frozen yogurt treats", "price": 249, "originalPrice": 249, "image": "", "category": "frozen-treats", "available": True},
+                {"id": "frozen-005", "name": "Pupsicle Variety Pack", "description": "4 assorted frozen pupsicles", "price": 399, "originalPrice": 449, "image": "", "category": "frozen-treats", "available": True},
                 
                 # HAMPERS & GIFT BOXES (5 products)
-                {"id": "hamper-001", "name": "Birthday Bash Box", "description": "Complete birthday celebration kit with cake, treats & party hat", "price": 1999, "originalPrice": 2499, "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600", "category": "hampers", "available": True},
-                {"id": "hamper-002", "name": "Welcome Home Box", "description": "Perfect welcome gift for new pet parents", "price": 1499, "originalPrice": 1799, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "hampers", "available": True},
-                {"id": "hamper-003", "name": "Pamper Your Pup Box", "description": "Spa day essentials + treats", "price": 1799, "originalPrice": 2099, "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600", "category": "hampers", "available": True},
-                {"id": "hamper-004", "name": "Training Starter Kit", "description": "Training treats + clicker + guide", "price": 999, "originalPrice": 1199, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "hampers", "available": True},
-                {"id": "hamper-005", "name": "Premium Celebration Box", "description": "Luxury celebration box with premium cake & accessories", "price": 2999, "originalPrice": 3499, "image": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=600", "category": "hampers", "available": True},
+                {"id": "hamper-001", "name": "Birthday Bash Box", "description": "Complete birthday celebration kit with cake, treats & party hat", "price": 1999, "originalPrice": 2499, "image": "", "category": "hampers", "available": True},
+                {"id": "hamper-002", "name": "Welcome Home Box", "description": "Perfect welcome gift for new pet parents", "price": 1499, "originalPrice": 1799, "image": "", "category": "hampers", "available": True},
+                {"id": "hamper-003", "name": "Pamper Your Pup Box", "description": "Spa day essentials + treats", "price": 1799, "originalPrice": 2099, "image": "", "category": "hampers", "available": True},
+                {"id": "hamper-004", "name": "Training Starter Kit", "description": "Training treats + clicker + guide", "price": 999, "originalPrice": 1199, "image": "", "category": "hampers", "available": True},
+                {"id": "hamper-005", "name": "Premium Celebration Box", "description": "Luxury celebration box with premium cake & accessories", "price": 2999, "originalPrice": 3499, "image": "", "category": "hampers", "available": True},
                 
                 # CUSTOM CAKES (3 products)
-                {"id": "custom-001", "name": "Custom Photo Cake", "description": "Personalized cake with your pet's photo printed on edible topper", "price": 1499, "originalPrice": 1499, "image": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600", "category": "custom", "available": True},
-                {"id": "custom-002", "name": "Custom Theme Cake", "description": "Themed cake designed to your specifications", "price": 1799, "originalPrice": 1799, "image": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600", "category": "custom", "available": True},
-                {"id": "custom-003", "name": "Custom Multi-Tier Cake", "description": "Impressive multi-tier celebration cake", "price": 2499, "originalPrice": 2499, "image": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?w=600", "category": "custom", "available": True},
+                {"id": "custom-001", "name": "Custom Photo Cake", "description": "Personalized cake with your pet's photo printed on edible topper", "price": 1499, "originalPrice": 1499, "image": "", "category": "custom", "available": True},
+                {"id": "custom-002", "name": "Custom Theme Cake", "description": "Themed cake designed to your specifications", "price": 1799, "originalPrice": 1799, "image": "", "category": "custom", "available": True},
+                {"id": "custom-003", "name": "Custom Multi-Tier Cake", "description": "Impressive multi-tier celebration cake", "price": 2499, "originalPrice": 2499, "image": "", "category": "custom", "available": True},
                 
                 # MEALS (5 products)
-                {"id": "meal-001", "name": "Chicken & Rice Bowl", "description": "Fresh chicken with steamed rice", "price": 299, "originalPrice": 299, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "meals", "available": True},
-                {"id": "meal-002", "name": "Lamb & Veggie Bowl", "description": "Tender lamb with mixed vegetables", "price": 349, "originalPrice": 349, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "meals", "available": True},
-                {"id": "meal-003", "name": "Fish & Sweet Potato Bowl", "description": "Omega-rich fish meal", "price": 329, "originalPrice": 329, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "meals", "available": True},
-                {"id": "meal-004", "name": "Beef Stew", "description": "Hearty beef stew with vegetables", "price": 379, "originalPrice": 379, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "meals", "available": True},
-                {"id": "meal-005", "name": "Vegetarian Delight", "description": "Plant-based nutritious meal", "price": 279, "originalPrice": 279, "image": "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600", "category": "meals", "available": True},
+                {"id": "meal-001", "name": "Chicken & Rice Bowl", "description": "Fresh chicken with steamed rice", "price": 299, "originalPrice": 299, "image": "", "category": "meals", "available": True},
+                {"id": "meal-002", "name": "Lamb & Veggie Bowl", "description": "Tender lamb with mixed vegetables", "price": 349, "originalPrice": 349, "image": "", "category": "meals", "available": True},
+                {"id": "meal-003", "name": "Fish & Sweet Potato Bowl", "description": "Omega-rich fish meal", "price": 329, "originalPrice": 329, "image": "", "category": "meals", "available": True},
+                {"id": "meal-004", "name": "Beef Stew", "description": "Hearty beef stew with vegetables", "price": 379, "originalPrice": 379, "image": "", "category": "meals", "available": True},
+                {"id": "meal-005", "name": "Vegetarian Delight", "description": "Plant-based nutritious meal", "price": 279, "originalPrice": 279, "image": "", "category": "meals", "available": True},
             ]
             
             # Add timestamps to all products
@@ -22273,6 +22273,7 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "delivery_time": order.get("delivery_time", ""),
         "delivery_type": order.get("delivery_type", "Delivery"),
         "total_price": order.get("total_price", 0),
+        "life_vision": order.get("life_vision", ""),
         "status": "pending",
         "created_at": ts.isoformat(),
         "source": order.get("source", "doggy_bakery_cake_modal"),
@@ -22281,6 +22282,7 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
 
     allergies_str = ", ".join(cake_order["pet_allergies"]) if cake_order["pet_allergies"] else "None"
     price_str = "\u20b9" + str(int(cake_order["total_price"])) if cake_order["total_price"] else "Price on request"
+    life_vision_str = cake_order.get("life_vision", "")
     ticket_text = (
         "\U0001f382 CAKE ORDER \u2014 " + pet_name + "\n\n"
         "Product: " + (cake_order["product_name"] or "—") + "\n"
@@ -22296,7 +22298,8 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "Total: " + price_str + "\n\n"
         "Pet: " + pet_name + " (" + (cake_order["pet_breed"] or "Unknown") + ")\n"
         "Allergies: " + allergies_str + "\n"
-        "Customer: " + current_user.get("email", "")
+        + ("North Star: \"" + life_vision_str + "\"\n" if life_vision_str else "")
+        + "Customer: " + current_user.get("email", "")
     )
 
     ticket = {
@@ -23067,7 +23070,7 @@ async def sync_stay_to_products_endpoint():
                 "price": prop.get('price_per_night') or price,
                 "category": "stay",
                 "pillar": "stay",
-                "image": prop.get('images', [None])[0] if prop.get('images') else prop.get('image') or "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                "image": prop.get('images', [None])[0] if prop.get('images') else prop.get('image') or "",
                 "tags": ["Stay", "Pet-Friendly", prop.get('city', ''), prop.get('property_type', '')],
                 "city": prop.get('city'),
                 "property_type": prop.get('property_type'),
@@ -24503,42 +24506,42 @@ async def get_automation_status(credentials: HTTPBasicCredentials = Depends(veri
 
 PILLAR_STOCK_IMAGES = {
     "fit": [
-        "https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800",
-        "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
-        "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800",
-        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
-        "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"
+        "",
+        "",
+        "",
+        "",
+        ""
     ],
     "care": [
-        "https://images.unsplash.com/photo-1601758123927-4f7b83de9a89?w=800",
-        "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800",
-        "https://images.unsplash.com/photo-1629740067905-bd3f515aa739?w=800",
-        "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800"
+        "",
+        "",
+        "",
+        ""
     ],
     "travel": [
-        "https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800",
-        "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800",
-        "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800"
+        "",
+        "",
+        ""
     ],
     "stay": [
-        "https://images.unsplash.com/photo-1587559070757-f72a388edbba?w=800",
-        "https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=800",
-        "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=800"
+        "",
+        "",
+        ""
     ],
     "dine": [
-        "https://images.unsplash.com/photo-1599443015574-be5fe8a05783?w=800",
-        "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?w=800",
-        "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800"
+        "",
+        "",
+        ""
     ],
     "celebrate": [
-        "https://images.unsplash.com/photo-1535930749574-1399327ce78f?w=800",
-        "https://images.unsplash.com/photo-1575223970966-76ae61ee7838?w=800",
-        "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=800"
+        "",
+        "",
+        ""
     ],
     "default": [
-        "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
-        "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800",
-        "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800"
+        "",
+        "",
+        ""
     ]
 }
 

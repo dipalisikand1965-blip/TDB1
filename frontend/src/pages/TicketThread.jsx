@@ -99,7 +99,39 @@ const MessageBubble = ({ message, isUser, showTimestamp, isHighlighted = false, 
             <span className={`text-xs font-medium ${lightMode ? 'text-[#C96D9E]' : 'text-amber-400'}`}>Concierge®</span>
           </div>
         )}
-        <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content || message.text || message.message}</p>
+        {(() => {
+          const rawText = message.content || message.text || message.message || '';
+          const photoUrls = [...new Set([
+            ...(rawText.match(/https?:\/\/[^\s,)\n]+\.(jpg|jpeg|png|gif|webp)/gi) || []),
+            ...(rawText.match(/https?:\/\/res\.cloudinary\.com\/[^\s,)\n]+/gi) || []),
+          ])];
+          const cleanText = rawText
+            .replace(/📸 PHOTO:\s*https?:\/\/[^\n]+\n?\s*\([^\n]*\)/gi, '')
+            .replace(/Photo:\s*https?:\/\/[^\s\n]+/gi, '')
+            .replace(/https?:\/\/res\.cloudinary\.com\/[^\s,)\n]+/gi, '')
+            .replace(/\bhttps?:\/\/[^\s,)\n]+\.(jpg|jpeg|png|gif|webp)\b/gi, '')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+          return (
+            <>
+              {photoUrls.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {photoUrls.map((url, i) => (
+                    <img
+                      key={i}
+                      src={url}
+                      alt="Attached photo"
+                      style={{ maxWidth: '300px', borderRadius: '8px' }}
+                      className="cursor-pointer object-cover shadow-sm border border-white/20"
+                      onClick={() => window.open(url, '_blank')}
+                    />
+                  ))}
+                </div>
+              )}
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">{cleanText || rawText}</p>
+            </>
+          );
+        })()}
         
         {/* Status indicator */}
         <div className={`flex items-center gap-1.5 mt-1 ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -325,7 +357,11 @@ const TicketThread = ({ ticketId: ticketIdProp, mode = "full", onClose, onTicket
       setTicket(ticketData);
       
       // Extract and deduplicate messages
-      const threadMessages = ticketData.messages || ticketData.conversation || ticketData.thread || [];
+      // NOTE: Use length check to avoid empty array [] being truthy and masking populated conversation
+      const threadMessages = (ticketData.messages?.length ? ticketData.messages : null)
+        || (ticketData.conversation?.length ? ticketData.conversation : null)
+        || ticketData.thread
+        || [];
       
       // Deduplicate system events (same type + content within 1 minute)
       const deduped = [];

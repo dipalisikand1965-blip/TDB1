@@ -22,6 +22,7 @@ import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
 import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
+import { buildMasterBriefing, buildMasterMetadata, getAllergiesFromPet } from '../../utils/masterBriefing';
 
 // ── Breed slug & display name helpers ────────────────────────────────────
 const BREED_SLUG_MAP = {
@@ -410,6 +411,21 @@ const MiraImaginesCard = ({ flavor, pet }) => {
     setSending(true);
     try {
       const apiUrl = getApiUrl();
+      const details = {
+        service_name:  productName,
+        product_name:  productName,
+        pillar:        'celebrate',
+        channel:       'celebrate_mira_imagines',
+        notes:         `${petName} ${trait}`,
+        urgency:       'normal',
+      };
+      const briefing = buildMasterBriefing(pet, user, 'mira_imagines_product', details);
+      const metadata  = buildMasterMetadata(pet, user, details, {
+        product_type: productType,
+        trait,
+        intent_secondary: [productType, 'custom_celebration_product'],
+      });
+
       await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
         method: 'POST',
         headers: {
@@ -417,18 +433,28 @@ const MiraImaginesCard = ({ flavor, pet }) => {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
-          parent_id: user?.id || user?.email || 'celebrate_guest',
-          pet_id: pet?.id || 'unknown',
-          pillar: 'celebrate',
+          parent_id:     user?.id || user?.email || 'celebrate_guest',
+          pet_id:        pet?.id || 'unknown',
+          pet_name:      petName,
+          pet_breed:     pet?.breed,
+          pet_allergies: getAllergiesFromPet(pet),
+          parent_email:  user?.email || '',
+          parent_name:   user?.name || user?.full_name || '',
+          parent_phone:  user?.phone || user?.whatsapp || '',
+          pillar:        'celebrate',
           intent_primary: 'mira_imagines_product',
           intent_secondary: [productType, 'custom_celebration_product'],
-          life_state: 'celebrate',
-          channel: 'celebrate_mira_imagines',
+          life_state:    'celebrate',
+          channel:       'celebrate_mira_imagines',
+          force_new:     true,
+          subject:       `Mira Imagines: ${productName} for ${petName}`,
           initial_message: {
             sender: 'parent',
             source: 'celebrate_page',
-            text: `Hi! I'd love a custom "${productName}" for ${petName}. Mira knows ${petName} ${trait}. Can you make this happen?`
-          }
+            text:   briefing,
+          },
+          product_name: productName,
+          metadata,
         })
       });
     } catch (err) {

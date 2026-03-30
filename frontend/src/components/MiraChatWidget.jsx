@@ -23,6 +23,7 @@ import { useResizeMobile } from '../hooks/useResizeMobile';
 import MiraOrb from './MiraOrb';
 import CinematicKitAssembly from './CinematicKitAssembly';
 import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCard';
+import { ProductDetailModal } from './ProductCard';
 import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
 import '../styles/mira-universal.css';
@@ -171,11 +172,12 @@ const PILLAR_CHIPS = {
 };
 
 // ── Product card suppress logic (Mira_Widget_MASTER.docx Section 3) ──────────
+// Only suppress products for genuine grief/critical-medical contexts
+// Do NOT include common words (gentle, feel, happy, comfortable) — they appear in every food/care response
 const SUPPRESS_PRODUCT_KEYWORDS = [
-  'lymphoma', 'treatment', 'illness', 'diagnosis', 'medication',
-  'happy', 'happiness', 'feel', 'feeling', 'mind', 'anxiety',
-  'separation', 'gentle', 'comfortable', 'cuddle', 'close',
-  'miss', 'grief', 'loss', 'passing', 'heaven', 'remember'
+  'lymphoma', 'chemotherapy', 'terminal', 'euthanasia',
+  'rainbow bridge', 'passed away', 'put to sleep', 'put him to sleep', 'put her to sleep',
+  'grief counseling', 'cremation', 'final moments'
 ];
 const shouldShowProducts = (responseText) => {
   if (!responseText || typeof responseText !== 'string') return false;
@@ -201,11 +203,15 @@ const MiraChatWidget = ({
   className = '',
   hideMiraChatOnPillarPages = false
 }) => {
-  const pillar = pillarProp || 'general';
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const loc = useLocation();
+
+  // Derive pillar from URL when parent passes null/general (global floating widget)
+  const _KNOWN_PILLARS = ['dine','care','go','play','learn','celebrate','shop','services','paperwork','emergency','farewell','adopt'];
+  const _urlDerivedPillar = _KNOWN_PILLARS.find(p => loc.pathname === '/' + p || loc.pathname.startsWith('/' + p + '/')) || null;
+  const pillar = pillarProp || _urlDerivedPillar || 'general';
 
   // Viewport-level mobile detection — ResizeObserver on document.body
   // Debounced at 150ms, handles device rotation and Chrome DevTools resize
@@ -221,6 +227,7 @@ const MiraChatWidget = ({
   // Cinematic Kit Assembly state
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
+  const [selProd, setSelProd] = useState(null); // chip-tapped product → opens ProductDetailModal
   
   // Pet Picks Panel state (PersonalizedPicksPanel for pillar-specific picks)
   const [showPicksPanel, setShowPicksPanel] = useState(false);
@@ -1239,6 +1246,8 @@ const MiraChatWidget = ({
           const reader = streamResponse.body.getReader();
           const decoder = new TextDecoder();
           let fullText = '';
+          let finalProducts = [];
+          let finalNearbyPlaces = null;
 
           // Add empty streaming message immediately
           const streamMsgId = Date.now();
@@ -1263,6 +1272,12 @@ const MiraChatWidget = ({
               if (data === '[DONE]') break;
               try {
                 const parsed = JSON.parse(data);
+                // ── Enriched data event (products + nearbyPlaces from stream) ──
+                if (parsed.type === 'enriched') {
+                  finalProducts = parsed.data?.products || [];
+                  finalNearbyPlaces = parsed.data?.nearby_places || null;
+                  continue;
+                }
                 const tok = parsed.text || parsed.delta || parsed.content || '';
                 if (!tok) continue;
                 fullText += tok;
@@ -1273,10 +1288,70 @@ const MiraChatWidget = ({
             }
           }
 
-          // Mark streaming complete
+          // Mark streaming complete — attach enriched products/nearbyPlaces
           setMessages(prev => prev.map(m =>
-            m.id === streamMsgId ? { ...m, streaming: false, content: fullText } : m
+            m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
+
+          // ── Open the product-card render gate — always, no suppression ──
+          setTimeout(() => {
+            setVisibleProducts(prev => new Set([...prev, streamMsgId]));
+          }, 900);
+
+          // ── Post-stream product fetch — claude-picks (same engine as pillar page Mira Picks) ──
+          const _streamPetId = selectedPet?.id || selectedPet?._id;
+          const _rawPillar = currentPillar || pillar;
+          // Infer pillar from URL when widget is in 'general' mode (e.g. floating on any page)
+          const _urlPillar = (() => {
+            const path = window.location.pathname;
+            const _known = ['dine','care','go','play','learn','celebrate','shop','services','paperwork','emergency','farewell','adopt'];
+            return _known.find(p => path.includes('/' + p)) || null;
+          })();
+          const _activePillar = (!_rawPillar || _rawPillar === 'general') ? (_urlPillar || 'dine') : _rawPillar;
+          if (_streamPetId && !['emergency','paperwork','farewell'].includes(_activePillar)) {
+            const _pillarParam = _activePillar !== 'general' ? `&pillar=${_activePillar}` : '';
+            fetch(`${getApiUrl()}/api/mira/claude-picks/${_streamPetId}?limit=4&min_score=30${_pillarParam}`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => {
+                const picks = d?.picks || [];
+                if (picks.length > 0) {
+                  setMessages(prev => prev.map(m =>
+                    m.id === streamMsgId ? { ...m, products: picks } : m
+                  ));
+                }
+              })
+              .catch(() => {}); // fire-and-forget — never block the UI
+          }
+
+          // ── Service chips fetch — when Mira's response mentions a bookable service ──
+          const _SERVICE_WORDS = ['groom', 'vet', 'walk', 'train', 'board', 'session', 'appointment',
+            'book', 'spa', 'bath', 'nail', 'dental', 'vaccin', 'checkup', 'consult'];
+          const _hasServiceIntent = _SERVICE_WORDS.some(w => fullText.toLowerCase().includes(w));
+          if (_hasServiceIntent && _streamPetId && _activePillar &&
+              !['emergency', 'paperwork', 'farewell'].includes(_activePillar)) {
+            fetch(`${getApiUrl()}/api/service-box/services?pillar=${_activePillar}&limit=3`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => {
+                const svcs = d?.services || [];
+                if (svcs.length > 0) {
+                  setMessages(prev => prev.map(m =>
+                    m.id === streamMsgId ? { ...m, services: svcs } : m
+                  ));
+                }
+              })
+              .catch(() => {});
+          }
+
+          // ── NearMe intent detection ──
+          const _NEARME_WORDS = ['near me', 'nearby', 'near ', 'find a vet', 'find a groomer',
+            'groomer near', 'vet near', 'close to', 'around me', 'locate', 'in my city', 'where can i find'];
+          const _combined = ((messageToSend || '') + ' ' + (fullText || '')).toLowerCase();
+          const _hasNearMe = _NEARME_WORDS.some(kw => _combined.includes(kw));
+          if (_hasNearMe) {
+            setMessages(prev => prev.map(m =>
+              m.id === streamMsgId ? { ...m, showNearMe: { pillar: _activePillar } } : m
+            ));
+          }
 
           // ── Mira Ticket Intelligence — fire on concern detection OR 3+ message conversations ──
           const { detectConcernType: detectCT, fireMiraTicket } = await import('../hooks/mira/useMiraTicket');
@@ -1715,9 +1790,9 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
-  // If hideMiraChatOnPillarPages=true, don't render on pages that have their own pillar widget
-  // This check is AFTER all hooks to comply with React rules of hooks
-  if (hideMiraChatOnPillarPages && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
+  // On mobile pillar pages — hide global FAB (those pages have their own inline Mira)
+  // On DESKTOP — always show the floating panel, even on pillar pages
+  if (hideMiraChatOnPillarPages && isMobile && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
     return null;
   }
 
@@ -2202,45 +2277,153 @@ const MiraChatWidget = ({
                         }
                         return null;
                       })()}
-                      {/* Legacy catalog products (max 2, only if no concierge cards) */}
-                      {msg.products && Array.isArray(msg.products) && msg.products.length > 0 &&
-                       parseMiraRecommendations(typeof msg.content === 'string' ? msg.content : '', selectedPet?.name).length === 0 && (
-                        <div className="space-y-2">
-                          {msg.products.slice(0, 2).map((product, pIdx) => {
-                            if (!product || !product.id) return null;
-                            const imageUrl = product.image && product.image.startsWith('http')
-                              ? product.image
-                              : product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                      {/* MIRA PICKS — vertical card style matching the design spec */}
+                      {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && (
+                        <div style={{ marginTop: 16 }}>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px 0' }}>
+                            MIRA PICKS{selectedPet?.name ? ` FOR ${selectedPet.name.toUpperCase()}` : ''}
+                          </p>
+                          {msg.products.slice(0, 3).map((p, pIdx) => {
+                            if (!p) return null;
+                            const chipImg = p.watercolor_image || p.mockup_url || p.cloudinary_url || p.image_url || p.image;
+                            const chipPrice = p.price || p.original_price || p.base_price || 0;
+                            const chipName = p.product_name || p.name || p.title || 'Product';
                             return (
-                              <div key={product.id || pIdx}
-                                className="bg-white rounded-xl p-2.5 flex items-center gap-3 border border-purple-100 cursor-pointer"
-                                onClick={() => handleProductClick(product)}>
-                                <img src={imageUrl} alt={product.name || 'Product'}
-                                  className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop'; }} />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name || 'Product'}</p>
-                                  <p className="text-sm text-purple-600 font-bold">₹{product.price || 0}</p>
+                              <button
+                                key={p.id || pIdx}
+                                onClick={() => setSelProd(p)}
+                                style={{
+                                  display: 'flex', alignItems: 'center', gap: 12,
+                                  width: '100%', background: '#FFFFFF',
+                                  border: '1.5px solid #F3F0FF', borderRadius: 14,
+                                  padding: '12px 14px', marginBottom: 8,
+                                  cursor: 'pointer', textAlign: 'left',
+                                  boxShadow: '0 1px 4px rgba(107,33,168,0.06)'
+                                }}
+                              >
+                                {chipImg ? (
+                                  <img src={chipImg} alt={chipName}
+                                    style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, background: '#EDE9FE' }}
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                ) : (
+                                  <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#EDE9FE', flexShrink: 0 }} />
+                                )}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{chipName}</div>
+                                  {chipPrice > 0 && <div style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>₹{chipPrice}</div>}
                                 </div>
-                                <button onClick={(e) => { e.stopPropagation(); addToCart(product); toast.success('Added!'); }}
-                                  className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg text-xs font-bold shrink-0">
-                                  Add
-                                </button>
-                              </div>
+                              </button>
                             );
                           })}
-                          {msg.kitAssembly?.can_add_all_to_cart && msg.products.length > 1 && (
-                            <div className="space-y-1.5">
-                              <button onClick={() => { setCinematicKitData({ name: msg.kitAssembly?.kit_name || 'Kit', items: msg.products }); setShowCinematicKit(true); }}
-                                className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-                                <Play className="w-3.5 h-3.5" /> View Kit Experience
+                        </div>
+                      )}
+
+                      {/* SERVICE CHIPS — bookable services when Mira mentions grooming/vet/etc */}
+                      {msg.services && Array.isArray(msg.services) && msg.services.length > 0 && (
+                        <div style={{ marginTop: 12 }}>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px 0' }}>
+                            BOOK A SERVICE
+                          </p>
+                          {msg.services.slice(0, 3).map((svc, sIdx) => {
+                            const svcName = svc.name || svc.title || 'Service';
+                            const svcPrice = svc.price || svc.base_price || svc.original_price;
+                            const svcImg = svc.cloudinary_url || svc.image_url || svc.image;
+                            return (
+                              <button
+                                key={svc.id || sIdx}
+                                onClick={async () => {
+                                  try {
+                                    const _pet = selectedPet || {};
+                                    const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
+                                    const _favFoods   = _pet.favorite_foods?.join(', ') || 'Not specified';
+                                    const _lifeVision = _pet.life_vision || _pet.north_star || 'Not set';
+                                    const _breed      = _pet.breed || _pet.dog_breed || 'Unknown';
+                                    const _age        = _pet.age_years != null ? `${_pet.age_years}y` : (_pet.age || 'Unknown');
+                                    const _photoUrl   = _pet.watercolor_image || _pet.profile_photo || _pet.image_url || '';
+                                    await fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                      },
+                                      body: JSON.stringify({
+                                        pet_id:       _pet.id,
+                                        pet_name:     _pet.name,
+                                        pet_breed:    _breed,
+                                        pet_age:      _age,
+                                        photo_url:    _photoUrl,
+                                        allergies:    _allergies,
+                                        favorite_foods: _favFoods,
+                                        life_vision:  _lifeVision,
+                                        pillar:       currentPillar || pillar,
+                                        service_id:   svc.id,
+                                        intent_primary: 'service_booking',
+                                        channel:      'mira_chat',
+                                        source:       'mira_service_chip',
+                                        metadata: {
+                                          pet_name:       _pet.name,
+                                          pet_breed:      _breed,
+                                          pet_age:        _age,
+                                          photo_url:      _photoUrl,
+                                          allergies:      _allergies,
+                                          favorite_foods: _favFoods,
+                                          life_vision:    _lifeVision,
+                                          service_name:   svcName,
+                                          service_price:  svcPrice,
+                                        },
+                                        initial_message: {
+                                          sender: 'member',
+                                          text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
+                                        },
+                                      })
+                                    });
+                                    toast.success(`Request sent for ${svcName}!`);
+                                  } catch { toast.error('Could not send request'); }
+                                }}
+                                style={{
+                                  display: 'flex', alignItems: 'center', gap: 10,
+                                  width: '100%', background: '#F0FDF4',
+                                  border: '1.5px solid #BBF7D0', borderRadius: 14,
+                                  padding: '10px 14px', marginBottom: 8,
+                                  cursor: 'pointer', textAlign: 'left'
+                                }}
+                              >
+                                {svcImg ? (
+                                  <img src={svcImg} alt={svcName} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} onError={e => { e.target.style.display = 'none'; }} />
+                                ) : (
+                                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#D1FAE5', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🐕</div>
+                                )}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
+                                  {svcPrice > 0 && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>₹{svcPrice}</div>}
+                                </div>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
                               </button>
-                              <button onClick={() => { msg.products.forEach(p => addToCart(p)); toast.success(`Added ${msg.products.length} items!`); }}
-                                className="w-full py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-medium flex items-center justify-center gap-2">
-                                <ShoppingBag className="w-3.5 h-3.5" /> Add All {msg.products.length} Items
-                              </button>
-                            </div>
-                          )}
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* NearMe chip — when location intent detected */}
+                      {msg.showNearMe && (
+                        <div style={{ marginTop: 10 }}>
+                          <button
+                            onClick={() => {
+                              const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
+                              window.location.href = `/${nearMePillar}#nearme`;
+                            }}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 8,
+                              background: '#fff', border: '1.5px solid #BBF7D0',
+                              borderRadius: 999, padding: '6px 16px',
+                              fontSize: 13, fontWeight: 600, color: '#065F46',
+                              cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)'
+                            }}
+                          >
+                            <span style={{ fontSize: 15 }}>📍</span>
+                            Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
+                          </button>
                         </div>
                       )}
                     </div>
@@ -2369,6 +2552,16 @@ const MiraChatWidget = ({
           )}
         </div>
       
+      {/* Product Detail Modal — opened when user taps a chip */}
+      {selProd && (
+        <ProductDetailModal
+          product={selProd}
+          pillar={currentPillar || pillar || 'celebrate'}
+          selectedPet={selectedPet}
+          onClose={() => setSelProd(null)}
+        />
+      )}
+
       {/* Cinematic Kit Assembly Modal */}
       {showCinematicKit && (
         <CinematicKitAssembly

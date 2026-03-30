@@ -654,7 +654,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
         </div>
       </div>
 
-      {showModal && createPortal(
+      {showModal && (
         isConciergeOnly ? (
           <ConciergeOnlyProductDetailModal
             product={product}
@@ -670,8 +670,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             miraContext={effectiveMiraContext}
             onClose={() => setShowModal(false)} 
           />
-        ),
-        document.body
+        )
       )}
     </>
   );
@@ -699,7 +698,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
     setSending(false);
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]" style={{ backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)' }} onClick={onClose}>
       <div className="bg-white w-full max-w-3xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative" style={{ borderRadius:'28px 28px 0 0', animation:'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }} onClick={(e) => e.stopPropagation()} data-testid={`paperwork-product-modal-${product.id || 'item'}`}>
         <div style={{ width:40, height:5, background:'#E5E7EB', borderRadius:999, margin:'12px auto 0' }} />
@@ -784,7 +783,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
         </div>
       </div>
     </div>
-  );
+  , document.body);
 };
 
 const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, onClose, onAddToPicks = null }) => {
@@ -879,10 +878,48 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const handleServiceRequest = async () => {
     setServiceSending(true);
     const petName = selectedPet?.name || 'my dog';
+    const allergies = selectedPet?.allergies || [];
+    const lifeVision = selectedPet?.doggy_soul_answers?.life_vision || '';
     try {
       const userRaw = localStorage.getItem('user') || '{}';
       let storedUser = {};
       try { storedUser = JSON.parse(userRaw); } catch {}
+      const parentUser = user || storedUser;
+
+      const briefingLines = [
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '🐾 PET',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Name:      ${petName}`,
+        `Breed:     ${selectedPet?.breed || '—'}`,
+        `Allergies: ${allergies.length ? '⚠️ NO ' + allergies.join(', NO ') : 'None known'}`,
+        lifeVision ? `North Star: "${lifeVision}"` : '',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '👤 PET PARENT',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Name:      ${parentUser?.name || parentUser?.full_name || '—'}`,
+        `Phone:     ${parentUser?.phone || parentUser?.whatsapp || '—'}`,
+        `Email:     ${parentUser?.email || '—'}`,
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '📋 REQUEST',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Intent:    Product interest / Concierge enquiry`,
+        `Pillar:    ${pillar || 'dine'}`,
+        `Product:   ${product.name}`,
+        product.original_price ? `Price:     ₹${product.original_price}` : '',
+        product.category ? `Category:  ${product.category}` : '',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '⚡ ACTION REQUIRED',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        allergies.length ? `🔴 ALLERGY ALERT: No ${allergies.join(', ')} in ANY product` : '',
+        lifeVision ? `🌟 NORTH STAR: ${lifeVision}` : '',
+        'Please confirm availability and pricing via WhatsApp within 2 hours.',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      ].filter(l => l !== '').join('\n');
+
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
         method: 'POST',
         headers: {
@@ -890,17 +927,39 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          parent_id: user?.id || storedUser?.id || storedUser?.email || 'guest',
-          pet_id: selectedPet?.id || 'unknown',
-          pillar: pillar || 'dine',
-          intent_primary: 'service_request',
-          intent_secondary: [product.name, product.category || pillar],
-          life_state: pillar || 'dine',
-          channel: `${pillar}_product_card`,
+          parent_id:     parentUser?.id || parentUser?.email || 'guest',
+          parent_email:  parentUser?.email || '',
+          parent_name:   parentUser?.name || parentUser?.full_name || '',
+          parent_phone:  parentUser?.phone || parentUser?.whatsapp || '',
+          pet_id:        selectedPet?.id || 'unknown',
+          pet_name:      petName,
+          pet_breed:     selectedPet?.breed || '',
+          pet_allergies: allergies,
+          life_vision:   lifeVision,
+          pillar:        pillar || 'dine',
+          intent_primary: 'product_interest',
+          channel:       `${pillar}_product_card`,
+          force_new:     true,
+          subject:       `Product Interest: ${product.name} for ${petName}`,
           initial_message: {
             sender: 'parent',
-            source: `${pillar}_page`,
-            text: `I'd like to request "${product.name}" for ${petName}. Please get in touch!`,
+            source: `${pillar}_product_card`,
+            text:   briefingLines,
+          },
+          metadata: {
+            pet_name:      petName,
+            pet_breed:     selectedPet?.breed || '',
+            pet_allergies: allergies,
+            life_vision:   lifeVision,
+            parent_phone:  parentUser?.phone || parentUser?.whatsapp || '',
+            parent_email:  parentUser?.email || '',
+            parent_name:   parentUser?.name  || parentUser?.full_name || '',
+            product_name:  product.name,
+            product_id:    product.id || product._id,
+            price:         product.original_price,
+            pillar:        pillar || 'dine',
+            channel:       `${pillar}_product_card`,
+            urgency:       'normal',
           },
         }),
       });
@@ -924,7 +983,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   
   // Pet Soul Integration - Fetch user's pets
   const [userPets, setUserPets] = useState([]);
-  const [selectedPetId, setSelectedPetId] = useState('');
+  const [selectedPetId, setSelectedPetId] = useState(selectedPet?.id || '');
   const [loadingPets, setLoadingPets] = useState(false);
   
   // Fetch user's pets on mount if logged in
@@ -961,11 +1020,16 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     if (pet) {
       // Calculate age from birthday
       let ageStr = '';
-      if (pet.birthday) {
+      if (pet.age && Number(pet.age) > 0) {
+        ageStr = `${pet.age} year${Number(pet.age) !== 1 ? 's' : ''}`;
+      } else if (pet.life_stage) {
+        ageStr = pet.life_stage.charAt(0).toUpperCase() + pet.life_stage.slice(1);
+      } else if (pet.birthday) {
         const birthDate = new Date(pet.birthday);
         const today = new Date();
         const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
+        // Only use birthday if it gives a sensible age — never show "Less than 1 year"
+        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : '';
       }
       setCartInput(prev => ({ 
         ...prev, 
@@ -1013,23 +1077,41 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                         (product.sub_category || '').toLowerCase().includes('cake');
   const requiresDate = isCakeProduct || !!product.requires_date;
   
-  const [cartInput, setCartInput] = useState({
-    petName: '',
-    date: null,
-    time: '',
-    age: '',
-    purchaseType: 'onetime',
-    autoshipFrequency: '',
-    autoshipStartDate: null,
-    autoshipEndDate: null,
-    addPartyBox: false,
-    // Bundle selections
-    selectedCake: '',
-    selectedToy: '',
-    // Pet Soul fields
-    selectedPetId: null,
-    petBreed: '',
-    petSize: ''
+  const [cartInput, setCartInput] = useState(() => {
+    // Compute default age from selectedPet prop (priority: age > life_stage > birthday)
+    let defaultAge = '';
+    if (selectedPet) {
+      if (selectedPet.age && Number(selectedPet.age) > 0) {
+        defaultAge = `${selectedPet.age} year${Number(selectedPet.age) !== 1 ? 's' : ''}`;
+      } else if (selectedPet.life_stage) {
+        defaultAge = selectedPet.life_stage.charAt(0).toUpperCase() + selectedPet.life_stage.slice(1);
+      } else if (selectedPet.birthday) {
+        const ageYears = Math.floor((Date.now() - new Date(selectedPet.birthday)) / (365.25 * 24 * 60 * 60 * 1000));
+        // Only use birthday if it gives a sensible age — never show "Less than 1 year"
+        defaultAge = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : '';
+      }
+    }
+    // Default delivery date = today + 3 days
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 3);
+    return {
+      petName: selectedPet?.name || '',
+      date: defaultDate,
+      time: '',
+      age: defaultAge,
+      purchaseType: 'onetime',
+      autoshipFrequency: '',
+      autoshipStartDate: null,
+      autoshipEndDate: null,
+      addPartyBox: false,
+      // Bundle selections
+      selectedCake: '',
+      selectedToy: '',
+      // Pet Soul fields
+      selectedPetId: selectedPet?.id || null,
+      petBreed: selectedPet?.breed || '',
+      petSize: selectedPet?.size || ''
+    };
   });
   
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -1453,26 +1535,36 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     }
   };
 
-  return (
+  return createPortal(
     <div 
       className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]"
       style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
       onClick={handleBackdropClick}
     >
       <div 
-        className="bg-white w-full max-w-2xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative"
-        style={{ borderRadius: '28px 28px 0 0', animation: 'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }}
+        className="bg-white w-full max-w-2xl max-h-[88dvh] no-sb shadow-2xl relative"
+        style={{ borderRadius: '28px 28px 0 0', animation: 'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both', display: 'flex', flexDirection: 'column' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drag handle */}
-        <div style={{ width:40, height:5, background:'#E5E7EB', borderRadius:999, margin:'12px auto 0' }} />
-        <button 
-          className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+        {/* X close — direct child of modal, above all content */}
+        <button
+          className="absolute top-3 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+          style={{ zIndex: 9999, pointerEvents: 'all' }}
           onClick={onClose}
+          data-testid="product-modal-close-btn"
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>
-
+        {/* Drag handle header */}
+        <div style={{ flexShrink: 0, paddingTop: 12, paddingBottom: 8 }}>
+          <div style={{ width: 40, height: 5, background: '#E5E7EB', borderRadius: 999, margin: '0 auto' }} />
+        </div>
+        {/* Scrollable body */}
+        <div
+          className="overflow-y-auto product-modal-inner"
+          style={{ flex: 1, overflowX: 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+        <style>{`.product-modal-inner::-webkit-scrollbar { display: none; }`}</style>
         <div className="grid md:grid-cols-2">
           <div className="relative aspect-square bg-gray-50">
             <img
@@ -1749,11 +1841,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               
               <div className="flex flex-col gap-2">
                 <Input 
-                  placeholder="Pet's Age *" 
+                  placeholder="Pet's Age (e.g. 3 years) *" 
                   value={cartInput.age}
                   onChange={(e) => { setCartInput({...cartInput, age: e.target.value}); setAgeError(false); }}
                   className={`text-sm ${ageError ? 'border-red-400 border-2' : ''}`}
-                  disabled={selectedPetId && selectedPetId !== 'manual' && !!cartInput.age}
                 />
                 {ageError && (
                   <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
@@ -1887,14 +1978,26 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
-            {/* Why Mira suggests this — shown when mira_hint is set (e.g. from DimExpanded intelligence) */}
-            {(product.mira_hint || product.mira_score > 0) && (
-              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">✦</div>
-                <div>
-                  <p className="text-xs font-bold text-amber-900 mb-0.5">Why Mira suggests this</p>
-                  <p className="text-xs text-amber-800">{product.mira_hint}</p>
-                </div>
+            {/* Why Mira chose this — personalised chip */}
+            {(product.mira_hint || product._miraReason || product.why_reason || product.mira_score > 0) && (
+              <div style={{
+                display:'flex', alignItems:'flex-start', gap:8,
+                background:'linear-gradient(135deg,#F5F3FF,#EDE9FE)',
+                border:'1px solid rgba(124,58,237,0.2)',
+                borderRadius:12, padding:'10px 14px', marginBottom:16
+              }}>
+                <div style={{
+                  width:20, height:20, borderRadius:'50%',
+                  background:'linear-gradient(135deg,#7C3AED,#4F46E5)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:10, color:'#fff', flexShrink:0
+                }}>✦</div>
+                <p style={{fontSize:12, color:'#4C1D95', fontStyle:'italic', margin:0, lineHeight:1.5}}>
+                  {product.mira_hint || product._miraReason || product.why_reason ||
+                    (product.mira_score >= 75
+                      ? `Mira scored this ★${product.mira_score} for ${selectedPet?.name || 'your dog'} — top match for their breed, age and soul profile.`
+                      : `Mira selected this for ${selectedPet?.name || 'your dog'} based on their soul profile.`)}
+                </p>
               </div>
             )}
 
@@ -2110,7 +2213,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#C9973A', letterSpacing: '0.14em', marginBottom: 3 }}>
-                  ✦ SOUL MADE™ · JUST FOR {(selectedPet?.name || 'YOUR DOG').toUpperCase()}
+                  ✦ Mira also recommends for {selectedPet?.name || 'your dog'}
                 </div>
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
                   {selectedPet?.breed ? `Made for ${selectedPet.breed.split('(')[0].trim()}s` : 'Personalised for your dog'}
@@ -2140,7 +2243,18 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                     </div>
                     <div style={{ padding: '8px 8px 10px' }}>
                       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', fontWeight: 600, lineHeight: 1.35, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{name}</div>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: '#C9973A' }}>{price > 0 ? `₹${price}` : 'Custom'}</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#C9973A', marginBottom: 6 }}>{price > 0 ? `₹${price}` : 'Custom'}</div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleQuickAdd(item); }}
+                        style={{
+                          width: '100%', padding: '5px 0', fontSize: 10, fontWeight: 700,
+                          background: 'linear-gradient(135deg,#7C3AED,#4F46E5)',
+                          color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer',
+                          letterSpacing: '0.03em'
+                        }}
+                      >
+                        + Add to Cart
+                      </button>
                     </div>
                   </div>
                 );
@@ -2148,9 +2262,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             </div>
           </div>
         )}
+        </div>{/* end scrollable body */}
       </div>
     </div>
-  );
+  , document.body);
 };
 
 export { ProductDetailModal, ConciergeOnlyProductDetailModal };

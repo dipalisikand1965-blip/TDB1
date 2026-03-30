@@ -46,6 +46,7 @@ import { useState, useEffect } from "react";
 import { API_URL } from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
 import { tdc } from "../../utils/tdc_intent";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
 
 const MIRA_ORB = "linear-gradient(135deg,#9B59B6,#E91E8C,#FF6EC7)";
 
@@ -472,26 +473,19 @@ function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, t
     tdc.imagine({ name: card.name, service: card.desc, pillar, pet, channel: "mira_imagines_breed" });
     // Call parent handler first (for pillar-specific modals like /celebrate)
     if (onConcierge) onConcierge(card);
-    // Direct ticket creation + toast
+    // Create Master Ticket via canonical bookViaConcierge
     setSending(true);
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const tdbSession = JSON.parse(localStorage.getItem('tdb_auth_token') ? JSON.stringify({id: localStorage.getItem('tdb_user_id'), email: localStorage.getItem('tdb_user_email')}) : '{}');
-        await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          parent_id:     user?.id || user?.email || user?.user_id || tdbSession?.id || tdbSession?.email || 'guest',
-          pet_id:        pet?.id || 'unknown',
-          pillar,
-          intent_primary:'mira_imagines_request',
-          channel:       `${pillar}_mira_imagines`,
-          life_state:    pillar,
-          initial_message: { sender:'parent', text:`I'd love "${card.name}" for ${petName}. Mira imagined this — please help source it.` },
-        }),
+      await bookViaConcierge({
+        service:  card.name,
+        pillar,
+        pet,
+        token,
+        channel:  `${pillar}_mira_imagines`,
+        notes:    card.desc ? `Mira imagined: ${card.desc}` : 'Mira imagined this — please help source it',
       });
       setSent(true);
-    } catch { setSent(true); } // still show success even if offline
+    } catch { setSent(true); }
     finally { setSending(false); }
   };
 
@@ -588,6 +582,8 @@ export default function MiraImaginesBreed({
   onConcierge,
   colour = "#9B59B6",
   limit,
+  singleColumn = false,
+  token: tokenProp,
 }) {
   const petName    = pet?.name || "your dog";
   const rawBreed   = (pet?.breed || pet?.doggy_soul_answers?.breed || "").toLowerCase().trim();
@@ -692,7 +688,7 @@ export default function MiraImaginesBreed({
       {/* Imagine cards */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: (limit === 2) ? "1fr 1fr" : "repeat(auto-fill,minmax(min(240px,100%),1fr))",
+        gridTemplateColumns: singleColumn ? "1fr" : "repeat(auto-fill,minmax(min(240px,100%),1fr))",
         gap: 16,
         marginBottom: 20,
       }}>

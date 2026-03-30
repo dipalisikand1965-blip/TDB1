@@ -138,7 +138,7 @@ const ProductQuickViewModal = ({
                 if (product.image && product.image.includes('shopify.com')) {
                   return product.image;
                 }
-                return product.image_url || product.image || 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&q=80';
+                return product.image_url || product.image || '';
               })()}
               alt={product.name}
               className="w-full h-full object-cover"

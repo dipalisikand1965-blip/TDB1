@@ -21,6 +21,7 @@ import { useCart } from '../../context/CartContext';
 import ProductCard from '../ProductCard';
 import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
@@ -70,29 +71,15 @@ const MiraImaginesCard = ({ item, pet, apiUrl, token }) => {
   const sendToConcierge = async () => {
     setState('sending');
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          parent_id: storedUser?.id || storedUser?.email || 'guest',
-          pet_id: pet?.id || 'unknown',
-          pillar: 'dine',
-          intent_primary: 'mira_imagines_request',
-          intent_secondary: [item.name],
-          life_state: 'dine',
-          channel: 'miras_picks_imagines',
-          initial_message: {
-            sender: 'parent',
-            source: 'dine_miras_picks',
-            text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!`,
-          },
-        }),
+      await bookViaConcierge({
+        service:  item.name,
+        pillar:   'dine',
+        pet,
+        token,
+        channel:  'dine_miras_picks_imagines',
+        notes:    `Mira imagined: ${item.name}`,
       });
-    } catch (err) { console.error('[MiraImaginesCard]', err); }
+    } catch (err) { console.error('[DineMiraImaginesCard]', err); }
     setState('sent');
   };
 
@@ -144,32 +131,19 @@ const ServiceCard = ({ service, pet, apiUrl, token }) => {
   const sendToConcierge = async () => {
     setState('sending');
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          parent_id: storedUser?.id || storedUser?.email || 'guest',
-          pet_id: pet?.id || 'unknown',
-          pillar: 'dine',
-          intent_primary: 'service_request',
-          intent_secondary: [service.name || service.entity_name],
-          life_state: 'dine',
-          channel: 'miras_picks_services',
-          initial_message: {
-            sender: 'parent',
-            source: 'dine_miras_picks',
-            text: `I'd like "${service.name || service.entity_name}" for ${petName}. Mira scored this as a match (${service.mira_score || '?'}/100). Please get in touch!`,
-          },
-        }),
+      await bookViaConcierge({
+        service:  service.name || service.entity_name,
+        pillar:   'dine',
+        pet,
+        token,
+        channel:  'dine_miras_picks_services',
+        amount:   service.price_range || service.avg_price,
+        notes:    `Mira matched: ${service.mira_score || '?'}/100 — ${service.name || service.entity_name}`,
       });
       toast.success('Sent to Concierge®!', { description: `We'll reach out about "${service.name || service.entity_name}" within 48 hours.` });
       setState('sent');
     } catch (err) {
-      console.error('[ServiceCard] concierge error:', err);
+      console.error('[DineServiceCard] concierge error:', err);
       toast.error('Could not send request. Please try again.');
       setState('idle');
     }

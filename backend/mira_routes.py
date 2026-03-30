@@ -385,21 +385,32 @@ def ensure_conversation_contract(response: dict, pillar: str = None, ticket_id: 
 # ═══════════════════════════════════════════════════════════════════════════════
 
 BANNED_OPENERS = [
-    "Great idea!", "Great idea.", "Great idea,",
-    "That's a great idea!", "That's a great idea.",
-    "Great question!", "Great question.",
-    "That sounds wonderful!", "That sounds wonderful.",
-    "That sounds lovely!", "That sounds lovely.",
-    "That sounds great!", "That sounds great.",
-    "I'd be happy to", "I'd be happy to help",
-    "I would be happy to", "I would be happy to help",
-    "Absolutely!", "Absolutely,",
-    "Sure!", "Sure,", "Sure thing!",
-    "Of course!", "Of course,",
-    "No problem!", "No problem,",
-    "Certainly!", "Certainly,",
-    "Good thinking!", "Good thinking,",
-    "What a great", "How exciting!",
+    "Hey there",
+    "Hi there",
+    "Hello there",
+    "Hello!",
+    "Hello,",
+    "Great question",
+    "Great choice",
+    "Great idea",
+    "That's a great idea",
+    "That sounds wonderful",
+    "That sounds lovely",
+    "That sounds great",
+    "Of course",
+    "Certainly",
+    "Absolutely",
+    "I'd be happy",
+    "I would be happy",
+    "I'm so excited",
+    "I'm excited",
+    "How exciting",
+    "Sure!",
+    "Sure,",
+    "Sure thing",
+    "No problem",
+    "Good thinking",
+    "What a great",
 ]
 
 SOULFUL_REPLACEMENTS = {
@@ -422,49 +433,19 @@ SOULFUL_REPLACEMENTS = {
 
 def filter_banned_openers(response_text: str, pet_name: str = None) -> str:
     """
-    Filter banned corporate openers from Mira's responses.
-    Replaces them with soulful alternatives.
-    
-    This is a POST-PROCESSING filter - the system prompt should prevent these,
-    but this acts as a safety net for any that slip through.
+    Strip banned corporate openers from the START of Mira's responses.
+    Uses regex so it's case-insensitive and handles trailing punctuation/spaces.
     """
     if not response_text:
         return response_text
-    
-    # Check if response starts with any banned opener
-    for banned in BANNED_OPENERS:
-        if response_text.strip().startswith(banned):
-            # Find replacement
-            for key, replacement in SOULFUL_REPLACEMENTS.items():
-                if banned.startswith(key):
-                    # Replace opener
-                    response_text = response_text.strip()[len(banned):].strip()
-                    
-                    # Add soulful opener based on pet context
-                    if pet_name:
-                        # Pet-aware soulful opener
-                        openers = [
-                            f"Oh, for {pet_name} - ",
-                            f"Since I know {pet_name}, ",
-                            f"I know {pet_name} - ",
-                        ]
-                        import random
-                        response_text = random.choice(openers) + response_text
-                    else:
-                        # Generic soulful opener
-                        response_text = replacement + " " + response_text
-                    
-                    logger.info(f"[VOICE FILTER] Replaced banned opener: '{banned}' → soulful")
-                    break
-            break
-    
-    # Also check for any banned phrase mid-sentence (less aggressive)
-    # Only log, don't replace mid-sentence
-    for banned in BANNED_OPENERS:
-        if banned.lower() in response_text.lower() and not response_text.startswith("Oh"):
-            logger.debug(f"[VOICE FILTER] Found banned phrase mid-sentence: '{banned}' (not replaced)")
-    
-    return response_text
+    text = response_text.strip()
+    for opener in BANNED_OPENERS:
+        pattern = re.compile(
+            r'^' + re.escape(opener) + r'[!,.]?\s*',
+            re.IGNORECASE
+        )
+        text = pattern.sub('', text).strip()
+    return text
 
 
 
@@ -7785,6 +7766,7 @@ async def get_default_picks_for_pet(
     limit: int = Query(8, le=48),
     offset: int = Query(0, ge=0),
     pillar: Optional[str] = Query(None),
+    query: Optional[str] = Query(None),
     authorization: Optional[str] = Header(None)
 ):
     """
@@ -7826,7 +7808,52 @@ async def get_default_picks_for_pet(
         
         picks = []
         
-        # Strategy 1: Get admin-curated Mira Picks
+        # Strategy 0: Query-based smart search — when user asked something specific
+        if query:
+            _stop_words = {"what", "food", "good", "best", "for", "should", "have", "with",
+                          "give", "find", "show", "tell", "about", "some", "that", "this",
+                          "does", "your", "mojo", "dog", "pet", "need", "like", "want"}
+            _query_words = [w for w in query.lower().split() if len(w) > 3 and w not in _stop_words]
+            if _query_words:
+                _search_conds = []
+                for _w in _query_words[:4]:
+                    _search_conds.extend([
+                        {"name": {"$regex": _w, "$options": "i"}},
+                        {"product_name": {"$regex": _w, "$options": "i"}},
+                        {"description": {"$regex": _w, "$options": "i"}},
+                        {"tags": {"$regex": _w, "$options": "i"}},
+                        {"title": {"$regex": _w, "$options": "i"}},
+                    ])
+                _q_filter = {"$or": _search_conds, "visibility.status": {"$ne": "archived"}}
+                # Exclude allergens
+                if allergy_names:
+                    _q_filter["$and"] = [{"$or": [
+                        {"name": {"$not": {"$regex": _a, "$options": "i"}}},
+                        {"product_name": {"$not": {"$regex": _a, "$options": "i"}}}
+                    ]} for _a in allergy_names[:3]]
+                _q_products = await db.products_master.find(
+                    _q_filter,
+                    {"_id": 0, "id": 1, "name": 1, "product_name": 1, "price": 1,
+                     "original_price": 1, "image_url": 1, "cloudinary_url": 1,
+                     "watercolor_image": 1, "mockup_url": 1, "mira_hint": 1}
+                ).limit(4).to_list(4)
+                for _p in _q_products:
+                    _pname = _p.get("product_name") or _p.get("name") or ""
+                    if _pname and _p.get("id") not in [x.get("id") for x in picks]:
+                        picks.append({
+                            "id": _p.get("id"),
+                            "name": _pname,
+                            "title": _pname,
+                            "price": _p.get("price") or _p.get("original_price"),
+                            "image": _p.get("watercolor_image") or _p.get("mockup_url") or _p.get("cloudinary_url") or _p.get("image_url"),
+                            "watercolor_image": _p.get("watercolor_image"),
+                            "mockup_url": _p.get("mockup_url"),
+                            "cloudinary_url": _p.get("cloudinary_url"),
+                            "image_url": _p.get("image_url"),
+                            "type": "product",
+                            "why_reason": _p.get("mira_hint") or f"Matched your question for {pet_name}",
+                            "source": "query_match"
+                        })
         admin_picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(4).to_list(4)
         if admin_picks:
             product_ids = [p.get("product_id") for p in admin_picks]
@@ -7940,6 +7967,36 @@ async def get_default_picks_for_pet(
                     "source": "service_recommendation"
                 })
         
+        # Strategy 5: Pillar fallback — return ANY active products for this pillar if still empty
+        if not picks and pillar:
+            _pil_filter = {
+                "$or": [{"pillar": pillar}, {"tags": pillar}, {"pillars": pillar}],
+                "visibility.status": {"$ne": "archived"}
+            }
+            _pil_products = await db.products_master.find(
+                _pil_filter,
+                {"_id": 0, "id": 1, "name": 1, "product_name": 1, "price": 1,
+                 "original_price": 1, "image_url": 1, "cloudinary_url": 1,
+                 "watercolor_image": 1, "mockup_url": 1, "mira_hint": 1}
+            ).limit(4).to_list(4)
+            for _p in _pil_products:
+                _pname = _p.get("product_name") or _p.get("name") or ""
+                if _pname:
+                    picks.append({
+                        "id": _p.get("id"),
+                        "name": _pname,
+                        "title": _pname,
+                        "price": _p.get("price") or _p.get("original_price"),
+                        "image": _p.get("watercolor_image") or _p.get("mockup_url") or _p.get("cloudinary_url") or _p.get("image_url"),
+                        "watercolor_image": _p.get("watercolor_image"),
+                        "mockup_url": _p.get("mockup_url"),
+                        "cloudinary_url": _p.get("cloudinary_url"),
+                        "image_url": _p.get("image_url"),
+                        "type": "product",
+                        "why_reason": _p.get("mira_hint") or f"Top pick for {pillar}",
+                        "source": "pillar_fallback"
+                    })
+
         total_available = len(picks)
         paginated = picks[offset: offset + limit]
         return {
@@ -18769,6 +18826,7 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
     pillar_focus = PILLAR_FOCUS.get(current_pillar, "")
 
     # Build pet context
+    allergy_list = []  # always defined — populated below if pet found
     pet_context = f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company. Be warm, personal and specific. Always use their name."
     if pet_id:
         try:
@@ -18805,18 +18863,45 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 except (ValueError, TypeError):
                     age = 0
                 life_stage = "puppy" if age < 1 else ("senior" if age >= 8 else "adult")
-                pet_context = (
-                    f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
-                    f"Pet profile: Name={pet_name}, Breed={pet.get('breed','unknown')}, "
-                    f"Gender={pet.get('gender','unknown')}, Age={age}y ({life_stage}), "
-                    f"Soul score={pet.get('overall_score',0)}%.\n"
-                    f"ALLERGIES: {allergy_str} — NEVER EVER suggest or recommend these foods or ingredients.\n"
+                has_breed = pet.get('breed') and pet.get('breed','').lower() not in ('unknown','')
+                if has_breed:
+                    pet_context = (
+                        f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
+                        f"Pet profile: Name={pet_name}, Breed={pet.get('breed')}, "
+                        f"Gender={pet.get('gender','unknown')}, Age={age}y ({life_stage}), "
+                        f"Soul score={pet.get('overall_score',0)}%.\n"
+                        f"ALLERGIES: {allergy_str} — NEVER EVER suggest or recommend these foods or ingredients.\n"
+                    )
+                    if fav_treat:
+                        pet_context += f"Favourite treat: {fav_treat}.\n"
+                    if personality_str:
+                        pet_context += f"Personality: {personality_str}.\n"
+                    pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
+                else:
+                    # No breed — give minimal context, don't write "Breed=unknown"
+                    pet_context = (
+                        f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
+                        f"CRITICAL: You do NOT have a complete soul profile for {pet_name}. "
+                        "Do NOT invent breed, personality, energy level, or any physical characteristics. "
+                        f"You only know their name is {pet_name}"
+                    )
+                    if age:
+                        pet_context += f" and they are {age}y old"
+                    if allergy_str and allergy_str != 'none known':
+                        pet_context += f". Known allergies: {allergy_str} — never recommend these"
+                    pet_context += (
+                        f".\nIf asked about {pet_name}'s breed or personality, say: "
+                        f"\"I don't know {pet_name} well enough yet — could you tell me their breed, "
+                        "age and any allergies? Once I know, I can personalise everything for them.\"\n"
+                    )
+            else:
+                # Pet ID provided but not found in DB
+                pet_context += (
+                    f"\nCRITICAL: You do NOT have a soul profile for this pet. "
+                    "Do NOT invent their breed, age, personality, energy level, or any characteristics. "
+                    f"Say: \"I don't know {pet_name} yet — could you tell me a little about them? "
+                    "Once I know their breed, age and any allergies, I can personalise everything for them.\"\n"
                 )
-                if fav_treat:
-                    pet_context += f"Favourite treat: {fav_treat}.\n"
-                if personality_str:
-                    pet_context += f"Personality: {personality_str}.\n"
-                pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
         except Exception as e:
             logger.warning(f"[Mira Stream] Pet lookup failed for {pet_id}: {e}")
 
@@ -18845,12 +18930,58 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
 
             full_response = await chat.send_message(UserMessage(text=message))
 
-            # Stream word-by-word for progressive display effect
-            words = full_response.split(" ")
+            # ── Enrichment: fetch products if message has product intent ──────────
+            _products_to_show = []
+            _nearby_places_data = None
+            _PRODUCT_WORDS = ["buy","recommend","suggest","show me","which","what should",
+                              "product","cake","treat","food","toy","collar","leash","shampoo",
+                              "supplement","gift","shop","purchase","get me","need a","need some"]
+            _NEARME_WORDS  = ["near me","nearby","near ","around me","in my city","close to","where can i find"]
+            _msg_lower = message.lower()
+            _wants_products = (
+                any(kw in _msg_lower for kw in _PRODUCT_WORDS)
+                and current_pillar not in ["emergency", "paperwork", "farewell", "adopt", "general"]
+            )
+            _wants_nearme = any(kw in _msg_lower for kw in _NEARME_WORDS)
+            if _wants_products:
+                try:
+                    _pdb = get_db()
+                    _cur = _pdb.products_master.find(
+                        {"visibility.status": {"$ne": "archived"},
+                         "$or": [{"pillar": current_pillar}, {"tags": {"$in": [current_pillar]}}]},
+                        {"_id": 0, "id": 1, "name": 1, "product_name": 1, "price": 1,
+                         "original_price": 1, "image_url": 1, "cloudinary_url": 1,
+                         "watercolor_image": 1, "mockup_url": 1,
+                         "tags": 1, "description": 1, "pillar": 1, "mira_hint": 1}
+                    ).limit(8)
+                    _raw = await _cur.to_list(length=8)
+                    _safe = []
+                    for _p in _raw:
+                        _tag_str = " ".join(_p.get("tags", [])) if isinstance(_p.get("tags"), list) else str(_p.get("tags", ""))
+                        _p_str = f"{_p.get('name','')} {_p.get('description','')} {_tag_str}".lower()
+                        if not any(_a.lower() in _p_str for _a in allergy_list):
+                            _safe.append(_p)
+                    _products_to_show = _safe[:3]
+                except Exception as _pe:
+                    logger.warning(f"[Mira Stream] Product enrichment: {_pe}")
+            if _wants_nearme:
+                _nearby_places_data = {"show_nearme": True, "pillar": current_pillar, "trigger": "user_request"}
+            # ─────────────────────────────────────────────────────────────────────
+
+            # Stream word-by-word — apply banned opener filter to full response first
+            _clean_response = filter_banned_openers(str(full_response).strip(), pet_name)
+            words = _clean_response.split(" ")
             for i, word in enumerate(words):
                 chunk = word + (" " if i < len(words) - 1 else "")
                 yield f"data: {json.dumps({'text': chunk})}\n\n"
                 await asyncio.sleep(0.03)  # ~33 words/sec — crisp and natural
+
+            # Inject enriched products/nearbyPlaces BEFORE [DONE]
+            if _products_to_show or _nearby_places_data:
+                _enriched = {}
+                if _products_to_show:    _enriched["products"]      = _products_to_show
+                if _nearby_places_data:  _enriched["nearby_places"] = _nearby_places_data
+                yield f"data: {json.dumps({'type': 'enriched', 'data': _enriched})}\n\n"
 
             yield "data: [DONE]\n\n"
         except asyncio.CancelledError:

@@ -14,18 +14,18 @@ const PRODUCTS_PER_PAGE = 20;
 
 // Hero images for different categories
 const CATEGORY_HERO_IMAGES = {
-  cakes: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
-  'breed-cakes': 'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=1200&q=80',
-  treats: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
-  hampers: 'https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200&q=80',
-  desi: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=80',
-  'frozen-treats': 'https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=1200&q=80',
-  'mini-cakes': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
-  dognuts: 'https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=1200&q=80',
-  valentine: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&q=80',
-  cat: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
-  'cat-treats': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
-  default: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80'
+  cakes: '',
+  'breed-cakes': '',
+  treats: '',
+  hampers: '',
+  desi: '',
+  'frozen-treats': '',
+  'mini-cakes': '',
+  dognuts: '',
+  valentine: '',
+  cat: '',
+  'cat-treats': '',
+  default: ''
 };
 
 // Hero content for different categories

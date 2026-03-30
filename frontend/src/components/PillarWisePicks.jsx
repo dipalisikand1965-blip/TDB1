@@ -278,12 +278,12 @@ const PillarWisePicks = ({
                     {/* Product Image */}
                     <div className="aspect-square bg-gray-50 relative overflow-hidden">
                       <img 
-                        src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200'} 
+                        src={product.image_url || product.image || product.images?.[0] || ''} 
                         alt={product.name || product.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200';
+                          e.target.src = '';
                         }}
                       />
                       <Badge className={`absolute top-2 right-2 ${config?.bgColor || 'bg-purple-50'} ${config?.textColor || 'text-purple-700'} text-xs border ${config?.borderColor || 'border-purple-200'}`}>

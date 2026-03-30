@@ -158,7 +158,7 @@ const RainbowBridgeWall = () => {
               {/* Pet Photo */}
               <div className="relative h-48 overflow-hidden">
                 <img 
-                  src={memorial.photo || `https://api.dicebear.com/7.x/thumbs/svg?seed=${memorial.pet_name}`}
+                  src={memorial.photo || ''}
                   alt={memorial.pet_name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -260,7 +260,7 @@ const RainbowBridgeWall = () => {
               {/* Header with Photo */}
               <div className="relative -mx-6 -mt-6 h-56 overflow-hidden rounded-t-lg">
                 <img 
-                  src={selectedMemorial.photo || `https://api.dicebear.com/7.x/thumbs/svg?seed=${selectedMemorial.pet_name}`}
+                  src={selectedMemorial.photo || ''}
                   alt={selectedMemorial.pet_name}
                   className="w-full h-full object-cover"
                 />
@@ -386,7 +386,7 @@ const RainbowBridgeWall = () => {
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3 bg-purple-900/20 rounded-lg p-3">
                 <img 
-                  src={selectedMemorial.photo || `https://api.dicebear.com/7.x/thumbs/svg?seed=${selectedMemorial.pet_name}`}
+                  src={selectedMemorial.photo || ''}
                   alt={selectedMemorial.pet_name}
                   className="w-12 h-12 rounded-full object-cover"
                 />

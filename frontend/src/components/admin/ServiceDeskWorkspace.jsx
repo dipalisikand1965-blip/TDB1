@@ -408,14 +408,26 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   const ConversationMessage = ({ msg, index }) => {
     const isOutgoing = msg.direction === 'outgoing' || msg.is_agent_reply;
     const isInternal = msg.is_internal;
-    
+    const rawText = msg.message || msg.content || '';
+    const photoUrls = [...new Set([
+      ...(rawText.match(/https?:\/\/[^\s,)\n]+\.(jpg|jpeg|png|gif|webp)/gi) || []),
+      ...(rawText.match(/https?:\/\/res\.cloudinary\.com\/[^\s,)\n]+/gi) || []),
+    ])];
+    const cleanText = rawText
+      .replace(/📸 PHOTO:\s*https?:\/\/[^\n]+\n?\s*\([^\n]*\)/gi, '')
+      .replace(/Photo:\s*https?:\/\/[^\s\n]+/gi, '')
+      .replace(/https?:\/\/res\.cloudinary\.com\/[^\s,)\n]+/gi, '')
+      .replace(/\bhttps?:\/\/[^\s,)\n]+\.(jpg|jpeg|png|gif|webp)\b/gi, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
     return (
       <div className={`flex ${isOutgoing ? 'justify-end' : 'justify-start'} mb-4`}>
         <div className={`max-w-[80%] ${
-          isInternal 
-            ? 'bg-amber-50 border border-amber-200' 
-            : isOutgoing 
-              ? 'bg-blue-500 text-white' 
+          isInternal
+            ? 'bg-amber-50 border border-amber-200'
+            : isOutgoing
+              ? 'bg-blue-500 text-white'
               : 'bg-gray-100'
         } rounded-lg p-3`}>
           {isInternal && (
@@ -423,8 +435,22 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
               <FileText className="w-3 h-3" /> Internal Note
             </div>
           )}
+          {photoUrls.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-2">
+              {photoUrls.map((url, i) => (
+                <img
+                  key={i}
+                  src={url}
+                  alt="Attached"
+                  style={{ maxWidth: '300px', borderRadius: '8px' }}
+                  className="cursor-pointer object-cover shadow-sm"
+                  onClick={() => window.open(url, '_blank')}
+                />
+              ))}
+            </div>
+          )}
           <p className={`text-sm whitespace-pre-wrap ${isOutgoing && !isInternal ? 'text-white' : 'text-gray-800'}`}>
-            {msg.message || msg.content}
+            {cleanText || rawText}
           </p>
           <div className={`flex items-center justify-between mt-2 text-xs ${
             isOutgoing && !isInternal ? 'text-blue-100' : 'text-gray-400'

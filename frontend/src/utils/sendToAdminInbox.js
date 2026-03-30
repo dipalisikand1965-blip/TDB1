@@ -7,19 +7,10 @@
  * 2. 3 delivery methods: fetch keepalive → XMLHttpRequest → sendBeacon
  * 3. Works on mobile, desktop, private mode, poor connection
  * 4. Never throws — UX is never broken
- *
- * USAGE (from any component):
- *   import { sendToAdminInbox } from "../utils/sendToAdminInbox";
- *
- *   await sendToAdminInbox({
- *     service: "Birthday Party for Mojo",
- *     pillar: "celebrate",
- *     pet: currentPet,
- *     channel: "celebrate_concierge_btn",
- *     notes: "Outdoor venue, 20 guests",
- *     urgency: "high",          // optional: low|medium|high|emergency
- *   });
+ * 5. MASTER TICKET STANDARD — full briefing note every time
  */
+
+import { getAllergiesFromPet, buildMasterBriefing, buildMasterMetadata } from './masterBriefing';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -44,6 +35,7 @@ export async function sendToAdminInbox({
   notes,
   urgency = 'high',
   date,
+  photo_url,
 } = {}) {
   const { token, user } = getAuth();
   const parent_id = user?.id || user?._id || user?.email
@@ -55,12 +47,21 @@ export async function sendToAdminInbox({
   const pet_id   = pet?.id || pet?._id || null;
   const ch       = channel || `${pillar}_service_request`;
 
-  const text = [
-    `${petName}'s parent wants to book: ${service}`,
-    notes ? `Notes: ${notes}` : '',
-    date  ? `Date: ${date}` : '',
-    `Channel: ${ch}`,
-  ].filter(Boolean).join(' | ');
+  const details = {
+    service_name:  service,
+    pillar,
+    channel:       ch,
+    notes,
+    urgency,
+    delivery_date: date,
+    photo_url,
+  };
+
+  const briefing = buildMasterBriefing(pet, user, 'service_booking', details);
+  const metadata = buildMasterMetadata(pet, user, details, {
+    parent_id,
+    mobile: /Mobi|Android/i.test(navigator?.userAgent || ''),
+  });
 
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -68,18 +69,27 @@ export async function sendToAdminInbox({
   const body = JSON.stringify({
     parent_id,
     pet_id,
+    pet_name:      petName,
+    pet_breed:     pet?.breed,
+    pet_allergies: getAllergiesFromPet(pet),
+    parent_email:  user?.email || '',
+    parent_name:   user?.name || user?.full_name || '',
+    parent_phone:  user?.phone || user?.whatsapp || '',
     pillar,
-    intent_primary: 'booking_intent',
+    intent_primary: 'service_booking',
     channel: ch,
     life_state: 'PLAN',
     urgency,
     status: urgency === 'emergency' ? 'urgent' : 'open',
-    force_new: true,   // ← ALWAYS create new ticket, never reuse silently
+    force_new: true,
+    subject: `Service Request: ${service} for ${petName}`,
     initial_message: {
       sender: 'parent',
-      text,
-      metadata: { service, channel: ch, mobile: /Mobi|Android/i.test(navigator?.userAgent || '') },
+      text:   briefing,
+      source: ch,
     },
+    product_name: service,
+    metadata,
   });
 
   const endpoint = `${API_URL}/api/service_desk/attach_or_create_ticket`;

@@ -337,7 +337,7 @@ const UnifiedHero = ({
   const petBreed = pet?.breed || '';
   // Check multiple possible field names for pet photo
   const petPhoto = pet?.photo_url || pet?.profile_image || pet?.image_url || pet?.image || pet?.photo || 
-    (pet?.name ? `https://api.dicebear.com/7.x/lorelei/svg?seed=${encodeURIComponent(pet.name)}&backgroundColor=ffdfbf` : null);
+    (pet?.name ? '' : null);
   
   // Voice search state
   const [isListening, setIsListening] = useState(false);
@@ -472,7 +472,7 @@ const UnifiedHero = ({
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+                          e.target.style.display='none';
                         }}
                       />
                     ) : (

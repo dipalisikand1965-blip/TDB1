@@ -25,21 +25,7 @@ const CELEBRATE_SUBCATEGORIES = [
   { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉' },
 ];
 
-// Hero images for different categories
-const CATEGORY_HERO_IMAGES = {
-  cakes: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
-  'breed-cakes': 'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=1200&q=80',
-  treats: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
-  hampers: 'https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200&q=80',
-  desi: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=80',
-  'frozen-treats': 'https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=1200&q=80',
-  'mini-cakes': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
-  dognuts: 'https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=1200&q=80',
-  valentine: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&q=80',
-  cat: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
-  'cat-treats': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
-  default: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80'
-};
+// No stock photo hero images — TDC uses branded gradients defined in CATEGORY_HERO_CONTENT
 
 // Hero content for different categories
 const CATEGORY_HERO_CONTENT = {
@@ -1216,7 +1202,6 @@ const ProductListing = ({ category = 'all' }) => {
 
   // Get hero content for current category
   const heroContent = CATEGORY_HERO_CONTENT[category] || CATEGORY_HERO_CONTENT.default;
-  const heroImage = CATEGORY_HERO_IMAGES[category] || CATEGORY_HERO_IMAGES.default;
   
   // Get support filters for this pillar/category
   const supportFilters = getSupportFilters(category, pillar);
@@ -1246,15 +1231,9 @@ const ProductListing = ({ category = 'all' }) => {
       
       {/* === HERO SECTION === */}
       <div className={`relative overflow-hidden bg-gradient-to-br ${heroContent.color} text-white`}>
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0">
-          <img 
-            src={heroImage} 
-            alt={getCategoryTitle()} 
-            className="w-full h-full object-cover opacity-25"
-          />
-          <div className={`absolute inset-0 bg-gradient-to-r ${heroContent.color} opacity-90`} />
-        </div>
+        {/* Subtle texture overlay — no stock photos */}
+        <div className="absolute inset-0 opacity-10" style={{background:'linear-gradient(135deg,rgba(255,255,255,0.2) 0%,transparent 50%,rgba(0,0,0,0.1) 100%)'}} />
+        <div className={`absolute inset-0 bg-gradient-to-r ${heroContent.color} opacity-90`} />
         
         {/* Content */}
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">

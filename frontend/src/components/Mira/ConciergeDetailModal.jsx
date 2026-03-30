@@ -41,11 +41,11 @@ const ConciergeDetailModal = ({
     }
     // Default images by category
     const defaults = {
-      celebrate: 'https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc?w=600&q=80',
-      dine: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=600&q=80',
-      care: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80',
-      travel: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&q=80',
-      default: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80'
+      celebrate: '',
+      dine: '',
+      care: '',
+      travel: '',
+      default: ''
     };
     return defaults[service.pillar] || defaults.default;
   };

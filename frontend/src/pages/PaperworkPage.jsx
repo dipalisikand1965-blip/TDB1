@@ -875,7 +875,7 @@ const PaperworkPage = () => {
                             id: bundle.id,
                             name: bundle.name,
                             price: bundle.price,
-                            image: bundle.image || 'https://via.placeholder.com/200?text=Paperwork+Bundle',
+                            image: bundle.image || '',
                             quantity: 1,
                             pillar: 'paperwork'
                           });

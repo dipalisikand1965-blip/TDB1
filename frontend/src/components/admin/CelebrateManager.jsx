@@ -949,7 +949,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
               <Card key={product.id || product.shopify_id} className="overflow-hidden">
                 <div className="aspect-square relative">
                   <img 
-                    src={product.image || product.image_url || 'https://via.placeholder.com/300'} 
+                    src={product.image || product.image_url || ''} 
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -1054,7 +1054,7 @@ const CelebrateManager = ({ getAuthHeader }) => {
               <Card key={bundle.id} className="overflow-hidden">
                 <div className="aspect-video relative">
                   <img 
-                    src={bundle.image || 'https://via.placeholder.com/400x200'} 
+                    src={bundle.image || ''} 
                     alt={bundle.name}
                     className="w-full h-full object-cover"
                   />

@@ -1443,7 +1443,7 @@ _GST applicable on final invoice_
                       {petSoulInsights.answers?.favorite_treats && (
                         <div className="flex items-center gap-2 bg-green-50 text-green-700 rounded-lg px-3 py-2 text-sm">
                           <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                          <span><strong>Loves:</strong> {Array.isArray(petSoulInsights.answers.favorite_treats) ? petSoulInsights.answers.favorite_treats.join(', ') : petSoulInsights.answers.favorite_treats}</span>
+                          <span><strong>Loves:</strong> {Array.isArray(petSoulInsights.answers.favorite_treats) ? petSoulInsights.answers.favorite_treats.map(t => String(t)).join(', ') : String(petSoulInsights.answers.favorite_treats)}</span>
                         </div>
                       )}
                       
@@ -1451,7 +1451,7 @@ _GST applicable on final invoice_
                       {petSoulInsights.answers?.diet_type && (
                         <div className="flex items-center gap-2 bg-blue-50 text-blue-700 rounded-lg px-3 py-2 text-sm">
                           <Info className="w-4 h-4 flex-shrink-0" />
-                          <span><strong>Diet:</strong> {petSoulInsights.answers.diet_type}</span>
+                          <span><strong>Diet:</strong> {String(petSoulInsights.answers.diet_type)}</span>
                         </div>
                       )}
                       

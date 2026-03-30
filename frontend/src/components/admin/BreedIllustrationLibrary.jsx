@@ -172,7 +172,7 @@ const BreedIllustrationLibrary = () => {
                   src={breed.image_url}
                   alt={breed.name}
                   className="w-full h-full object-cover"
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
+                  onError={(e) => { e.target.src = ''; }}
                 />
                 
                 {/* Copy Button Overlay */}

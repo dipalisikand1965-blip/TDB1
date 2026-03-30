@@ -9,6 +9,7 @@
 import React, { useState } from 'react';
 import { tdc } from '../../utils/tdc_intent';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { buildMasterBriefing, buildMasterMetadata, getAllergiesFromPet } from '../../utils/masterBriefing';
 import { X, Plus, Minus, ShoppingCart, Sparkles, Heart, Check, Star, Palette, Loader2 } from 'lucide-react';
 import { useResizeMobile } from '../../hooks/useResizeMobile';
 
@@ -480,6 +481,19 @@ const ProductDetailModal = ({
                     const token = localStorage.getItem('tdb_auth_token');
                     const textNote = conciergeSpecialText ? ` Text on product: "${conciergeSpecialText}".` : '';
                     const extraNotes = conciergeNotes ? ` Notes: ${conciergeNotes}` : '';
+                    const details = {
+                      product_name:  product.name,
+                      pillar:        product.pillar || 'celebrate',
+                      channel:       'soul_picks_customise',
+                      notes:         [textNote, extraNotes].filter(Boolean).join(' ').trim() || undefined,
+                      customisation: conciergeSpecialText ? { text_on_product: conciergeSpecialText } : undefined,
+                      urgency:       'high',
+                    };
+                    const briefing = buildMasterBriefing(pet, user, 'custom_order', details);
+                    const metadata = buildMasterMetadata(pet, user, details, {
+                      product_type: product.product_type,
+                      parent_id: user?.id || user?.email || 'guest',
+                    });
                     await fetch(`${API_BASE}/api/service_desk/attach_or_create_ticket`, {
                       method: "POST",
                       headers: {
@@ -487,19 +501,29 @@ const ProductDetailModal = ({
                         ...(token ? { "Authorization": `Bearer ${token}` } : {}),
                       },
                       body: JSON.stringify({
-                        parent_id: user?.id || user?.email || "guest",
-                        pet_id: pet?.id || pet?._id || "unknown",
-                        pillar: product.pillar || "celebrate",
+                        parent_id:     user?.id || user?.email || "guest",
+                        pet_id:        pet?.id || pet?._id || "unknown",
+                        pet_name:      pet?.name || petName,
+                        pet_breed:     pet?.breed,
+                        pet_allergies: getAllergiesFromPet(pet),
+                        parent_email:  user?.email || '',
+                        parent_name:   user?.name || user?.full_name || '',
+                        parent_phone:  user?.phone || user?.whatsapp || '',
+                        pillar:        product.pillar || "celebrate",
                         intent_primary: "custom_order",
-                        channel: "soul_picks_customise",
-                        life_state: "PLAN",
-                        urgency: "high",
-                        status: "open",
-                        force_new: true,
+                        channel:       "soul_picks_customise",
+                        life_state:    "PLAN",
+                        urgency:       "high",
+                        status:        "open",
+                        force_new:     true,
+                        subject:       `Custom Order: ${product.name} for ${petName}`,
                         initial_message: {
                           sender: "parent",
-                          text: `${petName}'s parent wants to customise: ${product.name} (${(product.product_type||'').replace(/_/g,' ')}).${textNote}${extraNotes} — Please collect pet photo and share pricing.`
-                        }
+                          text:   briefing,
+                          source: "soul_picks_customise",
+                        },
+                        product_name: product.name,
+                        metadata,
                       })
                     });
                     setConciergeSent(true);

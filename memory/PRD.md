@@ -1,6 +1,25 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-29 (Session 33 — life_vision in Mira AI + Learn mobile layout + CelebrateMobilePage verified)
-## DEPLOYMENT: Upcoming (Atlas IP whitelist still blocked)
+## Last Updated: 2026-03-30 (Session 37 — Mira Chat Widget Product Cards Fixed)
+
+## IRON RULE #1: NO STOCK PHOTOS
+- **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
+- Pet photos → `pet.photo_url` from DB
+- Product images → `cloudinary_url || mockup_url || image_url` from DB
+- Hero/banner images → TDC branded CSS gradients (`#1A0A2E`, `#2D1B69`, gold `#D4A840`)
+- Empty states → gradient cards with emoji + pillar accent color
+
+## IRON RULE #2: MASTER TICKET STANDARD (Every ticket. Every time. Forever.)
+- **ALL** `attach_or_create_ticket` calls MUST use `buildMasterBriefing()` from `/app/frontend/src/utils/masterBriefing.js`
+- The canonical chain: `bookViaConcierge()` in `MiraCardActions.js` → uses `buildMasterBriefing` → sends full briefing
+- Components that do direct fetch MUST import `buildMasterBriefing` and `buildMasterMetadata` from `masterBriefing.js`
+- Photo URLs in `details.photo_url` MUST appear in BOTH the REQUEST section AND the ACTION REQUIRED section
+- Admin views (TicketThread.jsx, ServiceDeskWorkspace.jsx) render photo URLs as `<img>` tags automatically
+- **LOCKED**: SoulPage desktop files are exempt — do NOT modify them
+
+## IRON RULE #3: TICKET PHOTO RENDERING
+- Wherever ticket message text is rendered in admin or service desk — if text contains a Cloudinary URL or URL ending in .jpg/.png/.webp — render it as `<img>` tag
+- Implemented in: `TicketThread.jsx` (member) and `ServiceDeskWorkspace.jsx` (admin)
+- `TicketFullPageModal.jsx` already had this before Session 35
 
 ---
 
@@ -233,6 +252,16 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 2. ✅ **Bug B (Pet loading)** — `usePet.js`: `petLoaded` flag added (false until API returns real pet). `MiraDemoPage.jsx`: renders loading spinner until `petLoaded=true`. No Buddy flash.
 3. ✅ **Bug C** — `PersonalizedPicksPanel.jsx` PILLARS extended: farewell (🕊️) + adopt (🐾)
 4. ✅ **Bug D** — `useVoice.js` default → `true` (ElevenLabs ON by default, opt-out not opt-in)
+
+### SESSION 37 — (2026-03-30) Mira Chat Widget Product Cards Fix
+
+1. ✅ **Bug Root Cause**: `setVisibleProducts(streamMsgId)` was never called in the streaming path. The render gate `visibleProducts.has(msg.id)` stayed closed for ALL streaming messages → product cards never rendered even though `msg.products` was set.
+2. ✅ **Fix**: Added `setVisibleProducts(prev => new Set([...prev, streamMsgId]))` with 800ms delay after stream completes (mirrors exact pattern from fallback non-streaming path).
+3. ✅ **Secondary Fix**: `SUPPRESS_PRODUCT_KEYWORDS` contained 20+ common words ('gentle', 'feel', 'happy', 'comfortable', etc.) that appear in virtually every food/care response from Mira → false suppression. Replaced with 10 truly grief/crisis-only phrases.
+4. ✅ **Backend verified**: `/api/mira/picks/default/{pet_id}?query=salmon` returns 4 query-matched products. Endpoint works correctly.
+
+### P0 — Remaining
+None.
 
 ### P1 — Upcoming
 1. Watch & Learn YouTube sections (Care + Go)
@@ -545,3 +574,74 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 10. ✅ **GoSoulPage.jsx** — Same pattern. Added `ytQuery` to all 6 go dims (safety, calming, carriers, feeding, health, stay). 3rd "🎬 Watch" tab in `DimExpanded`.
 
 **Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
+
+
+### SESSION 36 — (2026-03-30) ProductDetailModal Portal Fix — Systemic
+
+**Root cause found**: `ProductDetailModal` and `ConciergeOnlyProductDetailModal` in `ProductCard.jsx` did NOT use `createPortal` internally. All 15+ usages across pillar pages rendered the modal inline inside PillarPageLayout's `overflow-x-hidden` div, which created a containing block hijacking `position: fixed`. The modal appeared behind the sticky header and below page content on every pillar.
+
+1. ✅ **ProductCard.jsx** — Wrapped `ProductDetailModal.return()` in `createPortal(..., document.body)`. One fix, all 15+ usages auto-fixed (CelebratePageNew, ShopSoulPage, CareSoulPage, PlaySoulPage, GoSoulPage, all Mobile pages, etc.)
+2. ✅ **ProductCard.jsx** — Same fix applied to `ConciergeOnlyProductDetailModal`
+3. ✅ **ProductCard.jsx** — Removed now-redundant outer `createPortal` wrapper in ProductCard's render
+4. ✅ **DoggyBakeryCakeModal.jsx** — Z-index raised to max (`2147483640/641/642`), order panel scroll fixed (`maxHeight:92vh`, `WebkitOverflowScrolling:touch`, proper `paddingBottom`)
+5. ✅ **PillarPageLayout.jsx** — Pillar sub-nav changed from `sticky top-0` to `sticky top-16` to avoid Navbar overlap
+
+---
+
+## SESSION 35 — (2026-03-30) Cake Modal Z-index Fix + Cart Safety Guards + PillarPageLayout Header Fix
+
+1. ✅ **DoggyBakeryCakeModal.jsx** — Raised z-index to max (`2147483640/641/642`) for backdrop, modal container, and order panel. This fixes the modal going behind page content.
+2. ✅ **Order panel scroll** — Fixed bottom sheet: `maxHeight:'92vh'`, `overflowY:'auto'`, `WebkitOverflowScrolling:'touch'`, `paddingBottom: env(safe-area-inset-bottom)`. Form fields now fully accessible.
+3. ✅ **CartSidebar.jsx** — Added `String()` coercions to all `customDetails` renders (date, flavour, shape, name, allergies, lifeVision). Prevents "Objects are not valid as a React child" Date crashes.
+4. ✅ **Checkout.jsx** — Added `String()` guards on `petSoulInsights.answers.diet_type` and `favorite_treats` renders to prevent object crashes from raw MongoDB data.
+5. ✅ **PillarPageLayout.jsx** — Changed pillar sub-nav from `sticky top-0 z-40` to `sticky top-16 z-40`. Prevents pillar nav overlapping main Navbar on scroll.
+
+---
+
+## SESSION 34 — (2026-03-30) Design Bible v2 + Cake Cart Flow
+
+**Design Bible v2 (tdc-design-tokens (1).css — Session 97 master):**
+
+**Status: MERGED** — All new tokens appended to existing file. Old tokens kept for backward compatibility. No breaking changes.
+
+#### Key Discrepancies Found (new bible vs existing implementation):
+
+| Token | Existing File | New Design Bible | Resolution |
+|---|---|---|---|
+| `--font-primary` | Not present (`--font-sans` used) | Added as primary name | ADDED as alias → `--font-sans` |
+| `--font-accent` | Not present (`--font-serif` used) | Added as accent name | ADDED as alias → `--font-serif` |
+| `--text-xs` | `13px` | `11px` (micro labels) | KEPT `13px` for compat; added `--text-xs-sm: 11px` |
+| `--text-base` | `17px` (Apple HIG) | `15px` | KEPT `17px` — intentional Apple HIG choice |
+| `--radius-md` | `14px` | `12px` | KEPT `14px` — visual regression risk |
+| `--radius-lg` | `20px` | `14px` | KEPT `20px` — used on all buttons/cards |
+| `--radius-xl` | `28px` | `16px` | KEPT `28px` — major visual change |
+| Pillar colors | Single flat value per pillar | Full dark/mid/light/pale per pillar | ADDED full palettes as new tokens |
+| Gradients | Not present | Full library (brand, mira, cta, pillar heroes) | ADDED all gradient tokens |
+| Z-index scale | Not present | `--z-header: 300`, `--z-modal: 500`, etc. | ADDED all z-index tokens |
+| Layout tokens | Not present | `--header-height: 64px`, `--nav-height-mobile: 72px`, etc. | ADDED all layout tokens |
+| Image dimension tokens | Not present | `--img-avatar-sm/md/lg/xl`, `--img-product-*` | ADDED all image tokens |
+| `@import` fonts | `Cormorant Garamond + Inter` | `Cormorant Garamond + DM Sans` | UPDATED — added DM Sans import |
+| `--gradient-*` | Not present | All pillar hero gradients | ADDED all |
+| `static.prod-images.emergentagent.com` | Used in MealsPage.jsx HERO_IMAGES + CARD_IMAGES | BLOCKED (staging CDN) | ⚠️ OPEN — Images appear genuine TDC product photos; do not remove until Cloudinary URLs are confirmed |
+
+#### New Token Categories Added:
+- Brand colour palette (`--color-brand-deepest` → `--color-brand-cream`)
+- Teal token family (`--color-teal-dark/mid/light/pale`)
+- Extended radius scale (`--radius-xs: 6px`, `--radius-2xl: 20px`, `--radius-3xl: 24px`)
+- Shadow additions (`--shadow-brand`, `--shadow-teal`, `--shadow-inner`, `--shadow-2xl`)
+- Full Z-index scale (`--z-header: 300` → `--z-top: 9999`)
+- Component padding shortcuts (`--padding-card`, `--padding-modal`, `--padding-hero`, etc.)
+- Image dimension tokens (`--img-avatar-*`, `--img-product-*`, `--img-radius-*`)
+- 12 pillar palettes (4 tones each: dark/mid/light/pale)
+- Complete gradient library (brand, mira, cta, all 12 pillar heroes)
+- Utility classes: `.tdc-btn`, `.tdc-img-placeholder`, `.tdc-north-star`, `.tdc-label-upper`, `.tdc-heading-serif`
+
+**Cake Order → Cart Flow (Session 34):**
+1. ✅ `DoggyBakeryCakeModal.jsx` — Replaced direct-order-with-success-screen with: (a) immediate `addToCart()` call with full customDetails (flavour, base, size, shape, petName, petBreed, petAllergies, message, date, time, lifeVision, productImage), (b) non-blocking background `fetch` to `/api/celebrate/cake-order` for service desk ticket
+2. ✅ `CartSidebar.jsx` — Enhanced `customDetails` block to display: flavour+base, message, delivery date+time+type, pet name+breed, allergies, and life vision (north star)
+3. ✅ `server.py` — Added `life_vision` field to `cake_orders` schema and ticket text ("North Star: ...")
+
+**Image Hygiene (Session 34):**
+4. ✅ 237 stock photo URLs removed (206 from server.py seed data, 31 from frontend JSX)
+5. ✅ `PillarPage.jsx`, `ProductListing.jsx`, `MealsPage.jsx`, `Streaties.jsx`, `ProductListingNew.jsx` — All img tags replaced with TDC branded CSS gradients
+6. ⚠️ `MealsPage.jsx` HERO_IMAGES + CARD_IMAGES still use `static.prod-images.emergentagent.com` URLs — these appear to be genuine TDC product images on the staging CDN; flagged for migration to Cloudinary

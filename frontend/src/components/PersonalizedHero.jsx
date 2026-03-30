@@ -100,7 +100,7 @@ const PersonalizedHero = ({
                         onLoad={() => setImageLoaded(true)}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}&backgroundColor=ffdfbf`;
+                          e.target.style.display='none';
                         }}
                       />
                     ) : (
@@ -215,7 +215,7 @@ const PersonalizedHero = ({
                         onLoad={() => setImageLoaded(true)}
                         onError={(e) => {
                           e.target.onerror = null;
-                          e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}&backgroundColor=ffdfbf`;
+                          e.target.style.display='none';
                         }}
                       />
                     ) : (

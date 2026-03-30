@@ -613,7 +613,7 @@ const ProductCard = ({ product, activePet, onQuickAdd }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   
-  const PLACEHOLDER = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
+  const PLACEHOLDER = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231A0A2E"/><g fill="%23D4A840" opacity="0.6"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
   
   const getImage = () => {
     if (product.image && product.image.startsWith('http')) return product.image;

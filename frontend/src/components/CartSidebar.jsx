@@ -395,7 +395,7 @@ const CartSidebar = () => {
                       {/* Product Image */}
                       <div className="relative flex-shrink-0">
                         <img
-                          src={item.image || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200'}
+                          src={item.image || item.image_url || `https://placehold.co/200x200/f5f0eb/C9973A?text=${encodeURIComponent(item.name?.slice(0,2) || '🐾')}`}
                           alt={item.name}
                           className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg"
                         />
@@ -428,16 +428,28 @@ const CartSidebar = () => {
                         {/* Custom Details (for cakes, flat art etc) */}
                         {item.customDetails && (
                           <div className="mt-2 text-xs bg-gray-50 rounded-lg p-2 space-y-0.5">
-                            {item.customDetails.shape && <p><span className="text-gray-500">Shape:</span> {item.customDetails.shape}</p>}
-                            {item.customDetails.customName && <p><span className="text-gray-500">Name:</span> {item.customDetails.customName}</p>}
-                            {item.customDetails.date && <p><span className="text-gray-500">Date:</span> {new Date(item.customDetails.date).toLocaleDateString()}</p>}
+                            {item.customDetails.shape && <p><span className="text-gray-500">Shape:</span> {String(item.customDetails.shape)}</p>}
+                            {item.customDetails.flavour && <p><span className="text-gray-500">Flavour:</span> {String(item.customDetails.flavour)}{item.customDetails.base ? ` · ${item.customDetails.base} base` : ''}</p>}
+                            {item.customDetails.size && !item.customDetails.shape && <p><span className="text-gray-500">Size:</span> {String(item.customDetails.size)}</p>}
+                            {item.customDetails.customName && <p><span className="text-gray-500">Name on cake:</span> {String(item.customDetails.customName)}</p>}
+                            {item.customDetails.message && <p><span className="text-gray-500">Message:</span> "{String(item.customDetails.message)}"</p>}
+                            {item.customDetails.date && (
+                              <p><span className="text-gray-500">Delivery:</span> {String(item.customDetails.date)}{item.customDetails.deliveryTime ? ` · ${item.customDetails.deliveryTime}` : ''}{item.customDetails.deliveryType ? ` (${item.customDetails.deliveryType})` : ''}</p>
+                            )}
+                            {item.customDetails.petName && <p className="text-purple-600 font-medium">For {String(item.customDetails.petName)}{item.customDetails.petBreed ? ` · ${item.customDetails.petBreed}` : ''}</p>}
+                            {item.customDetails.petAllergies?.length > 0 && (
+                              <p className="text-red-500">Allergies: {item.customDetails.petAllergies.map(a => String(a)).join(', ')}</p>
+                            )}
+                            {item.customDetails.lifeVision && (
+                              <p className="text-purple-400 italic">"{String(item.customDetails.lifeVision)}"</p>
+                            )}
                             {/* Flat Art illustration details */}
                             {item.customDetails.illustration_url && (
                               <div className="flex items-center gap-2 mt-1">
                                 <img src={item.customDetails.illustration_url} alt="illustration"
                                   className="w-8 h-8 rounded-md object-cover border border-amber-200 flex-shrink-0" />
                                 <div>
-                                  <p className="font-semibold text-amber-700">🐾 Flat Art · {item.customDetails.variant}</p>
+                                  <p className="font-semibold text-amber-700">Flat Art · {item.customDetails.variant}</p>
                                   <p className="text-gray-400">{item.customDetails.breed_display} · For {item.customDetails.pet_name}</p>
                                 </div>
                               </div>
