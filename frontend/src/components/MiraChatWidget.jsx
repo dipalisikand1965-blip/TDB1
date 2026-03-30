@@ -2325,10 +2325,11 @@ const MiraChatWidget = ({
                             return (
                               <a
                                 key={svc.id || sIdx}
-                                href="javascript:;"
+                                href="#"
                                 role="button"
                                 tabIndex={0}
                                 onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   const _pet = selectedPet || {};
