@@ -847,7 +847,7 @@ const ProductManager = ({ credentials }) => {
                     src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
+                    onError={(e) => { e.target.src = ''; }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400">

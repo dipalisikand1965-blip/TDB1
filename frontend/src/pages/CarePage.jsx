@@ -67,7 +67,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-pink-500 to-rose-600",
     badge: "Popular",
     badgeColor: "bg-pink-500",
-    image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800&q=80",
+    image: "",
     highlights: [
       "Groomer matching by breed expertise",
       "Temperament-sensitive handling",
@@ -82,7 +82,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-blue-500 to-indigo-600",
     badge: "Essential",
     badgeColor: "bg-blue-600",
-    image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80",
+    image: "",
     highlights: [
       "Clinic discovery & appointment booking",
       "Preventive care scheduling",
@@ -97,7 +97,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-emerald-500 to-teal-600",
     badge: "Trusted",
     badgeColor: "bg-emerald-600",
-    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80",
+    image: "",
     highlights: [
       "Verified boarding facilities",
       "Daycare matching by temperament",
@@ -110,7 +110,7 @@ const CARE_EXPERIENCES = [
     description: "For pets who need gentle support with anxiety, fear, or stress. We connect you with specialists who understand sensitive handling and therapeutic approaches.",
     icon: "💜",
     gradient: "from-purple-500 to-violet-600",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
+    image: "",
     highlights: [
       "Anxiety & fear support specialists",
       "Grooming & vet stress handling",
@@ -125,7 +125,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-amber-500 to-orange-600",
     badge: "Compassionate",
     badgeColor: "bg-amber-500",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
+    image: "",
     highlights: [
       "Senior comfort & support",
       "Special needs handling",
@@ -138,7 +138,7 @@ const CARE_EXPERIENCES = [
     description: "When emergencies strike, we guide you through crisis moments — locating 24/7 vets, arranging urgent transport, and coordinating care until your pet is safe.",
     icon: "🚨",
     gradient: "from-red-500 to-rose-600",
-    image: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=800&q=80",
+    image: "",
     highlights: [
       "24/7 emergency vet routing",
       "Urgent transport coordination",
@@ -232,9 +232,9 @@ const CARE_TYPES = {
 
 // Hero images for care
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+  '',
+  '',
+  ''
 ];
 
 // Main Care Page Component

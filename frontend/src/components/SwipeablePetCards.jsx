@@ -78,7 +78,7 @@ const SwipeablePetCards = ({ pets, activePetId, onPetChange }) => {
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-purple-200">
             <img
-              src={pet.photo_url || `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}`}
+              src={pet.photo_url || ''}
               alt={pet.name}
               className="w-full h-full object-cover"
             />
@@ -147,7 +147,7 @@ const SwipeablePetCards = ({ pets, activePetId, onPetChange }) => {
               <div className="relative">
                 <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-purple-200">
                   <img
-                    src={pet.photo_url || `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}`}
+                    src={pet.photo_url || ''}
                     alt={pet.name}
                     className="w-full h-full object-cover"
                   />

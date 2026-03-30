@@ -374,7 +374,7 @@ const MealPlanPage = () => {
                   <Link key={product.id || idx} to={`/product/${product.slug || product.id}`} className="block">
                     <div className="p-3 border rounded-xl hover:shadow-md transition-shadow bg-white">
                       <img 
-                        src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200'} 
+                        src={product.image_url || product.image || product.images?.[0] || ''} 
                         alt={product.name}
                         className="w-full h-24 object-cover rounded-lg mb-2"
                       />
@@ -401,7 +401,7 @@ const MealPlanPage = () => {
                   <Link key={product.id || idx} to={`/product/${product.slug || product.id}`} className="block flex-shrink-0 w-40">
                     <div className="p-3 border rounded-xl hover:shadow-md transition-shadow bg-white">
                       <img 
-                        src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1582798358481-d199fb7347bb?w=200'} 
+                        src={product.image_url || product.image || product.images?.[0] || ''} 
                         alt={product.name}
                         className="w-full h-20 object-cover rounded-lg mb-2"
                       />
@@ -428,7 +428,7 @@ const MealPlanPage = () => {
                   <Link key={product.id || idx} to={`/product/${product.slug || product.id}`} className="block flex-shrink-0 w-40">
                     <div className="p-3 border rounded-xl hover:shadow-md transition-shadow bg-white">
                       <img 
-                        src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200'} 
+                        src={product.image_url || product.image || product.images?.[0] || ''} 
                         alt={product.name}
                         className="w-full h-20 object-cover rounded-lg mb-2"
                       />

@@ -63,7 +63,7 @@ const MiraUniversalBar = ({
     id: 'demo-pet',
     name: 'Meister',
     breed: 'Shih Tzu',
-    photo: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&h=100&fit=crop',
+    photo: '',
     traits: ['human', 'loving', 'understanding'],
     favorites: { treat: 'liver, jerkies' },
     soul_percentage: 70.4
@@ -425,7 +425,7 @@ const MiraUniversalBar = ({
                         {miraResponse.products.slice(0, 4).map((product, idx) => (
                           <div key={idx} className="mira-response-product">
                             <img 
-                              src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100'} 
+                              src={product.image || product.images?.[0] || ''} 
                               alt={product.name}
                             />
                             <div className="mira-response-product-info">

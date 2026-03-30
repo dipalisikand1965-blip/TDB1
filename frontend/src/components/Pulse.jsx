@@ -1225,7 +1225,7 @@ const Pulse = ({
                         onClick={() => onNavigate && onNavigate(`/product/${product.id || product._id}`)}
                       >
                         <img 
-                          src={product.image_url || product.image || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=100'} 
+                          src={product.image_url || product.image || ''} 
                           alt={product.name || product.title}
                           className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                         />

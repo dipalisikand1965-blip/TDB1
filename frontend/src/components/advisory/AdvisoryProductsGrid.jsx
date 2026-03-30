@@ -49,7 +49,7 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart }) => {
         {/* Header */}
         <div className="relative">
           <img 
-            src={product.image_url || 'https://via.placeholder.com/400x300'} 
+            src={product.image_url || ''} 
             alt={product.name}
             className="w-full h-56 object-cover rounded-t-xl"
           />
@@ -270,10 +270,10 @@ const AdvisoryProductsGrid = ({ maxProducts = 24, showCategories = true, categor
                 {/* Image */}
                 <div className="relative h-36 bg-gray-100">
                   <img 
-                    src={product.image_url || 'https://via.placeholder.com/200'} 
+                    src={product.image_url || ''} 
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200'; }}
+                    onError={(e) => { e.target.src = ''; }}
                   />
                   {/* Category badge */}
                   <div className="absolute top-2 left-2">

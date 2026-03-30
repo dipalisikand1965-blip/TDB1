@@ -85,9 +85,9 @@ const TRAVEL_TYPES = {
 
 // Hero Images
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1759340875613-75cb64d2c16d?w=1200&q=80',
-  'https://images.unsplash.com/photo-1758991281299-756e997a027b?w=1200&q=80',
-  'https://images.unsplash.com/photo-1759559790290-a3c6fce1d55f?w=1200&q=80'
+  '',
+  '',
+  ''
 ];
 
 // Elevated Concierge® Travel Experiences - NOT bookable services
@@ -99,7 +99,7 @@ const TRAVEL_EXPERIENCES = [
     gradient: "from-violet-500 to-purple-600",
     badge: "Most Popular",
     badgeColor: "bg-amber-500",
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80",
+    image: "",
     highlights: [
       "Airline policy navigation & booking assistance",
       "IATA-compliant crate sizing & procurement",
@@ -112,7 +112,7 @@ const TRAVEL_EXPERIENCES = [
     description: "Planning a scenic drive with your pet? We map out pet-friendly stops, dining spots, and overnight stays — ensuring your four-legged co-pilot enjoys every mile.",
     icon: "🚗",
     gradient: "from-blue-500 to-cyan-500",
-    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80",
+    image: "",
     highlights: [
       "Custom route planning with pet stops",
       "Pet-friendly restaurant & café bookings",
@@ -127,7 +127,7 @@ const TRAVEL_EXPERIENCES = [
     gradient: "from-amber-500 to-orange-500",
     badge: "White Glove",
     badgeColor: "bg-purple-600",
-    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
+    image: "",
     highlights: [
       "End-to-end relocation coordination",
       "International & domestic paperwork",
@@ -140,7 +140,7 @@ const TRAVEL_EXPERIENCES = [
     description: "Taking your pet to the vet shouldn't be stressful. We arrange comfortable transport, wait with your pet if needed, and ensure they arrive calm and cared for.",
     icon: "🏥",
     gradient: "from-rose-500 to-pink-500",
-    image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80",
+    image: "",
     highlights: [
       "Comfortable, climate-controlled transport",
       "Vetted drivers trained in pet handling",
@@ -786,7 +786,7 @@ const TravelPage = () => {
             {/* Story 1: Rocky's Flight */}
             <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
               <img 
-                src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&h=400&fit=crop" 
+                src="" 
                 alt="Rocky - Golden Retriever" 
                 className="w-full h-48 object-cover"
               />
@@ -809,7 +809,7 @@ const TravelPage = () => {
             {/* Story 2: Simba & Luna Road Trip */}
             <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
               <img 
-                src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=600&h=400&fit=crop" 
+                src="" 
                 alt="Simba & Luna - Huskies" 
                 className="w-full h-48 object-cover"
               />
@@ -832,7 +832,7 @@ const TravelPage = () => {
             {/* Story 3: Milo's International Move */}
             <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
               <img 
-                src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&h=400&fit=crop" 
+                src="" 
                 alt="Milo - French Bulldog" 
                 className="w-full h-48 object-cover"
               />
@@ -855,7 +855,7 @@ const TravelPage = () => {
             {/* Story 4: Cookie's Train Journey */}
             <div className="flex-shrink-0 w-[280px] md:w-auto snap-start bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-lg hover:shadow-xl transition-all">
               <img 
-                src="https://images.unsplash.com/photo-1568572933382-74d440642117?w=600&h=400&fit=crop" 
+                src="" 
                 alt="Cookie - Indie Mix" 
                 className="w-full h-48 object-cover"
               />

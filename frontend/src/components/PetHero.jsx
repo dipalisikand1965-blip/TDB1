@@ -32,7 +32,7 @@ export const PetHero = ({
   const navigate = useNavigate();
   const [imageLoaded, setImageLoaded] = useState(false);
   
-  const petPhoto = pet?.photo_url || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&auto=format&fit=crop`;
+  const petPhoto = pet?.photo_url || '';
   const unlockedAchievements = achievements.filter(a => a.unlocked);
 
   return (

@@ -50,7 +50,7 @@ const ServiceQuickViewModal = ({
       return service.image_url || service.image;
     }
     // Default image based on category
-    return 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80';
+    return '';
   };
   
   // What's included items

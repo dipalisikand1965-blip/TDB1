@@ -11,7 +11,7 @@ const InstagramFeed = () => {
   const mockPosts = [
     {
       id: '1',
-      imageUrl: 'https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=500',
+      imageUrl: '',
       caption: '🎂 Bruno\'s 3rd birthday celebration! Custom Golden Retriever cake made with love 💕 #DoggyBakery #DogBirthday',
       likes: 245,
       comments: 18,
@@ -20,7 +20,7 @@ const InstagramFeed = () => {
     },
     {
       id: '2',
-      imageUrl: 'https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=500',
+      imageUrl: '',
       caption: '🐕 Behind the scenes at our Bangalore kitchen! Fresh ingredients, baked with love every single day 🥰',
       likes: 189,
       comments: 12,
@@ -29,7 +29,7 @@ const InstagramFeed = () => {
     },
     {
       id: '3',
-      imageUrl: 'https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=500',
+      imageUrl: '',
       caption: '🎉 Pawty time! Our Floral Fido cake bringing joy to celebrations across Mumbai 🌸',
       likes: 312,
       comments: 24,
@@ -38,7 +38,7 @@ const InstagramFeed = () => {
     },
     {
       id: '4',
-      imageUrl: 'https://images.unsplash.com/photo-1534361960057-19889db9621e?w=500',
+      imageUrl: '',
       caption: '🦴 Healthy treats, happy pups! 100% natural ingredients, zero preservatives. That\'s our promise 💚',
       likes: 198,
       comments: 15,
@@ -47,7 +47,7 @@ const InstagramFeed = () => {
     },
     {
       id: '5',
-      imageUrl: 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=500',
+      imageUrl: '',
       caption: '🎨 Custom breed cakes that look almost too good to eat! (But they do anyway 😋)',
       likes: 276,
       comments: 21,
@@ -56,7 +56,7 @@ const InstagramFeed = () => {
     },
     {
       id: '6',
-      imageUrl: 'https://images.unsplash.com/photo-1679067652135-324b9535d288?w=500',
+      imageUrl: '',
       caption: '☀️ Sunny days and birthday celebrations! Thank you for trusting us with your special moments 🌟',
       likes: 234,
       comments: 19,

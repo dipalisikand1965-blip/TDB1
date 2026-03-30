@@ -360,10 +360,10 @@ const LearnProductsGrid = ({ maxProducts = 8, showCategories = true, categoryFil
                 {/* Image */}
                 <div className="relative h-36 bg-gray-100">
                   <img 
-                    src={productImage || 'https://via.placeholder.com/200'} 
+                    src={productImage || ''} 
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200'; }}
+                    onError={(e) => { e.target.src = ''; }}
                   />
                   {/* Category badge */}
                   <div className="absolute top-2 left-2">

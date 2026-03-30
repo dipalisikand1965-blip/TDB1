@@ -151,7 +151,7 @@ const ProductCard = ({ product, onClick, onAddToCart }) => {
     ? product.image_url
     : product.image?.startsWith('http')
     ? product.image
-    : product.images?.[0] || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=300&h=300&fit=crop';
+    : product.images?.[0] || '';
 
   return (
     <Card 
@@ -164,7 +164,7 @@ const ProductCard = ({ product, onClick, onAddToCart }) => {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            e.target.src = 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=300&h=300&fit=crop';
+            e.target.src = '';
           }}
         />
         {product.discount && (

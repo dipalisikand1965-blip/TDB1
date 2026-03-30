@@ -69,7 +69,7 @@ const PillarServiceCard = ({
         <div className={`relative overflow-hidden ${compact ? 'h-36' : 'h-48 sm:h-56'}`}>
           {/* Background Image */}
           <img
-            src={image || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800`}
+            src={image || ''}
             alt={displayTitle}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
@@ -229,7 +229,7 @@ const PillarServiceCard = ({
                     onClick={(e) => { e.stopPropagation(); /* Add to cart */ }}
                   >
                     <img
-                      src={product.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100'}
+                      src={product.image || ''}
                       alt={product.name}
                       className="w-12 h-12 rounded-lg object-cover"
                     />

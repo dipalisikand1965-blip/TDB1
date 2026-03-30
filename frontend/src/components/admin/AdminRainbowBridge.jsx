@@ -169,7 +169,7 @@ const AdminRainbowBridge = () => {
             <Card key={memorial.id || memorial.pet_id} className="p-4">
               <div className="flex items-start gap-4">
                 <img 
-                  src={memorial.photo || `https://api.dicebear.com/7.x/thumbs/svg?seed=${memorial.pet_name}`}
+                  src={memorial.photo || ''}
                   alt={memorial.pet_name}
                   className="w-20 h-20 rounded-lg object-cover"
                 />

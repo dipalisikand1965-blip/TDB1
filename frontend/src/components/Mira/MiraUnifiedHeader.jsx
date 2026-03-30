@@ -61,7 +61,7 @@ const PetIdentitySection = memo(({ pet, soulScore = 0, onClick }) => {
           {petPhoto ? (
             <img src={petPhoto} alt={petName} onError={(e) => {
               e.target.onerror = null;
-              e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+              e.target.style.display='none';
             }} />
           ) : (
             <span>🐕</span>
@@ -208,7 +208,7 @@ const PetSwitcher = memo(({ pet, allPets = [], onSwitchPet, isOpen, onToggle, on
           {petPhoto ? (
             <img src={petPhoto} alt={petName} onError={(e) => {
               e.target.onerror = null;
-              e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+              e.target.style.display='none';
             }} />
           ) : (
             <span>🐕</span>

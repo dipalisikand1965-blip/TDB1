@@ -307,7 +307,7 @@ const CelebrationWallManager = () => {
                     src={photo.image_url || photo.imageUrl}
                     alt={photo.pet_name || photo.petName}
                     className="w-full h-32 object-cover"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/200?text=No+Image'; }}
+                    onError={(e) => { e.target.src = ''; }}
                   />
                   
                   {/* Overlay */}

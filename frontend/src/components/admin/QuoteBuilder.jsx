@@ -245,7 +245,7 @@ const QuoteBuilder = ({ partyRequest, ticketId, onClose, onQuoteSent }) => {
         description: 'Full grooming to look pawfect for the party',
         quantity: 1,
         unit_price: 1499,
-        image: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=200'
+        image: ''
       });
     }
     
@@ -257,7 +257,7 @@ const QuoteBuilder = ({ partyRequest, ticketId, onClose, onQuoteSent }) => {
         description: 'Professional photos of the celebration',
         quantity: 1,
         unit_price: 2999,
-        image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200'
+        image: ''
       });
     }
     
@@ -358,7 +358,7 @@ const QuoteBuilder = ({ partyRequest, ticketId, onClose, onQuoteSent }) => {
                           onClick={() => addItem(product)}
                         >
                           <img 
-                            src={product.image || product.images?.[0] || 'https://via.placeholder.com/50'}
+                            src={product.image || product.images?.[0] || ''}
                             alt={product.name}
                             className="w-12 h-12 object-cover rounded"
                           />
@@ -407,7 +407,7 @@ const QuoteBuilder = ({ partyRequest, ticketId, onClose, onQuoteSent }) => {
                     {quoteItems.map(item => (
                       <div key={item.item_id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
                         <img 
-                          src={item.image || 'https://via.placeholder.com/40'}
+                          src={item.image || ''}
                           alt={item.name}
                           className="w-10 h-10 object-cover rounded"
                         />
