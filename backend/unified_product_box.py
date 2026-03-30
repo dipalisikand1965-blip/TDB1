@@ -705,7 +705,11 @@ async def get_all_products(
     if search:
         and_conditions.append({"$or": [
             {"name": {"$regex": search, "$options": "i"}},
+            {"title": {"$regex": search, "$options": "i"}},
+            {"id": {"$regex": search, "$options": "i"}},
             {"sku": {"$regex": search, "$options": "i"}},
+            {"sub_category": {"$regex": search, "$options": "i"}},
+            {"pillar": {"$regex": search, "$options": "i"}},
             {"tags": {"$regex": search, "$options": "i"}},
             {"category": {"$regex": search, "$options": "i"}},
             {"description": {"$regex": search, "$options": "i"}},
@@ -744,6 +748,15 @@ async def get_all_products(
         ).sort([("created_at", -1), ("_id", -1)]).skip(skip).limit(limit).to_list(limit)
         
         products_master_total = await db.products_master.count_documents(query)
+        
+        # When searching, sort name-matches first for better relevance
+        if search:
+            search_lower = search.lower()
+            products.sort(key=lambda p: (
+                0 if search_lower in (p.get('name') or '').lower() else
+                1 if search_lower in (p.get('id') or '').lower() else
+                2
+            ))
         
         # Mark source
         for p in products:
