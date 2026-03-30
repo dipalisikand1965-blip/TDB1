@@ -211,6 +211,16 @@ const PILLAR_CROSS_SELL_TITLES = {
   default: "You May Also Like"
 };
 
+// ─── Module-scoped URL helper — used by ProductCard AND ProductDetailModal ───
+const isValidUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  if (!url.startsWith('http')) return false;
+  if (url.includes('emergentagent.com')) return false;
+  if (url.includes('static.prod-images')) return false;
+  if (url.includes('ai_generated')) return false;
+  return true;
+};
+
 const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
   const [miraExpanded, setMiraExpanded] = useState(false);
@@ -339,15 +349,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
 
-  // Helper: reject broken/staging URLs — never show emergentagent.com or empty URLs
-  const isValidUrl = (url) => {
-    if (!url || typeof url !== 'string') return false;
-    if (!url.startsWith('http')) return false;
-    if (url.includes('emergentagent.com')) return false; // broken staging URLs — always skip
-    if (url.includes('static.prod-images')) return false; // same staging CDN
-    return true;
-  };
-  
+  // Helper: reject broken/staging URLs — uses module-scoped isValidUrl above
+
   // Get valid image - PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (only Shopify/Cloudinary) → images[0] (only Shopify)
   const getValidImage = () => {
     // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
