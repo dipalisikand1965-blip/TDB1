@@ -3,7 +3,7 @@
  * The single source of truth for all products, rewards, and experiences
  * Enhanced with comprehensive 6-tab editor
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -73,7 +73,8 @@ const UnifiedProductBox = () => {
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);  const [filterType, setFilterType] = useState('');
   const [filterPillar, setFilterPillar] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterShipping, setFilterShipping] = useState('');
@@ -111,6 +112,16 @@ const UnifiedProductBox = () => {
   ]);
   const [pillarsData, setPillarsData] = useState([]);
 
+  // Debounce search — wait 350ms after user stops typing before firing API call
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(0);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [searchTerm]);
+
   // Fetch products
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -120,7 +131,7 @@ const UnifiedProductBox = () => {
         limit: limit.toString()
       });
       
-      if (searchTerm) params.append('search', searchTerm);
+      if (debouncedSearch) params.append('search', debouncedSearch);
       if (filterType) params.append('product_type', filterType);
       if (filterPillar) params.append('pillar', filterPillar);
       if (filterStatus) params.append('status', filterStatus);
@@ -143,7 +154,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
+  }, [page, debouncedSearch, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
 
   // Fetch stats — non-critical, uses AbortController so it never blocks product list
   const fetchStats = async () => {
@@ -1024,7 +1035,7 @@ const UnifiedProductBox = () => {
               type="text"
               placeholder={`Search ${ALL_PILLARS.find(p => p.id === filterPillar)?.name || ''} products by name or sub-category...`}
               value={searchTerm}
-              onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
               data-testid="pillar-search-input"
             />
@@ -1070,7 +1081,7 @@ const UnifiedProductBox = () => {
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
-                onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
                 data-testid="search-products-input"
               />
