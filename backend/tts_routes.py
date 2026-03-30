@@ -25,7 +25,7 @@ tts_router = APIRouter(prefix="/tts", tags=["tts"])
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
 
 # Voice IDs - using Eloise (premade ElevenLabs voice) — confirmed working AZnzlk1XvdvUeBnXmlld
-MIRA_VOICE_ID = os.environ.get("MIRA_VOICE_ID", "AZnzlk1XvdvUeBnXmlld")  # Eloise — user-confirmed
+MIRA_VOICE_ID = os.environ.get("MIRA_VOICE_ID", "AZnzlk1XvdvUeBnXmlld")  # Elise — replaces retired Eloise (AZnzlk1XvdvUeBnXmlld)
 
 # E024: Voice Personality Profiles — all using Eloise for consistent Mira voice
 VOICE_PERSONALITIES = {

@@ -224,6 +224,15 @@ select {
    TOUCH TARGET SIZES - iOS 44px, Android 48px
    ============================================ */
 button,
+
+/* iOS fix — buttons inside pan-y scroll containers need this to fire clicks */
+.mira-chat-messages button,
+.mira-chat-messages a {
+  -webkit-user-select: auto;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
 [role="button"],
 a.btn,
 .touchable {
@@ -1384,5 +1393,13 @@ a[href*="emergent"][class*="badge"] {
 @media (max-width: 1024px) {
   .tdc-mobile-header {
     display: flex !important;
+  }
+}
+
+
+/* When Mira widget is open on desktop, shift product modals left to avoid overlap */
+@media (min-width: 640px) {
+  body[data-mira-open="true"] .product-modal-backdrop {
+    padding-right: 400px;
   }
 }

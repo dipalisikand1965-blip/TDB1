@@ -63,12 +63,15 @@ function serviceToProduct(s) {
         original_price: Number(s.price) || 0,
         discount_percent: 0,
       },
+      approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
     },
     original_price: Number(s.price) || 0,
     primary_pillar: pillar,
     pillar,
     category: s.category || '',
     sub_category: s.sub_category || '',
+    // approval_status drives the "Status in Pillar" dropdown in ProductBoxEditor
+    approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
     visibility: { is_active: s.is_active !== false, status: s.is_active !== false ? 'active' : 'inactive' },
     image_url: s.image_url || s.image || s.watercolor_image || '',
     image: s.image_url || s.image || '',
@@ -84,15 +87,21 @@ function serviceToProduct(s) {
 
 // Extract service-relevant fields from ProductBoxEditor state
 function productToServicePatch(p) {
+  // Resolve status: commerce_ops.approval_status is what ProductBoxEditor dropdown updates
+  // Top-level approval_status is the initial value from serviceToProduct — check commerce_ops FIRST
+  const approvalStatus = p.commerce_ops?.approval_status || p.approval_status || 'live';
+  const isActive = ['live', 'active'].includes(approvalStatus);
   return {
     name: p.basics?.name || p.name || '',
-    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
+    base_price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
+    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0), // legacy alias
     category: p.category || '',
     sub_category: p.sub_category || '',
     pillar: p.primary_pillar || p.pillar || '',
     description: p.basics?.description || p.description || '',
     long_description: p.basics?.description || p.description || '',
-    is_active: p.visibility?.is_active !== false,
+    is_active: isActive,
+    approval_status: approvalStatus,
     tags: p.tags || [],
     image_url: p.image_url || p.media?.primary_image || '',
     image: p.image_url || p.media?.primary_image || '',
@@ -271,8 +280,8 @@ export default function ServiceBox() {
             {paginated.map((s, i) => (
               <div key={s.id||s._id||i} style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 80px', gap:12, padding:'10px 16px', borderBottom:i<paginated.length-1?`1px solid ${P.border}`:'none', alignItems:'center' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  {(s.image_url || s.image) && (
-                    <img src={s.image_url || s.image} alt={s.name}
+                  {(s.image_url || s.image || s.watercolor_image) && (
+                    <img src={s.image_url || s.image || s.watercolor_image} alt={s.name}
                       style={{ width:32, height:32, borderRadius:6, objectFit:'cover', flexShrink:0, border:`1px solid ${P.border}` }} />
                   )}
                   <div>

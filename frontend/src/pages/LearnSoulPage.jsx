@@ -1474,7 +1474,8 @@ export function MiraPicksSection({ pet }) {
           <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==="service";
-            const img=[pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+            const _rawImg=[pick.watercolor_image,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+            const img=_rawImg&&!_rawImg.includes('ai_generated')?_rawImg:null;
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
             return (

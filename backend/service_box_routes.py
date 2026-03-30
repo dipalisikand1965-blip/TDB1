@@ -87,6 +87,7 @@ class ServiceCreate(BaseModel):
     
     # Status
     is_active: bool = True
+    approval_status: Optional[str] = "live"  # live | paused | draft | archived
 
 
 # ==================== STATS ====================
@@ -325,6 +326,7 @@ async def update_service(service_id: str, service: ServiceCreate):
         "paw_points_value": service.paw_points_value,
         
         "is_active": service.is_active,
+        "approval_status": service.approval_status or ("live" if service.is_active else "paused"),
         "updated_at": datetime.now(timezone.utc)
     }
     

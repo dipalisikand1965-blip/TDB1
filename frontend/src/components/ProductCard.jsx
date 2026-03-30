@@ -211,6 +211,16 @@ const PILLAR_CROSS_SELL_TITLES = {
   default: "You May Also Like"
 };
 
+// ─── Module-scoped URL helper — used by ProductCard AND ProductDetailModal ───
+const isValidUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  if (!url.startsWith('http')) return false;
+  if (url.includes('emergentagent.com')) return false;
+  if (url.includes('static.prod-images')) return false;
+  if (url.includes('ai_generated')) return false;
+  return true;
+};
+
 const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
   const [miraExpanded, setMiraExpanded] = useState(false);
@@ -339,15 +349,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
 
-  // Helper: reject broken/staging URLs — never show emergentagent.com or empty URLs
-  const isValidUrl = (url) => {
-    if (!url || typeof url !== 'string') return false;
-    if (!url.startsWith('http')) return false;
-    if (url.includes('emergentagent.com')) return false; // broken staging URLs — always skip
-    if (url.includes('static.prod-images')) return false; // same staging CDN
-    return true;
-  };
-  
+  // Helper: reject broken/staging URLs — uses module-scoped isValidUrl above
+
   // Get valid image - PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (only Shopify/Cloudinary) → images[0] (only Shopify)
   const getValidImage = () => {
     // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
@@ -699,7 +702,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
   };
 
   return createPortal(
-    <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]" style={{ backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)' }} onClick={onClose}>
+    <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000] product-modal-backdrop" style={{ backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)' }} onClick={onClose}>
       <div className="bg-white w-full max-w-3xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative" style={{ borderRadius:'28px 28px 0 0', animation:'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }} onClick={(e) => e.stopPropagation()} data-testid={`paperwork-product-modal-${product.id || 'item'}`}>
         <div style={{ width:40, height:5, background:'#E5E7EB', borderRadius:999, margin:'12px auto 0' }} />
         <button
@@ -1537,11 +1540,11 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
 
   return createPortal(
     <div 
-      className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]"
+      className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000] product-modal-backdrop"
       style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
       onClick={handleBackdropClick}
-    >
-      <div 
+    > 
+        <div
         className="bg-white w-full max-w-2xl max-h-[88dvh] no-sb shadow-2xl relative"
         style={{ borderRadius: '28px 28px 0 0', animation: 'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both', display: 'flex', flexDirection: 'column' }}
         onClick={(e) => e.stopPropagation()}

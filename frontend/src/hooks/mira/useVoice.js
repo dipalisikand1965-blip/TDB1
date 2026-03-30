@@ -209,8 +209,8 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   }, []);
   
   // ─── ElevenLabs Eloise voice (direct API, key rotation) ───────────────────
-  // Eloise — AZnzlk1XvdvUeBnXmlld — user-confirmed, same ID used by backend tts_routes.py
-  const ELOISE_VOICE_ID = 'AZnzlk1XvdvUeBnXmlld'; // Eloise (ElevenLabs premade)
+  // Eloise — EST9Ui6982FZPSi7gCHi — user-confirmed canonical voice ID
+  const ELOISE_VOICE_ID = 'EST9Ui6982FZPSi7gCHi'; // Eloise (ElevenLabs)
 
   const ELEVEN_KEYS = [
     process.env.REACT_APP_ELEVEN_LABS_KEY_1,
@@ -295,13 +295,14 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
         .replace(/^Hi there[!,]?\s*/i, '')       // strip "Hi there!"
         .replace(/^Hello[!,]?\s*/i, '')          // strip "Hello!"
         .replace(/^Great question[!,]?\s*/i, '') // strip "Great question!"
-        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡🐶🌷💚✦]/g, '')
         .replace(/\*\*(.*?)\*\*/g, '$1')         // strip bold markdown
         .replace(/\*(.*?)\*/g, '$1')             // strip italic markdown
         .replace(/[*#_~`]/g, '')
         .replace(/\[.*?\]/g, '')
         .replace(/\n/g, ' ')
         .replace(/®/g, '')
+        .replace(/[^\w\s.,!?'"()-]/g, ' ')       // strip ALL non-speech chars (emojis, symbols, ✦ ™ etc)
+        .replace(/\s+/g, ' ')                    // collapse multiple spaces
         .trim();
       
       // Smart truncation at sentence boundary (max 400 chars for natural delivery)
