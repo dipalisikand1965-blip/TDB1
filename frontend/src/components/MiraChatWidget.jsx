@@ -203,14 +203,15 @@ const MiraChatWidget = ({
   className = '',
   hideMiraChatOnPillarPages = false
 }) => {
-  // Derive pillar from URL when parent passes null/general (global floating widget)
-  const _KNOWN_PILLARS = ['dine','care','go','play','learn','celebrate','shop','services','paperwork','emergency','farewell','adopt'];
-  const _urlDerivedPillar = _KNOWN_PILLARS.find(p => loc.pathname === '/' + p || loc.pathname.startsWith('/' + p + '/')) || null;
-  const pillar = pillarProp || _urlDerivedPillar || 'general';
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const loc = useLocation();
+
+  // Derive pillar from URL when parent passes null/general (global floating widget)
+  const _KNOWN_PILLARS = ['dine','care','go','play','learn','celebrate','shop','services','paperwork','emergency','farewell','adopt'];
+  const _urlDerivedPillar = _KNOWN_PILLARS.find(p => loc.pathname === '/' + p || loc.pathname.startsWith('/' + p + '/')) || null;
+  const pillar = pillarProp || _urlDerivedPillar || 'general';
 
   // Viewport-level mobile detection — ResizeObserver on document.body
   // Debounced at 150ms, handles device rotation and Chrome DevTools resize
