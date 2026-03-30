@@ -1348,19 +1348,22 @@ const MiraChatWidget = ({
           const _SERVICE_WORDS = ['groom', 'vet', 'walk', 'train', 'board', 'session', 'appointment',
             'book', 'spa', 'bath', 'nail', 'dental', 'vaccin', 'checkup', 'consult'];
           const _hasServiceIntent = _SERVICE_WORDS.some(w => fullText.toLowerCase().includes(w));
+          console.log('[SVC_CHIPS] hasIntent:', _hasServiceIntent, '| pillar:', _activePillar, '| fullText snippet:', fullText.slice(0, 80));
           if (_hasServiceIntent && _activePillar &&
               !['emergency', 'paperwork', 'farewell'].includes(_activePillar)) {
+            console.log('[SVC_CHIPS] fetching services for pillar:', _activePillar);
             fetch(`${getApiUrl()}/api/service-box/services?pillar=${_activePillar}&limit=3`)
               .then(r => r.ok ? r.json() : null)
               .then(d => {
                 const svcs = d?.services || [];
+                console.log('[SVC_CHIPS] received svcs:', svcs.length);
                 if (svcs.length > 0) {
                   setMessages(prev => prev.map(m =>
                     m.id === streamMsgId ? { ...m, services: svcs } : m
                   ));
                 }
               })
-              .catch(() => {});
+              .catch((err) => { console.warn('[SVC_CHIPS] fetch error:', err); });
           }
 
           // ── NearMe intent detection ──
