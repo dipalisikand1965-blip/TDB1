@@ -1288,11 +1288,12 @@ const MiraChatWidget = ({
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
 
-          // ── Post-stream product fetch — show pillar-relevant picks after Mira responds ──
+          // ── Post-stream product fetch — smart query-matched picks ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
           const _activePillar = currentPillar || pillar;
           if (_streamPetId && _activePillar) {
-            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?pillar=${_activePillar}&limit=4`)
+            const _queryParam = encodeURIComponent(messageToSend || '');
+            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?pillar=${_activePillar}&limit=4&query=${_queryParam}`)
               .then(r => r.json())
               .then(d => {
                 const picks = d.picks || d.products || [];
@@ -1303,6 +1304,17 @@ const MiraChatWidget = ({
                 }
               })
               .catch(() => {}); // fire-and-forget — never block the UI
+          }
+
+          // ── NearMe intent detection ──
+          const _NEARME_WORDS = ['near me', 'nearby', 'near ', 'find a vet', 'find a groomer',
+            'groomer near', 'vet near', 'close to', 'around me', 'locate', 'in my city', 'where can i find'];
+          const _combined = ((messageToSend || '') + ' ' + (fullText || '')).toLowerCase();
+          const _hasNearMe = _NEARME_WORDS.some(kw => _combined.includes(kw));
+          if (_hasNearMe) {
+            setMessages(prev => prev.map(m =>
+              m.id === streamMsgId ? { ...m, showNearMe: { pillar: _activePillar } } : m
+            ));
           }
 
           // ── Mira Ticket Intelligence — fire on concern detection OR 3+ message conversations ──
@@ -2261,6 +2273,28 @@ const MiraChatWidget = ({
                               </button>
                             );
                           })}
+                        </div>
+                      )}
+
+                      {/* NearMe chip — when location intent detected */}
+                      {msg.showNearMe && (
+                        <div style={{ marginTop: 10 }}>
+                          <button
+                            onClick={() => {
+                              const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
+                              window.location.href = `/${nearMePillar}#nearme`;
+                            }}
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 8,
+                              background: '#fff', border: '1.5px solid #BBF7D0',
+                              borderRadius: 999, padding: '6px 16px',
+                              fontSize: 13, fontWeight: 600, color: '#065F46',
+                              cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)'
+                            }}
+                          >
+                            <span style={{ fontSize: 15 }}>📍</span>
+                            Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
+                          </button>
                         </div>
                       )}
                     </div>
