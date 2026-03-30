@@ -1286,6 +1286,22 @@ const MiraChatWidget = ({
             m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
 
+          // ── Post-stream product fetch — always show pillar-relevant picks after Mira responds ──
+          const _streamPetId = selectedPet?.id || selectedPet?._id;
+          if (_streamPetId && pillar && pillar !== 'general') {
+            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?pillar=${pillar}&limit=4`)
+              .then(r => r.json())
+              .then(d => {
+                const picks = d.picks || d.products || [];
+                if (picks.length > 0) {
+                  setMessages(prev => prev.map(m =>
+                    m.id === streamMsgId ? { ...m, products: picks } : m
+                  ));
+                }
+              })
+              .catch(() => {}); // fire-and-forget — never block the UI
+          }
+
           // ── Mira Ticket Intelligence — fire on concern detection OR 3+ message conversations ──
           const { detectConcernType: detectCT, fireMiraTicket } = await import('../hooks/mira/useMiraTicket');
           const concernType = detectCT(messageToSend) || (messages.length >= 3 ? 'general' : null);
