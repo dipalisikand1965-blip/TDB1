@@ -2327,6 +2327,7 @@ const MiraChatWidget = ({
                                 key={svc.id || sIdx}
                                 role="button"
                                 tabIndex={0}
+                                onTouchStart={() => {}}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -2403,11 +2404,18 @@ const MiraChatWidget = ({
                       {/* NearMe chip — when location intent detected */}
                       {msg.showNearMe && (
                         <div style={{ marginTop: 10 }}>
-                          <a
-                            href={`/${msg.showNearMe?.pillar || currentPillar || pillar || 'care'}#nearme`}
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            onTouchStart={() => {}}
                             onClick={(e) => {
                               e.stopPropagation();
-                              console.log('[NEARME] clicked, pillar:', msg.showNearMe?.pillar || currentPillar || pillar);
+                              const _pillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
+                              console.log('[NEARME] clicked, pillar:', _pillar);
+                              navigate(`/${_pillar}`);
+                              setTimeout(() => {
+                                document.getElementById('nearme')?.scrollIntoView({ behavior: 'smooth' });
+                              }, 300);
                             }}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -2421,7 +2429,7 @@ const MiraChatWidget = ({
                           >
                             <span style={{ fontSize: 15 }}>📍</span>
                             Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
-                          </a>
+                          </div>
                         </div>
                       )}
                     </div>
