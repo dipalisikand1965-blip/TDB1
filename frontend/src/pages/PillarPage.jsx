@@ -16,7 +16,6 @@ const pillarConfig = {
       'Subscription meal delivery',
       'Nutrition consultations',
     ],
-    image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800',
   },
   stay: {
     name: 'Stay',
@@ -29,7 +28,6 @@ const pillarConfig = {
       'In-home pet sitting',
       'Live camera access to your pet',
     ],
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
   },
   travel: {
     name: 'Travel',
@@ -42,7 +40,6 @@ const pillarConfig = {
       'Pet relocation services',
       'Adventure trip planning',
     ],
-    image: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800',
   },
   care: {
     name: 'Care',
@@ -55,7 +52,6 @@ const pillarConfig = {
       'Pet insurance partnerships',
       'Wellness & grooming services',
     ],
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
   },
   celebrate: {
     name: 'Celebrate',
@@ -68,7 +64,6 @@ const pillarConfig = {
       'Party supplies & accessories',
       'Gift hampers',
     ],
-    image: 'https://images.unsplash.com/photo-1596492784531-6e6eb5ea9993?w=800',
     isActive: true,
     redirectTo: '/cakes',
   },
@@ -83,7 +78,6 @@ const pillarConfig = {
       'Prescription diet support',
       'Subscription delivery',
     ],
-    image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800',
   },
   groom: {
     name: 'Groom',
@@ -96,7 +90,6 @@ const pillarConfig = {
       'Spa treatments & massages',
       'At-home grooming visits',
     ],
-    image: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800',
   },
   play: {
     name: 'Play',
@@ -109,7 +102,6 @@ const pillarConfig = {
       'Subscription toy boxes',
       'Activity recommendations',
     ],
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
   },
   train: {
     name: 'Train',
@@ -122,7 +114,6 @@ const pillarConfig = {
       'Agility & tricks training',
       'Virtual training sessions',
     ],
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
   },
   insure: {
     name: 'Insure',
@@ -135,7 +126,6 @@ const pillarConfig = {
       'Wellness plan add-ons',
       'Multi-pet discounts',
     ],
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
   },
   adopt: {
     name: 'Adopt',
@@ -148,7 +138,6 @@ const pillarConfig = {
       'Foster programs',
       'Post-adoption support',
     ],
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
   },
   farewell: {
     name: 'Farewell',
@@ -161,7 +150,6 @@ const pillarConfig = {
       'Cremation options',
       'Grief support resources',
     ],
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
   },
   shop: {
     name: 'Shop',
@@ -174,7 +162,6 @@ const pillarConfig = {
       'Health & wellness products',
       'Exclusive member discounts',
     ],
-    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
     isActive: true,
     redirectTo: '/all',
   },
@@ -189,7 +176,6 @@ const pillarConfig = {
       'Events & workshops',
       'Expert Q&A sessions',
     ],
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
   },
 };
 
@@ -212,13 +198,7 @@ const PillarPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <div className={`relative bg-gradient-to-r ${pillar.color} text-white py-20 px-4 overflow-hidden`}>
-        <div className="absolute inset-0 opacity-20">
-          <img 
-            src={pillar.image} 
-            alt={pillar.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
+        <div className="absolute inset-0 opacity-10" style={{background:'linear-gradient(135deg,rgba(255,255,255,0.15) 0%,transparent 60%)'}} />
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
             <Clock className="w-5 h-5" />
