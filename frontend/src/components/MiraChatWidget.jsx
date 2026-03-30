@@ -2325,6 +2325,7 @@ const MiraChatWidget = ({
                             return (
                               <a
                                 key={svc.id || sIdx}
+                                href="javascript:;"
                                 role="button"
                                 tabIndex={0}
                                 onClick={(e) => {
@@ -2369,10 +2370,7 @@ const MiraChatWidget = ({
                                         service_name:   svcName,
                                         service_price:  svcPrice,
                                       },
-                                      initial_message: {
-                                        sender: 'member',
-                                        text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
-                                      },
+                                      initial_message: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
                                     })
                                   }).then(() => toast.success(`Request sent for ${svcName}!`))
                                     .catch(() => toast.error('Could not send request'));
