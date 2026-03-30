@@ -12,6 +12,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, Component } from 'react';
+import ReactDOM from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
@@ -227,6 +228,12 @@ const MiraChatWidget = ({
   const [isMinimized, setIsMinimized] = useState(false);
   const followUpCheckedRef = useRef(false); // prevents re-running follow-up check on each dep change
   const lastPetSwitchRef = useRef({ id: null, ts: 0 }); // deduplicate rapid petChanged events
+
+  // Signal to the page that Mira is open → product modals can shift left to avoid overlap
+  useEffect(() => {
+    document.body.setAttribute('data-mira-open', isOpen ? 'true' : 'false');
+    return () => document.body.removeAttribute('data-mira-open');
+  }, [isOpen]);
   
   // Cinematic Kit Assembly state
   const [showCinematicKit, setShowCinematicKit] = useState(false);
@@ -2544,14 +2551,15 @@ const MiraChatWidget = ({
           )}
         </div>
       
-      {/* Product Detail Modal — opened when user taps a chip */}
-      {selProd && (
+      {/* Product Detail Modal — portaled to body to escape Mira's stacking context */}
+      {selProd && ReactDOM.createPortal(
         <ProductDetailModal
           product={selProd}
           pillar={currentPillar || pillar || 'celebrate'}
           selectedPet={selectedPet}
           onClose={() => setSelProd(null)}
-        />
+        />,
+        document.body
       )}
 
       {/* Cinematic Kit Assembly Modal */}
