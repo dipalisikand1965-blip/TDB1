@@ -1297,16 +1297,15 @@ const MiraChatWidget = ({
             }, 800);
           }
 
-          // ── Post-stream product fetch — smart query-matched picks ──
+          // ── Post-stream product fetch — claude-picks (same engine as pillar page Mira Picks) ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
           const _activePillar = currentPillar || pillar;
-          if (_streamPetId) {
-            const _queryParam = encodeURIComponent(messageToSend || '');
-            const _pillarParam = _activePillar ? `&pillar=${_activePillar}` : '';
-            fetch(`${getApiUrl()}/api/mira/picks/default/${_streamPetId}?limit=4&query=${_queryParam}${_pillarParam}`)
-              .then(r => r.json())
+          if (_streamPetId && _activePillar &&
+              !['emergency', 'paperwork', 'farewell', 'general'].includes(_activePillar)) {
+            fetch(`${getApiUrl()}/api/mira/claude-picks/${_streamPetId}?pillar=${_activePillar}&limit=4&min_score=30`)
+              .then(r => r.ok ? r.json() : null)
               .then(d => {
-                const picks = d.picks || d.products || [];
+                const picks = d?.picks || [];
                 if (picks.length > 0) {
                   setMessages(prev => prev.map(m =>
                     m.id === streamMsgId ? { ...m, products: picks } : m
@@ -2260,7 +2259,7 @@ const MiraChatWidget = ({
                           {msg.products.slice(0, 3).map((p, pIdx) => {
                             if (!p) return null;
                             const chipImg = p.watercolor_image || p.mockup_url || p.cloudinary_url || p.image_url || p.image;
-                            const chipPrice = p.price || p.original_price || 0;
+                            const chipPrice = p.price || p.original_price || p.base_price || 0;
                             const chipName = p.product_name || p.name || p.title || 'Product';
                             return (
                               <button
