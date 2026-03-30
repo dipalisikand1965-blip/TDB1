@@ -18769,6 +18769,7 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
     pillar_focus = PILLAR_FOCUS.get(current_pillar, "")
 
     # Build pet context
+    allergy_list = []  # always defined — populated below if pet found
     pet_context = f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company. Be warm, personal and specific. Always use their name."
     if pet_id:
         try:
@@ -18845,12 +18846,57 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
 
             full_response = await chat.send_message(UserMessage(text=message))
 
+            # ── Enrichment: fetch products if message has product intent ──────────
+            _products_to_show = []
+            _nearby_places_data = None
+            _PRODUCT_WORDS = ["buy","recommend","suggest","show me","which","what should",
+                              "product","cake","treat","food","toy","collar","leash","shampoo",
+                              "supplement","gift","shop","purchase","get me","need a","need some"]
+            _NEARME_WORDS  = ["near me","nearby","near ","around me","in my city","close to","where can i find"]
+            _msg_lower = message.lower()
+            _wants_products = (
+                any(kw in _msg_lower for kw in _PRODUCT_WORDS)
+                and current_pillar not in ["emergency", "paperwork", "farewell", "adopt", "general"]
+            )
+            _wants_nearme = any(kw in _msg_lower for kw in _NEARME_WORDS)
+            if _wants_products:
+                try:
+                    _pdb = get_db()
+                    _cur = _pdb.products_master.find(
+                        {"visibility.status": {"$ne": "archived"},
+                         "$or": [{"pillar": current_pillar}, {"tags": {"$in": [current_pillar]}}]},
+                        {"_id": 0, "id": 1, "name": 1, "product_name": 1, "price": 1,
+                         "original_price": 1, "image_url": 1, "cloudinary_url": 1,
+                         "watercolor_image": 1, "mockup_url": 1,
+                         "tags": 1, "description": 1, "pillar": 1, "mira_hint": 1}
+                    ).limit(8)
+                    _raw = await _cur.to_list(length=8)
+                    _safe = []
+                    for _p in _raw:
+                        _tag_str = " ".join(_p.get("tags", [])) if isinstance(_p.get("tags"), list) else str(_p.get("tags", ""))
+                        _p_str = f"{_p.get('name','')} {_p.get('description','')} {_tag_str}".lower()
+                        if not any(_a.lower() in _p_str for _a in allergy_list):
+                            _safe.append(_p)
+                    _products_to_show = _safe[:3]
+                except Exception as _pe:
+                    logger.warning(f"[Mira Stream] Product enrichment: {_pe}")
+            if _wants_nearme:
+                _nearby_places_data = {"show_nearme": True, "pillar": current_pillar, "trigger": "user_request"}
+            # ─────────────────────────────────────────────────────────────────────
+
             # Stream word-by-word for progressive display effect
             words = full_response.split(" ")
             for i, word in enumerate(words):
                 chunk = word + (" " if i < len(words) - 1 else "")
                 yield f"data: {json.dumps({'text': chunk})}\n\n"
                 await asyncio.sleep(0.03)  # ~33 words/sec — crisp and natural
+
+            # Inject enriched products/nearbyPlaces BEFORE [DONE]
+            if _products_to_show or _nearby_places_data:
+                _enriched = {}
+                if _products_to_show:    _enriched["products"]      = _products_to_show
+                if _nearby_places_data:  _enriched["nearby_places"] = _nearby_places_data
+                yield f"data: {json.dumps({'type': 'enriched', 'data': _enriched})}\n\n"
 
             yield "data: [DONE]\n\n"
         except asyncio.CancelledError:
