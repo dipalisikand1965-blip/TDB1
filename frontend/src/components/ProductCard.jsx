@@ -2110,7 +2110,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#C9973A', letterSpacing: '0.14em', marginBottom: 3 }}>
-                  ✦ SOUL MADE™ · JUST FOR {(selectedPet?.name || 'YOUR DOG').toUpperCase()}
+                  ✦ Mira also recommends for {selectedPet?.name || 'your dog'}
                 </div>
                 <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)' }}>
                   {selectedPet?.breed ? `Made for ${selectedPet.breed.split('(')[0].trim()}s` : 'Personalised for your dog'}

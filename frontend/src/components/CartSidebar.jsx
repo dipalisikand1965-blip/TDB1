@@ -395,7 +395,7 @@ const CartSidebar = () => {
                       {/* Product Image */}
                       <div className="relative flex-shrink-0">
                         <img
-                          src={item.image || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=200'}
+                          src={item.image || item.image_url || `https://placehold.co/200x200/f5f0eb/C9973A?text=${encodeURIComponent(item.name?.slice(0,2) || '🐾')}`}
                           alt={item.name}
                           className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg"
                         />
