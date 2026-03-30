@@ -85,6 +85,14 @@ export async function fireMiraTicket({ pet, pillar, userMessage, miraResponse, c
     const urgency = concernType === 'emergency' ? 'critical' : 'normal';
     const resolvedPillar = CONCERN_TO_PILLAR[concernType] || pillar || 'care';
 
+    // Build master briefing from full pet soul profile
+    const allergies   = pet.allergies?.join(', ')  || pet.health_issues?.join(', ') || 'None recorded';
+    const favFoods    = pet.favorite_foods?.join(', ') || 'Not specified';
+    const lifeVision  = pet.life_vision || pet.north_star || 'Not set';
+    const breed       = pet.breed || pet.dog_breed || 'Unknown';
+    const age         = pet.age_years != null ? `${pet.age_years}y` : (pet.age || 'Unknown');
+    const photoUrl    = pet.watercolor_image || pet.profile_photo || pet.image_url || '';
+
     await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
       method: 'POST',
       headers: {
@@ -92,18 +100,39 @@ export async function fireMiraTicket({ pet, pillar, userMessage, miraResponse, c
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({
-        parent_id: user?.id || user?.email || 'guest',
-        pet_id: pet.id,
-        pillar: resolvedPillar,
+        parent_id:    user?.id || user?.email || 'guest',
+        pet_id:       pet.id,
+        pet_name:     pet.name,
+        pet_breed:    breed,
+        pet_age:      age,
+        photo_url:    photoUrl,
+        allergies,
+        favorite_foods: favFoods,
+        life_vision:  lifeVision,
+        pillar:       resolvedPillar,
         intent_primary: `mira_${concernType}_concern`,
-        life_state: 'ACTIVE',
+        life_state:   'ACTIVE',
         urgency,
-        channel: 'mira_chat_intelligence',
+        channel:      'mira_chat_intelligence',
+        metadata: {
+          pet_name:         pet.name,
+          pet_breed:        breed,
+          pet_age:          age,
+          photo_url:        photoUrl,
+          allergies,
+          favorite_foods:   favFoods,
+          life_vision:      lifeVision,
+          concern_type:     concernType,
+          mira_summary:     miraResponse?.slice(0, 400),
+        },
         initial_message: {
           sender: 'mira',
-          text: `Mira detected: ${concernType} concern for ${pet.name} (${pet.breed || 'unknown breed'}).
+          text: `[${concernType.toUpperCase()} — ${pet.name} · ${breed} · ${age}]
+Allergies: ${allergies}
+North Star: ${lifeVision}
+
 User said: "${userMessage?.slice(0, 200)}"
-Mira responded: "${miraResponse?.slice(0, 300)}"`,
+Mira said: "${miraResponse?.slice(0, 300)}"`,
         },
       }),
     });
