@@ -1239,6 +1239,8 @@ const MiraChatWidget = ({
           const reader = streamResponse.body.getReader();
           const decoder = new TextDecoder();
           let fullText = '';
+          let finalProducts = [];
+          let finalNearbyPlaces = null;
 
           // Add empty streaming message immediately
           const streamMsgId = Date.now();
@@ -1263,6 +1265,12 @@ const MiraChatWidget = ({
               if (data === '[DONE]') break;
               try {
                 const parsed = JSON.parse(data);
+                // ── Enriched data event (products + nearbyPlaces from stream) ──
+                if (parsed.type === 'enriched') {
+                  finalProducts = parsed.data?.products || [];
+                  finalNearbyPlaces = parsed.data?.nearby_places || null;
+                  continue;
+                }
                 const tok = parsed.text || parsed.delta || parsed.content || '';
                 if (!tok) continue;
                 fullText += tok;
@@ -1273,9 +1281,9 @@ const MiraChatWidget = ({
             }
           }
 
-          // Mark streaming complete
+          // Mark streaming complete — attach enriched products/nearbyPlaces
           setMessages(prev => prev.map(m =>
-            m.id === streamMsgId ? { ...m, streaming: false, content: fullText } : m
+            m.id === streamMsgId ? { ...m, streaming: false, content: fullText, products: finalProducts.length > 0 ? finalProducts : undefined, nearbyPlaces: finalNearbyPlaces || undefined } : m
           ));
 
           // ── Mira Ticket Intelligence — fire on concern detection OR 3+ message conversations ──

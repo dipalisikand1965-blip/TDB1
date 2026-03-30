@@ -1951,14 +1951,23 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               </div>
             )}
 
-            {/* Why Mira suggests this — shown when mira_hint is set (e.g. from DimExpanded intelligence) */}
-            {(product.mira_hint || product.mira_score > 0) && (
-              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">✦</div>
-                <div>
-                  <p className="text-xs font-bold text-amber-900 mb-0.5">Why Mira suggests this</p>
-                  <p className="text-xs text-amber-800">{product.mira_hint}</p>
-                </div>
+            {/* Why Mira chose this — personalised chip */}
+            {(product.mira_hint || product._miraReason) && selectedPet && (
+              <div style={{
+                display:'flex', alignItems:'flex-start', gap:8,
+                background:'linear-gradient(135deg,#F5F3FF,#EDE9FE)',
+                border:'1px solid rgba(124,58,237,0.2)',
+                borderRadius:12, padding:'10px 14px', marginBottom:16
+              }}>
+                <div style={{
+                  width:20, height:20, borderRadius:'50%',
+                  background:'linear-gradient(135deg,#7C3AED,#4F46E5)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:10, color:'#fff', flexShrink:0
+                }}>✦</div>
+                <p style={{fontSize:12, color:'#4C1D95', fontStyle:'italic', margin:0, lineHeight:1.5}}>
+                  {product.mira_hint || product._miraReason}
+                </p>
               </div>
             )}
 
