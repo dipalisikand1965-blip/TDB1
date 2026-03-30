@@ -2252,31 +2252,8 @@ const MiraChatWidget = ({
                       <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
                         ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
                       </p>
-                      {/* Concierge® recommendations (max 2) */}
-                      {(() => {
-                        const miraRecs = parseMiraRecommendations(
-                          typeof msg.content === 'string' ? msg.content : '',
-                          selectedPet?.name || 'your pet'
-                        );
-                        if (miraRecs.length > 0) {
-                          return (
-                            <MiraConciergeCards
-                              recommendations={miraRecs.slice(0, 2)}
-                              petName={selectedPet?.name || 'your pet'}
-                              petId={selectedPet?.id}
-                              token={token}
-                              onRequestCreated={(data) => {
-                                setMessages(prev => [...prev, {
-                                  id: `confirm-${Date.now()}`,
-                                  role: 'assistant',
-                                  content: `✅ Got it! Request #${data.request_id || 'created'} sent to our Concierge® team.`,
-                                }]);
-                              }}
-                            />
-                          );
-                        }
-                        return null;
-                      })()}
+                      {/* Concierge® recommendations — DISABLED (parseMiraRecommendations shows hallucinated prices) */}
+                      {null}
                       {/* MIRA PICKS — vertical card style matching the design spec */}
                       {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && (
                         <div style={{ marginTop: 16 }}>
