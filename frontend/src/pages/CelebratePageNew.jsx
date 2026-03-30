@@ -148,7 +148,7 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
       )}
       {!picksLoading&&picks.length>0&&(
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
-          {picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const img=[pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;return(
+          {picks.map((pick,i)=>{const isService=pick.entity_type==='service'||pick.type==='service';const score=pick.mira_score||0;const col=score>=80?"#16A34A":score>=70?"#C44DFF":"#6B7280";const _ri=[pick.watercolor_image,pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;const img=_ri&&!_ri.includes("ai_generated")?_ri:null;return(
             <div key={pick.id||i} style={{flexShrink:0,width:180,background:"#fff",borderRadius:16,border:"1.5px solid rgba(201,151,58,0.20)",overflow:"hidden",cursor:"pointer",boxShadow:"0 2px 12px rgba(201,151,58,0.08)",transition:"transform 0.15s,box-shadow 0.15s"}}
               onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)}
               onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(201,151,58,0.18)";}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 2px 12px rgba(201,151,58,0.08)";}}>

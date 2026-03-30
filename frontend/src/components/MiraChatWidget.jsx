@@ -2328,7 +2328,9 @@ const MiraChatWidget = ({
                           {msg.services.slice(0, 3).map((svc, sIdx) => {
                             const svcName = svc.name || svc.title || 'Service';
                             const svcPrice = svc.price || svc.base_price || svc.original_price;
-                            const svcImg = svc.cloudinary_url || svc.image_url || svc.image;
+                            const svcImg = svc.watercolor_image || svc.image_url || svc.cloudinary_url || svc.image;
+                            // Skip AI-generated stock images — show TDC gradient instead
+                            const _svcImgClean = svcImg && !svcImg.includes('ai_generated') ? svcImg : null;
                             return (
                               <button
                                 key={svc.id || sIdx}
@@ -2389,8 +2391,8 @@ const MiraChatWidget = ({
                                   cursor: 'pointer', textAlign: 'left'
                                 }}
                               >
-                                {svcImg ? (
-                                  <img src={svcImg} alt={svcName} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} onError={e => { e.target.style.display = 'none'; }} />
+                                {_svcImgClean ? (
+                                  <img src={_svcImgClean} alt={svcName} style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} onError={e => { e.target.style.display = 'none'; }} />
                                 ) : (
                                   <div style={{ width: 34, height: 34, borderRadius: '50%', background: '#D1FAE5', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🐕</div>
                                 )}
