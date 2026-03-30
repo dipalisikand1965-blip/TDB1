@@ -1431,7 +1431,7 @@ Sample Café,Koramangala,Bangalore,yes,all-pets,Café|Continental,Outdoor Seatin
                     src={restaurant.image} 
                     alt={restaurant.name}
                     className="w-24 h-24 object-cover rounded-lg"
-                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200'; }}
+                    onError={(e) => { e.target.src = ''; }}
                   />
                 ) : (
                   <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">

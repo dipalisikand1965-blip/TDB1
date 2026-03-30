@@ -142,7 +142,7 @@ const CustomCakeDesigner = () => {
       id: `custom-cake-${Date.now()}`,
       name: `Custom ${shape.name} Cake (${flavor.name})`,
       price: calculatePrice(),
-      image: referenceImagePreview || 'https://images.unsplash.com/photo-1641029902225-f2a0907ee22d?w=400',
+      image: referenceImagePreview || '',
       category: 'custom-cakes',
       isCustomCake: true,
       customDetails: {

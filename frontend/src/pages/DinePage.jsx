@@ -256,9 +256,9 @@ const DinePage = () => {
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
-    'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-    'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
-    'https://images.unsplash.com/photo-1552053831-71594a27632d?w=1200&q=80'
+    '',
+    '',
+    ''
   ];
   
   // Get user from localStorage as fallback

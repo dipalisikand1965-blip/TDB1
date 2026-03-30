@@ -880,7 +880,7 @@ const AdvisoryPage = () => {
                         src={getPetPhotoUrl(pet)} 
                         alt={pet.name}
                         className="w-full h-full object-cover"
-                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/32'; }}
+                        onError={(e) => { e.target.onerror = null; e.target.src = ''; }}
                       />
                     </div>
                     <div className="text-left">
@@ -958,7 +958,7 @@ const AdvisoryPage = () => {
                           src={getPetPhotoUrl(pet)} 
                           alt={pet.name}
                           className="w-full h-full object-cover"
-                          onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/32'; }}
+                          onError={(e) => { e.target.onerror = null; e.target.src = ''; }}
                         />
                       </div>
                       <div className="text-left">

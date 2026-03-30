@@ -951,7 +951,7 @@ const StayManager = ({ getAuthHeader }) => {
                 <Card key={product.id} className="overflow-hidden">
                   <div className="relative h-40">
                     <img 
-                      src={product.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
+                      src={product.image || ''}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
@@ -1039,7 +1039,7 @@ const StayManager = ({ getAuthHeader }) => {
                   <Card key={social.id} className="overflow-hidden bg-purple-50 border-purple-100">
                     <div className="relative h-32">
                       <img 
-                        src={social.image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=400'}
+                        src={social.image || ''}
                         alt={social.title}
                         className="w-full h-full object-cover"
                       />
@@ -1373,7 +1373,7 @@ const PropertyRow = ({ property, onEdit, onDelete, onStatusChange, onEditPawRewa
     <Card className="p-4">
       <div className="flex items-start gap-4">
         <img 
-          src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=200'} 
+          src={property.photos?.[0] || ''} 
           alt={property.name}
           className="w-24 h-20 object-cover rounded-lg"
         />
@@ -1676,7 +1676,7 @@ const PropertyModal = ({ property, onClose, onSave, getAuthHeader }) => {
                 <Textarea 
                   value={formData.photos?.join('\n') || ''}
                   onChange={(e) => updateField('photos', e.target.value.split('\n').map(t => t.trim()).filter(Boolean))}
-                  placeholder="https://images.unsplash.com/...&#10;https://images.unsplash.com/..."
+                  placeholder=""
                   rows={4}
                 />
                 <p className="text-xs text-gray-500 mt-1">Add image URLs - first image will be the primary photo</p>
@@ -2261,7 +2261,7 @@ const PawRewardModal = ({ property, eligibleProducts, onClose, onSave }) => {
                   }`}
                 >
                   <img 
-                    src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200'}
+                    src={product.image || product.images?.[0] || ''}
                     alt={product.name}
                     className="w-full h-20 object-cover rounded-lg mb-2"
                   />

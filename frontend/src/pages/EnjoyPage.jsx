@@ -57,7 +57,7 @@ const ENJOY_EXPERIENCES = [
     gradient: "from-red-500 to-rose-600",
     badge: "Popular",
     badgeColor: "bg-amber-500",
-    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
+    image: "",
     highlights: [
       "Curated event discovery",
       "Pet temperament matching",
@@ -70,7 +70,7 @@ const ENJOY_EXPERIENCES = [
     description: "Ready for something beyond the usual walk? We plan outdoor adventures, trail days, and pet-friendly excursions that match your pet's energy level and your sense of adventure.",
     icon: "🏕️",
     gradient: "from-rose-500 to-pink-600",
-    image: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&q=80",
+    image: "",
     highlights: [
       "Trail & hike planning",
       "Pet-friendly picnic spots",
@@ -83,7 +83,7 @@ const ENJOY_EXPERIENCES = [
     description: "Looking for playmates for your pup? We connect you with compatible pets and their humans — organizing playdates, breed meetups, and social gatherings that become lasting friendships.",
     icon: "🐾",
     gradient: "from-pink-500 to-red-600",
-    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80",
+    image: "",
     highlights: [
       "Temperament-based matching",
       "Playdate coordination",
@@ -96,7 +96,7 @@ const ENJOY_EXPERIENCES = [
     description: "Brunch with your bestie? We find cafés and restaurants that truly welcome pets — not just tolerate them. Expect water bowls, treats, and maybe even a menu for your four-legged friend.",
     icon: "☕",
     gradient: "from-red-600 to-rose-500",
-    image: "https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=800&q=80",
+    image: "",
     highlights: [
       "Pet-welcoming venue discovery",
       "Reservation handling",
@@ -117,9 +117,9 @@ const EXPERIENCE_TYPES = {
 };
 
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80',
-  'https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=1200&q=80'
+  '',
+  '',
+  ''
 ];
 
 const EnjoyPage = () => {
@@ -836,7 +836,7 @@ const EnjoyPage = () => {
                     {/* Image */}
                     <div className="relative h-40 sm:h-48 overflow-hidden">
                       <img 
-                        src={exp.image || exp.photos?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80`}
+                        src={exp.image || exp.photos?.[0] || ''}
                         alt={exp.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />

@@ -154,7 +154,7 @@ const PetAuraAvatar = ({
     return () => clearInterval(interval);
   }, [animate]);
   
-  const petImage = pet?.image || pet?.photo || `https://api.dicebear.com/7.x/thumbs/svg?seed=${pet?.name || 'pet'}&backgroundColor=transparent`;
+  const petImage = pet?.image || pet?.photo || '';
   
   return (
     <div 
@@ -209,7 +209,7 @@ const PetAuraAvatar = ({
             className="w-full h-full object-cover"
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = `https://api.dicebear.com/7.x/thumbs/svg?seed=${pet?.name || 'pet'}&backgroundColor=transparent`;
+              e.target.style.display='none';
             }}
           />
         </div>

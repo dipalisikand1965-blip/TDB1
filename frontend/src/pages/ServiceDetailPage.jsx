@@ -28,21 +28,21 @@ import SEOHead from '../components/SEOHead';
 // SERVICE CATEGORY VISUALS
 // =============================================================================
 const SERVICE_VISUALS = {
-  'grooming': { icon: Scissors, image: 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800', color: 'from-pink-500 to-rose-500' },
-  'spa': { icon: Bath, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-purple-500 to-indigo-500' },
-  'vet': { icon: Syringe, image: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800', color: 'from-blue-500 to-cyan-500' },
-  'training': { icon: Brain, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-amber-500 to-orange-500' },
-  'boarding': { icon: Home, image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800', color: 'from-green-500 to-emerald-500' },
-  'daycare': { icon: Users, image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800', color: 'from-teal-500 to-cyan-500' },
-  'walking': { icon: PawPrint, image: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800', color: 'from-lime-500 to-green-500' },
-  'travel': { icon: Car, image: 'https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?w=800', color: 'from-sky-500 to-blue-500' },
-  'photography': { icon: Camera, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-violet-500 to-purple-500' },
-  'adoption': { icon: Heart, image: 'https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=800', color: 'from-rose-500 to-pink-500' },
-  'emergency': { icon: AlertTriangle, image: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800', color: 'from-red-500 to-rose-500' },
-  'fitness': { icon: Dumbbell, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-green-500 to-emerald-500' },
-  'celebrate': { icon: PartyPopper, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-pink-500 to-rose-500' },
-  'advisory': { icon: Lightbulb, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-amber-500 to-yellow-500' },
-  'default': { icon: Sparkles, image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800', color: 'from-purple-500 to-pink-500' }
+  'grooming': { icon: Scissors, image: '', color: 'from-pink-500 to-rose-500' },
+  'spa': { icon: Bath, image: '', color: 'from-purple-500 to-indigo-500' },
+  'vet': { icon: Syringe, image: '', color: 'from-blue-500 to-cyan-500' },
+  'training': { icon: Brain, image: '', color: 'from-amber-500 to-orange-500' },
+  'boarding': { icon: Home, image: '', color: 'from-green-500 to-emerald-500' },
+  'daycare': { icon: Users, image: '', color: 'from-teal-500 to-cyan-500' },
+  'walking': { icon: PawPrint, image: '', color: 'from-lime-500 to-green-500' },
+  'travel': { icon: Car, image: '', color: 'from-sky-500 to-blue-500' },
+  'photography': { icon: Camera, image: '', color: 'from-violet-500 to-purple-500' },
+  'adoption': { icon: Heart, image: '', color: 'from-rose-500 to-pink-500' },
+  'emergency': { icon: AlertTriangle, image: '', color: 'from-red-500 to-rose-500' },
+  'fitness': { icon: Dumbbell, image: '', color: 'from-green-500 to-emerald-500' },
+  'celebrate': { icon: PartyPopper, image: '', color: 'from-pink-500 to-rose-500' },
+  'advisory': { icon: Lightbulb, image: '', color: 'from-amber-500 to-yellow-500' },
+  'default': { icon: Sparkles, image: '', color: 'from-purple-500 to-pink-500' }
 };
 
 // =============================================================================

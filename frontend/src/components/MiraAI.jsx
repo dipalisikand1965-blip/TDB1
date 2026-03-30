@@ -34,7 +34,7 @@ const getWelcomeImage = (user, pets) => {
   
   // No pet - return default
   return { 
-    url: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop',
+    url: '',
     type: 'default',
     needsUpload: false
   };
@@ -76,7 +76,7 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
           src={imageInfo.url} 
           alt={petName || 'Welcome'} 
           className="w-full h-full object-cover"
-          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop'; }}
+          onError={(e) => { e.target.src = ''; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         
@@ -1471,12 +1471,12 @@ const MiraAI = () => {
                                 </div>
                               ) : (
                                 <img 
-                                  src={product.image || product.image_url || 'https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=100'} 
+                                  src={product.image || product.image_url || ''} 
                                   alt={product.name || product.title}
                                   className="w-14 h-14 rounded-lg object-cover flex-shrink-0"
                                   onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                                    e.target.src = '';
                                   }}
                                 />
                               )}

@@ -50,14 +50,14 @@ const Insights = () => {
     if (post.image_url) return post.image_url;
     // Default images based on category
     const categoryImages = {
-      'Celebrate': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=400&fit=crop',
-      'Dine': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&h=400&fit=crop',
-      'Stay': 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&h=400&fit=crop',
-      'Travel': 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=600&h=400&fit=crop',
-      'Health': 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=600&h=400&fit=crop',
-      'Care': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+      'Celebrate': '',
+      'Dine': '',
+      'Stay': '',
+      'Travel': '',
+      'Health': '',
+      'Care': '',
     };
-    return categoryImages[post.category] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=400&fit=crop';
+    return categoryImages[post.category] || '';
   };
 
   // Article Modal Component

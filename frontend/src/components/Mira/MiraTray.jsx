@@ -58,7 +58,7 @@ const MiraTray = ({
           <div className="mp-tray-handle" />
           <div className="mp-tray-title">
             <img 
-              src={pet.photo || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100`} 
+              src={pet.photo || ''} 
               alt={pet.name}
               className="mp-tray-pet-photo"
             />

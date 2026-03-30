@@ -243,7 +243,7 @@ const MiraSearchPanel = ({
             src={product.image_url || product.image} 
             alt={product.name} 
             className="w-full h-full object-cover"
-            onError={(e) => { e.target.src = `https://api.dicebear.com/7.x/shapes/svg?seed=${product.name}`; }}
+            onError={(e) => { e.target.style.display='none'; }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-2xl">🦴</div>

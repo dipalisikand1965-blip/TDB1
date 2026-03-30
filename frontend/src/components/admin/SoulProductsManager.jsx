@@ -974,7 +974,7 @@ const SoulProductsManager = () => {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <img 
-                            src={product.image || product.images?.[0] || 'https://via.placeholder.com/40'} 
+                            src={product.image || product.images?.[0] || ''} 
                             alt={product.name}
                             className="w-10 h-10 rounded object-cover"
                           />

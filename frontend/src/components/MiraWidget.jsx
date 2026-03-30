@@ -77,7 +77,7 @@ const MiraWidget = ({
     id: 'demo-pet',
     name: 'Buddy',
     breed: 'Golden Retriever',
-    photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=100&h=100&fit=crop',
+    photo: '',
     traits: ['Playful', 'Energetic'],
     sensitivities: ['Chicken allergy'],
     favorites: { treat: 'Peanut butter' }
@@ -378,7 +378,7 @@ const MiraWidget = ({
                 {products.map((product, idx) => (
                   <div key={idx} className="mira-widget-product-card">
                     <img 
-                      src={product.image_url || product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150&h=150&fit=crop'} 
+                      src={product.image_url || product.image || product.images?.[0] || ''} 
                       alt={product.name}
                       className="mira-widget-product-image"
                     />
