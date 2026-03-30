@@ -17,12 +17,12 @@ import { motion } from 'framer-motion';
 const BRAND_IMAGES = {
   hero: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg',
   goldenRetriever: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
-  bulldog: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop&crop=faces',
+  bulldog: '',
   petWithOwner: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
-  happyPet: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop&crop=faces',
+  happyPet: '',
   lifestyle1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/sj6layzi_shutterstock_504980047%20%282%29.jpg',
   lifestyle2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/tfel85m7_shutterstock_139089332%20%281%29.jpg',
-  blackLab: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=faces',
+  blackLab: '',
 };
 
 // Mira's Living Soul Orb - Simplified
@@ -84,7 +84,7 @@ const TestimonialCard = ({ quote, name, pet, image }) => (
           src={image} 
           alt={name} 
           className="w-full h-full object-cover object-center"
-          onError={(e) => { e.target.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + name; }}
+          onError={(e) => { e.target.style.display='none' + name; }}
         />
       </div>
       <div>

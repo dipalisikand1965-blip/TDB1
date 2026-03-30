@@ -48,9 +48,9 @@ import {
 
 // Hero Images for Stay pillar
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1765604551468-2b012465ba59?w=1200&q=80',
-  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+  '',
+  '',
+  ''
 ];
 
 // Elevated Concierge® Stay Experiences
@@ -1411,7 +1411,7 @@ ${stayRequestForm.special_requests || 'None'}
                 <Card key={facility.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-36 md:h-48">
                     <img 
-                      src={facility.image || facility.photos?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'} 
+                      src={facility.image || facility.photos?.[0] || ''} 
                       alt={facility.name}
                       className="w-full h-full object-cover"
                     />
@@ -1492,7 +1492,7 @@ ${stayRequestForm.special_requests || 'None'}
                   {/* ========== IMAGE HEADER - Fixed height, self-contained ========== */}
                   <div className="relative h-[150px] sm:h-[180px] overflow-hidden flex-shrink-0">
                     <img 
-                      src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600'} 
+                      src={bundle.image || ''} 
                       alt={bundle.name}
                       className="w-full h-full object-cover"
                     />
@@ -1557,7 +1557,7 @@ ${stayRequestForm.special_requests || 'None'}
                             id: bundle.id,
                             name: bundle.name,
                             price: bundle.bundle_price || bundle.price,
-                            image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+                            image: bundle.image || '',
                             description: bundle.description,
                             category: 'stay_bundle',
                             pillar: 'stay'
@@ -1608,7 +1608,7 @@ ${stayRequestForm.special_requests || 'None'}
                 >
                   <div className="relative h-36">
                     <img 
-                      src={social.image || social.property_image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=600'} 
+                      src={social.image || social.property_image || ''} 
                       alt={social.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -1828,7 +1828,7 @@ ${stayRequestForm.special_requests || 'None'}
                           >
                             <div className="relative h-24">
                               <img 
-                                src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400'}
+                                src={property.photos?.[0] || ''}
                                 alt={property.name}
                                 className="w-full h-full object-cover"
                               />
@@ -1865,7 +1865,7 @@ ${stayRequestForm.special_requests || 'None'}
                           >
                             <div className="relative h-20">
                               <img 
-                                src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
+                                src={bundle.image || ''}
                                 alt={bundle.name}
                                 className="w-full h-full object-cover"
                               />
@@ -1900,7 +1900,7 @@ ${stayRequestForm.special_requests || 'None'}
                           >
                             <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                               <img 
-                                src={event.image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=200'}
+                                src={event.image || ''}
                                 alt={event.title}
                                 className="w-full h-full object-cover"
                               />
@@ -2170,7 +2170,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
       {/* ========== IMAGE HEADER - Fixed height, self-contained ========== */}
       <div className="relative h-[150px] sm:h-[180px] overflow-hidden flex-shrink-0">
         <img 
-          src={property.image || property.thumbnail || property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'} 
+          src={property.image || property.thumbnail || property.photos?.[0] || ''} 
           alt={property.name}
           className="w-full h-full object-cover"
         />
@@ -2270,7 +2270,7 @@ const PropertyDetailsModal = ({ property, onClose, onBookNow, getBadgeColor, Paw
         {/* Header Image */}
         <div className="relative h-64">
           <img 
-            src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'}
+            src={property.photos?.[0] || ''}
             alt={property.name}
             className="w-full h-full object-cover"
           />
@@ -2762,7 +2762,7 @@ const BookingRequestModal = ({ property, onClose }) => {
         <div className="border-b bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-3xl flex-shrink-0">
           <div className="flex items-center gap-3 p-3">
             <img 
-              src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=100'} 
+              src={property.photos?.[0] || ''} 
               alt={property.name}
               className="w-14 h-14 rounded-xl object-cover"
             />
@@ -3129,7 +3129,7 @@ const BundleDetailsModal = ({ bundle, onClose, addToCart }) => {
         id: bundle.id,
         name: bundle.name,
         price: bundle.bundle_price,
-        image: bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
+        image: bundle.image || '',
         description: bundle.description,
         category: 'stay_bundle',
         pillar: 'stay',
@@ -3158,7 +3158,7 @@ const BundleDetailsModal = ({ bundle, onClose, addToCart }) => {
         {/* Header Image */}
         <div className="relative h-48">
           <img 
-            src={bundle.image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800'}
+            src={bundle.image || ''}
             alt={bundle.name}
             className="w-full h-full object-cover"
           />
@@ -3337,7 +3337,7 @@ const SocialDetailsModal = ({ social, onClose }) => {
         {/* Header Image */}
         <div className="relative h-44">
           <img 
-            src={social.image || social.property_image || 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=800'}
+            src={social.image || social.property_image || ''}
             alt={social.title}
             className="w-full h-full object-cover"
           />

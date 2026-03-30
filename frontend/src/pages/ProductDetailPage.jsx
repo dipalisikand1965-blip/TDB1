@@ -156,7 +156,7 @@ const ProductDetailPage = () => {
   
   const images = product.images?.length > 0 
     ? product.images 
-    : [product.image || product.image_url || 'https://via.placeholder.com/500'];
+    : [product.image || product.image_url || ''];
   
   const price = selectedVariant?.price || product.price || product.pricing?.base_price || 0;
   const comparePrice = product.compare_at_price || product.pricing?.compare_at_price;
@@ -185,7 +185,7 @@ const ProductDetailPage = () => {
                 src={images[activeImageIndex]}
                 alt={product.name || product.title}
                 className="w-full h-full object-contain"
-                onError={(e) => { e.target.src = 'https://via.placeholder.com/500?text=Product'; }}
+                onError={(e) => { e.target.src = ''; }}
               />
               {hasDiscount && (
                 <Badge className="absolute top-4 left-4 bg-red-500 text-white text-lg px-3 py-1">

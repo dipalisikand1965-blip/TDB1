@@ -408,7 +408,7 @@ const OccasionBoxBuilder = ({
                         >
                           <div className="relative">
                             <img
-                              src={product.image_url || product.image || product.images?.[0] || 'https://via.placeholder.com/200'}
+                              src={product.image_url || product.image || product.images?.[0] || ''}
                               alt={product.title || product.name}
                               className="w-full h-32 object-cover"
                             />

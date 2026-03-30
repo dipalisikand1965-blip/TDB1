@@ -289,7 +289,7 @@ const PetSnapshot = memo(({ pet, soulScore, membership, onEditClick, onSwitchPet
               className="snapshot-photo"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${petName}&backgroundColor=ffdfbf`;
+                e.target.style.display='none';
               }}
             />
           ) : (

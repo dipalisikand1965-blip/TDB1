@@ -85,7 +85,7 @@ const PetPassCard = ({ pet, className = '' }) => {
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                e.target.src = '';
               }}
             />
           </div>

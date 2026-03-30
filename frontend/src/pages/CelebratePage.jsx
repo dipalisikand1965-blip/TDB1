@@ -446,9 +446,9 @@ const CelebratePage = () => {
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
-    'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-    'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=1200&q=80',
-    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+    '',
+    '',
+    ''
   ];
 
   // Rotate hero images - use stable interval
