@@ -1339,7 +1339,7 @@ const MiraChatWidget = ({
           const _SERVICE_WORDS = ['groom', 'vet', 'walk', 'train', 'board', 'session', 'appointment',
             'book', 'spa', 'bath', 'nail', 'dental', 'vaccin', 'checkup', 'consult'];
           const _hasServiceIntent = _SERVICE_WORDS.some(w => fullText.toLowerCase().includes(w));
-          if (_hasServiceIntent && _activePillar &&
+          if (_hasServiceIntent && _streamPetId && _activePillar &&
               !['emergency', 'paperwork', 'farewell'].includes(_activePillar)) {
             fetch(`${getApiUrl()}/api/service-box/services?pillar=${_activePillar}&limit=3`)
               .then(r => r.ok ? r.json() : null)
@@ -1851,8 +1851,9 @@ const MiraChatWidget = ({
         `}
         style={{ 
           maxHeight: '100dvh',
-          overflow: 'hidden'
+          overflow: 'hidden'   // MUST stay hidden: clips flex container so Zone B can't escape
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* ═══════════════════════════════════════════════════════════════════
             ZONE A: STICKY TOP STACK (Header + Tabs + Quick Actions)
@@ -2323,14 +2324,12 @@ const MiraChatWidget = ({
                             // Skip AI-generated stock images — show TDC gradient instead
                             const _svcImgClean = svcImg && !svcImg.includes('ai_generated') ? svcImg : null;
                             return (
-                              <div
+                              <a
                                 key={svc.id || sIdx}
-                                role="button"
-                                tabIndex={0}
-                                onTouchStart={() => {}}
+                                href="#"
                                 onClick={(e) => {
-                                  e.preventDefault();
                                   e.stopPropagation();
+                                  e.preventDefault();
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   const _pet = selectedPet || {};
                                   const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
@@ -2371,7 +2370,10 @@ const MiraChatWidget = ({
                                         service_name:   svcName,
                                         service_price:  svcPrice,
                                       },
-                                      initial_message: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
+                                      initial_message: {
+                                        sender: 'member',
+                                        text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
+                                      },
                                     })
                                   }).then(() => toast.success(`Request sent for ${svcName}!`))
                                     .catch(() => toast.error('Could not send request'));
@@ -2395,7 +2397,7 @@ const MiraChatWidget = ({
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
-                              </div>
+                              </a>
                             );
                           })}
                         </div>
@@ -2404,18 +2406,11 @@ const MiraChatWidget = ({
                       {/* NearMe chip — when location intent detected */}
                       {msg.showNearMe && (
                         <div style={{ marginTop: 10 }}>
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            onTouchStart={() => {}}
+                          <a
+                            href={`/${msg.showNearMe?.pillar || currentPillar || pillar || 'care'}#nearme`}
                             onClick={(e) => {
                               e.stopPropagation();
-                              const _pillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
-                              console.log('[NEARME] clicked, pillar:', _pillar);
-                              navigate(`/${_pillar}`);
-                              setTimeout(() => {
-                                document.getElementById('nearme')?.scrollIntoView({ behavior: 'smooth' });
-                              }, 300);
+                              console.log('[NEARME] clicked, pillar:', msg.showNearMe?.pillar || currentPillar || pillar);
                             }}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -2429,7 +2424,7 @@ const MiraChatWidget = ({
                           >
                             <span style={{ fontSize: 15 }}>📍</span>
                             Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
-                          </div>
+                          </a>
                         </div>
                       )}
                     </div>
