@@ -1,13 +1,25 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-30 (Session 34 — Stock Photo Purge)
+## Last Updated: 2026-03-30 (Session 35 — Master Ticket Standard Complete)
 
-## IRON RULE: NO STOCK PHOTOS (Added Session 34)
+## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
 - Pet photos → `pet.photo_url` from DB
 - Product images → `cloudinary_url || mockup_url || image_url` from DB
 - Hero/banner images → TDC branded CSS gradients (`#1A0A2E`, `#2D1B69`, gold `#D4A840`)
 - Empty states → gradient cards with emoji + pillar accent color
-- This rule was enforced on 2026-03-30: 206 Unsplash URLs removed from server.py; 31 removed from frontend JSX files
+
+## IRON RULE #2: MASTER TICKET STANDARD (Every ticket. Every time. Forever.)
+- **ALL** `attach_or_create_ticket` calls MUST use `buildMasterBriefing()` from `/app/frontend/src/utils/masterBriefing.js`
+- The canonical chain: `bookViaConcierge()` in `MiraCardActions.js` → uses `buildMasterBriefing` → sends full briefing
+- Components that do direct fetch MUST import `buildMasterBriefing` and `buildMasterMetadata` from `masterBriefing.js`
+- Photo URLs in `details.photo_url` MUST appear in BOTH the REQUEST section AND the ACTION REQUIRED section
+- Admin views (TicketThread.jsx, ServiceDeskWorkspace.jsx) render photo URLs as `<img>` tags automatically
+- **LOCKED**: SoulPage desktop files are exempt — do NOT modify them
+
+## IRON RULE #3: TICKET PHOTO RENDERING
+- Wherever ticket message text is rendered in admin or service desk — if text contains a Cloudinary URL or URL ending in .jpg/.png/.webp — render it as `<img>` tag
+- Implemented in: `TicketThread.jsx` (member) and `ServiceDeskWorkspace.jsx` (admin)
+- `TicketFullPageModal.jsx` already had this before Session 35
 
 ---
 

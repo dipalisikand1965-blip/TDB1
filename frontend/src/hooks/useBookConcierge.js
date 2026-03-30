@@ -1,18 +1,6 @@
-/**
- * useBookConcierge.js
- * The Doggy Company — CANONICAL booking hook
- *
- * RULE: Every "Book →", "Tap → Concierge", "Source this for me →", 
- *       "Reach out →" button MUST call this hook.
- *
- * Flow: User Intent → Service Desk Ticket → Admin Notification → Member Notification
- *
- * Usage:
- *   const { book, booked, booking } = useBookConcierge(pet, pillar, token);
- *   <button onClick={() => book(serviceName, channel)}>Book →</button>
- */
 import { useState, useCallback } from "react";
 import { API_URL } from "../utils/api";
+import { getAllergiesFromPet, buildMasterBriefing, buildMasterMetadata } from "../utils/masterBriefing";
 
 export default function useBookConcierge(pet, pillar, token) {
   const [booking, setBooking] = useState(false);
@@ -28,28 +16,52 @@ export default function useBookConcierge(pet, pillar, token) {
     if (booking) return;
     setBooking(true);
     try {
-      // Try multiple sources for user identity
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       const session = JSON.parse(localStorage.getItem("tdb_user_session") || "{}");
-      const parentId = user?.id || user?.email || user?.user_id || 
-                       session?.id || session?.email || 
+      const parentId = user?.id || user?.email || user?.user_id ||
+                       session?.id || session?.email ||
                        pet?.owner_id || pet?.owner_email || "guest";
-      const petId    = pet?.id || "unknown";
       const petName  = pet?.name || "your dog";
       const ch       = channel || `${pillar}_booking`;
 
+      const details = {
+        service_name: serviceName,
+        pillar,
+        channel: ch,
+        notes: extraMessage,
+        urgency: 'normal',
+      };
+
+      const briefing = buildMasterBriefing(pet, user, 'service_booking', details);
+      const metadata = buildMasterMetadata(pet, user, details, {
+        intent_secondary: intentSecondary || [serviceName],
+        parent_id: parentId,
+      });
+
       const body = {
         parent_id:     parentId,
-        pet_id:        petId,
+        pet_id:        pet?.id || pet?._id || "unknown",
+        pet_name:      petName,
+        pet_breed:     pet?.breed,
+        pet_allergies: getAllergiesFromPet(pet),
+        parent_email:  user?.email || '',
+        parent_name:   user?.name || user?.full_name || '',
+        parent_phone:  user?.phone || user?.whatsapp || '',
         pillar,
         intent_primary:   "service_booking",
         intent_secondary: intentSecondary || [serviceName],
         life_state:    "PLAN",
         channel:       ch,
+        urgency:       'normal',
+        force_new:     true,
+        subject:       `Booking Request: ${serviceName} for ${petName}`,
         initial_message: {
           sender: "parent",
-          text: extraMessage || `I'd like to book ${serviceName} for ${petName}. Please arrange.`,
+          text:   briefing,
+          source: ch,
         },
+        product_name: serviceName,
+        metadata,
       };
 
       const res = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
@@ -68,7 +80,7 @@ export default function useBookConcierge(pet, pillar, token) {
       setBooked(true);
     } catch (err) {
       console.error("[useBookConcierge] Error:", err);
-      setBooked(true); // still show success to user
+      setBooked(true);
     } finally {
       setBooking(false);
     }

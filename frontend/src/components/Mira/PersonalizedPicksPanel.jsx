@@ -32,7 +32,7 @@ import ConciergeDetailModal from './ConciergeDetailModal';
 import CuratedConciergeSection from './CuratedConciergeSection';
 import { ProductDetailModal } from '../ProductCard';
 import { createPortal } from 'react-dom';
-import useUniversalServiceCommand from '../../hooks/useUniversalServiceCommand';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 /**
  * FitBadges - Subtle safety/fit indicators for picks
@@ -1073,20 +1073,14 @@ const PersonalizedPicksPanel = ({
     hapticFeedback.success();
     setIsSending(true);
     try {
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          pet_id: pet?.id,
-          pet_name: pet?.name,
-          pillar: activePillar || 'general',
-          source: 'picks_anything_else',
-          intent: 'custom_request',
-          customer_message: text,
-        }),
+      await bookViaConcierge({
+        service:  text,
+        pillar:   activePillar || 'general',
+        pet,
+        token,
+        channel:  'picks_anything_else',
+        notes:    `Custom request: ${text}`,
+        urgency:  'normal',
       });
       toast.success(`Received ✓ Your Concierge® is on it for ${pet?.name || 'your pet'}`, {
         icon: '🐾',

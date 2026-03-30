@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
 
 // ── API base ─────────────────────────────────────────────────────────────────
 const API_URL =
@@ -236,27 +237,17 @@ export function detectJourneyMode(pet) {
   return "ALWAYS";
 }
 
-// ── bookViaConciergeDirect — internal helper ──────────────────────────────────
+// ── bookViaConciergeDirect — replaced by canonical bookViaConcierge from MiraCardActions ─────
 async function bookViaConciergeDirect({ pet, step, token }) {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({
-      parent_id: user?.id || user?.email || "guest",
-      pet_id: pet?.id || "unknown",
-      pillar: step.pillar,
-      intent_primary: step.intent,
-      life_state: "WELCOME_HOME",
-      channel: "pawrent_journey",
-      initial_message: {
-        sender: "parent",
-        text: `Pawrent Journey — ${step.title} for ${pet?.name || "my dog"}`,
-      },
-    }),
+  await bookViaConcierge({
+    service:  step.title,
+    pillar:   step.pillar || 'care',
+    pet,
+    token,
+    channel:  'pawrent_journey',
+    notes:    `Pawrent Journey step: ${step.title}`,
+    urgency:  'normal',
   });
 }
 

@@ -249,7 +249,9 @@ const TicketFullPageModal = ({
     ...(ticket.conversation || []).map(m => ({
       ...m,
       _text: m.text || m.content || m.message || '',
-      content: m.content || m.message || m.text || '',
+      // content should only hold actual HTML (from agent replies), not plain text from m.text
+      // Using m.text as fallback caused photo URLs to bypass cleanText stripping
+      content: m.content || m.message || '',
       sender: m.sender,
       is_mira: m.is_briefing === true || m.sender === 'mira',
       timestamp: m.timestamp || m.created_at,
@@ -257,18 +259,23 @@ const TicketFullPageModal = ({
     ...(ticket.thread || []).map(m => ({
       ...m,
       _text: m.text || m.content || m.message || '',
-      content: m.content || m.message || m.text || '',
+      content: m.content || m.message || '',
       timestamp: m.timestamp || m.created_at,
     })),
     ...(ticket.messages || []).map(m => ({
       ...m,
       _text: m.text || m.content || m.message || '',
-      content: m.content || m.message || m.text || '',
+      content: m.content || m.message || '',
     })),
   ]
     .filter((m, i, arr) => {
-      const key = `${m.sender}|${m.timestamp || m.created_at}`;
-      return arr.findIndex(x => `${x.sender}|${x.timestamp || x.created_at}` === key) === i;
+      // Include message text in dedup key to avoid removing messages with same sender+timestamp
+      const textSnippet = (m._text || m.text || '').substring(0, 30);
+      const key = `${m.sender}|${m.timestamp || m.created_at}|${textSnippet}`;
+      return arr.findIndex(x => {
+        const xs = (x._text || x.text || '').substring(0, 30);
+        return `${x.sender}|${x.timestamp || x.created_at}|${xs}` === key;
+      }) === i;
     })
     .sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
 
