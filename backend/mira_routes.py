@@ -18870,15 +18870,15 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                         f"Pet profile: Name={pet_name}, Breed={pet.get('breed')}, "
                         f"Gender={pet.get('gender','unknown')}, Age={age}y ({life_stage}), "
                         f"Soul score={pet.get('overall_score',0)}%.\n"
-                    f"ALLERGIES: {allergy_str} — NEVER EVER suggest or recommend these foods or ingredients.\n"
-                )
-                if fav_treat:
-                    pet_context += f"Favourite treat: {fav_treat}.\n"
-                if personality_str:
-                    pet_context += f"Personality: {personality_str}.\n"
-                pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
+                        f"ALLERGIES: {allergy_str} — NEVER EVER suggest or recommend these foods or ingredients.\n"
+                    )
+                    if fav_treat:
+                        pet_context += f"Favourite treat: {fav_treat}.\n"
+                    if personality_str:
+                        pet_context += f"Personality: {personality_str}.\n"
+                    pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
                 else:
-                    # Pet found but NO breed — don't write "Breed=unknown", give minimal context
+                    # No breed — give minimal context, don't write "Breed=unknown"
                     pet_context = (
                         f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
                         f"CRITICAL: You do NOT have a complete soul profile for {pet_name}. "
