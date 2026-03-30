@@ -1299,10 +1299,17 @@ const MiraChatWidget = ({
 
           // ── Post-stream product fetch — claude-picks (same engine as pillar page Mira Picks) ──
           const _streamPetId = selectedPet?.id || selectedPet?._id;
-          const _activePillar = currentPillar || pillar;
-          if (_streamPetId && _activePillar &&
-              !['emergency', 'paperwork', 'farewell', 'general'].includes(_activePillar)) {
-            fetch(`${getApiUrl()}/api/mira/claude-picks/${_streamPetId}?pillar=${_activePillar}&limit=4&min_score=30`)
+          const _rawPillar = currentPillar || pillar;
+          // Infer pillar from URL when widget is in 'general' mode (e.g. floating on any page)
+          const _urlPillar = (() => {
+            const path = window.location.pathname;
+            const _known = ['dine','care','go','play','learn','celebrate','shop','services','paperwork','emergency','farewell','adopt'];
+            return _known.find(p => path.includes('/' + p)) || null;
+          })();
+          const _activePillar = (!_rawPillar || _rawPillar === 'general') ? (_urlPillar || 'dine') : _rawPillar;
+          if (_streamPetId && !['emergency','paperwork','farewell'].includes(_activePillar)) {
+            const _pillarParam = _activePillar !== 'general' ? `&pillar=${_activePillar}` : '';
+            fetch(`${getApiUrl()}/api/mira/claude-picks/${_streamPetId}?limit=4&min_score=30${_pillarParam}`)
               .then(r => r.ok ? r.json() : null)
               .then(d => {
                 const picks = d?.picks || [];
