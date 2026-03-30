@@ -295,13 +295,14 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
         .replace(/^Hi there[!,]?\s*/i, '')       // strip "Hi there!"
         .replace(/^Hello[!,]?\s*/i, '')          // strip "Hello!"
         .replace(/^Great question[!,]?\s*/i, '') // strip "Great question!"
-        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡🐶🌷💚✦]/g, '')
         .replace(/\*\*(.*?)\*\*/g, '$1')         // strip bold markdown
         .replace(/\*(.*?)\*/g, '$1')             // strip italic markdown
         .replace(/[*#_~`]/g, '')
         .replace(/\[.*?\]/g, '')
         .replace(/\n/g, ' ')
         .replace(/®/g, '')
+        .replace(/[^\w\s.,!?'"()-]/g, ' ')       // strip ALL non-speech chars (emojis, symbols, ✦ ™ etc)
+        .replace(/\s+/g, ' ')                    // collapse multiple spaces
         .trim();
       
       // Smart truncation at sentence boundary (max 400 chars for natural delivery)
