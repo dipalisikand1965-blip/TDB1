@@ -260,24 +260,63 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          parent_id:      user?.id || user?.email || '',
+          // WHO
+          parent_id:     user?.id || user?.email || '',
+          parent_email:  user?.email || '',
+          parent_name:   user?.name || user?.full_name || '',
+          parent_phone:  user?.phone || user?.whatsapp || '',
+          pet_id:        pet?.id,
+          pet_name:      petName,
+          pet_breed:     breed,
+          pet_allergies: allergies,
+          life_vision:   pet?.doggy_soul_answers?.life_vision || '',
+
+          // INTENT
           intent_primary: 'breed_cake_order',
           pillar:         'celebrate',
-          channel:        'doggy_bakery_order',
+          channel:        'doggy_bakery_breed_cake',
           urgency:        'normal',
-          pet_id:         pet?.id,
-          metadata: {
-            image_url:          illusUrl || undefined,
-            illustration_name:  selIllus?.name || selIllus?.colour_label || undefined,
-            breed_cake:         true,
-            flavour:            selectedFlavour?.label || flavour,
-            base:               selectedBase?.label,
-          },
+
+          // SUBJECT
+          subject: subject,
+
+          // MASTER BRIEFING TEXT (already well-formatted)
           initial_message: {
             sender: 'parent',
             source: 'breed_cake_order',
             text:   `${subject}\n\n${body}`,
           },
+
+          // MASTER METADATA
+          metadata: {
+            pet_name:         petName,
+            pet_breed:        breed,
+            pet_allergies:    allergies,
+            life_vision:      pet?.doggy_soul_answers?.life_vision || '',
+            parent_phone:     user?.phone || user?.whatsapp || '',
+            parent_email:     user?.email || '',
+            parent_name:      user?.name || user?.full_name || '',
+            product_name:     `${breed} Breed Cake`,
+            price:            rawPrice,
+            pillar:           'celebrate',
+            channel:          'doggy_bakery_breed_cake',
+            breed_cake:       true,
+            flavour:          selectedFlavour?.label || flavour,
+            base:             selectedBase?.label,
+            message:          message || '',
+            photo_url:        illusUrl || '',
+            illustration_name: selIllus?.name || selIllus?.colour_label || '',
+            customisation: {
+              base:          selectedBase?.label,
+              flavour:       selectedFlavour?.label || flavour,
+              illustration:  selIllus?.name || selIllus?.colour_label,
+              image_url:     illusUrl,
+              message:       message || '',
+            },
+            urgency: 'normal',
+          },
+
+          force_new: true,
         }),
       });
     } catch (e) {

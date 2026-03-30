@@ -879,10 +879,48 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const handleServiceRequest = async () => {
     setServiceSending(true);
     const petName = selectedPet?.name || 'my dog';
+    const allergies = selectedPet?.allergies || [];
+    const lifeVision = selectedPet?.doggy_soul_answers?.life_vision || '';
     try {
       const userRaw = localStorage.getItem('user') || '{}';
       let storedUser = {};
       try { storedUser = JSON.parse(userRaw); } catch {}
+      const parentUser = user || storedUser;
+
+      const briefingLines = [
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '🐾 PET',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Name:      ${petName}`,
+        `Breed:     ${selectedPet?.breed || '—'}`,
+        `Allergies: ${allergies.length ? '⚠️ NO ' + allergies.join(', NO ') : 'None known'}`,
+        lifeVision ? `North Star: "${lifeVision}"` : '',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '👤 PET PARENT',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Name:      ${parentUser?.name || parentUser?.full_name || '—'}`,
+        `Phone:     ${parentUser?.phone || parentUser?.whatsapp || '—'}`,
+        `Email:     ${parentUser?.email || '—'}`,
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '📋 REQUEST',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        `Intent:    Product interest / Concierge enquiry`,
+        `Pillar:    ${pillar || 'dine'}`,
+        `Product:   ${product.name}`,
+        product.original_price ? `Price:     ₹${product.original_price}` : '',
+        product.category ? `Category:  ${product.category}` : '',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '⚡ ACTION REQUIRED',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        allergies.length ? `🔴 ALLERGY ALERT: No ${allergies.join(', ')} in ANY product` : '',
+        lifeVision ? `🌟 NORTH STAR: ${lifeVision}` : '',
+        'Please confirm availability and pricing via WhatsApp within 2 hours.',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+      ].filter(l => l !== '').join('\n');
+
       await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
         method: 'POST',
         headers: {
@@ -890,17 +928,39 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({
-          parent_id: user?.id || storedUser?.id || storedUser?.email || 'guest',
-          pet_id: selectedPet?.id || 'unknown',
-          pillar: pillar || 'dine',
-          intent_primary: 'service_request',
-          intent_secondary: [product.name, product.category || pillar],
-          life_state: pillar || 'dine',
-          channel: `${pillar}_product_card`,
+          parent_id:     parentUser?.id || parentUser?.email || 'guest',
+          parent_email:  parentUser?.email || '',
+          parent_name:   parentUser?.name || parentUser?.full_name || '',
+          parent_phone:  parentUser?.phone || parentUser?.whatsapp || '',
+          pet_id:        selectedPet?.id || 'unknown',
+          pet_name:      petName,
+          pet_breed:     selectedPet?.breed || '',
+          pet_allergies: allergies,
+          life_vision:   lifeVision,
+          pillar:        pillar || 'dine',
+          intent_primary: 'product_interest',
+          channel:       `${pillar}_product_card`,
+          force_new:     true,
+          subject:       `Product Interest: ${product.name} for ${petName}`,
           initial_message: {
             sender: 'parent',
-            source: `${pillar}_page`,
-            text: `I'd like to request "${product.name}" for ${petName}. Please get in touch!`,
+            source: `${pillar}_product_card`,
+            text:   briefingLines,
+          },
+          metadata: {
+            pet_name:      petName,
+            pet_breed:     selectedPet?.breed || '',
+            pet_allergies: allergies,
+            life_vision:   lifeVision,
+            parent_phone:  parentUser?.phone || parentUser?.whatsapp || '',
+            parent_email:  parentUser?.email || '',
+            parent_name:   parentUser?.name  || parentUser?.full_name || '',
+            product_name:  product.name,
+            product_id:    product.id || product._id,
+            price:         product.original_price,
+            pillar:        pillar || 'dine',
+            channel:       `${pillar}_product_card`,
+            urgency:       'normal',
           },
         }),
       });
