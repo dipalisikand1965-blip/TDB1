@@ -87,8 +87,9 @@ function serviceToProduct(s) {
 
 // Extract service-relevant fields from ProductBoxEditor state
 function productToServicePatch(p) {
-  // Resolve status: approval_status is the source of truth from the dropdown
-  const approvalStatus = p.approval_status || p.commerce_ops?.approval_status || 'live';
+  // Resolve status: commerce_ops.approval_status is what ProductBoxEditor dropdown updates
+  // Top-level approval_status is the initial value from serviceToProduct — check commerce_ops FIRST
+  const approvalStatus = p.commerce_ops?.approval_status || p.approval_status || 'live';
   const isActive = ['live', 'active'].includes(approvalStatus);
   return {
     name: p.basics?.name || p.name || '',
