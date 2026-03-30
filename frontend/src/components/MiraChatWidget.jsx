@@ -1824,12 +1824,13 @@ const MiraChatWidget = ({
   // Zone C: Sticky composer (input bar)
   return (
     <div 
-      className={`fixed z-[9999] ${className}
+      className={`fixed ${className}
         left-0 right-0 bottom-0
         sm:bottom-0 sm:right-0 sm:left-auto sm:top-0
       `}
       style={{
         top: 'var(--mira-top-offset, 105px)',
+        zIndex: 2147483640,
       }}
       data-testid="mira-chat-widget"
     >
