@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-30 (Session 35 — Master Ticket Standard Complete)
+## Last Updated: 2026-03-30 (Session 37 — Mira Chat Widget Product Cards Fixed)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
@@ -252,6 +252,16 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 2. ✅ **Bug B (Pet loading)** — `usePet.js`: `petLoaded` flag added (false until API returns real pet). `MiraDemoPage.jsx`: renders loading spinner until `petLoaded=true`. No Buddy flash.
 3. ✅ **Bug C** — `PersonalizedPicksPanel.jsx` PILLARS extended: farewell (🕊️) + adopt (🐾)
 4. ✅ **Bug D** — `useVoice.js` default → `true` (ElevenLabs ON by default, opt-out not opt-in)
+
+### SESSION 37 — (2026-03-30) Mira Chat Widget Product Cards Fix
+
+1. ✅ **Bug Root Cause**: `setVisibleProducts(streamMsgId)` was never called in the streaming path. The render gate `visibleProducts.has(msg.id)` stayed closed for ALL streaming messages → product cards never rendered even though `msg.products` was set.
+2. ✅ **Fix**: Added `setVisibleProducts(prev => new Set([...prev, streamMsgId]))` with 800ms delay after stream completes (mirrors exact pattern from fallback non-streaming path).
+3. ✅ **Secondary Fix**: `SUPPRESS_PRODUCT_KEYWORDS` contained 20+ common words ('gentle', 'feel', 'happy', 'comfortable', etc.) that appear in virtually every food/care response from Mira → false suppression. Replaced with 10 truly grief/crisis-only phrases.
+4. ✅ **Backend verified**: `/api/mira/picks/default/{pet_id}?query=salmon` returns 4 query-matched products. Endpoint works correctly.
+
+### P0 — Remaining
+None.
 
 ### P1 — Upcoming
 1. Watch & Learn YouTube sections (Care + Go)
