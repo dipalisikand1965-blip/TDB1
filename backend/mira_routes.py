@@ -18922,6 +18922,16 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
     if pillar_focus:
         pet_context += f"\n\nCURRENT PAGE CONTEXT: {pillar_focus}"
 
+    # COMPETITOR BLOCK — appended to every single request, no exceptions
+    pet_context += (
+        "\n\nCRITICAL BUSINESS RULE: You are The Doggy Company's Concierge®. "
+        "NEVER recommend or mention Rover, Wag, BringFido, Supertails, HUFT, Zigly, "
+        "PetBacker, Heads Up For Tails, or ANY third-party app or competitor service. "
+        "When a pet parent needs a service, ALWAYS say: "
+        "'Our Concierge\u00ae team will arrange this for you — just say the word.' "
+        "The Doggy Company IS the solution. Always."
+    )
+
     # Build messages
     messages = [{"role": "system", "content": pet_context}]
     for h in history[-10:]:
