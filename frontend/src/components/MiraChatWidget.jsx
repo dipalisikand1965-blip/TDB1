@@ -23,6 +23,7 @@ import { useResizeMobile } from '../hooks/useResizeMobile';
 import MiraOrb from './MiraOrb';
 import CinematicKitAssembly from './CinematicKitAssembly';
 import MiraConciergeCards, { parseMiraRecommendations } from './MiraConciergeCard';
+import { ProductDetailModal } from './ProductCard';
 import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
 import '../styles/mira-universal.css';
@@ -221,6 +222,7 @@ const MiraChatWidget = ({
   // Cinematic Kit Assembly state
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
+  const [selProd, setSelProd] = useState(null); // chip-tapped product → opens ProductDetailModal
   
   // Pet Picks Panel state (PersonalizedPicksPanel for pillar-specific picks)
   const [showPicksPanel, setShowPicksPanel] = useState(false);
@@ -2226,45 +2228,38 @@ const MiraChatWidget = ({
                         }
                         return null;
                       })()}
-                      {/* Legacy catalog products (max 2, only if no concierge cards) */}
+                      {/* Product chips — lightweight tappable pills (replaces heavy cards) */}
                       {msg.products && Array.isArray(msg.products) && msg.products.length > 0 &&
                        parseMiraRecommendations(typeof msg.content === 'string' ? msg.content : '', selectedPet?.name).length === 0 && (
-                        <div className="space-y-2">
-                          {msg.products.slice(0, 2).map((product, pIdx) => {
-                            if (!product || !product.id) return null;
-                            const imageUrl = product.image && product.image.startsWith('http')
-                              ? product.image
-                              : product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+                          {msg.products.slice(0, 4).map((p, pIdx) => {
+                            if (!p) return null;
+                            const chipImg = p.watercolor_image || p.mockup_url || p.cloudinary_url || p.image_url || p.image;
+                            const chipPrice = p.price || p.original_price || p.minPrice || 0;
+                            const chipName = p.product_name || p.name || p.title || 'Product';
                             return (
-                              <div key={product.id || pIdx}
-                                className="bg-white rounded-xl p-2.5 flex items-center gap-3 border border-purple-100 cursor-pointer"
-                                onClick={() => handleProductClick(product)}>
-                                <img src={imageUrl} alt={product.name || 'Product'}
-                                  className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop'; }} />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name || 'Product'}</p>
-                                  <p className="text-sm text-purple-600 font-bold">₹{product.price || 0}</p>
-                                </div>
-                                <button onClick={(e) => { e.stopPropagation(); addToCart(product); toast.success('Added!'); }}
-                                  className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg text-xs font-bold shrink-0">
-                                  Add
-                                </button>
-                              </div>
+                              <button
+                                key={p.id || pIdx}
+                                onClick={() => setSelProd(p)}
+                                style={{
+                                  display: 'flex', alignItems: 'center', gap: 8,
+                                  background: '#fff', border: '1.5px solid #E9D5FF',
+                                  borderRadius: 999, padding: '6px 14px',
+                                  fontSize: 13, fontWeight: 600, color: '#6B21A8',
+                                  cursor: 'pointer', boxShadow: '0 2px 8px rgba(107,33,168,0.1)',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                {chipImg && (
+                                  <img src={chipImg} alt={chipName}
+                                    style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                  />
+                                )}
+                                {chipName} {chipPrice > 0 ? `· ₹${chipPrice}` : ''}
+                              </button>
                             );
                           })}
-                          {msg.kitAssembly?.can_add_all_to_cart && msg.products.length > 1 && (
-                            <div className="space-y-1.5">
-                              <button onClick={() => { setCinematicKitData({ name: msg.kitAssembly?.kit_name || 'Kit', items: msg.products }); setShowCinematicKit(true); }}
-                                className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-                                <Play className="w-3.5 h-3.5" /> View Kit Experience
-                              </button>
-                              <button onClick={() => { msg.products.forEach(p => addToCart(p)); toast.success(`Added ${msg.products.length} items!`); }}
-                                className="w-full py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-medium flex items-center justify-center gap-2">
-                                <ShoppingBag className="w-3.5 h-3.5" /> Add All {msg.products.length} Items
-                              </button>
-                            </div>
-                          )}
                         </div>
                       )}
                     </div>
@@ -2393,6 +2388,16 @@ const MiraChatWidget = ({
           )}
         </div>
       
+      {/* Product Detail Modal — opened when user taps a chip */}
+      {selProd && (
+        <ProductDetailModal
+          product={selProd}
+          pillar={currentPillar || pillar || 'celebrate'}
+          selectedPet={selectedPet}
+          onClose={() => setSelProd(null)}
+        />
+      )}
+
       {/* Cinematic Kit Assembly Modal */}
       {showCinematicKit && (
         <CinematicKitAssembly
