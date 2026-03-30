@@ -289,26 +289,31 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
       const personality = detectVoicePersonality(text);
       console.log('[useVoice] Speaking with personality:', personality);
       
-      // Clean text for natural speech
+      // Clean text for natural speech — strip greetings, emojis, markdown
       let cleanText = text
-        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡]/g, '')
-        .replace(/\*\*/g, '')
+        .replace(/^Hey there[!,]?\s*/i, '')      // strip "Hey there!"
+        .replace(/^Hi there[!,]?\s*/i, '')       // strip "Hi there!"
+        .replace(/^Hello[!,]?\s*/i, '')          // strip "Hello!"
+        .replace(/^Great question[!,]?\s*/i, '') // strip "Great question!"
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡🐶🌷💚✦]/g, '')
+        .replace(/\*\*(.*?)\*\*/g, '$1')         // strip bold markdown
+        .replace(/\*(.*?)\*/g, '$1')             // strip italic markdown
         .replace(/[*#_~`]/g, '')
         .replace(/\[.*?\]/g, '')
         .replace(/\n/g, ' ')
         .replace(/®/g, '')
         .trim();
       
-      // Smart truncation at sentence boundary (max 800 chars)
-      if (cleanText.length > 800) {
-        const truncated = cleanText.substring(0, 800);
+      // Smart truncation at sentence boundary (max 400 chars for natural delivery)
+      if (cleanText.length > 400) {
+        const truncated = cleanText.substring(0, 400);
         const lastSentenceEnd = Math.max(
           truncated.lastIndexOf('. '),
           truncated.lastIndexOf('? '),
           truncated.lastIndexOf('! ')
         );
-        cleanText = lastSentenceEnd > 400 
-          ? truncated.substring(0, lastSentenceEnd + 1) 
+        cleanText = lastSentenceEnd > 150
+          ? truncated.substring(0, lastSentenceEnd + 1)
           : truncated;
       }
       
