@@ -1339,7 +1339,7 @@ const MiraChatWidget = ({
           const _SERVICE_WORDS = ['groom', 'vet', 'walk', 'train', 'board', 'session', 'appointment',
             'book', 'spa', 'bath', 'nail', 'dental', 'vaccin', 'checkup', 'consult'];
           const _hasServiceIntent = _SERVICE_WORDS.some(w => fullText.toLowerCase().includes(w));
-          if (_hasServiceIntent && _streamPetId && _activePillar &&
+          if (_hasServiceIntent && _activePillar &&
               !['emergency', 'paperwork', 'farewell'].includes(_activePillar)) {
             fetch(`${getApiUrl()}/api/service-box/services?pillar=${_activePillar}&limit=3`)
               .then(r => r.ok ? r.json() : null)
