@@ -385,21 +385,32 @@ def ensure_conversation_contract(response: dict, pillar: str = None, ticket_id: 
 # ═══════════════════════════════════════════════════════════════════════════════
 
 BANNED_OPENERS = [
-    "Great idea!", "Great idea.", "Great idea,",
-    "That's a great idea!", "That's a great idea.",
-    "Great question!", "Great question.",
-    "That sounds wonderful!", "That sounds wonderful.",
-    "That sounds lovely!", "That sounds lovely.",
-    "That sounds great!", "That sounds great.",
-    "I'd be happy to", "I'd be happy to help",
-    "I would be happy to", "I would be happy to help",
-    "Absolutely!", "Absolutely,",
-    "Sure!", "Sure,", "Sure thing!",
-    "Of course!", "Of course,",
-    "No problem!", "No problem,",
-    "Certainly!", "Certainly,",
-    "Good thinking!", "Good thinking,",
-    "What a great", "How exciting!",
+    "Hey there",
+    "Hi there",
+    "Hello there",
+    "Hello!",
+    "Hello,",
+    "Great question",
+    "Great choice",
+    "Great idea",
+    "That's a great idea",
+    "That sounds wonderful",
+    "That sounds lovely",
+    "That sounds great",
+    "Of course",
+    "Certainly",
+    "Absolutely",
+    "I'd be happy",
+    "I would be happy",
+    "I'm so excited",
+    "I'm excited",
+    "How exciting",
+    "Sure!",
+    "Sure,",
+    "Sure thing",
+    "No problem",
+    "Good thinking",
+    "What a great",
 ]
 
 SOULFUL_REPLACEMENTS = {
@@ -422,49 +433,19 @@ SOULFUL_REPLACEMENTS = {
 
 def filter_banned_openers(response_text: str, pet_name: str = None) -> str:
     """
-    Filter banned corporate openers from Mira's responses.
-    Replaces them with soulful alternatives.
-    
-    This is a POST-PROCESSING filter - the system prompt should prevent these,
-    but this acts as a safety net for any that slip through.
+    Strip banned corporate openers from the START of Mira's responses.
+    Uses regex so it's case-insensitive and handles trailing punctuation/spaces.
     """
     if not response_text:
         return response_text
-    
-    # Check if response starts with any banned opener
-    for banned in BANNED_OPENERS:
-        if response_text.strip().startswith(banned):
-            # Find replacement
-            for key, replacement in SOULFUL_REPLACEMENTS.items():
-                if banned.startswith(key):
-                    # Replace opener
-                    response_text = response_text.strip()[len(banned):].strip()
-                    
-                    # Add soulful opener based on pet context
-                    if pet_name:
-                        # Pet-aware soulful opener
-                        openers = [
-                            f"Oh, for {pet_name} - ",
-                            f"Since I know {pet_name}, ",
-                            f"I know {pet_name} - ",
-                        ]
-                        import random
-                        response_text = random.choice(openers) + response_text
-                    else:
-                        # Generic soulful opener
-                        response_text = replacement + " " + response_text
-                    
-                    logger.info(f"[VOICE FILTER] Replaced banned opener: '{banned}' → soulful")
-                    break
-            break
-    
-    # Also check for any banned phrase mid-sentence (less aggressive)
-    # Only log, don't replace mid-sentence
-    for banned in BANNED_OPENERS:
-        if banned.lower() in response_text.lower() and not response_text.startswith("Oh"):
-            logger.debug(f"[VOICE FILTER] Found banned phrase mid-sentence: '{banned}' (not replaced)")
-    
-    return response_text
+    text = response_text.strip()
+    for opener in BANNED_OPENERS:
+        pattern = re.compile(
+            r'^' + re.escape(opener) + r'[!,.]?\s*',
+            re.IGNORECASE
+        )
+        text = pattern.sub('', text).strip()
+    return text
 
 
 
@@ -18894,6 +18875,22 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 if personality_str:
                     pet_context += f"Personality: {personality_str}.\n"
                 pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
+                # If breed is missing, warn Mira not to invent characteristics
+                if not pet.get('breed') or pet.get('breed','').lower() in ('unknown',''):
+                    pet_context += (
+                        "\nIMPORTANT: The breed/soul profile for this pet is incomplete. "
+                        "Do NOT invent their breed, energy level, personality or any characteristics. "
+                        f"If asked, say: \"I don't know {pet_name} well enough yet — could you tell me "
+                        "their breed, age and any allergies? Once I know, I can personalise everything.\"\n"
+                    )
+            else:
+                # Pet ID provided but not found in DB
+                pet_context += (
+                    f"\nCRITICAL: You do NOT have a soul profile for this pet. "
+                    "Do NOT invent their breed, age, personality, energy level, or any characteristics. "
+                    f"Say: \"I don't know {pet_name} yet — could you tell me a little about them? "
+                    "Once I know their breed, age and any allergies, I can personalise everything for them.\"\n"
+                )
         except Exception as e:
             logger.warning(f"[Mira Stream] Pet lookup failed for {pet_id}: {e}")
 
