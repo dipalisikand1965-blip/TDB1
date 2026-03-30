@@ -1950,7 +1950,8 @@ const MiraChatWidget = ({
             className="flex-1 overflow-y-auto p-4 space-y-3 mira-chat-messages"
             style={{ 
               WebkitOverflowScrolling: 'touch',
-              overscrollBehavior: 'contain'
+              overscrollBehavior: 'contain',
+              paddingBottom: '8px'
             }}
           >
               {(messages || []).map((msg) => {
