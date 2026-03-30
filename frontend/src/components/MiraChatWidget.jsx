@@ -1853,6 +1853,7 @@ const MiraChatWidget = ({
           maxHeight: '100dvh',
           overflow: 'hidden'   // MUST stay hidden: clips flex container so Zone B can't escape
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* ═══════════════════════════════════════════════════════════════════
             ZONE A: STICKY TOP STACK (Header + Tabs + Quick Actions)
@@ -2327,6 +2328,7 @@ const MiraChatWidget = ({
                                 key={svc.id || sIdx}
                                 href="#"
                                 onClick={(e) => {
+                                  e.stopPropagation();
                                   e.preventDefault();
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   const _pet = selectedPet || {};
@@ -2407,6 +2409,7 @@ const MiraChatWidget = ({
                           <a
                             href={`/${msg.showNearMe?.pillar || currentPillar || pillar || 'care'}#nearme`}
                             onClick={(e) => {
+                              e.stopPropagation();
                               console.log('[NEARME] clicked, pillar:', msg.showNearMe?.pillar || currentPillar || pillar);
                             }}
                             style={{
