@@ -2370,7 +2370,8 @@ const MiraChatWidget = ({
                                   width: '100%', background: '#F0FDF4',
                                   border: '1.5px solid #BBF7D0', borderRadius: 14,
                                   padding: '10px 14px', marginBottom: 8,
-                                  cursor: 'pointer', textAlign: 'left'
+                                  cursor: 'pointer', textAlign: 'left',
+                                  touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent'
                                 }}
                               >
                                 {_svcImgClean ? (
@@ -2380,7 +2381,7 @@ const MiraChatWidget = ({
                                 )}
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
-                                  {svcPrice > 0 && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>₹{svcPrice}</div>}
+                                  {svcPrice > 0 && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>From ₹{svcPrice.toLocaleString()}</div>}
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
                               </button>
@@ -2402,7 +2403,8 @@ const MiraChatWidget = ({
                               background: '#fff', border: '1.5px solid #BBF7D0',
                               borderRadius: 999, padding: '6px 16px',
                               fontSize: 13, fontWeight: 600, color: '#065F46',
-                              cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)'
+                              cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)',
+                              touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent'
                             }}
                           >
                             <span style={{ fontSize: 15 }}>📍</span>

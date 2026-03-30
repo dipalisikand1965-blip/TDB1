@@ -209,9 +209,8 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   }, []);
   
   // ─── ElevenLabs Eloise voice (direct API, key rotation) ───────────────────
-  // Elise — EST9Ui6982FZPSi7gCHi — replaces retired Eloise (AZnzlk1XvdvUeBnXmlld)
-  // Alt: Sreeja (Indian accent) = 6ZZR4JY6rOriLSDtV54M
-  const ELOISE_VOICE_ID = 'EST9Ui6982FZPSi7gCHi'; // Elise — Warm, Natural, Engaging
+  // Eloise — AZnzlk1XvdvUeBnXmlld — user-confirmed canonical voice ID
+  const ELOISE_VOICE_ID = 'AZnzlk1XvdvUeBnXmlld'; // Eloise (ElevenLabs)
 
   const ELEVEN_KEYS = [
     process.env.REACT_APP_ELEVEN_LABS_KEY_1,
