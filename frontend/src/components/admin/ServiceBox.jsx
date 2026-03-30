@@ -271,8 +271,8 @@ export default function ServiceBox() {
             {paginated.map((s, i) => (
               <div key={s.id||s._id||i} style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 80px', gap:12, padding:'10px 16px', borderBottom:i<paginated.length-1?`1px solid ${P.border}`:'none', alignItems:'center' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                  {(s.image_url || s.image) && (
-                    <img src={s.image_url || s.image} alt={s.name}
+                  {(s.image_url || s.image || s.watercolor_image) && (
+                    <img src={s.image_url || s.image || s.watercolor_image} alt={s.name}
                       style={{ width:32, height:32, borderRadius:6, objectFit:'cover', flexShrink:0, border:`1px solid ${P.border}` }} />
                   )}
                   <div>
