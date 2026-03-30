@@ -1519,19 +1519,24 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       onClick={handleBackdropClick}
     >
       <div 
-        className="bg-white w-full max-w-2xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative"
-        style={{ borderRadius: '28px 28px 0 0', animation: 'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }}
+        className="bg-white w-full max-w-2xl max-h-[88dvh] no-sb shadow-2xl relative"
+        style={{ borderRadius: '28px 28px 0 0', animation: 'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both', display: 'flex', flexDirection: 'column' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drag handle */}
-        <div style={{ width:40, height:5, background:'#E5E7EB', borderRadius:999, margin:'12px auto 0' }} />
-        <button 
-          className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
-          onClick={onClose}
-        >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
-
+        {/* Sticky header — drag handle + X, never scrolls away */}
+        <div style={{ flexShrink: 0, position: 'relative', paddingTop: 12, paddingBottom: 4 }}>
+          <div style={{ width: 40, height: 5, background: '#E5E7EB', borderRadius: 999, margin: '0 auto' }} />
+          <button 
+            className="absolute top-2 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition-colors"
+            style={{ zIndex: 10 }}
+            onClick={onClose}
+            data-testid="product-modal-close-btn"
+          >
+            <X className="w-5 h-5 text-gray-600" />
+          </button>
+        </div>
+        {/* Scrollable body */}
+        <div className="overflow-y-auto" style={{ flex: 1 }}>
         <div className="grid md:grid-cols-2">
           <div className="relative aspect-square bg-gray-50">
             <img
@@ -2207,6 +2212,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             </div>
           </div>
         )}
+        </div>{/* end scrollable body */}
       </div>
     </div>
   , document.body);
