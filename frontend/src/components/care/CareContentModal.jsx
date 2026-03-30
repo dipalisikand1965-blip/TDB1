@@ -12,6 +12,7 @@ import { getApiUrl } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
 import SoulMadeModal from '../SoulMadeModal';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 // ─── Green palette ────────────────────────────────────────────────────────────
 const G = {
@@ -142,27 +143,13 @@ const MiraCareImaginesCard = ({ item, pet, apiUrl, token }) => {
   const sendToConcierge = async () => {
     setState('sending');
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          parent_id: storedUser?.id || storedUser?.email || 'guest',
-          pet_id: pet?.id || 'unknown',
-          pillar: 'care',
-          intent_primary: 'mira_imagines_request',
-          intent_secondary: [item.name],
-          life_state: 'care',
-          channel: 'care_miras_picks_imagines',
-          initial_message: {
-            sender: 'parent',
-            source: 'care_miras_picks',
-            text: `I'd love "${item.name}" for ${petName}. Mira imagined this for care — please help source it!`,
-          },
-        }),
+      await bookViaConcierge({
+        service:  item.name,
+        pillar:   'care',
+        pet,
+        token,
+        channel:  'care_miras_picks_imagines',
+        notes:    `Mira imagined: ${item.name} for care`,
       });
     } catch (err) { console.error('[MiraCareImaginesCard]', err); }
     setState('sent');

@@ -15,6 +15,7 @@ import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
 import PersonalisedBreedSection from '../common/PersonalisedBreedSection';
 import SoulMadeCollection from '../SoulMadeCollection';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 // Utility: boarding_comfort → Boarding Comfort
 const toLabel = s => s ? s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : s;
@@ -141,24 +142,13 @@ const MiraGoImaginesCard = ({ item, pet, apiUrl, token }) => {
   const sendToConcierge = async () => {
     setState('sending');
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      await fetch(`${apiUrl}/api/service_desk/attach_or_create_ticket`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          parent_id: storedUser?.id || storedUser?.email || 'guest',
-          pet_id: pet?.id || 'unknown',
-          pillar: 'go',
-          intent_primary: 'mira_imagines_request',
-          intent_secondary: [item.name],
-          life_state: 'go',
-          channel: 'go_miras_picks_imagines',
-          initial_message: {
-            sender: 'parent',
-            source: 'go_miras_picks',
-            text: `I'd love "${item.name}" for ${petName}. Mira imagined this — please help source it!`,
-          },
-        }),
+      await bookViaConcierge({
+        service:  item.name,
+        pillar:   'go',
+        pet,
+        token,
+        channel:  'go_miras_picks_imagines',
+        notes:    item.description || `Mira imagined this — please help source it`,
       });
     } catch (err) { console.error('[MiraGoImaginesCard]', err); }
     setState('sent');
