@@ -1028,7 +1028,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
         const birthDate = new Date(pet.birthday);
         const today = new Date();
         const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
+        // Only use birthday if it gives a sensible age — never show "Less than 1 year"
+        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : '';
       }
       setCartInput(prev => ({ 
         ...prev, 
@@ -1086,7 +1087,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
         defaultAge = selectedPet.life_stage.charAt(0).toUpperCase() + selectedPet.life_stage.slice(1);
       } else if (selectedPet.birthday) {
         const ageYears = Math.floor((Date.now() - new Date(selectedPet.birthday)) / (365.25 * 24 * 60 * 60 * 1000));
-        defaultAge = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
+        // Only use birthday if it gives a sensible age — never show "Less than 1 year"
+        defaultAge = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : '';
       }
     }
     // Default delivery date = today + 3 days
@@ -1838,11 +1840,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
               
               <div className="flex flex-col gap-2">
                 <Input 
-                  placeholder="Pet's Age *" 
+                  placeholder="Pet's Age (e.g. 3 years) *" 
                   value={cartInput.age}
                   onChange={(e) => { setCartInput({...cartInput, age: e.target.value}); setAgeError(false); }}
                   className={`text-sm ${ageError ? 'border-red-400 border-2' : ''}`}
-                  disabled={selectedPetId && selectedPetId !== 'manual' && !!cartInput.age}
                 />
                 {ageError && (
                   <p className="text-xs text-red-500 font-medium flex items-center gap-1 -mt-1">
