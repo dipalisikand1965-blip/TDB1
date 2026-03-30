@@ -428,20 +428,20 @@ const CartSidebar = () => {
                         {/* Custom Details (for cakes, flat art etc) */}
                         {item.customDetails && (
                           <div className="mt-2 text-xs bg-gray-50 rounded-lg p-2 space-y-0.5">
-                            {item.customDetails.shape && <p><span className="text-gray-500">Shape:</span> {item.customDetails.shape}</p>}
-                            {item.customDetails.flavour && <p><span className="text-gray-500">Flavour:</span> {item.customDetails.flavour}{item.customDetails.base ? ` · ${item.customDetails.base} base` : ''}</p>}
-                            {item.customDetails.size && !item.customDetails.shape && <p><span className="text-gray-500">Size:</span> {item.customDetails.size}</p>}
-                            {item.customDetails.customName && <p><span className="text-gray-500">Name on cake:</span> {item.customDetails.customName}</p>}
-                            {item.customDetails.message && <p><span className="text-gray-500">Message:</span> "{item.customDetails.message}"</p>}
+                            {item.customDetails.shape && <p><span className="text-gray-500">Shape:</span> {String(item.customDetails.shape)}</p>}
+                            {item.customDetails.flavour && <p><span className="text-gray-500">Flavour:</span> {String(item.customDetails.flavour)}{item.customDetails.base ? ` · ${item.customDetails.base} base` : ''}</p>}
+                            {item.customDetails.size && !item.customDetails.shape && <p><span className="text-gray-500">Size:</span> {String(item.customDetails.size)}</p>}
+                            {item.customDetails.customName && <p><span className="text-gray-500">Name on cake:</span> {String(item.customDetails.customName)}</p>}
+                            {item.customDetails.message && <p><span className="text-gray-500">Message:</span> "{String(item.customDetails.message)}"</p>}
                             {item.customDetails.date && (
-                              <p><span className="text-gray-500">Delivery:</span> {item.customDetails.date}{item.customDetails.deliveryTime ? ` · ${item.customDetails.deliveryTime}` : ''}{item.customDetails.deliveryType ? ` (${item.customDetails.deliveryType})` : ''}</p>
+                              <p><span className="text-gray-500">Delivery:</span> {String(item.customDetails.date)}{item.customDetails.deliveryTime ? ` · ${item.customDetails.deliveryTime}` : ''}{item.customDetails.deliveryType ? ` (${item.customDetails.deliveryType})` : ''}</p>
                             )}
-                            {item.customDetails.petName && <p className="text-purple-600 font-medium">For {item.customDetails.petName}{item.customDetails.petBreed ? ` · ${item.customDetails.petBreed}` : ''}</p>}
+                            {item.customDetails.petName && <p className="text-purple-600 font-medium">For {String(item.customDetails.petName)}{item.customDetails.petBreed ? ` · ${item.customDetails.petBreed}` : ''}</p>}
                             {item.customDetails.petAllergies?.length > 0 && (
-                              <p className="text-red-500">Allergies: {item.customDetails.petAllergies.join(', ')}</p>
+                              <p className="text-red-500">Allergies: {item.customDetails.petAllergies.map(a => String(a)).join(', ')}</p>
                             )}
                             {item.customDetails.lifeVision && (
-                              <p className="text-purple-400 italic">"{item.customDetails.lifeVision}"</p>
+                              <p className="text-purple-400 italic">"{String(item.customDetails.lifeVision)}"</p>
                             )}
                             {/* Flat Art illustration details */}
                             {item.customDetails.illustration_url && (
