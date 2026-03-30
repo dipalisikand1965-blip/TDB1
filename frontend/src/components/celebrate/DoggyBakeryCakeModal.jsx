@@ -14,6 +14,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import SoulMadeModal from '../SoulMadeModal';
@@ -314,6 +315,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
 
     } catch (e) {
       console.error('[DoggyBakeryCakeModal] addToCart failed', e);
+      toast.error('Could not add to cart. Please try again.');
     }
     setOrderSending(false);
   }, [validate, addToCart, orderProduct, selectedFlavour, selectedBase, selectedSize, petNameOnCake, deliveryDate, deliveryTime, deliveryType, cakeMessage, allergies, totalPrice, pet, petName, token, onCloseProp]);
@@ -506,10 +508,8 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
             >
               {orderSending ? 'Placing order…' : 'Confirm Order →'}
             </button>
-          </>
         </div>
       </div>
-    </div>
   );
 
   const modalContent = (
