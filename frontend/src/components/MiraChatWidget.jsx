@@ -36,15 +36,6 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-// ─── URL safety helper ───────────────────────────────────────────────────────
-const isValidUrl = (url) => {
-  if (!url || typeof url !== 'string') return false;
-  if (!url.startsWith('http')) return false;
-  if (url.includes('emergentagent.com')) return false;
-  if (url.includes('ai_generated')) return false;
-  return true;
-};
-
 // ─── Mira Conversational Memory helpers (mirrored from useChatSubmit) ───────
 const MEMORY_TRIGGERS = {
   health:     ['infection', 'bacteria', 'itch', 'scratch', 'bite', 'vet',
@@ -1348,22 +1339,19 @@ const MiraChatWidget = ({
           const _SERVICE_WORDS = ['groom', 'vet', 'walk', 'train', 'board', 'session', 'appointment',
             'book', 'spa', 'bath', 'nail', 'dental', 'vaccin', 'checkup', 'consult'];
           const _hasServiceIntent = _SERVICE_WORDS.some(w => fullText.toLowerCase().includes(w));
-          console.log('[SVC_CHIPS] hasIntent:', _hasServiceIntent, '| pillar:', _activePillar, '| fullText snippet:', fullText.slice(0, 80));
-          if (_hasServiceIntent && _activePillar &&
+          if (_hasServiceIntent && _streamPetId && _activePillar &&
               !['emergency', 'paperwork', 'farewell'].includes(_activePillar)) {
-            console.log('[SVC_CHIPS] fetching services for pillar:', _activePillar);
             fetch(`${getApiUrl()}/api/service-box/services?pillar=${_activePillar}&limit=3`)
               .then(r => r.ok ? r.json() : null)
               .then(d => {
                 const svcs = d?.services || [];
-                console.log('[SVC_CHIPS] received svcs:', svcs.length);
                 if (svcs.length > 0) {
                   setMessages(prev => prev.map(m =>
                     m.id === streamMsgId ? { ...m, services: svcs } : m
                   ));
                 }
               })
-              .catch((err) => { console.warn('[SVC_CHIPS] fetch error:', err); });
+              .catch(() => {});
           }
 
           // ── NearMe intent detection ──
@@ -2271,13 +2259,11 @@ const MiraChatWidget = ({
 
                   {/* ── Product cards — BELOW bubble, 800ms delay, health/emotion suppressed ── */}
                   {msg.role === 'assistant' && visibleProducts.has(msg.id) && (
-                    <>
-                      <style>{`@keyframes miraProductFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}`}</style>
-                      <div style={{
-                        marginTop: 8, width: '85%', maxWidth: 420,
-                        animation: 'miraProductFadeIn 300ms ease forwards',
-                        opacity: 0
-                      }}>
+                    <div style={{
+                      marginTop: 8, width: '85%', maxWidth: 420,
+                      animation: 'miraProductFadeIn 300ms ease forwards',
+                      opacity: 0
+                    }}>
                       <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
                         ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
                       </p>
@@ -2341,10 +2327,10 @@ const MiraChatWidget = ({
                               <a
                                 key={svc.id || sIdx}
                                 href="#"
-                                onClick={async (e) => {
-                                  e.preventDefault();
+                                onClick={(e) => {
                                   e.stopPropagation();
-                                  console.log('[BOOK] clicked:', svcName);
+                                  e.preventDefault();
+                                  console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   const _pet = selectedPet || {};
                                   const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
                                   const _favFoods   = _pet.favorite_foods?.join(', ') || 'Not specified';
@@ -2352,45 +2338,45 @@ const MiraChatWidget = ({
                                   const _breed      = _pet.breed || _pet.dog_breed || 'Unknown';
                                   const _age        = _pet.age_years != null ? `${_pet.age_years}y` : (_pet.age || 'Unknown');
                                   const _photoUrl   = _pet.watercolor_image || _pet.profile_photo || _pet.image_url || '';
-                                  try {
-                                    await fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                                      },
-                                      body: JSON.stringify({
-                                        pet_id:       _pet.id,
-                                        pet_name:     _pet.name,
-                                        pet_breed:    _breed,
-                                        pet_age:      _age,
-                                        photo_url:    _photoUrl,
-                                        allergies:    _allergies,
+                                  // fire async work without awaiting — keeps handler sync for iOS
+                                  fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                    },
+                                    body: JSON.stringify({
+                                      pet_id:       _pet.id,
+                                      pet_name:     _pet.name,
+                                      pet_breed:    _breed,
+                                      pet_age:      _age,
+                                      photo_url:    _photoUrl,
+                                      allergies:    _allergies,
+                                      favorite_foods: _favFoods,
+                                      life_vision:  _lifeVision,
+                                      pillar:       currentPillar || pillar,
+                                      service_id:   svc.id,
+                                      intent_primary: 'service_booking',
+                                      channel:      'mira_chat',
+                                      source:       'mira_service_chip',
+                                      metadata: {
+                                        pet_name:       _pet.name,
+                                        pet_breed:      _breed,
+                                        pet_age:        _age,
+                                        photo_url:      _photoUrl,
+                                        allergies:      _allergies,
                                         favorite_foods: _favFoods,
-                                        life_vision:  _lifeVision,
-                                        pillar:       currentPillar || pillar,
-                                        service_id:   svc.id,
-                                        intent_primary: 'service_booking',
-                                        channel:      'mira_chat',
-                                        source:       'mira_service_chip',
-                                        metadata: {
-                                          pet_name:       _pet.name,
-                                          pet_breed:      _breed,
-                                          pet_age:        _age,
-                                          photo_url:      _photoUrl,
-                                          allergies:      _allergies,
-                                          favorite_foods: _favFoods,
-                                          life_vision:    _lifeVision,
-                                          service_name:   svcName,
-                                          service_price:  svcPrice,
-                                        },
-                                        initial_message: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
-                                      })
-                                    });
-                                    toast.success(`Request sent for ${svcName}!`);
-                                  } catch {
-                                    toast.error('Could not send request');
-                                  }
+                                        life_vision:    _lifeVision,
+                                        service_name:   svcName,
+                                        service_price:  svcPrice,
+                                      },
+                                      initial_message: {
+                                        sender: 'member',
+                                        text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
+                                      },
+                                    })
+                                  }).then(() => toast.success(`Request sent for ${svcName}!`))
+                                    .catch(() => toast.error('Could not send request'));
                                 }}
                                 style={{
                                   display: 'flex', alignItems: 'center', gap: 10,
@@ -2442,7 +2428,6 @@ const MiraChatWidget = ({
                         </div>
                       )}
                     </div>
-                    </>
                   )}
                 </div>
               );
