@@ -1843,7 +1843,7 @@ const MiraChatWidget = ({
         `}
         style={{ 
           maxHeight: '100dvh',
-          overflowX: 'hidden' // clip horizontal for rounded corners; Zone B owns vertical scroll
+          overflow: 'hidden'   // MUST stay hidden: clips flex container so Zone B can't escape
         }}
       >
         {/* ═══════════════════════════════════════════════════════════════════
