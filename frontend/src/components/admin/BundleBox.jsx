@@ -55,6 +55,9 @@ function bundleToProduct(b) {
     category: b.category || '',
     sub_category: '',
     soul_tier: b.is_soul_made ? 'soul_made' : '',
+    // approval_status drives the "Status in Pillar" dropdown in ProductBoxEditor
+    approval_status: b.approval_status || (b.is_active !== false ? 'live' : 'paused'),
+    commerce_ops: { approval_status: b.approval_status || (b.is_active !== false ? 'live' : 'paused') },
     visibility: { is_active: b.is_active !== false, status: b.is_active !== false ? 'active' : 'inactive' },
     image_url: b.image_url || b.image || b.watercolor_image || '',
     image: b.image_url || b.image || '',
@@ -70,12 +73,15 @@ function bundleToProduct(b) {
 
 // Extract bundle-relevant fields from ProductBoxEditor state
 function productToBundlePatch(p) {
+  const approvalStatus = p.commerce_ops?.approval_status || p.approval_status || 'live';
+  const isActive = ['live', 'active'].includes(approvalStatus);
   return {
     name: p.basics?.name || p.name || '',
     price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
     pillar: p.primary_pillar || p.pillar || '',
     description: p.basics?.description || p.description || '',
-    is_active: p.visibility?.is_active !== false,
+    is_active: isActive,
+    approval_status: approvalStatus,
     is_soul_made: p.soul_tier === 'soul_made',
     discount_percent: Number(p.commerce_ops?.pricing?.discount_percent || 0),
     tags: p.tags || [],
