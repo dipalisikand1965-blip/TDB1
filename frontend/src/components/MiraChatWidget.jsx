@@ -2242,34 +2242,42 @@ const MiraChatWidget = ({
                         }
                         return null;
                       })()}
-                      {/* Product chips — DB picks, always show when available */}
+                      {/* MIRA PICKS — vertical card style matching the design spec */}
                       {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
-                          {msg.products.slice(0, 4).map((p, pIdx) => {
+                        <div style={{ marginTop: 16 }}>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 8px 0' }}>
+                            MIRA PICKS{selectedPet?.name ? ` FOR ${selectedPet.name.toUpperCase()}` : ''}
+                          </p>
+                          {msg.products.slice(0, 3).map((p, pIdx) => {
                             if (!p) return null;
                             const chipImg = p.watercolor_image || p.mockup_url || p.cloudinary_url || p.image_url || p.image;
-                            const chipPrice = p.price || p.original_price || p.minPrice || 0;
+                            const chipPrice = p.price || p.original_price || 0;
                             const chipName = p.product_name || p.name || p.title || 'Product';
                             return (
                               <button
                                 key={p.id || pIdx}
                                 onClick={() => setSelProd(p)}
                                 style={{
-                                  display: 'flex', alignItems: 'center', gap: 8,
-                                  background: '#fff', border: '1.5px solid #E9D5FF',
-                                  borderRadius: 999, padding: '6px 14px',
-                                  fontSize: 13, fontWeight: 600, color: '#6B21A8',
-                                  cursor: 'pointer', boxShadow: '0 2px 8px rgba(107,33,168,0.1)',
-                                  whiteSpace: 'nowrap'
+                                  display: 'flex', alignItems: 'center', gap: 12,
+                                  width: '100%', background: '#FFFFFF',
+                                  border: '1.5px solid #F3F0FF', borderRadius: 14,
+                                  padding: '12px 14px', marginBottom: 8,
+                                  cursor: 'pointer', textAlign: 'left',
+                                  boxShadow: '0 1px 4px rgba(107,33,168,0.06)'
                                 }}
                               >
-                                {chipImg && (
+                                {chipImg ? (
                                   <img src={chipImg} alt={chipName}
-                                    style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                                    style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, background: '#EDE9FE' }}
                                     onError={(e) => { e.target.style.display = 'none'; }}
                                   />
+                                ) : (
+                                  <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#EDE9FE', flexShrink: 0 }} />
                                 )}
-                                {chipName} {chipPrice > 0 ? `· ₹${chipPrice}` : ''}
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>{chipName}</div>
+                                  {chipPrice > 0 && <div style={{ fontSize: 13, color: '#6B7280', marginTop: 2 }}>₹{chipPrice}</div>}
+                                </div>
                               </button>
                             );
                           })}

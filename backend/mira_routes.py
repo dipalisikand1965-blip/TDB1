@@ -18863,11 +18863,13 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 except (ValueError, TypeError):
                     age = 0
                 life_stage = "puppy" if age < 1 else ("senior" if age >= 8 else "adult")
-                pet_context = (
-                    f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
-                    f"Pet profile: Name={pet_name}, Breed={pet.get('breed','unknown')}, "
-                    f"Gender={pet.get('gender','unknown')}, Age={age}y ({life_stage}), "
-                    f"Soul score={pet.get('overall_score',0)}%.\n"
+                has_breed = pet.get('breed') and pet.get('breed','').lower() not in ('unknown','')
+                if has_breed:
+                    pet_context = (
+                        f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
+                        f"Pet profile: Name={pet_name}, Breed={pet.get('breed')}, "
+                        f"Gender={pet.get('gender','unknown')}, Age={age}y ({life_stage}), "
+                        f"Soul score={pet.get('overall_score',0)}%.\n"
                     f"ALLERGIES: {allergy_str} — NEVER EVER suggest or recommend these foods or ingredients.\n"
                 )
                 if fav_treat:
@@ -18875,13 +18877,22 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 if personality_str:
                     pet_context += f"Personality: {personality_str}.\n"
                 pet_context += f"You KNOW this dog deeply. Be warm, personal and always use {pet_name}'s name.\n"
-                # If breed is missing, warn Mira not to invent characteristics
-                if not pet.get('breed') or pet.get('breed','').lower() in ('unknown',''):
+                else:
+                    # Pet found but NO breed — don't write "Breed=unknown", give minimal context
+                    pet_context = (
+                        f"You are Mira, {pet_name}'s Soul Mate at The Doggy Company.\n"
+                        f"CRITICAL: You do NOT have a complete soul profile for {pet_name}. "
+                        "Do NOT invent breed, personality, energy level, or any physical characteristics. "
+                        f"You only know their name is {pet_name}"
+                    )
+                    if age:
+                        pet_context += f" and they are {age}y old"
+                    if allergy_str and allergy_str != 'none known':
+                        pet_context += f". Known allergies: {allergy_str} — never recommend these"
                     pet_context += (
-                        "\nIMPORTANT: The breed/soul profile for this pet is incomplete. "
-                        "Do NOT invent their breed, energy level, personality or any characteristics. "
-                        f"If asked, say: \"I don't know {pet_name} well enough yet — could you tell me "
-                        "their breed, age and any allergies? Once I know, I can personalise everything.\"\n"
+                        f".\nIf asked about {pet_name}'s breed or personality, say: "
+                        f"\"I don't know {pet_name} well enough yet — could you tell me their breed, "
+                        "age and any allergies? Once I know, I can personalise everything for them.\"\n"
                     )
             else:
                 # Pet ID provided but not found in DB
@@ -18957,8 +18968,9 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 _nearby_places_data = {"show_nearme": True, "pillar": current_pillar, "trigger": "user_request"}
             # ─────────────────────────────────────────────────────────────────────
 
-            # Stream word-by-word for progressive display effect
-            words = full_response.split(" ")
+            # Stream word-by-word — apply banned opener filter to full response first
+            _clean_response = filter_banned_openers(str(full_response).strip(), pet_name)
+            words = _clean_response.split(" ")
             for i, word in enumerate(words):
                 chunk = word + (" " if i < len(words) - 1 else "")
                 yield f"data: {json.dumps({'text': chunk})}\n\n"
