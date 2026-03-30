@@ -50,11 +50,17 @@ const Streaties = () => {
               </p>
             </div>
             <div className="relative">
-              <img 
-                src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=500&fit=crop" 
-                alt="Stray dog"
-                className="rounded-2xl shadow-2xl"
-              />
+              <div 
+                className="rounded-2xl shadow-2xl flex items-center justify-center"
+                style={{
+                  background: 'linear-gradient(135deg, #1A0A2E 0%, #2D1B69 50%, #0D4F4F 100%)',
+                  width: '100%',
+                  height: '400px',
+                  fontSize: 96
+                }}
+              >
+                🐾
+              </div>
               <div className="absolute -bottom-6 -left-6 bg-orange-500 text-white p-6 rounded-xl shadow-lg">
                 <p className="text-3xl font-bold">10%</p>
                 <p className="text-sm">of every sale goes to strays</p>
