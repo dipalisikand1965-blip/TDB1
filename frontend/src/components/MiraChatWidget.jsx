@@ -2316,65 +2316,18 @@ const MiraChatWidget = ({
                             // Skip AI-generated stock images — show TDC gradient instead
                             const _svcImgClean = svcImg && !svcImg.includes('ai_generated') ? svcImg : null;
                             return (
-                              <button
+                              <a
                                 key={svc.id || sIdx}
-                                onClick={async () => {
-                                  console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
-                                  try {
-                                    const _pet = selectedPet || {};
-                                    const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
-                                    const _favFoods   = _pet.favorite_foods?.join(', ') || 'Not specified';
-                                    const _lifeVision = _pet.life_vision || _pet.north_star || 'Not set';
-                                    const _breed      = _pet.breed || _pet.dog_breed || 'Unknown';
-                                    const _age        = _pet.age_years != null ? `${_pet.age_years}y` : (_pet.age || 'Unknown');
-                                    const _photoUrl   = _pet.watercolor_image || _pet.profile_photo || _pet.image_url || '';
-                                    await fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/json',
-                                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                                      },
-                                      body: JSON.stringify({
-                                        pet_id:       _pet.id,
-                                        pet_name:     _pet.name,
-                                        pet_breed:    _breed,
-                                        pet_age:      _age,
-                                        photo_url:    _photoUrl,
-                                        allergies:    _allergies,
-                                        favorite_foods: _favFoods,
-                                        life_vision:  _lifeVision,
-                                        pillar:       currentPillar || pillar,
-                                        service_id:   svc.id,
-                                        intent_primary: 'service_booking',
-                                        channel:      'mira_chat',
-                                        source:       'mira_service_chip',
-                                        metadata: {
-                                          pet_name:       _pet.name,
-                                          pet_breed:      _breed,
-                                          pet_age:        _age,
-                                          photo_url:      _photoUrl,
-                                          allergies:      _allergies,
-                                          favorite_foods: _favFoods,
-                                          life_vision:    _lifeVision,
-                                          service_name:   svcName,
-                                          service_price:  svcPrice,
-                                        },
-                                        initial_message: {
-                                          sender: 'member',
-                                          text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
-                                        },
-                                      })
-                                    });
-                                    toast.success(`Request sent for ${svcName}!`);
-                                  } catch { toast.error('Could not send request'); }
-                                }}
+                                href="#"
+                                onClick={(e) => { e.preventDefault(); console.log('A TAG CLICKED'); alert('clicked!'); }}
                                 style={{
                                   display: 'flex', alignItems: 'center', gap: 10,
                                   width: '100%', background: '#F0FDF4',
                                   border: '1.5px solid #BBF7D0', borderRadius: 14,
                                   padding: '10px 14px', marginBottom: 8,
                                   cursor: 'pointer', textAlign: 'left',
-                                  touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent'
+                                  touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
+                                  textDecoration: 'none', color: 'inherit'
                                 }}
                               >
                                 {_svcImgClean ? (
@@ -2386,7 +2339,7 @@ const MiraChatWidget = ({
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
-                              </button>
+                              </a>
                             );
                           })}
                         </div>
