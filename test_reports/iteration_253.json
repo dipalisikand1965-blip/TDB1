@@ -1,0 +1,72 @@
+{
+  "summary": "Pre-deployment system health check for Pet Life OS. All 19 backend API tests pass (100%). All frontend tests pass. Backend: health, auth, claude-picks, service desk ticket, Mira stream SSE, picks/default, service-box all verified. Frontend: /dine, /care, /go load without JS errors or crashes. Mira chat chips render correctly on mobile (390px) and desktop (1920px) with petName substitution. Investor.html shows 29,878 and 12 pillars. Introduction.html shows 7,520. Pet breed filters visible on all pillar pages.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "POST /api/auth/login for admin email",
+        "issue": "Admin (aditya@thedoggycompany.com) does NOT use email/password login endpoint — uses HTTP Basic auth (aditya:lola4304) instead. Not a bug, just a design note. Verified Basic auth works correctly for /api/service_desk/tickets."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_predeployment_253.py",
+    "/app/test_reports/pytest/predeployment_253.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "MiraChatWidget.jsx line 1298: setVisibleProducts called after stream completes (900ms setTimeout) — confirmed working. Chips render on both mobile and desktop.",
+    "MiraChatWidget.jsx line 1313: Post-stream fetch uses claude-picks endpoint (not picks/default) — confirmed correct.",
+    "MiraChatWidget.jsx line 1795: isMobile guard ensures desktop always shows widget; on mobile pillar pages it hides the global FAB (those pages have inline Mira) — confirmed correct behaviour.",
+    "useMiraTicket.js: Full pet soul briefing (breed, allergies, life_vision, photo_url) sent in every ticket — confirmed via API test and code review.",
+    "URL-based pillar detection in MiraChatWidget.jsx line 213: _urlDerivedPillar correctly infers pillar from URL path — /go gives pillar='go' (not 'general'). Verified on /go page."
+  ],
+  "verified_checkpoints": {
+    "1_health_200": "PASS — GET /api/health returns 200",
+    "2_auth_login": "PASS — POST /api/auth/login returns access_token for dipali@clubconcierge.in",
+    "3_claude_picks": "PASS — GET /api/mira/claude-picks/{pet_id}?pillar=dine&limit=4&min_score=30 returns picks array",
+    "4_service_desk_ticket": "PASS — POST /api/service_desk/attach_or_create_ticket creates ticket with pet soul data (pet_name, pet_breed, allergies, metadata, life_vision)",
+    "5_mira_stream": "PASS — POST /api/mira/os/stream returns SSE stream with data: lines and text chunks",
+    "6_picks_default": "PASS — GET /api/mira/picks/default/{pet_id}?query=salmon returns picks list",
+    "7_dine_no_errors": "PASS — /dine loads, body length 6273, no crash, no error elements",
+    "8_care_no_errors": "PASS — /care loads, body length 7542, no crash (GuidedCarePaths null guard previously fixed)",
+    "9_go_no_errors": "PASS — /go loads, body length 5882, no crash",
+    "10_investor_html": "PASS — investor.html contains '29,878' and '12 pillars'",
+    "11_introduction_html": "PASS — introduction.html contains '7,520'",
+    "12_service_box": "PASS — GET /api/service-box/services?pillar=dine&limit=3 returns services",
+    "13_mira_chips_mobile": "PASS — Mira widget on mobile /dine shows chips: '🐟 What should Mojo eat today?' and '🍽️ Find Mojo a restaurant' (petName substituted)",
+    "14_mira_chips_desktop": "PASS — Mira widget on desktop /dine shows chips: '🐟 What should Mojo eat today?' and '🍽️ Find Mojo a restaurant'",
+    "15_breed_filters": "PASS — /dine shows Allergy:chicken/beef + Loves:Salmon chips; /care shows Breed:Indie + Coat:short; /go shows Indie + Goa filters",
+    "16_admin_basic_auth": "PASS — aditya:lola4304 Basic auth returns 200 from /api/service_desk/tickets"
+  },
+  "updated_files": [
+    "/app/backend/tests/test_predeployment_253.py"
+  ],
+  "success_rate": {
+    "backend": "100% (19/19 tests pass)",
+    "frontend": "100% (all pillar pages load, Mira chips work mobile+desktop, static pages verified)"
+  },
+  "test_credentials": {
+    "member_email": "dipali@clubconcierge.in",
+    "member_password": "test123",
+    "admin_user": "aditya",
+    "admin_password": "lola4304",
+    "admin_auth_method": "HTTP Basic auth (not email login)"
+  },
+  "seed_data_creation": "1 test ticket created during service desk test (channel: mira_chat_intelligence_test_253)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 12 pre-deployment checkpoints verified GREEN. Backend 100% pass. Frontend 100% pass. Key confirmations: (1) Mira chips render on both mobile+desktop with petName substitution working. (2) setVisibleProducts gate at line 1298 confirmed calling after stream. (3) Post-stream fetch uses claude-picks endpoint. (4) URL-based pillar detection working (/go correctly uses pillar=go). (5) useMiraTicket.js sends full pet soul briefing. (6) All 3 pillar pages (/dine /care /go) load without crash. (7) investor.html and introduction.html serve correct content. (8) Service desk ticket creates with pet soul data including pet_name, pet_breed, allergies, metadata.photo_url. Admin uses Basic auth NOT email login.",
+  "rca_of_issues": {
+    "admin_email_login": {
+      "description": "POST /api/auth/login with aditya@thedoggycompany.com returns 401",
+      "root_cause": "Admin (aditya) is not registered as a regular user in the auth system. Admin access uses HTTP Basic auth (username: aditya, password: lola4304) for admin API endpoints like /api/service_desk/tickets. This is by design.",
+      "status": "NOT a bug — expected behaviour"
+    }
+  }
+}
