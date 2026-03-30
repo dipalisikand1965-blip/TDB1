@@ -240,6 +240,21 @@ const UnifiedProductBox = () => {
           sanitizedProduct[field] = selectedProduct[field];
         }
       }
+
+      // Derive is_active from approval_status — the status dropdown only updates
+      // approval_status/commerce_ops.approval_status but the DB filter and list view
+      // both read is_active. Sync them here before every save.
+      const _approval = sanitizedProduct.commerce_ops?.approval_status
+                     || sanitizedProduct.approval_status;
+      if (_approval) {
+        const _isActive = ['live', 'active'].includes(_approval);
+        sanitizedProduct.is_active = _isActive;
+        sanitizedProduct.visibility = {
+          ...(sanitizedProduct.visibility || {}),
+          is_active: _isActive,
+          status: _isActive ? 'active' : _approval,  // 'paused' | 'draft' | 'archived'
+        };
+      }
       
       // For new products, include the ID if it's not a temp ID
       if (isNew && selectedProduct.id && !selectedProduct.id.startsWith('NEW-')) {
