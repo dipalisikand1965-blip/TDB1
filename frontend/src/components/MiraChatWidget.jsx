@@ -1825,7 +1825,7 @@ const MiraChatWidget = ({
   return (
     <div 
       className={`fixed z-[9999] ${className}
-        left-0 right-0 bottom-[70px]
+        left-0 right-0 bottom-0
         sm:bottom-0 sm:right-0 sm:left-auto sm:top-0
       `}
       style={{
