@@ -7785,6 +7785,7 @@ async def get_default_picks_for_pet(
     limit: int = Query(8, le=48),
     offset: int = Query(0, ge=0),
     pillar: Optional[str] = Query(None),
+    query: Optional[str] = Query(None),
     authorization: Optional[str] = Header(None)
 ):
     """
@@ -7826,7 +7827,52 @@ async def get_default_picks_for_pet(
         
         picks = []
         
-        # Strategy 1: Get admin-curated Mira Picks
+        # Strategy 0: Query-based smart search — when user asked something specific
+        if query:
+            _stop_words = {"what", "food", "good", "best", "for", "should", "have", "with",
+                          "give", "find", "show", "tell", "about", "some", "that", "this",
+                          "does", "your", "mojo", "dog", "pet", "need", "like", "want"}
+            _query_words = [w for w in query.lower().split() if len(w) > 3 and w not in _stop_words]
+            if _query_words:
+                _search_conds = []
+                for _w in _query_words[:4]:
+                    _search_conds.extend([
+                        {"name": {"$regex": _w, "$options": "i"}},
+                        {"product_name": {"$regex": _w, "$options": "i"}},
+                        {"description": {"$regex": _w, "$options": "i"}},
+                        {"tags": {"$regex": _w, "$options": "i"}},
+                        {"title": {"$regex": _w, "$options": "i"}},
+                    ])
+                _q_filter = {"$or": _search_conds, "visibility.status": {"$ne": "archived"}}
+                # Exclude allergens
+                if allergy_names:
+                    _q_filter["$and"] = [{"$or": [
+                        {"name": {"$not": {"$regex": _a, "$options": "i"}}},
+                        {"product_name": {"$not": {"$regex": _a, "$options": "i"}}}
+                    ]} for _a in allergy_names[:3]]
+                _q_products = await db.products_master.find(
+                    _q_filter,
+                    {"_id": 0, "id": 1, "name": 1, "product_name": 1, "price": 1,
+                     "original_price": 1, "image_url": 1, "cloudinary_url": 1,
+                     "watercolor_image": 1, "mockup_url": 1, "mira_hint": 1}
+                ).limit(4).to_list(4)
+                for _p in _q_products:
+                    _pname = _p.get("product_name") or _p.get("name") or ""
+                    if _pname and _p.get("id") not in [x.get("id") for x in picks]:
+                        picks.append({
+                            "id": _p.get("id"),
+                            "name": _pname,
+                            "title": _pname,
+                            "price": _p.get("price") or _p.get("original_price"),
+                            "image": _p.get("watercolor_image") or _p.get("mockup_url") or _p.get("cloudinary_url") or _p.get("image_url"),
+                            "watercolor_image": _p.get("watercolor_image"),
+                            "mockup_url": _p.get("mockup_url"),
+                            "cloudinary_url": _p.get("cloudinary_url"),
+                            "image_url": _p.get("image_url"),
+                            "type": "product",
+                            "why_reason": _p.get("mira_hint") or f"Matched your question for {pet_name}",
+                            "source": "query_match"
+                        })
         admin_picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(4).to_list(4)
         if admin_picks:
             product_ids = [p.get("product_id") for p in admin_picks]
@@ -7940,6 +7986,36 @@ async def get_default_picks_for_pet(
                     "source": "service_recommendation"
                 })
         
+        # Strategy 5: Pillar fallback — return ANY active products for this pillar if still empty
+        if not picks and pillar:
+            _pil_filter = {
+                "$or": [{"pillar": pillar}, {"tags": pillar}, {"pillars": pillar}],
+                "visibility.status": {"$ne": "archived"}
+            }
+            _pil_products = await db.products_master.find(
+                _pil_filter,
+                {"_id": 0, "id": 1, "name": 1, "product_name": 1, "price": 1,
+                 "original_price": 1, "image_url": 1, "cloudinary_url": 1,
+                 "watercolor_image": 1, "mockup_url": 1, "mira_hint": 1}
+            ).limit(4).to_list(4)
+            for _p in _pil_products:
+                _pname = _p.get("product_name") or _p.get("name") or ""
+                if _pname:
+                    picks.append({
+                        "id": _p.get("id"),
+                        "name": _pname,
+                        "title": _pname,
+                        "price": _p.get("price") or _p.get("original_price"),
+                        "image": _p.get("watercolor_image") or _p.get("mockup_url") or _p.get("cloudinary_url") or _p.get("image_url"),
+                        "watercolor_image": _p.get("watercolor_image"),
+                        "mockup_url": _p.get("mockup_url"),
+                        "cloudinary_url": _p.get("cloudinary_url"),
+                        "image_url": _p.get("image_url"),
+                        "type": "product",
+                        "why_reason": _p.get("mira_hint") or f"Top pick for {pillar}",
+                        "source": "pillar_fallback"
+                    })
+
         total_available = len(picks)
         paginated = picks[offset: offset + limit]
         return {
