@@ -983,7 +983,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   
   // Pet Soul Integration - Fetch user's pets
   const [userPets, setUserPets] = useState([]);
-  const [selectedPetId, setSelectedPetId] = useState('');
+  const [selectedPetId, setSelectedPetId] = useState(selectedPet?.id || '');
   const [loadingPets, setLoadingPets] = useState(false);
   
   // Fetch user's pets on mount if logged in
@@ -1020,7 +1020,11 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     if (pet) {
       // Calculate age from birthday
       let ageStr = '';
-      if (pet.birthday) {
+      if (pet.age && Number(pet.age) > 0) {
+        ageStr = `${pet.age} year${Number(pet.age) !== 1 ? 's' : ''}`;
+      } else if (pet.life_stage) {
+        ageStr = pet.life_stage.charAt(0).toUpperCase() + pet.life_stage.slice(1);
+      } else if (pet.birthday) {
         const birthDate = new Date(pet.birthday);
         const today = new Date();
         const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
@@ -1072,23 +1076,40 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                         (product.sub_category || '').toLowerCase().includes('cake');
   const requiresDate = isCakeProduct || !!product.requires_date;
   
-  const [cartInput, setCartInput] = useState({
-    petName: '',
-    date: null,
-    time: '',
-    age: '',
-    purchaseType: 'onetime',
-    autoshipFrequency: '',
-    autoshipStartDate: null,
-    autoshipEndDate: null,
-    addPartyBox: false,
-    // Bundle selections
-    selectedCake: '',
-    selectedToy: '',
-    // Pet Soul fields
-    selectedPetId: null,
-    petBreed: '',
-    petSize: ''
+  const [cartInput, setCartInput] = useState(() => {
+    // Compute default age from selectedPet prop (priority: age > life_stage > birthday)
+    let defaultAge = '';
+    if (selectedPet) {
+      if (selectedPet.age && Number(selectedPet.age) > 0) {
+        defaultAge = `${selectedPet.age} year${Number(selectedPet.age) !== 1 ? 's' : ''}`;
+      } else if (selectedPet.life_stage) {
+        defaultAge = selectedPet.life_stage.charAt(0).toUpperCase() + selectedPet.life_stage.slice(1);
+      } else if (selectedPet.birthday) {
+        const ageYears = Math.floor((Date.now() - new Date(selectedPet.birthday)) / (365.25 * 24 * 60 * 60 * 1000));
+        defaultAge = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Less than 1 year';
+      }
+    }
+    // Default delivery date = today + 3 days
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 3);
+    return {
+      petName: selectedPet?.name || '',
+      date: defaultDate,
+      time: '',
+      age: defaultAge,
+      purchaseType: 'onetime',
+      autoshipFrequency: '',
+      autoshipStartDate: null,
+      autoshipEndDate: null,
+      addPartyBox: false,
+      // Bundle selections
+      selectedCake: '',
+      selectedToy: '',
+      // Pet Soul fields
+      selectedPetId: selectedPet?.id || null,
+      petBreed: selectedPet?.breed || '',
+      petSize: selectedPet?.size || ''
+    };
   });
   
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -1536,7 +1557,11 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
           </button>
         </div>
         {/* Scrollable body */}
-        <div className="overflow-y-auto" style={{ flex: 1 }}>
+        <div
+          className="overflow-y-auto product-modal-inner"
+          style={{ flex: 1, overflowX: 'hidden', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+        <style>{`.product-modal-inner::-webkit-scrollbar { display: none; }`}</style>
         <div className="grid md:grid-cols-2">
           <div className="relative aspect-square bg-gray-50">
             <img
@@ -1952,7 +1977,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             )}
 
             {/* Why Mira chose this — personalised chip */}
-            {(product.mira_hint || product._miraReason) && selectedPet && (
+            {(product.mira_hint || product._miraReason || product.why_reason || product.mira_score > 0) && (
               <div style={{
                 display:'flex', alignItems:'flex-start', gap:8,
                 background:'linear-gradient(135deg,#F5F3FF,#EDE9FE)',
@@ -1966,7 +1991,10 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                   fontSize:10, color:'#fff', flexShrink:0
                 }}>✦</div>
                 <p style={{fontSize:12, color:'#4C1D95', fontStyle:'italic', margin:0, lineHeight:1.5}}>
-                  {product.mira_hint || product._miraReason}
+                  {product.mira_hint || product._miraReason || product.why_reason ||
+                    (product.mira_score >= 75
+                      ? `Mira scored this ★${product.mira_score} for ${selectedPet?.name || 'your dog'} — top match for their breed, age and soul profile.`
+                      : `Mira selected this for ${selectedPet?.name || 'your dog'} based on their soul profile.`)}
                 </p>
               </div>
             )}
