@@ -209,8 +209,8 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
   }, []);
   
   // ─── ElevenLabs Eloise voice (direct API, key rotation) ───────────────────
-  // Eloise — AZnzlk1XvdvUeBnXmlld — user-confirmed canonical voice ID
-  const ELOISE_VOICE_ID = 'AZnzlk1XvdvUeBnXmlld'; // Eloise (ElevenLabs)
+  // Eloise — EST9Ui6982FZPSi7gCHi — user-confirmed canonical voice ID
+  const ELOISE_VOICE_ID = 'EST9Ui6982FZPSi7gCHi'; // Eloise (ElevenLabs)
 
   const ELEVEN_KEYS = [
     process.env.REACT_APP_ELEVEN_LABS_KEY_1,
