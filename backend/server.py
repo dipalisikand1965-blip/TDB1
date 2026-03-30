@@ -22273,6 +22273,7 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "delivery_time": order.get("delivery_time", ""),
         "delivery_type": order.get("delivery_type", "Delivery"),
         "total_price": order.get("total_price", 0),
+        "life_vision": order.get("life_vision", ""),
         "status": "pending",
         "created_at": ts.isoformat(),
         "source": order.get("source", "doggy_bakery_cake_modal"),
@@ -22281,6 +22282,7 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
 
     allergies_str = ", ".join(cake_order["pet_allergies"]) if cake_order["pet_allergies"] else "None"
     price_str = "\u20b9" + str(int(cake_order["total_price"])) if cake_order["total_price"] else "Price on request"
+    life_vision_str = cake_order.get("life_vision", "")
     ticket_text = (
         "\U0001f382 CAKE ORDER \u2014 " + pet_name + "\n\n"
         "Product: " + (cake_order["product_name"] or "—") + "\n"
@@ -22296,7 +22298,8 @@ async def submit_cake_order(order: dict, current_user: dict = Depends(get_curren
         "Total: " + price_str + "\n\n"
         "Pet: " + pet_name + " (" + (cake_order["pet_breed"] or "Unknown") + ")\n"
         "Allergies: " + allergies_str + "\n"
-        "Customer: " + current_user.get("email", "")
+        + ("North Star: \"" + life_vision_str + "\"\n" if life_vision_str else "")
+        + "Customer: " + current_user.get("email", "")
     )
 
     ticket = {

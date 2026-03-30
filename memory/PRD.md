@@ -552,3 +552,52 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 10. ✅ **GoSoulPage.jsx** — Same pattern. Added `ytQuery` to all 6 go dims (safety, calming, carriers, feeding, health, stay). 3rd "🎬 Watch" tab in `DimExpanded`.
 
 **Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
+
+
+### SESSION 34 — (2026-03-30) Design Bible v2 + Cake Cart Flow
+
+**Design Bible v2 (tdc-design-tokens (1).css — Session 97 master):**
+
+**Status: MERGED** — All new tokens appended to existing file. Old tokens kept for backward compatibility. No breaking changes.
+
+#### Key Discrepancies Found (new bible vs existing implementation):
+
+| Token | Existing File | New Design Bible | Resolution |
+|---|---|---|---|
+| `--font-primary` | Not present (`--font-sans` used) | Added as primary name | ADDED as alias → `--font-sans` |
+| `--font-accent` | Not present (`--font-serif` used) | Added as accent name | ADDED as alias → `--font-serif` |
+| `--text-xs` | `13px` | `11px` (micro labels) | KEPT `13px` for compat; added `--text-xs-sm: 11px` |
+| `--text-base` | `17px` (Apple HIG) | `15px` | KEPT `17px` — intentional Apple HIG choice |
+| `--radius-md` | `14px` | `12px` | KEPT `14px` — visual regression risk |
+| `--radius-lg` | `20px` | `14px` | KEPT `20px` — used on all buttons/cards |
+| `--radius-xl` | `28px` | `16px` | KEPT `28px` — major visual change |
+| Pillar colors | Single flat value per pillar | Full dark/mid/light/pale per pillar | ADDED full palettes as new tokens |
+| Gradients | Not present | Full library (brand, mira, cta, pillar heroes) | ADDED all gradient tokens |
+| Z-index scale | Not present | `--z-header: 300`, `--z-modal: 500`, etc. | ADDED all z-index tokens |
+| Layout tokens | Not present | `--header-height: 64px`, `--nav-height-mobile: 72px`, etc. | ADDED all layout tokens |
+| Image dimension tokens | Not present | `--img-avatar-sm/md/lg/xl`, `--img-product-*` | ADDED all image tokens |
+| `@import` fonts | `Cormorant Garamond + Inter` | `Cormorant Garamond + DM Sans` | UPDATED — added DM Sans import |
+| `--gradient-*` | Not present | All pillar hero gradients | ADDED all |
+| `static.prod-images.emergentagent.com` | Used in MealsPage.jsx HERO_IMAGES + CARD_IMAGES | BLOCKED (staging CDN) | ⚠️ OPEN — Images appear genuine TDC product photos; do not remove until Cloudinary URLs are confirmed |
+
+#### New Token Categories Added:
+- Brand colour palette (`--color-brand-deepest` → `--color-brand-cream`)
+- Teal token family (`--color-teal-dark/mid/light/pale`)
+- Extended radius scale (`--radius-xs: 6px`, `--radius-2xl: 20px`, `--radius-3xl: 24px`)
+- Shadow additions (`--shadow-brand`, `--shadow-teal`, `--shadow-inner`, `--shadow-2xl`)
+- Full Z-index scale (`--z-header: 300` → `--z-top: 9999`)
+- Component padding shortcuts (`--padding-card`, `--padding-modal`, `--padding-hero`, etc.)
+- Image dimension tokens (`--img-avatar-*`, `--img-product-*`, `--img-radius-*`)
+- 12 pillar palettes (4 tones each: dark/mid/light/pale)
+- Complete gradient library (brand, mira, cta, all 12 pillar heroes)
+- Utility classes: `.tdc-btn`, `.tdc-img-placeholder`, `.tdc-north-star`, `.tdc-label-upper`, `.tdc-heading-serif`
+
+**Cake Order → Cart Flow (Session 34):**
+1. ✅ `DoggyBakeryCakeModal.jsx` — Replaced direct-order-with-success-screen with: (a) immediate `addToCart()` call with full customDetails (flavour, base, size, shape, petName, petBreed, petAllergies, message, date, time, lifeVision, productImage), (b) non-blocking background `fetch` to `/api/celebrate/cake-order` for service desk ticket
+2. ✅ `CartSidebar.jsx` — Enhanced `customDetails` block to display: flavour+base, message, delivery date+time+type, pet name+breed, allergies, and life vision (north star)
+3. ✅ `server.py` — Added `life_vision` field to `cake_orders` schema and ticket text ("North Star: ...")
+
+**Image Hygiene (Session 34):**
+4. ✅ 237 stock photo URLs removed (206 from server.py seed data, 31 from frontend JSX)
+5. ✅ `PillarPage.jsx`, `ProductListing.jsx`, `MealsPage.jsx`, `Streaties.jsx`, `ProductListingNew.jsx` — All img tags replaced with TDC branded CSS gradients
+6. ⚠️ `MealsPage.jsx` HERO_IMAGES + CARD_IMAGES still use `static.prod-images.emergentagent.com` URLs — these appear to be genuine TDC product images on the staging CDN; flagged for migration to Cloudinary
