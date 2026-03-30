@@ -1949,7 +1949,7 @@ const MiraChatWidget = ({
           <div 
             className="flex-1 overflow-y-auto p-4 space-y-3 mira-chat-messages"
             style={{ 
-              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-y',      // tells iOS: vertical scroll only — no tap delay
               overscrollBehavior: 'contain',
               paddingBottom: '8px'
             }}
