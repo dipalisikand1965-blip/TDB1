@@ -1073,7 +1073,7 @@ const ProductBoxEditor = ({
                 <div>
                   <Label>Status in Pillar</Label>
                   <select
-                    value={getValue('approval_status', 'live') || getValue('commerce_ops.approval_status', 'live')}
+                    value={getValue('commerce_ops.approval_status', null) || getValue('approval_status', 'live')}
                     onChange={(e) => {
                       updateField('approval_status', e.target.value);
                       updateField('commerce_ops.approval_status', e.target.value);

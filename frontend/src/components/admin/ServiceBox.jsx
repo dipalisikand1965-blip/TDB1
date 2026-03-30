@@ -63,6 +63,7 @@ function serviceToProduct(s) {
         original_price: Number(s.price) || 0,
         discount_percent: 0,
       },
+      approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
     },
     original_price: Number(s.price) || 0,
     primary_pillar: pillar,
@@ -71,7 +72,6 @@ function serviceToProduct(s) {
     sub_category: s.sub_category || '',
     // approval_status drives the "Status in Pillar" dropdown in ProductBoxEditor
     approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
-    commerce_ops: { approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused') },
     visibility: { is_active: s.is_active !== false, status: s.is_active !== false ? 'active' : 'inactive' },
     image_url: s.image_url || s.image || s.watercolor_image || '',
     image: s.image_url || s.image || '',
