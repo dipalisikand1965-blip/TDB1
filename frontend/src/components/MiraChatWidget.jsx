@@ -2316,9 +2316,11 @@ const MiraChatWidget = ({
                             // Skip AI-generated stock images — show TDC gradient instead
                             const _svcImgClean = svcImg && !svcImg.includes('ai_generated') ? svcImg : null;
                             return (
-                              <button
+                              <a
                                 key={svc.id || sIdx}
-                                onClick={async () => {
+                                href="#"
+                                onClick={async (e) => {
+                                  e.preventDefault();
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   try {
                                     const _pet = selectedPet || {};
@@ -2374,7 +2376,8 @@ const MiraChatWidget = ({
                                   border: '1.5px solid #BBF7D0', borderRadius: 14,
                                   padding: '10px 14px', marginBottom: 8,
                                   cursor: 'pointer', textAlign: 'left',
-                                  touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent'
+                                  touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
+                                  textDecoration: 'none', color: 'inherit'
                                 }}
                               >
                                 {_svcImgClean ? (
@@ -2386,7 +2389,7 @@ const MiraChatWidget = ({
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
-                              </button>
+                              </a>
                             );
                           })}
                         </div>
@@ -2395,24 +2398,24 @@ const MiraChatWidget = ({
                       {/* NearMe chip — when location intent detected */}
                       {msg.showNearMe && (
                         <div style={{ marginTop: 10 }}>
-                          <button
-                            onClick={() => {
-                              const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
-                              console.log('[NEARME] clicked, pillar:', nearMePillar);
-                              window.location.href = `/${nearMePillar}#nearme`;
+                          <a
+                            href={`/${msg.showNearMe?.pillar || currentPillar || pillar || 'care'}#nearme`}
+                            onClick={(e) => {
+                              console.log('[NEARME] clicked, pillar:', msg.showNearMe?.pillar || currentPillar || pillar);
                             }}
                             style={{
-                              display: 'flex', alignItems: 'center', gap: 8,
+                              display: 'inline-flex', alignItems: 'center', gap: 8,
                               background: '#fff', border: '1.5px solid #BBF7D0',
                               borderRadius: 999, padding: '6px 16px',
                               fontSize: 13, fontWeight: 600, color: '#065F46',
                               cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)',
-                              touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent'
+                              touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
+                              textDecoration: 'none'
                             }}
                           >
                             <span style={{ fontSize: 15 }}>📍</span>
                             Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
-                          </button>
+                          </a>
                         </div>
                       )}
                     </div>

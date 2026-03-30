@@ -234,13 +234,6 @@ a.btn,
   cursor: pointer;
 }
 
-/* Fix iOS button tap detection inside pan-y scroll containers */
-.mira-chat-messages button {
-  -webkit-user-select: auto !important;
-  touch-action: manipulation !important;
-  cursor: pointer !important;
-}
-
 /* iOS click delay fix - must be on clickable elements */
 @supports (-webkit-touch-callout: none) {
   button,
