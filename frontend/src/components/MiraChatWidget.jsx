@@ -1290,11 +1290,11 @@ const MiraChatWidget = ({
           ));
 
           // ── Open the product-card render gate for streaming messages ──
-          // (fallback path does this at line ~1576; streaming path was missing this entirely)
+          // (fallback path does this at line ~1584; streaming path was missing this entirely)
           if (shouldShowProducts(fullText)) {
             setTimeout(() => {
               setVisibleProducts(prev => new Set([...prev, streamMsgId]));
-            }, 800);
+            }, 900);
           }
 
           // ── Post-stream product fetch — claude-picks (same engine as pillar page Mira Picks) ──
