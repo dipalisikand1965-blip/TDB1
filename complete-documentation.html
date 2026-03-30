@@ -835,9 +835,51 @@ PRODUCTION_MONGO_URL=mongodb+srv://...  (Atlas — BLOCKED)
 </div>
 </section>
 
+<section style="background:#f0fdf4;padding:32px;border-radius:12px;margin:32px 0;border-left:4px solid #16a34a;">
+<h2 style="color:#14532d;margin-top:0;">Design Bible v2 — Session 97 (March 30, 2026)</h2>
+<p>The canonical master design token file was uploaded and merged into <code>/app/frontend/src/styles/tdc-design-tokens.css</code>.</p>
+<p><strong>Merge strategy:</strong> All new tokens APPENDED. Old tokens kept for backward compat. No breaking changes. Backward-compat aliases bridge renamed tokens.</p>
+
+<h3 style="color:#065f46;">Token Discrepancies Found &amp; Resolved</h3>
+<table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+<tr style="background:#dcfce7;"><th style="padding:8px;text-align:left;border:1px solid #86efac;">Token</th><th style="padding:8px;text-align:left;border:1px solid #86efac;">Existing</th><th style="padding:8px;text-align:left;border:1px solid #86efac;">New Bible</th><th style="padding:8px;text-align:left;border:1px solid #86efac;">Resolution</th></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--font-primary</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">Missing (used <code>--font-sans</code>)</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">New canonical name</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ Added as alias → --font-sans</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--font-accent</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">Missing (used <code>--font-serif</code>)</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">New canonical name</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ Added as alias → --font-serif</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--text-xs</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">13px</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">11px (micro labels)</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#92400e;">⚠️ Kept 13px for compat; added <code>--text-xs-sm: 11px</code></td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--text-base</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">17px (Apple HIG)</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">15px</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#92400e;">⚠️ Kept 17px — intentional Apple HIG floor</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--radius-lg</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">20px</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">14px</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#92400e;">⚠️ Kept 20px — used on all buttons/cards app-wide</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--radius-xl</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">28px</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">16px</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#92400e;">⚠️ Kept 28px — large-radius card identity</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">Pillar palettes</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">1 flat value per pillar</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">dark/mid/light/pale per pillar</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ Full 12-pillar × 4-tone palettes added</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--gradient-* library</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">Missing entirely</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">16 gradients (brand, mira, cta, 12 pillar heroes)</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ All gradient tokens added</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">--z-* scale</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">Missing</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">base → top (1–9999)</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ Full z-index scale added</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">Layout tokens</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">Missing</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">header-height, nav-height-mobile, sidebar-width</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ Added all layout tokens</td></tr>
+<tr><td style="padding:6px 8px;border:1px solid #bbf7d0;font-family:monospace;">@import fonts</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">Inter + Cormorant Garamond</td><td style="padding:6px 8px;border:1px solid #bbf7d0;">DM Sans + Cormorant Garamond</td><td style="padding:6px 8px;border:1px solid #bbf7d0;color:#166534;">✅ Updated — DM Sans added, Inter retained</td></tr>
+</table>
+
+<div style="background:#fef9c3;padding:16px;border-radius:8px;margin-top:16px;border-left:4px solid #eab308;">
+  <strong>⚠️ Open: MealsPage.jsx static.prod-images.emergentagent.com</strong><br>
+  HERO_IMAGES and CARD_IMAGES in MealsPage.jsx use <code>static.prod-images.emergentagent.com</code> URLs. These appear to be genuine TDC product photos on the staging CDN.
+  Design bible says this domain may be unreliable. <strong>Action: Migrate these 5 images to Cloudinary and update URLs when Cloudinary access is confirmed.</strong>
+</div>
+
+<h3 style="color:#065f46;">Cake Order → Cart Flow (Session 34)</h3>
+<ul>
+  <li>✅ <code>DoggyBakeryCakeModal.jsx</code> — "Confirm Order" now: (1) calls <code>addToCart()</code> immediately with full <code>customDetails</code> (flavour, base, size, shape, name on cake, message, delivery date/time/type, petName, petBreed, petAllergies, lifeVision, productImage), (2) fires <code>POST /api/celebrate/cake-order</code> in background (non-blocking) for Admin Service Desk ticket + <code>cake_orders</code> DB record</li>
+  <li>✅ <code>CartSidebar.jsx</code> — Enhanced customDetails display: flavour+base line, message line, delivery line (date + time + type), pet name+breed chip, allergy warning, north star life vision in italic</li>
+  <li>✅ <code>server.py</code> — Added <code>life_vision</code> to <code>cake_orders</code> schema; ticket text now includes "North Star: ..." line</li>
+</ul>
+
+<h3 style="color:#065f46;">Image Hygiene (Session 34)</h3>
+<ul>
+  <li>✅ 237 Unsplash/Pexels stock photo URLs removed (206 from server.py seed data, 31 from frontend JSX)</li>
+  <li>✅ <code>PillarPage.jsx</code>, <code>ProductListing.jsx</code>, <code>MealsPage.jsx</code>, <code>Streaties.jsx</code>, <code>ProductListingNew.jsx</code> — All external img tags replaced with TDC branded CSS gradients</li>
+</ul>
+</section>
+
 <footer style="background:#1a1a2e;color:#94a3b8;text-align:center;padding:24px;font-size:0.85rem;margin-top:60px;">
-  The Doggy Company — Pet Life OS · Auto-updated each session · Last: Session 88+ (26 Mar 2026) · Care: AUDITED
+  The Doggy Company — Pet Life OS · Auto-updated each session · Last: Session 97 (30 Mar 2026) · Design Bible v2 merged
 </footer>
 
 </body>
 </html>
+
