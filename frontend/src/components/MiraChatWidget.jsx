@@ -2271,11 +2271,13 @@ const MiraChatWidget = ({
 
                   {/* ── Product cards — BELOW bubble, 800ms delay, health/emotion suppressed ── */}
                   {msg.role === 'assistant' && visibleProducts.has(msg.id) && (
-                    <div style={{
-                      marginTop: 8, width: '85%', maxWidth: 420,
-                      animation: 'miraProductFadeIn 300ms ease forwards',
-                      opacity: 0
-                    }}>
+                    <>
+                      <style>{`@keyframes miraProductFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}`}</style>
+                      <div style={{
+                        marginTop: 8, width: '85%', maxWidth: 420,
+                        animation: 'miraProductFadeIn 300ms ease forwards',
+                        opacity: 0
+                      }}>
                       <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
                         ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
                       </p>
@@ -2440,6 +2442,7 @@ const MiraChatWidget = ({
                         </div>
                       )}
                     </div>
+                    </>
                   )}
                 </div>
               );
