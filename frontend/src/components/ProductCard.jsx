@@ -654,7 +654,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
         </div>
       </div>
 
-      {showModal && createPortal(
+      {showModal && (
         isConciergeOnly ? (
           <ConciergeOnlyProductDetailModal
             product={product}
@@ -670,8 +670,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
             miraContext={effectiveMiraContext}
             onClose={() => setShowModal(false)} 
           />
-        ),
-        document.body
+        )
       )}
     </>
   );
@@ -699,7 +698,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
     setSending(false);
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]" style={{ backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)' }} onClick={onClose}>
       <div className="bg-white w-full max-w-3xl max-h-[88dvh] overflow-y-auto no-sb shadow-2xl relative" style={{ borderRadius:'28px 28px 0 0', animation:'slideUp 0.38s cubic-bezier(0.32,0.72,0,1) both' }} onClick={(e) => e.stopPropagation()} data-testid={`paperwork-product-modal-${product.id || 'item'}`}>
         <div style={{ width:40, height:5, background:'#E5E7EB', borderRadius:999, margin:'12px auto 0' }} />
@@ -784,7 +783,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
         </div>
       </div>
     </div>
-  );
+  , document.body);
 };
 
 const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, onClose, onAddToPicks = null }) => {
@@ -1513,7 +1512,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     }
   };
 
-  return (
+  return createPortal(
     <div 
       className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center sm:p-4 z-[50000]"
       style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
@@ -2210,7 +2209,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
         )}
       </div>
     </div>
-  );
+  , document.body);
 };
 
 export { ProductDetailModal, ConciergeOnlyProductDetailModal };

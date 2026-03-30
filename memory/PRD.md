@@ -566,7 +566,19 @@ Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_co
 **Test Results (iteration_247.json):** 6/7 tests PASS (86%). Watch & Learn ✅, Tokens ✅, Font ✅, Chips ✅, No regressions ✅. Desktop layout on /mira-os-shell ✅ (MiraDemoPage at /mira-os is the chat interface and uses different layout by design).
 
 
-### SESSION 35 — (2026-03-30) Cake Modal Z-index Fix + Cart Safety Guards + PillarPageLayout Header Fix
+### SESSION 36 — (2026-03-30) ProductDetailModal Portal Fix — Systemic
+
+**Root cause found**: `ProductDetailModal` and `ConciergeOnlyProductDetailModal` in `ProductCard.jsx` did NOT use `createPortal` internally. All 15+ usages across pillar pages rendered the modal inline inside PillarPageLayout's `overflow-x-hidden` div, which created a containing block hijacking `position: fixed`. The modal appeared behind the sticky header and below page content on every pillar.
+
+1. ✅ **ProductCard.jsx** — Wrapped `ProductDetailModal.return()` in `createPortal(..., document.body)`. One fix, all 15+ usages auto-fixed (CelebratePageNew, ShopSoulPage, CareSoulPage, PlaySoulPage, GoSoulPage, all Mobile pages, etc.)
+2. ✅ **ProductCard.jsx** — Same fix applied to `ConciergeOnlyProductDetailModal`
+3. ✅ **ProductCard.jsx** — Removed now-redundant outer `createPortal` wrapper in ProductCard's render
+4. ✅ **DoggyBakeryCakeModal.jsx** — Z-index raised to max (`2147483640/641/642`), order panel scroll fixed (`maxHeight:92vh`, `WebkitOverflowScrolling:touch`, proper `paddingBottom`)
+5. ✅ **PillarPageLayout.jsx** — Pillar sub-nav changed from `sticky top-0` to `sticky top-16` to avoid Navbar overlap
+
+---
+
+## SESSION 35 — (2026-03-30) Cake Modal Z-index Fix + Cart Safety Guards + PillarPageLayout Header Fix
 
 1. ✅ **DoggyBakeryCakeModal.jsx** — Raised z-index to max (`2147483640/641/642`) for backdrop, modal container, and order panel. This fixes the modal going behind page content.
 2. ✅ **Order panel scroll** — Fixed bottom sheet: `maxHeight:'92vh'`, `overflowY:'auto'`, `WebkitOverflowScrolling:'touch'`, `paddingBottom: env(safe-area-inset-bottom)`. Form fields now fully accessible.
