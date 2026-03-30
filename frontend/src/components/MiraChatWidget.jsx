@@ -2241,9 +2241,8 @@ const MiraChatWidget = ({
                         }
                         return null;
                       })()}
-                      {/* Product chips — lightweight tappable pills (replaces heavy cards) */}
-                      {msg.products && Array.isArray(msg.products) && msg.products.length > 0 &&
-                       parseMiraRecommendations(typeof msg.content === 'string' ? msg.content : '', selectedPet?.name).length === 0 && (
+                      {/* Product chips — DB picks, always show when available */}
+                      {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
                           {msg.products.slice(0, 4).map((p, pIdx) => {
                             if (!p) return null;
