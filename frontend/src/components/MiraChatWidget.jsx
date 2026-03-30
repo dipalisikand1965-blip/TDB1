@@ -2318,6 +2318,7 @@ const MiraChatWidget = ({
                               <button
                                 key={svc.id || sIdx}
                                 onClick={async () => {
+                                  console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   try {
                                     const _pet = selectedPet || {};
                                     const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
@@ -2396,6 +2397,7 @@ const MiraChatWidget = ({
                           <button
                             onClick={() => {
                               const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
+                              console.log('[NEARME] clicked, pillar:', nearMePillar);
                               window.location.href = `/${nearMePillar}#nearme`;
                             }}
                             style={{
