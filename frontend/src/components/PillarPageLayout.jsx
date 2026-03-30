@@ -463,7 +463,7 @@ const PillarPageLayout = ({
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPillarCardsOpen(v => !v); }}
             data-testid="concierge-builder-float-btn"
             style={{
-              position: 'fixed', bottom: 160, right: 24, zIndex: 2147483640,
+              position: 'fixed', bottom: 160, right: 24, zIndex: 2147483630,
               display: 'flex', alignItems: 'center', gap: 8,
               padding: window.innerWidth < 768 ? '12px 16px' : '12px 20px',
               background: accent.bg, color: accent.text,
