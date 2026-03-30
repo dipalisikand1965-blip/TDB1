@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { API_URL } from '../../utils/api';
 import { useAuth } from '../../context/AuthContext';
 import { tdc } from '../../utils/tdc_intent';
+import { guidedPathComplete } from '../../utils/MiraCardActions';
 
 // ── Colour system ────────────────────────────────────────────
 const G = {
@@ -379,31 +380,19 @@ export function PathFlowModal({ path, pet, onClose }) {
 
   const send = async () => {
     setSending(true);
-    // Fire tdc immediately on path completion
-    tdc.request({ text: `Completed guided path: ${path.title}`, name: path.title, pillar: "learn", pet, channel: "learn_guided_paths_complete" });
-    try {
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const summary = path.steps.map((s,i) =>
-        `${s.title?.replace(/{name}/g,petName)||'Step '+(i+1)}: ${(answers[i]||[]).join(', ')}`
-      ).join(' | ');
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-        method:'POST',
-        headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},
-        body:JSON.stringify({
-          parent_id: storedUser?.id || storedUser?.email || 'guest',
-          pet_id: pet?.id || 'unknown',
-          pillar: 'learn',
-          life_state: 'PLAN',
-          force_new: true,
-          intent_primary: 'guided_path_booking',
-          channel: `learn_guided_${path.id}`,
-          initial_message: {
-            sender:'parent',
-            text:`I'd like to start the "${path.title}" learning path for ${petName}. ${summary}`,
-          },
-        }),
-      });
-    } catch(e) { console.error('[GuidedLearnPaths]', e); }
+    const summary = path.steps.map((s, i) =>
+      `${s.title?.replace(/{name}/g, petName) || 'Step ' + (i + 1)}: ${(answers[i] || []).join(', ')}`
+    ).join(' | ');
+    await guidedPathComplete({
+      pathTitle:  path.title,
+      pathId:     path.id,
+      pillar:     'learn',
+      pet,
+      token,
+      channel:    `learn_guided_${path.id}`,
+      selections: answers,
+      onSuccess:  () => {},
+    });
     setSending(false);
     setSent(true);
   };

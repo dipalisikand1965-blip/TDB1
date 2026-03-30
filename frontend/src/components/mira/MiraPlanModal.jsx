@@ -11,6 +11,7 @@
  */
 import { useState, useEffect } from 'react';
 import { API_URL } from '../../utils/api';
+import { bookViaConcierge } from '../../utils/MiraCardActions';
 
 const PILLAR_CONFIG = {
   learn: {
@@ -117,23 +118,6 @@ async function fetchMiraPlan(petId, pillar, token) {
   }
 }
 
-async function bookViaConcierge(petId, petName, cardTitle, pillar, token) {
-  try {
-    await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({
-        pet_id: petId,
-        title: `${cardTitle} — for ${petName}`,
-        description: `Mira's ${pillar} plan recommendation: ${cardTitle}`,
-        pillar,
-        type: 'mira_plan',
-        priority: 'normal',
-      }),
-    });
-  } catch {}
-}
-
 export default function MiraPlanModal({ isOpen = false, onClose, pet = null, pillar = 'learn', token = null }) {
   const [cards, setCards] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -162,7 +146,14 @@ export default function MiraPlanModal({ isOpen = false, onClose, pet = null, pil
 
   const handleBook = async (card, idx) => {
     setBookedCards((prev) => [...prev, idx]);
-    await bookViaConcierge(petId, petName, card.title, pillar, token);
+    await bookViaConcierge({
+      service:  card.title,
+      pillar,
+      pet,
+      token,
+      channel:  `${pillar}_mira_plan_modal`,
+      notes:    card.description || card.subtitle || undefined,
+    });
   };
 
   if (!isOpen) return null;

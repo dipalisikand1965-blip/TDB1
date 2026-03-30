@@ -13,6 +13,7 @@
 import { useState } from "react";
 import { API_URL } from "../../utils/api";
 import { tdc } from "../../utils/tdc_intent";
+import { bookViaConcierge } from "../../utils/MiraCardActions";
 
 export default function ProductModal({ item, pet, pillar, onClose, onBook, colour = "#9B59B6" }) {
   const [booked,  setBooked]  = useState(false);
@@ -43,23 +44,16 @@ export default function ProductModal({ item, pet, pillar, onClose, onBook, colou
       if (onBook) {
         await onBook(item);
       } else {
-        // Direct concierge ticket
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            parent_id:     user?.id || user?.email || "guest",
-            pet_id:        pet?.id || "unknown",
-            pillar,
-            intent_primary: isService ? "service_booking" : "product_order",
-            channel:        `${pillar}_product_modal`,
-            life_state:     pillar,
-            initial_message: {
-              sender: "parent",
-              text: `I'd like to ${isService ? "book" : "order"} "${item.name}" for ${petName}.${item.price && !isFree ? ` Price: ₹${item.price}.` : ""}`,
-            },
-          }),
+        // Direct concierge ticket via canonical bookViaConcierge (Master Ticket Standard)
+        const token = localStorage.getItem('tdb_auth_token');
+        await bookViaConcierge({
+          service:  item.name,
+          pillar:   pillar || 'platform',
+          pet,
+          token,
+          channel:  `${pillar || 'platform'}_product_modal`,
+          amount:   item.price,
+          notes:    item.description ? item.description.slice(0, 120) : undefined,
         });
       }
       setBooked(true);
