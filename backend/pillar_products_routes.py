@@ -45,6 +45,12 @@ KNOWN_BREED_NAMES = sorted([
     "alaskan malamute", "malamute", "miniature schnauzer", "giant schnauzer",
     "miniature poodle", "toy poodle", "standard poodle",
     "english springer spaniel", "springer spaniel",
+    # Breeds verified in DB product names/tags — added to prevent cross-breed contamination
+    "shiba inu",       # 24 products in DB tagged/named with shiba inu
+    "maltipoo",        # 25 products in DB
+    "italian greyhound",
+    "collie",          # generic collie (border collie is already above)
+    "bernese mountain dog",
 ], key=len, reverse=True)  # Longest first so "golden retriever" beats "retriever"
 
 

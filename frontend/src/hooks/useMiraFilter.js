@@ -585,6 +585,8 @@ export const KNOWN_BREEDS = [
   'giant schnauzer','flat coated retriever',
   'springer spaniel','english springer spaniel',
   'basset hound','bloodhound','american bully',
+  // Verified in DB — missing breeds cause contamination leakage
+  'shiba inu','maltipoo','italian greyhound','collie','bernese mountain dog',
 ];
 
 /**
