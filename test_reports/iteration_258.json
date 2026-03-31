@@ -1,0 +1,79 @@
+{
+  "summary": "Tested ServiceBox + BundleBox CRUD, Import/Export CSV for iteration 258. 16/18 backend tests pass. Key findings: Import CSV endpoints broken (422) for both services and bundles due to FastAPI `list` body param issue. ServiceBox layout bug fixed (Edit+Delete buttons were on separate rows). All other features (delete, export, create, toggles, Add Bundle editor) working correctly.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/admin/services/import-csv",
+        "issue": "Returns 422 for all request body formats. Backend uses `services: list` without `Body(...)` annotation - FastAPI/Pydantic v2 cannot parse a raw JSON array or wrapped format. Frontend sends raw list `[...]` which fails. Fix: Add `= Body(...)` annotation to the services param.",
+        "priority": "CRITICAL"
+      },
+      {
+        "endpoint": "POST /api/admin/bundles/all/import-csv",
+        "issue": "Returns 422 for all request body formats. Same root cause as services import-csv: `bundles: list` without `Body(...)` annotation. All 4 endpoint versions (admin_router and api_router duplicates) have this issue. Fix: Add `from fastapi import Body` and use `bundles: list = Body(...)`",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "Duplicate route: api_router.get('/admin/bundles/all/export-csv') at line 25330",
+        "issue": "Old duplicate endpoint has only 8 columns. Admin_router version (18 cols) takes precedence in practice (verified via test). Old route should be removed to avoid confusion."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ServiceBox - Actions column",
+        "issue": "Edit and Delete buttons were NOT wrapped in a flex container, causing Delete button to overflow to a second grid row below each service row. FIXED by wrapping in <div style={{display:'flex', gap:6}}> and widening last column to 120px.",
+        "selector": "[data-testid^='delete-service-']",
+        "priority": "HIGH - FIXED"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Service Import CSV",
+        "issue": "Import CSV button triggers handleImportCSV which calls POST /api/admin/services/import-csv with raw list body. Backend returns 422. Import is completely non-functional.",
+        "affected_selectors": ["label:has-text('Import CSV')"]
+      },
+      {
+        "flow": "Bundle Import CSV",
+        "issue": "Import CSV button triggers handleImportCSV which calls POST /api/admin/bundles/all/import-csv with raw list body. Backend returns 422. Import is completely non-functional.",
+        "affected_selectors": ["label:has-text('Import CSV') (BundleBox)"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_service_bundle_crud.py",
+    "/app/test_reports/pytest/service_bundle_crud_258.xml"
+  ],
+  "action_items": [
+    "CRITICAL FIX: Add `from fastapi import Body` and change `services: list` to `services: list = Body(...)` in ALL import-csv endpoint definitions (lines 7170, 7206, 25345, 25365 in server.py). Same for `bundles: list = Body(...)`. This fixes the 422 error for import CSV.",
+    "Optional cleanup: Remove old api_router.get('/admin/bundles/all/export-csv') at line 25330 (8 columns only) since admin_router version (18 columns) is the correct one.",
+    "Minor: ServiceBox layout fix already applied (Edit+Delete buttons now in flex container)"
+  ],
+  "critical_code_review_comments": [
+    "Import CSV endpoints (services + bundles): `services: list` and `bundles: list` body params lack `Body(...)` annotation. FastAPI/Pydantic v2 cannot parse bare JSON arrays sent by frontend. All 4 endpoint versions have this bug (admin_router lines 7170, 7206 + api_router lines 25345, 25365).",
+    "Route duplication: admin_router and api_router both define overlapping bundle CRUD paths. The GET /admin/bundles/all endpoint works because api_router's version registered first picks it up. The export-csv GET correctly returns 18 cols from admin_router. The import-csv POST is broken in both. Recommend consolidating to avoid future confusion.",
+    "ServiceBox.jsx grid layout bug (FIXED): Edit+Delete buttons were direct grid children without a wrapping flex div, causing overflow to next row."
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/admin/ServiceBox.jsx"
+  ],
+  "success_rate": {
+    "backend": "89% (16/18 tests pass)",
+    "frontend": "85% (import CSV broken, all other UI flows work)"
+  },
+  "test_credentials": "aditya / lola4304 (Basic auth: YWRpdHlhOmxvbGE0MzA0)",
+  "seed_data_creation": "Test created and deleted bundles during test run. 'Birthday Pawty Bundle' was accidentally deleted during delete flow test - may need to be re-seeded.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend import CSV endpoints (POST /api/admin/services/import-csv and POST /api/admin/bundles/all/import-csv) return 422 for raw list body. Fix is adding Body(...) annotation to the list params. All other features (export CSV 18 cols, create bundle POST, delete bundle DELETE, service delete DELETE, export service CSV JSON, Add Bundle editor) are working. ServiceBox layout fix was applied to wrap Edit+Delete in flex container. Previous iteration 257 was breed filter testing.",
+  "rca_of_issue": {
+    "import_csv_422": {
+      "root_cause": "FastAPI/Pydantic v2 treats a bare `list` type body parameter differently from a `list = Body(...)` parameter. Without `Body(...)`, FastAPI expects the request body to be a JSON object with the parameter name as a key (e.g., `{\"services\": [...]}`), not a raw JSON array. The frontend sends `JSON.stringify(services)` which is a raw array `[...]`. Even wrapping as `{\"services\": [...]}` fails with `input:null` suggesting Pydantic v2 has stricter handling.",
+      "reproduction": "curl -X POST /api/admin/services/import-csv -H 'Content-Type: application/json' -d '[{\"name\":\"test\"}]' → 422",
+      "fix": "In server.py, change `services: list` to `services: list = Body(...)` and `bundles: list` to `bundles: list = Body(...)` in all 4 import-csv endpoints (lines 7170, 7206, 25345, 25365). Add `from fastapi import Body` import."
+    }
+  }
+}
