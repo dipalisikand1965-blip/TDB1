@@ -583,7 +583,10 @@ async def get_top_picks(
         bundle_ids  = [p["entity_id"] for p in picks if p.get("entity_type") == "bundle"]
 
         if product_ids:
-            async for doc in _db.products_master.find({"id": {"$in": product_ids}}, {"_id": 0}):
+            async for doc in _db.products_master.find(
+                {"id": {"$in": product_ids}, "is_active": {"$ne": False}, "visibility.status": {"$ne": "archived"}},
+                {"_id": 0}
+            ):
                 products_map[doc["id"]] = doc
         if service_ids:
             async for doc in _db.services_master.find({"id": {"$in": service_ids}}, {"_id": 0}):
