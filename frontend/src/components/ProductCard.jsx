@@ -217,7 +217,9 @@ const isValidUrl = (url) => {
   if (!url.startsWith('http')) return false;
   if (url.includes('emergentagent.com')) return false;
   if (url.includes('static.prod-images')) return false;
-  if (url.includes('ai_generated')) return false;
+  // Only block 'ai_generated' for non-Cloudinary sources.
+  // Cloudinary stores real AI-generated images under /ai_generated/ folders — always valid.
+  if (!url.includes('cloudinary.com') && url.includes('ai_generated')) return false;
   return true;
 };
 
