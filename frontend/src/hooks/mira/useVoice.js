@@ -208,9 +208,9 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
     setIsSpeaking(false);
   }, []);
   
-  // ─── ElevenLabs Eloise voice (direct API, key rotation) ───────────────────
-  // Eloise — EST9Ui6982FZPSi7gCHi — user-confirmed canonical voice ID
-  const ELOISE_VOICE_ID = 'EST9Ui6982FZPSi7gCHi'; // Eloise (ElevenLabs)
+  // ─── ElevenLabs Elise voice (direct API, key rotation) ───────────────────
+  // Elise — AZnzlk1XvdvUeBnXmlld — replaces retired Eloise (EST9Ui6982FZPSi7gCHi)
+  const ELOISE_VOICE_ID = 'AZnzlk1XvdvUeBnXmlld'; // Elise (ElevenLabs) — confirmed working
 
   const ELEVEN_KEYS = [
     process.env.REACT_APP_ELEVEN_LABS_KEY_1,

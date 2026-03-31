@@ -879,39 +879,61 @@ const Pulse = ({
     utterance.rate = PULSE_VOICE_CONFIG.rate;
     utterance.pitch = PULSE_VOICE_CONFIG.pitch;
     
-    const voices = synthRef.current.getVoices();
-    
-    // Priority order for voice selection (best Indian female voices)
-    const voicePreference = [
-      // Google Indian English (best quality)
-      v => v.name.includes('Google') && v.lang === 'en-IN',
-      // Any Indian English voice
-      v => v.lang === 'en-IN' || v.lang === 'en_IN',
-      // Hindi voices (natural Indian accent)
-      v => v.lang.startsWith('hi'),
-      // Microsoft Indian voices
-      v => v.name.includes('Neerja') || v.name.includes('Heera'),
-      // Google UK female (similar intonation)
-      v => v.name.includes('Google UK English Female'),
-      // Any female voice
-      v => v.name.toLowerCase().includes('female') || 
-           v.name.includes('Samantha') || 
-           v.name.includes('Zira') ||
-           v.name.includes('Karen')
-    ];
-    
-    for (const preference of voicePreference) {
-      const voice = voices.find(preference);
-      if (voice) {
-        utterance.voice = voice;
-        break;
+    const pickVoice = () => {
+      const voices = synthRef.current.getVoices();
+      if (!voices.length) return null;
+
+      // Priority order for voice selection (best Indian/female English voices)
+      const voicePreference = [
+        // Google Indian English (best quality — available on Android Chrome)
+        v => v.name.includes('Google') && v.lang === 'en-IN',
+        // Any Indian English voice
+        v => v.lang === 'en-IN' || v.lang === 'en_IN',
+        // Hindi voices (natural Indian accent)
+        v => v.lang.startsWith('hi'),
+        // Microsoft Indian voices
+        v => v.name.includes('Neerja') || v.name.includes('Heera'),
+        // Google UK female (similar intonation)
+        v => v.name.includes('Google UK English Female'),
+        // iOS Samantha (default iOS female US voice — must be before generic female check)
+        v => v.name === 'Samantha',
+        // Any explicitly female voice
+        v => v.name.toLowerCase().includes('female') ||
+             v.name.includes('Zira') ||
+             v.name.includes('Karen') ||
+             v.name.includes('Victoria') ||
+             v.name.includes('Moira'),
+        // Any English female by name pattern (Karen/Victoria are female on macOS/iOS)
+        v => v.lang.startsWith('en') && !v.name.toLowerCase().includes('male'),
+      ];
+
+      for (const preference of voicePreference) {
+        const voice = voices.find(preference);
+        if (voice) return voice;
       }
+      // Last resort: first English voice (could be any gender)
+      return voices.find(v => v.lang.startsWith('en')) || null;
+    };
+
+    const setVoiceAndSpeak = () => {
+      const chosenVoice = pickVoice();
+      if (chosenVoice) utterance.voice = chosenVoice;
+      synthRef.current.speak(utterance);
+    };
+
+    const voices = synthRef.current.getVoices();
+    if (voices.length === 0) {
+      // iOS: voices not loaded yet — wait for onvoiceschanged
+      const handler = () => {
+        if (synthRef.current) {
+          synthRef.current.onvoiceschanged = null;
+          setVoiceAndSpeak();
+        }
+      };
+      synthRef.current.onvoiceschanged = handler;
+    } else {
+      setVoiceAndSpeak();
     }
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    
-    synthRef.current.speak(utterance);
   }, [isMuted, cleanTextForSpeech]);
   
   // Main speak function - tries ElevenLabs first, then falls back
