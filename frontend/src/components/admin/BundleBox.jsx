@@ -103,6 +103,7 @@ export default function BundleBox() {
   const [search, setSearch] = useState('');
   const [pillarFilter, setPillarFilter] = useState('all');
   const [toast, setToast] = useState('');
+  const [togglingId, setTogglingId] = useState(null);
 
   // ProductBoxEditor state
   const [editProduct, setEditProduct] = useState(null);
@@ -155,8 +156,28 @@ export default function BundleBox() {
     setSaving(false);
   };
 
-  const exportCSV = () => {
-    const headers = ['ID','Name','Pillar','Price','Discount %','Soul Made','Status'];
+  const handleToggleActive = async (bundle) => {
+    const bId = bundle._bundleId || bundle.id || bundle._id;
+    setTogglingId(bId);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/bundles/all/${bId}/toggle`, {
+        method: 'POST', headers: getAdminHeaders()
+      });
+      if (res.ok) {
+        const newStatus = bundle.is_active !== false ? false : true;
+        setBundles(prev => prev.map(b => (b._bundleId || b.id || b._id) === bId ? { ...b, is_active: newStatus } : b));
+        setToast(newStatus ? `✅ ${bundle.name} set Active` : `⏸ ${bundle.name} set Inactive`);
+      } else {
+        setToast('❌ Toggle failed');
+      }
+    } catch {
+      setToast('❌ Toggle failed');
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  const exportCSV = () => {    const headers = ['ID','Name','Pillar','Price','Discount %','Soul Made','Status'];
     const rows = bundles.map(b => [
       b.id||'', `"${b.name||''}"`, b.pillar||'', b.price||0,
       b.discount_percent||0, b.is_soul_made?'Yes':'No',
@@ -271,8 +292,22 @@ export default function BundleBox() {
                 {b.is_soul_made ? '✦ Yes' : '—'}
               </div>
               <div style={{ fontSize:11, fontWeight:700, color:b.is_active!==false?P.green:P.red }}>
-                {b.is_active!==false ? '✓ Active' : '✗ Off'}
-              </div>
+                  <button
+                    data-testid={`toggle-bundle-${b.id||i}`}
+                    onClick={() => handleToggleActive(b)}
+                    disabled={togglingId === (b._bundleId || b.id || b._id)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                      fontWeight: 700, fontSize: 11,
+                      background: b.is_active !== false ? '#D1FAE5' : '#FEE2E2',
+                      color: b.is_active !== false ? '#065F46' : '#991B1B',
+                      opacity: togglingId === (b._bundleId || b.id || b._id) ? 0.6 : 1,
+                      transition: 'all 0.15s ease',
+                      minWidth: 64
+                    }}>
+                    {togglingId === (b._bundleId || b.id || b._id) ? '…' : b.is_active !== false ? '✓ Active' : '✗ Off'}
+                  </button>
+                </div>
               <button
                 data-testid={`edit-bundle-${b.id||i}`}
                 onClick={() => openEditor(b)}

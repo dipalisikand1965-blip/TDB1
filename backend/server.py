@@ -7089,6 +7089,22 @@ async def admin_update_bundle(bundle_id: str, updates: dict, username: str = Dep
         raise HTTPException(status_code=404, detail="Bundle not found")
     return {"success": True, "updated": clean}
 
+@admin_router.post("/bundles/all/{bundle_id}/toggle")
+async def admin_toggle_bundle_active(bundle_id: str, username: str = Depends(verify_admin)):
+    """Toggle is_active for a bundle."""
+    from datetime import datetime, timezone
+    existing = await db.bundles.find_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "is_active": 1, "name": 1}
+    )
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    new_status = not existing.get("is_active", True)
+    await db.bundles.update_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+        {"$set": {"is_active": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "id": bundle_id, "is_active": new_status, "name": existing.get("name")}
+
 @admin_router.post("/bundles/all/import-csv")
 async def admin_import_bundles(bundles: list, username: str = Depends(verify_admin)):
     """Import bundles into master bundles collection."""
@@ -25172,6 +25188,25 @@ async def update_admin_bundle_all(
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Bundle not found")
     return {"success": True, "updated": clean}
+
+@api_router.post("/admin/bundles/all/{bundle_id}/toggle")
+async def toggle_admin_bundle_active(
+    bundle_id: str,
+    current_user: dict = Depends(verify_admin)
+):
+    """Toggle is_active for a bundle in the master bundles collection."""
+    from datetime import datetime, timezone
+    existing = await db.bundles.find_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "is_active": 1, "name": 1}
+    )
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    new_status = not existing.get("is_active", True)
+    await db.bundles.update_one(
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
+        {"$set": {"is_active": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"success": True, "id": bundle_id, "is_active": new_status, "name": existing.get("name")}
 
 @api_router.get("/admin/bundles/all/export-csv")
 async def export_all_bundles_csv(current_user: dict = Depends(verify_admin)):
