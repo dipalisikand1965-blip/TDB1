@@ -130,6 +130,7 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   const [shape, setShape] = useState('all');
   const [breedFilter, setBreedFilter] = useState(null);
   const [breedDropdownOpen, setBreedDropdownOpen] = useState(false);
+  const [breedSearch, setBreedSearch] = useState('');
   const [page, setPage] = useState(1);
 
   // Order form state
@@ -332,7 +333,16 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
   // ── All available breed names from breed-cakes (use product name directly) ─
   const allBreedNames = breedCakes
     .map(p => (p.name || '').trim())
-    .filter(name => name && name.toLowerCase() !== petBreed)
+    .filter(name => {
+      if (!name || name.toLowerCase() === petBreed) return false;
+      const lower = name.toLowerCase();
+      // Exclude cake variety names — keep only pure breed names
+      if (lower.endsWith(' cake') || lower.endsWith(' cakes') ||
+          lower.includes('munch') || lower.includes('smiles') ||
+          lower.startsWith('frosty') || lower.startsWith('peanut') ||
+          lower.startsWith('mynx') || lower === 'labowbow') return false;
+      return true;
+    })
     .sort();
 
   // ── Filtered grid ─────────────────────────────────────────────────────────
@@ -644,17 +654,32 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
                     position: 'absolute', top: '110%', left: 0, zIndex: 10,
                     background: '#fff', border: '1px solid #D4B8F0', borderRadius: 12,
                     boxShadow: '0 8px 24px rgba(155,89,182,0.2)',
-                    minWidth: 180, maxHeight: 220, overflowY: 'auto', padding: '6px 0',
+                    minWidth: 200, width: 220, padding: '6px 0',
                   }}>
+                    {/* Search input */}
+                    <div style={{ padding: '6px 10px 4px' }}>
+                      <input
+                        autoFocus
+                        placeholder="Search breed…"
+                        value={breedSearch}
+                        onChange={e => setBreedSearch(e.target.value)}
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                          width: '100%', padding: '6px 10px', fontSize: 12, borderRadius: 8,
+                          border: '1px solid #D4B8F0', outline: 'none', boxSizing: 'border-box',
+                        }}
+                      />
+                    </div>
+                    <div style={{ maxHeight: 280, overflowY: 'auto', padding: '2px 0' }}>
                     {breedFilter && (
-                      <button onClick={() => { setBreedFilter(null); setShape('all'); setBreedDropdownOpen(false); setPage(1); }}
+                      <button onClick={() => { setBreedFilter(null); setShape('all'); setBreedDropdownOpen(false); setBreedSearch(''); setPage(1); }}
                         style={{ width: '100%', textAlign: 'left', padding: '8px 14px', fontSize: 12, fontWeight: 700, color: '#C44DFF', background: 'none', border: 'none', cursor: 'pointer' }}>
                         ✕ Clear breed filter
                       </button>
                     )}
-                    {allBreedNames.map(breed => (
+                    {allBreedNames.filter(b => !breedSearch || b.toLowerCase().includes(breedSearch.toLowerCase())).map(breed => (
                       <button key={breed}
-                        onClick={() => { setBreedFilter(breed); setShape('all'); setBreedDropdownOpen(false); setPage(1); }}
+                        onClick={() => { setBreedFilter(breed); setShape('all'); setBreedDropdownOpen(false); setBreedSearch(''); setPage(1); }}
                         data-testid={`breed-option-${breed}`}
                         style={{
                           width: '100%', textAlign: 'left', padding: '8px 14px', fontSize: 13,
@@ -665,6 +690,10 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
                         {breed}
                       </button>
                     ))}
+                    {allBreedNames.filter(b => !breedSearch || b.toLowerCase().includes(breedSearch.toLowerCase())).length === 0 && (
+                      <div style={{ padding: '8px 14px', fontSize: 12, color: '#B8A0CC' }}>No breeds found</div>
+                    )}
+                    </div>
                   </div>
                 )}
               </div>
