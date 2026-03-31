@@ -327,7 +327,11 @@ async def get_sub_categories(pillar: str):
     db = get_db()
     try:
         pipeline = [
-            {"$match": {"pillar": pillar}},
+            {"$match": {
+                "pillar": pillar,
+                "visibility.status": {"$ne": "archived"},
+                "is_active": {"$ne": False}
+            }},
             {"$group": {"_id": "$category"}},
             {"$sort": {"_id": 1}}
         ]
