@@ -269,8 +269,8 @@ function DoggyBakerySection({ pet, token, presetFilter }) {
   const [filter, setFilter] = useState(presetFilter || 'all');
   const [showAll, setShowAll] = useState(false);
   useEffect(() => {
-    fetch(`${API_URL}/api/service-box/services?pillar=shop&limit=200`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-      .then(r => r.ok ? r.json() : null).then(d => { setItems(d?.services || []); setLoading(false); }).catch(() => setLoading(false));
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=200&sort_by=mira_score`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      .then(r => r.ok ? r.json() : null).then(d => { setItems(d?.products || []); setLoading(false); }).catch(() => setLoading(false));
   }, [token]);
   const filtered = filter === 'all' ? items : items.filter(i => {
     const n = (i.name || '').toLowerCase();
