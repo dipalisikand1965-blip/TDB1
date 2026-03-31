@@ -1289,11 +1289,12 @@ const MiraChatWidget = ({
 
             const chunk = decoder.decode(value, { stream: true });
             const lines = chunk.split('\n');
+            let streamEnded = false;
 
             for (const line of lines) {
               if (!line.startsWith('data: ')) continue;
               const data = line.slice(6).trim();
-              if (data === '[DONE]') break;
+              if (data === '[DONE]') { streamEnded = true; break; }
               try {
                 const parsed = JSON.parse(data);
                 // ── Enriched data event (products + nearbyPlaces from stream) ──
@@ -1310,6 +1311,7 @@ const MiraChatWidget = ({
                 ));
               } catch {}
             }
+            if (streamEnded) break;  // exits the while(true) loop
           }
 
           // Mark streaming complete — attach enriched products/nearbyPlaces
