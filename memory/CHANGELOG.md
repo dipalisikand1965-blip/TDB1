@@ -1,6 +1,20 @@
 # CHANGELOG
 
-## 2026-03-29 (This Session — Pre-Deploy Smoke Test)
+## 2026-03-31 (Session 39 — P0: Inactive Filtering + Admin Search Debounce)
+
+### Bug Fixes
+1. **Inactive Services on Consumer Frontend** — `GET /api/service-box/services` now defaults `active_only=True`. Previously 437 inactive services (out of 1048 total) were being returned to consumer pages (e.g. adopt pillar now returns 21 active vs. 31 total). Consumer pages like `ServicesSoulPage`, `FarewellSoulPage`, `AdoptSoulPage` no longer show deactivated services.
+
+### Enhancements
+2. **ServiceBox.jsx search** — Added 350ms debounce + multi-field search (id, name, category, sub_category, pillar, description) + relevance sort (name starts-with query first).
+3. **BundleBox.jsx search** — Same debounce + multi-field search + relevance sort pattern.
+4. **SoulProductsManager.jsx search** — Same debounce + multi-field search (id, name, category, sub_category, soul_tier, pillar, description) + relevance sort.
+
+### Test Results (iteration_254)
+- Backend: 100% (8/8 pass)
+- Frontend: 100% (3/3 debounce tests pass, consumer page verified)
+
+
 
 ### Bug Fixes
 1. **Shop "Ask Concierge®" button** — was calling silent `request()`, now opens `ConciergeRequestBuilder` modal correctly

@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-30 (Session 38 — Mira Widget UI Fixes: Zone A z-index, C° FAB hidden on mobile, service chip prices removed)
+## Last Updated: 2026-03-31 (Session 39 — P0: Inactive service filtering + Admin search debounce for ServiceBox/BundleBox/SoulBox)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
