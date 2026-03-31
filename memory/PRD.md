@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-31 (Session 43 — Strict breed filter: DineMobilePage + DineContentModal + backend KNOWN_BREED_NAMES expanded)
+## Last Updated: 2026-03-31 (Session 44 — ServiceBox + BundleBox full CRUD + 27/18 column CSV export/import)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service

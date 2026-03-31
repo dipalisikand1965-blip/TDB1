@@ -7168,7 +7168,7 @@ async def admin_toggle_bundle_active(bundle_id: str, username: str = Depends(ver
     return {"success": True, "id": bundle_id, "is_active": new_status, "name": existing.get("name")}
 
 @admin_router.post("/bundles/all/import-csv")
-async def admin_import_bundles(bundles: list, username: str = Depends(verify_admin)):
+async def admin_import_bundles(bundles: list = Body(...), username: str = Depends(verify_admin)):
     """Import bundles into master bundles collection."""
     from datetime import datetime, timezone
     now = datetime.now(timezone.utc).isoformat()
@@ -7204,7 +7204,7 @@ async def admin_export_bundles_csv(username: str = Depends(verify_admin)):
 
 # ─── ADMIN SERVICES IMPORT CSV ────────────────────────────────────────────────
 @admin_router.post("/services/import-csv")
-async def admin_import_services_csv(services: list, username: str = Depends(verify_admin)):
+async def admin_import_services_csv(services: list = Body(...), username: str = Depends(verify_admin)):
     """Import services into services_master."""
     from datetime import datetime, timezone
     now = datetime.now(timezone.utc).isoformat()
@@ -25327,24 +25327,12 @@ async def toggle_admin_bundle_active(
     )
     return {"success": True, "id": bundle_id, "is_active": new_status, "name": existing.get("name")}
 
-@api_router.get("/admin/bundles/all/export-csv")
-async def export_all_bundles_csv(current_user: dict = Depends(verify_admin)):
-    """Export all bundles as CSV."""
-    import csv, io
-    raw = await db.bundles.find({}).to_list(length=500)
-    output = io.StringIO()
-    writer = csv.DictWriter(output, fieldnames=["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"])
-    writer.writeheader()
-    for b in raw:
-        b["id"] = b.get("id") or str(b.get("_id",""))
-        writer.writerow({k: b.get(k,"") for k in ["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"]})
-    from fastapi.responses import Response
-    return Response(content=output.getvalue(), media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=bundles_export.csv"})
+
+# Note: /admin/bundles/all/export-csv is handled by admin_router (18 columns) — this api_router version removed to prevent conflict.
 
 @api_router.post("/admin/bundles/all/import-csv")
 async def import_all_bundles_csv(
-    bundles: list,
+    bundles: list = Body(...),
     current_user: dict = Depends(verify_admin)
 ):
     """Bulk import bundles into master bundles collection."""
@@ -25364,7 +25352,7 @@ async def import_all_bundles_csv(
 # ─── ADMIN SERVICES CSV IMPORT ────────────────────────────────────────────────
 @api_router.post("/admin/services/import-csv")
 async def import_services_csv(
-    services: list,
+    services: list = Body(...),
     current_user: dict = Depends(verify_admin)
 ):
     """Import services into services_master."""

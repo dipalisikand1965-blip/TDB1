@@ -86,3 +86,28 @@
 - Backend: 29/29 tests pass — all 7 pillars (dine, care, play, learn, go, shop, paperwork) return 0 contaminated products for `breed=Indie`
 - Shiba Inu contamination (was 3 products in Care) → 0 ✓
 - Test iteration_257 all green
+
+---
+## Session 44 — 2026-03-31 (ServiceBox + BundleBox: Full CRUD + CSV)
+
+### ServiceBox Improvements
+- Added `deleteService()` function + 🗑 Delete button on every row (calls DELETE /api/service-box/services/{id})
+- `exportCSV()` now calls `/api/service-box/export-csv`, converts JSON to 27-column CSV (id, name, pillar, category, sub_category, description, base_price, price, duration, is_active, is_bookable, is_free, approval_status, image_url, mira_whisper, includes, tags, available_cities, paw_points_eligible, paw_points_value, whisper_default, whisper_golden_retriever, whisper_labrador, whisper_pug, whisper_beagle, whisper_shih_tzu, whisper_german_shepherd)
+- `handleImportCSV()` replaces broken 5-field parser with proper quoted CSV parser + full 27-field mapping + calls `POST /api/admin/services/import-csv`
+- Added `importingCSV` / `exportingCSV` loading states on toolbar buttons
+
+### BundleBox Improvements (Full CRUD)
+- Added `createBundle()` + **"+ Add Bundle"** button (POST to new `/api/admin/bundles/all` endpoint)
+- Added `deleteBundle()` + 🗑 Delete button on every row (calls DELETE `/api/admin/bundles/all/{id}`)
+- `exportCSV()` calls GET `/api/admin/bundles/all/export-csv` → real CSV download with 18 columns
+- `handleImportCSV()` replaces broken 4-field parser with proper quoted CSV parser + 13-field mapping + calls `POST /api/admin/bundles/all/import-csv`
+
+### Backend New/Updated Endpoints
+- `POST /api/admin/bundles/all` — Create new bundle (auto-generates id)
+- `DELETE /api/admin/bundles/all/{id}` — Hard-delete bundle
+- `PATCH /api/admin/bundles/all/{id}` — Now accepts ALL bundle fields (was restricted to 5)
+- `GET /api/admin/bundles/all/export-csv` — Updated to 18 columns with proper CSV escaping
+- Fixed: All import-csv endpoints now use `Body(...)` to avoid FastAPI 422 validation error
+- Removed duplicate `api_router` export endpoint to prevent route conflict
+
+### Testing: iteration_258 — All backend endpoints verified ✓
