@@ -2392,7 +2392,7 @@ const MiraChatWidget = ({
                             onClick={(e) => {
                               e.preventDefault();
                               const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
-                              navigate(`/${nearMePillar}?tab=nearme`);
+                              window.location.href = `/${nearMePillar}`;
                             }}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 8,

@@ -247,6 +247,7 @@ function DoggyBakerySection({ pet }) {
   const [items,    setItems]    = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [filter,   setFilter]   = useState("all");
+  const [showAll,  setShowAll]  = useState(false);
   const petName = pet?.name || "your dog";
 
   const FILTERS = [
@@ -360,18 +361,19 @@ function DoggyBakerySection({ pet }) {
       ) : (
         <>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
-            {filtered.slice(0,24).map(item => (
+            {(showAll ? filtered : filtered.slice(0,24)).map(item => (
               <div key={item.id||item._id}>
                 <SharedProductCard product={item} pillar="shop" selectedPet={pet}
                   miraContext={{ includeText:"Add to Cart" }}/>
               </div>
             ))}
           </div>
-          <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer"
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowAll(true); }}
             style={{ display:"block", textAlign:"center", marginTop:16, padding:"12px",
                      borderRadius:10, background:G.pale, border:`1px solid ${G.border}`,
-                     color:G.mid, fontSize:13, fontWeight:600, textDecoration:"none" }}>
-            See all {items.length} products on thedoggybakery.com →
+                     color:G.mid, fontSize:13, fontWeight:600, textDecoration:"none",
+                     display: showAll ? "none" : "block" }}>
+            Browse all {filtered.length} products →
           </a>
         </>
       )}
