@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
-import PillarPageLayout from "../components/PillarPageLayout";
+import ConciergeCTA from "../components/ConciergeCTA";import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import SoulMadeModal from "../components/SoulMadeModal";
 import ConciergeToast from "../components/common/ConciergeToast";
@@ -500,6 +500,8 @@ const EmergencySoulPage = () => {
               <button onClick={()=>setConciergeOpen(true)} style={{background:`linear-gradient(135deg,${G.crimson},${G.mid})`,color:"#fff",border:"none",borderRadius:20,padding:"9px 20px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Fix these now with Concierge® →</button>
             </div>)}
             <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{const map={'Emergency Vet Discovery':'Find emergency vet','After-Hours Care Guidance':'Accident response','24/7 Emergency Helpline Subscription':'Emergency transport','24/7 Emergency Vet Hotline':'Find emergency vet'};openEmergencyService(map[serviceName]||serviceName||'Find emergency vet');}}/>
+            {/* Concierge CTA — desktop */}
+            <ConciergeCTA pillar="emergency" />
             {/* ✦ Soul Made™ trigger — custom emergency ID tags, medical alert tags */}
             <div data-testid="emergency-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{width:"100%",marginBottom:24,padding:"20px 20px 18px",background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 50%,${G.deep} 100%)`,border:`1.5px solid rgba(220,38,38,0.4)`,borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:`0 4px 24px rgba(220,38,38,0.18)`,transition:"transform 0.15s, box-shadow 0.15s"}}
