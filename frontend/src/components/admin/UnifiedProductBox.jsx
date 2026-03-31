@@ -4,6 +4,7 @@
  * Enhanced with comprehensive 6-tab editor
  */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import BatchImageButton from './BatchImageButton';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -908,8 +909,8 @@ const UnifiedProductBox = () => {
             )}
             Export CSV
           </Button>
+          <BatchImageButton target="products" label="Auto-Generate Product Images" />
           <label style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, border:'1px solid #86efac', color:'#166534', background:'#f0fdf4', cursor:'pointer', fontSize:13, fontWeight:600 }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Import CSV
             <input type="file" accept=".csv" style={{ display:'none' }} onChange={async (e) => {
               const file = e.target.files[0]; if (!file) return;
