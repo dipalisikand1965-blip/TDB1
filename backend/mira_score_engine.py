@@ -252,7 +252,9 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
         all_items = []
 
         if "product" in types:
-            q = {"pillar": pillar} if pillar else {}
+            q = {"is_active": {"$ne": False}, "visibility.status": {"$ne": "archived"}}
+            if pillar:
+                q["pillar"] = pillar
             cursor = _db.products_master.find(q, {"_id": 0})
             products = await cursor.to_list(length=2000)
 
