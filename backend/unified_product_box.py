@@ -902,29 +902,28 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
         # Check if it's a Soul Made product (stored in breed_products)
         if product_id.startswith("breed-"):
             existing = await db.breed_products.find_one({"id": product_id})
-            if not existing:
-                raise HTTPException(status_code=404, detail="Soul Made product not found")
-            
-            # Don't allow changing ID
-            updates.pop("id", None)
-            updates.pop("_id", None)
-            
-            # Set audit fields
-            updates["updated_at"] = datetime.now(timezone.utc).isoformat()
-            updates["updated_by"] = admin_user
-            
-            await db.breed_products.update_one(
-                {"id": product_id},
-                {"$set": updates}
-            )
-            
-            # Get updated product
-            updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
-            updated["source"] = "soul_made"
-            updated["image"] = updated.get("mockup_url") or updated.get("image", "")
-            
-            logger.info(f"Updated Soul Made product: {product_id}")
-            return {"message": "Soul Made product updated", "product": updated}
+            if existing:
+                # Don't allow changing ID
+                updates.pop("id", None)
+                updates.pop("_id", None)
+                
+                # Set audit fields
+                updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+                updates["updated_by"] = admin_user
+                
+                await db.breed_products.update_one(
+                    {"id": product_id},
+                    {"$set": updates}
+                )
+                
+                # Get updated product
+                updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+                updated["source"] = "soul_made"
+                updated["image"] = updated.get("watercolor_image") or updated.get("cloudinary_url") or updated.get("mockup_url") or updated.get("image", "")
+                
+                logger.info(f"Updated Soul Made product: {product_id}")
+                return {"message": "Soul Made product updated", "product": updated}
+            # Not found in breed_products — fall through to products_master check below
         
         # Regular product update (try products_master first, then products collection)
         existing = await db.products_master.find_one({"id": product_id})
