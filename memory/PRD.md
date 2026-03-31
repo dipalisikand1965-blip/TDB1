@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-31 (Session 42 — Go NearMe modal fix + NearMeConciergeModal MasterBriefing wiring + CSV Export/Import full field map)
+## Last Updated: 2026-03-31 (Session 43 — Strict breed filter: DineMobilePage + DineContentModal + backend KNOWN_BREED_NAMES expanded)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service

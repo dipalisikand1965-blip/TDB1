@@ -67,3 +67,22 @@
 
 ### Testing
 - iteration_256: 15/15 backend, 5/5 frontend — all 3 fixes confirmed working.
+
+---
+## Session 43 — 2026-03-31 (Strict Breed Filter — Dine + Cross Pillar)
+
+### Root Cause
+- `DineMobilePage.jsx` fetched products WITHOUT `breed` param → unfiltered 338 products loaded per category
+- `DineContentModal.jsx` (DineCategoryStrip tiles) also missing `breed` param at lines 618 and 697
+- Backend `KNOWN_BREED_NAMES` missing `'shiba inu'`, `'maltipoo'`, `'italian greyhound'`, `'collie'`, `'bernese mountain dog'` → those products treated as universal and shown to all breeds
+
+### Fixes Applied
+1. **`DineMobilePage.jsx`** — `fetchProducts` now passes `&breed=${encodeURIComponent(pet.breed)}` to all 5 FOOD_CATS API calls; limit bumped 100→200
+2. **`DineContentModal.jsx`** — Added `breedFilter` to the parallel FOOD_CATS batch fetch (line 618) and the standard category fetch (line 697)
+3. **`pillar_products_routes.py`** — Added `'shiba inu'`, `'maltipoo'`, `'italian greyhound'`, `'collie'`, `'bernese mountain dog'` to `KNOWN_BREED_NAMES`
+4. **`useMiraFilter.js`** — Added same 5 breeds to frontend `KNOWN_BREEDS` for client-side safety net
+
+### Verification
+- Backend: 29/29 tests pass — all 7 pillars (dine, care, play, learn, go, shop, paperwork) return 0 contaminated products for `breed=Indie`
+- Shiba Inu contamination (was 3 products in Care) → 0 ✓
+- Test iteration_257 all green
