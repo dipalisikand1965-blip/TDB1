@@ -1283,25 +1283,6 @@ function AgilityFlow({ pet, service, onClose }) {
   );
 }
 
-// ── Service Booking Modal Router ─────────────────────────────
-function ServiceBookingModal({ service, pet, onClose }) {
-  const FlowMap = {
-    social:   SocialFlow,
-    weekend:  WeekendFlow,
-    fitness:  FitnessFlow,
-    swimming: SwimmingFlow,
-    agility:  AgilityFlow,
-  };
-  const Flow = FlowMap[service.id] || GenericFlow3;
-  return (
-    <div onClick={onClose} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:500, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
-      <div onClick={e=>e.stopPropagation()} style={{ width:"min(560px,100%)", maxHeight:"90vh", background:"#fff", borderRadius:16, display:"flex", flexDirection:"column", overflow:"hidden", boxShadow:"0 32px 80px rgba(0,0,0,0.30)" }}>
-        <Flow pet={pet} service={service} onClose={onClose} />
-      </div>
-    </div>
-  );
-}
-
 // ── Play Concierge® section — REPLACED by PlayConciergeSection (watercolour cards)
 function PlayConcierge() { return null; }
 // eslint-disable-next-line no-unused-vars
