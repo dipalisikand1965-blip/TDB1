@@ -736,7 +736,9 @@ async def get_all_products(
         for p in soul_products:
             p["source"] = "soul_made"
             p["soul_tier"] = "soul_made"
-            p["image"] = p.get("mockup_url") or p.get("image", "")
+            # Preserve watercolor_image/cloudinary_url — only fall back to mockup_url if no better image
+            if not p.get("watercolor_image") and not p.get("cloudinary_url"):
+                p["image"] = p.get("mockup_url") or p.get("image", "")
         
         all_products = soul_products
         total = await db.breed_products.count_documents(breed_query)
@@ -789,8 +791,10 @@ async def get_all_products(
             for p in soul_products:
                 p["source"] = "soul_made"
                 p["soul_tier"] = "soul_made"
-                p["image"] = p.get("mockup_url") or p.get("image", "")
-                # Only add if not already in products_master
+                # Preserve watercolor_image/cloudinary_url — only fall back to mockup_url if no better image
+                if not p.get("watercolor_image") and not p.get("cloudinary_url"):
+                    p["image"] = p.get("mockup_url") or p.get("image", "")
+                # Only add if not already in products_master (dedup by id)
                 if not any(mp.get("id") == p.get("id") for mp in all_products):
                     all_products.append(p)
             

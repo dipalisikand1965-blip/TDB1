@@ -22036,6 +22036,8 @@ async def generate_image_universal(
 
     # Save result to the entity if entity info provided
     if entity_type and entity_id:
+        # Normalize entity_type aliases — soul_made / soul_product → check breed_products first, then products_master
+        soul_aliases = {"soul_made", "soul_product", "breed_product"}
         collection_map = {
             "product": db.products_master,
             "service": db.services_master,
@@ -22043,10 +22045,18 @@ async def generate_image_universal(
             "breed_product": db.breed_products,
         }
         col = collection_map.get(entity_type)
+
+        # For soul_made aliases not in map, probe breed_products then products_master
+        if col is None and entity_type in soul_aliases:
+            if await db.breed_products.find_one({"id": entity_id}):
+                col = db.breed_products
+            else:
+                col = db.products_master  # fallback — breed-* IDs that live in products_master
+
         if col is not None:
             update_fields = {
                 "ai_image_prompt": prompt,
-                "ai_prompt": prompt,  # save the prompt for future reference
+                "ai_prompt": prompt,
                 "watercolor_image": url,  # highest priority in getProductImage — ALWAYS set
                 "cloudinary_url": url,
                 "image_url": url,
