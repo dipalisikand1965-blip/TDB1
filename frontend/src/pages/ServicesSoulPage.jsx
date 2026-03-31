@@ -122,7 +122,7 @@ export function BookingModal(props) {
 // ── Service card ──────────────────────────────────────────────
 function ServiceCard({ service, groupColour, pet, onBook }) {
   const _rawImg = service.watercolor_image || service.image_url || service.cloudinary_url || service.image || null;
-  const img = _rawImg && !_rawImg.includes('ai_generated') ? _rawImg : null;
+  const img = _rawImg && (!_rawImg.includes('ai_generated') || _rawImg.includes('cloudinary.com')) ? _rawImg : null;
 
   return (
     <div style={{ background:"#fff", border:`1px solid ${G.border}`, borderRadius:14,
