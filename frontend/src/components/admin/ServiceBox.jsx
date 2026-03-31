@@ -84,6 +84,7 @@ function serviceToProduct(s) {
     description: s.description || '',
     ai_image_prompt: aiPrompt,
     ai_prompt: aiPrompt,
+    target_breed: s.target_breed || '',  // used by AIImagePromptField for breed-specific image gen
     _serviceId: s.id || s._id,
   };
 }
@@ -112,6 +113,7 @@ function productToServicePatch(p) {
     image_url: p.image_url || p.media?.primary_image || '',
     image: p.image_url || p.media?.primary_image || '',
     watercolor_image: p.image_url || p.media?.primary_image || '',
+    target_breed: p.target_breed || '',
   };
 }
 

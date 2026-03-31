@@ -1758,6 +1758,7 @@ const ProductBoxEditor = ({
                   productName={getValue('name', '')}
                   pillar={getValue('pillar', '') || getValue('category', '')}
                   category={getValue('category', '')}
+                  breed={getValue('target_breed', '') || (getValue('target_breeds', []) || [])[0] || ''}
                   currentImageUrl={getValue('image_url', '') || getValue('watercolor_image', '')}
                   onPromptChange={val => { updateField('ai_image_prompt', val); updateField('ai_prompt', val); }}
                   onImageGenerated={(url, usedPrompt) => {
