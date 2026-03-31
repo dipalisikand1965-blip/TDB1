@@ -45,3 +45,25 @@
 - Backend: 100% (13/13 pass)
 - Frontend: 95% (all key pages + new features verified)
 - Ready for deployment ✅
+
+---
+## Session 42 — 2026-03-31
+
+### Go NearMe Modal Fix
+- **PetFriendlyStays.onBook** in `GoMobilePage.jsx` now opens `NearMeConciergeModal` instead of the 4-step `ServiceBookingModal`. Stays/hotels in the Go pillar now correctly use the "BOOK VIA CONCIERGE · GO" modal.
+
+### NearMeConciergeModal — Full MasterBriefing Wiring
+- `handleSend` now passes structured `details` (service_name, venue_address, preferred_date, notes) and a `note` string to `useConcierge.request()` so `buildMasterBriefing` includes the full venue info, date, and notes in the service desk ticket.
+
+### CSV Export — Backend-Powered (50 columns)
+- `exportToCSV` in `UnifiedProductBox.jsx` now calls `GET /api/product-box/export/csv?include_all_fields=true` instead of doing a limited client-side generation.
+- 50 columns: id, sku, name, brand, product_type, primary_pillar, pillars, category, subcategory, mrp, selling_price, cost_price, margin_band, inventory_status, in_stock, is_bakery_product, mira_recommendable, mira_hint, life_stages, size_options, applicable_breeds, occasions, use_case_tags, image, tags, short_description, long_description, gst_rate, hsn_code, delivery_type, returnable, cold_chain_required, fragile, available_cities, quality_tier, approval_status, allergy_aware, common_avoids, material_safety_flags, energy_level_match, chew_strength, play_types, coat_type_match, brachycephalic_friendly, senior_friendly, is_giftable, subscription_friendly, travel_friendly, breed_metadata, intelligent_tags.
+- Pillar-filtered export supported via `?pillar=dine` etc.
+
+### CSV Import — Full Field Mapping + Backend Endpoint
+- Added `POST /api/product-box/import` endpoint in `unified_product_box.py`. Accepts flat CSV rows, maps all 50 columns to the full nested product schema, upserts by `id` (or creates new PROD-xxx).
+- Added `parseCSVText` (proper quoted-field parser) + `importFromCSV` in `UnifiedProductBox.jsx`.
+- Import button shows loading state during import and a detailed "Import Complete" toast (imported / updated / failed counts).
+
+### Testing
+- iteration_256: 15/15 backend, 5/5 frontend — all 3 fixes confirmed working.

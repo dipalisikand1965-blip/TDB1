@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-31 (Session 41 — Paperwork pillar clean sweep + image save bug fix + voice bug fix)
+## Last Updated: 2026-03-31 (Session 42 — Go NearMe modal fix + NearMeConciergeModal MasterBriefing wiring + CSV Export/Import full field map)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
