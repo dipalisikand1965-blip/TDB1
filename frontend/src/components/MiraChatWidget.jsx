@@ -2387,11 +2387,12 @@ const MiraChatWidget = ({
                       {/* NearMe chip — when location intent detected */}
                       {msg.showNearMe && (
                         <div style={{ marginTop: 10 }}>
-                          <a
-                            href={`/${msg.showNearMe?.pillar || currentPillar || pillar || 'care'}#nearme`}
+                          <button
+                            type="button"
                             onClick={(e) => {
-                              e.stopPropagation();
-                              console.log('[NEARME] clicked, pillar:', msg.showNearMe?.pillar || currentPillar || pillar);
+                              e.preventDefault();
+                              const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
+                              navigate(`/${nearMePillar}?tab=nearme`);
                             }}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -2400,12 +2401,12 @@ const MiraChatWidget = ({
                               fontSize: 13, fontWeight: 600, color: '#065F46',
                               cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)',
                               touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
-                              textDecoration: 'none'
+                              fontFamily: 'inherit'
                             }}
                           >
                             <span style={{ fontSize: 15 }}>📍</span>
                             Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
-                          </a>
+                          </button>
                         </div>
                       )}
                     </div>
