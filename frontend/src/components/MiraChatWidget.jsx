@@ -2326,7 +2326,7 @@ const MiraChatWidget = ({
                             return (
                               <a
                                 key={svc.id || sIdx}
-                                href="#"
+                                href="javascript:void(0)"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
