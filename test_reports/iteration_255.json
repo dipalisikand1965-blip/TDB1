@@ -1,0 +1,46 @@
+{
+  "summary": "Tested 4 fixes: ServiceBox Admin '+ Add Service' button, inline toggle, ProductCard service modal routing, and backend service filtering. All tests passed. 16/16 backend tests passed, all frontend features verified.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_service_box_255.py",
+    "/app/test_reports/pytest/service_box_255.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "All 4 fixes confirmed working correctly.",
+    "ServiceBox '+Add Service' button opens ProductBoxEditor with title 'Create New Service', Product Type pre-set to 'Service', all 6 tabs (Basics, Suitability, Pillars, Commerce, Media, Mira AI) visible.",
+    "handleToggleActive: svcId fix (svc.id || svc._id) confirmed working — 'Premium Grooming Session' toggled Active → '✗ Off' → Active correctly, toast notification shown.",
+    "ProductCard service modal: For pillar=care + product_type=service, ConciergeOnlyProductDetailModal opens with dynamic badge 'Care Service · Concierge® Only'. No 'Add to Cart' button. 'Talk to Concierge®' button shown.",
+    "mira_score_engine.py line 587: products_master lookup filter {is_active: {$ne: False}, visibility.status: {$ne: archived}} confirmed present in code. Backend stats: active vs inactive services tracked correctly."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_service_box_255.py"
+  ],
+  "success_rate": {
+    "backend": "100% (16/16 tests passed)",
+    "frontend": "100% (5/5 UI feature tests passed)"
+  },
+  "test_credentials": {
+    "admin": "aditya / lola4304 at /admin",
+    "member": "dipali@clubconcierge.in / test123 (pet: Mojo)"
+  },
+  "seed_data_creation": "Created and deleted test services (TEST-Service-*, TEST-AutoID-*, TEST-Toggle-*) during testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All 4 fixes in iteration 255 verified: (1) Ghost cache purge already done manually (364 entries deleted). (2) mira_score_engine.py line 587 now filters archived/inactive products_master entries. (3) ServiceBox.jsx handleToggleActive uses svc.id||svc._id correctly, '+ Add Service' button opens ProductBoxEditor in create mode with 'Create New Service' header. (4) ProductCard.jsx service modal routing: product_type='service' from any pillar (not just paperwork) correctly opens ConciergeOnlyProductDetailModal with dynamic badge '{Pillar} Service · Concierge® Only'. Two service product cards found in Care > Grooming: prod-SVC-CARE-GROOM-SPA (Full Spa Grooming) and prod-SVC-CARE-GROOM-HOME. Backend test file: /app/backend/tests/test_service_box_255.py (16 tests all passing).",
+  "detailed_findings": {
+    "servicebox_add_button": "data-testid='add-service-btn' present, clicking opens ProductBoxEditor modal with title 'Create New Service', Product Type pre-set to Service",
+    "servicebox_toggle": "data-testid='toggle-service-svc-care-grooming' first row, click changes Active→Inactive→Active, toast shows '⏸ Premium Grooming Session set Inactive', no crash",
+    "productcard_service_modal": "Clicking 'Talk to Concierge® →' button on service cards opens ConciergeOnlyProductDetailModal (data-testid='paperwork-product-modal-*'), shows 'Care Service · Concierge® Only' badge for care pillar services, no 'Add to Cart' button",
+    "backend_active_only": "GET /api/service-box/services default (active_only=True) returns 0 inactive services, explicit active_only=false returns all including inactive",
+    "backend_create_service": "POST /api/service-box/services creates service with auto-generated SVC-{PILLAR}-{NAME} ID, name required (422 without it), persists to DB"
+  }
+}
