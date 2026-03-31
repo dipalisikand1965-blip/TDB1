@@ -601,7 +601,7 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
           const scored = filterBreedProducts(d.picks || [], pet?.breed);
           if (scored.length > 0) { setProducts(scored); setLoading(false); return; }
           // Fallback: fetch all learn products, sort by mira_score
-          return fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=400`, {
+          return fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=400&active_only=true`, {
             headers: token ? { Authorization:`Bearer ${token}` } : {}
           })
             .then(r => r.json())
@@ -1956,7 +1956,7 @@ const LearnSoulPage = () => {
   useEffect(()=>{
     const CATS=["training","behavior","tricks","enrichment","classes","breed-training_logs","breed-treat_pouchs","breed-care-guide","breed-treat_jars"];
     Promise.all([
-      ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&category=${encodeURIComponent(cat)}`).then(r=>r.ok?r.json():null).catch(()=>null)),
+      ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&active_only=true&category=${encodeURIComponent(cat)}`).then(r=>r.ok?r.json():null).catch(()=>null)),
       fetch(`${API_URL}/api/service-box/services?pillar=learn`).then(r=>r.ok?r.json():null).catch(()=>null),
     ]).then(results=>{
       const svcData=results[results.length-1];
