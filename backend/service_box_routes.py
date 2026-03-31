@@ -134,6 +134,7 @@ async def list_services(
     is_bookable: Optional[bool] = None,
     is_active: Optional[bool] = None,
     is_free: Optional[bool] = None,
+    active_only: bool = True,  # Default TRUE — inactive services must never appear on consumer frontend
     skip: int = 0,
     limit: int = 50
 ):
@@ -141,7 +142,11 @@ async def list_services(
     db = get_db()
     
     query = {}
-    
+
+    # Strict inactive filtering — applied unless caller explicitly passes is_active=false
+    if active_only and is_active is None:
+        query["is_active"] = {"$ne": False}
+
     if search:
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},

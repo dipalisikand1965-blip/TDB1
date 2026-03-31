@@ -1,0 +1,51 @@
+{
+  "summary": "Tested 2 P0 fixes: (1) Backend service filtering - /api/service-box/services now defaults active_only=True correctly excluding inactive services from consumer views. (2) Frontend debounce+multi-field search in ServiceBox, BundleBox, and SoulProductsManager - all 3 confirmed working with 350ms debounce. All 8 backend tests passed. All 3 frontend debounce tests passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_service_box_filtering.py",
+    "/app/test_reports/pytest/service_box_filtering_254.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ServiceBox admin component (line 143) calls /api/admin/services?pillar=X (not /api/service-box/services). The P0 fix is specifically for /api/service-box/services used by consumer pages - this separation is correct and expected.",
+    "The PILLARS hardcoded counts in ServiceBox.jsx (e.g. adopt: 31) don't match actual active service counts (21 active out of 31 total) - this is a cosmetic discrepancy in admin UI but doesn't affect functionality.",
+    "SoulProductsManager shows '0 services' for 'cake' search - this is because the products are loaded from /api/products?limit=500 (general products, not bakery/cake type). Debounce is confirmed working."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_service_box_filtering.py"
+  ],
+  "success_rate": {
+    "backend": "100% (8/8 tests passed)",
+    "frontend": "100% (3/3 debounce tests passed, consumer page verified)"
+  },
+  "test_credentials": {
+    "admin": "aditya / lola4304 at /admin",
+    "member": "dipali@clubconcierge.in / test123"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "P0 fixes verified: (1) /api/service-box/services endpoint defaults active_only=True - verified adopt pillar returns 21 active (not 31 total, 10 were inactive). (2) ServiceBox, BundleBox, SoulProductsManager all have working 350ms debounce search confirmed by 150ms pre-debounce count unchanged / 550ms post-debounce count changed pattern. Consumer services page loads 327 bookable services (all active). Test file at /app/backend/tests/test_service_box_filtering.py.",
+  "detailed_findings": {
+    "backend_service_filtering": {
+      "adopt_pillar_default": "21 active services returned, 0 inactive (previously 31 returned including 10 inactive)",
+      "adopt_pillar_active_only_false": "31 services returned (21 active + 10 inactive) - admin bypass works",
+      "is_active_false": "Returns only inactive services correctly",
+      "total_stats": "1048 total services, 611 active, 437 inactive"
+    },
+    "frontend_debounce": {
+      "ServiceBox": "31→31 at 150ms (no change), filtered after 350ms debounce - CONFIRMED",
+      "BundleBox": "96→96 at 150ms (no change), 2 after 350ms debounce for 'cake' - CONFIRMED",
+      "SoulProductsManager": "50→50 at 150ms (no change), 0 after 350ms debounce - CONFIRMED"
+    },
+    "consumer_page": "Consumer services page (/services) shows 327 bookable active services for logged-in user Dipali/Mojo"
+  }
+}
