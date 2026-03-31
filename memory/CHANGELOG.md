@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-03-31 (Session 40 — P0: Ghost Cache Purge + ServiceBox Add/Toggle Fix + Service Card Modal Routing)
+
+### Bug Fixes
+1. **Ghost service cache purge** — Deleted 364 stale `mira_product_scores` entries for 68 archived `svc-*` ghost services. "Vet Appointment Coordination" and 67 others no longer appear in Mira Picks.
+2. **mira_score_engine.py get_top_picks** — `products_master` Layer 3 lookup now filters `is_active/$ne:False, visibility.status/$ne:"archived"`. Archived products never resurface through score cache.
+3. **ServiceBox.jsx handleToggleActive** — Fixed `ReferenceError: svcId is not defined`. Now uses `svc.id || svc._id` from the closure parameter correctly.
+4. **ProductCard.jsx service modal routing** — `(isConciergeOnly || isServiceProduct)` now gates `ConciergeOnlyProductDetailModal`. Services from ALL pillars (not just paperwork) show the Concierge modal. No "Add to Cart" ever shown for services.
+5. **ConciergeOnlyProductDetailModal label** — Dynamic: shows `"Care Service · Concierge® Only"` not hardcoded `"Concierge®-first paperwork pick"`.
+
+### New Features
+6. **ServiceBox "+ Add Service" button** — Opens `ProductBoxEditor` in create mode. Calls `POST /api/service-box/services`. Defaults price=0, pillar=activePillar.
+
+### Test Results (iteration_255) — 100% (21/21 pass)
+
+---
+
 ## 2026-03-31 (Session 39 — P0: Inactive Filtering + Admin Search Debounce)
 
 ### Bug Fixes
