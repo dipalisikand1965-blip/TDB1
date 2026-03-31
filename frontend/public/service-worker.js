@@ -1,16 +1,15 @@
-// Service Worker for The Doggy Company PWA - v8 with Push Notifications
-// Feature 11: Push notifications even when browser is closed
-// v8: Fixed auth redirect loop - force cache clear
+// Service Worker for The Doggy Company PWA - v10
+// v10: Force full cache clear — category/dimension mapping complete, shop tabs rewired
 
-const CACHE_NAME = 'tdc-pwa-v9';
+const CACHE_NAME = 'tdc-pwa-v10';
 
 self.addEventListener('install', (event) => {
-  console.log('[SW] PWA v7: Installing');
+  console.log('[SW] PWA v10: Installing — force clearing all old caches');
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[SW] PWA v7: Activating');
+  console.log('[SW] PWA v10: Activating');
   event.waitUntil(
     caches.keys().then((names) => {
       return Promise.all(
