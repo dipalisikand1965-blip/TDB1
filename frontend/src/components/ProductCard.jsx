@@ -660,7 +660,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
       </div>
 
       {showModal && (
-        isConciergeOnly ? (
+        (isConciergeOnly || isServiceProduct) ? (
           <ConciergeOnlyProductDetailModal
             product={product}
             pillar={pillar}
@@ -728,7 +728,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
           <div className="p-6 flex flex-col">
             <div className="inline-flex items-center gap-2 self-start rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 mb-4">
               <MessageSquare className="w-3.5 h-3.5" />
-              Concierge®-first paperwork pick
+              {pillar === 'paperwork' ? 'Concierge®-first paperwork pick' : `${pillar.charAt(0).toUpperCase() + pillar.slice(1)} Service · Concierge® Only`}
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900 mb-2 pr-8">

@@ -204,9 +204,13 @@ export default function ServiceBox() {
   // Save via ProductBoxEditor onSave callback
   const saveService = async () => {
     if (!editProduct) return;
+    // If no _serviceId, this is a create
+    const serviceId = editProduct._serviceId || editProduct.id;
+    if (!serviceId) {
+      return createService();
+    }
     setSaving(true);
     try {
-      const serviceId = editProduct._serviceId || editProduct.id;
       const payload = productToServicePatch(editProduct);
       const res = await fetch(`${API_URL}/api/admin/services/${serviceId}`, {
         method: 'PUT',
@@ -276,6 +280,7 @@ export default function ServiceBox() {
   };
 
   const handleToggleActive = async (svc) => {
+    const svcId = svc.id || svc._id;
     setTogglingId(svcId);
     try {
       const res = await fetch(`${API_URL}/api/service-box/services/${svcId}/toggle`, {
@@ -293,6 +298,59 @@ export default function ServiceBox() {
     } finally {
       setTogglingId(null);
     }
+  };
+
+  // Open editor for a brand-new service
+  const openCreateService = () => {
+    setEditProduct(serviceToProduct({
+      id: '',
+      name: '',
+      pillar: activePillar,
+      description: '',
+      category: '',
+      sub_category: '',
+      is_active: true,
+      base_price: 0,
+      price: 0,
+    }));
+    setShowEditor(true);
+  };
+
+  // Create a new service via POST
+  const createService = async () => {
+    if (!editProduct) return;
+    setSaving(true);
+    try {
+      const payload = productToServicePatch(editProduct);
+      // Use the basics.name as the canonical name
+      const name = editProduct.basics?.name || editProduct.name || '';
+      if (!name.trim()) { alert('Service name is required'); setSaving(false); return; }
+      const res = await fetch(`${API_URL}/api/service-box/services`, {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: JSON.stringify({
+          name,
+          pillar: payload.pillar || activePillar,
+          description: payload.description || '',
+          category: payload.category || '',
+          sub_category: payload.sub_category || '',
+          base_price: 0,
+          is_active: payload.is_active,
+          approval_status: payload.approval_status || 'live',
+          image_url: payload.image_url || '',
+        }),
+      });
+      if (res.ok) {
+        setShowEditor(false);
+        setEditProduct(null);
+        fetchServices();
+        setToast('✅ Service created');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert('Create failed: ' + (err.detail || res.status));
+      }
+    } catch (e) { alert('Create failed: ' + e.message); }
+    setSaving(false);
   };
 
   return (
@@ -337,6 +395,12 @@ export default function ServiceBox() {
           Reset All Prices to ₹0
         </button>
         <button onClick={fetchServices} style={{ padding:'7px 12px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12 }}>↻</button>
+        <button
+          data-testid="add-service-btn"
+          onClick={openCreateService}
+          style={{ padding:'7px 16px', borderRadius:8, border:`1.5px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:12, fontWeight:700 }}>
+          + Add Service
+        </button>
       </div>
 
       {loading ? (
