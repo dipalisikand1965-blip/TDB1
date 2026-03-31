@@ -347,20 +347,18 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                   {service.description}
                 </p>
                 
-                {/* Price & Duration - conditionally hidden */}
-                {!hidePrice && (
+                {/* Price & Duration - services are concierge, never priced */}
+                {!hidePrice && (service.is_free || (service.base_price && service.base_price > 0)) && (
                 <div className="flex items-center justify-between">
                   <div>
                     {service.is_free ? (
                       <span className="text-sm sm:text-lg font-bold text-emerald-600">Complimentary</span>
-                    ) : service.base_price ? (
+                    ) : service.base_price > 0 ? (
                       <span className="text-sm sm:text-lg font-bold text-gray-900">
                         ₹{service.base_price.toLocaleString()}
                         <span className="text-[10px] sm:text-xs text-gray-400 font-normal">+</span>
                       </span>
-                    ) : (
-                      <span className="text-xs sm:text-sm text-gray-500">Quote</span>
-                    )}
+                    ) : null}
                   </div>
                   {service.duration_minutes && (
                     <div className="flex items-center text-[10px] sm:text-sm text-gray-500">
@@ -535,10 +533,12 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                   </div>
                 ) : calculatedPrice ? (
                   <div className="text-sm">
+                    {calculatedPrice.base_price > 0 && (
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-gray-400">Base Price</span>
                       <span>₹{calculatedPrice.base_price}</span>
                     </div>
+                    )}
                     {calculatedPrice.modifiers?.city?.multiplier !== 1 && (
                       <div className="flex justify-between items-center mb-1.5 text-xs">
                         <span className="text-gray-400">{calculatedPrice.modifiers.city.value}</span>
@@ -565,7 +565,9 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                     )}
                     <div className="flex justify-between items-center pt-2 border-t border-gray-700">
                       <span className="font-bold">Your Price</span>
-                      <span className="text-xl sm:text-2xl font-bold text-rose-400">₹{calculatedPrice.total.toLocaleString()}</span>
+                      <span className="text-xl sm:text-2xl font-bold text-rose-400">
+                        {calculatedPrice.total > 0 ? `₹${calculatedPrice.total.toLocaleString()}` : 'Concierge Quote'}
+                      </span>
                     </div>
                     {calculatedPrice.deposit_amount && (
                       <div className="mt-2 text-xs text-gray-400">
