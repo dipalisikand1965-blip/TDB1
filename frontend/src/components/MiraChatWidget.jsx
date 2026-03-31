@@ -2334,9 +2334,9 @@ const MiraChatWidget = ({
                             // Skip AI-generated stock images — show TDC gradient instead
                             const _svcImgClean = svcImg && (!svcImg.includes('ai_generated') || svcImg.includes('cloudinary.com')) ? svcImg : null;
                             return (
-                              <a
+                              <button
+                                type="button"
                                 key={svc.id || sIdx}
-                                href="javascript:void(0)"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
@@ -2395,7 +2395,8 @@ const MiraChatWidget = ({
                                   padding: '10px 14px', marginBottom: 8,
                                   cursor: 'pointer', textAlign: 'left',
                                   touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
-                                  textDecoration: 'none', color: 'inherit'
+                                  textDecoration: 'none', color: 'inherit',
+                                  fontFamily: 'inherit', fontSize: 'inherit'
                                 }}
                               >
                                 {_svcImgClean ? (
@@ -2407,7 +2408,7 @@ const MiraChatWidget = ({
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
-                              </a>
+                              </button>
                             );
                           })}
                         </div>
