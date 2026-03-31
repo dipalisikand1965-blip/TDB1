@@ -375,15 +375,19 @@ const ProductBoxEditor = ({
   
   // Helper to update nested fields
   const updateField = (path, value) => {
-    const keys = path.split('.');
-    const newProduct = JSON.parse(JSON.stringify(product));
-    let current = newProduct;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i]]) current[keys[i]] = {};
-      current = current[keys[i]];
-    }
-    current[keys[keys.length - 1]] = value;
-    setProduct(newProduct);
+    // Use functional update form so multiple updateField calls in a single handler
+    // each operate on the latest state (not a stale closure of the prop).
+    setProduct(prev => {
+      const keys = path.split('.');
+      const newProduct = JSON.parse(JSON.stringify(prev));
+      let current = newProduct;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return newProduct;
+    });
   };
   
   // Get nested value
