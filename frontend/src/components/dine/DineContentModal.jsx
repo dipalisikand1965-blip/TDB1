@@ -613,9 +613,10 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         // 2. Fetch real food products by category (NOT a blanket dine fetch which returns
         //    breed merchandise first due to alphabetical sort). Fetch each food category in parallel.
         const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
+        const breedFilter = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
         const [catResults, serviceRes] = await Promise.all([
           Promise.all(FOOD_CATS.map(cat =>
-            fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(cat)}&limit=60`)
+            fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(cat)}&limit=100${breedFilter}`)
               .then(r => r.ok ? r.json() : { products: [] })
               .catch(() => ({ products: [] }))
           )),
@@ -694,7 +695,8 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
       // ── Standard categories ────────────────────────────────────────
       if (config.apiCategory) {
-        const url = `${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=60`;
+        const breedFilter2 = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+        const url = `${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=100${breedFilter2}`;
         const r = await fetch(url);
         if (r.ok) {
           const d = await r.json();
