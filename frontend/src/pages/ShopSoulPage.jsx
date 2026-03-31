@@ -258,7 +258,7 @@ function DoggyBakerySection({ pet }) {
   ];
 
   useEffect(() => {
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=200&sort_by=mira_score`, {
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=48&sort_by=mira_score`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("tdb_auth_token") || ""}` }
     })
       .then(r => r.ok ? r.json() : null)
