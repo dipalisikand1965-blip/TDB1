@@ -305,7 +305,7 @@ const applyMirasPicksIntelligence = (products, allergies, loves, healthCondition
 
   return products
     .filter(p => {
-      const isService = p.category === 'service' || p.product_type === 'service';
+      const isService = p.category === 'service' || p.product_type === 'service' || p.entity_type === 'service';
       if (isService) return true;
       if (!allergyTerms.length) return true;
       const text = `${p.name} ${p.description || ''}`.toLowerCase();
