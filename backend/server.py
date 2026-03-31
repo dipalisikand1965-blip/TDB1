@@ -22487,6 +22487,34 @@ async def update_product_shape_tag(
 # otherwise intercept requests intended for dedicated pillar routes
 app.include_router(learn_router)  # Learn Pillar - BEFORE api_router
 app.include_router(paperwork_router)  # Paperwork Pillar - BEFORE api_router
+
+# ─── Batch image generation router (must be included BEFORE api_router/admin_router snapshot) ───
+_batch_router = APIRouter(prefix="/api/admin")
+
+@_batch_router.post("/batch-generate-images")
+async def _start_batch_image_generation(
+    background_tasks: BackgroundTasks,
+    target: str = "all",
+    username: str = Depends(verify_admin),
+):
+    """Start background AI image generation for all services/products missing Cloudinary images.
+    target: 'services' | 'products' | 'all' — Returns immediately, poll /status for progress."""
+    global _batch_image_job
+    if _batch_image_job.get("status") == "running":
+        return {"status": "already_running", "progress": _batch_image_job}
+    _batch_image_job = {"status": "queued", "processed": 0, "total": 0, "errors": [], "log": [], "target": target}
+    background_tasks.add_task(_run_batch_image_generation, target)
+    return {"status": "started", "target": target, "poll_url": "/api/admin/batch-generate-images/status"}
+
+@_batch_router.get("/batch-generate-images/status")
+async def _get_batch_image_status(username: str = Depends(verify_admin)):
+    """Poll the progress of the batch image generation job."""
+    job = dict(_batch_image_job)
+    job["progress_pct"] = round(job["processed"] / job["total"] * 100) if job.get("total") else 0
+    return job
+
+app.include_router(_batch_router)
+
 app.include_router(api_router)
 app.include_router(admin_router)
 app.include_router(fulfilment_router)
@@ -25488,4 +25516,156 @@ async def get_bundle_image_status(
         if bundle and bundle.get("image_url", "").startswith("https://res.cloudinary.com"):
             return {"status": "complete", "image_url": bundle["image_url"], "bundle_id": bundle_id}
         return {"status": "not_started", "bundle_id": bundle_id}
+    return job
+
+
+# ─── BATCH IMAGE GENERATION ─────────────────────────────────────────────────
+_batch_image_job: dict = {"status": "idle", "processed": 0, "total": 0, "errors": [], "log": []}
+
+async def _run_batch_image_generation(target: str):
+    """Background task: generate AI images for all services/products missing Cloudinary URLs."""
+    import os, base64, cloudinary, cloudinary.uploader, asyncio
+    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+    from ai_image_service import get_product_image_prompt, get_service_image_prompt
+
+    global _batch_image_job
+    _batch_image_job["status"] = "running"
+    _batch_image_job["started_at"] = datetime.now(timezone.utc).isoformat()
+
+    emergent_api_key = (
+        os.environ.get("EMERGENT_LLM_KEY") or
+        os.environ.get("EMERGENT_API_KEY") or
+        os.environ.get("EMERGENT_MODEL_API_KEY")
+    )
+    if not emergent_api_key:
+        _batch_image_job["status"] = "error"
+        _batch_image_job["error"] = "API key not configured"
+        return
+
+    cloudinary.config(
+        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+        api_key=os.environ.get("CLOUDINARY_API_KEY"),
+        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+    )
+
+    no_cloudinary = {"$not": {"$regex": "cloudinary\\.com"}}
+
+    # Build work list
+    items = []
+    if target in ("services", "all"):
+        svcs = await db.services_master.find(
+            {"$and": [
+                {"$or": [{"watercolor_image": {"$in": [None, ""]}}, {"watercolor_image": no_cloudinary}]},
+                {"$or": [{"image_url": {"$in": [None, ""]}}, {"image_url": no_cloudinary}]},
+            ]},
+            {"_id": 0, "id": 1, "name": 1, "pillar": 1, "description": 1, "category": 1}
+        ).to_list(200)
+        for s in svcs:
+            items.append(("service", s))
+
+    if target in ("products", "all"):
+        prods = await db.products_master.find(
+            {"$and": [
+                {"visibility.status": {"$ne": "archived"}},
+                {"$or": [{"image_url": {"$in": [None, ""]}}, {"image_url": no_cloudinary}]},
+                {"$or": [{"watercolor_image": {"$in": [None, ""]}}, {"watercolor_image": no_cloudinary}]},
+                {"$or": [{"cloudinary_image_url": {"$in": [None, ""]}}, {"cloudinary_image_url": {"$exists": False}}]},
+            ]},
+            {"_id": 0, "id": 1, "name": 1, "pillar": 1, "description": 1, "category": 1,
+             "sub_category": 1, "product_type": 1, "ai_image_prompt": 1}
+        ).to_list(200)
+        for p in prods:
+            items.append(("product", p))
+
+    _batch_image_job["total"] = len(items)
+    _batch_image_job["processed"] = 0
+    _batch_image_job["errors"] = []
+    _batch_image_job["log"] = []
+    logger.info(f"[BATCH IMG] Starting batch for {len(items)} items (target={target})")
+
+    image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+
+    for kind, item in items:
+        item_id = item.get("id", "unknown")
+        item_name = item.get("name", "unknown")
+        try:
+            prompt = (
+                get_service_image_prompt(item) if kind == "service"
+                else (item.get("ai_image_prompt") or get_product_image_prompt(item))
+            )
+            logger.info(f"[BATCH IMG] Generating {kind} '{item_name}' | prompt: {prompt[:80]}")
+
+            images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+            if not images:
+                raise ValueError("No image returned")
+
+            img_b64 = base64.b64encode(images[0]).decode("utf-8")
+            folder = f"doggy/ai_generated/{kind}s"
+            upload_result = cloudinary.uploader.upload(
+                f"data:image/png;base64,{img_b64}",
+                folder=folder,
+                public_id=f"{kind}-{item_id}-batch",
+                overwrite=True,
+                resource_type="image",
+            )
+            image_url = upload_result.get("secure_url")
+            if not image_url:
+                raise ValueError("Cloudinary upload failed")
+
+            if kind == "service":
+                await db.services_master.update_one(
+                    {"id": item_id},
+                    {"$set": {"watercolor_image": image_url, "image_url": image_url,
+                              "ai_generated_image": True,
+                              "image_updated_at": datetime.now(timezone.utc).isoformat()}}
+                )
+            else:
+                await db.products_master.update_one(
+                    {"id": item_id},
+                    {"$set": {"image_url": image_url, "image": image_url, "images": [image_url],
+                              "cloudinary_image_url": image_url, "ai_generated_image": True,
+                              "image_updated_at": datetime.now(timezone.utc).isoformat()}}
+                )
+
+            _batch_image_job["processed"] += 1
+            _batch_image_job["log"].append({"id": item_id, "name": item_name, "kind": kind, "status": "done", "url": image_url})
+            logger.info(f"[BATCH IMG] ✅ {kind} '{item_name}' done ({_batch_image_job['processed']}/{_batch_image_job['total']})")
+
+            # Throttle — 1 image every 4 seconds to stay within rate limits
+            await asyncio.sleep(4)
+
+        except Exception as e:
+            logger.error(f"[BATCH IMG] ❌ {kind} '{item_name}': {e}")
+            _batch_image_job["errors"].append({"id": item_id, "name": item_name, "kind": kind, "error": str(e)})
+            _batch_image_job["processed"] += 1
+            await asyncio.sleep(2)
+
+    _batch_image_job["status"] = "complete"
+    _batch_image_job["finished_at"] = datetime.now(timezone.utc).isoformat()
+    logger.info(f"[BATCH IMG] ✅ Batch complete — {_batch_image_job['processed']} processed, {len(_batch_image_job['errors'])} errors")
+
+
+@admin_router.post("/batch-generate-images")
+async def start_batch_image_generation(
+    background_tasks: BackgroundTasks,
+    target: str = "all",
+    username: str = Depends(verify_admin),
+):
+    """Start background AI image generation for all services/products missing Cloudinary images.
+    target: 'services' | 'products' | 'all'  — defaults to 'all'
+    Returns immediately — poll /api/admin/batch-generate-images/status for progress.
+    """
+    global _batch_image_job
+    if _batch_image_job.get("status") == "running":
+        return {"status": "already_running", "progress": _batch_image_job}
+    _batch_image_job = {"status": "queued", "processed": 0, "total": 0, "errors": [], "log": [], "target": target}
+    background_tasks.add_task(_run_batch_image_generation, target)
+    return {"status": "started", "target": target, "poll_url": "/api/admin/batch-generate-images/status"}
+
+
+@admin_router.get("/batch-generate-images/status")
+async def get_batch_image_status(username: str = Depends(verify_admin)):
+    """Poll the progress of the batch image generation job."""
+    job = dict(_batch_image_job)
+    job["progress_pct"] = round(job["processed"] / job["total"] * 100) if job.get("total") else 0
     return job

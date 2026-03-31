@@ -5,6 +5,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import ProductBoxEditor from './ProductBoxEditor';
+import BatchImageButton from './BatchImageButton';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 function getAdminHeaders() {
@@ -283,6 +284,7 @@ export default function ServiceBox() {
           ↑ Import CSV
           <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} />
         </label>
+        <BatchImageButton target="services" label="Auto-Generate Service Images" />
         <button onClick={fetchServices} style={{ padding:'7px 12px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12 }}>↻</button>
       </div>
 
