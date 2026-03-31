@@ -125,6 +125,7 @@ export default function ServiceBox() {
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState('');
   const [totals, setTotals] = useState({});
+  const [togglingId, setTogglingId] = useState(null); // track which row is toggling
 
   // ProductBoxEditor state
   const [editProduct, setEditProduct] = useState(null);
@@ -226,6 +227,27 @@ export default function ServiceBox() {
     e.target.value = '';
   };
 
+  const handleToggleActive = async (svc) => {
+    const svcId = svc.id || svc._id;
+    setTogglingId(svcId);
+    try {
+      const res = await fetch(`${API_URL}/api/service-box/services/${svcId}/toggle`, {
+        method: 'POST', headers: getAdminHeaders()
+      });
+      if (res.ok) {
+        const newStatus = svc.is_active !== false ? false : true;
+        setServices(prev => prev.map(s => (s.id || s._id) === svcId ? { ...s, is_active: newStatus } : s));
+        setToast(newStatus ? `✅ ${svc.name} set Active` : `⏸ ${svc.name} set Inactive`);
+      } else {
+        setToast('❌ Toggle failed');
+      }
+    } catch {
+      setToast('❌ Toggle failed');
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   return (
     <div style={{ fontFamily:'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif', color:P.dark }}>
       <Toast msg={toast} onClose={() => setToast('')} />
@@ -295,7 +317,21 @@ export default function ServiceBox() {
                   {s.price ? `₹${Number(s.price).toLocaleString('en-IN')}` : <span style={{ color:P.amber }}>₹0</span>}
                 </div>
                 <div style={{ fontSize:11, fontWeight:700, color:s.is_active!==false?P.green:P.red }}>
-                  {s.is_active!==false ? '✓ Active' : '✗ Off'}
+                  <button
+                    data-testid={`toggle-service-${s.id||i}`}
+                    onClick={() => handleToggleActive(s)}
+                    disabled={togglingId === (s.id||s._id)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                      fontWeight: 700, fontSize: 11,
+                      background: s.is_active !== false ? '#D1FAE5' : '#FEE2E2',
+                      color: s.is_active !== false ? '#065F46' : '#991B1B',
+                      opacity: togglingId === (s.id||s._id) ? 0.6 : 1,
+                      transition: 'all 0.15s ease',
+                      minWidth: 64
+                    }}>
+                    {togglingId === (s.id||s._id) ? '…' : s.is_active !== false ? '✓ Active' : '✗ Off'}
+                  </button>
                 </div>
                 <button
                   data-testid={`edit-service-${s.id||i}`}
