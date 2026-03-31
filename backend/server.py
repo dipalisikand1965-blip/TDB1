@@ -848,7 +848,10 @@ async def _run_single_product_image(product_id: str, product: dict):
             {"id": product_id},
             {"$set": {
                 "image_url": image_url, "image": image_url, "images": [image_url],
+                "watercolor_image": image_url,  # highest priority — card always shows latest AI image
+                "cloudinary_url": image_url,
                 "ai_generated_image": True,
+                "locally_edited": True,
                 "image_updated_at": datetime.now(timezone.utc).isoformat(),
             }}
         )
@@ -21964,8 +21967,9 @@ async def regenerate_single_product_image(
             await db.products_master.update_one(
                 {"id": product_id},
                 {"$set": {
+                    "watercolor_image": url, "cloudinary_url": url,
                     "image_url": url, "image": url, "images": [url],
-                    "ai_image_generated": True,
+                    "ai_image_generated": True, "locally_edited": True,
                     "image_updated_at": datetime.now(timezone.utc).isoformat(),
                 }}
             )
@@ -22043,15 +22047,14 @@ async def generate_image_universal(
             update_fields = {
                 "ai_image_prompt": prompt,
                 "ai_prompt": prompt,  # save the prompt for future reference
-                "image_url": url,
+                "watercolor_image": url,  # highest priority in getProductImage — ALWAYS set
                 "cloudinary_url": url,
+                "image_url": url,
                 "image": url,
                 "ai_image_generated": True,
+                "locally_edited": True,
                 "image_updated_at": datetime.now(timezone.utc).isoformat(),
             }
-            # For breed_products (Soul Made), always save to watercolor_image too
-            if entity_type == "breed_product":
-                update_fields["watercolor_image"] = url
             await col.update_one(
                 {"$or": [{"id": entity_id}, {"_id": entity_id}]},
                 {"$set": update_fields}
