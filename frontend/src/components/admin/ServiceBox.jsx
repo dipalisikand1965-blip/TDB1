@@ -261,8 +261,19 @@ export default function ServiceBox() {
     e.target.value = '';
   };
 
+  const bulkResetPrices = async () => {
+    if (!window.confirm(`Reset ALL service prices to ₹0?\n\nThis will update every service in the database. This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API_URL}/api/admin/services/bulk-reset-prices`, {
+        method: 'POST', headers: getAdminHeaders()
+      });
+      const d = res.ok ? await res.json() : {};
+      setToast(`✅ ${d.modified || 0} services reset to ₹0`);
+      fetchServices();
+    } catch { setToast('❌ Bulk reset failed'); }
+  };
+
   const handleToggleActive = async (svc) => {
-    const svcId = svc.id || svc._id;
     setTogglingId(svcId);
     try {
       const res = await fetch(`${API_URL}/api/service-box/services/${svcId}/toggle`, {
@@ -318,6 +329,11 @@ export default function ServiceBox() {
           <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} />
         </label>
         <BatchImageButton target="services" label="Auto-Generate Service Images" />
+        <button onClick={bulkResetPrices}
+          data-testid="bulk-reset-prices-btn"
+          style={{ padding:'7px 14px', borderRadius:8, border:`1.5px solid #ef4444`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:700, color:'#ef4444' }}>
+          Reset All Prices to ₹0
+        </button>
         <button onClick={fetchServices} style={{ padding:'7px 12px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12 }}>↻</button>
       </div>
 
