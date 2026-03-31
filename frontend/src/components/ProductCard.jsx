@@ -227,7 +227,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   const [showModal, setShowModal] = useState(false);
   const [miraExpanded, setMiraExpanded] = useState(false);
   const { user, token } = useAuth();
-  const isServiceProduct = (product.product_type === 'service') || (product.category === 'service');
+  const isServiceProduct = (product.product_type === 'service') || (product.category === 'service') || (product.entity_type === 'service');
   const effectiveSelectedPet = selectedPet || pet;
   const isConciergeOnly = pillar === 'paperwork';
   
@@ -872,7 +872,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const { user, token } = useAuth();
   
   // ── Service detection & concierge flow ─────────────────────────────────────
-  const isService = (product.product_type === 'service') || (product.category === 'service');
+  const isService = (product.product_type === 'service') || (product.category === 'service') || (product.entity_type === 'service');
   const isDisplayOnly = !!(product.display_only || product.is_display_only);
   const [serviceSent, setServiceSent] = useState(false);
   const [serviceSending, setServiceSending] = useState(false);
