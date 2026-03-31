@@ -3,7 +3,7 @@
  * Manage all 1,025 services across 11 pillars
  * Uses ProductBoxEditor for rich multi-tab editing (Cloudinary, AI images, tabs)
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ProductBoxEditor from './ProductBoxEditor';
 import BatchImageButton from './BatchImageButton';
 
@@ -123,6 +123,8 @@ export default function ServiceBox() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState('');
   const [totals, setTotals] = useState({});
@@ -145,7 +147,17 @@ export default function ServiceBox() {
     setLoading(false);
   }, [activePillar]);
 
-  useEffect(() => { fetchServices(); setPage(1); setSearch(''); }, [fetchServices]);
+  useEffect(() => { fetchServices(); setPage(1); setSearch(''); setDebouncedSearch(''); }, [fetchServices]);
+
+  // Debounce search — 350ms delay before filtering
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [search]);
 
   useEffect(() => {
     const t = {};
@@ -153,10 +165,26 @@ export default function ServiceBox() {
     setTotals(t);
   }, []);
 
-  const filtered = services.filter(s =>
-    !search || s.name?.toLowerCase().includes(search.toLowerCase()) ||
-    s.category?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Multi-field search with relevance sort — name-match first
+  const filtered = (() => {
+    if (!debouncedSearch) return services;
+    const q = debouncedSearch.toLowerCase();
+    const matched = services.filter(s =>
+      (s.id || '').toLowerCase().includes(q) ||
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.category || '').toLowerCase().includes(q) ||
+      (s.sub_category || '').toLowerCase().includes(q) ||
+      (s.pillar || '').toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q)
+    );
+    return matched.sort((a, b) => {
+      const aStart = (a.name || '').toLowerCase().startsWith(q);
+      const bStart = (b.name || '').toLowerCase().startsWith(q);
+      if (aStart && !bStart) return -1;
+      if (!aStart && bStart) return 1;
+      return 0;
+    });
+  })();
   const paginated = filtered.slice((page-1)*PER_PAGE, page*PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
