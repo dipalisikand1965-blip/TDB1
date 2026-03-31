@@ -26,7 +26,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Check, ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
@@ -1931,7 +1931,8 @@ const LearnSoulPage = () => {
 
 
   const [loading,     setLoading]     = useState(true);
-  const [activeTab,   setActiveTab]   = useState("learn");
+  const [searchParams] = useSearchParams();
+  const [activeTab,   setActiveTab]   = useState(searchParams.get('tab') === 'nearme' ? 'find-learn' : 'learn');
   const [openDim,     setOpenDim]     = useState(null);
   const [catModal,    setCatModal]    = useState(null);
   const [petData,     setPetData]     = useState(null);

@@ -20,7 +20,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useScrollLock } from '../hooks/useScrollLock';
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
@@ -2193,7 +2193,8 @@ export default function CareSoulPage() {
 
 
   const [loading, setLoading]     = useState(true);
-  const [activeTab, setActiveTab] = useState("care");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') === 'nearme' ? 'find-care' : 'care');
   const [openDim, setOpenDim]     = useState(null);
   const [petData, setPetData]     = useState(null);
   const [soulScore, setSoulScore] = useState(0);
