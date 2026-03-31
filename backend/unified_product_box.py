@@ -773,7 +773,9 @@ async def get_all_products(
         total = products_master_total
         
         # Optionally include Soul Made products from breed_products if not filtered out
-        if include_soul_made and not source and len(all_products) < limit:
+        # Only supplement with breed_products when NO category or pillar filter is active
+        # (to avoid cross-contamination of unrelated breed products into filtered results)
+        if include_soul_made and not source and not category and not pillar and len(all_products) < limit:
             remaining = limit - len(all_products)
             breed_query = {}
             if search:
