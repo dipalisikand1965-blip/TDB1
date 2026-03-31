@@ -10,7 +10,8 @@
 5. **ConciergeOnlyProductDetailModal label** — Dynamic: shows `"Care Service · Concierge® Only"` not hardcoded `"Concierge®-first paperwork pick"`.
 
 ### New Features
-6. **ServiceBox "+ Add Service" button** — Opens `ProductBoxEditor` in create mode. Calls `POST /api/service-box/services`. Defaults price=0, pillar=activePillar.
+6. **ServiceBox "+ Add Service" button** — Opens `ProductBoxEditor` in create mode. Calls `POST /api/service-box/services`. Defaults price=₹0, pillar=activePillar.
+7. **ProductCard.jsx shared image resolver** — Replaced 3 separate image chains with single module-level `getProductImage(p)`. Card thumbnail + both modals (ConciergeOnly + ProductDetail) always show identical image. Priority: `watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (cloudinary/shopify only)`.
 
 ### Test Results (iteration_255) — 100% (21/21 pass)
 

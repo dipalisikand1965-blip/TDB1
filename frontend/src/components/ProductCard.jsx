@@ -223,6 +223,17 @@ const isValidUrl = (url) => {
   return true;
 };
 
+// ─── ONE shared image resolver — card thumbnail AND all modals use this ───────
+// Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (cloudinary/shopify only)
+const getProductImage = (p) =>
+  (isValidUrl(p.watercolor_image) ? p.watercolor_image : null) ||
+  (isValidUrl(p.cloudinary_url) ? p.cloudinary_url : null) ||
+  (isValidUrl(p.mockup_url) ? p.mockup_url : null) ||
+  (isValidUrl(p.primary_image) ? p.primary_image : null) ||
+  (isValidUrl(p.image_url) ? p.image_url : null) ||
+  (p.image && isValidUrl(p.image) && (p.image.includes('cloudinary') || p.image.includes('shopify.com')) ? p.image : null) ||
+  null;
+
 const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
   const [miraExpanded, setMiraExpanded] = useState(false);
@@ -351,64 +362,34 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
 
-  // Helper: reject broken/staging URLs — uses module-scoped isValidUrl above
-
-  // Get valid image - PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (only Shopify/Cloudinary) → images[0] (only Shopify)
+  // Get valid image — delegates URL resolution to module-level getProductImage()
   const getValidImage = () => {
-    // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
-    if (isValidUrl(product.watercolor_image)) return product.watercolor_image;
+    const fromUrl = getProductImage(product);
+    if (fromUrl) return fromUrl;
 
-    // 2. cloudinary_url — direct Cloudinary upload
-    if (isValidUrl(product.cloudinary_url)) return product.cloudinary_url;
-
-    // 3. mockup_url — breed product mockup
-    if (isValidUrl(product.mockup_url)) return product.mockup_url;
-
-    // 4. primary_image
-    if (isValidUrl(product.primary_image)) return product.primary_image;
-
-    // 5. image_url — clean curated URL
-    if (isValidUrl(product.image_url)) return product.image_url;
-
-    // 6. Shopify CDN or Cloudinary images in `image` field
-    if (isValidUrl(product.image) && (product.image.includes('shopify.com') || product.image.includes('cloudinary.com'))) {
-      return product.image;
-    }
-    
-    // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
+    // breed-specific product: use breed illustration
     const productId = product.id || '';
     if (productId.startsWith('breed-')) {
       const breedKey = productId.replace('breed-', '').split('-')[0];
       const breedIllustration = getBreedIllustrationByName(breedKey);
-      if (breedIllustration) {
-        return breedIllustration;
-      }
+      if (breedIllustration) return breedIllustration;
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
-      if (breedMatch) {
-        return breedMatch.imageUrl;
-      }
+      if (breedMatch) return breedMatch.imageUrl;
     }
-    
-    // 4. For soul_made products only, check for breed illustration
+
+    // soul_made: use breed illustration
     if (product.soul_tier === 'soul_made') {
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
-      if (breedMatch) {
-        return breedMatch.imageUrl;
-      }
+      if (breedMatch) return breedMatch.imageUrl;
     }
-    
-    // 5. Fallback: legacy image field — ONLY Shopify or Cloudinary, never emergentagent
-    if (isValidUrl(product.image) && (product.image.includes('shopify.com') || product.image.includes('cloudinary.com'))) {
-      return product.image;
-    }
-    
-    // 6. Last resort: images array (Shopify or Cloudinary only — never emergentagent)
+
+    // images[] last resort (Shopify or Cloudinary only)
     if (product.images?.[0] && isValidUrl(product.images[0]) && (product.images[0].includes('shopify.com') || product.images[0].includes('cloudinary.com'))) {
       return product.images[0];
     }
-    
+
     return PLACEHOLDER_IMAGE;
   };
   
@@ -686,7 +667,7 @@ const ConciergeOnlyProductDetailModal = ({ product, pillar = 'paperwork', select
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const petName = selectedPet?.name || 'your dog';
-  const productImage = product.watercolor_image || product.cloudinary_url || product.mockup_url || product.primary_image || product.image_url || product.image || product.images?.[0] || 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
+  const productImage = getProductImage(product) || 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
 
   const handleRequest = async () => {
     setSending(true);
@@ -795,73 +776,35 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   // miraContext is now always passed (effectiveMiraContext from parent)
   // onAddToPicks - callback for Mira picks panel (instead of cart)
   
-  // Get valid product image — PRIORITY: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image → images[0]
+  // Get valid product image — delegates to module-level getProductImage(), then breed illustration fallbacks
   const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
   const getValidProductImage = () => {
-    // 1. watercolor_image — admin AI-generated breed illustration (highest priority)
-    if (product.watercolor_image && product.watercolor_image.startsWith('http')) {
-      return product.watercolor_image;
-    }
+    const fromUrl = getProductImage(product);
+    if (fromUrl) return fromUrl;
 
-    // 2. cloudinary_url — direct Cloudinary upload
-    if (product.cloudinary_url && product.cloudinary_url.startsWith('http')) {
-      return product.cloudinary_url;
-    }
-
-    // 3. mockup_url — breed product mockup
-    if (product.mockup_url && product.mockup_url.startsWith('http')) {
-      return product.mockup_url;
-    }
-
-    // 4. primary_image
-    if (product.primary_image && product.primary_image.startsWith('http')) {
-      return product.primary_image;
-    }
-
-    // 5. image_url — clean curated URL
-    if (product.image_url && product.image_url.startsWith('http')) {
-      return product.image_url;
-    }
-
-    // 6. Shopify CDN images
-    if (product.image && product.image.startsWith('http') && product.image.includes('shopify.com')) {
-      return product.image;
-    }
-    
-    // 3. For breed-specific products (IDs like "breed-cavalier-welcome_kit"), use breed illustration
+    // breed-specific product: use breed illustration
     const productId = product.id || '';
     if (productId.startsWith('breed-')) {
       const breedKey = productId.replace('breed-', '').split('-')[0];
       const breedIllustration = getBreedIllustrationByName(breedKey);
-      if (breedIllustration) {
-        return breedIllustration;
-      }
+      if (breedIllustration) return breedIllustration;
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
-      if (breedMatch) {
-        return breedMatch.imageUrl;
-      }
+      if (breedMatch) return breedMatch.imageUrl;
     }
-    
-    // 4. For soul_made products only, check for breed illustration
+
+    // soul_made: use breed illustration
     if (product.soul_tier === 'soul_made') {
       const productName = (product.name || product.title || '').toLowerCase();
       const breedMatch = findBreedIllustration(productName);
-      if (breedMatch) {
-        return breedMatch.imageUrl;
-      }
+      if (breedMatch) return breedMatch.imageUrl;
     }
-    
-    // 5. Fallback: legacy image field — ONLY Shopify or Cloudinary, never emergentagent
-    if (isValidUrl(product.image) && (product.image.includes('shopify.com') || product.image.includes('cloudinary.com'))) {
-      return product.image;
-    }
-    
-    // 6. Last resort: images array (Shopify or Cloudinary only — never emergentagent)
+
+    // images[] last resort (Shopify or Cloudinary only)
     if (product.images?.[0] && isValidUrl(product.images[0]) && (product.images[0].includes('shopify.com') || product.images[0].includes('cloudinary.com'))) {
       return product.images[0];
     }
-    
+
     return PLACEHOLDER_IMAGE;
   };
   const productImage = getValidProductImage();
