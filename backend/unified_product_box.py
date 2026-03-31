@@ -916,6 +916,14 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
                 # Set audit fields
                 updates["updated_at"] = datetime.now(timezone.utc).isoformat()
                 updates["updated_by"] = admin_user
+
+                # Sync flat `image` field to best available image URL
+                best_img = (
+                    updates.get("watercolor_image") or updates.get("cloudinary_url") or updates.get("image_url")
+                    or existing.get("watercolor_image") or existing.get("cloudinary_url") or existing.get("image_url")
+                )
+                if best_img:
+                    updates["image"] = best_img
                 
                 await db.breed_products.update_one(
                     {"id": product_id},
@@ -983,7 +991,20 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
             updates["pricing"]["base_price"] = manual_price
             updates["pricing"]["selling_price"] = manual_price
             updates["price"] = manual_price
-        
+
+        # Sync the flat `image` field to the best available image URL.
+        # This prevents the rope-toy / stale static URL showing via the `image` fallback.
+        best_image = (
+            updates.get("watercolor_image")
+            or updates.get("cloudinary_url")
+            or updates.get("image_url")
+            or existing.get("watercolor_image")
+            or existing.get("cloudinary_url")
+            or existing.get("image_url")
+        )
+        if best_image:
+            updates["image"] = best_image
+
         await db[collection_name].update_one(
             {"id": product_id},
             {"$set": updates}
