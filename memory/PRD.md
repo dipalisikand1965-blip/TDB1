@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-03-31 (Session 39 — P0: Inactive service filtering + Admin search debounce for ServiceBox/BundleBox/SoulBox)
+## Last Updated: 2026-03-31 (Session 40 — Breed filter fixes, raincoat archive, rope toy gradient, cache fix)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
