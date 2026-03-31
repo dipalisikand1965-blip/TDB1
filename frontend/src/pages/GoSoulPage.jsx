@@ -26,7 +26,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
@@ -1891,7 +1891,8 @@ const GoSoulPage = () => {
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   const pet = currentPet; // alias so all sub-components can use pet directly
   const [loading, setLoading]       = useState(true);
-  const [activeTab, setActiveTab]   = useState("go");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab]   = useState(searchParams.get('tab') === 'nearme' ? 'stay' : 'go');
   const [goConciergOpen, setGoConciergOpen] = useState(false);
   const [openDim, setOpenDim]       = useState(null);
   const [petData, setPetData]       = useState(null);
