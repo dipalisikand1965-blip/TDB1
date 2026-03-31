@@ -272,7 +272,7 @@ function DoggyBakerySection({ pet }) {
 
   const filtered = filter === "all" ? items : items.filter(item => {
     const n = (item.name||"").toLowerCase();
-    if (filter==="cakes")    return n.includes("cake") || n.includes("pupcake") || n.includes("dognut");
+    if (filter==="cakes")    return (n.includes("cake") || n.includes("pupcake") || n.includes("dognut")) && !n.includes("topper") && !n.includes("decoration set");
     if (filter==="treats")   return n.includes("treat") || n.includes("ladoo") || n.includes("cookie") || n.includes("biscuit");
     if (filter==="hampers")  return n.includes("hamper") || n.includes("box") || n.includes("gift");
     if (filter==="seasonal") return n.includes("diwali") || n.includes("halloween") || n.includes("christmas") || n.includes("rakhi") || n.includes("spooky") || n.includes("festive");
