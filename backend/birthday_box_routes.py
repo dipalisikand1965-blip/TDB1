@@ -234,6 +234,10 @@ def get_slot_4_memory_item(pet: dict) -> dict:
 def get_slot_5_health_item(pet: dict) -> dict:
     """Slot 5 — Health Item: MUST be allergy-safe"""
     pet_age = pet.get("age", 3)
+    try:
+        pet_age = float(pet_age) if pet_age is not None else 3
+    except (ValueError, TypeError):
+        pet_age = 3
     health_condition = pet.get("health_condition") or pet.get("healthCondition")
     
     # Use the comprehensive allergy check
