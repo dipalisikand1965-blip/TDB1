@@ -26,6 +26,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ConciergeOnlyProductDetailModal } from "../components/ProductCard";
+import ServiceBookingModal from "../components/ServiceBookingModal";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import PillarServiceSection from "../components/PillarServiceSection";
@@ -201,126 +202,6 @@ const PAPER_SERVICES = [
   { id:"life_planning", icon:"💡", name:"Pet Life Planning",            tagline:"Plan {petName}'s life well",       price:"Free",   steps:2, dim:"advisory",  accentColor:"#1E293B", desc:"A comprehensive life plan for {petName} — every stage from puppy to senior, all guidance in one session.", miraKnows:"Planning ahead for {petName} reduces stress and ensures nothing is missed." },
   { id:"puppy_prep",    icon:"🐶", name:"New Puppy Preparation",        tagline:"Everything for the first year",    price:"₹1,499", steps:3, dim:"advisory",  accentColor:"#0D9488", desc:"Complete first-year guide for {petName} — vet, food, training, grooming, socialisation, documents.", miraKnows:"The first year is the most important. I've built the complete roadmap for {petName}." },
 ];
-
-// ─── BOOKING MODAL ─────────────────────────────────────────
-function ServiceBookingModal({ service, pet, onClose }) {
-  const [step,     setStep]     = useState(1);
-  const [choice,   setChoice]   = useState("");
-  const [schedule, setSchedule] = useState("");
-  const [notes,    setNotes]    = useState("");
-  const [sent,     setSent]     = useState(false);
-  const petName = pet?.name||"your dog";
-  const miraText = (service.miraKnows||"").replace(/{petName}/g,petName).replace(/{petname}/gi,petName);
-
-  if (sent) return (
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"min(480px,100%)",background:"#fff",borderRadius:16,padding:"40px 32px",textAlign:"center"}}>
-        <div style={{width:64,height:64,borderRadius:"50%",background:`linear-gradient(135deg,${G.teal},${G.mid})`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,margin:"0 auto 20px"}}>✦</div>
-        <div style={{fontSize:20,fontWeight:700,color:G.darkText,fontFamily:"Georgia,serif",marginBottom:8}}>Request Sent to Concierge®</div>
-        <div style={{fontSize:14,color:G.mutedText,lineHeight:1.7,marginBottom:24}}>Your {service.name.toLowerCase()} request for {petName} has been received. Our team will contact you within 2 hours.</div>
-        <div style={{display:"inline-flex",alignItems:"center",gap:6,background:G.pale,border:`1px solid ${G.border}`,borderRadius:20,padding:"6px 16px",fontSize:13,color:G.teal,fontWeight:600,marginBottom:20}}>📥 Added to your Inbox</div>
-        <div><button onClick={onClose} style={{background:G.teal,color:"#fff",border:"none",borderRadius:12,padding:"12px 28px",fontSize:14,fontWeight:700,cursor:"pointer"}}>Done</button></div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"min(500px,100%)",maxHeight:"90vh",background:"#fff",borderRadius:16,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-        {/* Header */}
-        <div style={{background:`linear-gradient(135deg,${service.accentColor},${service.accentColor}CC)`,padding:"18px 22px 14px",flexShrink:0}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.20)",borderRadius:20,padding:"3px 10px",fontSize:11,color:"#fff",fontWeight:500}}>
-              {service.icon} {service.name}
-            </div>
-            <button onClick={onClose} style={{background:"rgba(255,255,255,0.20)",border:"none",borderRadius:"50%",width:28,height:28,cursor:"pointer",color:"#fff",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
-          </div>
-          <div style={{fontSize:18,fontWeight:700,color:"#fff",fontFamily:"Georgia,serif",marginBottom:3}}>{service.name} for {petName}</div>
-          <div style={{height:4,background:"rgba(255,255,255,0.25)",borderRadius:4,overflow:"hidden",marginBottom:5}}>
-            <div style={{height:"100%",width:`${(step/service.steps)*100}%`,background:"#fff",borderRadius:4,transition:"width 0.3s"}}/>
-          </div>
-          <div style={{fontSize:11,color:"rgba(255,255,255,0.70)"}}>Step {step} of {service.steps}</div>
-        </div>
-
-        {/* Body */}
-        <div style={{padding:"18px 22px",overflowY:"auto",flex:1}}>
-          {/* Pet badge */}
-          <div style={{display:"flex",alignItems:"center",gap:10,paddingBottom:14,marginBottom:14,borderBottom:`0.5px solid ${G.pale}`}}>
-            <div style={{width:40,height:40,borderRadius:"50%",background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,overflow:"hidden",flexShrink:0}}>
-              {(pet?.photo_url||pet?.avatar_url)
-                ? <img src={pet.photo_url||pet.avatar_url} alt={petName} style={{width:"100%",height:"100%",objectFit:"cover"}} loading="eager" decoding="sync"/>
-                : <span>{pet?.avatar||"🐕"}</span>}
-            </div>
-            <div>
-              <div style={{fontSize:14,fontWeight:700,color:G.darkText}}>For {petName}</div>
-              <div style={{fontSize:12,color:G.mutedText}}>{pet?.breed||""}</div>
-            </div>
-          </div>
-
-          {/* Mira knows */}
-          {miraText && (
-            <div style={{background:G.pale,border:`1px solid ${G.border}`,borderRadius:10,padding:"10px 13px",display:"flex",alignItems:"flex-start",gap:8,marginBottom:16}}>
-              <span style={{fontSize:14,flexShrink:0}}>ⓘ</span>
-              <div style={{fontSize:12,color:G.mid,lineHeight:1.5}}><strong style={{color:G.darkText}}>Mira knows:</strong> {miraText}</div>
-            </div>
-          )}
-
-          {/* Step 1 */}
-          {step===1 && (
-            <>
-              <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:10}}>What do you need most?</div>
-              {["Starting from scratch — guide me step by step","I have some documents — need help completing","Urgent — need this sorted as soon as possible","Just exploring options for now"].map(o=>(
-                <div key={o} onClick={()=>setChoice(o)}
-                  style={{background:choice===o?G.pale:"#fff",border:`1.5px solid ${choice===o?G.teal:G.border}`,borderRadius:10,padding:"11px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:7,cursor:"pointer",transition:"all 0.12s"}}>
-                  <span style={{fontSize:13,color:G.darkText}}>{o}</span>
-                  {choice===o && <span style={{color:G.teal,fontWeight:700}}>✓</span>}
-                </div>
-              ))}
-            </>
-          )}
-
-          {/* Step 2 */}
-          {step===2 && (
-            <>
-              <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:10}}>When works best?</div>
-              {["Within 24 hours","This week","Next week","Flexible — Mira decides"].map(o=>(
-                <div key={o} onClick={()=>setSchedule(o)}
-                  style={{background:schedule===o?G.pale:"#fff",border:`1.5px solid ${schedule===o?G.teal:G.border}`,borderRadius:10,padding:"11px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:7,cursor:"pointer",transition:"all 0.12s"}}>
-                  <span style={{fontSize:13,color:G.darkText}}>{o}</span>
-                  {schedule===o && <span style={{color:G.teal,fontWeight:700}}>✓</span>}
-                </div>
-              ))}
-            </>
-          )}
-
-          {/* Step 3 (if 3-step service) */}
-          {step===3 && (
-            <>
-              <div style={{background:G.pale,borderRadius:12,padding:"16px",marginBottom:14}}>
-                <div style={{fontSize:13,color:G.darkText,lineHeight:1.6}}>Our concierge will contact you within 2 hours to arrange {petName}'s {service.name}.</div>
-                <div style={{fontSize:12,color:G.mutedText,marginTop:8}}>Need: {choice} · Schedule: {schedule}</div>
-              </div>
-              <textarea placeholder={`Any notes for Mira? (optional)`} value={notes} onChange={e=>setNotes(e.target.value)}
-                style={{width:"100%",border:`1.5px solid ${G.border}`,borderRadius:10,padding:"11px 14px",fontSize:13,color:G.darkText,outline:"none",resize:"none",minHeight:72,boxSizing:"border-box"}}/>
-            </>
-          )}
-        </div>
-
-        {/* Nav */}
-        <div style={{padding:"0 22px 18px",flexShrink:0,borderTop:`0.5px solid ${G.pale}`}}>
-          <div style={{display:"flex",gap:8,paddingTop:14}}>
-            {step>1 && <button onClick={()=>setStep(s=>s-1)} style={{flex:1,background:"#fff",border:`1.5px solid ${G.border}`,borderRadius:10,padding:"11px",fontSize:13,fontWeight:600,color:G.mutedText,cursor:"pointer"}}>← Back</button>}
-            <button onClick={()=>{ if(step<service.steps)setStep(s=>s+1); else setSent(true); }}
-              disabled={step===1&&!choice || step===2&&!schedule}
-              style={{flex:2,background:step===service.steps?`linear-gradient(135deg,${G.teal},${G.mid})`:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"11px",fontSize:13,fontWeight:700,cursor:"pointer",opacity:(step===1&&!choice||step===2&&!schedule)?0.5:1}}>
-              {step===service.steps?"✦ Send to Concierge®":"Continue →"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── MIRA PICKS ────────────────────────────────────────────
 function MiraPicksSection({ pet, onSelectProd }) {
@@ -797,7 +678,7 @@ const PaperworkSoulPage = () => {
         </div>
 
         {/* Booking modal */}
-        {activeService && <ServiceBookingModal service={activeService} pet={petData} onClose={()=>setActiveService(null)}/>}
+        {activeService && <ServiceBookingModal isOpen={true} onClose={()=>setActiveService(null)} serviceType={activeService?.category || 'paperwork'} preselectedService={activeService?.name} />}
 
         <div style={{display:'flex',gap:8,flexWrap:'wrap',padding:'14px 0 18px'}}>
           {topTabs.map((tab) => {
@@ -937,7 +818,7 @@ const PaperworkSoulPage = () => {
 
         {activeTab==="advisory" && (
           <div style={{marginTop:24}}>
-            {activeService&&<ServiceBookingModal service={activeService} pet={petData} onClose={()=>setActiveService(null)}/>}
+            {activeService&&<ServiceBookingModal isOpen={true} onClose={()=>setActiveService(null)} serviceType={activeService?.category || 'paperwork'} preselectedService={activeService?.name} />}
             <PillarServiceSection
               pillar="paperwork"
               pet={petData}
