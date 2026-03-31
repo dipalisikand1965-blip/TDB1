@@ -259,25 +259,44 @@ function DoggyBakerySection({ pet }) {
   ];
 
   useEffect(() => {
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=48&sort_by=mira_score`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("tdb_auth_token") || ""}` }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        setItems(data?.products || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    const fetchTab = async () => {
+      let products = [];
+      const headers = { Authorization: `Bearer ${localStorage.getItem("tdb_auth_token") || ""}` };
+      try {
+        if (filter === 'all') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=48&sort_by=mira_score`, { headers });
+          const d = await r.json();
+          products = d?.products || [];
+        } else if (filter === 'cakes') {
+          const [r1, r2] = await Promise.all([
+            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=cakes&limit=120`, { headers }),
+            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=breed-cakes&limit=120`, { headers }),
+          ]);
+          const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+          products = [...(d1.products || []), ...(d2.products || [])];
+        } else if (filter === 'treats') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&category=Treats%20%26%20Rewards&limit=80`, { headers });
+          const d = await r.json();
+          products = d?.products || [];
+        } else if (filter === 'hampers') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=hampers&limit=50`, { headers });
+          const d = await r.json();
+          products = d?.products || [];
+        } else if (filter === 'seasonal') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200`, { headers });
+          const d = await r.json();
+          const keys = ['diwali', 'halloween', 'christmas', 'rakhi', 'festive', 'holi', 'eid', 'spooky'];
+          products = (d?.products || []).filter(p => keys.some(s => p.name?.toLowerCase().includes(s)));
+        }
+      } catch (e) { /* silent */ }
+      setItems(products);
+      setLoading(false);
+    };
+    fetchTab();
+  }, [filter]);
 
-  const filtered = filter === "all" ? items : items.filter(item => {
-    const n = (item.name||"").toLowerCase();
-    if (filter==="cakes")    return (n.includes("cake") || n.includes("pupcake") || n.includes("dognut")) && !n.includes("topper") && !n.includes("decoration set");
-    if (filter==="treats")   return n.includes("treat") || n.includes("ladoo") || n.includes("cookie") || n.includes("biscuit");
-    if (filter==="hampers")  return n.includes("hamper") || n.includes("box") || n.includes("gift");
-    if (filter==="seasonal") return n.includes("diwali") || n.includes("halloween") || n.includes("christmas") || n.includes("rakhi") || n.includes("spooky") || n.includes("festive");
-    return true;
-  });
+  const filtered = items;
 
   return (
     <div>
