@@ -94,14 +94,16 @@ export default function DineMobilePage() {
     return () => window.removeEventListener('soulScoreUpdated', handler);
   }, [currentPet]);
 
-  // Fetch products
+  // Fetch products — breed param ensures backend pre-filters so Mojo sees only Indie products
   const fetchProducts = useCallback(async (pet) => {
     if (!pet?.id) return;
     const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
+    // Always pass breed so the backend pre-filters: Indie dog sees Indie + universal products only
+    const breedParam = pet.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
     try {
       const results = await Promise.all(
         FOOD_CATS.map(cat =>
-          fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}`, {
+          fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=200&category=${encodeURIComponent(cat)}${breedParam}`, {
             headers: token ? { Authorization:`Bearer ${token}` } : {}
           }).then(r => r.ok ? r.json() : null).catch(() => null)
         )
