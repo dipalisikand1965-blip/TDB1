@@ -97,6 +97,7 @@ const UnifiedProductBox = () => {
   const [page, setPage] = useState(0);
   const [totalProducts, setTotalProducts] = useState(0);
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [seeding, setSeeding] = useState(false);
   const limit = 20;
 
@@ -674,97 +675,129 @@ const UnifiedProductBox = () => {
     }
   };
 
-  // Export products to CSV
+  // Export products to CSV — uses backend endpoint which exports ALL fields intelligently
   const exportToCSV = async () => {
     setExporting(true);
     try {
-      // Fetch ALL products (no pagination)
-      const params = new URLSearchParams({ limit: '10000' });
-      if (searchTerm) params.append('search', searchTerm);
-      if (filterType) params.append('product_type', filterType);
+      const params = new URLSearchParams({ include_all_fields: 'true' });
       if (filterPillar) params.append('pillar', filterPillar);
-      if (filterStatus) params.append('status', filterStatus);
-      if (filterShipping) params.append('shipping', filterShipping);
-      if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
-      
-      const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
-      const data = await response.json();
-      const allProducts = data.products || [];
-      
-      if (allProducts.length === 0) {
-        toast({ title: 'No Data', description: 'No products to export', variant: 'destructive' });
-        return;
-      }
-      
-      // CSV Headers - includes Breed Intelligence
-      const headers = [
-        'ID', 'Name', 'Type', 'Status', 'Category', 'Tags',
-        'Primary Pillar', 'All Pillars', 'Base Price', 'GST Rate',
-        'In Stock', 'Reward Eligible', 'Reward Value', 'Reward Triggers',
-        'Life Stages', 'Size Suitability', 'Dietary Flags',
-        'Mira Can Reference', 'Mira Can Suggest', 'Mira Hint',
-        'Breed Targets', 'Size Targets', 'Age Groups', 'Chew Strength', 'Energy Level', 'Sensitivities',
-        'Short Description', 'Image URL'
-      ];
-      
-      // Build CSV rows
-      const rows = allProducts.map(p => {
-        const breedMeta = p.breed_metadata || {};
-        return [
-          p.id || '',
-          `"${(p.name || p.product_name || '').replace(/"/g, '""')}"`,
-          p.product_type || '',
-          p.visibility?.status || p.status || '',
-          p.category || '',
-          `"${(p.tags || []).join(', ')}"`,
-          p.primary_pillar || '',
-          `"${(p.pillars || []).join(', ')}"`,
-          p.pricing?.base_price || p.base_price || 0,
-          p.pricing?.gst_rate || 18,
-          p.in_stock ? 'Yes' : 'No',
-          p.paw_rewards?.is_reward_eligible ? 'Yes' : 'No',
-          p.paw_rewards?.reward_value || 0,
-          `"${(p.paw_rewards?.trigger_conditions || []).join(', ')}"`,
-          `"${(p.pet_safety?.life_stages || []).join(', ')}"`,
-          `"${(p.pet_safety?.size_suitability || []).join(', ')}"`,
-          `"${(p.pet_safety?.dietary_flags || []).join(', ')}"`,
-          p.mira_visibility?.can_reference ? 'Yes' : 'No',
-          p.mira_visibility?.can_suggest_proactively ? 'Yes' : 'No',
-          `"${(p.mira_hint || '').replace(/"/g, '""')}"`,
-          `"${(breedMeta.breeds || []).join(', ')}"`,
-          `"${(breedMeta.sizes || []).join(', ')}"`,
-          `"${(breedMeta.age_groups || []).join(', ')}"`,
-          breedMeta.chew_strength || '',
-          breedMeta.energy_level || '',
-          `"${(breedMeta.sensitivities || []).join(', ')}"`,
-          `"${(p.short_description || '').replace(/"/g, '""').substring(0, 200)}"`,
-          `"${p.image_url || p.images?.[0] || p.thumbnail || ''}"`
-        ];
-      });
-      
-      // Create CSV content
-      const csvContent = [
-        headers.join(','),
-        ...rows.map(row => row.join(','))
-      ].join('\n');
-      
-      // Download
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
+      if (filterType)   params.append('category', filterType);
+
+      const resp = await fetch(`${API_URL}/api/product-box/export/csv?${params}`);
+      if (!resp.ok) throw new Error(`Export failed: ${resp.status}`);
+
+      const blob = await resp.blob();
+      const url  = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `products_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `products_export_${filterPillar || 'all'}_${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
-      toast({ title: 'Exported!', description: `${allProducts.length} products exported to CSV` });
+
+      toast({ title: 'Exported!', description: `Products exported to CSV${filterPillar ? ` (${filterPillar} pillar)` : ' (all pillars)'}` });
     } catch (err) {
       console.error('Error exporting:', err);
       toast({ title: 'Error', description: 'Failed to export products', variant: 'destructive' });
     } finally {
       setExporting(false);
+    }
+  };
+
+  // Parse CSV properly — handles quoted fields containing commas/newlines
+  const parseCSVText = (text) => {
+    const lines = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') {
+        if (inQuotes && text[i + 1] === '"') { current += '"'; i++; }
+        else inQuotes = !inQuotes;
+      } else if (ch === '\n' && !inQuotes) {
+        if (current.trim()) lines.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    if (current.trim()) lines.push(current);
+
+    const parseRow = (line) => {
+      const vals = [];
+      let cell = '';
+      let q = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (q && line[i + 1] === '"') { cell += '"'; i++; }
+          else q = !q;
+        } else if (ch === ',' && !q) {
+          vals.push(cell); cell = '';
+        } else {
+          cell += ch;
+        }
+      }
+      vals.push(cell);
+      return vals;
+    };
+
+    if (lines.length < 2) return [];
+    const headers = parseRow(lines[0]).map(h => h.trim());
+    return lines.slice(1).map(line => {
+      const vals = parseRow(line);
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+      return obj;
+    }).filter(row => row.name || row.Name);
+  };
+
+  // Import products from CSV — full field mapping, all schema fields
+  const importFromCSV = async (file) => {
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const rows = parseCSVText(text);
+
+      if (rows.length === 0) {
+        toast({ title: 'Empty File', description: 'No valid product rows found in CSV', variant: 'destructive' });
+        return;
+      }
+
+      // Normalise keys (exported headers are lowercase)
+      const products = rows.map(row => {
+        const r = {};
+        Object.keys(row).forEach(k => { r[k.toLowerCase().replace(/\s+/g, '_')] = row[k]; });
+        return r;
+      });
+
+      const auth = localStorage.getItem('adminAuth') || btoa('aditya:lola4304');
+      const res = await fetch(`${API_URL}/api/product-box/import`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${auth}` },
+        body: JSON.stringify({ products, update_existing: true }),
+      });
+
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const d = await res.json();
+
+      toast({
+        title: 'Import Complete!',
+        description: `Imported: ${d.imported} new · Updated: ${d.updated} existing · Failed: ${d.failed}`,
+      });
+
+      if (d.errors && d.errors.length > 0) {
+        console.warn('[CSV Import] Errors:', d.errors);
+      }
+
+      fetchProducts(page, {});
+    } catch (err) {
+      console.error('CSV Import error:', err);
+      toast({ title: 'Import Failed', description: err.message, variant: 'destructive' });
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -911,27 +944,12 @@ const UnifiedProductBox = () => {
             Export CSV
           </Button>
           <BatchImageButton target="products" label="Auto-Generate Product Images" />
-          <label style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, border:'1px solid #86efac', color:'#166534', background:'#f0fdf4', cursor:'pointer', fontSize:13, fontWeight:600 }}>
-            Import CSV
-            <input type="file" accept=".csv" style={{ display:'none' }} onChange={async (e) => {
-              const file = e.target.files[0]; if (!file) return;
-              const text = await file.text();
-              const lines = text.split('\n').filter(Boolean);
-              const hdrs = lines[0].split(',');
-              const rows = lines.slice(1).map(line => {
-                const vals = line.split(',');
-                const obj = {};
-                hdrs.forEach((h,i) => { obj[h.trim()] = (vals[i]||'').trim().replace(/^"|"$/g,''); });
-                return { name:obj.Name||obj.name, pillar:obj.Pillar||obj.pillar, category:obj.Category||obj.category||'', original_price:parseFloat(obj.Price||obj.original_price)||0 };
-              }).filter(r => r.name);
-              try {
-                const auth = localStorage.getItem('adminAuth') || btoa('aditya:lola4304');
-                const res = await fetch(`${API_URL}/api/product-box/import`, { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Basic ${auth}`}, body:JSON.stringify({products:rows}) });
-                const d = res.ok ? await res.json() : {};
-                alert(`Imported ${d.imported||rows.length} products`);
-                fetchProducts(currentPage, activeFilters);
-              } catch { alert('Import failed'); }
-              e.target.value='';
+          <label style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, border:'1px solid #86efac', color: importing ? '#166534' : '#166534', background: importing ? '#dcfce7' : '#f0fdf4', cursor: importing ? 'wait' : 'pointer', fontSize:13, fontWeight:600, opacity: importing ? 0.7 : 1 }}>
+            {importing ? <><Loader2 size={14} className="animate-spin" /> Importing…</> : <><Upload size={14} /> Import CSV</>}
+            <input type="file" accept=".csv" style={{ display:'none' }} disabled={importing} onChange={async (e) => {
+              const file = e.target.files[0];
+              await importFromCSV(file);
+              e.target.value = '';
             }} />
           </label>
           <Button onClick={createNewProduct} className="bg-purple-600 hover:bg-purple-700" data-testid="add-product-btn">

@@ -48,19 +48,31 @@ export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar
     setSending(true);
     tdc.nearme({ query: venueName, pillar, pet, channel: `${pillar}_nearme_modal` });
 
-    const briefText =
-      `NearMe booking request for ${petName}\n` +
-      `Venue: ${venueName}\n` +
-      (actualVenue?.formatted_address || actualVenue?.vicinity ? `Address: ${actualVenue.formatted_address || actualVenue.vicinity}\n` : '') +
-      (actualVenue?.rating ? `Rating: ${actualVenue.rating}★\n` : '') +
-      (actualVenue?.formatted_phone_number ? `Phone: ${actualVenue.formatted_phone_number}\n` : '') +
-      `When: ${notSure ? 'Not sure yet — just enquire' : (date || 'Not specified')}\n` +
-      (notes.trim() ? `Notes: ${notes}\n` : '') +
-      `\nPlease contact the venue and arrange for ${petName}.`;
+    // Build a structured note for the Master Briefing
+    const noteLines = [
+      `Venue: ${venueName}`,
+      (actualVenue?.formatted_address || actualVenue?.vicinity) ? `Address: ${actualVenue.formatted_address || actualVenue.vicinity}` : null,
+      actualVenue?.rating ? `Rating: ${actualVenue.rating}★` : null,
+      actualVenue?.formatted_phone_number ? `Phone: ${actualVenue.formatted_phone_number}` : null,
+      `When: ${notSure ? 'Not sure yet — just enquire' : (date || 'Not specified')}`,
+      notes.trim() ? `Notes: ${notes.trim()}` : null,
+      `Please contact the venue and arrange for ${petName}.`,
+    ].filter(Boolean);
 
-    await request(briefText, {
+    await request(venueName, {
       channel:  `${pillar}_nearme`,
       urgency:  'normal',
+      // Pass structured details so buildMasterBriefing includes them
+      details: {
+        service_name:   venueName,
+        venue_name:     venueName,
+        venue_address:  actualVenue?.formatted_address || actualVenue?.vicinity,
+        venue_rating:   actualVenue?.rating ? `${actualVenue.rating}★` : null,
+        preferred_date: notSure ? 'Not sure yet — just enquire' : (date || 'Not specified'),
+        notes:          notes.trim() || null,
+        pillar,
+      },
+      note: noteLines.join('\n'),
       metadata: {
         nearme_booking: true,
         venue_name:     venueName,
