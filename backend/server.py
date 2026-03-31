@@ -7108,20 +7108,48 @@ async def admin_get_all_bundles(pillar: str = None, limit: int = 200, username: 
     total = await db.bundles.count_documents(query)
     return {"bundles": bundles, "total": total}
 
+
+@admin_router.post("/bundles/all")
+async def admin_create_bundle(bundle: dict, username: str = Depends(verify_admin)):
+    """Create a new bundle."""
+    from datetime import datetime, timezone
+    if not bundle.get("name"):
+        raise HTTPException(status_code=400, detail="Bundle name is required")
+    bundle_id = bundle.get("id") or f"bun-{uuid.uuid4().hex[:8]}"
+    bundle["id"] = bundle_id
+    bundle.setdefault("pillar", "care")
+    bundle.setdefault("is_active", True)
+    bundle.setdefault("is_soul_made", False)
+    bundle["created_at"] = datetime.now(timezone.utc).isoformat()
+    bundle["created_by"] = username
+    await db.bundles.insert_one(bundle)
+    bundle.pop("_id", None)
+    return {"success": True, "bundle": bundle}
+
 @admin_router.patch("/bundles/all/{bundle_id}")
 async def admin_update_bundle(bundle_id: str, updates: dict, username: str = Depends(verify_admin)):
     """Update a bundle in master bundles collection."""
     from datetime import datetime, timezone
-    allowed = ["name","price","pillar","description","is_active","is_soul_made","discount_percent","items","tags"]
-    clean = {k: v for k, v in updates.items() if k in allowed}
+    # Allow all known bundle fields (exclude internal _id)
+    EXCLUDED = {"_id", "id", "created_at", "created_by"}
+    clean = {k: v for k, v in updates.items() if k not in EXCLUDED}
     clean["updated_at"] = datetime.now(timezone.utc).isoformat()
     clean["updated_by"] = username
-    if "price" in clean:
+    if "price" in clean and clean["price"] is not None:
         clean["price"] = float(clean["price"])
     result = await db.bundles.update_one({"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"$set": clean})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Bundle not found")
     return {"success": True, "updated": clean}
+
+@admin_router.delete("/bundles/all/{bundle_id}")
+async def admin_delete_bundle(bundle_id: str, username: str = Depends(verify_admin)):
+    """Hard-delete a single bundle."""
+    result = await db.bundles.delete_one({"$or": [{"id": bundle_id}, {"_id": bundle_id}]})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"success": True, "id": bundle_id, "deleted": True}
+
 
 @admin_router.post("/bundles/all/{bundle_id}/toggle")
 async def admin_toggle_bundle_active(bundle_id: str, username: str = Depends(verify_admin)):
@@ -7153,18 +7181,26 @@ async def admin_import_bundles(bundles: list, username: str = Depends(verify_adm
 
 @admin_router.get("/bundles/all/export-csv")
 async def admin_export_bundles_csv(username: str = Depends(verify_admin)):
-    """Export all bundles as CSV."""
+    """Export all bundles as CSV with ALL fields."""
     import csv, io
-    raw = await db.bundles.find({}).to_list(length=500)
+    raw = await db.bundles.find({}, {"_id": 0}).to_list(length=5000)
+    ALL_COLS = ["id","name","pillar","price","discount_percent","is_active","is_soul_made",
+                "description","category","items","tags","image_url","approval_status",
+                "paw_points_eligible","paw_points_value","mira_hint","created_at","updated_at"]
     output = io.StringIO()
-    writer = csv.DictWriter(output, fieldnames=["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"])
+    writer = csv.DictWriter(output, fieldnames=ALL_COLS, extrasaction='ignore')
     writer.writeheader()
     for b in raw:
-        b["id"] = b.get("id") or str(b.get("_id",""))
-        writer.writerow({k: b.get(k,"") for k in ["id","name","pillar","price","discount_percent","is_active","is_soul_made","description"]})
+        b["id"] = b.get("id") or ""
+        # Flatten list fields to semicolon-separated strings
+        for lf in ["items","tags"]:
+            v = b.get(lf, "")
+            if isinstance(v, list): b[lf] = ";".join(str(x) for x in v)
+        row = {c: b.get(c, "") for c in ALL_COLS}
+        writer.writerow(row)
     from fastapi.responses import Response
     return Response(content=output.getvalue(), media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=bundles_export.csv"})
+        headers={"Content-Disposition": f"attachment; filename=bundles_export_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}.csv"})
 
 # ─── ADMIN SERVICES IMPORT CSV ────────────────────────────────────────────────
 @admin_router.post("/services/import-csv")
