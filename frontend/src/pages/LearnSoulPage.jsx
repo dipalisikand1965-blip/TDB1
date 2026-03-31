@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Check, ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
-import PillarPageLayout from "../components/PillarPageLayout";
+import ConciergeCTA from "../components/ConciergeCTA";import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
@@ -2144,6 +2144,8 @@ const LearnSoulPage = () => {
 
             {/* Mira Picks */}
             <div ref={miraPicksRef}><MiraPicksSection pet={petData}/></div>
+            {/* Concierge CTA — desktop */}
+            <ConciergeCTA pillar="learn" />
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
 

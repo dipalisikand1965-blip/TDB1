@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
-import PillarPageLayout from "../components/PillarPageLayout";
+import ConciergeCTA from "../components/ConciergeCTA";import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import ConciergeToast from "../components/common/ConciergeToast";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
@@ -356,6 +356,8 @@ const FarewellSoulPage = () => {
           <>
             <div style={{marginBottom:20}}><FarewellProfile pet={petData} token={token}/></div>
             <MiraPicksSection pet={petData} onOpenService={(serviceName)=>{const map={'End-of-Life Planning':'End-of-life care guidance','Euthanasia Coordination':'Saying goodbye — when and how'};setConciergeSvc(map[serviceName]||serviceName||'End-of-life care guidance');setConciergeOpen(true);}}/>
+            {/* Concierge CTA — desktop */}
+            <ConciergeCTA pillar="farewell" />
             {/* ✦ Soul Made™ trigger */}
             <div data-testid="farewell-soul-made-trigger" onClick={()=>setSoulMadeOpen(true)}
               style={{margin:"0 auto 24px",maxWidth:540,padding:"20px 20px 18px",background:"linear-gradient(135deg, #1a0a2e 0%, #2d0a4e 50%, #1a0a2e 100%)",border:"1.5px solid rgba(196,77,255,0.4)",borderRadius:18,cursor:"pointer",position:"relative",overflow:"hidden",boxShadow:"0 4px 24px rgba(196,77,255,0.18)",transition:"transform 0.15s, box-shadow 0.15s"}}

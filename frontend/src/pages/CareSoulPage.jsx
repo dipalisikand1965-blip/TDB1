@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
+import ConciergeCTA from "../components/ConciergeCTA";
 import PillarPageLayout from "../components/PillarPageLayout";
 import CareHero from "../components/care/CareHero";
 import CareCategoryStrip from "../components/care/CareCategoryStrip";
@@ -2391,6 +2392,9 @@ export default function CareSoulPage() {
 
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
+
+              {/* Concierge CTA — desktop */}
+              <ConciergeCTA pillar="care" />
 
               {/* Soul Made handled inside PersonalisedBreedSection */}
 
