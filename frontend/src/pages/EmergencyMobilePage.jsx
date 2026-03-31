@@ -19,6 +19,7 @@ import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
+import ConciergeCTA from '../components/ConciergeCTA';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedEmergencyPaths from '../components/emergency/GuidedEmergencyPaths';
 import EmergencyNearMe from '../components/emergency/EmergencyNearMe';
@@ -497,6 +498,9 @@ export default function EmergencyMobilePage() {
         pillar="emergency"
         token={token}
       />
+      <div style={{ padding: '0 16px' }}>
+        <ConciergeCTA pillar="emergency" />
+      </div>
     </PillarPageLayout>
   );
 }

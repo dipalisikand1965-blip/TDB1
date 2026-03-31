@@ -17,6 +17,7 @@ import { API_URL } from '../utils/api';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PillarPageLayout from '../components/PillarPageLayout';
+import ConciergeCTA from '../components/ConciergeCTA';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import GuidedFarewellPaths from '../components/farewell/GuidedFarewellPaths';
 import FarewellNearMe from '../components/farewell/FarewellNearMe';
@@ -607,6 +608,9 @@ export default function FarewellMobilePage() {
       services={services}
       onBook={handleBookService}
     />
+      <div style={{ padding: '0 16px' }}>
+        <ConciergeCTA pillar="farewell" />
+      </div>
     </PillarPageLayout>
   );
 }
