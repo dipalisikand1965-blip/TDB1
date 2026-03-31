@@ -7041,6 +7041,17 @@ async def admin_update_service(service_id: str, updates: dict, username: str = D
     return {"message": "Service updated successfully"}
 
 
+@admin_router.post("/services/bulk-reset-prices")
+async def admin_bulk_reset_service_prices(username: str = Depends(verify_admin)):
+    """Set price and base_price to 0 for every service in services_master."""
+    result = await db.services_master.update_many(
+        {},
+        {"$set": {"price": 0, "base_price": 0, "updated_at": get_utc_timestamp(), "updated_by": username}}
+    )
+    logger.info(f"[Admin] Bulk reset prices — {result.modified_count} services updated by {username}")
+    return {"message": f"All service prices reset to \u20b90", "modified": result.modified_count}
+
+
 @admin_router.delete("/services/{service_id}")
 async def admin_delete_service(service_id: str, username: str = Depends(verify_admin)):
     """Delete a service"""
