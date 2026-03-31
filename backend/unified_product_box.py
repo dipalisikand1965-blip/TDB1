@@ -659,8 +659,8 @@ async def get_all_products(
     if status:
         and_conditions.append({"visibility.status": status})
     else:
-        # Default: exclude archived products from admin list
-        and_conditions.append({"visibility.status": {"$ne": "archived"}})
+        # Default: only show active products to consumers (exclude archived, inactive, draft)
+        and_conditions.append({"visibility.status": "active"})
     if reward_eligible is not None:
         and_conditions.append({"paw_rewards.is_reward_eligible": reward_eligible})
     if shipping:

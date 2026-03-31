@@ -173,9 +173,9 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
     setLoading(true);
     Promise.all([
-      fetch(`${API_URL}/api/product-box/products?category=cakes&limit=200`, { headers })
+      fetch(`${API_URL}/api/product-box/products?category=cakes&limit=200&status=active`, { headers })
         .then(r => r.json()).then(d => Array.isArray(d) ? d : d.products || d.data || []),
-      fetch(`${API_URL}/api/product-box/products?category=breed-cakes&limit=100`, { headers })
+      fetch(`${API_URL}/api/product-box/products?category=breed-cakes&limit=100&status=active`, { headers })
         .then(r => r.json()).then(d => Array.isArray(d) ? d : d.products || d.data || []),
     ])
       .then(([c, b]) => { setCakes(c); setBreedCakes(b); })
@@ -329,23 +329,19 @@ export default function DoggyBakeryCakeModal({ pet: petProp, onClose: onClosePro
       name.includes(petBreed);
   }).map(p => ({ ...p, _breedMatch: true, _breedLabel: pet?.breed || petBreed }));
 
-  // ── All available breed names from breed-cakes ───────────────────────────
-  const allBreedNames = [...new Set(
-    breedCakes.flatMap(p =>
-      (p.tags || []).filter(t => {
-        const tl = String(t).toLowerCase();
-        return !['birthdays','cakes','breed','circle'].includes(tl) && tl.length > 3;
-      })
-    ).map(t => String(t).replace(/ cake$/i, '').replace(/ cakes$/i, '').trim())
-  )].filter(Boolean).sort();
+  // ── All available breed names from breed-cakes (use product name directly) ─
+  const allBreedNames = breedCakes
+    .map(p => (p.name || '').trim())
+    .filter(name => name && name.toLowerCase() !== petBreed)
+    .sort();
 
   // ── Filtered grid ─────────────────────────────────────────────────────────
   let gridCakes = breedFilter
     ? breedCakes.filter(p => {
-        const tags = (p.tags || []).map(t => String(t).toLowerCase());
         const name = (p.name || '').toLowerCase();
         const bf = breedFilter.toLowerCase();
-        return tags.some(t => t.includes(bf)) || name.includes(bf);
+        return name === bf || name.includes(bf) ||
+          (p.tags || []).some(t => String(t).toLowerCase().includes(bf));
       })
     : cakes;
 
