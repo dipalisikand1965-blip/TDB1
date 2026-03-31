@@ -121,7 +121,7 @@ async def get_pillar_products(
     limit: int = 50,
     search: Optional[str] = None,
     category: Optional[str] = None,
-    active_only: bool = False,
+    active_only: bool = True,  # Default TRUE — inactive products must never show on consumer frontend
     sort_by: str = "name",  # "name" | "mira_score" | "price"
     breed: Optional[str] = None,
 ):
@@ -146,7 +146,10 @@ async def get_pillar_products(
         if pillar:
             conditions.append(pillar_condition)
         if active_only:
-            conditions.append({"$or": [{"active": True}, {"is_active": True}]})
+            # Exclude products explicitly set to inactive — is_active: false means hidden
+            # Also respect visibility.status: 'inactive' and 'archived'
+            conditions.append({"is_active": {"$ne": False}})
+            conditions.append({"visibility.status": {"$nin": ["inactive", "archived"]}})
         if search:
             conditions.append({"$or": [
                 {"name": {"$regex": search, "$options": "i"}},
