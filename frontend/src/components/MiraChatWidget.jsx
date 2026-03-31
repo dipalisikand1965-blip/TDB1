@@ -2322,7 +2322,7 @@ const MiraChatWidget = ({
                             const svcPrice = svc.price || svc.base_price || svc.original_price;
                             const svcImg = svc.watercolor_image || svc.image_url || svc.cloudinary_url || svc.image;
                             // Skip AI-generated stock images — show TDC gradient instead
-                            const _svcImgClean = svcImg && !svcImg.includes('ai_generated') ? svcImg : null;
+                            const _svcImgClean = svcImg && (!svcImg.includes('ai_generated') || svcImg.includes('cloudinary.com')) ? svcImg : null;
                             return (
                               <a
                                 key={svc.id || sIdx}
