@@ -1475,7 +1475,7 @@ export function MiraPicksSection({ pet }) {
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==="service";
             const _rawImg=[pick.watercolor_image,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
-            const img=_rawImg&&!_rawImg.includes('ai_generated')?_rawImg:null;
+            const img=_rawImg&&(!_rawImg.includes('ai_generated') || _rawImg.includes('cloudinary.com'))?_rawImg:null;
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
             return (
