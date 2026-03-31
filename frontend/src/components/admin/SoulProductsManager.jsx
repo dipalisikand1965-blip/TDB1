@@ -235,23 +235,26 @@ const SoulProductsManager = () => {
       const rows = data.products || [];
 
       const headers = ['breed','product_name','product_type','pillar','all_pillars','sub_category','category','price','has_image','image_url','is_mockup'];
+      const escape = (v) => `"${String(v||'').replace(/"/g,'""').replace(/\r?\n/g,' ')}"`;
       const csv = [
         headers.join(','),
         ...rows.map(p => [
-          p.breed||'', `"${(p.name||'').replace(/"/g,'""')}"`,
+          escape(p.breed), escape(p.name),
           p.product_type||'', p.pillar||'',
-          `"${(p.pillars||[]).join('|')}"`,
+          escape((p.pillars||[]).join('|')),
           p.sub_category||'', p.category||'',
           p.price||0,
           (p.cloudinary_url||p.mockup_url) ? 'YES':'NO',
-          p.cloudinary_url||p.mockup_url||'',
+          escape(p.cloudinary_url||p.mockup_url||''),
           p.is_mockup ? 'true':'false'
         ].join(','))
       ].join('\n');
 
+      // UTF-8 BOM so Excel opens without garbling
+      const bom = '\uFEFF';
       const fname = `soul_${pendingOnly?'pending':'products'}${selectedBreed?'_'+selectedBreed:''}${selectedPillar?'_'+selectedPillar:''}.csv`;
       const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})), download: fname
+        href: URL.createObjectURL(new Blob([bom + csv], {type:'text/csv;charset=utf-8'})), download: fname
       });
       a.click(); URL.revokeObjectURL(a.href);
       toast({ title: `Downloaded ${rows.length} rows` });
