@@ -11892,6 +11892,10 @@ async def toggle_product_active(product_id: str):
     }
     if new_status:
         update_fields["visibility.status"] = "active"
+        update_fields["visibility.is_active"] = True
+    else:
+        update_fields["visibility.status"] = "inactive"
+        update_fields["visibility.is_active"] = False
     
     await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
