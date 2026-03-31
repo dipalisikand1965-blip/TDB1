@@ -273,28 +273,30 @@ function DoggyBakerySection({ pet, token, presetFilter }) {
     const fetchTab = async () => {
       let products = [];
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const breed = pet?.breed || '';
+      const breedParam = breed ? `&breed=${encodeURIComponent(breed)}` : '';
       try {
         if (filter === 'all') {
-          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=48&sort_by=mira_score`, { headers });
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=48&sort_by=mira_score${breedParam}`, { headers });
           const d = await r.json();
           products = d?.products || [];
         } else if (filter === 'cakes') {
           const [r1, r2] = await Promise.all([
-            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=cakes&limit=120`, { headers }),
-            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=breed-cakes&limit=120`, { headers }),
+            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=cakes&limit=120${breedParam}`, { headers }),
+            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=breed-cakes&limit=120${breedParam}`, { headers }),
           ]);
           const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
           products = [...(d1.products || []), ...(d2.products || [])];
         } else if (filter === 'treats') {
-          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&category=Treats%20%26%20Rewards&limit=80`, { headers });
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&category=Treats%20%26%20Rewards&limit=80${breedParam}`, { headers });
           const d = await r.json();
           products = d?.products || [];
         } else if (filter === 'hampers') {
-          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=hampers&limit=50`, { headers });
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=hampers&limit=50${breedParam}`, { headers });
           const d = await r.json();
           products = d?.products || [];
         } else if (filter === 'seasonal') {
-          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200`, { headers });
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200${breedParam}`, { headers });
           const d = await r.json();
           const keys = ['diwali', 'halloween', 'christmas', 'rakhi', 'festive', 'holi', 'eid', 'spooky'];
           products = (d?.products || []).filter(p => keys.some(s => p.name?.toLowerCase().includes(s)));
