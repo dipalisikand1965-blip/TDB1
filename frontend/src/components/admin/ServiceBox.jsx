@@ -50,6 +50,8 @@ function serviceToProduct(s) {
   // Pre-populate ai_image_prompt so it shows as real editable value (not greyed placeholder)
   const aiPrompt = s.ai_image_prompt || s.ai_prompt ||
     `Soulful watercolor illustration of "${name}" pet service, caring handler with a golden retriever dog, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
+  // Prefer base_price (canonical field), fall back to price for legacy data
+  const basePrice = Number(s.base_price ?? s.price ?? 0);
   return {
     id: s.id || s._id,
     name,
@@ -60,13 +62,13 @@ function serviceToProduct(s) {
     },
     commerce_ops: {
       pricing: {
-        selling_price: Number(s.price) || 0,
-        original_price: Number(s.price) || 0,
+        selling_price: basePrice,
+        original_price: basePrice,
         discount_percent: 0,
       },
       approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
     },
-    original_price: Number(s.price) || 0,
+    original_price: basePrice,
     primary_pillar: pillar,
     pillar,
     category: s.category || '',
@@ -92,10 +94,13 @@ function productToServicePatch(p) {
   // Top-level approval_status is the initial value from serviceToProduct — check commerce_ops FIRST
   const approvalStatus = p.commerce_ops?.approval_status || p.approval_status || 'live';
   const isActive = ['live', 'active'].includes(approvalStatus);
+  // Use ?? (nullish coalescing) so price=0 is preserved — never fall back on a valid 0
+  const rawSelling = p.commerce_ops?.pricing?.selling_price;
+  const resolvedPrice = Number(rawSelling != null ? rawSelling : (p.original_price ?? 0));
   return {
     name: p.basics?.name || p.name || '',
-    base_price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
-    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0), // legacy alias
+    base_price: resolvedPrice,
+    price: resolvedPrice, // legacy alias
     category: p.category || '',
     sub_category: p.sub_category || '',
     pillar: p.primary_pillar || p.pillar || '',
