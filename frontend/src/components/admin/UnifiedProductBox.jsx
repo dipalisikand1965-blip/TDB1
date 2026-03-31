@@ -1497,7 +1497,7 @@ const UnifiedProductBox = () => {
                               if (res.ok) {
                                 const data = await res.json();
                                 setProducts(prev => prev.map(p => p.id === product.id
-                                  ? { ...p, is_active: data.is_active, visibility: { ...p.visibility, status: data.is_active ? 'active' : 'archived' } }
+                                  ? { ...p, is_active: data.is_active, visibility: { ...p.visibility, status: data.is_active ? 'active' : 'inactive', is_active: data.is_active } }
                                   : p
                                 ));
                               }
@@ -1505,13 +1505,13 @@ const UnifiedProductBox = () => {
                           }}
                           title={product.is_active !== false ? 'Click to deactivate' : 'Click to activate'}
                           className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full border transition-colors ${
-                            product.is_active !== false || product.visibility?.status === 'active'
+                            product.is_active !== false
                               ? 'bg-green-100 text-green-700 border-green-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200'
                               : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200'
                           }`}
                           data-testid={`toggle-active-${product.id}`}
                         >
-                          {product.is_active !== false || product.visibility?.status === 'active' ? 'Active' : 'Inactive'}
+                          {product.is_active !== false ? 'Active' : 'Inactive'}
                         </button>
                       </td>
                       <td className="p-3">
