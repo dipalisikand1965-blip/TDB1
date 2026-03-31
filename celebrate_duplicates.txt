@@ -1,0 +1,1473 @@
+DUPLICATE PRODUCTS IN CELEBRATE PILLAR
+Total unique names with duplicates: 361
+Total extra entries (to be removed): 387
+======================================================================
+[3x] Akita Birthday Cake Topper
+      id: soul-breed-akita-cake_topper                  price: 599
+      id: breed-akita-cake_topper                       price: 599.0
+      id: soul-akita-breed-birthday_cake_toppers-c0a00e8d price: 499
+
+[2x] Akita Birthday Card
+      id: soul-breed-akita-birthday_card                price: 199
+      id: breed-akita-birthday_card                     price: 199.0
+
+[2x] Akita Party Banner
+      id: soul-breed-akita-party_banner                 price: 399
+      id: breed-akita-party_banner                      price: 399.0
+
+[2x] Akita Party Favor Pack
+      id: soul-breed-akita-return_gift_pack             price: 499
+      id: breed-akita-return_gift_pack                  price: 499.0
+
+[2x] Akita Pupcake Decoration Set
+      id: soul-breed-akita-pupcake_set                  price: 449
+      id: breed-akita-pupcake_set                       price: 449.0
+
+[2x] American Bully Bandana
+      id: soul-breed-american_bully-bandana             price: 399
+      id: breed-american_bully-bandana                  price: 399.0
+
+[2x] American Bully Keychain
+      id: soul-breed-american_bully-keychain            price: 299
+      id: breed-american_bully-keychain                 price: 299.0
+
+[2x] American Bully Lover Mug
+      id: soul-breed-american_bully-mug                 price: 499
+      id: breed-american_bully-mug                      price: 499.0
+
+[2x] American Bully Party Hat
+      id: soul-breed-american_bully-party_hat           price: 199
+      id: breed-american_bully-party_hat                price: 199.0
+
+[2x] American Bully Portrait Frame
+      id: soul-breed-american_bully-frame               price: 799
+      id: breed-american_bully-frame                    price: 799.0
+
+[2x] American Bully Tote Bag
+      id: soul-breed-american_bully-tote_bag            price: 699
+      id: breed-american_bully-tote_bag                 price: 699.0
+
+[2x] Australian Shepherd Birthday Cake Topper
+      id: soul-breed-australian_shepherd-cake_topper    price: 599
+      id: breed-australian_shepherd-cake_topper         price: 599.0
+
+[2x] Australian Shepherd Birthday Card
+      id: soul-breed-australian_shepherd-birthday_card  price: 199
+      id: breed-australian_shepherd-birthday_card       price: 199.0
+
+[2x] Australian Shepherd Party Banner
+      id: soul-breed-australian_shepherd-party_banner   price: 399
+      id: breed-australian_shepherd-party_banner        price: 399.0
+
+[2x] Australian Shepherd Party Favor Pack
+      id: soul-breed-australian_shepherd-return_gift_pack price: 499
+      id: breed-australian_shepherd-return_gift_pack    price: 499.0
+
+[2x] Australian Shepherd Pupcake Decoration Set
+      id: soul-breed-australian_shepherd-pupcake_set    price: 449
+      id: breed-australian_shepherd-pupcake_set         price: 449.0
+
+[2x] Beagle Bandana
+      id: soul-breed-beagle-bandana                     price: 399
+      id: breed-beagle-bandana                          price: 399.0
+
+[3x] Beagle Birthday Cake Topper
+      id: soul-breed-beagle-cake_topper                 price: 599
+      id: breed-beagle-cake_topper                      price: 599.0
+      id: soul-beagle-breed-birthday_cake_toppers-afc03ffd price: 499
+
+[2x] Beagle Birthday Card
+      id: soul-breed-beagle-birthday_card               price: 199
+      id: breed-beagle-birthday_card                    price: 199.0
+
+[2x] Beagle Keychain
+      id: soul-breed-beagle-keychain                    price: 299
+      id: breed-beagle-keychain                         price: 299.0
+
+[2x] Beagle Lover Mug
+      id: soul-breed-beagle-mug                         price: 499
+      id: breed-beagle-mug                              price: 499.0
+
+[2x] Beagle Party Banner
+      id: soul-breed-beagle-party_banner                price: 399
+      id: breed-beagle-party_banner                     price: 399.0
+
+[2x] Beagle Party Favor Pack
+      id: soul-breed-beagle-return_gift_pack            price: 499
+      id: breed-beagle-return_gift_pack                 price: 499.0
+
+[2x] Beagle Party Hat
+      id: soul-breed-beagle-party_hat                   price: 199
+      id: breed-beagle-party_hat                        price: 199.0
+
+[2x] Beagle Portrait Frame
+      id: soul-breed-beagle-frame                       price: 799
+      id: breed-beagle-frame                            price: 799.0
+
+[2x] Beagle Pupcake Decoration Set
+      id: soul-breed-beagle-pupcake_set                 price: 449
+      id: breed-beagle-pupcake_set                      price: 449.0
+
+[2x] Beagle Tote Bag
+      id: soul-breed-beagle-tote_bag                    price: 699
+      id: breed-beagle-tote_bag                         price: 699.0
+
+[2x] Bernese Mountain Dog Birthday Cake Topper
+      id: soul-breed-bernese_mountain-cake_topper       price: 599
+      id: breed-bernese_mountain-cake_topper            price: 599.0
+
+[2x] Bernese Mountain Dog Birthday Card
+      id: soul-breed-bernese_mountain-birthday_card     price: 199
+      id: breed-bernese_mountain-birthday_card          price: 199.0
+
+[2x] Bernese Mountain Dog Party Banner
+      id: soul-breed-bernese_mountain-party_banner      price: 399
+      id: breed-bernese_mountain-party_banner           price: 399.0
+
+[2x] Bernese Mountain Dog Party Favor Pack
+      id: soul-breed-bernese_mountain-return_gift_pack  price: 499
+      id: breed-bernese_mountain-return_gift_pack       price: 499.0
+
+[2x] Bernese Mountain Dog Pupcake Decoration Set
+      id: soul-breed-bernese_mountain-pupcake_set       price: 449
+      id: breed-bernese_mountain-pupcake_set            price: 449.0
+
+[2x] Border Collie Bandana
+      id: soul-breed-border_collie-bandana              price: 399
+      id: breed-border_collie-bandana                   price: 399.0
+
+[3x] Border Collie Birthday Cake Topper
+      id: soul-breed-border_collie-cake_topper          price: 599
+      id: breed-border_collie-cake_topper               price: 599.0
+      id: soul-border_collie-breed-birthday_cake_toppers-cb0550ad price: 499
+
+[2x] Border Collie Birthday Card
+      id: soul-breed-border_collie-birthday_card        price: 199
+      id: breed-border_collie-birthday_card             price: 199.0
+
+[2x] Border Collie Keychain
+      id: soul-breed-border_collie-keychain             price: 299
+      id: breed-border_collie-keychain                  price: 299.0
+
+[2x] Border Collie Lover Mug
+      id: soul-breed-border_collie-mug                  price: 499
+      id: breed-border_collie-mug                       price: 499.0
+
+[2x] Border Collie Party Banner
+      id: soul-breed-border_collie-party_banner         price: 399
+      id: breed-border_collie-party_banner              price: 399.0
+
+[2x] Border Collie Party Favor Pack
+      id: soul-breed-border_collie-return_gift_pack     price: 499
+      id: breed-border_collie-return_gift_pack          price: 499.0
+
+[2x] Border Collie Party Hat
+      id: soul-breed-border_collie-party_hat            price: 199
+      id: breed-border_collie-party_hat                 price: 199.0
+
+[2x] Border Collie Portrait Frame
+      id: soul-breed-border_collie-frame                price: 799
+      id: breed-border_collie-frame                     price: 799.0
+
+[2x] Border Collie Pupcake Decoration Set
+      id: soul-breed-border_collie-pupcake_set          price: 449
+      id: breed-border_collie-pupcake_set               price: 449.0
+
+[2x] Border Collie Tote Bag
+      id: soul-breed-border_collie-tote_bag             price: 699
+      id: breed-border_collie-tote_bag                  price: 699.0
+
+[2x] Boston Terrier Birthday Cake Topper
+      id: soul-breed-boston_terrier-cake_topper         price: 599
+      id: breed-boston_terrier-cake_topper              price: 599.0
+
+[2x] Boston Terrier Birthday Card
+      id: soul-breed-boston_terrier-birthday_card       price: 199
+      id: breed-boston_terrier-birthday_card            price: 199.0
+
+[2x] Boston Terrier Party Banner
+      id: soul-breed-boston_terrier-party_banner        price: 399
+      id: breed-boston_terrier-party_banner             price: 399.0
+
+[2x] Boston Terrier Party Favor Pack
+      id: soul-breed-boston_terrier-return_gift_pack    price: 499
+      id: breed-boston_terrier-return_gift_pack         price: 499.0
+
+[2x] Boston Terrier Pupcake Decoration Set
+      id: soul-breed-boston_terrier-pupcake_set         price: 449
+      id: breed-boston_terrier-pupcake_set              price: 449.0
+
+[2x] Boxer Bandana
+      id: soul-breed-boxer-bandana                      price: 399
+      id: breed-boxer-bandana                           price: 399.0
+
+[3x] Boxer Birthday Cake Topper
+      id: soul-breed-boxer-cake_topper                  price: 599
+      id: breed-boxer-cake_topper                       price: 599.0
+      id: soul-boxer-breed-birthday_cake_toppers-e4f5fe9a price: 499
+
+[2x] Boxer Birthday Card
+      id: soul-breed-boxer-birthday_card                price: 199
+      id: breed-boxer-birthday_card                     price: 199.0
+
+[2x] Boxer Keychain
+      id: soul-breed-boxer-keychain                     price: 299
+      id: breed-boxer-keychain                          price: 299.0
+
+[2x] Boxer Lover Mug
+      id: soul-breed-boxer-mug                          price: 499
+      id: breed-boxer-mug                               price: 499.0
+
+[2x] Boxer Party Banner
+      id: soul-breed-boxer-party_banner                 price: 399
+      id: breed-boxer-party_banner                      price: 399.0
+
+[2x] Boxer Party Favor Pack
+      id: soul-breed-boxer-return_gift_pack             price: 499
+      id: breed-boxer-return_gift_pack                  price: 499.0
+
+[2x] Boxer Party Hat
+      id: soul-breed-boxer-party_hat                    price: 199
+      id: breed-boxer-party_hat                         price: 199.0
+
+[2x] Boxer Portrait Frame
+      id: soul-breed-boxer-frame                        price: 799
+      id: breed-boxer-frame                             price: 799.0
+
+[2x] Boxer Pupcake Decoration Set
+      id: soul-breed-boxer-pupcake_set                  price: 449
+      id: breed-boxer-pupcake_set                       price: 449.0
+
+[2x] Boxer Tote Bag
+      id: soul-breed-boxer-tote_bag                     price: 699
+      id: breed-boxer-tote_bag                          price: 699.0
+
+[2x] Cavalier Bandana
+      id: soul-breed-cavalier-bandana                   price: 399
+      id: breed-cavalier-bandana                        price: 399.0
+
+[2x] Cavalier Keychain
+      id: soul-breed-cavalier-keychain                  price: 299
+      id: breed-cavalier-keychain                       price: 299.0
+
+[2x] Cavalier King Charles Birthday Cake Topper
+      id: soul-breed-cavalier-cake_topper               price: 599
+      id: breed-cavalier-cake_topper                    price: 599.0
+
+[2x] Cavalier King Charles Birthday Card
+      id: soul-breed-cavalier-birthday_card             price: 199
+      id: breed-cavalier-birthday_card                  price: 199.0
+
+[2x] Cavalier King Charles Party Banner
+      id: soul-breed-cavalier-party_banner              price: 399
+      id: breed-cavalier-party_banner                   price: 399.0
+
+[2x] Cavalier King Charles Party Favor Pack
+      id: soul-breed-cavalier-return_gift_pack          price: 499
+      id: breed-cavalier-return_gift_pack               price: 499.0
+
+[2x] Cavalier King Charles Pupcake Decoration Set
+      id: soul-breed-cavalier-pupcake_set               price: 449
+      id: breed-cavalier-pupcake_set                    price: 449.0
+
+[2x] Cavalier Lover Mug
+      id: soul-breed-cavalier-mug                       price: 499
+      id: breed-cavalier-mug                            price: 499.0
+
+[2x] Cavalier Party Hat
+      id: soul-breed-cavalier-party_hat                 price: 199
+      id: breed-cavalier-party_hat                      price: 199.0
+
+[2x] Cavalier Portrait Frame
+      id: soul-breed-cavalier-frame                     price: 799
+      id: breed-cavalier-frame                          price: 799.0
+
+[2x] Cavalier Tote Bag
+      id: soul-breed-cavalier-tote_bag                  price: 699
+      id: breed-cavalier-tote_bag                       price: 699.0
+
+[2x] Chihuahua Bandana
+      id: soul-breed-chihuahua-bandana                  price: 399
+      id: breed-chihuahua-bandana                       price: 399.0
+
+[3x] Chihuahua Birthday Cake Topper
+      id: soul-breed-chihuahua-cake_topper              price: 599
+      id: breed-chihuahua-cake_topper                   price: 599.0
+      id: soul-chihuahua-breed-birthday_cake_toppers-8c06b925 price: 499
+
+[2x] Chihuahua Birthday Card
+      id: soul-breed-chihuahua-birthday_card            price: 199
+      id: breed-chihuahua-birthday_card                 price: 199.0
+
+[2x] Chihuahua Keychain
+      id: soul-breed-chihuahua-keychain                 price: 299
+      id: breed-chihuahua-keychain                      price: 299.0
+
+[2x] Chihuahua Lover Mug
+      id: soul-breed-chihuahua-mug                      price: 499
+      id: breed-chihuahua-mug                           price: 499.0
+
+[2x] Chihuahua Party Banner
+      id: soul-breed-chihuahua-party_banner             price: 399
+      id: breed-chihuahua-party_banner                  price: 399.0
+
+[2x] Chihuahua Party Favor Pack
+      id: soul-breed-chihuahua-return_gift_pack         price: 499
+      id: breed-chihuahua-return_gift_pack              price: 499.0
+
+[2x] Chihuahua Party Hat
+      id: soul-breed-chihuahua-party_hat                price: 199
+      id: breed-chihuahua-party_hat                     price: 199.0
+
+[2x] Chihuahua Portrait Frame
+      id: soul-breed-chihuahua-frame                    price: 799
+      id: breed-chihuahua-frame                         price: 799.0
+
+[2x] Chihuahua Pupcake Decoration Set
+      id: soul-breed-chihuahua-pupcake_set              price: 449
+      id: breed-chihuahua-pupcake_set                   price: 449.0
+
+[2x] Chihuahua Tote Bag
+      id: soul-breed-chihuahua-tote_bag                 price: 699
+      id: breed-chihuahua-tote_bag                      price: 699.0
+
+[2x] Chow Chow Bandana
+      id: soul-breed-chow_chow-bandana                  price: 399
+      id: breed-chow_chow-bandana                       price: 399.0
+
+[2x] Chow Chow Keychain
+      id: soul-breed-chow_chow-keychain                 price: 299
+      id: breed-chow_chow-keychain                      price: 299.0
+
+[2x] Chow Chow Lover Mug
+      id: soul-breed-chow_chow-mug                      price: 499
+      id: breed-chow_chow-mug                           price: 499.0
+
+[2x] Chow Chow Party Hat
+      id: soul-breed-chow_chow-party_hat                price: 199
+      id: breed-chow_chow-party_hat                     price: 199.0
+
+[2x] Chow Chow Portrait Frame
+      id: soul-breed-chow_chow-frame                    price: 799
+      id: breed-chow_chow-frame                         price: 799.0
+
+[2x] Chow Chow Tote Bag
+      id: soul-breed-chow_chow-tote_bag                 price: 699
+      id: breed-chow_chow-tote_bag                      price: 699.0
+
+[2x] Cocker Spaniel Bandana
+      id: soul-breed-cocker_spaniel-bandana             price: 399
+      id: breed-cocker_spaniel-bandana                  price: 399.0
+
+[3x] Cocker Spaniel Birthday Cake Topper
+      id: soul-breed-cocker_spaniel-cake_topper         price: 599
+      id: breed-cocker_spaniel-cake_topper              price: 599.0
+      id: soul-cocker_spaniel-breed-birthday_cake_toppers-666719da price: 499
+
+[2x] Cocker Spaniel Birthday Card
+      id: soul-breed-cocker_spaniel-birthday_card       price: 199
+      id: breed-cocker_spaniel-birthday_card            price: 199.0
+
+[2x] Cocker Spaniel Keychain
+      id: soul-breed-cocker_spaniel-keychain            price: 299
+      id: breed-cocker_spaniel-keychain                 price: 299.0
+
+[2x] Cocker Spaniel Lover Mug
+      id: soul-breed-cocker_spaniel-mug                 price: 499
+      id: breed-cocker_spaniel-mug                      price: 499.0
+
+[2x] Cocker Spaniel Party Banner
+      id: soul-breed-cocker_spaniel-party_banner        price: 399
+      id: breed-cocker_spaniel-party_banner             price: 399.0
+
+[2x] Cocker Spaniel Party Favor Pack
+      id: soul-breed-cocker_spaniel-return_gift_pack    price: 499
+      id: breed-cocker_spaniel-return_gift_pack         price: 499.0
+
+[2x] Cocker Spaniel Party Hat
+      id: soul-breed-cocker_spaniel-party_hat           price: 199
+      id: breed-cocker_spaniel-party_hat                price: 199.0
+
+[2x] Cocker Spaniel Portrait Frame
+      id: soul-breed-cocker_spaniel-frame               price: 799
+      id: breed-cocker_spaniel-frame                    price: 799.0
+
+[2x] Cocker Spaniel Pupcake Decoration Set
+      id: soul-breed-cocker_spaniel-pupcake_set         price: 449
+      id: breed-cocker_spaniel-pupcake_set              price: 449.0
+
+[2x] Cocker Spaniel Tote Bag
+      id: soul-breed-cocker_spaniel-tote_bag            price: 699
+      id: breed-cocker_spaniel-tote_bag                 price: 699.0
+
+[2x] Dachshund Bandana
+      id: soul-breed-dachshund-bandana                  price: 399
+      id: breed-dachshund-bandana                       price: 399.0
+
+[3x] Dachshund Birthday Cake Topper
+      id: soul-breed-dachshund-cake_topper              price: 599
+      id: breed-dachshund-cake_topper                   price: 599.0
+      id: soul-dachshund-breed-birthday_cake_toppers-751d70ba price: 499
+
+[2x] Dachshund Birthday Card
+      id: soul-breed-dachshund-birthday_card            price: 199
+      id: breed-dachshund-birthday_card                 price: 199.0
+
+[2x] Dachshund Keychain
+      id: soul-breed-dachshund-keychain                 price: 299
+      id: breed-dachshund-keychain                      price: 299.0
+
+[2x] Dachshund Lover Mug
+      id: soul-breed-dachshund-mug                      price: 499
+      id: breed-dachshund-mug                           price: 499.0
+
+[2x] Dachshund Party Banner
+      id: soul-breed-dachshund-party_banner             price: 399
+      id: breed-dachshund-party_banner                  price: 399.0
+
+[2x] Dachshund Party Favor Pack
+      id: soul-breed-dachshund-return_gift_pack         price: 499
+      id: breed-dachshund-return_gift_pack              price: 499.0
+
+[2x] Dachshund Party Hat
+      id: soul-breed-dachshund-party_hat                price: 199
+      id: breed-dachshund-party_hat                     price: 199.0
+
+[2x] Dachshund Portrait Frame
+      id: soul-breed-dachshund-frame                    price: 799
+      id: breed-dachshund-frame                         price: 799.0
+
+[2x] Dachshund Pupcake Decoration Set
+      id: soul-breed-dachshund-pupcake_set              price: 449
+      id: breed-dachshund-pupcake_set                   price: 449.0
+
+[2x] Dachshund Tote Bag
+      id: soul-breed-dachshund-tote_bag                 price: 699
+      id: breed-dachshund-tote_bag                      price: 699.0
+
+[2x] Dalmatian Bandana
+      id: soul-breed-dalmatian-bandana                  price: 399
+      id: breed-dalmatian-bandana                       price: 399.0
+
+[2x] Dalmatian Keychain
+      id: soul-breed-dalmatian-keychain                 price: 299
+      id: breed-dalmatian-keychain                      price: 299.0
+
+[2x] Dalmatian Lover Mug
+      id: soul-breed-dalmatian-mug                      price: 499
+      id: breed-dalmatian-mug                           price: 499.0
+
+[2x] Dalmatian Party Hat
+      id: soul-breed-dalmatian-party_hat                price: 199
+      id: breed-dalmatian-party_hat                     price: 199.0
+
+[2x] Dalmatian Portrait Frame
+      id: soul-breed-dalmatian-frame                    price: 799
+      id: breed-dalmatian-frame                         price: 799.0
+
+[2x] Dalmatian Tote Bag
+      id: soul-breed-dalmatian-tote_bag                 price: 699
+      id: breed-dalmatian-tote_bag                      price: 699.0
+
+[2x] Doberman Bandana
+      id: soul-breed-doberman-bandana                   price: 399
+      id: breed-doberman-bandana                        price: 399.0
+
+[3x] Doberman Birthday Cake Topper
+      id: soul-breed-doberman-cake_topper               price: 599
+      id: breed-doberman-cake_topper                    price: 599.0
+      id: soul-doberman-breed-birthday_cake_toppers-e7e615c4 price: 499
+
+[2x] Doberman Birthday Card
+      id: soul-breed-doberman-birthday_card             price: 199
+      id: breed-doberman-birthday_card                  price: 199.0
+
+[2x] Doberman Keychain
+      id: soul-breed-doberman-keychain                  price: 299
+      id: breed-doberman-keychain                       price: 299.0
+
+[2x] Doberman Lover Mug
+      id: soul-breed-doberman-mug                       price: 499
+      id: breed-doberman-mug                            price: 499.0
+
+[2x] Doberman Party Banner
+      id: soul-breed-doberman-party_banner              price: 399
+      id: breed-doberman-party_banner                   price: 399.0
+
+[2x] Doberman Party Favor Pack
+      id: soul-breed-doberman-return_gift_pack          price: 499
+      id: breed-doberman-return_gift_pack               price: 499.0
+
+[2x] Doberman Party Hat
+      id: soul-breed-doberman-party_hat                 price: 199
+      id: breed-doberman-party_hat                      price: 199.0
+
+[2x] Doberman Portrait Frame
+      id: soul-breed-doberman-frame                     price: 799
+      id: breed-doberman-frame                          price: 799.0
+
+[2x] Doberman Pupcake Decoration Set
+      id: soul-breed-doberman-pupcake_set               price: 449
+      id: breed-doberman-pupcake_set                    price: 449.0
+
+[2x] Doberman Tote Bag
+      id: soul-breed-doberman-tote_bag                  price: 699
+      id: breed-doberman-tote_bag                       price: 699.0
+
+[2x] English Bulldog Bandana
+      id: soul-breed-bulldog-bandana                    price: 399
+      id: breed-bulldog-bandana                         price: 399.0
+
+[3x] English Bulldog Birthday Cake Topper
+      id: soul-breed-bulldog-cake_topper                price: 599
+      id: breed-bulldog-cake_topper                     price: 599.0
+      id: soul-english_bulldog-breed-birthday_cake_toppers-a7cc8bbb price: 499
+
+[2x] English Bulldog Birthday Card
+      id: soul-breed-bulldog-birthday_card              price: 199
+      id: breed-bulldog-birthday_card                   price: 199.0
+
+[2x] English Bulldog Keychain
+      id: soul-breed-bulldog-keychain                   price: 299
+      id: breed-bulldog-keychain                        price: 299.0
+
+[2x] English Bulldog Lover Mug
+      id: soul-breed-bulldog-mug                        price: 499
+      id: breed-bulldog-mug                             price: 499.0
+
+[2x] English Bulldog Party Banner
+      id: soul-breed-bulldog-party_banner               price: 399
+      id: breed-bulldog-party_banner                    price: 399.0
+
+[2x] English Bulldog Party Favor Pack
+      id: soul-breed-bulldog-return_gift_pack           price: 499
+      id: breed-bulldog-return_gift_pack                price: 499.0
+
+[2x] English Bulldog Party Hat
+      id: soul-breed-bulldog-party_hat                  price: 199
+      id: breed-bulldog-party_hat                       price: 199.0
+
+[2x] English Bulldog Portrait Frame
+      id: soul-breed-bulldog-frame                      price: 799
+      id: breed-bulldog-frame                           price: 799.0
+
+[2x] English Bulldog Pupcake Decoration Set
+      id: soul-breed-bulldog-pupcake_set                price: 449
+      id: breed-bulldog-pupcake_set                     price: 449.0
+
+[2x] English Bulldog Tote Bag
+      id: soul-breed-bulldog-tote_bag                   price: 699
+      id: breed-bulldog-tote_bag                        price: 699.0
+
+[2x] French Bulldog Bandana
+      id: soul-breed-french_bulldog-bandana             price: 399
+      id: breed-french_bulldog-bandana                  price: 399.0
+
+[2x] French Bulldog Keychain
+      id: soul-breed-french_bulldog-keychain            price: 299
+      id: breed-french_bulldog-keychain                 price: 299.0
+
+[2x] French Bulldog Lover Mug
+      id: soul-breed-french_bulldog-mug                 price: 499
+      id: breed-french_bulldog-mug                      price: 499.0
+
+[2x] French Bulldog Party Hat
+      id: soul-breed-french_bulldog-party_hat           price: 199
+      id: breed-french_bulldog-party_hat                price: 199.0
+
+[2x] French Bulldog Portrait Frame
+      id: soul-breed-french_bulldog-frame               price: 799
+      id: breed-french_bulldog-frame                    price: 799.0
+
+[2x] French Bulldog Tote Bag
+      id: soul-breed-french_bulldog-tote_bag            price: 699
+      id: breed-french_bulldog-tote_bag                 price: 699.0
+
+[2x] German Shepherd Bandana
+      id: soul-breed-german_shepherd-bandana            price: 399
+      id: breed-german_shepherd-bandana                 price: 399.0
+
+[3x] German Shepherd Birthday Cake Topper
+      id: soul-breed-german_shepherd-cake_topper        price: 599
+      id: breed-german_shepherd-cake_topper             price: 599.0
+      id: soul-german_shepherd-breed-birthday_cake_toppers-19d8241d price: 499
+
+[2x] German Shepherd Birthday Card
+      id: soul-breed-german_shepherd-birthday_card      price: 199
+      id: breed-german_shepherd-birthday_card           price: 199.0
+
+[2x] German Shepherd Keychain
+      id: soul-breed-german_shepherd-keychain           price: 299
+      id: breed-german_shepherd-keychain                price: 299.0
+
+[2x] German Shepherd Lover Mug
+      id: soul-breed-german_shepherd-mug                price: 499
+      id: breed-german_shepherd-mug                     price: 499.0
+
+[2x] German Shepherd Party Banner
+      id: soul-breed-german_shepherd-party_banner       price: 399
+      id: breed-german_shepherd-party_banner            price: 399.0
+
+[2x] German Shepherd Party Favor Pack
+      id: soul-breed-german_shepherd-return_gift_pack   price: 499
+      id: breed-german_shepherd-return_gift_pack        price: 499.0
+
+[2x] German Shepherd Party Hat
+      id: soul-breed-german_shepherd-party_hat          price: 199
+      id: breed-german_shepherd-party_hat               price: 199.0
+
+[2x] German Shepherd Portrait Frame
+      id: soul-breed-german_shepherd-frame              price: 799
+      id: breed-german_shepherd-frame                   price: 799.0
+
+[2x] German Shepherd Pupcake Decoration Set
+      id: soul-breed-german_shepherd-pupcake_set        price: 449
+      id: breed-german_shepherd-pupcake_set             price: 449.0
+
+[2x] German Shepherd Tote Bag
+      id: soul-breed-german_shepherd-tote_bag           price: 699
+      id: breed-german_shepherd-tote_bag                price: 699.0
+
+[2x] Golden Retriever Bandana
+      id: soul-breed-golden_retriever-bandana           price: 399
+      id: breed-golden_retriever-bandana                price: 399.0
+
+[3x] Golden Retriever Birthday Cake Topper
+      id: soul-breed-golden_retriever-cake_topper       price: 599
+      id: breed-golden_retriever-cake_topper            price: 599.0
+      id: soul-golden_retriever-breed-birthday_cake_toppers-6d63ff8f price: 499
+
+[2x] Golden Retriever Birthday Card
+      id: soul-breed-golden_retriever-birthday_card     price: 199
+      id: breed-golden_retriever-birthday_card          price: 199.0
+
+[2x] Golden Retriever Keychain
+      id: soul-breed-golden_retriever-keychain          price: 299
+      id: breed-golden_retriever-keychain               price: 299.0
+
+[2x] Golden Retriever Lover Mug
+      id: soul-breed-golden_retriever-mug               price: 499
+      id: breed-golden_retriever-mug                    price: 499.0
+
+[2x] Golden Retriever Party Banner
+      id: soul-breed-golden_retriever-party_banner      price: 399
+      id: breed-golden_retriever-party_banner           price: 399.0
+
+[2x] Golden Retriever Party Favor Pack
+      id: soul-breed-golden_retriever-return_gift_pack  price: 499
+      id: breed-golden_retriever-return_gift_pack       price: 499.0
+
+[2x] Golden Retriever Party Hat
+      id: soul-breed-golden_retriever-party_hat         price: 199
+      id: breed-golden_retriever-party_hat              price: 199.0
+
+[2x] Golden Retriever Portrait Frame
+      id: soul-breed-golden_retriever-frame             price: 799
+      id: breed-golden_retriever-frame                  price: 799.0
+
+[2x] Golden Retriever Pupcake Decoration Set
+      id: soul-breed-golden_retriever-pupcake_set       price: 449
+      id: breed-golden_retriever-pupcake_set            price: 449.0
+
+[2x] Golden Retriever Tote Bag
+      id: soul-breed-golden_retriever-tote_bag          price: 699
+      id: breed-golden_retriever-tote_bag               price: 699.0
+
+[2x] Great Dane Bandana
+      id: soul-breed-great_dane-bandana                 price: 399
+      id: breed-great_dane-bandana                      price: 399.0
+
+[3x] Great Dane Birthday Cake Topper
+      id: soul-breed-great_dane-cake_topper             price: 599
+      id: breed-great_dane-cake_topper                  price: 599.0
+      id: soul-great_dane-breed-birthday_cake_toppers-10cf89a3 price: 499
+
+[2x] Great Dane Birthday Card
+      id: soul-breed-great_dane-birthday_card           price: 199
+      id: breed-great_dane-birthday_card                price: 199.0
+
+[2x] Great Dane Keychain
+      id: soul-breed-great_dane-keychain                price: 299
+      id: breed-great_dane-keychain                     price: 299.0
+
+[2x] Great Dane Lover Mug
+      id: soul-breed-great_dane-mug                     price: 499
+      id: breed-great_dane-mug                          price: 499.0
+
+[2x] Great Dane Party Banner
+      id: soul-breed-great_dane-party_banner            price: 399
+      id: breed-great_dane-party_banner                 price: 399.0
+
+[2x] Great Dane Party Favor Pack
+      id: soul-breed-great_dane-return_gift_pack        price: 499
+      id: breed-great_dane-return_gift_pack             price: 499.0
+
+[2x] Great Dane Party Hat
+      id: soul-breed-great_dane-party_hat               price: 199
+      id: breed-great_dane-party_hat                    price: 199.0
+
+[2x] Great Dane Portrait Frame
+      id: soul-breed-great_dane-frame                   price: 799
+      id: breed-great_dane-frame                        price: 799.0
+
+[2x] Great Dane Pupcake Decoration Set
+      id: soul-breed-great_dane-pupcake_set             price: 449
+      id: breed-great_dane-pupcake_set                  price: 449.0
+
+[2x] Great Dane Tote Bag
+      id: soul-breed-great_dane-tote_bag                price: 699
+      id: breed-great_dane-tote_bag                     price: 699.0
+
+[2x] Havanese Birthday Cake Topper
+      id: soul-breed-havanese-cake_topper               price: 599
+      id: breed-havanese-cake_topper                    price: 599.0
+
+[2x] Havanese Birthday Card
+      id: soul-breed-havanese-birthday_card             price: 199
+      id: breed-havanese-birthday_card                  price: 199.0
+
+[2x] Havanese Party Banner
+      id: soul-breed-havanese-party_banner              price: 399
+      id: breed-havanese-party_banner                   price: 399.0
+
+[2x] Havanese Party Favor Pack
+      id: soul-breed-havanese-return_gift_pack          price: 499
+      id: breed-havanese-return_gift_pack               price: 499.0
+
+[2x] Havanese Pupcake Decoration Set
+      id: soul-breed-havanese-pupcake_set               price: 449
+      id: breed-havanese-pupcake_set                    price: 449.0
+
+[2x] Husky Bandana
+      id: soul-breed-husky-bandana                      price: 399
+      id: breed-husky-bandana                           price: 399.0
+
+[2x] Husky Keychain
+      id: soul-breed-husky-keychain                     price: 299
+      id: breed-husky-keychain                          price: 299.0
+
+[2x] Husky Lover Mug
+      id: soul-breed-husky-mug                          price: 499
+      id: breed-husky-mug                               price: 499.0
+
+[2x] Husky Party Hat
+      id: soul-breed-husky-party_hat                    price: 199
+      id: breed-husky-party_hat                         price: 199.0
+
+[2x] Husky Portrait Frame
+      id: soul-breed-husky-frame                        price: 799
+      id: breed-husky-frame                             price: 799.0
+
+[2x] Husky Tote Bag
+      id: soul-breed-husky-tote_bag                     price: 699
+      id: breed-husky-tote_bag                          price: 699.0
+
+[3x] Indian Pariah Dog Birthday Cake Topper
+      id: soul-breed-indie-cake_topper                  price: 599
+      id: breed-indie-cake_topper                       price: 599.0
+      id: soul-indian_pariah_dog-breed-birthday_cake_toppers-c95702ed price: 499
+
+[2x] Indian Pariah Dog Birthday Card
+      id: soul-breed-indie-birthday_card                price: 199
+      id: breed-indie-birthday_card                     price: 199.0
+
+[2x] Indian Pariah Dog Party Banner
+      id: soul-breed-indie-party_banner                 price: 399
+      id: breed-indie-party_banner                      price: 399.0
+
+[2x] Indian Pariah Dog Party Favor Pack
+      id: soul-breed-indie-return_gift_pack             price: 499
+      id: breed-indie-return_gift_pack                  price: 499.0
+
+[2x] Indie Bandana
+      id: soul-breed-indie-bandana                      price: 399
+      id: breed-indie-bandana                           price: 399.0
+
+[2x] Indie Keychain
+      id: soul-breed-indie-keychain                     price: 299
+      id: breed-indie-keychain                          price: 299.0
+
+[2x] Indie Lover Mug
+      id: soul-breed-indie-mug                          price: 499
+      id: breed-indie-mug                               price: 499.0
+
+[2x] Indie Party Hat
+      id: soul-breed-indie-party_hat                    price: 199
+      id: breed-indie-party_hat                         price: 199.0
+
+[2x] Indie Portrait Frame
+      id: soul-breed-indie-frame                        price: 799
+      id: breed-indie-frame                             price: 799.0
+
+[2x] Indie Tote Bag
+      id: soul-breed-indie-tote_bag                     price: 699
+      id: breed-indie-tote_bag                          price: 699.0
+
+[2x] Irish Setter Bandana
+      id: soul-breed-irish_setter-bandana               price: 399
+      id: breed-irish_setter-bandana                    price: 399.0
+
+[2x] Irish Setter Keychain
+      id: soul-breed-irish_setter-keychain              price: 299
+      id: breed-irish_setter-keychain                   price: 299.0
+
+[2x] Irish Setter Lover Mug
+      id: soul-breed-irish_setter-mug                   price: 499
+      id: breed-irish_setter-mug                        price: 499.0
+
+[2x] Irish Setter Party Hat
+      id: soul-breed-irish_setter-party_hat             price: 199
+      id: breed-irish_setter-party_hat                  price: 199.0
+
+[2x] Irish Setter Portrait Frame
+      id: soul-breed-irish_setter-frame                 price: 799
+      id: breed-irish_setter-frame                      price: 799.0
+
+[2x] Irish Setter Tote Bag
+      id: soul-breed-irish_setter-tote_bag              price: 699
+      id: breed-irish_setter-tote_bag                   price: 699.0
+
+[2x] Italian Greyhound Bandana
+      id: soul-breed-italian_greyhound-bandana          price: 399
+      id: breed-italian_greyhound-bandana               price: 399.0
+
+[2x] Italian Greyhound Keychain
+      id: soul-breed-italian_greyhound-keychain         price: 299
+      id: breed-italian_greyhound-keychain              price: 299.0
+
+[2x] Italian Greyhound Lover Mug
+      id: soul-breed-italian_greyhound-mug              price: 499
+      id: breed-italian_greyhound-mug                   price: 499.0
+
+[2x] Italian Greyhound Party Hat
+      id: soul-breed-italian_greyhound-party_hat        price: 199
+      id: breed-italian_greyhound-party_hat             price: 199.0
+
+[2x] Italian Greyhound Portrait Frame
+      id: soul-breed-italian_greyhound-frame            price: 799
+      id: breed-italian_greyhound-frame                 price: 799.0
+
+[2x] Italian Greyhound Tote Bag
+      id: soul-breed-italian_greyhound-tote_bag         price: 699
+      id: breed-italian_greyhound-tote_bag              price: 699.0
+
+[2x] Jack Russell Bandana
+      id: soul-breed-jack_russell-bandana               price: 399
+      id: breed-jack_russell-bandana                    price: 399.0
+
+[2x] Jack Russell Keychain
+      id: soul-breed-jack_russell-keychain              price: 299
+      id: breed-jack_russell-keychain                   price: 299.0
+
+[2x] Jack Russell Lover Mug
+      id: soul-breed-jack_russell-mug                   price: 499
+      id: breed-jack_russell-mug                        price: 499.0
+
+[2x] Jack Russell Party Hat
+      id: soul-breed-jack_russell-party_hat             price: 199
+      id: breed-jack_russell-party_hat                  price: 199.0
+
+[2x] Jack Russell Portrait Frame
+      id: soul-breed-jack_russell-frame                 price: 799
+      id: breed-jack_russell-frame                      price: 799.0
+
+[2x] Jack Russell Tote Bag
+      id: soul-breed-jack_russell-tote_bag              price: 699
+      id: breed-jack_russell-tote_bag                   price: 699.0
+
+[2x] Labrador Keychain
+      id: soul-breed-labrador-keychain                  price: 299
+      id: breed-labrador-keychain                       price: 299.0
+
+[2x] Labrador Lover Mug
+      id: soul-breed-labrador-mug                       price: 499
+      id: breed-labrador-mug                            price: 499.0
+
+[2x] Labrador Party Hat
+      id: soul-breed-labrador-party_hat                 price: 199
+      id: breed-labrador-party_hat                      price: 199.0
+
+[2x] Labrador Portrait Frame
+      id: soul-breed-labrador-frame                     price: 799
+      id: breed-labrador-frame                          price: 799.0
+
+[3x] Labrador Retriever Birthday Cake Topper
+      id: soul-breed-labrador-cake_topper               price: 599
+      id: breed-labrador-cake_topper                    price: 599.0
+      id: soul-labrador_retriever-breed-birthday_cake_toppers-29ff1fcd price: 499
+
+[2x] Labrador Retriever Birthday Card
+      id: soul-breed-labrador-birthday_card             price: 199
+      id: breed-labrador-birthday_card                  price: 199.0
+
+[2x] Labrador Retriever Party Banner
+      id: soul-breed-labrador-party_banner              price: 399
+      id: breed-labrador-party_banner                   price: 399.0
+
+[2x] Labrador Retriever Party Favor Pack
+      id: soul-breed-labrador-return_gift_pack          price: 499
+      id: breed-labrador-return_gift_pack               price: 499.0
+
+[2x] Labrador Retriever Pupcake Decoration Set
+      id: soul-breed-labrador-pupcake_set               price: 449
+      id: breed-labrador-pupcake_set                    price: 449.0
+
+[2x] Labrador Tote Bag
+      id: soul-breed-labrador-tote_bag                  price: 699
+      id: breed-labrador-tote_bag                       price: 699.0
+
+[2x] Lhasa Apso Bandana
+      id: soul-breed-lhasa_apso-bandana                 price: 399
+      id: breed-lhasa_apso-bandana                      price: 399.0
+
+[2x] Lhasa Apso Keychain
+      id: soul-breed-lhasa_apso-keychain                price: 299
+      id: breed-lhasa_apso-keychain                     price: 299.0
+
+[2x] Lhasa Apso Lover Mug
+      id: soul-breed-lhasa_apso-mug                     price: 499
+      id: breed-lhasa_apso-mug                          price: 499.0
+
+[2x] Lhasa Apso Party Hat
+      id: soul-breed-lhasa_apso-party_hat               price: 199
+      id: breed-lhasa_apso-party_hat                    price: 199.0
+
+[2x] Lhasa Apso Portrait Frame
+      id: soul-breed-lhasa_apso-frame                   price: 799
+      id: breed-lhasa_apso-frame                        price: 799.0
+
+[2x] Lhasa Apso Tote Bag
+      id: soul-breed-lhasa_apso-tote_bag                price: 699
+      id: breed-lhasa_apso-tote_bag                     price: 699.0
+
+[2x] Maltese Bandana
+      id: soul-breed-maltese-bandana                    price: 399
+      id: breed-maltese-bandana                         price: 399.0
+
+[3x] Maltese Birthday Cake Topper
+      id: soul-breed-maltese-cake_topper                price: 599
+      id: breed-maltese-cake_topper                     price: 599.0
+      id: soul-maltese-breed-birthday_cake_toppers-dec93185 price: 499
+
+[2x] Maltese Birthday Card
+      id: soul-breed-maltese-birthday_card              price: 199
+      id: breed-maltese-birthday_card                   price: 199.0
+
+[2x] Maltese Keychain
+      id: soul-breed-maltese-keychain                   price: 299
+      id: breed-maltese-keychain                        price: 299.0
+
+[2x] Maltese Lover Mug
+      id: soul-breed-maltese-mug                        price: 499
+      id: breed-maltese-mug                             price: 499.0
+
+[2x] Maltese Party Banner
+      id: soul-breed-maltese-party_banner               price: 399
+      id: breed-maltese-party_banner                    price: 399.0
+
+[2x] Maltese Party Favor Pack
+      id: soul-breed-maltese-return_gift_pack           price: 499
+      id: breed-maltese-return_gift_pack                price: 499.0
+
+[2x] Maltese Party Hat
+      id: soul-breed-maltese-party_hat                  price: 199
+      id: breed-maltese-party_hat                       price: 199.0
+
+[2x] Maltese Portrait Frame
+      id: soul-breed-maltese-frame                      price: 799
+      id: breed-maltese-frame                           price: 799.0
+
+[2x] Maltese Pupcake Decoration Set
+      id: soul-breed-maltese-pupcake_set                price: 449
+      id: breed-maltese-pupcake_set                     price: 449.0
+
+[2x] Maltese Tote Bag
+      id: soul-breed-maltese-tote_bag                   price: 699
+      id: breed-maltese-tote_bag                        price: 699.0
+
+[2x] Pomeranian Bandana
+      id: soul-breed-pomeranian-bandana                 price: 399
+      id: breed-pomeranian-bandana                      price: 399.0
+
+[3x] Pomeranian Birthday Cake Topper
+      id: soul-breed-pomeranian-cake_topper             price: 599
+      id: breed-pomeranian-cake_topper                  price: 599.0
+      id: soul-pomeranian-breed-birthday_cake_toppers-45626cbf price: 499
+
+[2x] Pomeranian Birthday Card
+      id: soul-breed-pomeranian-birthday_card           price: 199
+      id: breed-pomeranian-birthday_card                price: 199.0
+
+[2x] Pomeranian Keychain
+      id: soul-breed-pomeranian-keychain                price: 299
+      id: breed-pomeranian-keychain                     price: 299.0
+
+[2x] Pomeranian Lover Mug
+      id: soul-breed-pomeranian-mug                     price: 499
+      id: breed-pomeranian-mug                          price: 499.0
+
+[2x] Pomeranian Party Banner
+      id: soul-breed-pomeranian-party_banner            price: 399
+      id: breed-pomeranian-party_banner                 price: 399.0
+
+[2x] Pomeranian Party Favor Pack
+      id: soul-breed-pomeranian-return_gift_pack        price: 499
+      id: breed-pomeranian-return_gift_pack             price: 499.0
+
+[2x] Pomeranian Party Hat
+      id: soul-breed-pomeranian-party_hat               price: 199
+      id: breed-pomeranian-party_hat                    price: 199.0
+
+[2x] Pomeranian Portrait Frame
+      id: soul-breed-pomeranian-frame                   price: 799
+      id: breed-pomeranian-frame                        price: 799.0
+
+[2x] Pomeranian Pupcake Decoration Set
+      id: soul-breed-pomeranian-pupcake_set             price: 449
+      id: breed-pomeranian-pupcake_set                  price: 449.0
+
+[2x] Pomeranian Tote Bag
+      id: soul-breed-pomeranian-tote_bag                price: 699
+      id: breed-pomeranian-tote_bag                     price: 699.0
+
+[2x] Poodle Bandana
+      id: soul-breed-poodle-bandana                     price: 399
+      id: breed-poodle-bandana                          price: 399.0
+
+[3x] Poodle Birthday Cake Topper
+      id: soul-breed-poodle-cake_topper                 price: 599
+      id: breed-poodle-cake_topper                      price: 599.0
+      id: soul-poodle-breed-birthday_cake_toppers-4bd25c73 price: 499
+
+[2x] Poodle Birthday Card
+      id: soul-breed-poodle-birthday_card               price: 199
+      id: breed-poodle-birthday_card                    price: 199.0
+
+[2x] Poodle Keychain
+      id: soul-breed-poodle-keychain                    price: 299
+      id: breed-poodle-keychain                         price: 299.0
+
+[2x] Poodle Lover Mug
+      id: soul-breed-poodle-mug                         price: 499
+      id: breed-poodle-mug                              price: 499.0
+
+[2x] Poodle Party Banner
+      id: soul-breed-poodle-party_banner                price: 399
+      id: breed-poodle-party_banner                     price: 399.0
+
+[2x] Poodle Party Favor Pack
+      id: soul-breed-poodle-return_gift_pack            price: 499
+      id: breed-poodle-return_gift_pack                 price: 499.0
+
+[2x] Poodle Party Hat
+      id: soul-breed-poodle-party_hat                   price: 199
+      id: breed-poodle-party_hat                        price: 199.0
+
+[2x] Poodle Portrait Frame
+      id: soul-breed-poodle-frame                       price: 799
+      id: breed-poodle-frame                            price: 799.0
+
+[2x] Poodle Pupcake Decoration Set
+      id: soul-breed-poodle-pupcake_set                 price: 449
+      id: breed-poodle-pupcake_set                      price: 449.0
+
+[2x] Poodle Tote Bag
+      id: soul-breed-poodle-tote_bag                    price: 699
+      id: breed-poodle-tote_bag                         price: 699.0
+
+[2x] Pug Bandana
+      id: soul-breed-pug-bandana                        price: 399
+      id: breed-pug-bandana                             price: 399.0
+
+[3x] Pug Birthday Cake Topper
+      id: soul-breed-pug-cake_topper                    price: 599
+      id: breed-pug-cake_topper                         price: 599.0
+      id: soul-pug-breed-birthday_cake_toppers-41dc2a3c price: 499
+
+[2x] Pug Birthday Card
+      id: soul-breed-pug-birthday_card                  price: 199
+      id: breed-pug-birthday_card                       price: 199.0
+
+[2x] Pug Keychain
+      id: soul-breed-pug-keychain                       price: 299
+      id: breed-pug-keychain                            price: 299.0
+
+[2x] Pug Lover Mug
+      id: soul-breed-pug-mug                            price: 499
+      id: breed-pug-mug                                 price: 499.0
+
+[2x] Pug Party Banner
+      id: soul-breed-pug-party_banner                   price: 399
+      id: breed-pug-party_banner                        price: 399.0
+
+[2x] Pug Party Favor Pack
+      id: soul-breed-pug-return_gift_pack               price: 499
+      id: breed-pug-return_gift_pack                    price: 499.0
+
+[2x] Pug Party Hat
+      id: soul-breed-pug-party_hat                      price: 199
+      id: breed-pug-party_hat                           price: 199.0
+
+[2x] Pug Portrait Frame
+      id: soul-breed-pug-frame                          price: 799
+      id: breed-pug-frame                               price: 799.0
+
+[2x] Pug Pupcake Decoration Set
+      id: soul-breed-pug-pupcake_set                    price: 449
+      id: breed-pug-pupcake_set                         price: 449.0
+
+[2x] Pug Tote Bag
+      id: soul-breed-pug-tote_bag                       price: 699
+      id: breed-pug-tote_bag                            price: 699.0
+
+[2x] Rottweiler Bandana
+      id: soul-breed-rottweiler-bandana                 price: 399
+      id: breed-rottweiler-bandana                      price: 399.0
+
+[3x] Rottweiler Birthday Cake Topper
+      id: soul-breed-rottweiler-cake_topper             price: 599
+      id: breed-rottweiler-cake_topper                  price: 599.0
+      id: soul-rottweiler-breed-birthday_cake_toppers-c49d0d09 price: 499
+
+[2x] Rottweiler Birthday Card
+      id: soul-breed-rottweiler-birthday_card           price: 199
+      id: breed-rottweiler-birthday_card                price: 199.0
+
+[2x] Rottweiler Keychain
+      id: soul-breed-rottweiler-keychain                price: 299
+      id: breed-rottweiler-keychain                     price: 299.0
+
+[2x] Rottweiler Lover Mug
+      id: soul-breed-rottweiler-mug                     price: 499
+      id: breed-rottweiler-mug                          price: 499.0
+
+[2x] Rottweiler Party Banner
+      id: soul-breed-rottweiler-party_banner            price: 399
+      id: breed-rottweiler-party_banner                 price: 399.0
+
+[2x] Rottweiler Party Favor Pack
+      id: soul-breed-rottweiler-return_gift_pack        price: 499
+      id: breed-rottweiler-return_gift_pack             price: 499.0
+
+[2x] Rottweiler Party Hat
+      id: soul-breed-rottweiler-party_hat               price: 199
+      id: breed-rottweiler-party_hat                    price: 199.0
+
+[2x] Rottweiler Portrait Frame
+      id: soul-breed-rottweiler-frame                   price: 799
+      id: breed-rottweiler-frame                        price: 799.0
+
+[2x] Rottweiler Pupcake Decoration Set
+      id: soul-breed-rottweiler-pupcake_set             price: 449
+      id: breed-rottweiler-pupcake_set                  price: 449.0
+
+[2x] Rottweiler Tote Bag
+      id: soul-breed-rottweiler-tote_bag                price: 699
+      id: breed-rottweiler-tote_bag                     price: 699.0
+
+[3x] Samoyed Birthday Cake Topper
+      id: soul-breed-samoyed-cake_topper                price: 599
+      id: breed-samoyed-cake_topper                     price: 599.0
+      id: soul-samoyed-breed-birthday_cake_toppers-940cce56 price: 499
+
+[2x] Samoyed Birthday Card
+      id: soul-breed-samoyed-birthday_card              price: 199
+      id: breed-samoyed-birthday_card                   price: 199.0
+
+[2x] Samoyed Party Banner
+      id: soul-breed-samoyed-party_banner               price: 399
+      id: breed-samoyed-party_banner                    price: 399.0
+
+[2x] Samoyed Party Favor Pack
+      id: soul-breed-samoyed-return_gift_pack           price: 499
+      id: breed-samoyed-return_gift_pack                price: 499.0
+
+[2x] Samoyed Pupcake Decoration Set
+      id: soul-breed-samoyed-pupcake_set                price: 449
+      id: breed-samoyed-pupcake_set                     price: 449.0
+
+[2x] Schnoodle Bandana
+      id: soul-breed-schnoodle-bandana                  price: 399
+      id: breed-schnoodle-bandana                       price: 399.0
+
+[2x] Schnoodle Keychain
+      id: soul-breed-schnoodle-keychain                 price: 299
+      id: breed-schnoodle-keychain                      price: 299.0
+
+[2x] Schnoodle Lover Mug
+      id: soul-breed-schnoodle-mug                      price: 499
+      id: breed-schnoodle-mug                           price: 499.0
+
+[2x] Schnoodle Party Hat
+      id: soul-breed-schnoodle-party_hat                price: 199
+      id: breed-schnoodle-party_hat                     price: 199.0
+
+[2x] Schnoodle Portrait Frame
+      id: soul-breed-schnoodle-frame                    price: 799
+      id: breed-schnoodle-frame                         price: 799.0
+
+[2x] Schnoodle Tote Bag
+      id: soul-breed-schnoodle-tote_bag                 price: 699
+      id: breed-schnoodle-tote_bag                      price: 699.0
+
+[2x] Scottish Terrier Bandana
+      id: soul-breed-scottish_terrier-bandana           price: 399
+      id: breed-scottish_terrier-bandana                price: 399.0
+
+[3x] Scottish Terrier Birthday Cake Topper
+      id: soul-breed-scottish_terrier-cake_topper       price: 599
+      id: breed-scottish_terrier-cake_topper            price: 599.0
+      id: soul-scottish_terrier-breed-birthday_cake_toppers-41f39033 price: 499
+
+[2x] Scottish Terrier Birthday Card
+      id: soul-breed-scottish_terrier-birthday_card     price: 199
+      id: breed-scottish_terrier-birthday_card          price: 199.0
+
+[2x] Scottish Terrier Keychain
+      id: soul-breed-scottish_terrier-keychain          price: 299
+      id: breed-scottish_terrier-keychain               price: 299.0
+
+[2x] Scottish Terrier Lover Mug
+      id: soul-breed-scottish_terrier-mug               price: 499
+      id: breed-scottish_terrier-mug                    price: 499.0
+
+[2x] Scottish Terrier Party Banner
+      id: soul-breed-scottish_terrier-party_banner      price: 399
+      id: breed-scottish_terrier-party_banner           price: 399.0
+
+[2x] Scottish Terrier Party Favor Pack
+      id: soul-breed-scottish_terrier-return_gift_pack  price: 499
+      id: breed-scottish_terrier-return_gift_pack       price: 499.0
+
+[2x] Scottish Terrier Party Hat
+      id: soul-breed-scottish_terrier-party_hat         price: 199
+      id: breed-scottish_terrier-party_hat              price: 199.0
+
+[2x] Scottish Terrier Portrait Frame
+      id: soul-breed-scottish_terrier-frame             price: 799
+      id: breed-scottish_terrier-frame                  price: 799.0
+
+[2x] Scottish Terrier Pupcake Decoration Set
+      id: soul-breed-scottish_terrier-pupcake_set       price: 449
+      id: breed-scottish_terrier-pupcake_set            price: 449.0
+
+[2x] Scottish Terrier Tote Bag
+      id: soul-breed-scottish_terrier-tote_bag          price: 699
+      id: breed-scottish_terrier-tote_bag               price: 699.0
+
+[2x] Shetland Sheepdog Birthday Cake Topper
+      id: soul-breed-shetland_sheepdog-cake_topper      price: 599
+      id: breed-shetland_sheepdog-cake_topper           price: 599.0
+
+[2x] Shetland Sheepdog Birthday Card
+      id: soul-breed-shetland_sheepdog-birthday_card    price: 199
+      id: breed-shetland_sheepdog-birthday_card         price: 199.0
+
+[2x] Shetland Sheepdog Party Banner
+      id: soul-breed-shetland_sheepdog-party_banner     price: 399
+      id: breed-shetland_sheepdog-party_banner          price: 399.0
+
+[2x] Shetland Sheepdog Party Favor Pack
+      id: soul-breed-shetland_sheepdog-return_gift_pack price: 499
+      id: breed-shetland_sheepdog-return_gift_pack      price: 499.0
+
+[2x] Shetland Sheepdog Pupcake Decoration Set
+      id: soul-breed-shetland_sheepdog-pupcake_set      price: 449
+      id: breed-shetland_sheepdog-pupcake_set           price: 449.0
+
+[2x] Shih Tzu Bandana
+      id: soul-breed-shih_tzu-bandana                   price: 399
+      id: breed-shih_tzu-bandana                        price: 399.0
+
+[3x] Shih Tzu Birthday Cake Topper
+      id: soul-breed-shih_tzu-cake_topper               price: 599
+      id: breed-shih_tzu-cake_topper                    price: 599.0
+      id: soul-shih_tzu-breed-birthday_cake_toppers-fc5f0358 price: 499
+
+[2x] Shih Tzu Birthday Card
+      id: soul-breed-shih_tzu-birthday_card             price: 199
+      id: breed-shih_tzu-birthday_card                  price: 199.0
+
+[2x] Shih Tzu Keychain
+      id: soul-breed-shih_tzu-keychain                  price: 299
+      id: breed-shih_tzu-keychain                       price: 299.0
+
+[2x] Shih Tzu Lover Mug
+      id: soul-breed-shih_tzu-mug                       price: 499
+      id: breed-shih_tzu-mug                            price: 499.0
+
+[2x] Shih Tzu Party Banner
+      id: soul-breed-shih_tzu-party_banner              price: 399
+      id: breed-shih_tzu-party_banner                   price: 399.0
+
+[2x] Shih Tzu Party Favor Pack
+      id: soul-breed-shih_tzu-return_gift_pack          price: 499
+      id: breed-shih_tzu-return_gift_pack               price: 499.0
+
+[2x] Shih Tzu Party Hat
+      id: soul-breed-shih_tzu-party_hat                 price: 199
+      id: breed-shih_tzu-party_hat                      price: 199.0
+
+[2x] Shih Tzu Portrait Frame
+      id: soul-breed-shih_tzu-frame                     price: 799
+      id: breed-shih_tzu-frame                          price: 799.0
+
+[2x] Shih Tzu Pupcake Decoration Set
+      id: soul-breed-shih_tzu-pupcake_set               price: 449
+      id: breed-shih_tzu-pupcake_set                    price: 449.0
+
+[2x] Shih Tzu Tote Bag
+      id: soul-breed-shih_tzu-tote_bag                  price: 699
+      id: breed-shih_tzu-tote_bag                       price: 699.0
+
+[3x] Siberian Husky Birthday Cake Topper
+      id: soul-breed-siberian_husky-cake_topper         price: 599
+      id: breed-siberian_husky-cake_topper              price: 599.0
+      id: soul-siberian_husky-breed-birthday_cake_toppers-0dff1aa1 price: 499
+
+[2x] Siberian Husky Birthday Card
+      id: soul-breed-siberian_husky-birthday_card       price: 199
+      id: breed-siberian_husky-birthday_card            price: 199.0
+
+[2x] Siberian Husky Party Banner
+      id: soul-breed-siberian_husky-party_banner        price: 399
+      id: breed-siberian_husky-party_banner             price: 399.0
+
+[2x] Siberian Husky Party Favor Pack
+      id: soul-breed-siberian_husky-return_gift_pack    price: 499
+      id: breed-siberian_husky-return_gift_pack         price: 499.0
+
+[2x] Siberian Husky Pupcake Decoration Set
+      id: soul-breed-siberian_husky-pupcake_set         price: 449
+      id: breed-siberian_husky-pupcake_set              price: 449.0
+
+[2x] St Bernard Bandana
+      id: soul-breed-st_bernard-bandana                 price: 399
+      id: breed-st_bernard-bandana                      price: 399.0
+
+[2x] St Bernard Keychain
+      id: soul-breed-st_bernard-keychain                price: 299
+      id: breed-st_bernard-keychain                     price: 299.0
+
+[2x] St Bernard Lover Mug
+      id: soul-breed-st_bernard-mug                     price: 499
+      id: breed-st_bernard-mug                          price: 499.0
+
+[2x] St Bernard Party Hat
+      id: soul-breed-st_bernard-party_hat               price: 199
+      id: breed-st_bernard-party_hat                    price: 199.0
+
+[2x] St Bernard Portrait Frame
+      id: soul-breed-st_bernard-frame                   price: 799
+      id: breed-st_bernard-frame                        price: 799.0
+
+[2x] St Bernard Tote Bag
+      id: soul-breed-st_bernard-tote_bag                price: 699
+      id: breed-st_bernard-tote_bag                     price: 699.0
+
+[2x] St. Bernard Birthday Cake Topper
+      id: soul-breed-st_bernard-cake_topper             price: 599
+      id: breed-st_bernard-cake_topper                  price: 599.0
+
+[2x] St. Bernard Birthday Card
+      id: soul-breed-st_bernard-birthday_card           price: 199
+      id: breed-st_bernard-birthday_card                price: 199.0
+
+[2x] St. Bernard Party Banner
+      id: soul-breed-st_bernard-party_banner            price: 399
+      id: breed-st_bernard-party_banner                 price: 399.0
+
+[2x] St. Bernard Party Favor Pack
+      id: soul-breed-st_bernard-return_gift_pack        price: 499
+      id: breed-st_bernard-return_gift_pack             price: 499.0
+
+[2x] St. Bernard Pupcake Decoration Set
+      id: soul-breed-st_bernard-pupcake_set             price: 449
+      id: breed-st_bernard-pupcake_set                  price: 449.0
+
+[3x] Vizsla Birthday Cake Topper
+      id: soul-breed-vizsla-cake_topper                 price: 599
+      id: breed-vizsla-cake_topper                      price: 599.0
+      id: soul-vizsla-breed-birthday_cake_toppers-13ee7bad price: 499
+
+[2x] Vizsla Birthday Card
+      id: soul-breed-vizsla-birthday_card               price: 199
+      id: breed-vizsla-birthday_card                    price: 199.0
+
+[2x] Vizsla Party Banner
+      id: soul-breed-vizsla-party_banner                price: 399
+      id: breed-vizsla-party_banner                     price: 399.0
+
+[2x] Vizsla Party Favor Pack
+      id: soul-breed-vizsla-return_gift_pack            price: 499
+      id: breed-vizsla-return_gift_pack                 price: 499.0
+
+[2x] Vizsla Pupcake Decoration Set
+      id: soul-breed-vizsla-pupcake_set                 price: 449
+      id: breed-vizsla-pupcake_set                      price: 449.0
+
+[3x] Weimaraner Birthday Cake Topper
+      id: soul-breed-weimaraner-cake_topper             price: 599
+      id: breed-weimaraner-cake_topper                  price: 599.0
+      id: soul-weimaraner-breed-birthday_cake_toppers-b58f0796 price: 499
+
+[2x] Weimaraner Birthday Card
+      id: soul-breed-weimaraner-birthday_card           price: 199
+      id: breed-weimaraner-birthday_card                price: 199.0
+
+[2x] Weimaraner Party Banner
+      id: soul-breed-weimaraner-party_banner            price: 399
+      id: breed-weimaraner-party_banner                 price: 399.0
+
+[2x] Weimaraner Party Favor Pack
+      id: soul-breed-weimaraner-return_gift_pack        price: 499
+      id: breed-weimaraner-return_gift_pack             price: 499.0
+
+[2x] Weimaraner Pupcake Decoration Set
+      id: soul-breed-weimaraner-pupcake_set             price: 449
+      id: breed-weimaraner-pupcake_set                  price: 449.0
+
+[2x] Yorkshire Bandana
+      id: soul-breed-yorkshire-bandana                  price: 399
+      id: breed-yorkshire-bandana                       price: 399.0
+
+[2x] Yorkshire Keychain
+      id: soul-breed-yorkshire-keychain                 price: 299
+      id: breed-yorkshire-keychain                      price: 299.0
+
+[2x] Yorkshire Lover Mug
+      id: soul-breed-yorkshire-mug                      price: 499
+      id: breed-yorkshire-mug                           price: 499.0
+
+[2x] Yorkshire Party Hat
+      id: soul-breed-yorkshire-party_hat                price: 199
+      id: breed-yorkshire-party_hat                     price: 199.0
+
+[2x] Yorkshire Portrait Frame
+      id: soul-breed-yorkshire-frame                    price: 799
+      id: breed-yorkshire-frame                         price: 799.0
+
+[3x] Yorkshire Terrier Birthday Cake Topper
+      id: soul-breed-yorkshire-cake_topper              price: 599
+      id: breed-yorkshire-cake_topper                   price: 599.0
+      id: soul-yorkshire_terrier-breed-birthday_cake_toppers-01a88b81 price: 499
+
+[2x] Yorkshire Terrier Birthday Card
+      id: soul-breed-yorkshire-birthday_card            price: 199
+      id: breed-yorkshire-birthday_card                 price: 199.0
+
+[2x] Yorkshire Terrier Party Banner
+      id: soul-breed-yorkshire-party_banner             price: 399
+      id: breed-yorkshire-party_banner                  price: 399.0
+
+[2x] Yorkshire Terrier Party Favor Pack
+      id: soul-breed-yorkshire-return_gift_pack         price: 499
+      id: breed-yorkshire-return_gift_pack              price: 499.0
+
+[2x] Yorkshire Terrier Pupcake Decoration Set
+      id: soul-breed-yorkshire-pupcake_set              price: 449
+      id: breed-yorkshire-pupcake_set                   price: 449.0
+
+[2x] Yorkshire Tote Bag
+      id: soul-breed-yorkshire-tote_bag                 price: 699
+      id: breed-yorkshire-tote_bag                      price: 699.0
