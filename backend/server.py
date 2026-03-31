@@ -1364,7 +1364,15 @@ async def auto_seed_all_services():
     all_services = fit_services + care_services + celebrate_services + insure_services
     
     for service in all_services:
-        await db.services_master.update_one({"id": service["id"]}, {"$set": service}, upsert=True)
+        existing = await db.services_master.find_one({"id": service["id"]}, {"_id": 0, "image_url": 1, "image": 1, "watercolor_image": 1, "cloudinary_url": 1})
+        if existing:
+            # Preserve any images admin has already set — never overwrite with empty seed values
+            seed_data = {k: v for k, v in service.items()
+                         if k not in ("image", "image_url", "watercolor_image", "cloudinary_url")
+                         or v}  # only include image fields if they have a real value
+            await db.services_master.update_one({"id": service["id"]}, {"$set": seed_data})
+        else:
+            await db.services_master.insert_one(service)
     
     logger.info(f"✓ AUTO-SEEDED {len(all_services)} Concierge® Services")
 
@@ -25163,6 +25171,13 @@ async def get_admin_services(
     services = await db.services_master.find(
         query, {"_id": 0}
     ).skip(skip).limit(limit).to_list(limit)
+    
+    # Normalize image fields — prefer watercolor_image > image_url > image
+    for s in services:
+        preferred = s.get("watercolor_image") or s.get("image_url") or s.get("image") or ""
+        if preferred:
+            s["image_url"] = preferred
+            s["image"] = preferred
     
     total = await db.services_master.count_documents(query)
     
