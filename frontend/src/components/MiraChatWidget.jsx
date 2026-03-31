@@ -2545,15 +2545,17 @@ const MiraChatWidget = ({
         document.body
       )}
 
-      {/* Service Concierge Modal — opened by service chips in Mira chat */}
+      {/* Service Concierge Modal — rendered at z-index above chat widget (2147483647) */}
       {bookingModal.open && ReactDOM.createPortal(
-        <ServiceConciergeModal
-          service={bookingModal.service}
-          pet={selectedPet}
-          user={user}
-          onClose={() => setBookingModal({ open: false, service: null })}
-          onBooked={() => setBookingModal({ open: false, service: null })}
-        />,
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2147483647 }}>
+          <ServiceConciergeModal
+            service={bookingModal.service}
+            pet={selectedPet}
+            user={user}
+            onClose={() => setBookingModal({ open: false, service: null })}
+            onBooked={() => setBookingModal({ open: false, service: null })}
+          />
+        </div>,
         document.body
       )}
 
