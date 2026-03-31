@@ -29,7 +29,7 @@ import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
 import '../styles/mira-universal.css';
 import { tdc } from '../utils/tdc_intent';
-import ServiceBookingModal, { guessServiceType } from './ServiceBookingModal';
+import ServiceConciergeModal from './services/ServiceConciergeModal';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
@@ -240,7 +240,7 @@ const MiraChatWidget = ({
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
   const [selProd, setSelProd] = useState(null); // chip-tapped product → opens ProductDetailModal
-  const [bookingModal, setBookingModal] = useState({ open: false, serviceType: 'grooming', preselectedService: null }); // service chip → opens ServiceBookingModal
+  const [bookingModal, setBookingModal] = useState({ open: false, service: null }); // service chip → opens ServiceConciergeModal
   
   // Pet Picks Panel state (PersonalizedPicksPanel for pillar-specific picks)
   const [showPicksPanel, setShowPicksPanel] = useState(false);
@@ -2348,8 +2348,12 @@ const MiraChatWidget = ({
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
                                   setBookingModal({
                                     open: true,
-                                    serviceType: guessServiceType(svcName),
-                                    preselectedService: svcName,
+                                    service: {
+                                      name: svcName,
+                                      pillar: currentPillar || pillar || 'services',
+                                      sub_category: svc.sub_category || svc.category || '',
+                                      id: svc.id,
+                                    },
                                   });
                                 }}
                                 style={{
@@ -2539,14 +2543,14 @@ const MiraChatWidget = ({
         document.body
       )}
 
-      {/* Service Booking Modal — opened by service chips in Mira chat */}
+      {/* Service Concierge Modal — opened by service chips in Mira chat */}
       {bookingModal.open && ReactDOM.createPortal(
-        <ServiceBookingModal
-          isOpen={bookingModal.open}
-          onClose={() => setBookingModal({ open: false, serviceType: 'grooming', preselectedService: null })}
-          serviceType={bookingModal.serviceType}
-          preselectedService={bookingModal.preselectedService}
-          onBookingComplete={() => setBookingModal({ open: false, serviceType: 'grooming', preselectedService: null })}
+        <ServiceConciergeModal
+          service={bookingModal.service}
+          pet={selectedPet}
+          user={user}
+          onClose={() => setBookingModal({ open: false, service: null })}
+          onBooked={() => setBookingModal({ open: false, service: null })}
         />,
         document.body
       )}
