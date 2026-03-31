@@ -1213,9 +1213,9 @@ const MiraChatWidget = ({
         session_id: sessionId,
         source: 'chat_widget',
         current_pillar: pillar || 'general',
-        selected_pet_id: selectedPet?.id || null,
+        selected_pet_id: selectedPet?.id || selectedPet?._id || null,
         // Inline pet context as fallback — ensures Mira has data even if DB lookup is slow
-        pet_name: selectedPet?.name || null,
+        pet_name: selectedPet?.name || 'your dog',
         pet_breed: selectedPet?.breed || (selectedPet?.identity?.breed) || null,
         soul_answers: selectedPet?.doggy_soul_answers || {},
         history: historyMessages.slice(-10), // last 10 messages from this session
@@ -1236,7 +1236,7 @@ const MiraChatWidget = ({
           session_id: sessionId,
           source: 'chat_widget',
           current_pillar: pillar,
-          selected_pet_id: selectedPet?.id || null,
+          selected_pet_id: selectedPet?.id || selectedPet?._id || null,
           history: [] // Empty history as fallback
         });
       }
@@ -2272,7 +2272,10 @@ const MiraChatWidget = ({
                     <div style={{
                       marginTop: 8, width: '85%', maxWidth: 420,
                       animation: 'miraProductFadeIn 300ms ease forwards',
-                      opacity: 0
+                      opacity: 0,
+                      pointerEvents: 'auto',
+                      position: 'relative',
+                      zIndex: 1
                     }}>
                       <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
                         ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
