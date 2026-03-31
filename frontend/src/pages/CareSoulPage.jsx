@@ -20,10 +20,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useScrollLock } from '../hooks/useScrollLock';
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
+import ConciergeCTA from "../components/ConciergeCTA";
 import PillarPageLayout from "../components/PillarPageLayout";
 import CareHero from "../components/care/CareHero";
 import CareCategoryStrip from "../components/care/CareCategoryStrip";
@@ -2192,7 +2193,8 @@ export default function CareSoulPage() {
 
 
   const [loading, setLoading]     = useState(true);
-  const [activeTab, setActiveTab] = useState("care");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') === 'nearme' ? 'find-care' : 'care');
   const [openDim, setOpenDim]     = useState(null);
   const [petData, setPetData]     = useState(null);
   const [soulScore, setSoulScore] = useState(0);
@@ -2391,6 +2393,9 @@ export default function CareSoulPage() {
 
               {/* Mira's Picks */}
               <MiraPicksSection pet={petData} />
+
+              {/* Concierge CTA — desktop */}
+              <ConciergeCTA pillar="care" />
 
               {/* Soul Made handled inside PersonalisedBreedSection */}
 

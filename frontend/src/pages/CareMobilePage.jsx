@@ -33,6 +33,7 @@ import CareNearMe from '../components/care/CareNearMe';
 import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import ConciergeCTA from '../components/ConciergeCTA';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
@@ -483,6 +484,11 @@ export default function CareMobilePage() {
           </div>
         )}
 
+      </div>
+
+      {/* Concierge CTA — mobile: above modal stack */}
+      <div style={{ padding: '0 16px' }}>
+        <ConciergeCTA pillar="care" />
       </div>
 
       {/* Service Booking Modal */}

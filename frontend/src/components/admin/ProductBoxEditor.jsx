@@ -375,15 +375,19 @@ const ProductBoxEditor = ({
   
   // Helper to update nested fields
   const updateField = (path, value) => {
-    const keys = path.split('.');
-    const newProduct = JSON.parse(JSON.stringify(product));
-    let current = newProduct;
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!current[keys[i]]) current[keys[i]] = {};
-      current = current[keys[i]];
-    }
-    current[keys[keys.length - 1]] = value;
-    setProduct(newProduct);
+    // Use functional update form so multiple updateField calls in a single handler
+    // each operate on the latest state (not a stale closure of the prop).
+    setProduct(prev => {
+      const keys = path.split('.');
+      const newProduct = JSON.parse(JSON.stringify(prev));
+      let current = newProduct;
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      return newProduct;
+    });
   };
   
   // Get nested value
@@ -1698,12 +1702,24 @@ const ProductBoxEditor = ({
                   <Label>Primary Image URL (or paste URL manually)</Label>
                   <div className="flex gap-2 mt-1">
                     <Input 
-                      value={getValue('media.primary_image', '') || getValue('image', '') || getValue('image_url', '')}
+                      value={
+                        getValue('watercolor_image', '') ||
+                        getValue('cloudinary_url', '') ||
+                        getValue('media.primary_image', '') ||
+                        getValue('image', '') ||
+                        getValue('image_url', '')
+                      }
                       onChange={(e) => {
-                        updateField('media.primary_image', e.target.value);
-                        updateField('image', e.target.value);
-                        updateField('image_url', e.target.value);
-                        updateField('thumbnail', e.target.value);
+                        const url = e.target.value;
+                        // Update ALL image priority fields so the card always shows the new image
+                        updateField('watercolor_image', url);
+                        updateField('cloudinary_url', url);
+                        updateField('media.primary_image', url);
+                        updateField('image', url);
+                        updateField('image_url', url);
+                        updateField('thumbnail', url);
+                        updateField('media.images', url ? [url] : []);
+                        updateField('images', url ? [url] : []);
                       }}
                       placeholder="https://..."
                       className="flex-1"
@@ -1726,9 +1742,9 @@ const ProductBoxEditor = ({
                   <p className="text-xs text-purple-600 mt-1">
                     Generates image from product name/description and saves to Cloudinary
                   </p>
-                  {(getValue('media.primary_image') || getValue('image') || getValue('image_url')) && (
+                  {(getValue('watercolor_image') || getValue('cloudinary_url') || getValue('media.primary_image') || getValue('image') || getValue('image_url')) && (
                     <img 
-                      src={getValue('media.primary_image') || getValue('image') || getValue('image_url')} 
+                      src={getValue('watercolor_image') || getValue('cloudinary_url') || getValue('media.primary_image') || getValue('image') || getValue('image_url')} 
                       alt="Primary"
                       className="mt-2 w-32 h-32 object-cover rounded border"
                       onError={(e) => e.target.style.display = 'none'}
@@ -1754,6 +1770,7 @@ const ProductBoxEditor = ({
                   productName={getValue('name', '')}
                   pillar={getValue('pillar', '') || getValue('category', '')}
                   category={getValue('category', '')}
+                  breed={getValue('target_breed', '') || (getValue('target_breeds', []) || [])[0] || ''}
                   currentImageUrl={getValue('image_url', '') || getValue('watercolor_image', '')}
                   onPromptChange={val => { updateField('ai_image_prompt', val); updateField('ai_prompt', val); }}
                   onImageGenerated={(url, usedPrompt) => {

@@ -33,7 +33,8 @@ function buildDefaultPrompt({ productName, pillar, category, breed, entityType }
 
   // Service — matches the warm watercolour oval style used across all service images
   if (entityType === 'service') {
-    return `Soulful watercolor illustration of "${name}" pet service, caring handler with a golden retriever dog, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
+    const breedLabel = breed ? `${breed} dog` : 'a dog';
+    return `Soulful watercolor illustration of "${name}" pet service, caring handler with ${breedLabel}, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
   }
 
   // Bundle — painterly warm style
@@ -129,7 +130,7 @@ export default function AIImagePromptField({
         res = await fetch(`${API_URL}/api/service-box/services/${entityId}/generate-image`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
-          body: JSON.stringify({ prompt: trimmed }),
+          body: JSON.stringify({ prompt: trimmed, breed: breed || '' }),
         });
       } else if (entityType === 'bundle' && entityId) {
         res = await fetch(`${API_URL}/api/admin/bundles/${entityId}/generate-image`, {

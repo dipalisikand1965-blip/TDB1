@@ -26,11 +26,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2, Check, ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
-import PillarPageLayout from "../components/PillarPageLayout";
+import ConciergeCTA from "../components/ConciergeCTA";import PillarPageLayout from "../components/PillarPageLayout";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
@@ -601,7 +601,7 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
           const scored = filterBreedProducts(d.picks || [], pet?.breed);
           if (scored.length > 0) { setProducts(scored); setLoading(false); return; }
           // Fallback: fetch all learn products, sort by mira_score
-          return fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=400`, {
+          return fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=400&active_only=true`, {
             headers: token ? { Authorization:`Bearer ${token}` } : {}
           })
             .then(r => r.json())
@@ -1475,7 +1475,7 @@ export function MiraPicksSection({ pet }) {
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==="service";
             const _rawImg=[pick.watercolor_image,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
-            const img=_rawImg&&!_rawImg.includes('ai_generated')?_rawImg:null;
+            const img=_rawImg&&(!_rawImg.includes('ai_generated') || _rawImg.includes('cloudinary.com'))?_rawImg:null;
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
             return (
@@ -1931,7 +1931,8 @@ const LearnSoulPage = () => {
 
 
   const [loading,     setLoading]     = useState(true);
-  const [activeTab,   setActiveTab]   = useState("learn");
+  const [searchParams] = useSearchParams();
+  const [activeTab,   setActiveTab]   = useState(searchParams.get('tab') === 'nearme' ? 'find-learn' : 'learn');
   const [openDim,     setOpenDim]     = useState(null);
   const [catModal,    setCatModal]    = useState(null);
   const [petData,     setPetData]     = useState(null);
@@ -1956,7 +1957,7 @@ const LearnSoulPage = () => {
   useEffect(()=>{
     const CATS=["training","behavior","tricks","enrichment","classes","breed-training_logs","breed-treat_pouchs","breed-care-guide","breed-treat_jars"];
     Promise.all([
-      ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&category=${encodeURIComponent(cat)}`).then(r=>r.ok?r.json():null).catch(()=>null)),
+      ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&active_only=true&category=${encodeURIComponent(cat)}`).then(r=>r.ok?r.json():null).catch(()=>null)),
       fetch(`${API_URL}/api/service-box/services?pillar=learn`).then(r=>r.ok?r.json():null).catch(()=>null),
     ]).then(results=>{
       const svcData=results[results.length-1];
@@ -2144,6 +2145,8 @@ const LearnSoulPage = () => {
 
             {/* Mira Picks */}
             <div ref={miraPicksRef}><MiraPicksSection pet={petData}/></div>
+            {/* Concierge CTA — desktop */}
+            <ConciergeCTA pillar="learn" />
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
 

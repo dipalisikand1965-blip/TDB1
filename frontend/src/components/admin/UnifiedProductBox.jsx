@@ -3,7 +3,8 @@
  * The single source of truth for all products, rewards, and experiences
  * Enhanced with comprehensive 6-tab editor
  */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import BatchImageButton from './BatchImageButton';
 import { Card } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -73,7 +74,8 @@ const UnifiedProductBox = () => {
   
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);  const [filterType, setFilterType] = useState('');
   const [filterPillar, setFilterPillar] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterShipping, setFilterShipping] = useState('');
@@ -111,6 +113,16 @@ const UnifiedProductBox = () => {
   ]);
   const [pillarsData, setPillarsData] = useState([]);
 
+  // Debounce search — wait 350ms after user stops typing before firing API call
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPage(0);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [searchTerm]);
+
   // Fetch products
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -120,9 +132,10 @@ const UnifiedProductBox = () => {
         limit: limit.toString()
       });
       
-      if (searchTerm) params.append('search', searchTerm);
+      if (debouncedSearch) params.append('search', debouncedSearch);
       if (filterType) params.append('product_type', filterType);
-      if (filterPillar) params.append('pillar', filterPillar);
+      // When a search term is active, search ALL pillars — drop pillar filter for cross-pillar discovery
+      if (filterPillar && !debouncedSearch) params.append('pillar', filterPillar);
       if (filterStatus) params.append('status', filterStatus);
       if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
@@ -143,7 +156,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
+  }, [page, debouncedSearch, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
 
   // Fetch stats — non-critical, uses AbortController so it never blocks product list
   const fetchStats = async () => {
@@ -897,8 +910,8 @@ const UnifiedProductBox = () => {
             )}
             Export CSV
           </Button>
+          <BatchImageButton target="products" label="Auto-Generate Product Images" />
           <label style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:8, border:'1px solid #86efac', color:'#166534', background:'#f0fdf4', cursor:'pointer', fontSize:13, fontWeight:600 }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Import CSV
             <input type="file" accept=".csv" style={{ display:'none' }} onChange={async (e) => {
               const file = e.target.files[0]; if (!file) return;
@@ -1024,7 +1037,7 @@ const UnifiedProductBox = () => {
               type="text"
               placeholder={`Search ${ALL_PILLARS.find(p => p.id === filterPillar)?.name || ''} products by name or sub-category...`}
               value={searchTerm}
-              onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"
               data-testid="pillar-search-input"
             />
@@ -1070,7 +1083,7 @@ const UnifiedProductBox = () => {
               <Input
                 placeholder="Search products..."
                 value={searchTerm}
-                onChange={(e) => { setSearchTerm(e.target.value); setPage(0); }}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
                 data-testid="search-products-input"
               />
@@ -1486,7 +1499,7 @@ const UnifiedProductBox = () => {
                               if (res.ok) {
                                 const data = await res.json();
                                 setProducts(prev => prev.map(p => p.id === product.id
-                                  ? { ...p, is_active: data.is_active, visibility: { ...p.visibility, status: data.is_active ? 'active' : 'archived' } }
+                                  ? { ...p, is_active: data.is_active, visibility: { ...p.visibility, status: data.is_active ? 'active' : 'inactive', is_active: data.is_active } }
                                   : p
                                 ));
                               }
@@ -1494,13 +1507,13 @@ const UnifiedProductBox = () => {
                           }}
                           title={product.is_active !== false ? 'Click to deactivate' : 'Click to activate'}
                           className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full border transition-colors ${
-                            product.is_active !== false || product.visibility?.status === 'active'
+                            product.is_active !== false
                               ? 'bg-green-100 text-green-700 border-green-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200'
                               : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-green-50 hover:text-green-600 hover:border-green-200'
                           }`}
                           data-testid={`toggle-active-${product.id}`}
                         >
-                          {product.is_active !== false || product.visibility?.status === 'active' ? 'Active' : 'Inactive'}
+                          {product.is_active !== false ? 'Active' : 'Inactive'}
                         </button>
                       </td>
                       <td className="p-3">

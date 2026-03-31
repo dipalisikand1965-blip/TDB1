@@ -659,8 +659,8 @@ async def get_all_products(
     if status:
         and_conditions.append({"visibility.status": status})
     else:
-        # Default: exclude archived products from admin list
-        and_conditions.append({"visibility.status": {"$ne": "archived"}})
+        # Default: only show active products to consumers (exclude archived, inactive, draft)
+        and_conditions.append({"visibility.status": "active"})
     if reward_eligible is not None:
         and_conditions.append({"paw_rewards.is_reward_eligible": reward_eligible})
     if shipping:
@@ -705,7 +705,11 @@ async def get_all_products(
     if search:
         and_conditions.append({"$or": [
             {"name": {"$regex": search, "$options": "i"}},
+            {"title": {"$regex": search, "$options": "i"}},
+            {"id": {"$regex": search, "$options": "i"}},
             {"sku": {"$regex": search, "$options": "i"}},
+            {"sub_category": {"$regex": search, "$options": "i"}},
+            {"pillar": {"$regex": search, "$options": "i"}},
             {"tags": {"$regex": search, "$options": "i"}},
             {"category": {"$regex": search, "$options": "i"}},
             {"description": {"$regex": search, "$options": "i"}},
@@ -732,7 +736,9 @@ async def get_all_products(
         for p in soul_products:
             p["source"] = "soul_made"
             p["soul_tier"] = "soul_made"
-            p["image"] = p.get("mockup_url") or p.get("image", "")
+            # Preserve watercolor_image/cloudinary_url — only fall back to mockup_url if no better image
+            if not p.get("watercolor_image") and not p.get("cloudinary_url"):
+                p["image"] = p.get("mockup_url") or p.get("image", "")
         
         all_products = soul_products
         total = await db.breed_products.count_documents(breed_query)
@@ -744,6 +750,15 @@ async def get_all_products(
         ).sort([("created_at", -1), ("_id", -1)]).skip(skip).limit(limit).to_list(limit)
         
         products_master_total = await db.products_master.count_documents(query)
+        
+        # When searching, sort name-matches first for better relevance
+        if search:
+            search_lower = search.lower()
+            products.sort(key=lambda p: (
+                0 if search_lower in (p.get('name') or '').lower() else
+                1 if search_lower in (p.get('id') or '').lower() else
+                2
+            ))
         
         # Mark source
         for p in products:
@@ -758,7 +773,9 @@ async def get_all_products(
         total = products_master_total
         
         # Optionally include Soul Made products from breed_products if not filtered out
-        if include_soul_made and not source and len(all_products) < limit:
+        # Only supplement with breed_products when NO category or pillar filter is active
+        # (to avoid cross-contamination of unrelated breed products into filtered results)
+        if include_soul_made and not source and not category and not pillar and len(all_products) < limit:
             remaining = limit - len(all_products)
             breed_query = {}
             if search:
@@ -776,8 +793,10 @@ async def get_all_products(
             for p in soul_products:
                 p["source"] = "soul_made"
                 p["soul_tier"] = "soul_made"
-                p["image"] = p.get("mockup_url") or p.get("image", "")
-                # Only add if not already in products_master
+                # Preserve watercolor_image/cloudinary_url — only fall back to mockup_url if no better image
+                if not p.get("watercolor_image") and not p.get("cloudinary_url"):
+                    p["image"] = p.get("mockup_url") or p.get("image", "")
+                # Only add if not already in products_master (dedup by id)
                 if not any(mp.get("id") == p.get("id") for mp in all_products):
                     all_products.append(p)
             
@@ -889,29 +908,28 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
         # Check if it's a Soul Made product (stored in breed_products)
         if product_id.startswith("breed-"):
             existing = await db.breed_products.find_one({"id": product_id})
-            if not existing:
-                raise HTTPException(status_code=404, detail="Soul Made product not found")
-            
-            # Don't allow changing ID
-            updates.pop("id", None)
-            updates.pop("_id", None)
-            
-            # Set audit fields
-            updates["updated_at"] = datetime.now(timezone.utc).isoformat()
-            updates["updated_by"] = admin_user
-            
-            await db.breed_products.update_one(
-                {"id": product_id},
-                {"$set": updates}
-            )
-            
-            # Get updated product
-            updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
-            updated["source"] = "soul_made"
-            updated["image"] = updated.get("mockup_url") or updated.get("image", "")
-            
-            logger.info(f"Updated Soul Made product: {product_id}")
-            return {"message": "Soul Made product updated", "product": updated}
+            if existing:
+                # Don't allow changing ID
+                updates.pop("id", None)
+                updates.pop("_id", None)
+                
+                # Set audit fields
+                updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+                updates["updated_by"] = admin_user
+                
+                await db.breed_products.update_one(
+                    {"id": product_id},
+                    {"$set": updates}
+                )
+                
+                # Get updated product
+                updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+                updated["source"] = "soul_made"
+                updated["image"] = updated.get("watercolor_image") or updated.get("cloudinary_url") or updated.get("mockup_url") or updated.get("image", "")
+                
+                logger.info(f"Updated Soul Made product: {product_id}")
+                return {"message": "Soul Made product updated", "product": updated}
+            # Not found in breed_products — fall through to products_master check below
         
         # Regular product update (try products_master first, then products collection)
         existing = await db.products_master.find_one({"id": product_id})

@@ -66,6 +66,8 @@ const SoulProductsManager = () => {
   const [archetypes, setArchetypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);
   const [tierFilter, setTierFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [categories, setCategories] = useState([]);
@@ -235,23 +237,26 @@ const SoulProductsManager = () => {
       const rows = data.products || [];
 
       const headers = ['breed','product_name','product_type','pillar','all_pillars','sub_category','category','price','has_image','image_url','is_mockup'];
+      const escape = (v) => `"${String(v||'').replace(/"/g,'""').replace(/\r?\n/g,' ')}"`;
       const csv = [
         headers.join(','),
         ...rows.map(p => [
-          p.breed||'', `"${(p.name||'').replace(/"/g,'""')}"`,
+          escape(p.breed), escape(p.name),
           p.product_type||'', p.pillar||'',
-          `"${(p.pillars||[]).join('|')}"`,
+          escape((p.pillars||[]).join('|')),
           p.sub_category||'', p.category||'',
           p.price||0,
           (p.cloudinary_url||p.mockup_url) ? 'YES':'NO',
-          p.cloudinary_url||p.mockup_url||'',
+          escape(p.cloudinary_url||p.mockup_url||''),
           p.is_mockup ? 'true':'false'
         ].join(','))
       ].join('\n');
 
+      // UTF-8 BOM so Excel opens without garbling
+      const bom = '\uFEFF';
       const fname = `soul_${pendingOnly?'pending':'products'}${selectedBreed?'_'+selectedBreed:''}${selectedPillar?'_'+selectedPillar:''}.csv`;
       const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(new Blob([csv], {type:'text/csv'})), download: fname
+        href: URL.createObjectURL(new Blob([bom + csv], {type:'text/csv;charset=utf-8'})), download: fname
       });
       a.click(); URL.revokeObjectURL(a.href);
       toast({ title: `Downloaded ${rows.length} rows` });
@@ -445,6 +450,15 @@ const SoulProductsManager = () => {
     fetchMockupStats(); // Fetch mockup stats on mount
     fetchCloudStatus(); // Fetch cloud status
   }, []);
+
+  // Debounce search — 350ms delay before filtering
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [searchQuery]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -779,14 +793,31 @@ const SoulProductsManager = () => {
     setComputingArchetypes(false);
   };
 
-  // Filter products
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = !searchQuery || 
-      (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTier = tierFilter === 'all' || p.soul_tier === tierFilter;
-    const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
-    return matchesSearch && matchesTier && matchesCategory;
-  });
+  // Multi-field filter with relevance sort
+  const filteredProducts = (() => {
+    const q = debouncedSearch.toLowerCase();
+    const matched = products.filter(p => {
+      const matchesSearch = !debouncedSearch ||
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.id || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q) ||
+        (p.sub_category || '').toLowerCase().includes(q) ||
+        (p.soul_tier || '').toLowerCase().includes(q) ||
+        (p.pillar || '').toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q);
+      const matchesTier = tierFilter === 'all' || p.soul_tier === tierFilter;
+      const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
+      return matchesSearch && matchesTier && matchesCategory;
+    });
+    if (!debouncedSearch) return matched;
+    return matched.sort((a, b) => {
+      const aStart = (a.name || '').toLowerCase().startsWith(q);
+      const bStart = (b.name || '').toLowerCase().startsWith(q);
+      if (aStart && !bStart) return -1;
+      if (!aStart && bStart) return 1;
+      return 0;
+    });
+  })();
 
   // Stats
   const tierStats = {

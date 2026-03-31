@@ -247,6 +247,7 @@ function DoggyBakerySection({ pet }) {
   const [items,    setItems]    = useState([]);
   const [loading,  setLoading]  = useState(true);
   const [filter,   setFilter]   = useState("all");
+  const [showAll,  setShowAll]  = useState(false);
   const petName = pet?.name || "your dog";
 
   const FILTERS = [
@@ -258,23 +259,46 @@ function DoggyBakerySection({ pet }) {
   ];
 
   useEffect(() => {
-    fetch(`${API_URL}/api/service-box/services?pillar=shop&limit=200`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        setItems(data?.services || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    const fetchTab = async () => {
+      let products = [];
+      const headers = { Authorization: `Bearer ${localStorage.getItem("tdb_auth_token") || ""}` };
+      const breed = pet?.breed || '';
+      const breedParam = breed ? `&breed=${encodeURIComponent(breed)}` : '';
+      try {
+        if (filter === 'all') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&page=1&limit=48&sort_by=mira_score${breedParam}`, { headers });
+          const d = await r.json();
+          products = d?.products || [];
+        } else if (filter === 'cakes') {
+          const [r1, r2] = await Promise.all([
+            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=cakes&limit=120${breedParam}`, { headers }),
+            fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=breed-cakes&limit=120${breedParam}`, { headers }),
+          ]);
+          const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+          products = [...(d1.products || []), ...(d2.products || [])];
+        } else if (filter === 'treats') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&category=Treats%20%26%20Rewards&limit=80${breedParam}`, { headers });
+          const d = await r.json();
+          products = d?.products || [];
+        } else if (filter === 'hampers') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&category=hampers&limit=50${breedParam}`, { headers });
+          const d = await r.json();
+          products = d?.products || [];
+        } else if (filter === 'seasonal') {
+          const r = await fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200${breedParam}`, { headers });
+          const d = await r.json();
+          const keys = ['diwali', 'halloween', 'christmas', 'rakhi', 'festive', 'holi', 'eid', 'spooky'];
+          products = (d?.products || []).filter(p => keys.some(s => p.name?.toLowerCase().includes(s)));
+        }
+      } catch (e) { /* silent */ }
+      setItems(products);
+      setLoading(false);
+    };
+    fetchTab();
+  }, [filter]);
 
-  const filtered = filter === "all" ? items : items.filter(item => {
-    const n = (item.name||"").toLowerCase();
-    if (filter==="cakes")    return n.includes("cake") || n.includes("pupcake") || n.includes("dognut");
-    if (filter==="treats")   return n.includes("treat") || n.includes("ladoo") || n.includes("cookie") || n.includes("biscuit");
-    if (filter==="hampers")  return n.includes("hamper") || n.includes("box") || n.includes("gift");
-    if (filter==="seasonal") return n.includes("diwali") || n.includes("halloween") || n.includes("christmas") || n.includes("rakhi") || n.includes("spooky") || n.includes("festive");
-    return true;
-  });
+  const filtered = items;
 
   return (
     <div>
@@ -358,18 +382,19 @@ function DoggyBakerySection({ pet }) {
       ) : (
         <>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))", gap:12 }}>
-            {filtered.slice(0,24).map(item => (
+            {(showAll ? filtered : filtered.slice(0,24)).map(item => (
               <div key={item.id||item._id}>
                 <SharedProductCard product={item} pillar="shop" selectedPet={pet}
                   miraContext={{ includeText:"Add to Cart" }}/>
               </div>
             ))}
           </div>
-          <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer"
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowAll(true); }}
             style={{ display:"block", textAlign:"center", marginTop:16, padding:"12px",
                      borderRadius:10, background:G.pale, border:`1px solid ${G.border}`,
-                     color:G.mid, fontSize:13, fontWeight:600, textDecoration:"none" }}>
-            See all {items.length} products on thedoggybakery.com →
+                     color:G.mid, fontSize:13, fontWeight:600, textDecoration:"none",
+                     display: showAll ? "none" : "block" }}>
+            Browse all {filtered.length} products →
           </a>
         </>
       )}

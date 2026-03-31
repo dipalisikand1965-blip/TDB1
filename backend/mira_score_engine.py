@@ -252,7 +252,9 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
         all_items = []
 
         if "product" in types:
-            q = {"pillar": pillar} if pillar else {}
+            q = {"is_active": {"$ne": False}, "visibility.status": {"$ne": "archived"}}
+            if pillar:
+                q["pillar"] = pillar
             cursor = _db.products_master.find(q, {"_id": 0})
             products = await cursor.to_list(length=2000)
 
@@ -282,6 +284,7 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
             services = await cursor.to_list(length=1000)
             for s in services:
                 s["entity_type"] = "service"
+                s["product_type"] = "service"
             all_items.extend(services)
 
         if "bundle" in types:
@@ -449,6 +452,7 @@ async def score_context(req: ScoreContextRequest):
     services = await srv_cursor.to_list(length=20)
     for s in services:
         s["entity_type"] = "service"
+        s["product_type"] = "service"
     items.extend(services)
 
     if not items:
@@ -556,6 +560,7 @@ async def get_top_picks(
             s["mira_score"]  = s.get("mira_score", 88)
             s["mira_reason"] = f"Service Mira recommends for {breed_clean or 'your pet'} on /{pillar}"
             s["entity_type"] = "service"
+            s["product_type"] = "service"
             s["source"]      = "services_master"
             results.append(s)
 
@@ -578,7 +583,10 @@ async def get_top_picks(
         bundle_ids  = [p["entity_id"] for p in picks if p.get("entity_type") == "bundle"]
 
         if product_ids:
-            async for doc in _db.products_master.find({"id": {"$in": product_ids}}, {"_id": 0}):
+            async for doc in _db.products_master.find(
+                {"id": {"$in": product_ids}, "is_active": {"$ne": False}, "visibility.status": {"$ne": "archived"}},
+                {"_id": 0}
+            ):
                 products_map[doc["id"]] = doc
         if service_ids:
             async for doc in _db.services_master.find({"id": {"$in": service_ids}}, {"_id": 0}):
@@ -600,6 +608,9 @@ async def get_top_picks(
                 full["mira_score"]  = pick.get("score")
                 full["mira_reason"] = pick.get("mira_reason")
                 full["entity_type"] = etype
+                # Ensure product_type is set so frontend SharedProductCard detects service correctly
+                if etype == "service":
+                    full["product_type"] = "service"
                 full["source"]      = "mira_product_scores"
                 results.append(full)
                 already_ids.add(entity_id)

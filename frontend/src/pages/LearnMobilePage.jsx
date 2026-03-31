@@ -15,6 +15,7 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
+import ConciergeCTA from '../components/ConciergeCTA';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -580,6 +581,10 @@ export default function LearnMobilePage() {
           <button className="learn-cta">Explore Soul Made →</button>
         </div>
         </>}
+      </div>
+
+      <div style={{ padding: '0 16px' }}>
+        <ConciergeCTA pillar="learn" />
       </div>
 
       <ServiceBookingModal

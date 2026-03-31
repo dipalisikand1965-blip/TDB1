@@ -246,7 +246,7 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
           text: cleanText,
           model_id: 'eleven_turbo_v2',
           output_format: 'mp3_44100_128', // explicit — never let it default
-          voice_settings: { stability: 0.35, similarity_boost: 0.75, style: 0.25, speed: 0.95 },
+          voice_settings: { stability: 0.70, similarity_boost: 0.80, style: 0.10, speed: 0.90 },
         }),
       }
     );

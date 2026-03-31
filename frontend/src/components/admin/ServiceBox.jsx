@@ -3,8 +3,9 @@
  * Manage all 1,025 services across 11 pillars
  * Uses ProductBoxEditor for rich multi-tab editing (Cloudinary, AI images, tabs)
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ProductBoxEditor from './ProductBoxEditor';
+import BatchImageButton from './BatchImageButton';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 function getAdminHeaders() {
@@ -49,6 +50,8 @@ function serviceToProduct(s) {
   // Pre-populate ai_image_prompt so it shows as real editable value (not greyed placeholder)
   const aiPrompt = s.ai_image_prompt || s.ai_prompt ||
     `Soulful watercolor illustration of "${name}" pet service, caring handler with a golden retriever dog, warm amber and cream palette, soft elegant brushwork, premium editorial composition, oval composition, no text, white background`;
+  // Prefer base_price (canonical field), fall back to price for legacy data
+  const basePrice = Number(s.base_price ?? s.price ?? 0);
   return {
     id: s.id || s._id,
     name,
@@ -59,13 +62,13 @@ function serviceToProduct(s) {
     },
     commerce_ops: {
       pricing: {
-        selling_price: Number(s.price) || 0,
-        original_price: Number(s.price) || 0,
+        selling_price: basePrice,
+        original_price: basePrice,
         discount_percent: 0,
       },
       approval_status: s.approval_status || (s.is_active !== false ? 'live' : 'paused'),
     },
-    original_price: Number(s.price) || 0,
+    original_price: basePrice,
     primary_pillar: pillar,
     pillar,
     category: s.category || '',
@@ -81,6 +84,7 @@ function serviceToProduct(s) {
     description: s.description || '',
     ai_image_prompt: aiPrompt,
     ai_prompt: aiPrompt,
+    target_breed: s.target_breed || '',  // used by AIImagePromptField for breed-specific image gen
     _serviceId: s.id || s._id,
   };
 }
@@ -91,10 +95,13 @@ function productToServicePatch(p) {
   // Top-level approval_status is the initial value from serviceToProduct — check commerce_ops FIRST
   const approvalStatus = p.commerce_ops?.approval_status || p.approval_status || 'live';
   const isActive = ['live', 'active'].includes(approvalStatus);
+  // Use ?? (nullish coalescing) so price=0 is preserved — never fall back on a valid 0
+  const rawSelling = p.commerce_ops?.pricing?.selling_price;
+  const resolvedPrice = Number(rawSelling != null ? rawSelling : (p.original_price ?? 0));
   return {
     name: p.basics?.name || p.name || '',
-    base_price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0),
-    price: Number(p.commerce_ops?.pricing?.selling_price || p.original_price || 0), // legacy alias
+    base_price: resolvedPrice,
+    price: resolvedPrice, // legacy alias
     category: p.category || '',
     sub_category: p.sub_category || '',
     pillar: p.primary_pillar || p.pillar || '',
@@ -106,6 +113,7 @@ function productToServicePatch(p) {
     image_url: p.image_url || p.media?.primary_image || '',
     image: p.image_url || p.media?.primary_image || '',
     watercolor_image: p.image_url || p.media?.primary_image || '',
+    target_breed: p.target_breed || '',
   };
 }
 
@@ -122,9 +130,12 @@ export default function ServiceBox() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);
   const [page, setPage] = useState(1);
   const [toast, setToast] = useState('');
   const [totals, setTotals] = useState({});
+  const [togglingId, setTogglingId] = useState(null); // track which row is toggling
 
   // ProductBoxEditor state
   const [editProduct, setEditProduct] = useState(null);
@@ -143,7 +154,17 @@ export default function ServiceBox() {
     setLoading(false);
   }, [activePillar]);
 
-  useEffect(() => { fetchServices(); setPage(1); setSearch(''); }, [fetchServices]);
+  useEffect(() => { fetchServices(); setPage(1); setSearch(''); setDebouncedSearch(''); }, [fetchServices]);
+
+  // Debounce search — 350ms delay before filtering
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [search]);
 
   useEffect(() => {
     const t = {};
@@ -151,10 +172,26 @@ export default function ServiceBox() {
     setTotals(t);
   }, []);
 
-  const filtered = services.filter(s =>
-    !search || s.name?.toLowerCase().includes(search.toLowerCase()) ||
-    s.category?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Multi-field search with relevance sort — name-match first
+  const filtered = (() => {
+    if (!debouncedSearch) return services;
+    const q = debouncedSearch.toLowerCase();
+    const matched = services.filter(s =>
+      (s.id || '').toLowerCase().includes(q) ||
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.category || '').toLowerCase().includes(q) ||
+      (s.sub_category || '').toLowerCase().includes(q) ||
+      (s.pillar || '').toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q)
+    );
+    return matched.sort((a, b) => {
+      const aStart = (a.name || '').toLowerCase().startsWith(q);
+      const bStart = (b.name || '').toLowerCase().startsWith(q);
+      if (aStart && !bStart) return -1;
+      if (!aStart && bStart) return 1;
+      return 0;
+    });
+  })();
   const paginated = filtered.slice((page-1)*PER_PAGE, page*PER_PAGE);
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
 
@@ -167,9 +204,13 @@ export default function ServiceBox() {
   // Save via ProductBoxEditor onSave callback
   const saveService = async () => {
     if (!editProduct) return;
+    // If no _serviceId, this is a create
+    const serviceId = editProduct._serviceId || editProduct.id;
+    if (!serviceId) {
+      return createService();
+    }
     setSaving(true);
     try {
-      const serviceId = editProduct._serviceId || editProduct.id;
       const payload = productToServicePatch(editProduct);
       const res = await fetch(`${API_URL}/api/admin/services/${serviceId}`, {
         method: 'PUT',
@@ -226,6 +267,92 @@ export default function ServiceBox() {
     e.target.value = '';
   };
 
+  const bulkResetPrices = async () => {
+    if (!window.confirm(`Reset ALL service prices to ₹0?\n\nThis will update every service in the database. This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API_URL}/api/admin/services/bulk-reset-prices`, {
+        method: 'POST', headers: getAdminHeaders()
+      });
+      const d = res.ok ? await res.json() : {};
+      setToast(`✅ ${d.modified || 0} services reset to ₹0`);
+      fetchServices();
+    } catch { setToast('❌ Bulk reset failed'); }
+  };
+
+  const handleToggleActive = async (svc) => {
+    const svcId = svc.id || svc._id;
+    setTogglingId(svcId);
+    try {
+      const res = await fetch(`${API_URL}/api/service-box/services/${svcId}/toggle`, {
+        method: 'POST', headers: getAdminHeaders()
+      });
+      if (res.ok) {
+        const newStatus = svc.is_active !== false ? false : true;
+        setServices(prev => prev.map(s => (s.id || s._id) === svcId ? { ...s, is_active: newStatus } : s));
+        setToast(newStatus ? `✅ ${svc.name} set Active` : `⏸ ${svc.name} set Inactive`);
+      } else {
+        setToast('❌ Toggle failed');
+      }
+    } catch {
+      setToast('❌ Toggle failed');
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  // Open editor for a brand-new service
+  const openCreateService = () => {
+    setEditProduct(serviceToProduct({
+      id: '',
+      name: '',
+      pillar: activePillar,
+      description: '',
+      category: '',
+      sub_category: '',
+      is_active: true,
+      base_price: 0,
+      price: 0,
+    }));
+    setShowEditor(true);
+  };
+
+  // Create a new service via POST
+  const createService = async () => {
+    if (!editProduct) return;
+    setSaving(true);
+    try {
+      const payload = productToServicePatch(editProduct);
+      // Use the basics.name as the canonical name
+      const name = editProduct.basics?.name || editProduct.name || '';
+      if (!name.trim()) { alert('Service name is required'); setSaving(false); return; }
+      const res = await fetch(`${API_URL}/api/service-box/services`, {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: JSON.stringify({
+          name,
+          pillar: payload.pillar || activePillar,
+          description: payload.description || '',
+          category: payload.category || '',
+          sub_category: payload.sub_category || '',
+          base_price: 0,
+          is_active: payload.is_active,
+          approval_status: payload.approval_status || 'live',
+          image_url: payload.image_url || '',
+        }),
+      });
+      if (res.ok) {
+        setShowEditor(false);
+        setEditProduct(null);
+        fetchServices();
+        setToast('✅ Service created');
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert('Create failed: ' + (err.detail || res.status));
+      }
+    } catch (e) { alert('Create failed: ' + e.message); }
+    setSaving(false);
+  };
+
   return (
     <div style={{ fontFamily:'-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif', color:P.dark }}>
       <Toast msg={toast} onClose={() => setToast('')} />
@@ -261,7 +388,19 @@ export default function ServiceBox() {
           ↑ Import CSV
           <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} />
         </label>
+        <BatchImageButton target="services" label="Auto-Generate Service Images" />
+        <button onClick={bulkResetPrices}
+          data-testid="bulk-reset-prices-btn"
+          style={{ padding:'7px 14px', borderRadius:8, border:`1.5px solid #ef4444`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:700, color:'#ef4444' }}>
+          Reset All Prices to ₹0
+        </button>
         <button onClick={fetchServices} style={{ padding:'7px 12px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12 }}>↻</button>
+        <button
+          data-testid="add-service-btn"
+          onClick={openCreateService}
+          style={{ padding:'7px 16px', borderRadius:8, border:`1.5px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:12, fontWeight:700 }}>
+          + Add Service
+        </button>
       </div>
 
       {loading ? (
@@ -295,7 +434,21 @@ export default function ServiceBox() {
                   {s.price ? `₹${Number(s.price).toLocaleString('en-IN')}` : <span style={{ color:P.amber }}>₹0</span>}
                 </div>
                 <div style={{ fontSize:11, fontWeight:700, color:s.is_active!==false?P.green:P.red }}>
-                  {s.is_active!==false ? '✓ Active' : '✗ Off'}
+                  <button
+                    data-testid={`toggle-service-${s.id||i}`}
+                    onClick={() => handleToggleActive(s)}
+                    disabled={togglingId === (s.id||s._id)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 12, border: 'none', cursor: 'pointer',
+                      fontWeight: 700, fontSize: 11,
+                      background: s.is_active !== false ? '#D1FAE5' : '#FEE2E2',
+                      color: s.is_active !== false ? '#065F46' : '#991B1B',
+                      opacity: togglingId === (s.id||s._id) ? 0.6 : 1,
+                      transition: 'all 0.15s ease',
+                      minWidth: 64
+                    }}>
+                    {togglingId === (s.id||s._id) ? '…' : s.is_active !== false ? '✓ Active' : '✗ Off'}
+                  </button>
                 </div>
                 <button
                   data-testid={`edit-service-${s.id||i}`}

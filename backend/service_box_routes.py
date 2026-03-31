@@ -134,6 +134,7 @@ async def list_services(
     is_bookable: Optional[bool] = None,
     is_active: Optional[bool] = None,
     is_free: Optional[bool] = None,
+    active_only: bool = True,  # Default TRUE — inactive services must never appear on consumer frontend
     skip: int = 0,
     limit: int = 50
 ):
@@ -141,7 +142,11 @@ async def list_services(
     db = get_db()
     
     query = {}
-    
+
+    # Strict inactive filtering — applied unless caller explicitly passes is_active=false
+    if active_only and is_active is None:
+        query["is_active"] = {"$ne": False}
+
     if search:
         query["$or"] = [
             {"name": {"$regex": search, "$options": "i"}},
@@ -176,6 +181,10 @@ async def list_services(
         if preferred_image:
             service["image_url"] = preferred_image
             service["image"] = preferred_image
+        # Mark as service type so SharedProductCard shows Concierge flow, not Add to Cart
+        # Exception: pillar=shop items are purchasable bakery/retail items — keep as-is
+        if service.get("pillar") != "shop":
+            service["product_type"] = "service"
     
     return {
         "services": services,
@@ -820,9 +829,15 @@ async def generate_service_image(service_id: str, request: Request, x_admin_user
     try:
         body = await request.json()
         custom_prompt = body.get("prompt", "")
+        breed = body.get("breed", "")
     except Exception:
         custom_prompt = ""
+        breed = ""
     prompt = custom_prompt if custom_prompt else SERVICE_IMAGE_PROMPTS.get(service_name, DEFAULT_SERVICE_PROMPT)
+
+    # Inject breed into prompt for personalised illustrations
+    if breed:
+        prompt = f"A {breed} {prompt}"
     
     # Add pillar context to prompt
     pillar_context = {

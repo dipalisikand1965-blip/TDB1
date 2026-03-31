@@ -29,6 +29,7 @@ import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
 import '../styles/mira-universal.css';
 import { tdc } from '../utils/tdc_intent';
+import ServiceConciergeModal from './services/ServiceConciergeModal';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
@@ -239,6 +240,7 @@ const MiraChatWidget = ({
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
   const [selProd, setSelProd] = useState(null); // chip-tapped product → opens ProductDetailModal
+  const [bookingModal, setBookingModal] = useState({ open: false, service: null }); // service chip → opens ServiceConciergeModal
   
   // Pet Picks Panel state (PersonalizedPicksPanel for pillar-specific picks)
   const [showPicksPanel, setShowPicksPanel] = useState(false);
@@ -966,9 +968,19 @@ const MiraChatWidget = ({
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback(async (text) => {
     if (!voiceEnabledRef.current) return;
-    
+
+    // Stop any in-progress audio before starting new — prevents overlap on fast responses
+    if (audioRef.current) {
+      try { audioRef.current.pause(); audioRef.current.currentTime = 0; } catch(e) {}
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
+    synthRef.current?.cancel();
+
     // Try ElevenLabs first for premium voice
     if (useElevenLabs) {
+      // 100ms gap: lets iOS audio context fully release the previous stream before starting next
+      await new Promise(resolve => setTimeout(resolve, 100));
       const success = await speakWithElevenLabs(text);
       if (success) return;
     }
@@ -1203,9 +1215,9 @@ const MiraChatWidget = ({
         session_id: sessionId,
         source: 'chat_widget',
         current_pillar: pillar || 'general',
-        selected_pet_id: selectedPet?.id || null,
+        selected_pet_id: selectedPet?.id || selectedPet?._id || null,
         // Inline pet context as fallback — ensures Mira has data even if DB lookup is slow
-        pet_name: selectedPet?.name || null,
+        pet_name: selectedPet?.name || 'your dog',
         pet_breed: selectedPet?.breed || (selectedPet?.identity?.breed) || null,
         soul_answers: selectedPet?.doggy_soul_answers || {},
         history: historyMessages.slice(-10), // last 10 messages from this session
@@ -1226,7 +1238,7 @@ const MiraChatWidget = ({
           session_id: sessionId,
           source: 'chat_widget',
           current_pillar: pillar,
-          selected_pet_id: selectedPet?.id || null,
+          selected_pet_id: selectedPet?.id || selectedPet?._id || null,
           history: [] // Empty history as fallback
         });
       }
@@ -1277,11 +1289,12 @@ const MiraChatWidget = ({
 
             const chunk = decoder.decode(value, { stream: true });
             const lines = chunk.split('\n');
+            let streamEnded = false;
 
             for (const line of lines) {
               if (!line.startsWith('data: ')) continue;
               const data = line.slice(6).trim();
-              if (data === '[DONE]') break;
+              if (data === '[DONE]') { streamEnded = true; break; }
               try {
                 const parsed = JSON.parse(data);
                 // ── Enriched data event (products + nearbyPlaces from stream) ──
@@ -1298,6 +1311,7 @@ const MiraChatWidget = ({
                 ));
               } catch {}
             }
+            if (streamEnded) break;  // exits the while(true) loop
           }
 
           // Mark streaming complete — attach enriched products/nearbyPlaces
@@ -2262,7 +2276,10 @@ const MiraChatWidget = ({
                     <div style={{
                       marginTop: 8, width: '85%', maxWidth: 420,
                       animation: 'miraProductFadeIn 300ms ease forwards',
-                      opacity: 0
+                      opacity: 0,
+                      pointerEvents: 'auto',
+                      position: 'relative',
+                      zIndex: 1
                     }}>
                       <p style={{ fontSize: 11, color: '#C9973A', marginBottom: 6, fontWeight: 600 }}>
                         ✦ Mira thought of this for {selectedPet?.name || 'your pet'}
@@ -2322,61 +2339,24 @@ const MiraChatWidget = ({
                             const svcPrice = svc.price || svc.base_price || svc.original_price;
                             const svcImg = svc.watercolor_image || svc.image_url || svc.cloudinary_url || svc.image;
                             // Skip AI-generated stock images — show TDC gradient instead
-                            const _svcImgClean = svcImg && !svcImg.includes('ai_generated') ? svcImg : null;
+                            const _svcImgClean = svcImg && (!svcImg.includes('ai_generated') || svcImg.includes('cloudinary.com')) ? svcImg : null;
                             return (
-                              <a
+                              <button
+                                type="button"
                                 key={svc.id || sIdx}
-                                href="#"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
-                                  const _pet = selectedPet || {};
-                                  const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
-                                  const _favFoods   = _pet.favorite_foods?.join(', ') || 'Not specified';
-                                  const _lifeVision = _pet.life_vision || _pet.north_star || 'Not set';
-                                  const _breed      = _pet.breed || _pet.dog_breed || 'Unknown';
-                                  const _age        = _pet.age_years != null ? `${_pet.age_years}y` : (_pet.age || 'Unknown');
-                                  const _photoUrl   = _pet.watercolor_image || _pet.profile_photo || _pet.image_url || '';
-                                  // fire async work without awaiting — keeps handler sync for iOS
-                                  fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
-                                    method: 'POST',
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                  setBookingModal({
+                                    open: true,
+                                    service: {
+                                      name: svcName,
+                                      pillar: currentPillar || pillar || 'services',
+                                      sub_category: svc.sub_category || svc.category || '',
+                                      id: svc.id,
                                     },
-                                    body: JSON.stringify({
-                                      pet_id:       _pet.id,
-                                      pet_name:     _pet.name,
-                                      pet_breed:    _breed,
-                                      pet_age:      _age,
-                                      photo_url:    _photoUrl,
-                                      allergies:    _allergies,
-                                      favorite_foods: _favFoods,
-                                      life_vision:  _lifeVision,
-                                      pillar:       currentPillar || pillar,
-                                      service_id:   svc.id,
-                                      intent_primary: 'service_booking',
-                                      channel:      'mira_chat',
-                                      source:       'mira_service_chip',
-                                      metadata: {
-                                        pet_name:       _pet.name,
-                                        pet_breed:      _breed,
-                                        pet_age:        _age,
-                                        photo_url:      _photoUrl,
-                                        allergies:      _allergies,
-                                        favorite_foods: _favFoods,
-                                        life_vision:    _lifeVision,
-                                        service_name:   svcName,
-                                        service_price:  svcPrice,
-                                      },
-                                      initial_message: {
-                                        sender: 'member',
-                                        text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
-                                      },
-                                    })
-                                  }).then(() => toast.success(`Request sent for ${svcName}!`))
-                                    .catch(() => toast.error('Could not send request'));
+                                  });
                                 }}
                                 style={{
                                   display: 'flex', alignItems: 'center', gap: 10,
@@ -2385,7 +2365,8 @@ const MiraChatWidget = ({
                                   padding: '10px 14px', marginBottom: 8,
                                   cursor: 'pointer', textAlign: 'left',
                                   touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
-                                  textDecoration: 'none', color: 'inherit'
+                                  textDecoration: 'none', color: 'inherit',
+                                  fontFamily: 'inherit', fontSize: 'inherit'
                                 }}
                               >
                                 {_svcImgClean ? (
@@ -2397,7 +2378,7 @@ const MiraChatWidget = ({
                                   <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46', lineHeight: 1.3 }}>{svcName}</div>
                                 </div>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', whiteSpace: 'nowrap' }}>Book →</span>
-                              </a>
+                              </button>
                             );
                           })}
                         </div>
@@ -2406,11 +2387,12 @@ const MiraChatWidget = ({
                       {/* NearMe chip — when location intent detected */}
                       {msg.showNearMe && (
                         <div style={{ marginTop: 10 }}>
-                          <a
-                            href={`/${msg.showNearMe?.pillar || currentPillar || pillar || 'care'}#nearme`}
+                          <button
+                            type="button"
                             onClick={(e) => {
-                              e.stopPropagation();
-                              console.log('[NEARME] clicked, pillar:', msg.showNearMe?.pillar || currentPillar || pillar);
+                              e.preventDefault();
+                              const nearMePillar = msg.showNearMe?.pillar || currentPillar || pillar || 'care';
+                              window.location.href = `/${nearMePillar}`;
                             }}
                             style={{
                               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -2419,12 +2401,12 @@ const MiraChatWidget = ({
                               fontSize: 13, fontWeight: 600, color: '#065F46',
                               cursor: 'pointer', boxShadow: '0 2px 8px rgba(6,95,70,0.10)',
                               touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
-                              textDecoration: 'none'
+                              fontFamily: 'inherit'
                             }}
                           >
                             <span style={{ fontSize: 15 }}>📍</span>
                             Find {msg.showNearMe?.pillar ? `${msg.showNearMe.pillar} services` : 'services'} near you →
-                          </a>
+                          </button>
                         </div>
                       )}
                     </div>
@@ -2561,6 +2543,20 @@ const MiraChatWidget = ({
           selectedPet={selectedPet}
           onClose={() => setSelProd(null)}
         />,
+        document.body
+      )}
+
+      {/* Service Concierge Modal — rendered at z-index above chat widget (2147483647) */}
+      {bookingModal.open && ReactDOM.createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 2147483647 }}>
+          <ServiceConciergeModal
+            service={bookingModal.service}
+            pet={selectedPet}
+            user={user}
+            onClose={() => setBookingModal({ open: false, service: null })}
+            onBooked={() => setBookingModal({ open: false, service: null })}
+          />
+        </div>,
         document.body
       )}
 
