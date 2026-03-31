@@ -371,12 +371,12 @@ export default function GoMobilePage() {
 
             {/* Pet-Friendly Stays — Goa, Coorg, Manali etc */}
             <PetFriendlyStays pet={currentPet} token={token} onBook={(stay, query) => {
-              if (!stay) {
-                setNearMeConc({ open: true, venue: { name: `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' } });
-                return;
-              }
-              tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
-              setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
+              // Always open the Concierge modal — NEVER the multi-step ServiceBookingModal
+              const venue = (typeof stay === 'object' && stay?.name)
+                ? stay
+                : { name: stay ? `Pet-Friendly Stay: ${stay}` : `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' };
+              tdc.book({ service: venue.name, pillar:'go', pet:currentPet, channel:'go_stays' });
+              setNearMeConc({ open: true, venue });
             }} />
 
             {/* Divider */}
