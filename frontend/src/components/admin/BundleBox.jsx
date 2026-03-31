@@ -3,7 +3,7 @@
  * Manage all bundles across pillars
  * Uses ProductBoxEditor for rich multi-tab editing (Cloudinary, AI images, tabs)
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ProductBoxEditor from './ProductBoxEditor';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -101,6 +101,8 @@ export default function BundleBox() {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);
   const [pillarFilter, setPillarFilter] = useState('all');
   const [toast, setToast] = useState('');
   const [togglingId, setTogglingId] = useState(null);
@@ -124,6 +126,15 @@ export default function BundleBox() {
   }, [pillarFilter]);
 
   useEffect(() => { fetchBundles(); }, [fetchBundles]);
+
+  // Debounce search — 350ms delay before filtering
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [search]);
 
   // Open editor for a bundle
   const openEditor = (b) => {
@@ -213,11 +224,28 @@ export default function BundleBox() {
     e.target.value = '';
   };
 
-  const filtered = bundles.filter(b => {
-    const matchSearch = !search || b.name?.toLowerCase().includes(search.toLowerCase());
-    const matchPillar = pillarFilter === 'all' || b.pillar === pillarFilter;
-    return matchSearch && matchPillar;
-  });
+  // Multi-field search with relevance sort
+  const filtered = (() => {
+    const q = debouncedSearch.toLowerCase();
+    const matched = bundles.filter(b => {
+      const matchSearch = !debouncedSearch ||
+        (b.id || '').toLowerCase().includes(q) ||
+        (b.name || '').toLowerCase().includes(q) ||
+        (b.pillar || '').toLowerCase().includes(q) ||
+        (b.description || '').toLowerCase().includes(q) ||
+        (b.category || '').toLowerCase().includes(q);
+      const matchPillar = pillarFilter === 'all' || b.pillar === pillarFilter;
+      return matchSearch && matchPillar;
+    });
+    if (!debouncedSearch) return matched;
+    return matched.sort((a, b) => {
+      const aStart = (a.name || '').toLowerCase().startsWith(q);
+      const bStart = (b.name || '').toLowerCase().startsWith(q);
+      if (aStart && !bStart) return -1;
+      if (!aStart && bStart) return 1;
+      return 0;
+    });
+  })();
 
   const PILLARS = ['care','dine','celebrate','go','play','learn','paperwork','emergency','farewell','adopt','shop'];
   const pillarCounts = {};

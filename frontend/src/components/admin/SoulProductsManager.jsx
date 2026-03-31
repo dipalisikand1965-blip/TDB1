@@ -66,6 +66,8 @@ const SoulProductsManager = () => {
   const [archetypes, setArchetypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchDebounceRef = useRef(null);
   const [tierFilter, setTierFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [categories, setCategories] = useState([]);
@@ -449,6 +451,15 @@ const SoulProductsManager = () => {
     fetchCloudStatus(); // Fetch cloud status
   }, []);
 
+  // Debounce search — 350ms delay before filtering
+  useEffect(() => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 350);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [searchQuery]);
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -782,14 +793,31 @@ const SoulProductsManager = () => {
     setComputingArchetypes(false);
   };
 
-  // Filter products
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = !searchQuery || 
-      (p.name || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTier = tierFilter === 'all' || p.soul_tier === tierFilter;
-    const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
-    return matchesSearch && matchesTier && matchesCategory;
-  });
+  // Multi-field filter with relevance sort
+  const filteredProducts = (() => {
+    const q = debouncedSearch.toLowerCase();
+    const matched = products.filter(p => {
+      const matchesSearch = !debouncedSearch ||
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.id || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q) ||
+        (p.sub_category || '').toLowerCase().includes(q) ||
+        (p.soul_tier || '').toLowerCase().includes(q) ||
+        (p.pillar || '').toLowerCase().includes(q) ||
+        (p.description || '').toLowerCase().includes(q);
+      const matchesTier = tierFilter === 'all' || p.soul_tier === tierFilter;
+      const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
+      return matchesSearch && matchesTier && matchesCategory;
+    });
+    if (!debouncedSearch) return matched;
+    return matched.sort((a, b) => {
+      const aStart = (a.name || '').toLowerCase().startsWith(q);
+      const bStart = (b.name || '').toLowerCase().startsWith(q);
+      if (aStart && !bStart) return -1;
+      if (!aStart && bStart) return 1;
+      return 0;
+    });
+  })();
 
   // Stats
   const tierStats = {
