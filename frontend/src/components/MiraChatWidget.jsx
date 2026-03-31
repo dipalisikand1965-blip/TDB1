@@ -29,6 +29,7 @@ import PersonalizedPicksPanel from './Mira/PersonalizedPicksPanel';
 import ReactMarkdown from 'react-markdown';
 import '../styles/mira-universal.css';
 import { tdc } from '../utils/tdc_intent';
+import ServiceBookingModal, { guessServiceType } from './ServiceBookingModal';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
@@ -239,6 +240,7 @@ const MiraChatWidget = ({
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
   const [selProd, setSelProd] = useState(null); // chip-tapped product → opens ProductDetailModal
+  const [bookingModal, setBookingModal] = useState({ open: false, serviceType: 'grooming', preselectedService: null }); // service chip → opens ServiceBookingModal
   
   // Pet Picks Panel state (PersonalizedPicksPanel for pillar-specific picks)
   const [showPicksPanel, setShowPicksPanel] = useState(false);
@@ -2344,52 +2346,11 @@ const MiraChatWidget = ({
                                   e.stopPropagation();
                                   e.preventDefault();
                                   console.log('[BOOK CHIP] clicked, token:', !!token, 'pet:', selectedPet?.name);
-                                  const _pet = selectedPet || {};
-                                  const _allergies  = _pet.allergies?.join(', ') || _pet.health_issues?.join(', ') || 'None recorded';
-                                  const _favFoods   = _pet.favorite_foods?.join(', ') || 'Not specified';
-                                  const _lifeVision = _pet.life_vision || _pet.north_star || 'Not set';
-                                  const _breed      = _pet.breed || _pet.dog_breed || 'Unknown';
-                                  const _age        = _pet.age_years != null ? `${_pet.age_years}y` : (_pet.age || 'Unknown');
-                                  const _photoUrl   = _pet.watercolor_image || _pet.profile_photo || _pet.image_url || '';
-                                  // fire async work without awaiting — keeps handler sync for iOS
-                                  fetch(`${getApiUrl()}/api/service_desk/attach_or_create_ticket`, {
-                                    method: 'POST',
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                                    },
-                                    body: JSON.stringify({
-                                      pet_id:       _pet.id,
-                                      pet_name:     _pet.name,
-                                      pet_breed:    _breed,
-                                      pet_age:      _age,
-                                      photo_url:    _photoUrl,
-                                      allergies:    _allergies,
-                                      favorite_foods: _favFoods,
-                                      life_vision:  _lifeVision,
-                                      pillar:       currentPillar || pillar,
-                                      service_id:   svc.id,
-                                      intent_primary: 'service_booking',
-                                      channel:      'mira_chat',
-                                      source:       'mira_service_chip',
-                                      metadata: {
-                                        pet_name:       _pet.name,
-                                        pet_breed:      _breed,
-                                        pet_age:        _age,
-                                        photo_url:      _photoUrl,
-                                        allergies:      _allergies,
-                                        favorite_foods: _favFoods,
-                                        life_vision:    _lifeVision,
-                                        service_name:   svcName,
-                                        service_price:  svcPrice,
-                                      },
-                                      initial_message: {
-                                        sender: 'member',
-                                        text: `[SERVICE REQUEST — ${_pet.name} · ${_breed} · ${_age}]\nAllergies: ${_allergies}\nNorth Star: ${_lifeVision}\n\nRequested: ${svcName}`,
-                                      },
-                                    })
-                                  }).then(() => toast.success(`Request sent for ${svcName}!`))
-                                    .catch(() => toast.error('Could not send request'));
+                                  setBookingModal({
+                                    open: true,
+                                    serviceType: guessServiceType(svcName),
+                                    preselectedService: svcName,
+                                  });
                                 }}
                                 style={{
                                   display: 'flex', alignItems: 'center', gap: 10,
@@ -2574,6 +2535,18 @@ const MiraChatWidget = ({
           pillar={currentPillar || pillar || 'celebrate'}
           selectedPet={selectedPet}
           onClose={() => setSelProd(null)}
+        />,
+        document.body
+      )}
+
+      {/* Service Booking Modal — opened by service chips in Mira chat */}
+      {bookingModal.open && ReactDOM.createPortal(
+        <ServiceBookingModal
+          isOpen={bookingModal.open}
+          onClose={() => setBookingModal({ open: false, serviceType: 'grooming', preselectedService: null })}
+          serviceType={bookingModal.serviceType}
+          preselectedService={bookingModal.preselectedService}
+          onBookingComplete={() => setBookingModal({ open: false, serviceType: 'grooming', preselectedService: null })}
         />,
         document.body
       )}
