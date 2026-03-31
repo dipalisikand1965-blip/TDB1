@@ -134,7 +134,8 @@ const UnifiedProductBox = () => {
       
       if (debouncedSearch) params.append('search', debouncedSearch);
       if (filterType) params.append('product_type', filterType);
-      if (filterPillar) params.append('pillar', filterPillar);
+      // When a search term is active, search ALL pillars — drop pillar filter for cross-pillar discovery
+      if (filterPillar && !debouncedSearch) params.append('pillar', filterPillar);
       if (filterStatus) params.append('status', filterStatus);
       if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
