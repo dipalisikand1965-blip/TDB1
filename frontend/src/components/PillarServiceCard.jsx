@@ -157,24 +157,9 @@ const PillarServiceCard = ({
             </div>
           )}
           
-          {/* Price & CTA */}
+          {/* CTA */}
           <div className="flex items-end justify-between gap-2">
-            <div>
-              {price > 0 ? (
-                <div className="flex items-baseline gap-2">
-                  <span className="text-lg sm:text-xl font-bold text-gray-900">
-                    From ₹{price.toLocaleString()}
-                  </span>
-                  {originalPrice > 0 && (
-                    <span className="text-sm text-gray-400 line-through">
-                      ₹{originalPrice.toLocaleString()}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <span className="text-sm text-purple-600 font-medium">Price on request</span>
-              )}
-            </div>
+            <div>{/* Services are concierge — no price shown */}</div>
             
             <Button
               size="sm"
