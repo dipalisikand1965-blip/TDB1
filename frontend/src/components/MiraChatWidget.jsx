@@ -967,8 +967,13 @@ const MiraChatWidget = ({
   const speakText = useCallback(async (text) => {
     if (!voiceEnabledRef.current) return;
     
+    // Stop any in-progress audio before starting new — prevents overlap on fast responses
+    stopSpeaking();
+    
     // Try ElevenLabs first for premium voice
     if (useElevenLabs) {
+      // 100ms gap: lets iOS audio context fully release the previous stream before starting next
+      await new Promise(resolve => setTimeout(resolve, 100));
       const success = await speakWithElevenLabs(text);
       if (success) return;
     }
@@ -1116,7 +1121,7 @@ const MiraChatWidget = ({
     setTimeout(() => {
       synthRef.current.speak(utterance);
     }, 50);
-  }, [voiceEnabled, useElevenLabs, speakWithElevenLabs]);
+  }, [voiceEnabled, useElevenLabs, speakWithElevenLabs, stopSpeaking]);
   
   const sendMessage = async (directMessage = null) => {
     const messageToSend = directMessage || inputValue.trim();
