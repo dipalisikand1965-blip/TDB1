@@ -579,6 +579,12 @@ export const KNOWN_BREEDS = [
   'bloodhound','rhodesian ridgeback',
   'tibetan mastiff','bull mastiff','staffordshire bull terrier','bull terrier','pit bull',
   'leonberger','newfoundland','coton de tulear','nova scotia',
+  // Breeds added to match backend KNOWN_BREED_NAMES (prevent cross-breed contamination)
+  'shetland sheepdog','sheltie','whippet','greyhound',
+  'west highland terrier','westie','schnauzer','miniature schnauzer',
+  'giant schnauzer','flat coated retriever',
+  'springer spaniel','english springer spaniel',
+  'basset hound','bloodhound','american bully',
 ];
 
 /**
