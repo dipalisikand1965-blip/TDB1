@@ -181,6 +181,10 @@ async def list_services(
         if preferred_image:
             service["image_url"] = preferred_image
             service["image"] = preferred_image
+        # Mark as service type so SharedProductCard shows Concierge flow, not Add to Cart
+        # Exception: pillar=shop items are purchasable bakery/retail items — keep as-is
+        if service.get("pillar") != "shop":
+            service["product_type"] = "service"
     
     return {
         "services": services,
@@ -825,9 +829,15 @@ async def generate_service_image(service_id: str, request: Request, x_admin_user
     try:
         body = await request.json()
         custom_prompt = body.get("prompt", "")
+        breed = body.get("breed", "")
     except Exception:
         custom_prompt = ""
+        breed = ""
     prompt = custom_prompt if custom_prompt else SERVICE_IMAGE_PROMPTS.get(service_name, DEFAULT_SERVICE_PROMPT)
+
+    # Inject breed into prompt for personalised illustrations
+    if breed:
+        prompt = f"A {breed} {prompt}"
     
     # Add pillar context to prompt
     pillar_context = {
