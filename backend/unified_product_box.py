@@ -930,6 +930,12 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
                     {"$set": updates}
                 )
                 
+                # Keep products_master in sync — it wins deduplication in the default admin list view.
+                # Without this, edits saved to breed_products won't show when viewing ALL products.
+                master_copy = await db.products_master.find_one({"id": product_id})
+                if master_copy:
+                    await db.products_master.update_one({"id": product_id}, {"$set": updates})
+                
                 # Get updated product
                 updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
                 updated["source"] = "soul_made"
