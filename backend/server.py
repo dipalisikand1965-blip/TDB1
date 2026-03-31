@@ -855,6 +855,18 @@ async def _run_single_product_image(product_id: str, product: dict):
                 "image_updated_at": datetime.now(timezone.utc).isoformat(),
             }}
         )
+        # Also update breed_products if same ID exists there (soul_made products live in both collections)
+        await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "image_url": image_url, "image": image_url, "images": [image_url],
+                "watercolor_image": image_url,
+                "cloudinary_url": image_url,
+                "ai_generated_image": True,
+                "locally_edited": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
         _single_image_jobs[product_id] = {"status": "complete", "image_url": image_url, "product_id": product_id, "success": True}
         logger.info(f"Single image done for '{product.get('name')}': {image_url}")
 
