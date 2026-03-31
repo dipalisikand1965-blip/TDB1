@@ -966,10 +966,15 @@ const MiraChatWidget = ({
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback(async (text) => {
     if (!voiceEnabledRef.current) return;
-    
+
     // Stop any in-progress audio before starting new — prevents overlap on fast responses
-    stopSpeaking();
-    
+    if (audioRef.current) {
+      try { audioRef.current.pause(); audioRef.current.currentTime = 0; } catch(e) {}
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
+    synthRef.current?.cancel();
+
     // Try ElevenLabs first for premium voice
     if (useElevenLabs) {
       // 100ms gap: lets iOS audio context fully release the previous stream before starting next
@@ -1121,7 +1126,7 @@ const MiraChatWidget = ({
     setTimeout(() => {
       synthRef.current.speak(utterance);
     }, 50);
-  }, [voiceEnabled, useElevenLabs, speakWithElevenLabs, stopSpeaking]);
+  }, [voiceEnabled, useElevenLabs, speakWithElevenLabs]);
   
   const sendMessage = async (directMessage = null) => {
     const messageToSend = directMessage || inputValue.trim();
