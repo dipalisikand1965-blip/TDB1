@@ -49,6 +49,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import GoMobilePage from './GoMobilePage';
 
 // ─────────────────────────────────────────────────────────────
@@ -2043,6 +2044,7 @@ const GoSoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="go" color="#0D9488" />
         </div>
+        <DesktopSoulCard pet={petData} pillarLabel="Go" pillar="go" dataTestId="desktop-go-soul-card" />
       </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>

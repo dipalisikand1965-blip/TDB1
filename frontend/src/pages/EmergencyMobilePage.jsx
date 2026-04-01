@@ -21,6 +21,7 @@ import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hoo
 import PillarPageLayout from '../components/PillarPageLayout';
 import ConciergeCTA from '../components/ConciergeCTA';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import GuidedEmergencyPaths from '../components/emergency/GuidedEmergencyPaths';
 import EmergencyNearMe from '../components/emergency/EmergencyNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
@@ -252,6 +253,11 @@ export default function EmergencyMobilePage() {
 
         {/* Soul Profile */}
         {currentPet && <div style={{ padding:'0 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="emergency" token={token} /></div>}
+        {currentPet && (
+          <div style={{ padding:'0 16px 4px' }}>
+            <DesktopSoulCard pet={currentPet} pillarLabel="Emergency" pillar="emergency" dataTestId="mobile-emergency-soul-card" />
+          </div>
+        )}
 
         {/* Soul Pillar CTA */}
         {currentPet && (

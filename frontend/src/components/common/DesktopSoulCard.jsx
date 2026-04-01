@@ -142,15 +142,81 @@ function getPillarFacts(pet, pillar) {
     return facts;
   }
 
+  if (pillar === 'paperwork') {
+    const breed      = cap(pet?.breed || soul.breed || '');
+    const age        = pet?.age ? `${pet.age} yr` : null;
+    const lifeStage  = cap(cleanVal(pet?.life_stage || soul.life_stage || ''));
+    const bioRow     = [breed, lifeStage, age].filter(Boolean).join(' · ');
+    if (bioRow) facts.push({ icon: '🐕', text: bioRow, bg: 'rgba(13,148,136,0.08)', border: 'rgba(13,148,136,0.22)', color: '#134E4A' });
+    const vetComfort = cleanVal(soul.vet_comfort);
+    if (vetComfort && !/^(very comfortable|no issues|fine|ok)$/i.test(vetComfort)) {
+      facts.push({ icon: '🏥', text: `Vet: ${vetComfort}`, bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.22)', color: '#92400E' });
+    }
+    const vacStatus  = cleanVal(soul.vaccination_status) || (Array.isArray(soul.vaccinated) ? soul.vaccinated[0] : null);
+    if (vacStatus)   facts.push({ icon: '💉', text: cap(vacStatus.replace(/_/g,' ')), bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.22)', color: '#14532D' });
+    return facts;
+  }
+
+  if (pillar === 'emergency') {
+    // allergens already in row 1 — add health context
+    const hc = soul.health_conditions;
+    const healthText = Array.isArray(hc)
+      ? hc.filter(h => h && !isNegative(h)).join(', ')
+      : (typeof hc === 'string' && !isNegative(hc) ? hc : null);
+    if (healthText) facts.push({ icon: '🏥', text: cap(healthText), bg: 'rgba(220,38,38,0.08)', border: 'rgba(220,38,38,0.2)', color: '#7F1D1D' });
+    const vetComfort = cleanVal(soul.vet_comfort);
+    if (vetComfort) facts.push({ icon: '🩺', text: `Vet comfort: ${vetComfort}`, bg: 'rgba(107,114,128,0.08)', border: 'rgba(107,114,128,0.22)', color: '#374151' });
+    return facts;
+  }
+
+  if (pillar === 'farewell') {
+    const age       = pet?.age ? `${pet.age} yr` : null;
+    const lifeStage = cap(cleanVal(pet?.life_stage || soul.life_stage || ''));
+    const breed     = cap(pet?.breed || soul.breed || '');
+    const bioRow    = [breed, lifeStage, age].filter(Boolean).join(' · ');
+    if (bioRow) facts.push({ icon: '🐾', text: bioRow, bg: 'rgba(79,70,229,0.08)', border: 'rgba(79,70,229,0.22)', color: '#312E81' });
+    const wish      = Array.isArray(soul.main_wish) ? soul.main_wish[0] : cleanVal(soul.main_wish);
+    const dream     = cleanVal(soul.dream_life);
+    if (wish || dream) facts.push({ icon: '🌟', text: cap(wish || dream), bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.22)', color: '#92400E' });
+    const attached  = cleanVal(soul.most_attached_to);
+    if (attached)   facts.push({ icon: '🌷', text: `Most attached to: ${cap(attached)}`, bg: 'rgba(107,114,128,0.08)', border: 'rgba(107,114,128,0.22)', color: '#374151' });
+    return facts;
+  }
+
+  if (pillar === 'adopt') {
+    const livesWith = Array.isArray(soul.lives_with) ? soul.lives_with : [];
+    const dogBehav  = cleanVal(soul.behavior_with_dogs);
+    const otherPets = cleanVal(soul.other_pets);
+    const socialParts = [...livesWith.slice(0, 2), dogBehav || null].filter(Boolean);
+    if (socialParts.length) facts.push({ icon: '🐕', text: `Lives with: ${socialParts.join(' · ')}`, bg: 'rgba(225,29,72,0.08)', border: 'rgba(225,29,72,0.22)', color: '#881337' });
+    const temp = cleanVal(soul.temperament);
+    if (temp) facts.push({ icon: '😊', text: cap(temp), bg: 'rgba(249,168,212,0.12)', border: 'rgba(249,168,212,0.35)', color: '#9D174D' });
+    if (otherPets && !livesWith.length) facts.push({ icon: '🏠', text: cap(otherPets), bg: 'rgba(107,114,128,0.08)', border: 'rgba(107,114,128,0.22)', color: '#374151' });
+    return facts;
+  }
+
+  if (pillar === 'celebrate') {
+    const celebPrefs = Array.isArray(soul.celebration_preferences) ? soul.celebration_preferences.slice(0, 3) : [];
+    if (celebPrefs.length) facts.push({ icon: '🎉', text: celebPrefs.join(' · '), bg: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.22)', color: '#3B0764' });
+    const feastStyle = cleanVal(soul.birthday_feast_style);
+    if (feastStyle) facts.push({ icon: '🎂', text: feastStyle, bg: 'rgba(245,158,11,0.09)', border: 'rgba(245,158,11,0.25)', color: '#92400E' });
+    return facts;
+  }
+
   return facts;
 }
 
 const PILLAR_STYLES = {
-  dine:  { bg: 'linear-gradient(135deg,#FFF8F0 0%,#FFF3E8 100%)', border: 'rgba(255,140,66,0.22)',  titleColor: '#3D1200' },
-  care:  { bg: 'linear-gradient(135deg,#F0FFF4 0%,#E8F5E9 100%)', border: 'rgba(64,145,108,0.22)', titleColor: '#1B4332' },
-  play:  { bg: 'linear-gradient(135deg,#FFF5F0 0%,#FFE8DF 100%)', border: 'rgba(255,107,53,0.22)', titleColor: '#3D1200' },
-  learn: { bg: 'linear-gradient(135deg,#EEF2FF 0%,#E0E7FF 100%)', border: 'rgba(99,102,241,0.22)', titleColor: '#1E1B4B' },
-  go:    { bg: 'linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%)', border: 'rgba(16,185,129,0.22)', titleColor: '#064E3B' },
+  dine:      { bg: 'linear-gradient(135deg,#FFF8F0 0%,#FFF3E8 100%)', border: 'rgba(255,140,66,0.22)',  titleColor: '#3D1200' },
+  care:      { bg: 'linear-gradient(135deg,#F0FFF4 0%,#E8F5E9 100%)', border: 'rgba(64,145,108,0.22)', titleColor: '#1B4332' },
+  play:      { bg: 'linear-gradient(135deg,#FFF5F0 0%,#FFE8DF 100%)', border: 'rgba(255,107,53,0.22)', titleColor: '#3D1200' },
+  learn:     { bg: 'linear-gradient(135deg,#EEF2FF 0%,#E0E7FF 100%)', border: 'rgba(99,102,241,0.22)', titleColor: '#1E1B4B' },
+  go:        { bg: 'linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%)', border: 'rgba(16,185,129,0.22)', titleColor: '#064E3B' },
+  paperwork: { bg: 'linear-gradient(135deg,#F0FDFA 0%,#CCFBF1 100%)', border: 'rgba(13,148,136,0.22)', titleColor: '#134E4A' },
+  emergency: { bg: 'linear-gradient(135deg,#FFF1F2 0%,#FFE4E6 100%)', border: 'rgba(220,38,38,0.20)',  titleColor: '#7F1D1D' },
+  farewell:  { bg: 'linear-gradient(135deg,#EEF2FF 0%,#E0E7FF 100%)', border: 'rgba(79,70,229,0.20)',  titleColor: '#312E81' },
+  adopt:     { bg: 'linear-gradient(135deg,#FFF1F5 0%,#FFE4EE 100%)', border: 'rgba(225,29,72,0.20)',  titleColor: '#881337' },
+  celebrate: { bg: 'linear-gradient(135deg,#FAF5FF 0%,#EDE9FE 100%)', border: 'rgba(124,58,237,0.20)', titleColor: '#3B0764' },
 };
 
 export default function DesktopSoulCard({ pet, pillarLabel, pillar, dataTestId }) {

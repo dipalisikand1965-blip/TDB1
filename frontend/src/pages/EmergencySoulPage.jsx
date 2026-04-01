@@ -27,6 +27,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import PillarServiceSection from "../components/PillarServiceSection";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import EmergencyMobilePage from './EmergencyMobilePage';
@@ -472,6 +473,7 @@ const EmergencySoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="emergency" />
         </div>
+        <DesktopSoulCard pet={petData} pillarLabel="Emergency" pillar="emergency" dataTestId="desktop-emergency-soul-card" />
         {/* Category strip */}
         <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>

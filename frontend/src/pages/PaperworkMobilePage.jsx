@@ -18,6 +18,7 @@ import { API_URL } from '../utils/api';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import DocumentVault from '../components/paperwork/DocumentVault';
 import GuidedPaperworkPaths from '../components/paperwork/GuidedPaperworkPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -363,6 +364,11 @@ export default function PaperworkMobilePage() {
         {mainTab === 'paperwork' && <>
         {/* Soul Profile + CTA + Pawrent — inside tab, same as Play/Care */}
         {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="paperwork" token={token} /></div>}
+        {currentPet && (
+          <div style={{ padding:'0 16px 4px' }}>
+            <DesktopSoulCard pet={currentPet} pillarLabel="Paperwork" pillar="paperwork" dataTestId="mobile-paperwork-soul-card" />
+          </div>
+        )}
         {currentPet && (
           <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(99,179,237,0.14),rgba(99,179,237,0.20))', border:'1px solid rgba(99,179,237,0.35)', borderRadius:18, padding:'16px' }}>
             <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>
