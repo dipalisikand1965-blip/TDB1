@@ -65,39 +65,9 @@ function ScrollToTop() {
   return null;
 }
 
-// ConditionalFloatingButton - Desktop-only service help button
-// On mobile, service access is via MobileNavBar → Mira chat — no extra FAB needed
+// ConditionalFloatingButton - Hidden: service access is via Mira chat and pillar Concierge buttons
 function ConditionalFloatingButton() {
-  const { pathname } = useLocation();
-  
-  // Only show on desktop (md: and above) — avoids FAB clutter on mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  if (isMobile) return null;
-
-  // Hide on /mira, /admin, and ALL pillar pages (they have their own Concierge buttons)
-  const hiddenPaths = [
-    '/mira', '/admin', '/demo', '/pet-home', '/my-requests', '/my-pets', '/dashboard',
-    '/care', '/celebrate', '/celebrate-soul', '/dine', '/go', '/play',
-    '/emergency', '/learn', '/farewell', '/adopt', 
-    '/paperwork', '/shop', '/services', '/cakes', '/breed-cakes', '/mini-cakes',
-    '/stay', '/travel', '/enjoy', '/fit', '/advisory'
-  ];
-  
-  if (hiddenPaths.some(path => pathname === path || pathname.startsWith(path + '/'))) {
-    return null;
-  }
-  
-  return (
-    <UniversalServiceButton 
-      variant="floating"
-      position="bottom-left"
-      label="Need Help?"
-      showLabel={false}
-      pillar="general"
-      requireIntakeModal={true}
-      navigateToInbox={true}
-    />
-  );
+  return null;
 }
 
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
