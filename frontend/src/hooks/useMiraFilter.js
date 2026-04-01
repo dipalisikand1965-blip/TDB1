@@ -122,7 +122,7 @@ const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies|nil|n\/a|
 // ── Pet data extractors ───────────────────────────────────────────────────────
 function extractAllergies(pet) {
   const s = new Set();
-  const add = v => {
+  const addStr = v => {
     if (Array.isArray(v)) {
       v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(String(x).trim().toLowerCase()); });
     } else if (v && !CLEAN_NONE.test(String(v).trim())) {
@@ -132,10 +132,27 @@ function extractAllergies(pet) {
       });
     }
   };
-  add(pet?.preferences?.allergies);
-  add(pet?.doggy_soul_answers?.food_allergies);
-  add(pet?.doggy_soul_answers?.allergies);
-  add(pet?.allergies);
+  // Legacy sources
+  addStr(pet?.preferences?.allergies);
+  addStr(pet?.doggy_soul_answers?.food_allergies);
+  addStr(pet?.doggy_soul_answers?.allergies);
+  addStr(pet?.allergies);
+  // Health vault: primary allergy store (array of objects with .name field)
+  if (Array.isArray(pet?.vault?.allergies)) {
+    pet.vault.allergies.forEach(alg => {
+      if (alg?.name && !CLEAN_NONE.test(String(alg.name).trim())) {
+        s.add(String(alg.name).trim().toLowerCase());
+      }
+    });
+  }
+  // health_data.allergies (array of strings — another store)
+  addStr(pet?.health_data?.allergies);
+  // Mira learned facts typed as 'allergy'
+  if (Array.isArray(pet?.learned_facts)) {
+    pet.learned_facts.forEach(f => {
+      if (f?.type === 'allergy' && f?.value) addStr(f.value);
+    });
+  }
   return [...s].filter(a => a && !CLEAN_NONE.test(a));
 }
 
@@ -143,13 +160,26 @@ function extractLoves(pet) {
   const loves = [];
   const addLove = item => {
     if (!item) return;
-    const v = typeof item === 'string' ? item : (item?.name || item?.value || null);
-    if (v && !CLEAN_NONE.test(v)) loves.push(v.toLowerCase().trim());
+    if (Array.isArray(item)) {
+      item.forEach(x => { const v = typeof x === 'string' ? x : (x?.name || x?.value || null); if (v && !CLEAN_NONE.test(v)) loves.push(v.toLowerCase().trim()); });
+    } else {
+      const v = typeof item === 'string' ? item : (item?.name || item?.value || null);
+      if (v && !CLEAN_NONE.test(v)) loves.push(v.toLowerCase().trim());
+    }
   };
+  // Primary stores
+  addLove(pet?.preferences?.favorite_treats);      // ["salmon"] — main store
+  addLove(pet?.soul_enrichments?.favorite_treats); // enriched by Mira
   addLove(pet?.doggy_soul_answers?.favorite_treats);
   addLove(pet?.doggy_soul_answers?.favorite_protein);
   if (pet?.preferences?.favorite_flavors?.length) addLove(pet.preferences.favorite_flavors[0]);
-  return [...new Set(loves)].slice(0, 3);
+  // Conversation insights typed as 'loves'
+  if (Array.isArray(pet?.conversation_insights)) {
+    pet.conversation_insights.forEach(ci => {
+      if (ci?.category === 'loves' && ci?.content) addLove(ci.content);
+    });
+  }
+  return [...new Set(loves)].slice(0, 5);
 }
 
 function extractHealthCondition(pet) {
@@ -678,14 +708,24 @@ const CLEAN_NONE_EXPORT = /^(no|none|none_confirmed|no_allergies|no allergies|ni
 
 export function getAllergiesFromPet(pet) {
   const s = new Set();
-  const add = v => {
+  const addStr = v => {
     if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE_EXPORT.test(String(x).trim())) s.add(String(x).trim()); });
     else if (v && !CLEAN_NONE_EXPORT.test(String(v).trim())) s.add(String(v).trim());
   };
-  add(pet?.preferences?.allergies);
-  add(pet?.doggy_soul_answers?.food_allergies);
-  add(pet?.doggy_soul_answers?.allergies);
-  add(pet?.allergies);
+  addStr(pet?.preferences?.allergies);
+  addStr(pet?.doggy_soul_answers?.food_allergies);
+  addStr(pet?.doggy_soul_answers?.allergies);
+  addStr(pet?.allergies);
+  // vault.allergies — primary store
+  if (Array.isArray(pet?.vault?.allergies)) {
+    pet.vault.allergies.forEach(alg => {
+      if (alg?.name && !CLEAN_NONE_EXPORT.test(String(alg.name).trim())) s.add(String(alg.name).trim());
+    });
+  }
+  addStr(pet?.health_data?.allergies);
+  if (Array.isArray(pet?.learned_facts)) {
+    pet.learned_facts.forEach(f => { if (f?.type === 'allergy' && f?.value) addStr(f.value); });
+  }
   return [...s].filter(a => a && !CLEAN_NONE_EXPORT.test(a));
 }
 
