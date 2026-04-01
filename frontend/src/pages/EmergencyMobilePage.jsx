@@ -505,7 +505,7 @@ export default function EmergencyMobilePage() {
         token={token}
       />
       <div style={{ padding: '0 16px' }}>
-        <ConciergeCTA pillar="emergency" />
+        <ConciergeCTA pillar="emergency" pet={currentPet} />
       </div>
     </PillarPageLayout>
   );
