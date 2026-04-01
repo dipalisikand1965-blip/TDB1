@@ -2,40 +2,19 @@ import React from 'react';
 
 /**
  * Error Boundary Component
- * - ChunkLoadError: clears caches and reloads
- * - removeChild / DOM sync errors: auto-recover by resetting boundary
+ * Special handling for ChunkLoadError - clears caches and reloads
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null, retryKey: 0 };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error) {
-    // DOM removeChild errors are caused by external scripts (emergent-main.js)
-    // modifying DOM nodes that React also owns. Auto-recover — don't show error UI.
-    const isDOMSyncError =
-      error?.message?.includes('removeChild') ||
-      error?.message?.includes('not a child') ||
-      error?.message?.includes('insertBefore') ||
-      error?.message?.includes('Node') ;
-    if (isDOMSyncError) return null; // Don't enter error state — let React re-render
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    // DOM sync errors — silently recover by forcing re-mount of children
-    const isDOMSyncError =
-      error?.message?.includes('removeChild') ||
-      error?.message?.includes('not a child') ||
-      error?.message?.includes('insertBefore');
-
-    if (isDOMSyncError) {
-      console.warn('[ErrorBoundary] DOM sync error caught, auto-recovering:', error?.message);
-      this.setState(s => ({ hasError: false, error: null, retryKey: s.retryKey + 1 }));
-      return;
-    }
-
     console.error('ErrorBoundary caught:', error?.message);
     this.setState({ errorInfo });
 
@@ -126,8 +105,7 @@ class ErrorBoundary extends React.Component {
       );
     }
 
-    // retryKey forces a full re-mount of children on DOM sync recovery
-    return <React.Fragment key={this.state.retryKey}>{this.props.children}</React.Fragment>;
+    return this.props.children;
   }
 }
 
