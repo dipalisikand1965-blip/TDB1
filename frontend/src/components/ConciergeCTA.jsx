@@ -27,7 +27,7 @@ const PILLAR_SERVICE_TYPE = {
   celebrate: 'grooming',
 };
 
-export default function ConciergeCTA({ pillar = 'care', style = {} }) {
+export default function ConciergeCTA({ pillar = 'care', pet = null, style = {} }) {
   const [open, setOpen] = useState(false);
   const serviceType = PILLAR_SERVICE_TYPE[pillar] || 'grooming';
 
@@ -83,6 +83,7 @@ export default function ConciergeCTA({ pillar = 'care', style = {} }) {
           isOpen={open}
           onClose={() => setOpen(false)}
           serviceType={serviceType}
+          pet={pet}
         />
       )}
     </>

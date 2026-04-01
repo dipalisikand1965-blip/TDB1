@@ -615,7 +615,7 @@ export default function FarewellMobilePage() {
       onBook={handleBookService}
     />
       <div style={{ padding: '0 16px' }}>
-        <ConciergeCTA pillar="farewell" />
+        <ConciergeCTA pillar="farewell" pet={currentPet} />
       </div>
     </PillarPageLayout>
   );
