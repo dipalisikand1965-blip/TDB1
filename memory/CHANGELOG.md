@@ -1,6 +1,30 @@
 # CHANGELOG
 
-## 2026-04-01 (Session 47 — P0: Public `/demo` Page Complete)
+## 2026-04-01 (Session 48 — Production Build + Insights Redesign)
+
+### Performance
+1. **Production build** — `yarn build` completed in 70s. Build artifacts in `/app/frontend/build/`.
+   - Main chunk: 1.8MB (gzip ~450KB)
+   - 20+ code-split lazy chunks (97 lazy routes in App.js)
+   - No source maps (GENERATE_SOURCEMAP=false)
+
+### Redesign
+2. **Insights.jsx** — Full dark midnight TDC redesign (was: light purple gradient, "TDB Insights").
+   - Background `#1A0A2E` · Cormorant Garamond headlines · DM Sans body
+   - Hero: "TDC INSIGHTS" label · "Stories from the soul of dog parenting."
+   - Category filter pills: All / Travel / Health / Dine / Care / Celebrate (amber gold active state)
+   - Featured: full-width editorial card with image zoom, author, read-time
+   - Grid: dark glass-morphism cards with category colour badges, hover lift
+   - Article modal: dark midnight, left-colour-bar excerpt, full content scroll
+   - Newsletter strip: dark amber CTA at bottom
+   - SEO: `<SEO>` component added with title/description/keywords/url
+   - Error/empty/loading states all properly styled in dark theme
+
+3. **Footer** — Added `✦ Experience Demo` amber link in both desktop Intelligence column and mobile collapsible section → `/demo`
+
+---
+
+
 
 ### New Features
 1. **`DemoPage.jsx`** — Created `/app/frontend/src/pages/DemoPage.jsx` as a standalone, fully public, no-auth luxury editorial showcase page.
