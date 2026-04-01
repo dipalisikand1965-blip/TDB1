@@ -296,6 +296,79 @@ export default function DineMobilePage() {
           )}
         </PillarHero>
 
+        {/* ── 2. Soul Card — Mojo's heart, always visible ── */}
+        {(() => {
+          const allergyList = getAllergiesFromPet(currentPet).filter(a =>
+            !['none','no','nil','n/a','unknown','no allergies','none known'].includes(a.toLowerCase())
+          );
+          const loveList = (() => {
+            const raw = [
+              ...(currentPet?.preferences?.favorite_treats || []),
+              ...(currentPet?.soul_enrichments?.favorite_treats || []),
+              ...(currentPet?.doggy_soul_answers?.favorite_treats || []),
+              currentPet?.doggy_soul_answers?.favorite_protein,
+            ].filter(Boolean).map(v => (typeof v === 'string' ? v : v?.name || '')).filter(Boolean);
+            // De-dup, strip allergens from loves
+            return [...new Set(raw)].filter(l =>
+              !allergyList.some(a => l.toLowerCase().includes(a.toLowerCase()))
+            ).slice(0, 3);
+          })();
+          const lifeVision = currentPet?.doggy_soul_answers?.life_vision
+            || currentPet?.dsa?.life_vision
+            || currentPet?.soul_enrichments?.life_vision
+            || null;
+          if (!allergyList.length && !loveList.length && !lifeVision) return null;
+          return (
+            <div data-testid="dine-soul-card" style={{
+              margin:'12px 16px 0',
+              background:'linear-gradient(135deg,#FFF8F0 0%,#FFF3E8 100%)',
+              border:'1.5px solid rgba(255,140,66,0.2)',
+              borderRadius:16,
+              padding:'14px 16px',
+              boxShadow:'0 2px 12px rgba(61,18,0,0.06)',
+            }}>
+              {/* Name + icon */}
+              <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:lifeVision ? 6 : 10 }}>
+                <span style={{ fontSize:18 }}>🐾</span>
+                <span style={{ fontSize:15, fontWeight:700, color:C.dark, letterSpacing:'-0.3px' }}>
+                  {petName}'s Dine
+                </span>
+              </div>
+
+              {/* Life vision quote */}
+              {lifeVision && (
+                <p style={{ margin:'0 0 10px', fontSize:13, color:C.taupe, fontStyle:'italic', lineHeight:1.45, paddingLeft:26 }}>
+                  "{lifeVision}"
+                </p>
+              )}
+
+              {/* Chips row */}
+              <div style={{ display:'flex', flexWrap:'wrap', gap:6, paddingLeft:0 }}>
+                {/* Allergen chips */}
+                {allergyList.map(a => (
+                  <span key={a} style={{
+                    display:'inline-flex', alignItems:'center', gap:4,
+                    background:'rgba(255,107,100,0.10)', border:'1px solid rgba(255,107,100,0.28)',
+                    borderRadius:999, padding:'4px 10px', fontSize:12, fontWeight:600, color:'#B03A2E',
+                  }}>
+                    ⚠️ No {a.charAt(0).toUpperCase() + a.slice(1)}
+                  </span>
+                ))}
+                {/* Love chips */}
+                {loveList.map(l => (
+                  <span key={l} style={{
+                    display:'inline-flex', alignItems:'center', gap:4,
+                    background:'rgba(39,174,96,0.09)', border:'1px solid rgba(39,174,96,0.25)',
+                    borderRadius:999, padding:'4px 10px', fontSize:12, fontWeight:600, color:'#1E7A46',
+                  }}>
+                    ❤️ {l.charAt(0).toUpperCase() + l.slice(1)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── 3. Main 3-Tab Bar ── */}
         <div className="ios-tab-bar">
           {[
