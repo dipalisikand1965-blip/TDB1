@@ -1823,9 +1823,13 @@ const MiraChatWidget = ({
   }
 
   // Floating Button (when closed)
-  // On mobile: show orb so user can directly tap Mira without relying solely on MobileNavBar
-  // MiraFloatingButton (Pulse) is now hidden md:flex, so this orb is the main Mira entry on mobile
+  // On mobile non-pillar pages: MobileNavBar center FAB handles Mira access — no floating orb needed
+  // (component stays mounted so openMiraAI event listener remains active even when returning null)
   if (!isOpen) {
+    if (isMobile && hideMiraChatOnPillarPages) {
+      // Mobile + global widget → MobileNavBar FAB provides Mira access, hide duplicate orb
+      return null;
+    }
     return (
       <div className={`flex fixed ${isMobile ? 'bottom-[76px] right-3' : 'bottom-4 right-4 sm:bottom-6 sm:right-6'} z-[9999] flex-col items-end gap-3 ${className}`}>
         <MiraOrb 

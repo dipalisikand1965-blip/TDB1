@@ -65,38 +65,9 @@ function ScrollToTop() {
   return null;
 }
 
-// ConditionalFloatingButton - Hide on pages that have their own contact buttons
+// ConditionalFloatingButton - Hidden: service access is via Mira chat and pillar Concierge buttons
 function ConditionalFloatingButton() {
-  const { pathname } = useLocation();
-  const { user, isAuthenticated } = useAuth();
-  
-  // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
-  const hiddenPaths = [
-    '/mira', '/admin', '/demo', '/pet-home', '/my-requests', '/my-pets', '/dashboard',
-    '/care', '/celebrate', '/celebrate-soul', '/dine', '/go', '/play',
-    '/emergency', '/learn', '/farewell', '/adopt', 
-    '/paperwork', '/shop', '/services', '/cakes', '/breed-cakes', '/mini-cakes',
-    '/stay', '/travel', '/enjoy', '/fit', '/advisory'
-  ];
-  
-  if (hiddenPaths.some(path => pathname === path || pathname.startsWith(path + '/'))) {
-    return null;
-  }
-  
-  // UNIVERSAL SERVICE COMMAND - Accessible from EVERYWHERE
-  // User Intent → Service Desk Ticket → Admin Notification → Member Notification
-  // Shows on BOTH mobile and desktop
-  return (
-    <UniversalServiceButton 
-      variant="floating"
-      position="bottom-left"
-      label="Need Help?"
-      showLabel={false}
-      pillar="general"
-      requireIntakeModal={true}
-      navigateToInbox={true}
-    />
-  );
+  return null;
 }
 
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
@@ -330,6 +301,7 @@ const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
+const DemoPage = lazy(() => import("./pages/DemoPage"));
 
 // Pet Wrapped
 const PetWrappedViewer = lazy(() => import("./pages/PetWrappedViewer"));
@@ -389,6 +361,9 @@ function AppRouter() {
         
         {/* B2B Demo Pages - Standalone, no auth required */}
         <Route path="/demo/dreamfolks" element={<DreamfolksDemo />} />
+        
+        {/* Public Experience Demo Page - No auth, no navbar */}
+        <Route path="/demo" element={<DemoPage />} />
         
         {/* Agent Portal - Standalone Service Desk for agents */}
         <Route path="/agent" element={<AdminProtectedRoute><AgentPortal /></AdminProtectedRoute>} />
@@ -688,8 +663,9 @@ function MainLayout() {
       </Suspense>
       <ConditionalFooter />
       <CartSidebar />
-      <MiraAI />
-      {/* Pulse removed - voice capabilities now inside MiraAI */}
+      {/* MiraAI removed — MiraChatWidget (in MainLayout) is the unified Mira chat interface */}
+      {/* <MiraAI /> */}
+      {/* Universal service button — desktop only, hidden on mobile to avoid FAB clutter */}
       <ConditionalFloatingButton />
       {/* Trial / Account Status Banner — shown globally for trial users */}
       <TrialStatusBanner />

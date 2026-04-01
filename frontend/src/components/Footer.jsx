@@ -140,6 +140,7 @@ const Footer = () => {
                   <Link to="/about" className="text-sm py-2 block hover:text-pink-400 transition-colors">About Us</Link>
                   <Link to="/my-requests" className="text-sm py-2 block hover:text-pink-400 transition-colors">📋 My Requests</Link>
                   <Link to="/faqs" className="text-sm py-2 block hover:text-pink-400 transition-colors">FAQs</Link>
+                  <Link to="/demo" className="text-sm py-2 block font-medium" style={{ color: '#C9973A' }}>✦ Experience Demo</Link>
                 </div>
               )}
             </div>
@@ -334,6 +335,7 @@ const Footer = () => {
                 <li><Link to="/about" className="hover:text-pink-400 transition-colors">About Us</Link></li>
                 <li><Link to="/faqs" className="hover:text-pink-400 transition-colors">FAQs</Link></li>
                 <li><Link to="/insights" className="hover:text-pink-400 transition-colors">TDC Insights</Link></li>
+                <li><Link to="/demo" className="hover:text-amber-400 transition-colors font-medium" style={{ color: '#C9973A' }}>✦ Experience Demo</Link></li>
               </ul>
             </div>
 

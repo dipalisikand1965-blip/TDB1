@@ -128,7 +128,7 @@ async def create_blog_post(post: dict, username: str = Depends(verify_admin)):
         "content": post.get("content", ""),
         "image_url": post.get("image_url"),
         "category": post.get("category", "Tips"),
-        "author": post.get("author", "TDB Team"),
+        "author": post.get("author", "The Doggy Company Team"),
         "status": post.get("status", "draft"),
         "is_featured": post.get("is_featured", False),
         "views": 0,

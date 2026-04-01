@@ -1,6 +1,56 @@
 # CHANGELOG
 
-## 2026-03-31 (Session 40 — P0: Ghost Cache Purge + ServiceBox Add/Toggle Fix + Service Card Modal Routing)
+## 2026-04-01 (Session 48 — Production Build + Insights Redesign)
+
+### Performance
+1. **Production build** — `yarn build` completed in 70s. Build artifacts in `/app/frontend/build/`.
+   - Main chunk: 1.8MB (gzip ~450KB)
+   - 20+ code-split lazy chunks (97 lazy routes in App.js)
+   - No source maps (GENERATE_SOURCEMAP=false)
+
+### Redesign
+2. **Insights.jsx** — Full dark midnight TDC redesign (was: light purple gradient, "TDB Insights").
+   - Background `#1A0A2E` · Cormorant Garamond headlines · DM Sans body
+   - Hero: "TDC INSIGHTS" label · "Stories from the soul of dog parenting."
+   - Category filter pills: All / Travel / Health / Dine / Care / Celebrate (amber gold active state)
+   - Featured: full-width editorial card with image zoom, author, read-time
+   - Grid: dark glass-morphism cards with category colour badges, hover lift
+   - Article modal: dark midnight, left-colour-bar excerpt, full content scroll
+   - Newsletter strip: dark amber CTA at bottom
+   - SEO: `<SEO>` component added with title/description/keywords/url
+   - Error/empty/loading states all properly styled in dark theme
+
+3. **Footer** — Added `✦ Experience Demo` amber link in both desktop Intelligence column and mobile collapsible section → `/demo`
+
+---
+
+
+
+### New Features
+1. **`DemoPage.jsx`** — Created `/app/frontend/src/pages/DemoPage.jsx` as a standalone, fully public, no-auth luxury editorial showcase page.
+   - Section 1: Hero — "Every dog has a soul. For the first time in the world — a platform that knows it."
+   - Section 2: Three Truths — "Google suggests. Amazon sells. The Doggy Company does. For the first time. Anywhere."
+   - Section 3: Mira — "Meet Mira — The world's first Pet Life OS" with capability cards
+   - Section 4: Mojo's interactive soul card (Indie · Senior · High energy · Allergies: Chicken/Beef · Loves: Salmon/Peanut Butter · Celebrations: 5 tracked)
+   - Section 5: 12 Pillars grid (hover effects, descriptions)
+   - Section 6: Animated stats counters (1,247+ dogs, 12 pillars, 97% accuracy, 286+ services)
+   - Section 7: Waitlist CTA with email form + success state
+   - Footer: "Built in memory of Mystique. Launched on her birthday — May 15, 2026."
+   - Design: `#1A0A2E` deep midnight, Cormorant Garamond + DM Sans, amber gold `#C9973A`, animated Mira orb
+2. **App.js route** — Added `<Route path="/demo" element={<DemoPage />} />` as a public route outside MainLayout (no Navbar/Footer from main app).
+
+### Test Results — Screenshot verified (all 7 sections render correctly)
+
+### Blog Post Published
+4. **"Why I Built This at Midnight"** — Dipali Sikand's founder essay published via API as the first Insights post.
+   - Category: Soul Stories (auto-appeared as a new filter pill)
+   - Author: Dipali Sikand · Featured: true · Status: published
+   - Excerpt: "Her name was Mystique. She was a Shih Tzu. Ten years old..."
+   - No image provided → gradient fallback with ✦ symbol (intentionally elegant)
+
+---
+
+ — P0: Ghost Cache Purge + ServiceBox Add/Toggle Fix + Service Card Modal Routing)
 
 ### Bug Fixes
 1. **Ghost service cache purge** — Deleted 364 stale `mira_product_scores` entries for 68 archived `svc-*` ghost services. "Vet Appointment Coordination" and 67 others no longer appear in Mira Picks.

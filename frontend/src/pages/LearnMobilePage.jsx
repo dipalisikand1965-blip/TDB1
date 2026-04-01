@@ -590,7 +590,7 @@ export default function LearnMobilePage() {
       </div>
 
       <div style={{ padding: '0 16px' }}>
-        <ConciergeCTA pillar="learn" />
+        <ConciergeCTA pillar="learn" pet={currentPet} />
       </div>
 
       <ServiceBookingModal
