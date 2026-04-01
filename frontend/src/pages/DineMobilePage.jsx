@@ -12,7 +12,7 @@ import { useCart } from '../context/CartContext';
 import { usePillarContext } from '../context/PillarContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
-import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import PillarPageLayout from '../components/PillarPageLayout';
@@ -100,10 +100,13 @@ export default function DineMobilePage() {
     const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
     // Always pass breed so the backend pre-filters: Indie dog sees Indie + universal products only
     const breedParam = pet.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    // Pass allergens to backend for server-side pre-filtering (double safety layer)
+    const petAllergies = getAllergiesFromPet(pet);
+    const allergenParam = petAllergies.length > 0 ? `&allergens=${encodeURIComponent(petAllergies.join(','))}` : '';
     try {
       const results = await Promise.all(
         FOOD_CATS.map(cat =>
-          fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=200&category=${encodeURIComponent(cat)}${breedParam}`, {
+          fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=200&category=${encodeURIComponent(cat)}${breedParam}${allergenParam}`, {
             headers: token ? { Authorization:`Bearer ${token}` } : {}
           }).then(r => r.ok ? r.json() : null).catch(() => null)
         )

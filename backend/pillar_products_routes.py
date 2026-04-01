@@ -10,10 +10,61 @@ ARCHITECTURE RULES: See /app/memory/ARCHITECTURE.md
 """
 
 from fastapi import APIRouter, HTTPException, Query
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
 import uuid
 import logging
+import re
+
+# ── Allergen synonym map — any product whose name/description/tags matches
+#    ANY synonym for an allergen the pet has → excluded from results ──────────
+ALLERGEN_SYNONYMS: dict = {
+    "chicken":  ["chicken", "poultry", "fowl"],
+    "beef":     ["beef", "bovine"],
+    "soy":      ["soy", "soya", "tofu"],
+    "wheat":    ["wheat", "gluten", "flour", "barley"],
+    "dairy":    ["milk", "cheese", "butter", "lactose", "dairy"],
+    "egg":      ["egg", "eggs"],
+    "fish":     ["fish", "anchovy", "sardine", "tuna", "cod"],
+    "lamb":     ["lamb", "mutton"],
+    "pork":     ["pork", "ham", "bacon"],
+    "corn":     ["corn", "maize"],
+    "potato":   ["potato"],
+    "rice":     ["rice"],
+    "duck":     ["duck"],
+    "turkey":   ["turkey"],
+    "rabbit":   ["rabbit"],
+    "venison":  ["venison", "deer"],
+}
+# Pattern to skip X-free mentions (e.g. "chicken-free" doesn't count as chicken)
+_FREE_PATTERN = re.compile(r'\b\w+[-\s]free\b', re.I)
+
+def _product_contains_allergen(product: dict, allergen: str) -> bool:
+    """Return True if the product text contains the allergen (ignoring *-free mentions)."""
+    syns = ALLERGEN_SYNONYMS.get(allergen.lower(), [allergen.lower()])
+    raw_text = " ".join([
+        product.get("name", ""),
+        product.get("description", ""),
+        product.get("mira_tag", ""),
+        " ".join(product.get("tags", []) if isinstance(product.get("tags"), list) else [str(product.get("tags", ""))]),
+    ]).lower()
+    # Remove *-free occurrences so "chicken-free" doesn't trigger chicken block
+    cleaned = _FREE_PATTERN.sub("", raw_text)
+    return any(syn in cleaned for syn in syns)
+
+
+def _allergen_list_from_param(param: Optional[str]) -> List[str]:
+    """Parse comma-separated allergen query param into a cleaned list."""
+    if not param:
+        return []
+    NO_ALLERGY = {"no", "none", "nil", "na", "n/a", "unknown", "none known",
+                  "none_confirmed", "no_allergies", "no allergies", "not known"}
+    result = []
+    for a in param.split(","):
+        a = a.strip().lower()
+        if a and a not in NO_ALLERGY:
+            result.append(a)
+    return result
 
 # ── All known breed names for strict product filtering ──────────────────────
 KNOWN_BREED_NAMES = sorted([
@@ -127,9 +178,10 @@ async def get_pillar_products(
     limit: int = 50,
     search: Optional[str] = None,
     category: Optional[str] = None,
-    active_only: bool = True,  # Default TRUE — inactive products must never show on consumer frontend
-    sort_by: str = "name",  # "name" | "mira_score" | "price"
+    active_only: bool = True,
+    sort_by: str = "name",
     breed: Optional[str] = None,
+    allergens: Optional[str] = Query(None, description="Comma-separated allergens to exclude, e.g. 'chicken,beef,soy'"),
 ):
     """
     Get products for a specific pillar from products_master.
@@ -199,15 +251,39 @@ async def get_pillar_products(
 
             # Breed-specific products always surface first, then universal
             filtered = breed_specific + universal
+
+            # ── ALLERGEN PRE-FILTER (backend layer of safety) ─────────────────
+            pet_allergens = _allergen_list_from_param(allergens)
+            if pet_allergens:
+                before = len(filtered)
+                filtered = [
+                    p for p in filtered
+                    if not any(_product_contains_allergen(p, alg) for alg in pet_allergens)
+                ]
+                logging.info(f"[allergen-filter] Removed {before - len(filtered)} products "
+                             f"for allergens={pet_allergens}, breed={breed}")
+
             skip = (page - 1) * limit
             products = filtered[skip: skip + limit]
             total = len(filtered)
         else:
             # ── NORMAL MODE: standard DB-level pagination ────────────────────
             skip = (page - 1) * limit
-            cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(limit)
-            products = await cursor.to_list(length=limit)
-            total = total_query
+            pet_allergens = _allergen_list_from_param(allergens)
+            if pet_allergens:
+                # Must fetch more to account for allergen exclusions; paginate after filter
+                cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order)
+                all_prods = await cursor.to_list(length=10000)
+                filtered = [
+                    p for p in all_prods
+                    if not any(_product_contains_allergen(p, alg) for alg in pet_allergens)
+                ]
+                total = len(filtered)
+                products = filtered[skip: skip + limit]
+            else:
+                cursor = db.products_master.find(query, {"_id": 0}).sort(sort_order).skip(skip).limit(limit)
+                products = await cursor.to_list(length=limit)
+                total = total_query
 
         # Get unique categories for filter
         cat_pipeline = [
