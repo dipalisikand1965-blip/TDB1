@@ -590,9 +590,8 @@ const Insights = () => {
                 border: `2px solid ${C.borderS}`,
                 borderTopColor: C.amber,
                 margin: '0 auto 16px',
-                animation: 'spin 0.8s linear infinite',
+                animation: 'insights-spin 0.8s linear infinite',
               }} />
-              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
               <p style={{ color: C.muted, fontFamily: 'DM Sans, sans-serif', fontSize: 14 }}>
                 Fetching stories…
               </p>
