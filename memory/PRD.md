@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-04-01 (Session 46 — Four Mira Buttons Bug Fix)
+## Last Updated: 2026-04-01 (Session 47 — Public `/demo` Experience Page)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service

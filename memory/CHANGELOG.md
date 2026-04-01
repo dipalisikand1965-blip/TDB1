@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 2026-04-01 (Session 47 — P0: Public `/demo` Page Complete)
+
+### New Features
+1. **`DemoPage.jsx`** — Created `/app/frontend/src/pages/DemoPage.jsx` as a standalone, fully public, no-auth luxury editorial showcase page.
+   - Section 1: Hero — "Every dog has a soul. For the first time in the world — a platform that knows it."
+   - Section 2: Three Truths — "Google suggests. Amazon sells. The Doggy Company does. For the first time. Anywhere."
+   - Section 3: Mira — "Meet Mira — The world's first Pet Life OS" with capability cards
+   - Section 4: Mojo's interactive soul card (Indie · Senior · High energy · Allergies: Chicken/Beef · Loves: Salmon/Peanut Butter · Celebrations: 5 tracked)
+   - Section 5: 12 Pillars grid (hover effects, descriptions)
+   - Section 6: Animated stats counters (1,247+ dogs, 12 pillars, 97% accuracy, 286+ services)
+   - Section 7: Waitlist CTA with email form + success state
+   - Footer: "Built in memory of Mystique. Launched on her birthday — May 15, 2026."
+   - Design: `#1A0A2E` deep midnight, Cormorant Garamond + DM Sans, amber gold `#C9973A`, animated Mira orb
+2. **App.js route** — Added `<Route path="/demo" element={<DemoPage />} />` as a public route outside MainLayout (no Navbar/Footer from main app).
+
+### Test Results — Screenshot verified (all 7 sections render correctly)
+
+---
+
 ## 2026-03-31 (Session 40 — P0: Ghost Cache Purge + ServiceBox Add/Toggle Fix + Service Card Modal Routing)
 
 ### Bug Fixes
