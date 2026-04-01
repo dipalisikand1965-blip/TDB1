@@ -65,12 +65,16 @@ function ScrollToTop() {
   return null;
 }
 
-// ConditionalFloatingButton - Hide on pages that have their own contact buttons
+// ConditionalFloatingButton - Desktop-only service help button
+// On mobile, service access is via MobileNavBar → Mira chat — no extra FAB needed
 function ConditionalFloatingButton() {
   const { pathname } = useLocation();
-  const { user, isAuthenticated } = useAuth();
   
-  // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
+  // Only show on desktop (md: and above) — avoids FAB clutter on mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  if (isMobile) return null;
+
+  // Hide on /mira, /admin, and ALL pillar pages (they have their own Concierge buttons)
   const hiddenPaths = [
     '/mira', '/admin', '/demo', '/pet-home', '/my-requests', '/my-pets', '/dashboard',
     '/care', '/celebrate', '/celebrate-soul', '/dine', '/go', '/play',
@@ -83,9 +87,6 @@ function ConditionalFloatingButton() {
     return null;
   }
   
-  // UNIVERSAL SERVICE COMMAND - Accessible from EVERYWHERE
-  // User Intent → Service Desk Ticket → Admin Notification → Member Notification
-  // Shows on BOTH mobile and desktop
   return (
     <UniversalServiceButton 
       variant="floating"
@@ -688,8 +689,9 @@ function MainLayout() {
       </Suspense>
       <ConditionalFooter />
       <CartSidebar />
-      <MiraAI />
-      {/* Pulse removed - voice capabilities now inside MiraAI */}
+      {/* MiraAI removed — MiraChatWidget (in MainLayout) is the unified Mira chat interface */}
+      {/* <MiraAI /> */}
+      {/* Universal service button — desktop only, hidden on mobile to avoid FAB clutter */}
       <ConditionalFloatingButton />
       {/* Trial / Account Status Banner — shown globally for trial users */}
       <TrialStatusBanner />
