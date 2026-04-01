@@ -418,7 +418,37 @@ None.
 **DineSoulPage.jsx contains an inline DineMobilePage function** (all other pillars have separate *MobilePage.jsx files). Any changes to Dine mobile must edit DineSoulPage.jsx lines 767+. The desktop path (DineSoulPageDesktopLegacy) is strictly locked.
 
 
-## SESSION 15 — (2026-03-26) Mira Intelligence Fixes + Mobile Audit
+## SESSION 46 — (2026-04-01) Desktop Soul Card + Allergy Safety Fix
+
+### Soul Card added to 3 Desktop Pillar Pages (Srini Thursday feature)
+
+1. ✅ **DesktopSoulCard.jsx created** at `/app/frontend/src/components/common/DesktopSoulCard.jsx`
+   - Shows pet name + pillar ("Mojo's Dine"), ⚠️ allergen chips, ❤️ love chips, life_vision quote
+   - Empty state: "Tell us about {name} → Complete Soul Profile →" (links to /my-pets)
+   - Case-normalized Set deduplication (no duplicate chicken/Chicken chips)
+   - Pillar-themed colors: Dine=amber, Care=green, Play=orange
+   
+2. ✅ **DineSoulPageDesktopLegacy.jsx** — Soul Card inserted after PillarSoulProfile, before DineCategoryStrip
+3. ✅ **CareSoulPage.jsx** — Soul Card inserted at top of "Care & Products" tab, before WellnessProfile
+4. ✅ **PlaySoulPage.jsx** — Soul Card inserted after PillarSoulProfile, above PlayCategoryStrip
+
+### Desktop Allergy Safety Fix (vault.allergies — CRITICAL)
+
+5. ✅ **getAllergies() fixed in 4 files** — Now reads from `pet.vault.allergies` + `pet.health_data.allergies`:
+   - `DineSoulPageDesktopLegacy.jsx` (local getAllergies)
+   - `CareSoulPage.jsx` (local getAllergies)
+   - `PlaySoulPage.jsx` (local getAllergies)
+   - `DineSoulPage.jsx` (exported getAllergies utility)
+   - Before fix: Mojo's severe chicken/beef allergies (in vault) were NOT visible on desktop → safety gap
+   - After fix: Both soul answers AND vault allergies merged with deduplication
+
+### Verified
+- Mojo's Soul Card on /dine desktop: ⚠️ No Chicken ⚠️ No Beef ❤️ Salmon ❤️ Wild Salmon Treats ❤️ Salmon Training Treats ✅
+- Same on /care (green theme) ✅
+- Same on /play (orange theme) ✅
+- No duplicate chips (case-normalized lowercase Set) ✅
+
+
 
 ### 3 Critical Mira Intelligence Bugs Fixed
 1. ✅ **Pillar context gap**: `/api/mira/os/stream` now reads `current_pillar` from request body. 12 pillar-specific focus prompts injected into system. Mira no longer answers off-topic (e.g., nutrition on Paperwork pillar redirects correctly).
