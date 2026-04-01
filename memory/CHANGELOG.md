@@ -41,9 +41,16 @@
 
 ### Test Results — Screenshot verified (all 7 sections render correctly)
 
+### Blog Post Published
+4. **"Why I Built This at Midnight"** — Dipali Sikand's founder essay published via API as the first Insights post.
+   - Category: Soul Stories (auto-appeared as a new filter pill)
+   - Author: Dipali Sikand · Featured: true · Status: published
+   - Excerpt: "Her name was Mystique. She was a Shih Tzu. Ten years old..."
+   - No image provided → gradient fallback with ✦ symbol (intentionally elegant)
+
 ---
 
-## 2026-03-31 (Session 40 — P0: Ghost Cache Purge + ServiceBox Add/Toggle Fix + Service Card Modal Routing)
+ — P0: Ghost Cache Purge + ServiceBox Add/Toggle Fix + Service Card Modal Routing)
 
 ### Bug Fixes
 1. **Ghost service cache purge** — Deleted 364 stale `mira_product_scores` entries for 68 archived `svc-*` ghost services. "Vet Appointment Coordination" and 67 others no longer appear in Mira Picks.
