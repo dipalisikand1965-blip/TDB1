@@ -301,7 +301,7 @@ export default function LandingPage() {
               Sign in
             </a>
           )}
-          <button onClick={handleJoin} style={{
+          <button onClick={handleJoin} className="tdc-desktop-join" style={{
             padding: "9px 22px", borderRadius: 999,
             border: `1px solid ${C.amber}`,
             background: "transparent",

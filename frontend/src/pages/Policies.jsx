@@ -1,429 +1,296 @@
 import React, { useState } from 'react';
-import { Card } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { 
-  FileText, 
-  Shield, 
-  ScrollText, 
-  Truck,
-  ChevronDown,
-  ChevronUp,
-  Mail,
-  Phone,
-  Sparkles,
-  Brain
-} from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { FileText, Shield, ScrollText, Truck, Sparkles } from 'lucide-react';
+
+const G = {
+  navy:   '#1A0A2E',
+  amber:  '#FF8C42',
+  sage:   '#40916C',
+  cream:  '#FFF8F0',
+  muted:  '#6B5E7A',
+  border: 'rgba(26,10,46,0.10)',
+};
+
+const Section = ({ title, children }) => (
+  <div style={{ marginBottom: 32 }}>
+    <h3 style={{ fontSize: 15, fontWeight: 700, color: G.navy, marginBottom: 10, paddingBottom: 6, borderBottom: `1px solid ${G.border}` }}>
+      {title}
+    </h3>
+    {children}
+  </div>
+);
+
+const Para = ({ children, style }) => (
+  <p style={{ fontSize: 14, color: G.muted, lineHeight: 1.8, margin: '0 0 10px', ...style }}>{children}</p>
+);
+
+const Bullet = ({ items }) => (
+  <ul style={{ paddingLeft: 20, margin: '6px 0 12px' }}>
+    {items.map((item, i) => (
+      <li key={i} style={{ fontSize: 14, color: G.muted, lineHeight: 1.8, marginBottom: 4 }}>{item}</li>
+    ))}
+  </ul>
+);
+
+const Notice = ({ bg, borderColor, children }) => (
+  <div style={{ background: bg, borderLeft: `4px solid ${borderColor}`, borderRadius: '0 10px 10px 0', padding: '14px 18px', marginBottom: 24 }}>
+    {children}
+  </div>
+);
+
+// Route → default tab mapping
+function useDefaultTab() {
+  const loc = useLocation();
+  if (loc.pathname.includes('privacy'))  return 'privacy';
+  if (loc.pathname.includes('shipping')) return 'shipping';
+  if (loc.pathname.includes('terms'))    return 'terms';
+  if (loc.pathname.includes('refund'))   return 'refund';
+  return 'refund';
+}
 
 const Policies = () => {
-  const [activePolicy, setActivePolicy] = useState('refund');
+  const defaultTab = useDefaultTab();
+  const [active, setActive] = useState(defaultTab);
 
-  const policies = [
-    { id: 'refund', name: 'Refund Policy', icon: FileText },
-    { id: 'privacy', name: 'Privacy Policy', icon: Shield },
-    { id: 'terms', name: 'Terms of Service', icon: ScrollText },
-    { id: 'shipping', name: 'Shipping Policy', icon: Truck },
-    { id: 'ai', name: 'AI Disclaimer', icon: Sparkles },
+  const tabs = [
+    { id: 'refund',   label: 'Refunds',  icon: FileText },
+    { id: 'privacy',  label: 'Privacy',  icon: Shield },
+    { id: 'terms',    label: 'Terms',    icon: ScrollText },
+    { id: 'shipping', label: 'Shipping', icon: Truck },
+    { id: 'ai',       label: 'Mira AI',  icon: Sparkles },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Policies & Terms
-          </h1>
-          <p className="text-gray-600">
-            Please read our policies carefully before making a purchase.
-          </p>
-        </div>
+    <div style={{ minHeight: '100vh', background: G.cream, fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      {/* Page header */}
+      <div style={{ background: G.navy, padding: '48px 24px 36px', textAlign: 'center' }}>
+        <p style={{ fontSize: 11, letterSpacing: '0.14em', color: '#FF8C4299', fontWeight: 700, marginBottom: 10, textTransform: 'uppercase' }}>
+          The Doggy Company
+        </p>
+        <h1 style={{ fontSize: 'clamp(1.8rem,4vw,2.6rem)', fontWeight: 800, fontFamily: 'Georgia,serif', color: '#fff', margin: '0 0 10px', lineHeight: 1.15 }}>
+          Policies &amp; Terms
+        </h1>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: '0 auto' }}>
+          Written for pet parents, not for lawyers.
+        </p>
+      </div>
 
-        {/* Policy Navigation */}
-        <div className="flex flex-wrap gap-2 justify-center mb-8">
-          {policies.map((policy) => {
-            const Icon = policy.icon;
+      <div style={{ maxWidth: 780, margin: '0 auto', padding: '32px 16px 80px' }}>
+        {/* Tab nav */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 28 }}>
+          {tabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = active === tab.id;
             return (
               <button
-                key={policy.id}
-                onClick={() => setActivePolicy(policy.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-                  activePolicy === policy.id
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white text-gray-600 hover:bg-purple-50 border'
-                }`}
-                data-testid={`policy-tab-${policy.id}`}
+                key={tab.id}
+                onClick={() => setActive(tab.id)}
+                data-testid={`policy-tab-${tab.id}`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '8px 18px', borderRadius: 999, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                  border: `1.5px solid ${isActive ? G.navy : G.border}`,
+                  background: isActive ? G.navy : '#fff',
+                  color: isActive ? '#fff' : G.navy,
+                  transition: 'all 0.15s',
+                }}
               >
-                <Icon className="w-4 h-4" />
-                {policy.name}
+                <Icon style={{ width: 14, height: 14 }} />
+                {tab.label}
               </button>
             );
           })}
         </div>
 
-        {/* Policy Content */}
-        <Card className="p-6 md:p-10">
-          {/* Refund Policy */}
-          {activePolicy === 'refund' && (
-            <div className="prose max-w-none" data-testid="refund-policy">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <FileText className="w-6 h-6 text-purple-600" />
+        {/* Content card */}
+        <div style={{ background: '#fff', borderRadius: 20, border: `1.5px solid ${G.border}`, padding: '32px 32px 40px', boxShadow: '0 4px 24px rgba(26,10,46,0.06)' }}>
+
+          {/* ── REFUND ── */}
+          {active === 'refund' && (
+            <div data-testid="refund-policy">
+              <h2 style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Georgia,serif', color: G.navy, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <FileText style={{ width: 22, height: 22, color: G.amber }} />
                 Refund Policy
               </h2>
-              
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
-                <p className="text-yellow-800">
-                  <strong>Important:</strong> We do not accept refunds or cancellations of orders after they have been delivered.
-                </p>
-              </div>
 
-              <p className="text-gray-700 mb-4">
-                Due to the perishable nature of our products (freshly baked cakes and treats), 
-                we are unable to offer refunds or accept returns once an order has been delivered.
-              </p>
+              <Section title="Physical Products">
+                <Para>If you receive a damaged or incorrect item, contact us within 24 hours at <a href="mailto:concierge@thedoggycompany.com" style={{ color: G.amber, fontWeight: 600 }}>concierge@thedoggycompany.com</a>. We will replace it, no questions asked.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">Discrepancies in Order</h3>
-              <p className="text-gray-700 mb-4">
-                In case of any discrepancies in your order (wrong item, damaged product, missing items), 
-                please contact us within 24 hours of delivery with:
-              </p>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Your order number</li>
-                <li>Clear photos of the issue</li>
-                <li>Detailed description of the problem</li>
-              </ul>
+              <Section title="Custom Products">
+                <Para>Birthday cakes, portraits, and Soul Made™ items are non-refundable once production has begun. If you need to cancel, please contact us within 2 hours of ordering.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">Contact Us</h3>
-              <p className="text-gray-700">
-                For any order-related concerns, please email us at{' '}
-                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.in
-                </a>
-              </p>
+              <Section title="Concierge® Services">
+                <Para>If a service cannot be fulfilled by our team or partner, you will receive a full credit to your account — no fees, no process.</Para>
+              </Section>
+
+              <Section title="Memberships">
+                <Para>Please write to us at <a href="mailto:concierge@thedoggycompany.com" style={{ color: G.amber, fontWeight: 600 }}>concierge@thedoggycompany.com</a>. We will always find a fair solution. We do not hide cancellation behind forms.</Para>
+              </Section>
             </div>
           )}
 
-          {/* Privacy Policy */}
-          {activePolicy === 'privacy' && (
-            <div className="prose max-w-none" data-testid="privacy-policy">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Shield className="w-6 h-6 text-purple-600" />
+          {/* ── PRIVACY ── */}
+          {active === 'privacy' && (
+            <div data-testid="privacy-policy">
+              <h2 style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Georgia,serif', color: G.navy, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Shield style={{ width: 22, height: 22, color: G.sage }} />
                 Privacy Policy
               </h2>
 
-              <p className="text-gray-700 mb-4">
-                This policy explains our privacy practices for The Doggy Company website and services.
-                By using our services, you accept the terms of this privacy policy.
-              </p>
+              {/* Hero blockquote */}
+              <blockquote style={{
+                background: G.navy, color: '#fff', borderRadius: 16, padding: '24px 28px',
+                margin: '0 0 28px', borderLeft: 'none', fontFamily: 'Georgia,serif',
+                fontSize: 'clamp(1.1rem,3vw,1.4rem)', fontWeight: 700, lineHeight: 1.4,
+                letterSpacing: '-0.3px',
+              }}>
+                "Your dog's soul profile is yours. Always."
+                <p style={{ fontSize: 13, fontWeight: 400, fontFamily: '-apple-system,sans-serif', color: 'rgba(255,255,255,0.6)', marginTop: 10, marginBottom: 0, lineHeight: 1.6 }}>
+                  We collect soul profile data for one reason only — to help Mira know your dog better.
+                  We do not sell it. We do not share it with advertisers. We do not use it for any purpose
+                  other than personalising your experience on The Doggy Company.
+                </p>
+              </blockquote>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">What Personal Data We Collect</h3>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Contact details (name, phone number, email)</li>
-                <li>Personal information (date of birth, nationality)</li>
-                <li>Delivery address and payment details</li>
-                <li>Device information (IP address, browser type)</li>
-                <li>Communication preferences and history</li>
-              </ul>
+              <Section title="What we store">
+                <Bullet items={[
+                  "Your dog's name, breed, age, and life stage",
+                  "Soul Profile answers — allergies, preferences, personality, fears, and life vision",
+                  "Conversation history with Mira (so she remembers what she's promised)",
+                  "Your contact details (name, email, phone) for service coordination",
+                ]} />
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">How We Use Personal Data</h3>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Meeting our obligations to customers</li>
-                <li>Making our products and services available to you</li>
-                <li>Personalizing your shopping experience</li>
-                <li>Improving our service</li>
-                <li>Managing customer relationships</li>
-                <li>Securing your use of our website</li>
-              </ul>
+              <Section title="What we never do">
+                <Bullet items={[
+                  "Sell your data — to anyone, ever",
+                  "Share your dog's soul profile with advertisers",
+                  "Use your data for any purpose other than your dog's experience on TDC",
+                  "Store payment details — all payments are handled securely by Razorpay",
+                ]} />
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">Sharing Personal Data</h3>
-              <p className="text-gray-700 mb-4">
-                We do not sell your personal data. We may share information with:
-              </p>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Affiliated businesses to improve services</li>
-                <li>Service providers who help deliver our services</li>
-                <li>Legal authorities when required by law</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Security</h3>
-              <p className="text-gray-700 mb-4">
-                Your account is password-protected. We implement security procedures 
-                to protect your information. Credit card information is always encrypted 
-                during transfer over networks.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Communication & Marketing</h3>
-              <p className="text-gray-700 mb-4">
-                As a registered member, you may receive promotional emails. 
-                You can opt-out anytime by emailing us at{' '}
-                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.in
-                </a>
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Privacy Inquiries</h3>
-              <p className="text-gray-700">
-                For privacy-related concerns, contact us at{' '}
-                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.in
-                </a>
-              </p>
+              <Section title="Your right to delete">
+                <Para>You can delete your account and all associated data at any time by writing to <a href="mailto:concierge@thedoggycompany.com" style={{ color: G.amber, fontWeight: 600 }}>concierge@thedoggycompany.com</a>. We will process your request within 7 business days.</Para>
+              </Section>
             </div>
           )}
 
-          {/* Terms of Service */}
-          {activePolicy === 'terms' && (
-            <div className="prose max-w-none" data-testid="terms-policy">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <ScrollText className="w-6 h-6 text-purple-600" />
+          {/* ── TERMS ── */}
+          {active === 'terms' && (
+            <div data-testid="terms-policy">
+              <h2 style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Georgia,serif', color: G.navy, marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <ScrollText style={{ width: 22, height: 22, color: G.amber }} />
                 Terms of Service
               </h2>
 
-              <p className="text-gray-700 mb-4">
-                This website is operated by The Doggy Company. By visiting our site and/or 
-                purchasing something from us, you engage in our &ldquo;Service&rdquo; and agree to be 
-                bound by the following terms and conditions.
-              </p>
+              <Para style={{ color: G.navy, fontWeight: 600, marginBottom: 20 }}>
+                The Doggy Company is a membership platform. By joining you agree to the following.
+              </Para>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">1. Online Store Terms</h3>
-              <p className="text-gray-700 mb-4">
-                You must be at least 18 years old to use this site. You may not use our 
-                products for any illegal purpose. A breach of any Terms will result in 
-                immediate termination of Services.
-              </p>
+              <Section title="Use of the platform">
+                <Para>TDC is for your dog's wellbeing. You may not use the platform for commercial resale of our recommendations, products, or Concierge® arrangements.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">2. General Conditions</h3>
-              <p className="text-gray-700 mb-4">
-                We reserve the right to refuse service to anyone. Credit card information 
-                is always encrypted during transfer. You agree not to reproduce or exploit 
-                any portion of the Service without written permission.
-              </p>
+              <Section title="Mira's recommendations">
+                <Para>Mira's recommendations are personalised suggestions based on your dog's Soul Profile. They are not veterinary advice. Always consult your vet for medical decisions.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">3. Accuracy of Information</h3>
-              <p className="text-gray-700 mb-4">
-                We are not responsible if information on this site is not accurate or current. 
-                The material is provided for general information only. We reserve the right 
-                to modify contents at any time.
-              </p>
+              <Section title="Soul Made™ products">
+                <Para>Soul Made™ products are custom-created for your dog and are non-transferable. Production begins within 24 hours of order confirmation.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">4. Products & Services</h3>
-              <p className="text-gray-700 mb-4">
-                Products may have limited quantities. We have made every effort to display 
-                colors and images accurately. We reserve the right to limit sales, discontinue 
-                products, or change pricing at any time.
-              </p>
+              <Section title="Trademarks">
+                <Para>The Doggy Company®, Concierge®, Soul Profile™, and Soul Made™ are registered trademarks. Mira™ is named after our founder's mother.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">5. Billing & Account</h3>
-              <p className="text-gray-700 mb-4">
-                We reserve the right to refuse any order. You agree to provide accurate 
-                purchase and account information. We may limit or cancel orders that appear 
-                to be placed by dealers or resellers.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">6. Third-Party Links</h3>
-              <p className="text-gray-700 mb-4">
-                Third-party links may direct you to websites not affiliated with us. 
-                We are not responsible for third-party content or practices.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">7. Prohibited Uses</h3>
-              <p className="text-gray-700 mb-4">
-                You are prohibited from using the site for unlawful purposes, to violate 
-                regulations, infringe intellectual property, harass others, submit false 
-                information, or interfere with security features.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">8. Disclaimer & Liability</h3>
-              <p className="text-gray-700 mb-4">
-                We do not guarantee uninterrupted or error-free service. The service is 
-                provided &ldquo;as is&rdquo;. We shall not be liable for any damages arising from 
-                your use of the service.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">9. Governing Law</h3>
-              <p className="text-gray-700 mb-4">
-                These Terms shall be governed by the laws of India with jurisdiction 
-                in Jaipur, Rajasthan.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Contact</h3>
-              <p className="text-gray-700">
-                Questions about Terms of Service:{' '}
-                <a href="mailto:woof@thedoggybakery.in" className="text-purple-600 hover:underline">
-                  woof@thedoggybakery.in
-                </a>
-              </p>
+              <Section title="Governing law">
+                <Para>These terms are governed by the laws of India. For any disputes, please write to us first at <a href="mailto:concierge@thedoggycompany.com" style={{ color: G.amber, fontWeight: 600 }}>concierge@thedoggycompany.com</a>. We will always try to resolve directly.</Para>
+              </Section>
             </div>
           )}
 
-          {/* Shipping Policy */}
-          {activePolicy === 'shipping' && (
-            <div className="prose max-w-none" data-testid="shipping-policy">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Truck className="w-6 h-6 text-purple-600" />
-                Shipping Policy
+          {/* ── SHIPPING ── */}
+          {active === 'shipping' && (
+            <div data-testid="shipping-policy">
+              <h2 style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Georgia,serif', color: G.navy, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Truck style={{ width: 22, height: 22, color: G.sage }} />
+                Shipping &amp; Delivery
               </h2>
 
-              <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
-                <p className="text-green-800">
-                  <strong>Same Day Delivery!</strong> Available in Mumbai, Bangalore & Gurgaon 
-                  for all orders placed by 6:00 PM.
+              <Notice bg="#F0FFF4" borderColor={G.sage}>
+                <p style={{ fontSize: 14, fontWeight: 600, color: G.sage, margin: 0, lineHeight: 1.7 }}>
+                  The Doggy Company is a Concierge® platform. Most of what we do is arranged for you — not shipped to you. Your Concierge® team handles all logistics via WhatsApp.
                 </p>
-              </div>
+              </Notice>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">Delivery Options</h3>
-              
-              <div className="space-y-4 mb-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900">Local Delivery (Mumbai, Bangalore, Gurgaon)</h4>
-                  <ul className="list-disc pl-6 text-gray-700 mt-2">
-                    <li>Same-day delivery for orders before 6:00 PM</li>
-                    <li>Delivery fee: ₹75</li>
-                    <li>Free delivery for Premium & VIP members</li>
-                  </ul>
-                </div>
+              <Section title="Physical products from The Doggy Bakery">
+                <Bullet items={[
+                  "Delivered within 3–5 business days across India",
+                  "Fresh and frozen products delivered within your city only",
+                  "Custom birthday cakes require 48 hours notice",
+                ]} />
+              </Section>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900">Pan-India Delivery</h4>
-                  <ul className="list-disc pl-6 text-gray-700 mt-2">
-                    <li>Standard shipping across India</li>
-                    <li>Delivery fee: ₹150</li>
-                    <li>Delivery time: 2-5 business days</li>
-                  </ul>
-                </div>
+              <Section title="Concierge® services">
+                <Para>Our team will confirm timing, provider, and logistics via WhatsApp within 2 hours of your request. You don't need to track anything — we update you.</Para>
+              </Section>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900">Pickup from Bakery</h4>
-                  <ul className="list-disc pl-6 text-gray-700 mt-2">
-                    <li>Available at our bakery locations</li>
-                    <li>No delivery charges</li>
-                    <li>Call to arrange pickup time</li>
-                  </ul>
-                </div>
-              </div>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Payment on Delivery</h3>
-              <p className="text-gray-700 mb-4">
-                For Payment on Delivery, please call us on{' '}
-                <a href="tel:+919663185747" className="text-purple-600 hover:underline">
-                  9663185747
-                </a>
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Important Notes</h3>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>All cakes and fresh items are made to order</li>
-                <li>Please provide accurate delivery address and contact number</li>
-                <li>Someone must be available to receive the order</li>
-                <li>Products are perishable - consume within recommended time</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Contact for Delivery</h3>
-              <div className="flex flex-col gap-2">
-                <p className="flex items-center gap-2 text-gray-700">
-                  <Phone className="w-4 h-4 text-purple-600" />
-                  <a href="tel:+919663185747" className="hover:text-purple-600">+91 96631 85747</a>
-                </p>
-                <p className="flex items-center gap-2 text-gray-700">
-                  <Mail className="w-4 h-4 text-purple-600" />
-                  <a href="mailto:woof@thedoggybakery.in" className="hover:text-purple-600">woof@thedoggybakery.in</a>
-                </p>
-              </div>
+              <Section title="Questions about your order?">
+                <Para>
+                  Write to <a href="mailto:concierge@thedoggycompany.com" style={{ color: G.amber, fontWeight: 600 }}>concierge@thedoggycompany.com</a> or message us on WhatsApp. Our team responds within 2 hours.
+                </Para>
+              </Section>
             </div>
           )}
 
-          {/* AI Disclaimer */}
-          {activePolicy === 'ai' && (
-            <div className="prose max-w-none" data-testid="ai-disclaimer">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-purple-600" />
-                Mira AI Disclaimer
+          {/* ── MIRA AI ── */}
+          {active === 'ai' && (
+            <div data-testid="ai-disclaimer">
+              <h2 style={{ fontSize: 22, fontWeight: 800, fontFamily: 'Georgia,serif', color: G.navy, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Sparkles style={{ width: 22, height: 22, color: G.amber }} />
+                Mira AI — What She Is &amp; Isn't
               </h2>
-              
-              <div className="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6">
-                <p className="text-purple-900 font-medium flex items-center gap-2">
-                  <Brain className="w-5 h-5" />
-                  Mira is powered by artificial intelligence and can make mistakes. Always verify important information.
+
+              <Notice bg="#FFF8F0" borderColor={G.amber}>
+                <p style={{ fontSize: 14, color: '#8B4513', margin: 0, lineHeight: 1.7, fontWeight: 600 }}>
+                  Mira is your dog's AI concierge — not a veterinarian. Her recommendations are personalised to your dog's Soul Profile, but they are not medical advice. Always consult your vet for health decisions.
                 </p>
-              </div>
+              </Notice>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">About Mira AI</h3>
-              <p className="text-gray-700 mb-4">
-                Mira is our AI-powered pet concierge designed to assist you with product recommendations, 
-                pet care information, and general guidance. Mira uses advanced language models and our 
-                curated pet care database to provide helpful responses.
-              </p>
+              <Section title="What Mira is">
+                <Para>Mira is an AI concierge powered by your dog's Soul Profile. She remembers your dog's allergies, loves, fears, and history — and uses that context to personalise every recommendation, service, and interaction. She is named after our founder's mother.</Para>
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">Information Sources</h3>
-              <p className="text-gray-700 mb-4">
-                Mira&apos;s knowledge is based on:
-              </p>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Our product catalog and inventory data</li>
-                <li>General pet care guidelines from established sources (PetMD, AKC, The Spruce Pets)</li>
-                <li>Breed-specific information from veterinary databases</li>
-                <li>Our curated kit templates and recommendations</li>
-              </ul>
+              <Section title="What Mira can do">
+                <Bullet items={[
+                  "Filter products by your dog's allergens — automatically, always",
+                  "Recommend services based on your dog's breed, age, and health notes",
+                  "Book and coordinate Concierge® services on your behalf",
+                  "Remember what she's promised and follow up proactively",
+                  "Answer questions about The Doggy Company's products and services",
+                ]} />
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">Limitations</h3>
-              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
-                <p className="text-yellow-800 font-medium mb-2">Important Notice</p>
-                <ul className="list-disc pl-6 text-yellow-900">
-                  <li><strong>NOT Veterinary Advice:</strong> Mira does not provide veterinary diagnosis, treatment plans, or medical advice. Always consult a qualified veterinarian for health concerns.</li>
-                  <li><strong>AI Limitations:</strong> Mira may occasionally produce inaccurate or outdated information. Please verify any critical information.</li>
-                  <li><strong>Product Availability:</strong> Product recommendations may not always reflect current stock availability.</li>
-                </ul>
-              </div>
+              <Section title="What Mira cannot do">
+                <Bullet items={[
+                  "Diagnose illness or prescribe treatment — always call your vet for this",
+                  "Guarantee specific health outcomes",
+                  "Replace professional veterinary advice in emergencies",
+                ]} />
+              </Section>
 
-              <h3 className="text-lg font-semibold mt-6 mb-3">What Mira Can Help With</h3>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Product recommendations and comparisons</li>
-                <li>General pet care tips and guidance</li>
-                <li>Breed-specific dietary considerations</li>
-                <li>Kit assembly for special occasions</li>
-                <li>Service booking assistance</li>
-                <li>Order status and account information</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">What Mira Cannot Help With</h3>
-              <ul className="list-disc pl-6 text-gray-700 mb-4">
-                <li>Veterinary diagnosis or medical treatment</li>
-                <li>Specific medication dosages</li>
-                <li>Emergency medical situations (call your vet immediately)</li>
-                <li>Legal advice</li>
-                <li>Guaranteed health outcomes</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Data Privacy</h3>
-              <p className="text-gray-700 mb-4">
-                Your conversations with Mira are stored securely to improve service quality and provide 
-                personalized recommendations. We do not share your conversation data with third parties 
-                for advertising purposes. For more details, please see our Privacy Policy.
-              </p>
-
-              <h3 className="text-lg font-semibold mt-6 mb-3">Feedback</h3>
-              <p className="text-gray-700 mb-4">
-                We&apos;re continuously improving Mira. If you encounter any issues or have suggestions, 
-                please reach out to us:
-              </p>
-              <div className="flex flex-col gap-2">
-                <p className="flex items-center gap-2 text-gray-700">
-                  <Mail className="w-4 h-4 text-purple-600" />
-                  <a href="mailto:woof@thedoggycompany.in" className="hover:text-purple-600">woof@thedoggycompany.in</a>
-                </p>
-              </div>
-
-              <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 italic">
-                  By using Mira AI, you acknowledge that you have read and understood this disclaimer. 
-                  Mira is a helpful assistant but not a replacement for professional veterinary care.
-                </p>
-              </div>
+              <Section title="Mira's memory &amp; your data">
+                <Para>Mira stores your conversation history to improve her personalisation over time. This data is never shared or sold. See our Privacy Policy for full details.</Para>
+              </Section>
             </div>
           )}
-        </Card>
+        </div>
 
-        {/* Last Updated */}
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Last updated: January 2025
+        <p style={{ textAlign: 'center', fontSize: 12, color: '#aaa', marginTop: 24 }}>
+          Last updated: April 2026 · Questions? <a href="mailto:concierge@thedoggycompany.com" style={{ color: G.amber }}>concierge@thedoggycompany.com</a>
         </p>
       </div>
     </div>
