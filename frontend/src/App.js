@@ -301,6 +301,7 @@ const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
+const DemoPage = lazy(() => import("./pages/DemoPage"));
 
 // Pet Wrapped
 const PetWrappedViewer = lazy(() => import("./pages/PetWrappedViewer"));
@@ -360,6 +361,9 @@ function AppRouter() {
         
         {/* B2B Demo Pages - Standalone, no auth required */}
         <Route path="/demo/dreamfolks" element={<DreamfolksDemo />} />
+        
+        {/* Public Experience Demo Page - No auth, no navbar */}
+        <Route path="/demo" element={<DemoPage />} />
         
         {/* Agent Portal - Standalone Service Desk for agents */}
         <Route path="/agent" element={<AdminProtectedRoute><AgentPortal /></AdminProtectedRoute>} />
