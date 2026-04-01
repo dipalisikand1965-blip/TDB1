@@ -604,16 +604,16 @@ const MiraChatWidget = ({
     return () => { cancelled = true; };
   }, [selectedPet?.id, pillar, token]);
   
-  // Lock body scroll when widget is open on mobile
+  // Lock body scroll when widget is open — mobile only
+  // Desktop doesn't need position:fixed (no rubber-band scroll) and it breaks navigation
   useEffect(() => {
+    if (!isMobile) return; // Desktop: never lock body position
     if (isOpen) {
-      // Lock scroll
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.top = `-${window.scrollY}px`;
     } else {
-      // Restore scroll
       const scrollY = document.body.style.top;
       document.body.style.overflow = '';
       document.body.style.position = '';
@@ -625,13 +625,12 @@ const MiraChatWidget = ({
     }
     
     return () => {
-      // Cleanup on unmount
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
       document.body.style.top = '';
     };
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   // Generate pillar-specific welcome message (Mira_Widget_MASTER.docx Section 4)
   const generateWelcomeMessage = useCallback(() => {
@@ -1816,9 +1815,11 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
-  // On mobile pillar pages — hide global FAB (those pages have their own inline Mira)
-  // On DESKTOP — always show the floating panel, even on pillar pages
-  if (hideMiraChatOnPillarPages && isMobile && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
+  // Hide global widget on ALL pillar pages (desktop + mobile).
+  // Every pillar page already renders its own MiraChatWidget via PillarPageLayout.
+  // Two simultaneous instances cause double DOM writes, double scroll locks, and
+  // React reconciliation conflicts that break desktop pillar navigation.
+  if (hideMiraChatOnPillarPages && PILLAR_PATHS.some(p => loc.pathname === p || loc.pathname.startsWith(p + '/'))) {
     return null;
   }
 
@@ -1826,8 +1827,8 @@ const MiraChatWidget = ({
   // On mobile non-pillar pages: MobileNavBar center FAB handles Mira access — no floating orb needed
   // (component stays mounted so openMiraAI event listener remains active even when returning null)
   if (!isOpen) {
-    if (isMobile && hideMiraChatOnPillarPages) {
-      // Mobile + global widget → MobileNavBar FAB provides Mira access, hide duplicate orb
+    if (hideMiraChatOnPillarPages) {
+      // Global widget is hidden on all pillar pages — pillar page has its own Mira
       return null;
     }
     return (
