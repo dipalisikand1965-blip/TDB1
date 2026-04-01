@@ -18,8 +18,62 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-const FONTS = `
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+// CSS injected into <head> via useEffect — never as JSX <style> in body
+const DEMO_CSS = `
+  .demo-pillars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .demo-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .demo-soul-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .demo-three-truths { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; }
+  .demo-nav-links { display: flex; align-items: center; gap: 16px; }
+  .demo-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; z-index: 102; }
+  .demo-hamburger span { width: 22px; height: 2px; background: #F5F0E8; border-radius: 2px; transition: all 0.3s; }
+  .demo-mobile-menu {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 260px;
+    z-index: 101; background: rgba(26,10,46,0.97);
+    backdrop-filter: blur(16px); padding: 80px 28px 40px;
+    display: flex; flex-direction: column; gap: 4px;
+    transform: translateX(100%); transition: transform 0.3s ease;
+    border-left: 1px solid rgba(201,151,58,0.18);
+  }
+  .demo-mobile-menu.open { transform: translateX(0); }
+  .demo-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .demo-overlay.open { opacity: 1; pointer-events: auto; }
+  @keyframes demo-orbPulse {
+    0%, 100% { box-shadow: 0 0 40px rgba(155,89,182,0.3), 0 0 80px rgba(155,89,182,0.1); }
+    50%       { box-shadow: 0 0 60px rgba(155,89,182,0.5), 0 0 120px rgba(155,89,182,0.2); }
+  }
+  @keyframes demo-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes demo-shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+  .demo-mira-orb { animation: demo-orbPulse 3s ease-in-out infinite, demo-float 6s ease-in-out infinite; }
+  .demo-amber-shimmer {
+    background: linear-gradient(90deg, #C9973A 0%, #E8B84B 40%, #C9973A 80%);
+    background-size: 200%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; animation: demo-shimmer 3s linear infinite;
+  }
+  ::selection { background: rgba(201,151,58,0.3); }
+  @media (max-width: 900px) {
+    .demo-pillars { grid-template-columns: repeat(3, 1fr); }
+    .demo-stats   { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .demo-three-truths { grid-template-columns: 1fr; gap: 12px; }
+  }
+  @media (max-width: 640px) {
+    .demo-pillars { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .demo-stats   { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .demo-nav-links > *:not(:last-child) { display: none; }
+    .demo-hamburger { display: flex; }
+  }
+  @media (max-width: 480px) { .demo-pillars { grid-template-columns: repeat(2, 1fr); } }
 `;
 
 const C = {
@@ -200,6 +254,15 @@ export default function DemoPage() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Inject CSS into <head> — never as JSX <style> in body (avoids removeChild errors)
+  useEffect(() => {
+    const el = document.createElement("style");
+    el.id = "demo-page-styles";
+    el.textContent = DEMO_CSS;
+    document.head.appendChild(el);
+    return () => { if (document.head.contains(el)) document.head.removeChild(el); };
+  }, []);
+
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", h, { passive: true });
@@ -255,105 +318,6 @@ export default function DemoPage() {
       fontFamily: "DM Sans, sans-serif",
       overflowX: "hidden", minHeight: "100vh",
     }}>
-      <style>{`
-        ${FONTS}
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        ::selection { background: rgba(201,151,58,0.3); }
-
-        .demo-pillars {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 14px;
-        }
-        .demo-stats {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 40px;
-          max-width: 860px;
-          margin: 0 auto;
-        }
-        .demo-soul-chips {
-          display: flex; flex-wrap: wrap; gap: 8px;
-        }
-        .demo-three-truths {
-          display: grid;
-          grid-template-columns: 1fr 1fr 1fr;
-          gap: 2px;
-        }
-        .demo-nav-links { display: flex; align-items: center; gap: 16px; }
-        .demo-hamburger {
-          display: none; flex-direction: column; gap: 5px;
-          cursor: pointer; padding: 8px; z-index: 102;
-        }
-        .demo-hamburger span {
-          width: 22px; height: 2px;
-          background: ${C.ivory}; border-radius: 2px;
-          transition: all 0.3s;
-        }
-        .demo-mobile-menu {
-          position: fixed; top: 0; right: 0; bottom: 0; width: 260px;
-          z-index: 101; background: rgba(26,10,46,0.97);
-          backdrop-filter: blur(16px);
-          padding: 80px 28px 40px;
-          display: flex; flex-direction: column; gap: 4px;
-          transform: translateX(100%);
-          transition: transform 0.3s ease;
-          border-left: 1px solid ${C.border};
-        }
-        .demo-mobile-menu.open { transform: translateX(0); }
-        .demo-overlay {
-          position: fixed; inset: 0; z-index: 100;
-          background: rgba(0,0,0,0.5);
-          opacity: 0; pointer-events: none;
-          transition: opacity 0.3s;
-        }
-        .demo-overlay.open { opacity: 1; pointer-events: auto; }
-
-        @keyframes orbPulse {
-          0%, 100% { box-shadow: 0 0 40px rgba(155,89,182,0.3), 0 0 80px rgba(155,89,182,0.1); }
-          50%       { box-shadow: 0 0 60px rgba(155,89,182,0.5), 0 0 120px rgba(155,89,182,0.2); }
-        }
-        @keyframes float {
-          0%,100% { transform: translateY(0); }
-          50%      { transform: translateY(-10px); }
-        }
-        @keyframes shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position:  200% center; }
-        }
-        @keyframes blink {
-          0%,100% { opacity: 1; }
-          50%      { opacity: 0; }
-        }
-
-        .demo-mira-orb {
-          animation: orbPulse 3s ease-in-out infinite, float 6s ease-in-out infinite;
-        }
-        .demo-amber-shimmer {
-          background: linear-gradient(90deg, ${C.amber} 0%, ${C.amberL} 40%, ${C.amber} 80%);
-          background-size: 200%;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          animation: shimmer 3s linear infinite;
-        }
-
-        @media (max-width: 900px) {
-          .demo-pillars { grid-template-columns: repeat(3, 1fr); }
-          .demo-stats   { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-          .demo-three-truths { grid-template-columns: 1fr; gap: 12px; }
-        }
-        @media (max-width: 640px) {
-          .demo-pillars { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-          .demo-stats   { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-          .demo-nav-links > *:not(:last-child) { display: none; }
-          .demo-hamburger { display: flex; }
-        }
-        @media (max-width: 480px) {
-          .demo-pillars { grid-template-columns: repeat(2, 1fr); }
-        }
-      `}</style>
-
       {/* ── NAVBAR ──────────────────────────────────────────────────────── */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
