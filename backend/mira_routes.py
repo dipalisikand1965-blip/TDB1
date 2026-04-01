@@ -7807,8 +7807,61 @@ async def get_default_picks_for_pet(
         pet_name = pet.get("name", "your pet") if pet else "your pet"
         breed = (pet.get("breed") or "").lower() if pet else ""
         breed_title = breed.title() if breed else ""
-        allergies = pet.get("sensitivities", []) or pet.get("health_vault") or {}.get("allergies", []) if pet else []
-        allergy_names = [a.get("allergen", a) if isinstance(a, dict) else a for a in allergies]
+
+        # ── Allergy extraction — reads ALL sources (vault, health_data, legacy) ──
+        _NO_ALLERGY = {"no", "none", "none known", "nil", "na", "n/a", "unknown",
+                       "none_confirmed", "no_allergies", "no allergies", "not known",
+                       "no known", "no known allergies"}
+        allergy_names = set()
+        if pet:
+            # 1. vault.allergies (primary store — objects with .name)
+            for alg in (pet.get("vault") or {}).get("allergies") or []:
+                n = (alg.get("name") or "").strip().lower()
+                if n and n not in _NO_ALLERGY:
+                    allergy_names.add(n)
+            # 2. health_data.allergies (list of strings)
+            for a in (pet.get("health_data") or {}).get("allergies") or []:
+                n = str(a).strip().lower()
+                if n and n not in _NO_ALLERGY:
+                    allergy_names.add(n)
+            # 3. doggy_soul_answers.food_allergies
+            dsa_allg = (pet.get("doggy_soul_answers") or {}).get("food_allergies") or []
+            for a in (dsa_allg if isinstance(dsa_allg, list) else [dsa_allg]):
+                n = str(a).strip().lower()
+                if n and n not in _NO_ALLERGY:
+                    allergy_names.add(n)
+            # 4. top-level allergies[]
+            for a in pet.get("allergies") or []:
+                n = str(a).strip().lower()
+                if n and n not in _NO_ALLERGY:
+                    allergy_names.add(n)
+            # 5. learned_facts typed as allergy
+            for f in pet.get("learned_facts") or []:
+                if f.get("type") == "allergy" and f.get("value"):
+                    n = str(f["value"]).strip().lower()
+                    if n and n not in _NO_ALLERGY:
+                        allergy_names.add(n)
+        allergy_names = list(allergy_names)
+
+        # ── Loves extraction — reads preferences + soul_enrichments + dsa ──────
+        love_names = set()
+        if pet:
+            for ft in (pet.get("preferences") or {}).get("favorite_treats") or []:
+                love_names.add(str(ft).strip().lower())
+            for ft in (pet.get("soul_enrichments") or {}).get("favorite_treats") or []:
+                love_names.add(str(ft).strip().lower())
+            dsa_ft = (pet.get("doggy_soul_answers") or {}).get("favorite_treats") or []
+            for ft in (dsa_ft if isinstance(dsa_ft, list) else [dsa_ft]):
+                love_names.add(str(ft).strip().lower())
+            dsa_fp = (pet.get("doggy_soul_answers") or {}).get("favorite_protein") or ""
+            if dsa_fp:
+                love_names.add(dsa_fp.strip().lower())
+            for f in pet.get("learned_facts") or []:
+                if f.get("type") == "loves" and f.get("value"):
+                    love_names.add(str(f["value"]).strip().lower())
+        # Remove loves that are also allergens
+        love_names = [l for l in love_names if l and not any(l in a or a in l for a in allergy_names)]
+
         size = pet.get("size", "medium").lower() if pet else "medium"
         soul = pet.get("soul") or {} if pet else {}
         doggy_answers = pet.get("doggy_soul_answers") or {} if pet else {}
@@ -7817,7 +7870,7 @@ async def get_default_picks_for_pet(
         energy_level = soul.get("energy_level", doggy_answers.get("energy_level", ""))
         
         # Build personalization context
-        allergy_text = f" (avoiding {', '.join(allergy_names[:2])})" if allergy_names else ""
+        allergy_text = f" (avoiding {', '.join(allergy_names[:3])})" if allergy_names else ""
         
         picks = []
         
@@ -7908,8 +7961,8 @@ async def get_default_picks_for_pet(
             }
             
             # Exclude allergens
-            if allergies:
-                breed_query["title"] = {"$not": {"$regex": "|".join(allergies), "$options": "i"}}
+            if allergy_names:
+                breed_query["title"] = {"$not": {"$regex": "|".join(allergy_names), "$options": "i"}}
             
             breed_products = await db.products_master.find(breed_query).limit(3).to_list(3)
             for p in breed_products:
