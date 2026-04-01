@@ -12,6 +12,14 @@ import CareConciergeModal from './CareConciergeModal';
 import CelebrateServiceCard from '../celebrate/CelebrateServiceCard';
 import { getApiUrl } from '../../utils/api';
 
+// Breed-specific service copy: breed_whispers[breed_key] → default → mira_whisper → description
+function getBreedWhisper(svc, pet) {
+  if (!svc?.breed_whispers) return null;
+  const key = pet?.breed ? String(pet.breed).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') : null;
+  if (key && svc.breed_whispers[key]) return svc.breed_whispers[key];
+  return svc.breed_whispers.default || null;
+}
+
 const G = {
   sage:    '#40916C',
   deepMid: '#2D6A4F',
@@ -83,7 +91,7 @@ const CareConciergeSection = ({ pet }) => {
               illustration={svc.image_url || svc.watercolor_image || svc.illustration_url || ''}
               subLabel={svc.category || 'CARE'}
               title={svc.name}
-              description={svc.short_description || svc.description || ''}
+              description={getBreedWhisper(svc, pet) || svc.mira_whisper || svc.short_description || svc.description || ''}
               ctaText={`Book ${petName}'s ${svc.name} →`}
               onCta={() => handleCardClick(svc)}
             />
