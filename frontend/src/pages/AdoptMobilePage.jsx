@@ -16,6 +16,7 @@ import { API_URL } from '../utils/api';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import GuidedAdoptPaths from '../components/adopt/GuidedAdoptPaths';
 import AdoptNearMe from '../components/adopt/AdoptNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
@@ -233,6 +234,11 @@ export default function AdoptMobilePage() {
           <div>
             {/* Soul Profile + CTA + Pawrent — inside Tab 1, same as Play/Care */}
             {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="adopt" token={token} /></div>}
+            {currentPet && (
+              <div style={{ padding:'0 16px 4px' }}>
+                <DesktopSoulCard pet={currentPet} pillarLabel="Adopt" pillar="adopt" dataTestId="mobile-adopt-soul-card" />
+              </div>
+            )}
             {currentPet && (
               <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(251,113,133,0.14),rgba(251,113,133,0.20))', border:'1px solid rgba(251,113,133,0.35)', borderRadius:18, padding:'16px' }}>
                 <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>

@@ -25,6 +25,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import FarewellMobilePage from './FarewellMobilePage';
@@ -346,6 +347,7 @@ const FarewellSoulPage = () => {
             <div style={{fontSize:11,color:G.indigo,fontWeight:700,whiteSpace:'nowrap',flexShrink:0}}>I'm here to help →</div>
           </div>
         </div>
+        <DesktopSoulCard pet={petData} pillarLabel="Farewell" pillar="farewell" dataTestId="desktop-farewell-soul-card" />
         {/* Tab bar */}
         <div style={{display:"flex",background:"#fff",borderBottom:`1.5px solid ${G.borderLight}`,marginBottom:24}}>
           {[{id:"farewell",label:"🌷 Legacy & Memorial"},{id:"services",label:"💙 Get Support"},{id:"find",label:"📍 Find Care"}].map(tab=>{const a=activeTab===tab.id;return<button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,padding:"14px 4px",background:"none",border:"none",borderBottom:a?`3px solid ${G.indigo}`:"3px solid transparent",color:a?G.indigo:"#888",fontSize:13,fontWeight:a?700:500,cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"}}>{tab.label}</button>;})}
