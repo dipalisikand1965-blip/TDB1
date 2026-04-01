@@ -17,6 +17,14 @@ import CelebrateServiceCard from './celebrate/CelebrateServiceCard';
 import { getApiUrl } from '../utils/api';
 import { useConcierge } from '../hooks/useConcierge';
 
+// Resolve breed-specific service copy: breed_whispers.indie > breed_whispers.default > mira_whisper > description
+function getBreedWhisper(svc, pet) {
+  if (!svc?.breed_whispers) return null;
+  const key = pet?.breed ? String(pet.breed).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g,'') : null;
+  if (key && svc.breed_whispers[key]) return svc.breed_whispers[key];
+  return svc.breed_whispers.default || null;
+}
+
 const PillarServiceSection = ({
   pillar,
   pet,
@@ -133,7 +141,7 @@ const PillarServiceSection = ({
             illustration={svc.watercolor_image || svc.cloudinary_image_url || svc.image_url}
             subLabel={svc.category || pillar}
             title={svc.name}
-            description={svc.description || svc.tagline || ''}
+            description={getBreedWhisper(svc, pet) || svc.mira_whisper || svc.description || svc.tagline || ''}
             ctaText={`Book for ${petName} →`}
             onCta={() => openModal(svc)}
           />
@@ -186,7 +194,7 @@ const PillarServiceSection = ({
                   {pendingService.name}
                 </h3>
                 <p style={{ fontSize: 13, color: '#666', marginBottom: 18, lineHeight: 1.6 }}>
-                  {pendingService.description || pendingService.tagline || `Personalised for ${petName} — our team handles every detail.`}
+                  {getBreedWhisper(pendingService, pet) || pendingService.mira_whisper || pendingService.description || pendingService.tagline || `Personalised for ${petName} — our team handles every detail.`}
                 </p>
 
                 {/* Notes */}
