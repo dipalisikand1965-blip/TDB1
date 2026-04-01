@@ -52,6 +52,7 @@ import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import { ProductDetailModal } from '../components/ProductCard';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import DoggyBakeryCakeModal from '../components/celebrate/BreedCakeOrderModal';
 import BirthdayCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 
@@ -489,6 +490,7 @@ const CelebratePageNew = () => {
       <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         {/* Soul Profile bar — pet/breed info + questions */}
         <div style={{ paddingTop: 16 }}>
+          <DesktopSoulCard pet={selectedPet} pillarLabel="Celebrate" pillar="celebrate" dataTestId="desktop-celebrate-soul-card" />
           <PillarSoulProfile pet={selectedPet} token={token} pillar="celebrate" color="#E11D48" />
         </div>
 
