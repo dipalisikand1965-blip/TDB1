@@ -418,7 +418,17 @@ None.
 **DineSoulPage.jsx contains an inline DineMobilePage function** (all other pillars have separate *MobilePage.jsx files). Any changes to Dine mobile must edit DineSoulPage.jsx lines 767+. The desktop path (DineSoulPageDesktopLegacy) is strictly locked.
 
 
-## SESSION 46 — (2026-04-01) Desktop Soul Card + Allergy Safety Fix
+## SESSION 47 — (2026-04-01) Pillar-Specific Soul Cards on Desktop (v2)
+
+Updated DesktopSoulCard.jsx to show pillar-specific facts per Srini Thursday spec:
+- Dine: allergens + loves + 💊 Sensitive stomach
+- Care: allergens + 🐕 breed/coat/grooming + 😰 stranger reaction + 💊 health
+- Play: ⚡ energy/life stage/age + 🐕 social/lives_with + 😰 stranger reaction + 🎾 training
+- Learn/Go: wired and ready (learn_level, travel prefs)
+
+All 3 desktop pages verified with live screenshot: correct chips, correct pillar colours, no duplicates.
+
+
 
 ### Soul Card added to 3 Desktop Pillar Pages (Srini Thursday feature)
 
