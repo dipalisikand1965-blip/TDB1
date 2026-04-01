@@ -19,6 +19,7 @@ import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ConciergeCTA from '../components/ConciergeCTA';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import GuidedFarewellPaths from '../components/farewell/GuidedFarewellPaths';
 import FarewellNearMe from '../components/farewell/FarewellNearMe';
 import SoulMadeModal from '../components/SoulMadeModal';
@@ -437,6 +438,11 @@ export default function FarewellMobilePage() {
 
             {/* Soul Profile + CTA + Pawrent — inside Tab 1 */}
             {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="farewell" token={token} /></div>}
+            {currentPet && (
+              <div style={{ padding:'0 16px 4px' }}>
+                <DesktopSoulCard pet={currentPet} pillarLabel="Farewell" pillar="farewell" dataTestId="mobile-farewell-soul-card" />
+              </div>
+            )}
             {currentPet && (
               <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(129,140,248,0.14),rgba(129,140,248,0.20))', border:'1px solid rgba(129,140,248,0.35)', borderRadius:18, padding:'16px' }}>
                 <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>

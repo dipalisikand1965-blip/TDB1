@@ -39,6 +39,7 @@ import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import PaperworkMobilePage from './PaperworkMobilePage';
 
 // ─── COLOUR SYSTEM ─────────────────────────────────────────
@@ -676,8 +677,7 @@ const PaperworkSoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="paperwork" color="#0D9488" />
         </div>
-
-        {/* Booking modal */}
+        <DesktopSoulCard pet={petData} pillarLabel="Paperwork" pillar="paperwork" dataTestId="desktop-paperwork-soul-card" />
         {activeService && <ServiceBookingModal isOpen={true} onClose={()=>setActiveService(null)} serviceType={activeService?.category || 'paperwork'} preselectedService={activeService?.name} />}
 
         <div style={{display:'flex',gap:8,flexWrap:'wrap',padding:'14px 0 18px'}}>

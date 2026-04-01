@@ -46,6 +46,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import LearnMobilePage from './LearnMobilePage';
 import { filterBreedProducts } from '../hooks/useMiraFilter';
 
@@ -2086,8 +2087,7 @@ const LearnSoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="learn" />
         </div>
-
-        {/* Category strip — Care-style icon+label pills with content modal */}
+        <DesktopSoulCard pet={petData} pillarLabel="Learn" pillar="learn" dataTestId="desktop-learn-soul-card" />
         <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
             {LEARN_CATS.map(cat=>{
