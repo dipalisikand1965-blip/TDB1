@@ -17,6 +17,7 @@ import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import PlayConciergeSection from '../components/play/PlayConciergeSection';
@@ -55,13 +56,20 @@ function vibe(t='light') { if(navigator?.vibrate) navigator.vibrate(t==='medium'
 function getAllergies(pet) {
   const s = new Set();
   const add = v => {
-    if (Array.isArray(v)) v.forEach(x => { if (x && !['none','no allergies','nil','n/a'].includes(String(x).toLowerCase().trim())) s.add(String(x).trim()); });
-    else if (v && !['none','no allergies','nil','n/a'].includes(String(v).toLowerCase().trim())) { String(v).split(',').forEach(a => { const t = a.trim(); if (t) s.add(t); }); }
+    if (Array.isArray(v)) v.forEach(x => { if (x && !['none','no allergies','nil','n/a'].includes(String(x).toLowerCase().trim())) s.add(String(x).trim().toLowerCase()); });
+    else if (v && !['none','no allergies','nil','n/a'].includes(String(v).toLowerCase().trim())) { String(v).split(',').forEach(a => { const t = a.trim().toLowerCase(); if (t) s.add(t); }); }
   };
   add(pet?.allergies);
   add(pet?.preferences?.allergies);
   add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies);
+  // vault.allergies — vet-confirmed severe allergies (PRIMARY source)
+  if (pet?.vault?.allergies) {
+    const va = pet.vault.allergies;
+    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n) s.add(String(n).trim().toLowerCase()); });
+    else add(va);
+  }
+  add(pet?.health_data?.allergies);
   return [...s];
 }
 function applyMiraIntelligence(products, allergies) {
@@ -207,6 +215,14 @@ export default function PlayMobilePage() {
 
             {/* Soul Profile + CTA — inside tab, same as Care */}
             {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="play" token={token} /></div>}
+
+            {/* Soul Card — energy, social, training — pillar-specific at a glance */}
+            {currentPet && (
+              <div style={{ padding:'4px 16px 0' }}>
+                <DesktopSoulCard pet={currentPet} pillarLabel="Play" pillar="play" dataTestId="mobile-play-soul-card" />
+              </div>
+            )}
+
             {currentPet && (
               <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(251,146,60,0.14),rgba(251,146,60,0.20))', border:'1px solid rgba(251,146,60,0.35)', borderRadius:18, padding:'16px' }}>
                 <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>

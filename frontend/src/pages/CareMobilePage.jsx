@@ -27,6 +27,7 @@ import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import CareCategoryStrip from '../components/care/CareCategoryStrip';
 import CareConciergeSection from '../components/care/CareConciergeSection';
 import CareNearMe from '../components/care/CareNearMe';
@@ -252,6 +253,9 @@ export default function CareMobilePage() {
         {/* ══════════ TAB 1: Care ══════════ */}
         {activeTab === 'care' && currentPet && (
           <div style={{ padding:'16px' }}>
+
+            {/* Soul Card — allergies, grooming, health — always visible at top */}
+            <DesktopSoulCard pet={currentPet} pillarLabel="Care" pillar="care" dataTestId="mobile-care-soul-card" />
 
             {/* CareCategoryStrip — inside Care tab (moved from above tab bar) */}
             <div style={{ margin:'0 -16px 8px' }}>
