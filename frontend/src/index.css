@@ -1403,3 +1403,13 @@ a[href*="emergent"][class*="badge"] {
     padding-right: 400px;
   }
 }
+
+/* Landing page Join Now — desktop nav only, hidden on mobile (mobile menu has its own) */
+.tdc-desktop-join {
+  display: inline-flex;
+}
+@media (max-width: 1024px) {
+  .tdc-desktop-join {
+    display: none !important;
+  }
+}
