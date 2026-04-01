@@ -33,6 +33,7 @@ import PersonalisedBreedSection from "../components/common/PersonalisedBreedSect
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 
 // ─── Dimension visual config — dynamic per pet ───────────────────────────────
 function getDineDims(pet) {
@@ -121,6 +122,13 @@ function getAllergies(pet) {
   };
   add(pet?.preferences?.allergies); add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies); add(pet?.allergies);
+  // vault.allergies — vet-confirmed severe allergies (PRIMARY source)
+  if (pet?.vault?.allergies) {
+    const va = pet.vault.allergies;
+    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim()); });
+    else add(va);
+  }
+  add(pet?.health_data?.allergies);
   return [...s].filter(a => a && !CLEAN_NONE.test(String(a).trim()));
 }
 
@@ -1509,6 +1517,9 @@ const DineSoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="dine" color="#D97706" />
         </div>
+
+        {/* Soul Card — allergies + loves, always visible */}
+        <DesktopSoulCard pet={petData} pillarLabel="Dine" pillar="dine" dataTestId="desktop-dine-soul-card" />
 
         {/* Category strip — centered within max-w container (same as Celebrate) */}
         <DineCategoryStrip pet={petData} />

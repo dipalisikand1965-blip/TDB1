@@ -123,6 +123,13 @@ export function getAllergies(pet) {
   add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies);
   add(pet?.allergies);
+  // vault.allergies — vet-confirmed severe allergies (PRIMARY source)
+  if (pet?.vault?.allergies) {
+    const va = pet.vault.allergies;
+    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim()); });
+    else add(va);
+  }
+  add(pet?.health_data?.allergies);
   return [...s];
 }
 
