@@ -1,48 +1,39 @@
-// Service Worker for The Doggy Company PWA - v11
-// v11: Aggressive self-destruct — unregisters itself after clearing all caches
-// This ensures returning users with stale caches always get fresh content
+// Service Worker for The Doggy Company PWA - v12
+// v12: Smart passthrough — never intercepts API or JS chunk requests.
+// Only handles push notifications. No forced reloads.
 
-const CACHE_NAME = 'tdc-pwa-v11';
+const CACHE_NAME = 'tdc-pwa-v12';
 
 self.addEventListener('install', (event) => {
-  console.log('[SW] v11: Installing — clearing ALL old caches');
-  // Skip waiting immediately so this SW activates without delay
+  console.log('[SW] v12: Installing');
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('[SW] v11: Activating — nuking old caches');
+  console.log('[SW] v12: Activating — clearing old caches');
   event.waitUntil(
-    caches.keys().then((names) => {
-      return Promise.all(
-        names.map(name => {
-          console.log('[SW] Deleting cache:', name);
-          return caches.delete(name);
-        })
-      );
-    }).then(() => {
-      // Claim all clients immediately
-      return self.clients.claim();
-    }).then(() => {
-      // Tell all clients to reload so they get fresh content
-      return self.clients.matchAll({ type: 'window' }).then(clients => {
-        clients.forEach(client => {
-          client.postMessage({ type: 'SW_UPDATED', version: 'v11' });
-        });
-      });
-    })
+    caches.keys().then((names) =>
+      Promise.all(names.map(name => caches.delete(name)))
+    ).then(() => self.clients.claim())
+    // NOTE: No SW_UPDATED message — no forced page reload on SW update
   );
 });
 
-// NETWORK ONLY — no caching at all to prevent stale content issues
+// PASSTHROUGH ONLY — never intercept API calls or JS chunks
+// This prevents the SW from interfering with React lazy-loading or auth tokens
 self.addEventListener('fetch', (event) => {
+  const url = event.request.url;
+  // Skip all non-GET requests
   if (event.request.method !== 'GET') return;
-  // Always pass through to network — no service worker caching
-  // Fall back to cache ONLY for offline support of static assets
+  // Skip API calls — must reach the backend directly
+  if (url.includes('/api/')) return;
+  // Skip static JS/CSS chunks — let browser cache handle them natively
+  if (url.includes('/static/js/') || url.includes('/static/css/') || url.includes('/static/media/')) return;
+  // Skip Cloudinary, Google APIs, and other CDNs
+  if (url.includes('cloudinary.com') || url.includes('googleapis.com') || url.includes('emergent.sh')) return;
+  // For everything else (HTML pages, manifest, icons) — network only, no cache
   event.respondWith(
-    fetch(event.request, { cache: 'no-store' }).catch(() => {
-      return caches.match(event.request);
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
 
