@@ -117,7 +117,8 @@ const BREED_DEFAULT_SIZE = {
   rottweiler: 'large', doberman: 'large', husky: 'large',
 };
 
-const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies|nil|n\/a|unknown|na)$/i;
+// Phrases that mean "no allergy" — must NOT be treated as actual allergens
+const CLEAN_NONE = /^(no|none|none known|none_confirmed|no_allergies|no allergies|not known|no known|no known allergies|nil|n\/a|unknown|na|not applicable|n\.a\.|-)$/i;
 
 // ── Pet data extractors ───────────────────────────────────────────────────────
 function extractAllergies(pet) {
@@ -156,15 +157,15 @@ function extractAllergies(pet) {
   return [...s].filter(a => a && !CLEAN_NONE.test(a));
 }
 
-function extractLoves(pet) {
+function extractLoves(pet, allergySet) {
   const loves = [];
   const addLove = item => {
     if (!item) return;
     if (Array.isArray(item)) {
-      item.forEach(x => { const v = typeof x === 'string' ? x : (x?.name || x?.value || null); if (v && !CLEAN_NONE.test(v)) loves.push(v.toLowerCase().trim()); });
+      item.forEach(x => { const v = typeof x === 'string' ? x : (x?.name || x?.value || null); if (v && !CLEAN_NONE.test(v.trim())) loves.push(v.toLowerCase().trim()); });
     } else {
       const v = typeof item === 'string' ? item : (item?.name || item?.value || null);
-      if (v && !CLEAN_NONE.test(v)) loves.push(v.toLowerCase().trim());
+      if (v && !CLEAN_NONE.test(String(v).trim())) loves.push(String(v).toLowerCase().trim());
     }
   };
   // Primary stores
@@ -173,13 +174,31 @@ function extractLoves(pet) {
   addLove(pet?.doggy_soul_answers?.favorite_treats);
   addLove(pet?.doggy_soul_answers?.favorite_protein);
   if (pet?.preferences?.favorite_flavors?.length) addLove(pet.preferences.favorite_flavors[0]);
+  // Mira learned facts typed as 'loves' or 'prefers'
+  if (Array.isArray(pet?.learned_facts)) {
+    pet.learned_facts.forEach(f => {
+      if (f?.type === 'loves' && f?.value) addLove(f.value);
+    });
+  }
   // Conversation insights typed as 'loves'
   if (Array.isArray(pet?.conversation_insights)) {
     pet.conversation_insights.forEach(ci => {
       if (ci?.category === 'loves' && ci?.content) addLove(ci.content);
     });
   }
-  return [...new Set(loves)].slice(0, 5);
+  // Post-filter: remove any loved food that is also an allergen
+  // (e.g. Mystique: dsa.favorite_protein=Chicken but allergic to chicken)
+  const safeLoves = allergySet && allergySet.size > 0
+    ? [...new Set(loves)].filter(love => {
+        const allergenKeys = Object.keys(ALLERGEN_MAP);
+        return !allergenKeys.some(key => {
+          if (!allergySet.has(key)) return false;
+          const syns = ALLERGEN_MAP[key];
+          return syns.some(syn => love.includes(syn));
+        });
+      })
+    : [...new Set(loves)];
+  return safeLoves.slice(0, 5);
 }
 
 function extractHealthCondition(pet) {
@@ -360,7 +379,8 @@ export function applyMiraFilter(products, pet) {
 
   const petName        = pet?.name || 'your dog';
   const allergies      = extractAllergies(pet);
-  const loves          = extractLoves(pet);
+  const allergySet     = new Set(allergies);
+  const loves          = extractLoves(pet, allergySet);
   const healthCond     = extractHealthCondition(pet);
   const nutritionGoal  = extractNutritionGoal(pet);
   const conflictTags   = GOAL_CONFLICTS[nutritionGoal] || [];
@@ -704,7 +724,7 @@ export function filterBreedProducts(products, petBreed) {
 }
 
 // ── Helper exports ────────────────────────────────────────────────────────────
-const CLEAN_NONE_EXPORT = /^(no|none|none_confirmed|no_allergies|no allergies|nil|n\/a|unknown|na)$/i;
+const CLEAN_NONE_EXPORT = /^(no|none|none known|none_confirmed|no_allergies|no allergies|not known|no known|no known allergies|nil|n\/a|unknown|na|not applicable|n\.a\.|-)$/i;
 
 export function getAllergiesFromPet(pet) {
   const s = new Set();
