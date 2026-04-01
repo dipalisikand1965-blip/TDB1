@@ -6,6 +6,23 @@ import App from "@/App";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { initVersionChecker } from './utils/versionChecker';
 
+// ─── Patch removeChild to never throw on React + external script conflicts ───
+// React's reconciler tries to remove inline <style> nodes from JSX during page
+// transitions. emergent-main.js sometimes moves these same nodes, causing
+// "The node to be removed is not a child of this node" — which crashes the
+// ErrorBoundary and leaves the router in a broken state.
+// This patch silently no-ops the bad remove, letting React continue normally.
+(function patchRemoveChild() {
+  const _removeChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function(child) {
+    if (child && child.parentNode === this) {
+      return _removeChild.call(this, child);
+    }
+    // Node was already moved/removed by an external script — silently ignore
+    return child;
+  };
+})();
+
 // Global error handler — handles ChunkLoadErrors and DOM sync errors
 window.addEventListener('error', async (event) => {
   const msg = event.message || '';
