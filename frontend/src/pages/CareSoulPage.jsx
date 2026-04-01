@@ -27,6 +27,7 @@ import { usePillarContext } from "../context/PillarContext";
 import ConciergeCTA from "../components/ConciergeCTA";
 import PillarPageLayout from "../components/PillarPageLayout";
 import CareHero from "../components/care/CareHero";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import CareCategoryStrip from "../components/care/CareCategoryStrip";
 import GuidedCarePaths from "../components/care/GuidedCarePaths";
 import CareConciergeSection from "../components/care/CareConciergeSection";
@@ -89,6 +90,13 @@ function getAllergies(pet) {
   add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies);
   add(pet?.allergies);
+  // vault.allergies — vet-confirmed severe allergies (PRIMARY source)
+  if (pet?.vault?.allergies) {
+    const va = pet.vault.allergies;
+    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim()); });
+    else add(va);
+  }
+  add(pet?.health_data?.allergies);
   return [...s].filter(a => a && !CLEAN_NONE.test(String(a).trim()));
 }
 
@@ -2353,6 +2361,9 @@ export default function CareSoulPage() {
 
           {activeTab === "care" && (
             <>
+              {/* Soul Card — allergies + loves, always visible at top of care tab */}
+              <DesktopSoulCard pet={petData} pillarLabel="Care" pillar="care" dataTestId="desktop-care-soul-card" />
+
               {/* Wellness Profile bar */}
               <WellnessProfile pet={petData} token={token} />
 
