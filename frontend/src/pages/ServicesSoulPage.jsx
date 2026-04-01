@@ -360,7 +360,7 @@ const ServicesSoulPage = () => {
             {petData ? `Services for ${petName}` : "All Services"}
           </h1>
           <p style={{ fontSize:14, color:G.mutedText, margin:"0 0 16px" }}>
-            {svcLoading ? "Loading…" : `${totalServices} bookable services · All arranged by Concierge®`}
+            Anything. Anytime. Anywhere. Arranged by Concierge®
           </p>
           {petData && (
             <div style={{ display:"inline-flex", alignItems:"center", gap:6,
