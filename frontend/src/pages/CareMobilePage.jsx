@@ -492,7 +492,7 @@ export default function CareMobilePage() {
 
       {/* Concierge CTA — mobile: above modal stack */}
       <div style={{ padding: '0 16px' }}>
-        <ConciergeCTA pillar="care" />
+        <ConciergeCTA pillar="care" pet={currentPet} />
       </div>
 
       {/* Service Booking Modal */}
