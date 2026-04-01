@@ -117,12 +117,13 @@ const BREED_DEFAULT_SIZE = {
   rottweiler: 'large', doberman: 'large', husky: 'large',
 };
 
-const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies|nil|n\/a|unknown|na)$/i;
+// Phrases that mean "no allergy" — must NOT be treated as actual allergens
+const CLEAN_NONE = /^(no|none|none known|none_confirmed|no_allergies|no allergies|not known|no known|no known allergies|nil|n\/a|unknown|na|not applicable|n\.a\.|-)$/i;
 
 // ── Pet data extractors ───────────────────────────────────────────────────────
 function extractAllergies(pet) {
   const s = new Set();
-  const add = v => {
+  const addStr = v => {
     if (Array.isArray(v)) {
       v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(String(x).trim().toLowerCase()); });
     } else if (v && !CLEAN_NONE.test(String(v).trim())) {
@@ -132,24 +133,72 @@ function extractAllergies(pet) {
       });
     }
   };
-  add(pet?.preferences?.allergies);
-  add(pet?.doggy_soul_answers?.food_allergies);
-  add(pet?.doggy_soul_answers?.allergies);
-  add(pet?.allergies);
+  // Legacy sources
+  addStr(pet?.preferences?.allergies);
+  addStr(pet?.doggy_soul_answers?.food_allergies);
+  addStr(pet?.doggy_soul_answers?.allergies);
+  addStr(pet?.allergies);
+  // Health vault: primary allergy store (array of objects with .name field)
+  if (Array.isArray(pet?.vault?.allergies)) {
+    pet.vault.allergies.forEach(alg => {
+      if (alg?.name && !CLEAN_NONE.test(String(alg.name).trim())) {
+        s.add(String(alg.name).trim().toLowerCase());
+      }
+    });
+  }
+  // health_data.allergies (array of strings — another store)
+  addStr(pet?.health_data?.allergies);
+  // Mira learned facts typed as 'allergy'
+  if (Array.isArray(pet?.learned_facts)) {
+    pet.learned_facts.forEach(f => {
+      if (f?.type === 'allergy' && f?.value) addStr(f.value);
+    });
+  }
   return [...s].filter(a => a && !CLEAN_NONE.test(a));
 }
 
-function extractLoves(pet) {
+function extractLoves(pet, allergySet) {
   const loves = [];
   const addLove = item => {
     if (!item) return;
-    const v = typeof item === 'string' ? item : (item?.name || item?.value || null);
-    if (v && !CLEAN_NONE.test(v)) loves.push(v.toLowerCase().trim());
+    if (Array.isArray(item)) {
+      item.forEach(x => { const v = typeof x === 'string' ? x : (x?.name || x?.value || null); if (v && !CLEAN_NONE.test(v.trim())) loves.push(v.toLowerCase().trim()); });
+    } else {
+      const v = typeof item === 'string' ? item : (item?.name || item?.value || null);
+      if (v && !CLEAN_NONE.test(String(v).trim())) loves.push(String(v).toLowerCase().trim());
+    }
   };
+  // Primary stores
+  addLove(pet?.preferences?.favorite_treats);      // ["salmon"] — main store
+  addLove(pet?.soul_enrichments?.favorite_treats); // enriched by Mira
   addLove(pet?.doggy_soul_answers?.favorite_treats);
   addLove(pet?.doggy_soul_answers?.favorite_protein);
   if (pet?.preferences?.favorite_flavors?.length) addLove(pet.preferences.favorite_flavors[0]);
-  return [...new Set(loves)].slice(0, 3);
+  // Mira learned facts typed as 'loves' or 'prefers'
+  if (Array.isArray(pet?.learned_facts)) {
+    pet.learned_facts.forEach(f => {
+      if (f?.type === 'loves' && f?.value) addLove(f.value);
+    });
+  }
+  // Conversation insights typed as 'loves'
+  if (Array.isArray(pet?.conversation_insights)) {
+    pet.conversation_insights.forEach(ci => {
+      if (ci?.category === 'loves' && ci?.content) addLove(ci.content);
+    });
+  }
+  // Post-filter: remove any loved food that is also an allergen
+  // (e.g. Mystique: dsa.favorite_protein=Chicken but allergic to chicken)
+  const safeLoves = allergySet && allergySet.size > 0
+    ? [...new Set(loves)].filter(love => {
+        const allergenKeys = Object.keys(ALLERGEN_MAP);
+        return !allergenKeys.some(key => {
+          if (!allergySet.has(key)) return false;
+          const syns = ALLERGEN_MAP[key];
+          return syns.some(syn => love.includes(syn));
+        });
+      })
+    : [...new Set(loves)];
+  return safeLoves.slice(0, 5);
 }
 
 function extractHealthCondition(pet) {
@@ -330,7 +379,8 @@ export function applyMiraFilter(products, pet) {
 
   const petName        = pet?.name || 'your dog';
   const allergies      = extractAllergies(pet);
-  const loves          = extractLoves(pet);
+  const allergySet     = new Set(allergies);
+  const loves          = extractLoves(pet, allergySet);
   const healthCond     = extractHealthCondition(pet);
   const nutritionGoal  = extractNutritionGoal(pet);
   const conflictTags   = GOAL_CONFLICTS[nutritionGoal] || [];
@@ -579,6 +629,14 @@ export const KNOWN_BREEDS = [
   'bloodhound','rhodesian ridgeback',
   'tibetan mastiff','bull mastiff','staffordshire bull terrier','bull terrier','pit bull',
   'leonberger','newfoundland','coton de tulear','nova scotia',
+  // Breeds added to match backend KNOWN_BREED_NAMES (prevent cross-breed contamination)
+  'shetland sheepdog','sheltie','whippet','greyhound',
+  'west highland terrier','westie','schnauzer','miniature schnauzer',
+  'giant schnauzer','flat coated retriever',
+  'springer spaniel','english springer spaniel',
+  'basset hound','bloodhound','american bully',
+  // Verified in DB — missing breeds cause contamination leakage
+  'shiba inu','maltipoo','italian greyhound','collie','bernese mountain dog',
 ];
 
 /**
@@ -666,18 +724,28 @@ export function filterBreedProducts(products, petBreed) {
 }
 
 // ── Helper exports ────────────────────────────────────────────────────────────
-const CLEAN_NONE_EXPORT = /^(no|none|none_confirmed|no_allergies|no allergies|nil|n\/a|unknown|na)$/i;
+const CLEAN_NONE_EXPORT = /^(no|none|none known|none_confirmed|no_allergies|no allergies|not known|no known|no known allergies|nil|n\/a|unknown|na|not applicable|n\.a\.|-)$/i;
 
 export function getAllergiesFromPet(pet) {
   const s = new Set();
-  const add = v => {
+  const addStr = v => {
     if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE_EXPORT.test(String(x).trim())) s.add(String(x).trim()); });
     else if (v && !CLEAN_NONE_EXPORT.test(String(v).trim())) s.add(String(v).trim());
   };
-  add(pet?.preferences?.allergies);
-  add(pet?.doggy_soul_answers?.food_allergies);
-  add(pet?.doggy_soul_answers?.allergies);
-  add(pet?.allergies);
+  addStr(pet?.preferences?.allergies);
+  addStr(pet?.doggy_soul_answers?.food_allergies);
+  addStr(pet?.doggy_soul_answers?.allergies);
+  addStr(pet?.allergies);
+  // vault.allergies — primary store
+  if (Array.isArray(pet?.vault?.allergies)) {
+    pet.vault.allergies.forEach(alg => {
+      if (alg?.name && !CLEAN_NONE_EXPORT.test(String(alg.name).trim())) s.add(String(alg.name).trim());
+    });
+  }
+  addStr(pet?.health_data?.allergies);
+  if (Array.isArray(pet?.learned_facts)) {
+    pet.learned_facts.forEach(f => { if (f?.type === 'allergy' && f?.value) addStr(f.value); });
+  }
   return [...s].filter(a => a && !CLEAN_NONE_EXPORT.test(a));
 }
 

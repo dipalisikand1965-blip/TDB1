@@ -19,6 +19,7 @@ import ConciergeCTA from '../components/ConciergeCTA';
 import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import GuidedLearnPaths from '../components/learn/GuidedLearnPaths';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
@@ -444,6 +445,11 @@ export default function LearnMobilePage() {
         {mainTab === 'learn' && <>
         {/* Soul Profile + CTA + Pawrent — inside tab, same as Play/Care */}
         {currentPet && <div style={{ padding:'16px 16px 0' }}><PillarSoulProfile pet={currentPet} pillar="learn" token={token} /></div>}
+        {currentPet && (
+          <div style={{ padding:'0 16px 4px' }}>
+            <DesktopSoulCard pet={currentPet} pillarLabel="Learn" pillar="learn" dataTestId="mobile-learn-soul-card" />
+          </div>
+        )}
         {currentPet && (
           <div style={{ margin:'12px 16px 0', background:'linear-gradient(135deg,rgba(167,139,250,0.14),rgba(167,139,250,0.20))', border:'1px solid rgba(167,139,250,0.35)', borderRadius:18, padding:'16px' }}>
             <div style={{ fontSize:18, fontWeight:700, color:'#1A0A2E', lineHeight:1.25, marginBottom:4 }}>

@@ -46,6 +46,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import LearnMobilePage from './LearnMobilePage';
 import { filterBreedProducts } from '../hooks/useMiraFilter';
 
@@ -1953,11 +1954,12 @@ const LearnSoulPage = () => {
     setConciergeOpen(true);
   }, [petData]);
 
-  // Pre-fetch everything on page load
+  // Pre-fetch everything on page load — re-runs when pet changes so breed filter applies
   useEffect(()=>{
     const CATS=["training","behavior","tricks","enrichment","classes","breed-training_logs","breed-treat_pouchs","breed-care-guide","breed-treat_jars"];
+    const breedQ = currentPet?.breed ? `&breed=${encodeURIComponent(currentPet.breed)}` : "";
     Promise.all([
-      ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&active_only=true&category=${encodeURIComponent(cat)}`).then(r=>r.ok?r.json():null).catch(()=>null)),
+      ...CATS.map(cat=>fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=100&active_only=true&category=${encodeURIComponent(cat)}${breedQ}`).then(r=>r.ok?r.json():null).catch(()=>null)),
       fetch(`${API_URL}/api/service-box/services?pillar=learn`).then(r=>r.ok?r.json():null).catch(()=>null),
     ]).then(results=>{
       const svcData=results[results.length-1];
@@ -1973,7 +1975,7 @@ const LearnSoulPage = () => {
       });
       setApiProducts(grouped);
     });
-  },[]);
+  },[currentPet?.breed]);
 
   useEffect(()=>{if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]);if(contextPets!==undefined)setLoading(false);},[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{if(currentPet){setPetData(currentPet);setSoulScore(currentPet.overall_score||currentPet.soul_score||0);}},[currentPet]);
@@ -2085,8 +2087,7 @@ const LearnSoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="learn" />
         </div>
-
-        {/* Category strip — Care-style icon+label pills with content modal */}
+        <DesktopSoulCard pet={petData} pillarLabel="Learn" pillar="learn" dataTestId="desktop-learn-soul-card" />
         <div style={{background:"#fff",borderBottom:`1px solid ${G.borderLight}`,position:"relative"}}>
           <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"8px 12px",gap:4}}>
             {LEARN_CATS.map(cat=>{

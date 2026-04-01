@@ -916,11 +916,25 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
                 # Set audit fields
                 updates["updated_at"] = datetime.now(timezone.utc).isoformat()
                 updates["updated_by"] = admin_user
+
+                # Sync flat `image` field to best available image URL
+                best_img = (
+                    updates.get("watercolor_image") or updates.get("cloudinary_url") or updates.get("image_url")
+                    or existing.get("watercolor_image") or existing.get("cloudinary_url") or existing.get("image_url")
+                )
+                if best_img:
+                    updates["image"] = best_img
                 
                 await db.breed_products.update_one(
                     {"id": product_id},
                     {"$set": updates}
                 )
+                
+                # Keep products_master in sync — it wins deduplication in the default admin list view.
+                # Without this, edits saved to breed_products won't show when viewing ALL products.
+                master_copy = await db.products_master.find_one({"id": product_id})
+                if master_copy:
+                    await db.products_master.update_one({"id": product_id}, {"$set": updates})
                 
                 # Get updated product
                 updated = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
@@ -983,7 +997,20 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
             updates["pricing"]["base_price"] = manual_price
             updates["pricing"]["selling_price"] = manual_price
             updates["price"] = manual_price
-        
+
+        # Sync the flat `image` field to the best available image URL.
+        # This prevents the rope-toy / stale static URL showing via the `image` fallback.
+        best_image = (
+            updates.get("watercolor_image")
+            or updates.get("cloudinary_url")
+            or updates.get("image_url")
+            or existing.get("watercolor_image")
+            or existing.get("cloudinary_url")
+            or existing.get("image_url")
+        )
+        if best_image:
+            updates["image"] = best_image
+
         await db[collection_name].update_one(
             {"id": product_id},
             {"$set": updates}
@@ -2241,6 +2268,216 @@ async def auto_enable_rewards(
         "success": True,
         "message": f"Enabled rewards for {updated_count} products ({percentage}%)",
         "updated_count": updated_count
+    }
+
+
+# ==================== CSV IMPORT ====================
+
+class ImportProductsRequest(BaseModel):
+    products: List[Dict[str, Any]]
+    update_existing: bool = True
+
+@product_box_router.post("/import")
+async def import_products_csv(request: ImportProductsRequest):
+    """
+    Import products from a CSV. Accepts flat CSV rows (as exported by /export/csv)
+    and maps every column back to the full nested product schema.
+    Creates new products (PROD-xxx) if no id column, updates existing if id matches.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+
+    imported = 0
+    updated = 0
+    failed = 0
+    errors = []
+
+    def _list(val):
+        """'chicken,beef' → ['chicken','beef']"""
+        if not val:
+            return []
+        if isinstance(val, list):
+            return val
+        return [v.strip() for v in str(val).split(',') if v.strip()]
+
+    def _bool(val, default=False):
+        if isinstance(val, bool):
+            return val
+        return str(val).lower() in ('true', 'yes', '1', 'y') if val else default
+
+    def _float(val, default=0.0):
+        try:
+            return float(val) if val else default
+        except (ValueError, TypeError):
+            return default
+
+    def _str(val):
+        return str(val).strip() if val else ''
+
+    for i, row in enumerate(request.products):
+        try:
+            name = _str(row.get('name') or row.get('Name'))
+            if not name:
+                continue
+
+            product_id = _str(row.get('id') or row.get('ID'))
+            if not product_id:
+                product_id = f"PROD-{secrets.token_hex(6).upper()}"
+
+            pillars_list  = _list(row.get('pillars', ''))
+            primary_pillar = _str(row.get('primary_pillar') or (pillars_list[0] if pillars_list else 'shop'))
+            if primary_pillar and primary_pillar not in pillars_list:
+                pillars_list.insert(0, primary_pillar)
+
+            mrp           = _float(row.get('mrp', 0))
+            selling_price = _float(row.get('selling_price', mrp))
+            image         = _str(row.get('image') or row.get('image_url'))
+
+            product_doc = {
+                "id":              product_id,
+                "name":            name,
+                "product_name":    name,
+                "sku":             _str(row.get('sku')),
+                "brand":           _str(row.get('brand')),
+                "product_type":    _str(row.get('product_type')) or 'physical',
+                "primary_pillar":  primary_pillar,
+                "pillars":         pillars_list,
+                "category":        _str(row.get('category')),
+                "sub_category":    _str(row.get('subcategory')),
+                "tags":            _list(row.get('tags')),
+                "in_stock":        _bool(row.get('in_stock'), True),
+                "is_bakery_product": _bool(row.get('is_bakery_product'), False),
+                "price":           selling_price,
+                "original_price":  mrp,
+                "mrp":             mrp,
+                "mira_hint":       _str(row.get('mira_hint')),
+                "image_url":       image,
+                "image":           image,
+                "short_description": _str(row.get('short_description')),
+                "description":     _str(row.get('long_description')),
+                "visibility":      {"status": "active"},
+                "is_active":       True,
+                "external_source": "import",
+                "_schema_version": "2.0",
+                "imported_at":     datetime.now(timezone.utc).isoformat(),
+
+                # ── Nested schema ───────────────────────────────────────────────
+                "basics": {
+                    "id":               product_id,
+                    "sku":              _str(row.get('sku')),
+                    "name":             name,
+                    "short_description": _str(row.get('short_description')),
+                    "long_description": _str(row.get('long_description')),
+                    "brand":            _str(row.get('brand')),
+                    "product_type":     _str(row.get('product_type')) or 'physical',
+                    "is_bakery_product": _bool(row.get('is_bakery_product'), False),
+                },
+                "commerce_ops": {
+                    "category":      _str(row.get('category')),
+                    "subcategory":   _str(row.get('subcategory')),
+                    "quality_tier":  _str(row.get('quality_tier')) or 'standard',
+                    "approval_status": _str(row.get('approval_status')) or 'live',
+                    "pricing": {
+                        "mrp":           mrp,
+                        "selling_price": selling_price,
+                        "cost_price":    _float(row.get('cost_price')) or None,
+                        "margin_band":   _str(row.get('margin_band')),
+                        "gst_rate":      _float(row.get('gst_rate'), 18),
+                        "hsn_code":      _str(row.get('hsn_code')),
+                        "currency":      "INR",
+                    },
+                    "inventory": {
+                        "inventory_status": _str(row.get('inventory_status')) or 'in_stock',
+                        "in_stock":         _bool(row.get('in_stock'), True),
+                    },
+                    "fulfillment": {
+                        "delivery_type":    _str(row.get('delivery_type')) or 'ship',
+                        "returnable":       _bool(row.get('returnable'), True),
+                        "cold_chain_required": _bool(row.get('cold_chain_required'), False),
+                        "fragile":          _bool(row.get('fragile'), False),
+                        "available_cities": _list(row.get('available_cities')),
+                    },
+                    "tags": _list(row.get('tags')),
+                },
+                "suitability": {
+                    "pet_filters": {
+                        "life_stages":       _list(row.get('life_stages')) or ['all'],
+                        "size_options":      _list(row.get('size_options')) or ['all'],
+                        "applicable_breeds": _list(row.get('applicable_breeds')),
+                        "breed_applicability": 'specific' if _list(row.get('applicable_breeds')) else 'all',
+                    },
+                    "behavior": {
+                        "energy_level_match": _list(row.get('energy_level_match')) or ['all'],
+                        "chew_strength":      _str(row.get('chew_strength')) or None,
+                        "play_types":         _list(row.get('play_types')),
+                    },
+                    "physical_traits": {
+                        "coat_type_match":       _list(row.get('coat_type_match')),
+                        "brachycephalic_friendly": _bool(row.get('brachycephalic_friendly'), True),
+                        "senior_friendly":       _bool(row.get('senior_friendly'), True),
+                    },
+                    "safety": {
+                        "allergy_aware":       _bool(row.get('allergy_aware'), False),
+                        "common_avoids":       _list(row.get('common_avoids')),
+                        "material_safety_flags": _list(row.get('material_safety_flags')),
+                    },
+                },
+                "pillars_occasions": {
+                    "pillar": {
+                        "primary_pillar":    primary_pillar,
+                        "secondary_pillars": pillars_list[1:] if len(pillars_list) > 1 else [],
+                    },
+                    "occasion": {
+                        "occasions": _list(row.get('occasions')),
+                    },
+                    "use_case": {
+                        "use_case_tags":         _list(row.get('use_case_tags')),
+                        "is_giftable":           _bool(row.get('is_giftable'), False),
+                        "subscription_friendly": _bool(row.get('subscription_friendly'), False),
+                        "travel_friendly":       _bool(row.get('travel_friendly'), False),
+                    },
+                },
+                "mira_ai": {
+                    "mira": {
+                        "mira_recommendable":     _bool(row.get('mira_recommendable'), True),
+                        "can_suggest_proactively": False,
+                    },
+                    "ai_enrichment": {
+                        "mira_hint":       _str(row.get('mira_hint')),
+                        "intelligent_tags": _list(row.get('intelligent_tags')),
+                    },
+                },
+                "media": {
+                    "primary_image": image,
+                },
+            }
+
+            # Upsert logic
+            existing = await db.products_master.find_one({"id": product_id})
+            if existing and request.update_existing:
+                product_doc.pop("id", None)
+                product_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+                await db.products_master.update_one({"id": product_id}, {"$set": product_doc})
+                updated += 1
+            else:
+                if existing:
+                    # id collision + update_existing=False → assign new id
+                    product_doc["id"] = f"PROD-{secrets.token_hex(6).upper()}"
+                result = await db.products_master.insert_one(product_doc)
+                imported += 1
+
+        except Exception as e:
+            failed += 1
+            errors.append(f"Row {i + 1} ({row.get('name','?')}): {str(e)}")
+
+    logger.info(f"CSV import: {imported} created, {updated} updated, {failed} failed")
+    return {
+        "success": True,
+        "imported": imported,
+        "updated": updated,
+        "failed": failed,
+        "total": len(request.products),
+        "errors": errors[:20],
     }
 
 

@@ -1,0 +1,65 @@
+{
+  "summary": "Tested 3 breed filter fixes for iteration 257. Backend: 29/29 tests pass — all 7 pillars return 0 contaminated products with breed=Indie (including shiba inu, akita, beagle, border collie, bernese mountain dog). DineMobilePage.jsx API call confirmed to include &breed=Indie. HOWEVER: DineContentModal.jsx (opened via DineCategoryStrip tiles) fetches products WITHOUT breed filter at line 697, causing contaminated products (Akita Dining Placemat, Beagle Food Bowl, etc.) to appear when Mojo clicks 'Daily Meals' category strip tile.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "DineCategoryStrip → DineContentModal → Daily Meals fetch",
+        "issue": "DineContentModal.jsx line 697 fetches ?pillar=dine&category=Daily%20Meals&limit=60 WITHOUT &breed=Indie parameter. When Mojo (Indie) taps 'Daily Meals' tile in DineCategoryStrip, DineContentModal opens and loads 60 products including Akita Dining Placemat, Australian Shepherd Dining Placemat, Beagle Food Bowl etc. The DineMobilePage fix was applied only to the fetchProducts in DineMobilePage.jsx (line 106) but NOT to DineContentModal.jsx.",
+        "affected_selectors": ["[data-testid='dine-category-strip-daily-meals']", "[data-testid='dine-modal-daily-meals']"],
+        "priority": "HIGH"
+      },
+      {
+        "flow": "DineContentModal miras-picks multi-category fetch",
+        "issue": "DineContentModal.jsx line 618 also fetches all 5 FOOD_CATS without breed filter in the miras-picks section: fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(cat)}&limit=60`) — missing &breed parameter.",
+        "affected_selectors": ["[data-testid='dine-modal-miras-picks']"],
+        "priority": "MEDIUM"
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_breed_filter_257.py",
+    "/app/test_reports/pytest/breed_filter_257.xml"
+  ],
+  "action_items": [
+    "Fix DineContentModal.jsx line 697: Add breed param to standard category fetch — change `const url = \\`${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=60\\`` to include `&breed=${encodeURIComponent(pet?.breed || '')}`",
+    "Fix DineContentModal.jsx line 618: Add breed param to miras-picks FOOD_CATS fetch — add `&breed=${encodeURIComponent(pet?.breed || '')}` to each category fetch URL",
+    "The breed param must be passed as pet?.breed (pet is already available as prop in DineContentModal component signature at line 486: `const DineContentModal = ({ isOpen, onClose, category, pet }) =>`)"
+  ],
+  "critical_code_review_comments": [
+    "DineContentModal.jsx at line 697 is missing breed filter — this is the primary contamination source when Mojo taps any DineCategoryStrip tile. Fix: `const url = \\`${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=60${pet?.breed ? '&breed=' + encodeURIComponent(pet.breed) : ''}\\`;`",
+    "DineContentModal.jsx at line 618 also missing breed in miras-picks batch fetch — same fix needed",
+    "The 3 fixes described in the problem statement (DineMobilePage breed param, KNOWN_BREED_NAMES backend, KNOWN_BREEDS frontend) are ALL correctly applied and pass backend tests. The remaining gap is DineContentModal."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_breed_filter_257.py"
+  ],
+  "success_rate": {
+    "backend": "100% (29/29 tests passed — 0 contamination across all 7 pillars with breed=Indie)",
+    "frontend": "PARTIAL — DineMobilePage API calls confirmed with breed=Indie; DineContentModal (DineCategoryStrip path) confirmed MISSING breed filter"
+  },
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123 (pet: Mojo, breed: Indie)",
+    "admin": "aditya / lola4304"
+  },
+  "seed_data_creation": "None — only read API calls made",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Iteration 257 backend tests all pass (29/29). The DineMobilePage.jsx fix for breed=Indie is verified working (network trace shows all 5 category API calls include &breed=Indie). Backend KNOWN_BREED_NAMES includes shiba inu, maltipoo, italian greyhound, collie, bernese mountain dog — verified 0 contamination. Frontend KNOWN_BREEDS updated to match. HOWEVER: DineContentModal.jsx (at /app/frontend/src/components/dine/DineContentModal.jsx) opened via DineCategoryStrip tile clicks does NOT pass breed param (line 697 and 618). When Mojo (Indie) taps 'Daily Meals' in the category strip, DineContentModal fetches ?pillar=dine&category=Daily%20Meals&limit=60 WITHOUT breed — returns 60 products including Akita Dining Placemat, Australian Shepherd Dining Placemat, Beagle Food Bowl etc. Fix: add &breed=${encodeURIComponent(pet?.breed || '')} to both fetch calls in DineContentModal.",
+  "rca_of_the_issue": {
+    "root_cause": "DineContentModal.jsx has its own product fetching logic that was NOT updated when DineMobilePage.jsx was fixed. There are TWO separate product loading paths for /dine: (1) DineMobilePage.fetchProducts → uses FOOD_CATS fetch with breed param ✓ (2) DineCategoryStrip → DineContentModal.fetchData → fetches without breed param ✗. The fix applied breed filter only to path (1) but path (2) remains unfixed.",
+    "reproduction_steps": [
+      "Login as dipali@clubconcierge.in (Mojo = Indie dog)",
+      "Navigate to /dine on mobile viewport (390x844)",
+      "Tap any tile in DineCategoryStrip (horizontal strip at top of Dine tab) e.g. 'Daily Meals'",
+      "DineContentModal opens, shows 60 products including 'Akita Dining Placemat', 'Australian Shepherd Dining Placemat', 'Beagle Food Bowl' etc.",
+      "Network: GET /api/admin/pillar-products?pillar=dine&category=Daily%20Meals&limit=60 (NO breed param)"
+    ],
+    "mitigation": "Add &breed=${encodeURIComponent(pet?.breed || '')} to line 697 and line 618 in DineContentModal.jsx"
+  }
+}

@@ -1611,3 +1611,27 @@ frontend/node_modules/.cache/default-development/226.pack
 # Environment files
 *.env
 *.env.*
+frontend/node_modules/.cache/default-development/257.pack
+frontend/node_modules/.cache/default-development/259.pack
+-e 
+# Environment files
+*.env
+*.env.*
+frontend/node_modules/.cache/default-development/180.pack
+-e 
+# Environment files
+*.env
+*.env.*
+frontend/node_modules/.cache/default-development/263.pack
+-e 
+# Environment files
+*.env
+*.env.*
+frontend/node_modules/.cache/default-development/123.pack
+frontend/node_modules/.cache/default-development/264.pack
+frontend/node_modules/.cache/default-development/265.pack
+-e 
+# Environment files
+*.env
+*.env.*
+frontend/node_modules/.cache/default-development/267.pack

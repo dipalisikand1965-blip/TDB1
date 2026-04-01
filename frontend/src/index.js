@@ -78,9 +78,24 @@ serviceWorkerRegistration.register({
   onSuccess: () => console.log('PWA: Ready for offline use'),
   onUpdate: (registration) => {
     console.log('PWA: New version available, will reload...');
-    // Skip waiting and activate new service worker immediately
     if (registration.waiting) {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
   }
 });
+
+// Listen for SW_UPDATED message from service worker v11+ → hard reload
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data?.type === 'SW_UPDATED') {
+      console.log('[TDC] SW updated to', event.data.version, '— reloading...');
+      const reloadKey = 'tdc_sw_reload';
+      const last = sessionStorage.getItem(reloadKey);
+      const now = Date.now();
+      if (!last || now - parseInt(last) > 30000) {
+        sessionStorage.setItem(reloadKey, now.toString());
+        window.location.reload(true);
+      }
+    }
+  });
+}

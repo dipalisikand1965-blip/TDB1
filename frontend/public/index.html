@@ -350,6 +350,33 @@
         </script>
         
         <title>The Doggy Company | Pet Life Operating System | India's #1 Pet Platform</title>
+        <!-- CACHE BUSTER: runs before React, clears stale service workers & caches -->
+        <script>
+        (function() {
+          try {
+            // Unregister any lingering service workers immediately
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                regs.forEach(function(reg) {
+                  reg.unregister();
+                  console.log('[TDC] Unregistered SW:', reg.scope);
+                });
+              });
+            }
+            // Delete all caches
+            if ('caches' in window) {
+              caches.keys().then(function(names) {
+                names.forEach(function(name) {
+                  caches.delete(name);
+                  console.log('[TDC] Cleared cache:', name);
+                });
+              });
+            }
+          } catch(e) {
+            console.warn('[TDC] Cache clear error:', e);
+          }
+        })();
+        </script>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <!--
         These two scripts have been added for the Visual Edits, please do not edit or remove them

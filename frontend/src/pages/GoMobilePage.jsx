@@ -19,6 +19,7 @@ import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hoo
 import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import GoConciergeSection from '../components/go/GoConciergeSection';
 import GoCategoryStrip from '../components/go/GoCategoryStrip';
 import { getGoDims, DimExpanded, MiraPicksSection, GO_SERVICES, ServiceBookingModal as GoServiceBookingModal } from './GoSoulPage';
@@ -242,6 +243,11 @@ export default function GoMobilePage() {
             {currentPet && <GoCategoryStrip pet={currentPet} />}
 
             {currentPet && <div style={{ padding:'16px 16px 8px' }}><PillarSoulProfile pet={currentPet} pillar="go" token={token} /></div>}
+            {currentPet && (
+              <div style={{ padding:'0 16px 4px' }}>
+                <DesktopSoulCard pet={currentPet} pillarLabel="Go" pillar="go" dataTestId="mobile-go-soul-card" />
+              </div>
+            )}
             {currentPet && <PawrentFirstStepsTab pet={currentPet} token={token} currentPillar="go" defaultCollapsed={true} />}
 
             {/* ══ Mira Picks Strip — AI Scored, same as Care ══ */}
@@ -371,12 +377,12 @@ export default function GoMobilePage() {
 
             {/* Pet-Friendly Stays — Goa, Coorg, Manali etc */}
             <PetFriendlyStays pet={currentPet} token={token} onBook={(stay, query) => {
-              if (!stay) {
-                setNearMeConc({ open: true, venue: { name: `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' } });
-                return;
-              }
-              tdc.book({ service:`Stay: ${stay}`, pillar:'go', pet:currentPet, channel:'go_stays' });
-              setSvcBooking({ isOpen: true, serviceType: guessServiceType(stay) || 'boarding' });
+              // Always open the Concierge modal — NEVER the multi-step ServiceBookingModal
+              const venue = (typeof stay === 'object' && stay?.name)
+                ? stay
+                : { name: stay ? `Pet-Friendly Stay: ${stay}` : `Pet-Friendly Stay${query ? ` in ${query}` : ''}`, vicinity: query || 'as requested' };
+              tdc.book({ service: venue.name, pillar:'go', pet:currentPet, channel:'go_stays' });
+              setNearMeConc({ open: true, venue });
             }} />
 
             {/* Divider */}

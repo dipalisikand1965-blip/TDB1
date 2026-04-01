@@ -223,16 +223,30 @@ const isValidUrl = (url) => {
   return true;
 };
 
+// Rope-toy bad cloudinary patterns — these were bulk-generated with wrong image content.
+// When detected, getProductImage returns null → card shows gradient placeholder instead.
+const ROPE_TOY_PATTERNS = [
+  '/tdc/products_master/enjoy/breed-',  // enrichment mat batch — rope toy content
+];
+const isBadCloudinaryImage = (url) =>
+  url && url.includes('res.cloudinary.com') && ROPE_TOY_PATTERNS.some(p => url.includes(p));
+
 // ─── ONE shared image resolver — card thumbnail AND all modals use this ───────
 // Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (cloudinary/shopify only)
-const getProductImage = (p) =>
-  (isValidUrl(p.watercolor_image) ? p.watercolor_image : null) ||
-  (isValidUrl(p.cloudinary_url) ? p.cloudinary_url : null) ||
-  (isValidUrl(p.mockup_url) ? p.mockup_url : null) ||
-  (isValidUrl(p.primary_image) ? p.primary_image : null) ||
-  (isValidUrl(p.image_url) ? p.image_url : null) ||
-  (p.image && isValidUrl(p.image) && (p.image.includes('cloudinary') || p.image.includes('shopify.com')) ? p.image : null) ||
-  null;
+const getProductImage = (p) => {
+  const candidates = [
+    p.watercolor_image,
+    p.cloudinary_url,
+    p.mockup_url,
+    p.primary_image,
+    p.image_url,
+    (p.image && (p.image.includes('cloudinary') || p.image.includes('shopify.com'))) ? p.image : null,
+  ];
+  for (const url of candidates) {
+    if (isValidUrl(url) && !isBadCloudinaryImage(url)) return url;
+  }
+  return null;
+};
 
 const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = null, miraContext = null, overrideImageUrl = null, artStyleLabel = null }) => {
   const [showModal, setShowModal] = useState(false);
@@ -359,8 +373,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   
   const productMiraTip = getProductMiraTip();
   
-  // Fallback placeholder image
-  const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23F5F0EB"/><g fill="%23C4A882" opacity="0.7"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
+  // Fallback placeholder image — colorful gradient SVG for products with no valid image
+  const PLACEHOLDER_IMAGE = `data:image/svg+xml;charset=utf-8,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#7C3AED"/><stop offset="50%" style="stop-color:#EC4899"/><stop offset="100%" style="stop-color:#F59E0B"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><g fill="white" opacity="0.3"><circle cx="50" cy="56" r="15"/><circle cx="34" cy="43" r="7"/><circle cx="66" cy="43" r="7"/><circle cx="42" cy="37" r="7"/><circle cx="58" cy="37" r="7"/></g></svg>')}`;
 
   // Get valid image — delegates URL resolution to module-level getProductImage()
   const getValidImage = () => {

@@ -136,6 +136,8 @@ export default function ServiceBox() {
   const [toast, setToast] = useState('');
   const [totals, setTotals] = useState({});
   const [togglingId, setTogglingId] = useState(null); // track which row is toggling
+  const [exportingCSV, setExportingCSV] = useState(false);
+  const [importingCSV, setImportingCSV] = useState(false);
 
   // ProductBoxEditor state
   const [editProduct, setEditProduct] = useState(null);
@@ -230,41 +232,171 @@ export default function ServiceBox() {
     setSaving(false);
   };
 
-  const exportCSV = () => {
-    const headers = ['Name','Category','Sub-Category','Price','Pillar','Status'];
-    const rows = services.map(s => [
-      `"${s.name||''}"`, s.category||'', s.sub_category||'',
-      s.price||0, s.pillar||activePillar,
-      s.is_active!==false ? 'Active' : 'Inactive'
-    ]);
-    const csv = [headers,...rows].map(r=>r.join(',')).join('\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-    a.download = `services-${activePillar}.csv`;
-    a.click();
+  // ─── Proper CSV parser (handles quoted fields with commas/newlines) ────────
+  const parseCSVText = (text) => {
+    const lines = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === '"') { if (inQ && text[i+1] === '"') { cur += '"'; i++; } else inQ = !inQ; }
+      else if (ch === '\n' && !inQ) { if (cur.trim()) lines.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    if (cur.trim()) lines.push(cur);
+    const parseRow = (line) => {
+      const vals = [], len = line.length; let cell = '', q = false;
+      for (let i = 0; i < len; i++) {
+        const ch = line[i];
+        if (ch === '"') { if (q && line[i+1] === '"') { cell += '"'; i++; } else q = !q; }
+        else if (ch === ',' && !q) { vals.push(cell); cell = ''; }
+        else cell += ch;
+      }
+      vals.push(cell);
+      return vals;
+    };
+    if (lines.length < 2) return [];
+    const headers = parseRow(lines[0]).map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
+    return lines.slice(1).map(line => {
+      const vals = parseRow(line);
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = (vals[i] || '').trim(); });
+      return obj;
+    }).filter(row => row.name || row.service_name);
   };
 
+  // ─── Export CSV: calls backend for ALL fields ─────────────────────────────
+  const exportCSV = async () => {
+    setExportingCSV(true);
+    try {
+      // Fetch ALL services with every field via the service-box export endpoint
+      const res = await fetch(`${API_URL}/api/service-box/export-csv?pillar=${activePillar}`, { headers: getAdminHeaders() });
+      if (!res.ok) throw new Error('Export failed');
+      const data = await res.json();   // Returns {services:[...]}
+      const svcs = Array.isArray(data) ? data : (data.services || data.items || services);
+      if (!svcs.length) { setToast('No services to export'); return; }
+
+      // All columns
+      const COLS = ['id','name','pillar','category','sub_category','description','base_price','price',
+        'duration','is_active','is_bookable','is_free','approval_status','image_url','image',
+        'mira_whisper','includes','tags','available_cities','paw_points_eligible','paw_points_value',
+        'whisper_default','whisper_golden_retriever','whisper_labrador','whisper_pug',
+        'whisper_beagle','whisper_shih_tzu','whisper_german_shepherd'];
+
+      const esc = (v) => {
+        if (v == null) return '';
+        if (Array.isArray(v)) v = v.join(';');
+        const s = String(v);
+        return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g,'""')}"` : s;
+      };
+
+      // Build whispers from breed_whispers object if present
+      const rows = svcs.map(s => {
+        const bw = s.breed_whispers || {};
+        const row = { ...s,
+          includes: Array.isArray(s.includes) ? s.includes.join(';') : (s.includes || ''),
+          tags: Array.isArray(s.tags) ? s.tags.join(';') : (s.tags || ''),
+          available_cities: Array.isArray(s.available_cities) ? s.available_cities.join(';') : (s.available_cities || ''),
+          whisper_default: bw.default || s.whisper_default || s.mira_whisper || '',
+          whisper_golden_retriever: bw.golden_retriever || s.whisper_golden_retriever || '',
+          whisper_labrador: bw.labrador || s.whisper_labrador || '',
+          whisper_pug: bw.pug || s.whisper_pug || '',
+          whisper_beagle: bw.beagle || s.whisper_beagle || '',
+          whisper_shih_tzu: bw.shih_tzu || s.whisper_shih_tzu || '',
+          whisper_german_shepherd: bw.german_shepherd || s.whisper_german_shepherd || '',
+        };
+        return COLS.map(c => esc(row[c])).join(',');
+      });
+
+      const csv = [COLS.join(','), ...rows].join('\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      link.download = `services_${activePillar}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      setToast(`✅ Exported ${svcs.length} services (${COLS.length} columns)`);
+    } catch (err) {
+      console.error('Service export error:', err);
+      setToast('❌ Export failed: ' + err.message);
+    } finally { setExportingCSV(false); }
+  };
+
+  // ─── Import CSV: full field mapping + proper parser ───────────────────────
   const handleImportCSV = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const text = await file.text();
-    const lines = text.split('\n').filter(Boolean);
-    const hdrs = lines[0].split(',');
-    const rows = lines.slice(1).map(line => {
-      const vals = line.split(',');
-      const obj = {};
-      hdrs.forEach((h,i) => { obj[h.trim()] = (vals[i]||'').trim().replace(/^"|"$/g,''); });
-      return { name:obj.Name||obj.name, category:obj.Category||obj.category||'', price:parseFloat(obj.Price||obj.price)||0, pillar:obj.Pillar||obj.pillar||activePillar, is_active:true };
-    }).filter(r => r.name);
+    setImportingCSV(true);
     try {
+      const text = await file.text();
+      const rows = parseCSVText(text);
+      if (!rows.length) { setToast('❌ No valid rows found'); return; }
+
+      const toList = v => v ? v.split(';').map(x => x.trim()).filter(Boolean) : [];
+      const toBool = v => String(v).toLowerCase() === 'true';
+      const toNum  = (v, def=0) => parseFloat(v) || def;
+
+      const services = rows.map(r => ({
+        id: r.id || undefined,
+        name: r.name || r.service_name || '',
+        pillar: r.pillar || activePillar,
+        category: r.category || '',
+        sub_category: r.sub_category || r.subcategory || '',
+        description: r.description || '',
+        base_price: toNum(r.base_price || r.price),
+        price: toNum(r.price || r.base_price),
+        duration: r.duration || '',
+        is_active: r.is_active !== undefined ? toBool(r.is_active) : true,
+        is_bookable: r.is_bookable !== undefined ? toBool(r.is_bookable) : true,
+        is_free: r.is_free !== undefined ? toBool(r.is_free) : false,
+        approval_status: r.approval_status || 'live',
+        image_url: r.image_url || r.image || '',
+        mira_whisper: r.mira_whisper || r.whisper_default || '',
+        includes: toList(r.includes),
+        tags: toList(r.tags),
+        available_cities: toList(r.available_cities),
+        paw_points_eligible: toBool(r.paw_points_eligible),
+        paw_points_value: toNum(r.paw_points_value),
+        breed_whispers: {
+          default: r.whisper_default || '',
+          golden_retriever: r.whisper_golden_retriever || '',
+          labrador: r.whisper_labrador || '',
+          pug: r.whisper_pug || '',
+          beagle: r.whisper_beagle || '',
+          shih_tzu: r.whisper_shih_tzu || '',
+          german_shepherd: r.whisper_german_shepherd || '',
+        },
+      })).filter(s => s.name);
+
       const res = await fetch(`${API_URL}/api/admin/services/import-csv`, {
-        method:'POST', headers:getAdminHeaders(), body:JSON.stringify(rows)
+        method: 'POST', headers: getAdminHeaders(), body: JSON.stringify(services),
       });
-      const d = res.ok ? await res.json() : {};
-      setToast(`✅ Imported ${d.imported||rows.length} services`);
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const d = await res.json();
+      setToast(`✅ Imported ${d.imported || services.length} services`);
       fetchServices();
-    } catch { setToast('❌ Import failed'); }
-    e.target.value = '';
+    } catch (err) {
+      console.error('Service import error:', err);
+      setToast('❌ Import failed: ' + err.message);
+    } finally {
+      setImportingCSV(false);
+      e.target.value = '';
+    }
+  };
+
+  // ─── Delete a service ─────────────────────────────────────────────────────
+  const deleteService = async (svc) => {
+    const svcId = svc.id || svc._id;
+    if (!window.confirm(`Delete "${svc.name}"?\n\nThis cannot be undone.`)) return;
+    try {
+      const res = await fetch(`${API_URL}/api/service-box/services/${svcId}`, {
+        method: 'DELETE', headers: getAdminHeaders(),
+      });
+      if (res.ok) {
+        setServices(prev => prev.filter(s => (s.id || s._id) !== svcId));
+        setToast(`🗑️ "${svc.name}" deleted`);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setToast('❌ Delete failed: ' + (err.detail || res.status));
+      }
+    } catch (e) { setToast('❌ Delete failed: ' + e.message); }
   };
 
   const bulkResetPrices = async () => {
@@ -381,12 +513,13 @@ export default function ServiceBox() {
           placeholder="Search services…"
           style={{ padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13, minWidth:220 }} />
         <span style={{ fontSize:12, color:P.muted }}>{filtered.length} services</span>
-        <button onClick={exportCSV} style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:600, marginLeft:'auto' }}>
-          ↓ Export CSV
+        <button onClick={exportCSV} disabled={exportingCSV}
+          style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background: exportingCSV ? '#f5f5f5' : '#fff', cursor: exportingCSV ? 'wait' : 'pointer', fontSize:12, fontWeight:600, marginLeft:'auto', opacity: exportingCSV ? 0.7 : 1 }}>
+          {exportingCSV ? '⏳ Exporting…' : '↓ Export CSV'}
         </button>
-        <label style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background:'#fff', cursor:'pointer', fontSize:12, fontWeight:600 }}>
-          ↑ Import CSV
-          <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} />
+        <label style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background: importingCSV ? '#f5f5f5' : '#fff', cursor: importingCSV ? 'wait' : 'pointer', fontSize:12, fontWeight:600, opacity: importingCSV ? 0.7 : 1 }}>
+          {importingCSV ? '⏳ Importing…' : '↑ Import CSV'}
+          <input type="file" accept=".csv" onChange={handleImportCSV} style={{ display:'none' }} disabled={importingCSV} />
         </label>
         <BatchImageButton target="services" label="Auto-Generate Service Images" />
         <button onClick={bulkResetPrices}
@@ -413,11 +546,11 @@ export default function ServiceBox() {
       ) : (
         <>
           <div style={{ background:'#fff', border:`1px solid ${P.border}`, borderRadius:12, overflow:'hidden' }}>
-            <div style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 80px', gap:12, padding:'10px 16px', background:P.cream, borderBottom:`1px solid ${P.border}`, fontSize:11, fontWeight:700, color:P.muted, textTransform:'uppercase', letterSpacing:'0.06em' }}>
+            <div style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 120px', gap:12, padding:'10px 16px', background:P.cream, borderBottom:`1px solid ${P.border}`, fontSize:11, fontWeight:700, color:P.muted, textTransform:'uppercase', letterSpacing:'0.06em' }}>
               <div>Service</div><div>Category</div><div>Pillar</div><div>Price</div><div>Status</div><div>Actions</div>
             </div>
             {paginated.map((s, i) => (
-              <div key={s.id||s._id||i} style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 80px', gap:12, padding:'10px 16px', borderBottom:i<paginated.length-1?`1px solid ${P.border}`:'none', alignItems:'center' }}>
+              <div key={s.id||s._id||i} style={{ display:'grid', gridTemplateColumns:'2.5fr 1fr 1fr 80px 80px 120px', gap:12, padding:'10px 16px', borderBottom:i<paginated.length-1?`1px solid ${P.border}`:'none', alignItems:'center' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                   {(s.image_url || s.image || s.watercolor_image) && (
                     <img src={s.image_url || s.image || s.watercolor_image} alt={s.name}
@@ -450,12 +583,21 @@ export default function ServiceBox() {
                     {togglingId === (s.id||s._id) ? '…' : s.is_active !== false ? '✓ Active' : '✗ Off'}
                   </button>
                 </div>
-                <button
-                  data-testid={`edit-service-${s.id||i}`}
-                  onClick={() => openEditor(s)}
-                  style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
-                  ✏ Edit
-                </button>
+                <div style={{ display:'flex', gap:6 }}>
+                  <button
+                    data-testid={`edit-service-${s.id||i}`}
+                    onClick={() => openEditor(s)}
+                    style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
+                    ✏ Edit
+                  </button>
+                  <button
+                    data-testid={`delete-service-${s.id||i}`}
+                    onClick={() => deleteService(s)}
+                    title="Delete this service"
+                    style={{ padding:'5px 10px', borderRadius:6, border:'1px solid #fca5a5', background:'#fff5f5', color:'#b91c1c', cursor:'pointer', fontSize:11, fontWeight:600 }}>
+                    🗑
+                  </button>
+                </div>
               </div>
             ))}
           </div>

@@ -19,6 +19,7 @@ import { API_URL } from '../utils/api';
 import { applyMiraFilter } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
+import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -423,6 +424,13 @@ export default function CelebrateMobilePage() {
         <div style={{ padding:'12px 16px 0' }}>
           <PillarSoulProfile pet={currentPet} pillar="celebrate" token={token} />
         </div>
+
+        {/* ── 4a2. Soul Card — celebrations + loves ── */}
+        {currentPet && (
+          <div style={{ padding:'0 16px 4px' }}>
+            <DesktopSoulCard pet={currentPet} pillarLabel="Celebrate" pillar="celebrate" dataTestId="mobile-celebrate-soul-card" />
+          </div>
+        )}
 
         {/* ── 4b. Pawrent Journey — collapsible, starts CLOSED ── */}
         {currentPet && (

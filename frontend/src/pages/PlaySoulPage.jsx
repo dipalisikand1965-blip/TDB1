@@ -26,6 +26,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import PlayHero from "../components/play/PlayHero";
+import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import PlayCategoryStrip from "../components/play/PlayCategoryStrip";
 import PlayContentModal from "../components/play/PlayContentModal";
 import GuidedPlayPaths from "../components/play/GuidedPlayPaths";
@@ -83,6 +84,13 @@ function getAllergies(pet) {
   const s = new Set();
   const add = v => { if (Array.isArray(v)) v.forEach(x=>{if(x&&!CLEAN_NONE.test(String(x).trim()))s.add(x);}); else if(v&&!CLEAN_NONE.test(String(v).trim()))s.add(v); };
   add(pet?.preferences?.allergies); add(pet?.doggy_soul_answers?.food_allergies); add(pet?.allergies);
+  // vault.allergies — vet-confirmed severe allergies (PRIMARY source)
+  if (pet?.vault?.allergies) {
+    const va = pet.vault.allergies;
+    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim()); });
+    else add(va);
+  }
+  add(pet?.health_data?.allergies);
   return [...s].filter(Boolean);
 }
 function getHealth(pet) {
@@ -1516,6 +1524,9 @@ const PlaySoulPage = () => {
         <div style={{ paddingTop: 16 }}>
           <PillarSoulProfile pet={petData} token={token} pillar="play" />
         </div>
+
+        {/* Soul Card — allergies + loves, always visible below soul profile */}
+        <DesktopSoulCard pet={petData} pillarLabel="Play" pillar="play" dataTestId="desktop-play-soul-card" />
       </div>
 
       <div style={{ background:G.pageBg, fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif", minHeight:"60vh" }}>
