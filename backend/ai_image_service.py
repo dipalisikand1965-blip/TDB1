@@ -115,6 +115,42 @@ def get_product_image_prompt(product: dict) -> str:
     if any(x in name_lower for x in ["collar", "tag", "bandana", "sweater", "coat", "jacket"]):
         return f"Stylish dog accessory, '{name}', premium quality materials, elegant design, {style}"
     
+    # ── SOUL MADE™ FLAT ART MERCHANDISE ────────────────────────────────────
+    # These are generic Soul products (no breed) — use watercolour soul-dog illustration
+    # matching the same aesthetic as the breed product mockups in admin Soul Box
+    product_type = (product.get("product_type") or "").lower()
+    if product_type.startswith("flat_art_") or category == "flat_art":
+        soul_style = (
+            "professional product photography, studio lighting, clean white background, "
+            "photorealistic product mockup, watercolour illustration of a happy Indian mixed-breed dog "
+            "(warm tan coat, expressive eyes, friendly smile) printed on the product surface, "
+            "high quality print, sharp focus, commercial photography"
+        )
+        flat_type = product_type.replace("flat_art_", "")
+        prompts = {
+            "mug":        f"White ceramic coffee mug with a beautiful watercolour illustration of a happy Indian mixed-breed dog printed on it, {soul_style}",
+            "bowl":       f"Premium ceramic pet food bowl with a watercolour soul-dog illustration on the outer surface, {soul_style}",
+            "bandana":    f"Dog triangle bandana laid flat, soft cotton fabric with a watercolour soul-dog portrait printed on it, {soul_style}",
+            "tote":       f"Canvas tote bag displayed flat, watercolour soul-dog illustration printed on the front panel, {soul_style}",
+            "tote_bag":   f"Canvas tote bag displayed flat, watercolour soul-dog illustration printed on the front panel, {soul_style}",
+            "blanket":    f"Soft fleece pet blanket folded neatly on a wooden surface, watercolour soul-dog pattern, {soul_style}",
+            "cushion":    f"Square throw cushion with a centred watercolour soul-dog portrait printed on it, {soul_style}",
+            "frame":      f"Wooden picture frame with a beautiful watercolour portrait of a soul-dog inside, shelf setting, {soul_style}",
+            "keychain":   f"Metal keychain charm with a watercolour soul-dog silhouette, photographed on white surface, {soul_style}",
+            "party_hat":  f"Conical birthday party hat for dogs with watercolour soul-dog and confetti illustration, festive, {soul_style}",
+            "candle":     f"Frosted glass memorial candle with a watercolour soul-dog illustration on the label, warm glow, {soul_style}",
+            "journal":    f"Hardcover journal with watercolour soul-dog artwork on the cover, elegant stationery, {soul_style}",
+            "folder":     f"Slim leather passport holder with embossed watercolour soul-dog artwork, travel accessory, {soul_style}",
+            "card":       f"Luxury greeting card with hand-painted watercolour soul-dog portrait surrounded by florals, artisan stationery, {soul_style}",
+            "treat_jar":  f"Ceramic treat jar with a soul-dog watercolour illustration and 'Treats' lettering, kitchen setting, {soul_style}",
+            "mat":        f"Silicone pet feeding mat with watercolour soul-dog paw mandala design, flat-lay view, {soul_style}",
+            "cake_topper": f"Acrylic birthday cake toppers with watercolour soul-dog silhouette, gold and ivory accents, {soul_style}",
+            "pouch":      f"Velvet zipper pouch with watercolour soul-dog mandala embroidery, luxury feel, {soul_style}",
+            "plush":      f"Handcrafted plush stuffed dog toy with watercolour fabric patches, artisan toy, {soul_style}",
+            "box":        f"Lacquered keepsake box with watercolour soul-dog botanical artwork on the lid, heirloom quality, {soul_style}",
+        }
+        return prompts.get(flat_type, f"Premium Soul Made™ product '{name}' with watercolour soul-dog illustration, {soul_style}")
+
     # ── DEFAULT ─────────────────────────────────────────────────────────────
     return f"Premium pet product '{name}', high quality, beautiful packaging and presentation, {style}"
 
