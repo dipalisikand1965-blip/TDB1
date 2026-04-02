@@ -343,16 +343,12 @@ export default function MiraSearchPage() {
             const parsed = JSON.parse(data);
             if (parsed.type === 'enriched') {
               enrichedProducts = parsed.data?.products || [];
-              // Services come from nearby_places, not from products array
-              const nearbyPlaces = parsed.data?.nearby_places || [];
-              if (nearbyPlaces.length > 0) {
-                const svcsFromPlaces = nearbyPlaces.slice(0, 4).map(p => ({
-                  ...p,
-                  product_type: 'service',
-                  name: p.name || p.place_name || 'Service',
-                }));
+              // nearby_places is a FLAG {show_nearme:true}, not an array.
+              // Services DB is empty — show a booking CTA when flag fires
+              const nearbyFlag = parsed.data?.nearby_places;
+              if (nearbyFlag?.show_nearme) {
                 setTurns(prev => prev.map(t =>
-                  t.id === turnId ? { ...t, services: svcsFromPlaces } : t
+                  t.id === turnId ? { ...t, servicesCta: true } : t
                 ));
               }
               continue;
@@ -367,9 +363,19 @@ export default function MiraSearchPage() {
 
       // Attach enriched products
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
-      const svcs  = enrichedProducts.filter(p => p.product_type === 'service').slice(0, 4);
-      updateTurn({ streaming: false, response: fullText, products: prods, services: svcs });
-      // (No claude-picks fallback — it ignores the query and always returns soul-based defaults)
+      updateTurn({ streaming: false, response: fullText, products: prods, services: [] });
+
+      // Smart product fallback: if enriched returned 0 products, search by query
+      if (prods.length === 0) {
+        fetch(`${getApiUrl()}/api/search?q=${encodeURIComponent(q)}&limit=6`)
+          .then(r => r.ok ? r.json() : null)
+          .then(d => {
+            const hits = d?.products || d?.hits || d?.results || [];
+            if (!hits.length) return;
+            updateTurn({ products: hits.slice(0, 6) });
+          })
+          .catch(() => {});
+      }
 
       // Focus the follow-up input
       setTimeout(() => followUpRef.current?.focus(), 300);
@@ -612,19 +618,25 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Services for this turn */}
-            {turn.services?.length > 0 && (
-              <div style={{ marginBottom: 12 }}>
-                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
-                  Services
-                </p>
-                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
-                  {turn.services.map((s, i) => (
-                    <ResultChip key={s.id || s._id || i} item={s} type="service" pet={activePet}
-                      onCardClick={item => setSelProduct(item)}
-                      onCart={() => {}} onBook={() => {}} />
-                  ))}
-                </div>
+            {/* Services CTA — fires when nearby_places flag is true, DB is currently empty */}
+            {turn.servicesCta && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '12px 16px', borderRadius: 12,
+                background: 'rgba(124,58,237,0.08)',
+                border: '1px solid rgba(124,58,237,0.2)',
+                marginBottom: 12, animation: 'fadeUp 0.35s ease',
+              }}>
+                <Calendar size={16} color={C.purpleL} style={{ flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: C.text, fontFamily: 'DM Sans, sans-serif', flex: 1 }}>
+                  Looking for services near you?
+                </span>
+                <a href="/services" style={{
+                  fontSize: 13, fontWeight: 700, color: C.amber,
+                  textDecoration: 'none', whiteSpace: 'nowrap',
+                }}>
+                  Book via Concierge →
+                </a>
               </div>
             )}
 
