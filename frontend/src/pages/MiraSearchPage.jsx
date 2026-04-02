@@ -365,21 +365,26 @@ export default function MiraSearchPage() {
 
       // ── Step 1: use enriched products from stream if available ────────────
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
-      updateTurn({ streaming: false, response: fullText, products: prods, services: [] });
+      updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false });
 
-      // ── Step 2: fallback to claude-picks (soul-personalised) if stream returned nothing ──
+      // ── Step 2: fallback to semantic-search (query-aware) if stream returned nothing ──
       const petId = activePet?.id || activePet?._id;
-      if (prods.length === 0 && petId) {
-        fetch(`${getApiUrl()}/api/mira/claude-picks/${petId}?limit=6&min_score=30`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+      if (prods.length === 0) {
+        fetch(`${getApiUrl()}/api/mira/semantic-search`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ query: q, pet_id: petId, limit: 6 }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
-            const picks = d?.picks || d?.products || [];
-            if (picks.length > 0) {
-              updateTurn({ products: picks.slice(0, 6) });
+            const hits = d?.products || [];
+            if (hits.length > 0) {
+              updateTurn({ products: hits.slice(0, 6) });
             } else {
-              // ── Step 3: no picks at all — flag MiraImaginesBreed ────────
+              // ── Step 3: no matches at all — show MiraImaginesBreed ──────
               updateTurn({ showImagines: true });
             }
           })
