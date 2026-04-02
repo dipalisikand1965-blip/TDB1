@@ -17,7 +17,7 @@ API Endpoints:
 from fastapi import APIRouter, HTTPException, Depends, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, validator
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
 import uuid
@@ -112,7 +112,7 @@ class InitialMessage(BaseModel):
     text: str
 
 class AttachOrCreateTicketRequest(BaseModel):
-    parent_id: str
+    parent_id: Optional[str] = None          # optional — falls back to "anonymous"
     pet_id: Optional[str] = None
     pillar: str
     intent_primary: str
@@ -122,7 +122,7 @@ class AttachOrCreateTicketRequest(BaseModel):
     urgency: str = "medium"
     status: Optional[str] = None
     force_new: bool = False  # ← when True, always creates a new ticket (no dedup)
-    initial_message: Optional[InitialMessage] = None
+    initial_message: Optional[Union[str, InitialMessage]] = None   # accept string or object
     metadata: Dict[str, Any] = {}  # ← soul_made photo_url, product_name, etc.
 
 class AttachOrCreateTicketResponse(BaseModel):
@@ -549,7 +549,15 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
-    
+
+    # Normalize initial_message — accept plain string or InitialMessage object
+    if isinstance(request.initial_message, str):
+        request.initial_message = InitialMessage(
+            sender="member",
+            source=request.channel or "pillar_page",
+            text=request.initial_message
+        )
+
     now = datetime.now(timezone.utc)
     
     # Check for existing ticket — SKIP if force_new=True (always create fresh ticket)
