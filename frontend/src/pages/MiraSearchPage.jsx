@@ -12,6 +12,7 @@ import { getApiUrl } from '../utils/api';
 import { toast, Toaster } from 'sonner';
 import CartSidebar from '../components/CartSidebar';
 import { ProductDetailModal } from '../components/ProductCard';
+import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -362,20 +363,27 @@ export default function MiraSearchPage() {
         }
       }
 
-      // Attach enriched products
+      // ── Step 1: use enriched products from stream if available ────────────
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [] });
 
-      // Smart product fallback: if enriched returned 0 products, search by query
-      if (prods.length === 0) {
-        fetch(`${getApiUrl()}/api/search?q=${encodeURIComponent(q)}&limit=6`)
+      // ── Step 2: fallback to claude-picks (soul-personalised) if stream returned nothing ──
+      const petId = activePet?.id || activePet?._id;
+      if (prods.length === 0 && petId) {
+        fetch(`${getApiUrl()}/api/mira/claude-picks/${petId}?limit=6&min_score=30`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
-            const hits = d?.products || d?.hits || d?.results || [];
-            if (!hits.length) return;
-            updateTurn({ products: hits.slice(0, 6) });
+            const picks = d?.picks || d?.products || [];
+            if (picks.length > 0) {
+              updateTurn({ products: picks.slice(0, 6) });
+            } else {
+              // ── Step 3: no picks at all — flag MiraImaginesBreed ────────
+              updateTurn({ showImagines: true });
+            }
           })
-          .catch(() => {});
+          .catch(() => { updateTurn({ showImagines: true }); });
       }
 
       // Focus the follow-up input
@@ -616,6 +624,18 @@ export default function MiraSearchPage() {
                       onBook={() => {}} />
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Step 3 — MiraImaginesBreed: shown when both stream + claude-picks returned nothing */}
+            {turn.showImagines && !turn.streaming && activePet && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
+                <MiraImaginesBreed
+                  pet={activePet}
+                  pillar="general"
+                  colour={C.amber}
+                  onConcierge={() => {}}
+                />
               </div>
             )}
 
