@@ -2,7 +2,5 @@
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => {
   self.registration.unregister();
-  clients.matchAll({ type: 'window' }).then(clients => {
-    clients.forEach(client => client.navigate(client.url));
-  });
+  // Do NOT navigate clients — that causes a page reload that races with SPA link clicks
 });
