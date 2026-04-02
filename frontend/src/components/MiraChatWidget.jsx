@@ -1904,6 +1904,17 @@ const MiraChatWidget = ({
               >
                 {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
               </button>
+              {/* Minimize */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setIsMinimized(m => !m); }}
+                onTouchEnd={(e) => { e.stopPropagation(); setIsMinimized(m => !m); }}
+                className="w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors touch-manipulation active:scale-95"
+                style={{ WebkitTapHighlightColor: 'transparent', fontSize: 18, fontWeight: 700, lineHeight: 1 }}
+                data-testid="mira-widget-minimize"
+                title={isMinimized ? "Expand" : "Minimise"}
+              >
+                {isMinimized ? '□' : '—'}
+              </button>
               {/* Close */}
               <button
                 onClick={(e) => { e.stopPropagation(); e.preventDefault(); setIsOpen(false); }}
@@ -2588,7 +2599,11 @@ const MiraChatWidget = ({
             setShowCinematicKit(false);
           }}
           onClose={() => setShowCinematicKit(false)}
-          addToCart={addToCart}
+          addToCart={(...args) => {
+            addToCart(...args);
+            const productName = args[0]?.name || 'Item';
+            toast.success(`${productName} added to cart! 🛒`);
+          }}
         />
       )}
       

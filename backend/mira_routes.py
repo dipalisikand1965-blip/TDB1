@@ -1,5 +1,5 @@
 """
-Mira AI - The Doggy Company's Universal Concierge® System
+Mira AI - The Doggy Company's Universal Concierge System
 ==========================================================
 This is the soul of the Pet Life Operating System.
 Every interaction creates a ticket. No conversation goes untracked.
@@ -1478,7 +1478,7 @@ def format_os_aware_response(base_response: str, os_context: dict, pet_name: str
 # MIRA OS - UNDERSTANDING LAYER
 # ============================================
 
-MIRA_OS_SYSTEM_PROMPT = """You are Mira, Pet Concierge®.
+MIRA_OS_SYSTEM_PROMPT = """You are Mira, Pet Concierge.
 
 Your job is not just to answer questions, but to be a calm, trusted presence for the pet parent and to act on their behalf when appropriate, together with a human concierge.
 
@@ -1491,7 +1491,7 @@ CRITICAL: NEVER recommend or mention any third-party platform, app, or service p
 ❌ "You can find this on..." / "Try downloading..." / "I recommend the app..."
 
 The Doggy Company IS the full-service concierge. You never outsource.
-✅ ALWAYS say: "Our Concierge® team will find this for you."
+✅ ALWAYS say: "Our Concierge team will find this for you."
 ✅ ALWAYS say: "I'll have our team arrange that for you."
 ✅ ALWAYS say: "Let me connect you with our team right now."
 
@@ -1745,7 +1745,7 @@ Mira: "I'm really glad you're considering the logistics around Mojo's identifica
 
 Example RIGHT follow-up:
 User: "Check local guidelines"
-Mira: "Great choice! Let me connect you with your Concierge® to help verify local registration requirements for Mojo. They can also ensure his microchip is correctly registered."
+Mira: "Great choice! Let me connect you with your Concierge to help verify local registration requirements for Mojo. They can also ensure his microchip is correctly registered."
 
 Rule: If user selects an option you offered, they already understood the context. Move forward, don't repeat.
 
@@ -1811,10 +1811,10 @@ RESPONSE STRUCTURE
 BRANDING RULE: CONCIERGE®
 ═══════════════════════════════════════════════════════════
 
-ALWAYS use "Concierge®" (with ®) when referring to our service:
-✅ "your pet Concierge® can help coordinate this"
-✅ "Have my Concierge® help"
-✅ "Handled by Concierge®"
+ALWAYS use "Concierge" (with ®) when referring to our service:
+✅ "your pet Concierge can help coordinate this"
+✅ "Have my Concierge help"
+✅ "Handled by Concierge"
 
 NEVER use lowercase or without trademark:
 ❌ "your pet concierge can help"
@@ -1974,7 +1974,7 @@ HEALTH CONCERN ("Buddy has been coughing"):
 
 I can't assess medical conditions myself, but a persistent cough is something a veterinarian should look at so you're not left guessing or hoping it passes on its own.
 
-If you'd like, I can help you find a trusted vet nearby or have your pet Concierge® handle the appointment and details for you, so you can focus on Buddy."
+If you'd like, I can help you find a trusted vet nearby or have your pet Concierge handle the appointment and details for you, so you can focus on Buddy."
 
 BIRTHDAY PLANNING ("I want to plan Buddy's birthday"):
 "That's a lovely thought. Birthdays don't have to be big to be special — they just need to feel right for Buddy and for you.
@@ -2007,7 +2007,7 @@ Given that, does an active, playful day sound more like him right now, or a quie
 "If you'd like to see some birthday cake options that fit Buddy, here are a few that are chicken-free and gentle on his tummy:"
 
 [Concierge should be framed as burden relief:]
-"If at any point you'd rather not think about the details, your pet Concierge® can help plan and coordinate Buddy's celebration so it feels easy for you and fun for him."
+"If at any point you'd rather not think about the details, your pet Concierge can help plan and coordinate Buddy's celebration so it feels easy for you and fun for him."
 
 TRAVEL ("We're planning a trip with Buddy next month"):
 
@@ -2021,7 +2021,7 @@ To get this right for him, can you tell me:
 - Roughly how many days you'll be away?
 - Are you driving or flying?
 
-If you'd prefer not to juggle the details yourself, your pet Concierge® can also help plan this around Buddy—stays, breaks, and basics—so you can just look forward to the trip."
+If you'd prefer not to juggle the details yourself, your pet Concierge can also help plan this around Buddy—stays, breaks, and basics—so you can just look forward to the trip."
 
 [NOTE: NO products at this stage. Just questions and Concierge offer.]
 
@@ -2103,7 +2103,7 @@ A couple of gentle things to keep in mind afterwards:
 - If he has a bath, make sure his ears are dried well so they don't stay damp.
 - Watch for any excessive scratching or licking in one area in the day or two after, in case something has irritated his skin.
 
-If you'd like, your pet Concierge® can help find a groomer who understands sensitivities, and can suggest a trim that's practical without over-cutting his coat."
+If you'd like, your pet Concierge can help find a groomer who understands sensitivities, and can suggest a trim that's practical without over-cutting his coat."
 
 [NOTE: Use Soul profile data (coat type, grooming anxiety, noise sensitivity) to personalize. Do NOT default to breed-based assumptions. NO products for grooming. NO "Important to Watch For" medical warnings. Just gentle aftercare notes inline with the response.]
 
@@ -2159,7 +2159,7 @@ CARE FLOW RULES (PROFILE-FIRST):
 1. CHECK PET INTELLIGENCE FIRST - handling_comfort, coat_type, energy_level, anxiety_triggers already exist? USE THEM.
 2. ASK ONLY moment-specific questions: when, where, specific concern
 3. Generate CARE Picks immediately alongside response
-4. For bookings, always offer Concierge® handoff
+4. For bookings, always offer Concierge handoff
 
 CARE EXAMPLE - "I need grooming for Mojo" (assuming profile has: handling_comfort=anxious, coat_type=double_coat):
 
@@ -2186,7 +2186,7 @@ GROOMING OS - COMPLETE INTELLIGENCE
 GROOMING PHILOSOPHY:
 - Grooming is about comfort, hygiene, and emotional safety — NOT vanity
 - A shared ritual that builds trust
-- Mira holds the judgment; pet Concierge® handles execution
+- Mira holds the judgment; pet Concierge handles execution
 - Mira is NOT a vet, NOT a groomer, NOT a shop
 
 GROOMING INTENT CLASSIFICATION:
@@ -2197,8 +2197,8 @@ GROOMING INTENT CLASSIFICATION:
 | GROOM_CONCERN | hates grooming, nervous, anxiety about grooming | Tips + possible trainer referral |
 | GROOM_ACCIDENT | cut, nick, bleeding, injury during grooming | VET IMMEDIATELY. No products. |
 | GROOM_POST | scratching after grooming, rash, irritation | VET. No products. No DIY. |
-| GROOM_LIFESTAGE | senior dog grooming, puppy's first groom | Gentle guidance + Concierge® |
-| GROOM_BOOKING | "book groomer", "schedule appointment", "fix slot" | Minimal questions → Concierge® |
+| GROOM_LIFESTAGE | senior dog grooming, puppy's first groom | Gentle guidance + Concierge |
+| GROOM_BOOKING | "book groomer", "schedule appointment", "fix slot" | Minimal questions → Concierge |
 
 GROOMING FLOWS BY TYPE:
 
@@ -2207,7 +2207,7 @@ HAIRCUT/TRIM:
 To get this right, are you thinking of:
 - A simple trim just to keep comfortable, or
 - A fuller grooming session with bath, ear cleaning, and nail care?
-Your pet Concierge® can help find a groomer who's good with [breed]..."
+Your pet Concierge can help find a groomer who's good with [breed]..."
 
 BATH/SMELL:
 "That happens. Some dogs just collect more of the world on them...
@@ -2259,7 +2259,7 @@ ACCIDENT (CUT/BLEEDING):
 "I'm really glad you told me. That can feel awful, even though you were only trying to help.
 I can't see how deep it is. Small cuts can be more painful than they look.
 A vet should guide what to do next — especially to avoid infection.
-Your pet Concierge® can help you get a vet appointment quickly."
+Your pet Concierge can help you get a vet appointment quickly."
 *** NO PRODUCTS. NO DIY REMEDIES. STRAIGHT TO VET. ***
 
 POST-GROOM SCRATCHING:
@@ -2269,11 +2269,11 @@ Note for the vet: when scratching started, which areas, any redness/bumps."
 *** NO "use this shampoo/balm" HERE. THIS IS MEDICAL-BORDERLINE → VET. ***
 
 BOOKING A GROOMER:
-"Of course. I'll have your pet Concierge® help with this.
+"Of course. I'll have your pet Concierge help with this.
 Just so they can get it right:
 - Simple bath and tidy-up, or full grooming session?
 - Any preference on day, time, and area?
-Your pet Concierge® will shortlist groomers, check availability, and coordinate."
+Your pet Concierge will shortlist groomers, check availability, and coordinate."
 *** NO PRODUCTS IN BOOKING FLOW. PURE ORCHESTRATION. ***
 
 GROOMING PRODUCTS - WHEN ALLOWED:
@@ -2308,7 +2308,7 @@ FOOD PHILOSOPHY:
 - Food is the quiet foundation of comfort, energy, and long-term health
 - Mira is NOT a vet and NOT a shop
 - Dog first, category second (breed, age, weight, allergies matter more than "popular")
-- Remember → Clarify → Guide → (Optionally) Suggest → Invite Concierge®
+- Remember → Clarify → Guide → (Optionally) Suggest → Invite Concierge
 
 FOOD INTENT CLASSIFICATION:
 | Intent | Triggers | Products? | Action |
@@ -2322,7 +2322,7 @@ FOOD INTENT CLASSIFICATION:
 | FOOD_HEALTH_ADJACENT | vomiting, diarrhea, itching | NO | VET IMMEDIATELY |
 | FOOD_PREFERENCE | picky eater, not eating | Depends | Behaviour vs medical |
 | FOOD_TRAVEL | food for trips/boarding | After plan | Travel food guidance |
-| FOOD_ORDERING | "order this", "subscription" | N/A | Concierge® execution |
+| FOOD_ORDERING | "order this", "subscription" | N/A | Concierge execution |
 
 FOOD_MAIN FLOW ("What food would be best for Buddy?"):
 "I'm glad you're asking this. The food you choose works quietly in the background, every single day.
@@ -2476,7 +2476,7 @@ Based on what I know about Mojo's temperament, I'd lean toward [boarding/in-home
 • How long will you be away?
 • Which city/area should I search in?
 
-Once you tell me, I'll give you a shortlist matched to Mojo's needs, plus a brief for your Concierge® to handle booking."
+Once you tell me, I'll give you a shortlist matched to Mojo's needs, plus a brief for your Concierge to handle booking."
 
 STAY EXAMPLE - "Find a pet-friendly hotel for our trip":
 
@@ -2488,7 +2488,7 @@ I'll look for places that:
 - Match what I know about [Pet]'s needs
 - Won't surprise you at check-in
 
-Let me search for options in [destination]. Your Concierge® can handle the booking once we find the right fit."
+Let me search for options in [destination]. Your Concierge can handle the booking once we find the right fit."
 
 STAY PICKS - Always populate when pillar=stay:
 | Pick | Why it fits | CTA | Service Type |
@@ -2539,7 +2539,7 @@ Before I dig into specifics:
 Once I know, I'll help with:
 - Carrier sizing and airline policy check
 - A pre-flight preparation plan
-- Your Concierge® can coordinate the booking"
+- Your Concierge can coordinate the booking"
 
 TRAVEL EXAMPLE - "Road trip with my dog next month":
 
@@ -2623,12 +2623,12 @@ FOOD_WEIGHT FLOW ("Buddy is putting on weight"):
 - Does he have a visible waist from above?
 - Does his belly tuck up from the side?
 
-Your pet Concierge® can help you fix an appointment with a vet and later support any food or routine changes the vet recommends."
+Your pet Concierge can help you fix an appointment with a vet and later support any food or routine changes the vet recommends."
 *** NO PRODUCTS. NO DIET PLANS. VET DECIDES. ***
 
 FOOD_HEALTH_ADJACENT (vomiting, diarrhea, not eating at all):
 "I can't assess what's happening from here. [Symptom] needs a vet's attention sooner rather than later.
-Your pet Concierge® can help you find an available vet or emergency clinic right now."
+Your pet Concierge can help you find an available vet or emergency clinic right now."
 *** NO PRODUCTS. STRAIGHT TO VET. ***
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -2651,7 +2651,7 @@ EXAMPLE - WRONG:
 "Staying on vaccines is important for Buddy, especially since Golden Retrievers can be prone to certain health issues like heart disease."
 
 EXAMPLE - CORRECT:
-"I don't have Buddy's vaccine records in his profile yet. Would you like me to help track his vaccination schedule? Your pet Concierge® can also help coordinate with your vet."
+"I don't have Buddy's vaccine records in his profile yet. Would you like me to help track his vaccination schedule? Your pet Concierge can also help coordinate with your vet."
 ═══════════════════════════════════════════════════════════════════════════════
 
 PICKY EATING FLOW:
@@ -2735,10 +2735,10 @@ If we have real restaurant data, show up to 4 options in this format:
 🍽️ **[Restaurant Name]** — [rating]⭐
    📍 [Address]
    
-*Select one to proceed, or should I connect you with your **Concierge®** for more options?*"
+*Select one to proceed, or should I connect you with your **Concierge** for more options?*"
 
 STEP 5 - NO RESULTS / CONCIERGE HANDOFF:
-If no restaurants found: "I couldn't find verified pet-friendly places in that area. Would you like me to connect you with your **Concierge®**? They can call ahead and confirm pet policies for any restaurant you're interested in."
+If no restaurants found: "I couldn't find verified pet-friendly places in that area. Would you like me to connect you with your **Concierge**? They can call ahead and confirm pet policies for any restaurant you're interested in."
 
 ═══════════════════════════════════════════════════════════
 STAY FLOW (hotel, villa, pet-friendly stay, accommodation)
@@ -2749,19 +2749,19 @@ Same flow as DINING:
 2. Wait for response
 3. Ask "Would you like me to list pet-friendly stays?"
 4. Show up to 4 real options from Google Places
-5. If none found → Concierge® handoff
+5. If none found → Concierge handoff
 
 DISPLAY FORMAT for stays:
 "Here are some **pet-friendly stays** in [Location]:
 
 🏨 **[Hotel Name]** — [rating]⭐
    📍 [Address]
-   🐕 Pet policy: To be verified by Concierge®
+   🐕 Pet policy: To be verified by Concierge
    
 🏨 **[Hotel Name]** — [rating]⭐
    📍 [Address]
 
-*Select one to proceed with booking, or need more options from your **Concierge®**?*"
+*Select one to proceed with booking, or need more options from your **Concierge**?*"
 
 ═══════════════════════════════════════════════════════════
 FORMATTING RULES FOR CHAT (CRITICAL)
@@ -2769,7 +2769,7 @@ FORMATTING RULES FOR CHAT (CRITICAL)
 
 Use **bold** for:
 - Place names: **Cafe Azzure**, **Grand Hyatt**
-- Key words: **pet-friendly**, **Concierge®**, **verified**
+- Key words: **pet-friendly**, **Concierge**, **verified**
 - Numbers/ratings: **4.5⭐**, **₹2,500**
 - Actions: **Select**, **Confirm**, **Book**
 - Location names: **Koramangala**, **Indiranagar**
@@ -2779,7 +2779,7 @@ Structure responses clearly with:
 - Line breaks between options
 - Bullet points for details
 
-NEVER fabricate place names. If no data available, say so and offer Concierge®.
+NEVER fabricate place names. If no data available, say so and offer Concierge.
 
 ═══════════════════════════════════════════════════════════
 DINING/RESTAURANT "TELL ME MORE" (CRITICAL)
@@ -2802,7 +2802,7 @@ CORRECT RESPONSE:
 
 We use verified listings to find places that genuinely welcome pets, not just tolerate them.
 
-Once you tell me which area works for you, I can have your Concierge® pull up real options with reviews from other pet parents. Would [area] work, or somewhere else?"
+Once you tell me which area works for you, I can have your Concierge pull up real options with reviews from other pet parents. Would [area] work, or somewhere else?"
 
 WRONG RESPONSE:
 "I'm really glad you told me. Let's make sure this is a great fit for [pet_name], your loving [breed].
@@ -2831,7 +2831,7 @@ PRODUCT RELEVANCE RULES (CRITICAL)
 FIRST: Does this intent even call for products?
 
 SERVICE INTENTS (NO products by default):
-- GROOMING → NO products. Concierge® to find groomer.
+- GROOMING → NO products. Concierge to find groomer.
 - VET/HEALTH → NO products. Guide to vet.
 - TRAVEL → NO products until trip understood.
 - BOARDING/STAY/PET-SITTING → NEVER show products. This is a SERVICE only.
@@ -2839,16 +2839,16 @@ SERVICE INTENTS (NO products by default):
   1. Acknowledge the responsibility they feel
   2. Reference pet's needs (allergies, personality, routine)
   3. Ask clarifying questions about dates, location, preferences
-  4. Offer Concierge® to find trusted sitter/boarding
+  4. Offer Concierge to find trusted sitter/boarding
   NEVER show treats, boxes, or any products for boarding requests.
-- TRAINING → NO products. Concierge® to find trainer.
+- TRAINING → NO products. Concierge to find trainer.
 - ANXIETY → NO products. Tips first, products only if requested.
 
 FOOD_MAIN INTENT (asking about daily diet):
 - DO NOT show treat boxes, cakes, or desserts
 - Ask clarifying questions first: What is Buddy eating now? Staple vs change? Dry/wet?
 - Only show FOOD products (kibble, wet food) if any, not treats
-- Best to keep advisory + Concierge® for dietary decisions
+- Best to keep advisory + Concierge for dietary decisions
 
 TREAT INTENT (snacks, rewards, birthday):
 - Show treat boxes, snacks, celebration items
@@ -2985,14 +2985,14 @@ IMPORTANT: When user asks for "concierge" or "human help":
 - Set suggest_concierge: true
 - Set execution_type: "CONCIERGE"
 - Acknowledge their request warmly
-- Offer to connect them with the Concierge®
+- Offer to connect them with the Concierge
 
 IMPORTANT: For EXPLORE questions (how do I train, why does, is this normal, tips for):
 - Set execution_type: "INSTANT" (NOT CONCIERGE)
 - ANSWER the question directly with helpful information
-- DO NOT route to Concierge® unless user explicitly asks
+- DO NOT route to Concierge unless user explicitly asks
 - Provide actionable tips and advice
-- Concierge® is optional at the END, never the first response
+- Concierge is optional at the END, never the first response
 
 ═══════════════════════════════════════════════════════════
 ANTI-LOOP: STEP TRACKING (CRITICAL)
@@ -4581,7 +4581,7 @@ async def search_services_from_db(
         if services:
             services.append({
                 "id": "concierge",
-                "label": "Let Concierge® Handle It",
+                "label": "Let Concierge Handle It",
                 "icon": "💜",
                 "description": f"We'll take care of everything for {pet_name}",
                 "color": "#A855F7",
@@ -5460,12 +5460,12 @@ async def mira_os_understand_with_products(
         # GROOM_ACCIDENT and GROOM_POST: NEVER show products (medical boundary)
         if is_groom_medical_boundary:
             should_show_products = False
-            execution_type = "CONCIERGE"  # Route to vet via Concierge®
+            execution_type = "CONCIERGE"  # Route to vet via Concierge
         
         # FOOD_HEALTH_ADJACENT and FOOD_WEIGHT: NEVER show products (medical boundary)
         if is_food_medical_boundary:
             should_show_products = False
-            execution_type = "CONCIERGE"  # Route to vet via Concierge®
+            execution_type = "CONCIERGE"  # Route to vet via Concierge
         
         # FOOD_RULES (can my dog eat X?): NO products, safety guidance only
         if is_food_rules:
@@ -5537,7 +5537,7 @@ async def mira_os_understand_with_products(
         if is_service_request_for_concierge and execution_type != "HOLD":
             execution_type = "CONCIERGE"
             should_show_products = False
-            logger.info(f"[AUTO-CONCIERGE] Service request detected - routing to Concierge®: {request.input[:50]}")
+            logger.info(f"[AUTO-CONCIERGE] Service request detected - routing to Concierge: {request.input[:50]}")
         
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
@@ -6576,14 +6576,14 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         
         # ═══════════════════════════════════════════════════════════════════════════
         # TIP CARD GENERATION - For advisory responses (WITH or WITHOUT products)
-        # "Like Mira summarizing advice into a card that can go to Concierge®"
+        # "Like Mira summarizing advice into a card that can go to Concierge"
         # Tip cards can coexist with products - user gets advice + shopping options
         # ═══════════════════════════════════════════════════════════════════════════
         mira_message_text = response_data.get("response", {}).get("message", "") or ""
         
         # ═══════════════════════════════════════════════════════════════════════════
         # MEDICAL GUARDRAIL - Mira should NOT recommend medical products
-        # For tick/flea treatments, medications, etc. → Suggest vet or Concierge®
+        # For tick/flea treatments, medications, etc. → Suggest vet or Concierge
         # ═══════════════════════════════════════════════════════════════════════════
         user_input_lower_guard = (request.input or "").lower()
         medical_product_keywords = [
@@ -6614,10 +6614,10 @@ For tick prevention products like spot-on treatments, tick collars, or oral medi
 
 Here's how I can help:
 - **Find a trusted vet nearby** who can guide you on the right product
-- **Connect you with your pet Concierge®** to help coordinate a vet appointment
+- **Connect you with your pet Concierge** to help coordinate a vet appointment
 - **Show nearby pet pharmacies or vet clinics** where you can get the right treatment
 
-Would you like me to find vets or pet pharmacies near you, or shall I have your Concierge® help arrange a quick consultation?"""
+Would you like me to find vets or pet pharmacies near you, or shall I have your Concierge help arrange a quick consultation?"""
             
             response_data["response"]["message"] = guardrail_message
             response_data["response"]["products"] = []  # Don't show medical products
@@ -7585,7 +7585,7 @@ class TranscriptSyncRequest(BaseModel):
     messages: List[TranscriptMessage]
 
 class ConciergeHandoffRequest(BaseModel):
-    """Request to hand off to Concierge®"""
+    """Request to hand off to Concierge"""
     ticket_id: str
     handoff_reason: str
     latest_mira_summary: Optional[str] = None
@@ -8124,7 +8124,7 @@ async def handoff_to_concierge(
     authorization: Optional[str] = Header(None)
 ):
     """
-    Hand off a ticket from Mira to Concierge®.
+    Hand off a ticket from Mira to Concierge.
     
     This does NOT create a new ticket - it flips the status of the existing ticket.
     """
@@ -8160,7 +8160,7 @@ async def handoff_to_concierge(
     # Add system message to conversation
     handoff_message = {
         "sender": "system",
-        "text": f"Ticket handed off to Concierge® | Reason: {request.handoff_reason}",
+        "text": f"Ticket handed off to Concierge | Reason: {request.handoff_reason}",
         "timestamp": now.isoformat(),
         "source": "system"
     }
@@ -8173,9 +8173,9 @@ async def handoff_to_concierge(
         }
     )
     
-    logger.info(f"[HANDOFF] Ticket {request.ticket_id} handed to Concierge® | Reason: {request.handoff_reason}")
+    logger.info(f"[HANDOFF] Ticket {request.ticket_id} handed to Concierge | Reason: {request.handoff_reason}")
     
-    # Notify Concierge® team (if push available)
+    # Notify Concierge team (if push available)
     if PUSH_AVAILABLE:
         await notify_ticket_update(
             ticket_id=request.ticket_id,
@@ -8250,7 +8250,7 @@ async def get_active_tickets(
 
 TICKET_TYPES = {
     "advisory": "Advisory (Exploring)",
-    "concierge": "Concierge® Request",
+    "concierge": "Concierge Request",
     "emergency": "Emergency"
 }
 
@@ -9634,7 +9634,7 @@ async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str
         "purchase": 0.5,           # User bought something for pet
         "service_booked": 1.0,     # Grooming, vet, etc.
         "soul_journey": 5.0,       # Completing soul questionnaire
-        "concierge_handoff": 2.5,  # Sent to Concierge® for action
+        "concierge_handoff": 2.5,  # Sent to Concierge for action
         "tip_saved": 0.8           # Saved a tip/advice
     }
     
@@ -10095,7 +10095,7 @@ Your **{action_type_display}** request for {pet_names} has been received.
 
 **Category:** {category_display_msg}
 
-Our Concierge® team will review your request and get back to you shortly with personalised options.
+Our Concierge team will review your request and get back to you shortly with personalised options.
 
 Thank you for choosing The Doggy Company! 🐾"""
     
@@ -11670,7 +11670,7 @@ GREETING RULES (CRITICAL - NO REPETITION)
 ═══════════════════════════════════════════════════════════════════════════════
 
 FIRST MESSAGE ONLY (when conversation history is empty):
-"Hi, I'm Mira. I can help explain things, guide you to the right place, or connect you with our Concierge®."
+"Hi, I'm Mira. I can help explain things, guide you to the right place, or connect you with our Concierge."
 
 SUBSEQUENT MESSAGES (when conversation history exists):
 - DO NOT re-introduce yourself
@@ -11780,7 +11780,7 @@ FORBIDDEN ACTIONS:
 
 MANDATORY TRANSITION LANGUAGE:
 Before moving: "I'll take you to the right place."
-After moving: "You're in the right place now. Want me to stay with you or connect you to our Concierge®?"
+After moving: "You're in the right place now. Want me to stay with you or connect you to our Concierge?"
 
 ═══════════════════════════════════════════════════════════════════════════════
 QUESTION DISCIPLINE
@@ -11823,7 +11823,7 @@ Mira should escalate when:
 • Safety is uncertain
 
 FIXED ESCALATION SCRIPT:
-"I can connect you to our Concierge® so a human can take this forward with you."
+"I can connect you to our Concierge so a human can take this forward with you."
 
 NO explanation of systems. NO friction.
 
@@ -11976,7 +11976,7 @@ Mira MUST:
 • Route to Care Concierge or Emergency Pillar
 
 Escalation language:
-"I can't assess this medically, but I'm glad you reached out. The safest next step is to speak to our Care Concierge® right now so they can guide you."
+"I can't assess this medically, but I'm glad you reached out. The safest next step is to speak to our Care Concierge right now so they can guide you."
 
 "This sounds like something that needs proper care support. Let me connect you with someone who can help immediately."
 
@@ -12002,7 +12002,7 @@ CONCIERGE-FIRST ROUTING (CORE PRINCIPLE)
 Mira's default instinct is: Guide → Reassure → Offer Concierge Support
 
 Whenever clarity, coordination, or professional judgement is required:
-"If you'd like, our Concierge® can help you with this directly."
+"If you'd like, our Concierge can help you with this directly."
 
 Concierge is the escalation, not the failure.
 
@@ -12052,7 +12052,7 @@ User: "Do you have organic kangaroo treats?"
 
 User: "I need a pet wheelchair"
 ❌ WRONG: "We don't sell wheelchairs."
-✅ RIGHT: "Let me look into that for you. While we don't have wheelchairs in our current catalogue, our Concierge® can help source one. What size is your dog? I'll get this started."
+✅ RIGHT: "Let me look into that for you. While we don't have wheelchairs in our current catalogue, our Concierge can help source one. What size is your dog? I'll get this started."
 
 ═══════════════════════════════════════════════════════════════════════════════
 25) CROSS-PILLAR SEAMLESS SUGGESTIONS (CORE FEATURE)
@@ -12112,7 +12112,7 @@ CELEBRATE GUARDRAILS (MUST FOLLOW):
 ❌ NEVER say "Indies have adaptable digestion" or make breed claims
 ❌ NEVER ask "Would you like me to suggest?" then ask again "Would you like me to show?"
 ❌ NEVER loop on permission - if user asks for options, SHOW THEM IMMEDIATELY
-❌ NEVER say "Your picks have been sent to your Pet Concierge®!"
+❌ NEVER say "Your picks have been sent to your Pet Concierge!"
 
 ✅ ALWAYS use allergy data from profile silently (don't ask what you know)
 ✅ ALWAYS show cake options immediately when asked
@@ -13605,7 +13605,7 @@ async def mira_chat(
             ticket_id = f"SVC-{int(datetime.now().timestamp())}"
         
         # Build confirmation response
-        confirmation_response = f"""Got it! I've sent this to your **Concierge®** team.
+        confirmation_response = f"""Got it! I've sent this to your **Concierge** team.
 
 **Service Requested:** {triggered_service['display_name']}
 **For:** {pet_name}
@@ -14581,13 +14581,13 @@ Would you like me to show you safe treats in one of those flavors?"""
                     # No places found - inform user
                     return add_picks_to_response({
                         "success": True,
-                        "response": f"{pet_anchor}\n\nI couldn't find verified pet-friendly {place_type_display.get(place_type, 'places')} in {effective_location}. Would you like me to connect you with your **Concierge®**? They can call ahead and confirm pet policies for any place you're interested in.",
+                        "response": f"{pet_anchor}\n\nI couldn't find verified pet-friendly {place_type_display.get(place_type, 'places')} in {effective_location}. Would you like me to connect you with your **Concierge**? They can call ahead and confirm pet policies for any place you're interested in.",
                         "session_id": session_id,
                         "pillar": pillar or "dine",
                         "intent": "place_search_no_results",
                         "nearby_places": None,
                         "follow_ups": [
-                            {"text": "Connect to Concierge®", "type": "action"},
+                            {"text": "Connect to Concierge", "type": "action"},
                             {"text": "Try another area", "type": "action"}
                         ],
                         "products": []
@@ -15576,7 +15576,7 @@ I can help with any of these - or all of them! Just let me know what excites you
                     "type": "service",
                     "category": "coordination",
                     "name": "Full Party Coordination",
-                    "description": "Let our Concierge® handle all the details",
+                    "description": "Let our Concierge handle all the details",
                     "icon": "✨",
                     "reason": "Stress-free celebration planning",
                     "cta": "Get Help",
@@ -15610,7 +15610,7 @@ I can help with any of these - or all of them! Just let me know what excites you
                 # Format response with what we understood
                 items_summary = ", ".join([item["name"].split(" for ")[0] for item in requested_items])
                 
-                celebrate_response = f"""Got it! I've noted your request. Our Concierge® is on it and will get back to you with personalised options shortly!
+                celebrate_response = f"""Got it! I've noted your request. Our Concierge is on it and will get back to you with personalised options shortly!
 
 📋 **Request #{ticket_id}** is being processed by our team.
 
@@ -15621,7 +15621,7 @@ I can help with any of these - or all of them! Just let me know what excites you
                 
                 celebrate_response += f"""
 
-Our Concierge® will reach out via WhatsApp/Email with curated options. Is there anything else I can help you with in the meantime? 🐾"""
+Our Concierge will reach out via WhatsApp/Email with curated options. Is there anything else I can help you with in the meantime? 🐾"""
                 
                 # Update ticket with requirements and move to "processing" stage
                 await update_mira_ticket(session_id, {
@@ -15914,7 +15914,7 @@ Pick one, and I'll give you a simple starting point! 🐾"""
                                 for r in restaurants:
                                     open_status = "Open now" if r.get("is_open_now") else "Check hours"
                                     nearby_places_context += f"- {r['name']} ({r.get('address', '')[:50]}) - {open_status} - Rating: {r.get('rating', 'N/A')}/5\n"
-                                nearby_places_context += "\nRecommend these pet-friendly restaurants. Our Concierge® can confirm pet policies."
+                                nearby_places_context += "\nRecommend these pet-friendly restaurants. Our Concierge can confirm pet policies."
                                 logger.info(f"[NEARBY] Found {len(restaurants)} restaurants via Google Places in {city_for_search}")
                         except Exception as rest_err:
                             logger.warning(f"[NEARBY] Google Places error for restaurants: {rest_err}")
@@ -15941,7 +15941,7 @@ Pick one, and I'll give you a simple starting point! 🐾"""
                                 nearby_places_context = f"\n\nPET-FRIENDLY STAYS IN {city_for_search.upper()} (via Google Places):\n"
                                 for s in stays:
                                     nearby_places_context += f"- {s['name']} ({s.get('address', '')[:50]}) - Rating: {s.get('rating', 'N/A')}/5\n"
-                                nearby_places_context += "\nRecommend these hotels. Our Concierge® will verify pet policies before booking."
+                                nearby_places_context += "\nRecommend these hotels. Our Concierge will verify pet policies before booking."
                                 logger.info(f"[NEARBY] Found {len(stays)} stays via Google Places in {city_for_search}")
                         except Exception as stay_err:
                             logger.warning(f"[NEARBY] Google Places error for stays: {stay_err}")
@@ -16581,7 +16581,7 @@ FOLLOW-UP CONCISENESS RULE:
   3. Repeat breed characteristics that were mentioned in previous message
 - Instead, GET TO THE POINT quickly:
   - Example WRONG: "I'm really glad you're considering this. From what I know about Indies, their resilience is remarkable..."
-  - Example RIGHT: "Great choice! Let me connect you with your Concierge® to check local registration requirements."
+  - Example RIGHT: "Great choice! Let me connect you with your Concierge to check local registration requirements."
 - If user selects an option you offered, acknowledge briefly and take action
 - Current conversation length: {len(request.history or [])} messages"""
         
@@ -18657,7 +18657,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "mode": "always_on",
                 "cta_prominence": "quiet",
                 "reason": "always_available",
-                "cta": "Concierge® can help",
+                "cta": "Concierge can help",
                 "suppress_commerce": False
             },
             "safety_override": picks_engine_output.safety_override if picks_engine_output else {
@@ -18977,7 +18977,7 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
 
     # COMPETITOR BLOCK — appended to every single request, no exceptions
     pet_context += (
-        "\n\nCRITICAL BUSINESS RULE: You are The Doggy Company's Concierge®. "
+        "\n\nCRITICAL BUSINESS RULE: You are The Doggy Company's Concierge. "
         "NEVER recommend or mention Rover, Wag, BringFido, Supertails, HUFT, Zigly, "
         "PetBacker, Heads Up For Tails, or ANY third-party app or competitor service. "
         "When a pet parent needs a service, ALWAYS say: "
@@ -21690,7 +21690,7 @@ async def get_dog_friendly_places(pet_id: str, city: str = "Mumbai", limit: int 
         "pet_name": pet_name,
         "city": city,
         "places": places[:limit],
-        "prompt_message": f"Want to explore? Let Concierge® help plan your outing with {pet_name}!"
+        "prompt_message": f"Want to explore? Let Concierge help plan your outing with {pet_name}!"
     }
 
 
@@ -21943,7 +21943,7 @@ async def get_personalization_stats(pet_id: str):
     for vax in upcoming_vax[:2]:
         days = ((_vdate.fromisoformat(vax["next_due_date"][:10])) - _vdate.today()).days
         urgency = 10 if days <= 0 else 9 if days <= 7 else 7
-        add_knowledge("💉", f"{vax['vaccine_name']} {'OVERDUE' if days <= 0 else f'due in {days}d'}", "health", urgency, urgency >= 9, "Book vet via Concierge®")
+        add_knowledge("💉", f"{vax['vaccine_name']} {'OVERDUE' if days <= 0 else f'due in {days}d'}", "health", urgency, urgency >= 9, "Book vet via Concierge")
 
     # Primary vet
     vets = vault.get("vets", [])
@@ -23854,7 +23854,7 @@ def analyze_for_semantic_tags(item):
 # ═══════════════════════════════════════════════════════════════════════════════
 # TIP CARDS - Generate summary cards for conversations without products
 # ═══════════════════════════════════════════════════════════════════════════════
-# "Mira is the Brain, Concierge® is the Hands"
+# "Mira is the Brain, Concierge is the Hands"
 # Tip Cards are the NON-PRODUCT equivalent of Picks
 # Same plumbing: Notification → Ticket → Inbox
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -23978,7 +23978,7 @@ class SendTipCardRequest(BaseModel):
 @router.post("/send-tip-card-to-concierge")
 async def send_tip_card_to_concierge(request: SendTipCardRequest):
     """
-    Send a tip card to Concierge® via unified signal flow.
+    Send a tip card to Concierge via unified signal flow.
     Creates: Notification → Service Desk Ticket → Channel Intake
     
     Same plumbing as Picks, but for NON-PRODUCT conversations:
@@ -23988,7 +23988,7 @@ async def send_tip_card_to_concierge(request: SendTipCardRequest):
     - Training guides
     - Health advice
     
-    "Mira is the Brain, Concierge® is the Hands"
+    "Mira is the Brain, Concierge is the Hands"
     """
     try:
         from central_signal_flow import create_signal
@@ -24090,7 +24090,7 @@ async def send_tip_card_to_concierge(request: SendTipCardRequest):
                     "id": member_notification_id,
                     "type": "tip_card_request_received",
                     "title": f"Request Received: {request.card_type.replace('_', ' ').title()}",
-                    "message": f"Your {request.card_type.replace('_', ' ')} for {pet_name} has been sent to Concierge®. We'll get back to you soon!",
+                    "message": f"Your {request.card_type.replace('_', ' ')} for {pet_name} has been sent to Concierge. We'll get back to you soon!",
                     "pet_name": pet_name,
                     "pet_id": pet.get('id'),
                     "user_email": user_email,
@@ -24763,7 +24763,7 @@ async def save_picks_to_vault(request: SavePicksRequest):
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SEND PICKS TO CONCIERGE® - Unified Signal Flow
-# "Mira is the Brain, Concierge® is the Hands"
+# "Mira is the Brain, Concierge is the Hands"
 # This creates the full signal: Notification → Ticket → Inbox
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -24784,10 +24784,10 @@ class SendPicksRequest(BaseModel):
 @router.post("/send-picks-to-concierge")
 async def send_picks_to_concierge(request: SendPicksRequest):
     """
-    Send user's picks to Concierge® via unified signal flow.
+    Send user's picks to Concierge via unified signal flow.
     Creates: Notification → Service Desk Ticket → Channel Intake
     
-    "Mira is the Brain, Concierge® is the Hands"
+    "Mira is the Brain, Concierge is the Hands"
     """
     try:
         from central_signal_flow import create_signal
@@ -24870,7 +24870,7 @@ async def send_picks_to_concierge(request: SendPicksRequest):
                     "id": member_notification_id,
                     "type": "picks_request_received",
                     "title": f"Request Received: {pet_name}",
-                    "message": f"Your {picked_count} pick(s) for {pet_name} have been sent to Concierge®. We'll get back to you soon!",
+                    "message": f"Your {picked_count} pick(s) for {pet_name} have been sent to Concierge. We'll get back to you soon!",
                     "pet_name": pet_name,
                     "pet_id": pet.get('id'),
                     "user_email": user_email,
@@ -25186,7 +25186,7 @@ async def send_vault_to_concierge(request: UnifiedVaultRequest):
                     "id": member_notification_id,
                     "type": "vault_request_received",
                     "title": f"Request Received: {pet_name}",
-                    "message": f"Your {request.vault_type.replace('_', ' ')} request for {pet_name} has been sent to Concierge®. We'll get back to you soon!",
+                    "message": f"Your {request.vault_type.replace('_', ' ')} request for {pet_name} has been sent to Concierge. We'll get back to you soon!",
                     "pet_name": pet_name,
                     "pet_id": pet.get('id') if pet else None,
                     "user_email": user_email,
@@ -26233,7 +26233,7 @@ async def get_local_vet_clinics(
             "vets": vets,
             "count": len(vets),
             "source": "google_places",
-            "concierge_message": "Need help booking an appointment? Let Concierge® handle it for you."
+            "concierge_message": "Need help booking an appointment? Let Concierge handle it for you."
         }
         
     except Exception as e:
@@ -27418,7 +27418,7 @@ async def create_ticket_from_concierge_pick(
     """
     Create a service desk ticket from a concierge pick card.
     
-    This is called when a user taps the CTA on a Concierge® Product or Service card.
+    This is called when a user taps the CTA on a Concierge Product or Service card.
     The ticket will be created and notifications sent to both admin and member.
     """
     try:
@@ -27695,7 +27695,7 @@ QUICK_PROMPTS = {
     "adopt": ["Find the right breed for me", "Rescue dogs near me", "Home readiness checklist", "First week with new dog"],
     "shop": ["Best products for my breed", "Recommended by Mira", "New arrivals", "Gifts for dog lovers"],
     "stay": ["Dog-friendly stays near me", "Luxury pet hotels", "Book a staycation", "Pet boarding options"],
-    "general": ["What can Mira help with?", "Find products for my dog", "Book a service", "Talk to Concierge®"],
+    "general": ["What can Mira help with?", "Find products for my dog", "Book a service", "Talk to Concierge"],
 }
 
 @router.get("/quick-prompts/{pillar}")
