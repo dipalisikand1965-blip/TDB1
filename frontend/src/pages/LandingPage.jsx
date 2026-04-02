@@ -1061,8 +1061,19 @@ export default function LandingPage() {
           }}>
             I want to be part of this →
           </button>
+          <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
+            <button onClick={() => navigate("/demo")} style={{
+              padding: "12px 28px", borderRadius: 999,
+              border: `1px solid rgba(201,151,58,0.4)`,
+              background: "rgba(201,151,58,0.07)",
+              color: C.amber, fontSize: 14, fontWeight: 600,
+              cursor: "pointer", fontFamily: "DM Sans, sans-serif",
+            }}>
+              Try the Experience →
+            </button>
+          </div>
           <div style={{
-            marginTop: 20, fontSize: 13, color: C.muted,
+            marginTop: 16, fontSize: 13, color: C.muted,
             fontFamily: "DM Sans, sans-serif",
           }}>
             Join the founding circle · ₹2,999/year after soft launch
