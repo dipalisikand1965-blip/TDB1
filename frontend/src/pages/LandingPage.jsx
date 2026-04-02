@@ -1118,6 +1118,16 @@ export default function LandingPage() {
               {l.label}
             </button>
           ))}
+          {/* Experience Demo — amber accent */}
+          <button onClick={() => navigate('/demo')}
+            style={{
+              background: "none", border: "none",
+              color: C.amber, fontSize: 13, cursor: "pointer",
+              fontFamily: "DM Sans, sans-serif", fontWeight: 600,
+            }}
+          >
+            ✦ Experience Demo
+          </button>
           <a href="https://wa.me/919739908844?text=Hi! I'd like to know more about The Doggy Company 🐕" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>WhatsApp</a>
           <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Instagram</a>
           <a href="https://www.facebook.com/thedoggybaker" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Facebook</a>
