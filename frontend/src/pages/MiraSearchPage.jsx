@@ -50,19 +50,20 @@ const soulColor = (score) => {
 // ── Soul nudge banner ──────────────────────────────────────────────────────
 function SoulNudge({ pet }) {
   const score = Math.round(pet?.overall_score || 0);
-  if (score >= 80) return null;
-  const missing = 80 - score;
+  const isComplete = score >= 80;
   return (
     <Link to="/pet-home" style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '10px 16px', borderRadius: 12,
-      background: 'rgba(201,151,58,0.1)',
-      border: `1px solid rgba(201,151,58,0.3)`,
+      background: isComplete ? 'rgba(16,185,129,0.07)' : 'rgba(201,151,58,0.1)',
+      border: `1px solid ${isComplete ? 'rgba(16,185,129,0.25)' : 'rgba(201,151,58,0.3)'}`,
       textDecoration: 'none', marginBottom: 16,
     }}>
-      <Sparkles size={14} color={C.amber} />
-      <span style={{ fontSize: 13, color: C.amber, fontFamily: 'DM Sans, sans-serif' }}>
-        Tell Mira {Math.ceil(missing / 10)} more things about {pet?.name || 'your dog'} to unlock full personalisation →
+      <Sparkles size={14} color={isComplete ? C.green : C.amber} />
+      <span style={{ fontSize: 13, color: isComplete ? C.green : C.amber, fontFamily: 'DM Sans, sans-serif' }}>
+        {isComplete
+          ? `${pet?.name || 'Your dog'}'s soul profile is complete · Update anytime →`
+          : `Tell Mira ${Math.ceil((80 - score) / 10)} more things about ${pet?.name || 'your dog'} to unlock full personalisation →`}
       </span>
     </Link>
   );
