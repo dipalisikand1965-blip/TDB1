@@ -1855,7 +1855,8 @@ const MiraChatWidget = ({
         sm:bottom-0 sm:right-0 sm:left-auto sm:top-0
       `}
       style={{
-        top: 'var(--mira-top-offset, 105px)',
+        /* When minimized: top:auto so the h-16 strip anchors to bottom:0 (not floating at top-offset) */
+        top: isMinimized ? 'auto' : 'var(--mira-top-offset, 105px)',
         zIndex: 2147483640,
       }}
       data-testid="mira-chat-widget"
