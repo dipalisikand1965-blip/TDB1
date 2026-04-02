@@ -53,7 +53,7 @@ function SoulNudge({ pet }) {
   if (score >= 80) return null;
   const missing = 80 - score;
   return (
-    <Link to="/membership" style={{
+    <Link to="/pet-home" style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '10px 16px', borderRadius: 12,
       background: 'rgba(201,151,58,0.1)',
