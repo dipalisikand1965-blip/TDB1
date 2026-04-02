@@ -10,11 +10,13 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { getApiUrl } from '../utils/api';
 import { toast, Toaster } from 'sonner';
+import CartSidebar from '../components/CartSidebar';
+import { ProductDetailModal } from '../components/ProductCard';
 
-// ── Icons (lucide-react already installed) ─────────────────────────────────
+// ── Icons ──────────────────────────────────────────────────────────────────
 import {
-  Search, X, ArrowRight, ShoppingCart, Calendar,
-  Sparkles, ChevronDown, Send,
+  Search, X, ShoppingCart, Calendar,
+  Sparkles, Send,
 } from 'lucide-react';
 
 // ── Design tokens ──────────────────────────────────────────────────────────
@@ -125,21 +127,24 @@ function StreamingText({ text, streaming }) {
 }
 
 // ── Product / service chip ─────────────────────────────────────────────────
-function ResultChip({ item, type, pet, onBook, onCart }) {
+function ResultChip({ item, type, pet, onBook, onCart, onCardClick }) {
   const img = item.cloudinary_url || item.photo_url || item.image_url || item.image;
   const price = item.original_price || item.price || 0;
   const isService = type === 'service';
 
   return (
-    <div style={{
-      background: C.card, border: `1px solid ${C.border}`,
-      borderRadius: 14, overflow: 'hidden',
-      display: 'flex', flexDirection: 'column',
-      minWidth: 160, maxWidth: 200, flexShrink: 0,
-      transition: 'border-color 0.18s',
-    }}
-      onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(201,151,58,0.4)'}
-      onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+    <div
+      onClick={() => onCardClick && onCardClick(item)}
+      style={{
+        background: C.card, border: `1px solid ${C.border}`,
+        borderRadius: 14, overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+        minWidth: 160, maxWidth: 200, flexShrink: 0,
+        transition: 'border-color 0.18s, transform 0.15s',
+        cursor: 'pointer',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,151,58,0.4)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       {/* Image */}
       <div style={{ width: '100%', height: 100, background: '#1a1724', overflow: 'hidden', flexShrink: 0 }}>
@@ -160,29 +165,33 @@ function ResultChip({ item, type, pet, onBook, onCart }) {
         </div>
       </div>
 
-      {/* CTA */}
+      {/* CTA — stopPropagation so card click (modal) doesn't also fire */}
       <div style={{ padding: '0 10px 10px' }}>
         {isService ? (
-          <button onClick={() => onBook(item)} style={{
-            width: '100%', padding: '6px 0',
-            borderRadius: 8, border: `1px solid ${C.amber}`,
-            background: 'transparent', color: C.amber,
-            fontSize: 11, fontWeight: 600, cursor: 'pointer',
-            fontFamily: 'DM Sans, sans-serif',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-          }}>
+          <button
+            onClick={e => { e.stopPropagation(); onBook(item); }}
+            style={{
+              width: '100%', padding: '6px 0',
+              borderRadius: 8, border: `1px solid ${C.amber}`,
+              background: 'transparent', color: C.amber,
+              fontSize: 11, fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'DM Sans, sans-serif',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+            }}>
             <Calendar size={11} /> Book →
           </button>
         ) : (
-          <button onClick={() => onCart(item)} style={{
-            width: '100%', padding: '6px 0',
-            borderRadius: 8, border: 'none',
-            background: `linear-gradient(135deg,${C.amber},${C.amberL})`,
-            color: '#0D0B12',
-            fontSize: 11, fontWeight: 700, cursor: 'pointer',
-            fontFamily: 'DM Sans, sans-serif',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-          }}>
+          <button
+            onClick={e => { e.stopPropagation(); onCart(item); }}
+            style={{
+              width: '100%', padding: '6px 0',
+              borderRadius: 8, border: 'none',
+              background: `linear-gradient(135deg,${C.amber},${C.amberL})`,
+              color: '#0D0B12',
+              fontSize: 11, fontWeight: 700, cursor: 'pointer',
+              fontFamily: 'DM Sans, sans-serif',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+            }}>
             <ShoppingCart size={11} /> Add to Cart
           </button>
         )}
@@ -214,6 +223,8 @@ export default function MiraSearchPage() {
   // turns = [{ id, query, response, products, services, streaming }]
   const [turns, setTurns] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [selProduct, setSelProduct] = useState(null);
 
   const inputRef = useRef(null);
   const followUpRef = useRef(null);
@@ -332,6 +343,18 @@ export default function MiraSearchPage() {
             const parsed = JSON.parse(data);
             if (parsed.type === 'enriched') {
               enrichedProducts = parsed.data?.products || [];
+              // Services come from nearby_places, not from products array
+              const nearbyPlaces = parsed.data?.nearby_places || [];
+              if (nearbyPlaces.length > 0) {
+                const svcsFromPlaces = nearbyPlaces.slice(0, 4).map(p => ({
+                  ...p,
+                  product_type: 'service',
+                  name: p.name || p.place_name || 'Service',
+                }));
+                setTurns(prev => prev.map(t =>
+                  t.id === turnId ? { ...t, services: svcsFromPlaces } : t
+                ));
+              }
               continue;
             }
             const tok = parsed.text || parsed.delta || parsed.content || '';
@@ -411,8 +434,8 @@ export default function MiraSearchPage() {
           <span style={{ fontSize: 17, fontWeight: 700, color: C.ivory, letterSpacing: '-0.02em' }}>Mira</span>
         </div>
 
-        {/* Pet selector */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        {/* Pet selector + cart icon */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {pets.slice(0, 4).map(pet => (
             <PetChip
               key={pet.id || pet._id}
@@ -421,6 +444,21 @@ export default function MiraSearchPage() {
               onClick={() => setActivePet(pet)}
             />
           ))}
+          {/* Cart icon */}
+          <button
+            onClick={() => setCartOpen(true)}
+            data-testid="mira-search-cart"
+            style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: C.card, border: `1.5px solid ${C.border}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', transition: 'border-color 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = C.amber}
+            onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+          >
+            <ShoppingCart size={16} color={C.amber} />
+          </button>
         </div>
       </div>
 
@@ -566,6 +604,7 @@ export default function MiraSearchPage() {
                 <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
                   {turn.products.map((p, i) => (
                     <ResultChip key={p.id || p._id || i} item={p} type="product" pet={activePet}
+                      onCardClick={item => setSelProduct(item)}
                       onCart={item => { addToCart(item); toast.success(`${item.name} added to cart! 🛒`); }}
                       onBook={() => {}} />
                   ))}
@@ -582,6 +621,7 @@ export default function MiraSearchPage() {
                 <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
                   {turn.services.map((s, i) => (
                     <ResultChip key={s.id || s._id || i} item={s} type="service" pet={activePet}
+                      onCardClick={item => setSelProduct(item)}
                       onCart={() => {}} onBook={() => {}} />
                   ))}
                 </div>
@@ -637,7 +677,7 @@ export default function MiraSearchPage() {
       })}
 
       {/* Scroll anchor */}
-      <div ref={bottomRef} style={{ height: 1 }} />
+      <div ref={bottomRef} style={{ height: 100 }} />
 
       {/* ── WhatsApp bottom bar (fixed) — shown after first complete turn ── */}
       {turns.some(t => t.response && !t.streaming) && (
@@ -667,10 +707,25 @@ export default function MiraSearchPage() {
         </div>
       )}
 
-      {/* CSS spin + blink in top-level style block above */}
+      {/* ── CartSidebar ── */}
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
-      {/* Toaster — standalone page has no layout, mount it here */}
-      <Toaster position="top-center" richColors />
+      {/* ── ProductDetailModal — card tap opens this ── */}
+      {selProduct && (
+        <ProductDetailModal
+          product={selProduct}
+          pillar={selProduct?.pillar || 'celebrate'}
+          selectedPet={activePet}
+          onClose={() => setSelProduct(null)}
+        />
+      )}
+
+      {/* Toaster — bottom-center, offset above WhatsApp bar */}
+      <Toaster
+        position="bottom-center"
+        toastOptions={{ style: { marginBottom: 80 } }}
+        richColors
+      />
     </div>
   );
 }
