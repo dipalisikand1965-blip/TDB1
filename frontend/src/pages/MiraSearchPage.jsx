@@ -8,16 +8,18 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useConcierge } from '../hooks/useConcierge';
 import { getApiUrl } from '../utils/api';
 import { toast, Toaster } from 'sonner';
 import CartSidebar from '../components/CartSidebar';
 import { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import GroomingFlowModal from '../components/GroomingFlowModal';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
   Search, X, ShoppingCart, Calendar,
-  Sparkles, Send,
+  Sparkles, Send, Inbox,
 } from 'lucide-react';
 
 // ── Design tokens ──────────────────────────────────────────────────────────
@@ -217,6 +219,7 @@ export default function MiraSearchPage() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
 
   const [pets, setPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
@@ -227,6 +230,10 @@ export default function MiraSearchPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
+  const [groomingOpen, setGroomingOpen] = useState(false);
+
+  // Grooming keyword detector
+  const GROOMING_RE = /grooming|groom|bath|spa|wash|trim|nail|haircut|coat\s|fur\s/i;
 
   const inputRef = useRef(null);
   const followUpRef = useRef(null);
@@ -394,6 +401,11 @@ export default function MiraSearchPage() {
       // Focus the follow-up input
       setTimeout(() => followUpRef.current?.focus(), 300);
 
+      // Fix 2 — grooming queries → open GroomingFlowModal
+      if (GROOMING_RE.test(q)) {
+        setTimeout(() => setGroomingOpen(true), 400);
+      }
+
     } catch (err) {
       if (err.name !== 'AbortError') {
         updateTurn({ streaming: false, response: 'Mira had a moment. Please try again.' });
@@ -464,6 +476,22 @@ export default function MiraSearchPage() {
               onClick={() => setActivePet(pet)}
             />
           ))}
+          {/* My Requests */}
+          <button
+            onClick={() => navigate('/my-requests')}
+            data-testid="mira-search-my-requests"
+            title="My Requests"
+            style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: C.card, border: `1.5px solid ${C.border}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', transition: 'border-color 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = C.purpleL}
+            onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+          >
+            <Inbox size={16} color={C.purpleL} />
+          </button>
           {/* Cart icon */}
           <button
             onClick={() => setCartOpen(true)}
@@ -632,14 +660,27 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Step 3 — MiraImaginesBreed: shown when both stream + claude-picks returned nothing */}
+            {/* Step 3 — MiraImaginesBreed: shown when both stream + semantic-search returned nothing */}
             {turn.showImagines && !turn.streaming && activePet && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
                 <MiraImaginesBreed
                   pet={activePet}
                   pillar="general"
                   colour={C.amber}
-                  onConcierge={() => {}}
+                  onConcierge={async () => {
+                    try {
+                      await conciergefire({
+                        type: 'request',
+                        name: `Mira Search: ${turn.query}`,
+                        note: turn.query,
+                        metadata: { query: turn.query, source: 'mira_search', imagines: true },
+                        silent: true,
+                      });
+                      toast.success('Sent to Concierge! 📥 We\'ll find the right match for ' + (activePet?.name || 'your dog'));
+                    } catch {
+                      toast.error('Could not send — please try again');
+                    }
+                  }}
                 />
               </div>
             )}
@@ -743,6 +784,14 @@ export default function MiraSearchPage() {
             Send full conversation to WhatsApp →
           </button>
         </div>
+      )}
+
+      {/* ── GroomingFlowModal — opens when query is grooming-related ── */}
+      {groomingOpen && (
+        <GroomingFlowModal
+          pet={activePet}
+          onClose={() => setGroomingOpen(false)}
+        />
       )}
 
       {/* ── CartSidebar ── */}
