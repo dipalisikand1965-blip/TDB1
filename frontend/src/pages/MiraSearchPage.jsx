@@ -210,15 +210,14 @@ export default function MiraSearchPage() {
   const [pets, setPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
   const [query, setQuery] = useState('');
-  const [response, setResponse] = useState('');
-  const [streaming, setStreaming] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [services, setServices] = useState([]);
+  const [followUp, setFollowUp] = useState('');
+  // turns = [{ id, query, response, products, services, streaming }]
+  const [turns, setTurns] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [bookingItem, setBookingItem] = useState(null);
 
   const inputRef = useRef(null);
-  const responseRef = useRef(null);
+  const followUpRef = useRef(null);
+  const bottomRef = useRef(null);
   const abortRef = useRef(null);
 
   // ── Auth guard ────────────────────────────────────────────────────────────
@@ -248,41 +247,60 @@ export default function MiraSearchPage() {
     inputRef.current?.focus();
   }, []);
 
-  // ── Scroll response into view when it starts ──────────────────────────────
+  // ── Scroll to bottom after each new turn ─────────────────────────────────
   useEffect(() => {
-    if (response && responseRef.current) {
-      responseRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (turns.length > 0) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
-  }, [response.length > 0]);
+  }, [turns.length, turns[turns.length - 1]?.response?.length]);
 
   // ── Stream handler ────────────────────────────────────────────────────────
   const handleSearch = useCallback(async (searchQuery) => {
     const q = (searchQuery || query).trim();
-    if (!q || streaming) return;
+    if (!q) return;
     if (!activePet) { toast.error('Please select a pet first'); return; }
 
-    // Cancel previous stream
+    // Check if any turn is already streaming
+    const anyStreaming = turns.some(t => t.streaming);
+    if (anyStreaming) return;
+
+    // Cancel previous abort
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
+    const turnId = Date.now();
+
+    // Build history from previous turns
+    const history = turns.flatMap(t => [
+      { role: 'user', content: t.query },
+      { role: 'assistant', content: t.response || '' },
+    ]).slice(-10);
+
+    // Add this turn to the conversation
+    setTurns(prev => [...prev, {
+      id: turnId, query: q,
+      response: '', streaming: true,
+      products: [], services: [],
+    }]);
     setHasSearched(true);
-    setResponse('');
-    setProducts([]);
-    setServices([]);
-    setStreaming(true);
+    setQuery('');
+    setFollowUp('');
 
     const body = {
       message: q,
-      session_id: `search_${Date.now()}`,
+      session_id: `search_${turnId}`,
       source: 'mira_search',
       current_pillar: 'general',
       selected_pet_id: activePet?.id || activePet?._id,
       pet_name: activePet?.name,
       pet_breed: activePet?.breed || activePet?.identity?.breed || null,
       soul_answers: activePet?.doggy_soul_answers || {},
-      history: [],
+      history,
     };
+
+    const updateTurn = (patch) =>
+      setTurns(prev => prev.map(t => t.id === turnId ? { ...t, ...patch } : t));
 
     try {
       const res = await fetch(`${getApiUrl()}/api/mira/os/stream`, {
@@ -305,7 +323,6 @@ export default function MiraSearchPage() {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-
         const chunk = decoder.decode(value, { stream: true });
         for (const line of chunk.split('\n')) {
           if (!line.startsWith('data: ')) continue;
@@ -320,45 +337,46 @@ export default function MiraSearchPage() {
             const tok = parsed.text || parsed.delta || parsed.content || '';
             if (!tok) continue;
             fullText += tok;
-            setResponse(fullText);
+            updateTurn({ response: fullText });
           } catch {}
         }
       }
 
-      // Attach products from enriched event
-      if (enrichedProducts.length > 0) {
-        setProducts(enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6));
-        setServices(enrichedProducts.filter(p => p.product_type === 'service').slice(0, 4));
-      }
+      // Attach enriched products
+      const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
+      const svcs  = enrichedProducts.filter(p => p.product_type === 'service').slice(0, 4);
+      updateTurn({ streaming: false, response: fullText, products: prods, services: svcs });
 
-      // Post-stream: fetch claude-picks
+      // Post-stream claude-picks fallback
       const petId = activePet?.id || activePet?._id;
-      if (petId) {
+      if (petId && prods.length === 0) {
         fetch(`${getApiUrl()}/api/mira/claude-picks/${petId}?limit=6&min_score=30`)
           .then(r => r.ok ? r.json() : null)
           .then(d => {
             if (!d?.products?.length) return;
-            const picks = d.products;
-            setProducts(prev => {
-              if (prev.length >= 4) return prev;
-              return [...prev, ...picks.filter(p => p.product_type !== 'service')].slice(0, 6);
-            });
+            updateTurn({ products: d.products.filter(p => p.product_type !== 'service').slice(0, 6) });
           })
           .catch(() => {});
       }
+
+      // Focus the follow-up input
+      setTimeout(() => followUpRef.current?.focus(), 300);
+
     } catch (err) {
       if (err.name !== 'AbortError') {
-        setResponse('Mira had a moment. Please try again.');
+        updateTurn({ streaming: false, response: 'Mira had a moment. Please try again.' });
       }
-    } finally {
-      setStreaming(false);
     }
-  }, [query, activePet, token, streaming]);
+  }, [query, followUp, activePet, token, turns]);
 
-  // ── WhatsApp share ────────────────────────────────────────────────────────
+  // ── WhatsApp — send full conversation ────────────────────────────────────
   const handleWhatsApp = () => {
-    if (!response) return;
-    const msg = `*Mira's answer for ${activePet?.name || 'my dog'}:*\n\n${response.slice(0, 800)}${response.length > 800 ? '...' : ''}\n\n_Powered by The Doggy Company_`;
+    if (!turns.length) return;
+    const lines = turns
+      .filter(t => t.response)
+      .map(t => `*You:* ${t.query}\n*Mira:* ${t.response.slice(0, 400)}${t.response.length > 400 ? '…' : ''}`)
+      .join('\n\n');
+    const msg = `*Mira conversation for ${petName}:*\n\n${lines}\n\n_Powered by The Doggy Company_`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -377,6 +395,7 @@ export default function MiraSearchPage() {
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes spin { to{transform:rotate(360deg)} }
         .ms-chip-scroll::-webkit-scrollbar { display:none; }
         .ms-chip-scroll { scrollbar-width:none; }
         .ms-qp-btn:hover { background: rgba(201,151,58,0.12) !important; border-color: rgba(201,151,58,0.4) !important; }
@@ -503,85 +522,136 @@ export default function MiraSearchPage() {
         </div>
       )}
 
-      {/* ── Mira response ── */}
-      {(response || streaming) && (
-        <div
-          ref={responseRef}
-          style={{
-            width: '100%', maxWidth: 720,
-            background: C.surface,
-            border: `1px solid ${C.border}`,
-            borderRadius: 20, padding: '24px 24px 20px',
-            marginBottom: 24,
-            animation: 'fadeUp 0.35s ease',
-          }}
-        >
-          {/* Mira header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <div style={{
-              width: 24, height: 24, borderRadius: '50%',
-              background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-              <Sparkles size={12} color="#fff" />
+      {/* ── Conversation thread ── */}
+      {turns.map((turn, idx) => {
+        const isLast = idx === turns.length - 1;
+        return (
+          <div key={turn.id} style={{ width: '100%', maxWidth: 720, marginBottom: 8, animation: 'fadeUp 0.3s ease' }}>
+
+            {/* User message */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+              <div style={{
+                background: 'rgba(201,151,58,0.12)',
+                border: `1px solid rgba(201,151,58,0.25)`,
+                borderRadius: '18px 18px 4px 18px',
+                padding: '10px 16px',
+                maxWidth: '80%',
+                fontSize: 14, color: C.ivory,
+                fontFamily: 'DM Sans, sans-serif', lineHeight: 1.5,
+              }}>
+                {turn.query}
+              </div>
             </div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: C.purpleL }}>Mira</span>
-            {streaming && (
-              <span style={{ fontSize: 11, color: C.muted, fontStyle: 'italic' }}>thinking for {petName}…</span>
+
+            {/* Mira response */}
+            {(turn.response || turn.streaming) && (
+              <div style={{
+                background: C.surface,
+                border: `1px solid ${C.border}`,
+                borderRadius: 20, padding: '20px 24px 18px',
+                marginBottom: 12,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: '50%',
+                    background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <Sparkles size={11} color="#fff" />
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: C.purpleL }}>Mira</span>
+                  {turn.streaming && (
+                    <span style={{ fontSize: 11, color: C.muted, fontStyle: 'italic' }}>thinking for {petName}…</span>
+                  )}
+                </div>
+                <StreamingText text={turn.response} streaming={turn.streaming} />
+              </div>
+            )}
+
+            {/* Products for this turn */}
+            {turn.products?.length > 0 && (
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Mira picks for {petName}
+                </p>
+                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+                  {turn.products.map((p, i) => (
+                    <ResultChip key={p.id || p._id || i} item={p} type="product" pet={activePet}
+                      onCart={item => { addToCart(item); toast.success(`${item.name} added to cart! 🛒`); }}
+                      onBook={() => {}} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Services for this turn */}
+            {turn.services?.length > 0 && (
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Services
+                </p>
+                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+                  {turn.services.map((s, i) => (
+                    <ResultChip key={s.id || s._id || i} item={s} type="service" pet={activePet}
+                      onCart={() => {}} onBook={() => {}} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Follow-up input (only after last turn completes) ── */}
+            {isLast && !turn.streaming && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: C.card,
+                border: `1.5px solid rgba(201,151,58,0.25)`,
+                borderRadius: 16, padding: '6px 8px 6px 16px',
+                marginTop: 4, marginBottom: 8,
+                transition: 'border-color 0.2s',
+              }}>
+                <input
+                  ref={followUpRef}
+                  value={followUp}
+                  onChange={e => setFollowUp(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && followUp.trim()) handleSearch(followUp.trim()); }}
+                  placeholder="Ask a follow-up…"
+                  style={{
+                    flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                    fontSize: 14, color: C.ivory,
+                    fontFamily: 'DM Sans, sans-serif', padding: '8px 0',
+                    caretColor: C.amber,
+                  }}
+                  data-testid="mira-search-followup"
+                />
+                <button
+                  onClick={() => followUp.trim() && handleSearch(followUp.trim())}
+                  disabled={!followUp.trim()}
+                  style={{
+                    padding: '8px 14px', borderRadius: 12, border: 'none',
+                    background: followUp.trim()
+                      ? `linear-gradient(135deg,${C.amber},${C.amberL})`
+                      : 'rgba(255,255,255,0.06)',
+                    color: followUp.trim() ? C.night : C.muted,
+                    fontWeight: 700, fontSize: 13,
+                    cursor: followUp.trim() ? 'pointer' : 'not-allowed',
+                    fontFamily: 'DM Sans, sans-serif',
+                    display: 'flex', alignItems: 'center', gap: 5,
+                    transition: 'all 0.15s', flexShrink: 0,
+                  }}
+                >
+                  <Send size={13} /> Ask
+                </button>
+              </div>
             )}
           </div>
+        );
+      })}
 
-          <StreamingText text={response} streaming={streaming} />
-        </div>
-      )}
+      {/* Scroll anchor */}
+      <div ref={bottomRef} style={{ height: 1 }} />
 
-      {/* ── Products strip ── */}
-      {products.length > 0 && (
-        <div style={{ width: '100%', maxWidth: 720, marginBottom: 20, animation: 'fadeUp 0.4s ease' }}>
-          <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, fontWeight: 600 }}>
-            Mira picks for {petName}
-          </p>
-          <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
-            {products.map((p, i) => (
-              <ResultChip
-                key={p.id || p._id || i}
-                item={p}
-                type="product"
-                pet={activePet}
-                onCart={item => {
-                  addToCart(item);
-                  toast.success(`${item.name} added to cart! 🛒`);
-                }}
-                onBook={item => setBookingItem(item)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Services strip ── */}
-      {services.length > 0 && (
-        <div style={{ width: '100%', maxWidth: 720, marginBottom: 20, animation: 'fadeUp 0.45s ease' }}>
-          <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12, fontWeight: 600 }}>
-            Services near you
-          </p>
-          <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
-            {services.map((s, i) => (
-              <ResultChip
-                key={s.id || s._id || i}
-                item={s}
-                type="service"
-                pet={activePet}
-                onCart={() => {}}
-                onBook={item => setBookingItem(item)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── WhatsApp bottom bar (fixed) ── */}
-      {response && !streaming && (
+      {/* ── WhatsApp bottom bar (fixed) — shown after first complete turn ── */}
+      {turns.some(t => t.response && !t.streaming) && (
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
           padding: '12px 16px',
@@ -595,8 +665,7 @@ export default function MiraSearchPage() {
             data-testid="mira-search-whatsapp"
             style={{
               padding: '13px 28px', borderRadius: 999,
-              border: 'none',
-              background: '#25D366',
+              border: 'none', background: '#25D366',
               color: '#fff', fontWeight: 700, fontSize: 15,
               cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
               display: 'flex', alignItems: 'center', gap: 8,
@@ -604,13 +673,12 @@ export default function MiraSearchPage() {
             }}
           >
             <span style={{ fontSize: 18 }}>💬</span>
-            Send this to WhatsApp →
+            Send full conversation to WhatsApp →
           </button>
         </div>
       )}
 
-      {/* CSS spin keyframe */}
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      {/* CSS spin + blink in top-level style block above */}
     </div>
   );
 }
