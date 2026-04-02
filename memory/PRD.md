@@ -234,6 +234,26 @@ One-tap expandable row on Dine/Care/Celebrate product cards showing full soul pr
 **WHATSAPP_TEMPLATES_APPROVED=false** → All WA sends use freeform session messages.
 Set to `true` after Gupshup approves templates: tdc_welcome_member, tdc_order_confirmed, tdc_concierge_request, tdc_daily_digest, tdc_birthday_reminder, tdc_birthday_today, tdc_medication_reminder, tdc_pawrent_welcome
 
+## SESSION 48 — (2026-04-02) Mira Search Modal Router + ProtectedRoute Cleanup
+
+### Mira Search — Universal Service Modal Router (P0 COMPLETE)
+1. ✅ **7 keyword-triggered modals wired** in `MiraSearchPage.jsx`:
+   - `GroomingFlowModal` → grooming/groom/bath/spa/trim/nail queries (was already wired, fixed missing `isOpen` prop)
+   - `VetVisitFlowModal` → vet/checkup/vaccine/doctor/consult queries
+   - `ServiceBookingModal(boarding)` → boarding/daycare/pet-sitting/overnight queries
+   - `ServiceBookingModal(training)` → training/train/obedience/puppy-class queries
+   - `GoConciergeModal` → walk/hike/transport/trip/travel queries
+   - `ServiceConciergeModal(celebrate)` → birthday/celebrate/party/event queries
+   - `ServiceConciergeModal(learn)` → class/lesson/course/learn queries
+2. ✅ **`tdc.book()` crash fixed** in `GroomingFlowModal.jsx` and `VetVisitFlowModal.jsx` — replaced undefined `service?.name` reference with literal service type string
+
+### ProtectedRoute Console.log Cleanup (P1 COMPLETE)
+3. ✅ **10 synchronous `console.log` statements removed** from `ProtectedRoute.jsx` — eliminates performance drag on every route change
+
+### Testing Status
+- Test iteration: 259 — 92% pass (11/12), critical fixes applied post-test (GroomingFlowModal isOpen, tdc.book literals)
+- Auth guard, quick prompts, all 6 modal triggers, follow-up input, cart, my-requests: ALL PASS
+
 ## 9. PENDING TASKS (Priority for next session)
 
 ### SESSION 29 — (2026-03-29) 5 Bug Fixes (/mira-os + Admin)
