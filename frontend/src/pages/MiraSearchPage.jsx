@@ -9,7 +9,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { getApiUrl } from '../utils/api';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 
 // ── Icons (lucide-react already installed) ─────────────────────────────────
 import {
@@ -346,19 +346,7 @@ export default function MiraSearchPage() {
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
       const svcs  = enrichedProducts.filter(p => p.product_type === 'service').slice(0, 4);
       updateTurn({ streaming: false, response: fullText, products: prods, services: svcs });
-
-      // Post-stream claude-picks fallback (API returns { picks, count, layers })
-      const petId = activePet?.id || activePet?._id;
-      if (petId && prods.length === 0) {
-        fetch(`${getApiUrl()}/api/mira/claude-picks/${petId}?limit=6&min_score=30`)
-          .then(r => r.ok ? r.json() : null)
-          .then(d => {
-            const picks = d?.picks || d?.products || [];
-            if (!picks.length) return;
-            updateTurn({ products: picks.filter(p => p.product_type !== 'service').slice(0, 6) });
-          })
-          .catch(() => {});
-      }
+      // (No claude-picks fallback — it ignores the query and always returns soul-based defaults)
 
       // Focus the follow-up input
       setTimeout(() => followUpRef.current?.focus(), 300);
@@ -441,8 +429,8 @@ export default function MiraSearchPage() {
         <SoulNudge pet={activePet} />
       </div>}
 
-      {/* ── Search bar ── */}
-      <div
+      {/* ── Search bar (hidden after first search — follow-up bar takes over) ── */}
+      {!hasSearched && <div
         style={{
           width: '100%', maxWidth: 720,
           background: C.surface,
@@ -492,7 +480,7 @@ export default function MiraSearchPage() {
             ? <><span style={{ width: 14, height: 14, border: `2px solid ${C.muted}`, borderTopColor: C.amber, borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} /> Thinking</>
             : <><Send size={14} /> Ask</>}
         </button>
-      </div>
+      </div>}
 
       {/* ── Quick prompts (only before first search) ── */}
       {!hasSearched && (
@@ -680,6 +668,9 @@ export default function MiraSearchPage() {
       )}
 
       {/* CSS spin + blink in top-level style block above */}
+
+      {/* Toaster — standalone page has no layout, mount it here */}
+      <Toaster position="top-center" richColors />
     </div>
   );
 }
