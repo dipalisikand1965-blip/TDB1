@@ -6,13 +6,43 @@ import App from "@/App";
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import { initVersionChecker } from './utils/versionChecker';
 
-// Global ChunkLoadError handler - catches errors before React even mounts
-// This is critical for returning users with stale cached HTML
+// ─── Patch removeChild to never throw on React + external script conflicts ───
+// React's reconciler tries to remove inline <style> nodes from JSX during page
+// transitions. emergent-main.js sometimes moves these same nodes, causing
+// "The node to be removed is not a child of this node" — which crashes the
+// ErrorBoundary and leaves the router in a broken state.
+// This patch silently no-ops the bad remove, letting React continue normally.
+(function patchRemoveChild() {
+  const _removeChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function(child) {
+    if (child && child.parentNode === this) {
+      return _removeChild.call(this, child);
+    }
+    // Node was already moved/removed by an external script — silently ignore
+    return child;
+  };
+})();
+
+// Global error handler — handles ChunkLoadErrors and DOM sync errors
 window.addEventListener('error', async (event) => {
+  const msg = event.message || '';
+
+  // DOM removeChild / insertBefore errors: caused by emergent-main.js modifying
+  // DOM nodes that React also owns. Suppress the error — React ErrorBoundary handles recovery.
+  if (
+    msg.includes('removeChild') ||
+    msg.includes('not a child') ||
+    msg.includes('insertBefore')
+  ) {
+    console.warn('[TDC] DOM sync error suppressed (external script interference):', msg);
+    event.preventDefault();
+    return;
+  }
+
   const isChunkError = 
-    event.message?.includes('Loading chunk') ||
-    event.message?.includes('Loading CSS chunk') ||
-    (event.message?.includes('chunk') && event.message?.includes('failed'));
+    msg.includes('Loading chunk') ||
+    msg.includes('Loading CSS chunk') ||
+    (msg.includes('chunk') && msg.includes('failed'));
   
   if (isChunkError) {
     console.log('Global: ChunkLoadError detected, clearing caches and reloading...');
@@ -73,29 +103,9 @@ root.render(
   </React.StrictMode>,
 );
 
-// Register service worker for PWA functionality with enhanced update handling
-serviceWorkerRegistration.register({
-  onSuccess: () => console.log('PWA: Ready for offline use'),
-  onUpdate: (registration) => {
-    console.log('PWA: New version available, will reload...');
-    if (registration.waiting) {
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
-  }
-});
+// Service worker disabled — was intercepting fetch calls and failing silently,
+// causing navigation freezes and product load issues.
+serviceWorkerRegistration.unregister();
 
-// Listen for SW_UPDATED message from service worker v11+ → hard reload
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data?.type === 'SW_UPDATED') {
-      console.log('[TDC] SW updated to', event.data.version, '— reloading...');
-      const reloadKey = 'tdc_sw_reload';
-      const last = sessionStorage.getItem(reloadKey);
-      const now = Date.now();
-      if (!last || now - parseInt(last) > 30000) {
-        sessionStorage.setItem(reloadKey, now.toString());
-        window.location.reload(true);
-      }
-    }
-  });
-}
+// SW_UPDATED forced reload removed (v12) — SW now uses passthrough-only strategy
+// No need to reload on SW update; browser gets fresh content naturally

@@ -61,14 +61,6 @@ const webpackConfig = {
         ],
       };
 
-      // Deterministic module & chunk IDs — stable across restarts, prevents
-      // "Loading chunk failed" errors when dev server hot-reloads
-      webpackConfig.optimization = {
-        ...webpackConfig.optimization,
-        moduleIds: 'deterministic',
-        chunkIds: 'deterministic',
-      };
-
       // Disable CSS minification to avoid cssnano regex issues
       if (webpackConfig.optimization && webpackConfig.optimization.minimizer) {
         webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
