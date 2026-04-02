@@ -17,7 +17,7 @@ API Endpoints:
 from fastapi import APIRouter, HTTPException, Depends, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field, validator
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
 import uuid
@@ -112,7 +112,7 @@ class InitialMessage(BaseModel):
     text: str
 
 class AttachOrCreateTicketRequest(BaseModel):
-    parent_id: str
+    parent_id: Optional[str] = None          # optional — falls back to "anonymous"
     pet_id: Optional[str] = None
     pillar: str
     intent_primary: str
@@ -122,7 +122,7 @@ class AttachOrCreateTicketRequest(BaseModel):
     urgency: str = "medium"
     status: Optional[str] = None
     force_new: bool = False  # ← when True, always creates a new ticket (no dedup)
-    initial_message: Optional[InitialMessage] = None
+    initial_message: Optional[Union[str, InitialMessage]] = None   # accept string or object
     metadata: Dict[str, Any] = {}  # ← soul_made photo_url, product_name, etc.
 
 class AttachOrCreateTicketResponse(BaseModel):
@@ -549,7 +549,15 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
-    
+
+    # Normalize initial_message — accept plain string or InitialMessage object
+    if isinstance(request.initial_message, str):
+        request.initial_message = InitialMessage(
+            sender="member",
+            source=request.channel or "pillar_page",
+            text=request.initial_message
+        )
+
     now = datetime.now(timezone.utc)
     
     # Check for existing ticket — SKIP if force_new=True (always create fresh ticket)
@@ -772,7 +780,7 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
     await db.member_notifications.insert_one({
         "type": "ticket_created", "ticket_id": ticket_id,
         "parent_id": request.parent_id, "subject": subject,
-        "message": f"Your request for {service_name} has been received. Concierge® will be in touch shortly.",
+        "message": f"Your request for {service_name} has been received. Concierge will be in touch shortly.",
         "pillar": request.pillar, "read": False, "created_at": now.isoformat(),
     })
 
@@ -1053,7 +1061,7 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
         logger.warning(f"[HANDOFF] Warning: Handoff requested but there's an unanswered step: {ticket.get('current_step')}")
     
     # The proper closing line Mira should say
-    mira_closing_line = "I've shared everything we've discussed with your pet Concierge®. They'll take it forward from here and get back to you in this chat."
+    mira_closing_line = "I've shared everything we've discussed with your pet Concierge. They'll take it forward from here and get back to you in this chat."
     
     # Build update with pillar if provided
     update_set = {
@@ -1087,7 +1095,7 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
                         {
                             "sender": "system",
                             "source": "Mira_OS",
-                            "text": f"Handoff to pet Concierge® – queue {request.concierge_queue}.",
+                            "text": f"Handoff to pet Concierge – queue {request.concierge_queue}.",
                             "timestamp": now.isoformat(),
                             "meta": {
                                 "type": "handoff",
@@ -1123,7 +1131,7 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
                         {
                             "sender": "system",
                             "source": "Mira_OS",
-                            "content": f"Handoff to pet Concierge® – queue {request.concierge_queue}.",
+                            "content": f"Handoff to pet Concierge – queue {request.concierge_queue}.",
                             "timestamp": now.isoformat(),
                             "meta": {
                                 "type": "handoff",
@@ -1599,7 +1607,7 @@ async def concierge_reply(
 <html>
 <head><style>body{{font-family:'Segoe UI',sans-serif;background:#F5F0E8;margin:0;padding:20px}}.wrap{{max-width:580px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.08)}}.hdr{{background:#0F0F0F;padding:22px 24px}}.hdr p{{color:rgba(245,240,232,.55);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px}}.hdr h2{{color:#F5F0E8;margin:0;font-size:18px}}.body{{padding:24px}}.msg{{background:#F9F6F1;border-left:4px solid #40916C;padding:14px 16px;border-radius:6px;margin:16px 0;white-space:pre-wrap;line-height:1.6}}.btn{{display:inline-block;background:#40916C;color:#fff;padding:11px 24px;text-decoration:none;border-radius:8px;font-weight:600;font-size:13px;margin-top:18px}}.ftr{{background:#1a1a1a;padding:14px 24px;text-align:center}}.ftr p{{color:#666;font-size:11px;margin:0}}</style></head>
 <body><div class="wrap">
-  <div class="hdr"><p>The Doggy Company · Concierge®</p><h2>🐾 Message{pet_line}</h2></div>
+  <div class="hdr"><p>The Doggy Company · Concierge</p><h2>🐾 Message{pet_line}</h2></div>
   <div class="body">
     <p style="color:#333">Hi {member_name.split()[0] if member_name else 'there'},</p>
     <p style="color:#555"><strong>{concierge_name}</strong> from our Concierge team has replied:</p>
@@ -1607,7 +1615,7 @@ async def concierge_reply(
     <a href="{APP_URL}/my-requests" class="btn">View full thread →</a>
     <p style="color:#999;font-size:11px;margin-top:16px">Reply to this email or WhatsApp us to continue the conversation.</p>
   </div>
-  <div class="ftr"><p>The Doggy Company Concierge® · woof@thedoggycompany.com</p></div>
+  <div class="ftr"><p>The Doggy Company Concierge · woof@thedoggycompany.com</p></div>
 </div></body></html>""",
                         "headers": {"X-Ticket-ID": ticket_id}
                     })
@@ -1944,7 +1952,7 @@ async def create_enriched_ticket(
         "ticket_id":    ticket_id,
         "parent_id":    parent_id,
         "subject":      subject,
-        "message":      f"Your request for {service_name} has been received. Concierge® will be in touch shortly.",
+        "message":      f"Your request for {service_name} has been received. Concierge will be in touch shortly.",
         "pillar":       pillar,
         "read":         False,
         "created_at":   now.isoformat(),
@@ -2011,9 +2019,9 @@ async def send_whatsapp_confirmation(phone: str, service_name: str, pet_name: st
     message = (
         f"✦ *The Doggy Company*\n\n"
         f"Your request for *{service_name}* {pet_str} has been received.\n\n"
-        f"Our Concierge® team will be in touch within a few hours to arrange everything.\n\n"
+        f"Our Concierge team will be in touch within a few hours to arrange everything.\n\n"
         f"You can track this request in *My Requests* on the app.\n\n"
-        f"_Mira is the Brain · Concierge® is the Hands_ 🐾"
+        f"_Mira is the Brain · Concierge is the Hands_ 🐾"
     )
 
     # Fire to existing WhatsApp endpoint
