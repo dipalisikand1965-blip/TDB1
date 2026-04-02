@@ -103,16 +103,9 @@ root.render(
   </React.StrictMode>,
 );
 
-// Register service worker for PWA functionality with enhanced update handling
-serviceWorkerRegistration.register({
-  onSuccess: () => console.log('PWA: Ready for offline use'),
-  onUpdate: (registration) => {
-    console.log('PWA: New version available, will reload...');
-    if (registration.waiting) {
-      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
-  }
-});
+// Service worker disabled — was intercepting fetch calls and failing silently,
+// causing navigation freezes and product load issues.
+serviceWorkerRegistration.unregister();
 
 // SW_UPDATED forced reload removed (v12) — SW now uses passthrough-only strategy
 // No need to reload on SW update; browser gets fresh content naturally
