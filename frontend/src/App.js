@@ -302,6 +302,7 @@ const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
+const MiraSearchPage = lazy(() => import("./pages/MiraSearchPage"));
 
 // Pet Wrapped
 const PetWrappedViewer = lazy(() => import("./pages/PetWrappedViewer"));
@@ -364,6 +365,7 @@ function AppRouter() {
         
         {/* Public Experience Demo Page - No auth, no navbar */}
         <Route path="/demo" element={<DemoPage />} />
+        <Route path="/mira-search" element={<MiraSearchPage />} />
         
         {/* Agent Portal - Standalone Service Desk for agents */}
         <Route path="/agent" element={<AdminProtectedRoute><AgentPortal /></AdminProtectedRoute>} />
