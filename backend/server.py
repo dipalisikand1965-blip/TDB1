@@ -14504,7 +14504,7 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
             return [sanitize_objectids(item) for item in obj]
         return obj
     
-    pets_raw = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0}).to_list(50)
+    pets_raw = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0, "photo_base64": 0, "photo_content_type": 0}).to_list(50)
     pets = [sanitize_objectids(p) for p in pets_raw]
     
     for pet in pets:
