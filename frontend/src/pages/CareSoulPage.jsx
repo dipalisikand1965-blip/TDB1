@@ -2265,9 +2265,10 @@ export default function CareSoulPage() {
         if (!data?.products?.length) return;
         const grouped = {};
         data.products.forEach(p => {
-          // Skip soul/breed products for other breeds
+          // Skip soul/breed products for other breeds — but always allow universal all_breeds products
           const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+          const isUniversal = productBreeds.some(b => b === 'all_breeds' || b === 'all breeds' || b === 'all');
+          if (productBreeds.length > 0 && !isUniversal && !productBreeds.includes(petBreed)) return;
 
           const dim = p.dimension || "";
           const sub = p.sub_category || "Other";

@@ -163,7 +163,8 @@ export default function CareMobilePage() {
         const grouped = {};
         data.products.forEach(p => {
           const productBreeds = (p.breed_tags || []).map(b => b.toLowerCase().trim());
-          if (productBreeds.length > 0 && !productBreeds.includes(petBreed)) return;
+          const isUniversal = productBreeds.some(b => b === 'all_breeds' || b === 'all breeds' || b === 'all');
+          if (productBreeds.length > 0 && !isUniversal && !productBreeds.includes(petBreed)) return;
           // Map dimension → category name that DimExpanded expects
           const DIM_TO_CAT = {
             grooming:    "Grooming",
