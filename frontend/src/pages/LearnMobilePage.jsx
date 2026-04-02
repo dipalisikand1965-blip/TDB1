@@ -33,7 +33,7 @@ import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import PillarServiceSection from '../components/PillarServiceSection';
 import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
-import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
 
 const LEARN_STRIP_CATS = [
   { id:"foundations", icon:"🎓", label:"Foundations",    iconBg:"linear-gradient(135deg,#EDE9FE,#DDD6FE)" },
@@ -276,7 +276,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook, all
 }
 
 export default function LearnMobilePage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
   const { currentPet, setCurrentPet, pets: contextPets } = usePillarContext();
   usePlatformTracking({ pillar:'learn', pet:currentPet });
@@ -339,12 +339,15 @@ export default function LearnMobilePage() {
         <div style={{ textAlign:'center' }}><div style={{ fontSize:36, marginBottom:12 }}>🎓</div><div>Loading learn…</div></div>
       </div>
 
-      <ConciergeRequestBuilder
-        pet={currentPet}
-        token={token}
-        isOpen={conciergeBuilderOpen}
-        onClose={() => setConciergeBuilderOpen(false)}
-      />
+      {conciergeBuilderOpen && (
+        <ServiceConciergeModal
+          service={{ pillar: 'learn' }}
+          pet={currentPet}
+          user={user}
+          onClose={() => setConciergeBuilderOpen(false)}
+          onBooked={() => setConciergeBuilderOpen(false)}
+        />
+      )}
     </PillarPageLayout>
   );
 
@@ -666,6 +669,17 @@ export default function LearnMobilePage() {
           onClose={() => setCatModal(null)}
           category={catModal}
           pet={currentPet}
+        />
+      )}
+
+      {/* ServiceConciergeModal — "Three questions. Then your Concierge® takes over." */}
+      {conciergeBuilderOpen && (
+        <ServiceConciergeModal
+          service={{ pillar: 'learn' }}
+          pet={currentPet}
+          user={user}
+          onClose={() => setConciergeBuilderOpen(false)}
+          onBooked={() => setConciergeBuilderOpen(false)}
         />
       )}
     </>
