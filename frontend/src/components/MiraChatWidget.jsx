@@ -221,7 +221,7 @@ const MiraChatWidget = ({
 
   // Viewport-level mobile detection — ResizeObserver on document.body
   // Debounced at 150ms, handles device rotation and Chrome DevTools resize
-  const isMobile = useResizeMobile();
+  const isMobile = useResizeMobile(1024); // proper desktop breakpoint — prevents body lock on desktop
   
   // Widget state
   const [isOpen, setIsOpen] = useState(false);
