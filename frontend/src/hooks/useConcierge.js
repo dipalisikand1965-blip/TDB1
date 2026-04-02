@@ -108,6 +108,7 @@ export function useConcierge({ pet, pillar } = {}) {
         product_id:    item?.id   || item?._id,
         service_name:  name  || item?.name,
         price:         item?.price || item?.original_price || item?.discounted_price,
+        photo_url:     item?.cloudinary_url || item?.watercolor_image || item?.mockup_url || item?.image_url || item?.image,
         pillar:        pillarName,
         channel:       channel || `${pillarName}_${type}`,
         urgency:       intentUrge,
