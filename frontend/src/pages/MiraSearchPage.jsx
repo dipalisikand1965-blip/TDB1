@@ -219,7 +219,6 @@ export default function MiraSearchPage() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
 
   const [pets, setPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
@@ -231,6 +230,9 @@ export default function MiraSearchPage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
   const [groomingOpen, setGroomingOpen] = useState(false);
+
+  // useConcierge after activePet is declared (avoids temporal dead zone error)
+  const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
 
   // Grooming keyword detector
   const GROOMING_RE = /grooming|groom|bath|spa|wash|trim|nail|haircut|coat\s|fur\s/i;
