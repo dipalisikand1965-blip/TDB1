@@ -1179,7 +1179,7 @@ const Navbar = () => {
                 <Link
                   to={pillar.path}
                   className={`flex items-center gap-1 px-3 py-2.5 font-medium ${
-                    isActive(pillar.path) ? 'text-pink-400' : 'text-white/80 hover:text-pink-400'
+                    isActive(pillar.path) ? 'text-pink-400' : 'text-white/80 hover:text-pink-200'
                   }`}
                   style={{
                     borderBottom: isActive(pillar.path) ? '2px solid #f472b6' : '2px solid transparent',
