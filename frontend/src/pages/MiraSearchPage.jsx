@@ -239,8 +239,8 @@ export default function MiraSearchPage() {
   const [boardingOpen, setBoardingOpen] = useState(false);
   const [trainingOpen, setTrainingOpen] = useState(false);
   const [goOpen, setGoOpen] = useState(false);
-  // pillar-based: 'celebrate' | 'learn' | null
-  const [conciergeServicePillar, setConciergeServicePillar] = useState(null);
+  // ServiceConciergeModal: full service object { pillar, name, sub_category } | null
+  const [conciergeService, setConciergeService] = useState(null);
 
   // useConcierge after activePet is declared (avoids temporal dead zone error)
   const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
@@ -251,6 +251,7 @@ export default function MiraSearchPage() {
   const BOARDING_RE  = /boarding|daycare|day.?care|pet.?sitting|overnight|kennel|pet hotel|home.?boarding/i;
   const TRAINING_RE  = /training|train|obedien|puppy class|agility|command|behav|discipline/i;
   const GO_RE        = /\bwalk\b|hike|trail|outdoor|trip|travel|transport|carry|stroller|go outside/i;
+  const PHOTO_RE     = /photo|photoshoot|photo.?shoot|portrait|picture|session|memories.*shoot|shoot.*dog/i;
   const CELEBRATE_RE = /birthday|celebrate|party|event|gotcha.?day|anniversary|paw.?ty|cake\s|festiv/i;
   const LEARN_RE     = /\bclass\b|\bclasses\b|lesson|course|workshop|behaviour school|puppy school|learn/i;
 
@@ -432,10 +433,12 @@ export default function MiraSearchPage() {
         setTimeout(() => setTrainingOpen(true), MODAL_DELAY);
       } else if (GO_RE.test(q)) {
         setTimeout(() => setGoOpen(true), MODAL_DELAY);
+      } else if (PHOTO_RE.test(q)) {
+        setTimeout(() => setConciergeService({ pillar: 'celebrate', name: 'Photoshoot & Portrait', sub_category: 'photoshoot' }), MODAL_DELAY);
       } else if (CELEBRATE_RE.test(q)) {
-        setTimeout(() => setConciergeServicePillar('celebrate'), MODAL_DELAY);
+        setTimeout(() => setConciergeService({ pillar: 'celebrate', name: '' }), MODAL_DELAY);
       } else if (LEARN_RE.test(q)) {
-        setTimeout(() => setConciergeServicePillar('learn'), MODAL_DELAY);
+        setTimeout(() => setConciergeService({ pillar: 'learn', name: '' }), MODAL_DELAY);
       }
 
     } catch (err) {
@@ -861,13 +864,13 @@ export default function MiraSearchPage() {
         />
       )}
 
-      {/* ── ServiceConciergeModal — celebrate / learn queries (pillar-aware) ── */}
-      {conciergeServicePillar && (
+      {/* ── ServiceConciergeModal — celebrate / photoshoot / learn queries ── */}
+      {conciergeService && (
         <ServiceConciergeModal
-          service={{ pillar: conciergeServicePillar, name: '' }}
+          service={conciergeService}
           pet={activePet}
           user={user}
-          onClose={() => setConciergeServicePillar(null)}
+          onClose={() => setConciergeService(null)}
         />
       )}
 
