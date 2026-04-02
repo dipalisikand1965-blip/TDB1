@@ -1866,7 +1866,7 @@ const MiraChatWidget = ({
           w-full sm:w-[400px] lg:w-[420px]
           bg-white shadow-2xl flex flex-col
           rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
-          ${isMinimized ? 'h-16 sm:h-full' : 'h-full sm:h-[100dvh]'}
+          ${isMinimized ? 'h-16' : 'h-full sm:h-[100dvh]'}
         `}
         style={{ 
           maxHeight: '100dvh',
