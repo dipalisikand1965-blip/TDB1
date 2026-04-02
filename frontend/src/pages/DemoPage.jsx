@@ -1147,7 +1147,7 @@ export default function DemoPage() {
             background: "rgba(155,89,182,0.08)",
             border: `1px solid rgba(155,89,182,0.20)`,
             borderRadius: 18, padding: "28px 36px",
-            marginBottom: 40,
+            marginBottom: 32,
           }}>
             <div style={{ fontSize: 22, marginBottom: 14 }}>🌷</div>
             <div style={{
@@ -1160,6 +1160,17 @@ export default function DemoPage() {
               Launched on her birthday — May 15, 2026.<br />
               The world's first platform that knows your dog's soul.
             </div>
+          </div>
+
+          {/* Enter the platform CTA */}
+          <div style={{ marginBottom: 40, textAlign: "center" }}>
+            <a href="/pet-home" style={{
+              color: C.amber, fontSize: 16, fontWeight: 600,
+              fontFamily: "DM Sans, sans-serif",
+              textDecoration: "none", letterSpacing: "0.02em",
+            }}>
+              Enter the platform →
+            </a>
           </div>
 
           {/* Footer links */}
