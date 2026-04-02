@@ -15,6 +15,10 @@ import CartSidebar from '../components/CartSidebar';
 import { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
 import GroomingFlowModal from '../components/GroomingFlowModal';
+import VetVisitFlowModal from '../components/VetVisitFlowModal';
+import ServiceBookingModal from '../components/ServiceBookingModal';
+import GoConciergeModal from '../components/go/GoConciergeModal';
+import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -229,13 +233,26 @@ export default function MiraSearchPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
+  // ── Service modal states ──────────────────────────────────────────────────
   const [groomingOpen, setGroomingOpen] = useState(false);
+  const [vetOpen, setVetOpen] = useState(false);
+  const [boardingOpen, setBoardingOpen] = useState(false);
+  const [trainingOpen, setTrainingOpen] = useState(false);
+  const [goOpen, setGoOpen] = useState(false);
+  // pillar-based: 'celebrate' | 'learn' | null
+  const [conciergeServicePillar, setConciergeServicePillar] = useState(null);
 
   // useConcierge after activePet is declared (avoids temporal dead zone error)
   const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
 
-  // Grooming keyword detector
-  const GROOMING_RE = /grooming|groom|bath|spa|wash|trim|nail|haircut|coat\s|fur\s/i;
+  // ── Keyword regex patterns (order matters — most specific first) ───────────
+  const GROOMING_RE  = /grooming|groom|bath|spa|wash|trim|nail|haircut|coat\s|fur\s/i;
+  const VET_RE       = /\bvet\b|veterinar|checkup|check.?up|vaccine|vaccin|doctor|consult|deworming|tick|flea|health\s+check/i;
+  const BOARDING_RE  = /boarding|daycare|day.?care|pet.?sitting|overnight|kennel|pet hotel|home.?boarding/i;
+  const TRAINING_RE  = /training|train|obedien|puppy class|agility|command|behav|discipline/i;
+  const GO_RE        = /\bwalk\b|hike|trail|outdoor|trip|travel|transport|carry|stroller|go outside/i;
+  const CELEBRATE_RE = /birthday|celebrate|party|event|gotcha.?day|anniversary|paw.?ty|cake\s|festiv/i;
+  const LEARN_RE     = /\bclass\b|\bclasses\b|lesson|course|workshop|behaviour school|puppy school|learn/i;
 
   const inputRef = useRef(null);
   const followUpRef = useRef(null);
@@ -403,9 +420,22 @@ export default function MiraSearchPage() {
       // Focus the follow-up input
       setTimeout(() => followUpRef.current?.focus(), 300);
 
-      // Fix 2 — grooming queries → open GroomingFlowModal
+      // ── Keyword → service modal router (400ms delay so response renders first) ──
+      const MODAL_DELAY = 400;
       if (GROOMING_RE.test(q)) {
-        setTimeout(() => setGroomingOpen(true), 400);
+        setTimeout(() => setGroomingOpen(true), MODAL_DELAY);
+      } else if (VET_RE.test(q)) {
+        setTimeout(() => setVetOpen(true), MODAL_DELAY);
+      } else if (BOARDING_RE.test(q)) {
+        setTimeout(() => setBoardingOpen(true), MODAL_DELAY);
+      } else if (TRAINING_RE.test(q)) {
+        setTimeout(() => setTrainingOpen(true), MODAL_DELAY);
+      } else if (GO_RE.test(q)) {
+        setTimeout(() => setGoOpen(true), MODAL_DELAY);
+      } else if (CELEBRATE_RE.test(q)) {
+        setTimeout(() => setConciergeServicePillar('celebrate'), MODAL_DELAY);
+      } else if (LEARN_RE.test(q)) {
+        setTimeout(() => setConciergeServicePillar('learn'), MODAL_DELAY);
       }
 
     } catch (err) {
@@ -791,8 +821,53 @@ export default function MiraSearchPage() {
       {/* ── GroomingFlowModal — opens when query is grooming-related ── */}
       {groomingOpen && (
         <GroomingFlowModal
+          isOpen={groomingOpen}
           pet={activePet}
           onClose={() => setGroomingOpen(false)}
+        />
+      )}
+
+      {/* ── VetVisitFlowModal — vet / checkup / vaccine queries ── */}
+      <VetVisitFlowModal
+        isOpen={vetOpen}
+        onClose={() => setVetOpen(false)}
+        pet={activePet}
+        user={user}
+        token={token}
+        entryPoint="mira_search"
+      />
+
+      {/* ── ServiceBookingModal (Boarding) — boarding / daycare / overnight queries ── */}
+      <ServiceBookingModal
+        isOpen={boardingOpen}
+        onClose={() => setBoardingOpen(false)}
+        serviceType="boarding"
+      />
+
+      {/* ── ServiceBookingModal (Training) — training / obedience / puppy class queries ── */}
+      <ServiceBookingModal
+        isOpen={trainingOpen}
+        onClose={() => setTrainingOpen(false)}
+        serviceType="training"
+      />
+
+      {/* ── GoConciergeModal — walk / hike / transport / trip queries ── */}
+      {goOpen && (
+        <GoConciergeModal
+          pet={activePet}
+          service={{ name: 'Go & Explore' }}
+          token={token}
+          onClose={() => setGoOpen(false)}
+        />
+      )}
+
+      {/* ── ServiceConciergeModal — celebrate / learn queries (pillar-aware) ── */}
+      {conciergeServicePillar && (
+        <ServiceConciergeModal
+          service={{ pillar: conciergeServicePillar, name: '' }}
+          pet={activePet}
+          user={user}
+          onClose={() => setConciergeServicePillar(null)}
         />
       )}
 
