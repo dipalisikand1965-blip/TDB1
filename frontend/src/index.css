@@ -121,9 +121,10 @@
 
 html {
   min-height: 100%;
-  overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
+  /* NOTE: DO NOT add overflow-x:hidden here — it breaks desktop touch-scroll.
+     Body handles horizontal overflow containment. */
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -462,7 +463,7 @@ textarea {
 }
 
 html {
-  overflow-x: hidden;
+  /* overflow-x removed — breaks desktop touch-scroll; body handles it */
   scroll-behavior: smooth;
   background: var(--bg-primary);
 }

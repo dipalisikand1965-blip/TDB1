@@ -477,6 +477,15 @@ export default function LandingPage() {
           }}>
             I want to be part of this →
           </button>
+          <button onClick={() => navigate("/demo")} style={{
+            padding: "16px 36px", borderRadius: 999,
+            border: `1px solid rgba(201,151,58,0.5)`,
+            background: "rgba(201,151,58,0.08)",
+            color: C.amber, fontSize: 16, cursor: "pointer",
+            fontFamily: "DM Sans, sans-serif", fontWeight: 600,
+          }}>
+            Try the Demo →
+          </button>
           <button onClick={() => navigate("/about")} style={{
             padding: "16px 36px", borderRadius: 999,
             border: `1px solid rgba(245,240,232,0.2)`,
