@@ -568,6 +568,8 @@ const Navbar = () => {
   };
 
   const isActive = (path) => {
+    // /celebrate redirects to /celebrate-soul — treat them as the same active pillar
+    if (path === '/celebrate' && location.pathname === '/celebrate-soul') return true;
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
@@ -1101,8 +1103,8 @@ const Navbar = () => {
                           >
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm">
-                                {pet.profile_image ? (
-                                  <img src={pet.profile_image} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                                {(pet.profile_image || pet.photo_url) ? (
+                                  <img src={pet.profile_image || pet.photo_url} alt={pet.name} className="w-full h-full rounded-full object-cover" onError={e => { e.currentTarget.style.display='none'; }} />
                                 ) : (
                                   <PawPrint className="w-4 h-4" />
                                 )}
@@ -1333,8 +1335,8 @@ const Navbar = () => {
                         >
                           <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white flex-shrink-0">
-                              {pet.profile_image
-                                ? <img src={pet.profile_image} alt={pet.name} className="w-full h-full object-cover" />
+                              {(pet.profile_image || pet.photo_url)
+                                ? <img src={pet.profile_image || pet.photo_url} alt={pet.name} className="w-full h-full object-cover" onError={e => { e.currentTarget.style.display='none'; }} />
                                 : <PawPrint className="w-4 h-4" />}
                             </div>
                             <div>
