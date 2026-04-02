@@ -347,14 +347,15 @@ export default function MiraSearchPage() {
       const svcs  = enrichedProducts.filter(p => p.product_type === 'service').slice(0, 4);
       updateTurn({ streaming: false, response: fullText, products: prods, services: svcs });
 
-      // Post-stream claude-picks fallback
+      // Post-stream claude-picks fallback (API returns { picks, count, layers })
       const petId = activePet?.id || activePet?._id;
       if (petId && prods.length === 0) {
         fetch(`${getApiUrl()}/api/mira/claude-picks/${petId}?limit=6&min_score=30`)
           .then(r => r.ok ? r.json() : null)
           .then(d => {
-            if (!d?.products?.length) return;
-            updateTurn({ products: d.products.filter(p => p.product_type !== 'service').slice(0, 6) });
+            const picks = d?.picks || d?.products || [];
+            if (!picks.length) return;
+            updateTurn({ products: picks.filter(p => p.product_type !== 'service').slice(0, 6) });
           })
           .catch(() => {});
       }
@@ -473,21 +474,21 @@ export default function MiraSearchPage() {
         )}
         <button
           onClick={() => handleSearch()}
-          disabled={!query.trim() || streaming}
+          disabled={!query.trim() || turns.some(t => t.streaming)}
           data-testid="mira-search-submit"
           style={{
             padding: '10px 18px', borderRadius: 14,
-            border: 'none', cursor: query.trim() && !streaming ? 'pointer' : 'not-allowed',
-            background: query.trim() && !streaming
+            border: 'none', cursor: query.trim() && !turns.some(t => t.streaming) ? 'pointer' : 'not-allowed',
+            background: query.trim() && !turns.some(t => t.streaming)
               ? `linear-gradient(135deg,${C.amber},${C.amberL})`
               : 'rgba(255,255,255,0.06)',
-            color: query.trim() && !streaming ? C.night : C.muted,
+            color: query.trim() && !turns.some(t => t.streaming) ? C.night : C.muted,
             fontWeight: 700, fontSize: 14, fontFamily: 'DM Sans, sans-serif',
             display: 'flex', alignItems: 'center', gap: 6,
             transition: 'all 0.18s', flexShrink: 0,
           }}
         >
-          {streaming
+          {turns.some(t => t.streaming)
             ? <><span style={{ width: 14, height: 14, border: `2px solid ${C.muted}`, borderTopColor: C.amber, borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} /> Thinking</>
             : <><Send size={14} /> Ask</>}
         </button>
