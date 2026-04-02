@@ -276,13 +276,12 @@ const GroomingFlowModal = ({
   // Submit to Concierge®
   const handleSubmit = async () => {
     // ── tdc.book — canonical intent ticket ──
-    tdc.book({ service: service?.name || service?.type || 'a service', pillar: "care", pet, channel: "grooming_flow_modal" });
+    tdc.book({ service: 'grooming', pillar: "care", pet, channel: "grooming_flow_modal" });
 
     setIsSubmitting(true);
     
     try {
       const payload = buildGroomingTicketPayload(formData, pet, user, entryPoint);
-      console.log('[GroomingFlowModal] Submitting payload:', JSON.stringify(payload).substring(0, 500));
       
       const response = await fetch(`${API_URL}/api/tickets/`, {
         method: 'POST',
@@ -293,8 +292,6 @@ const GroomingFlowModal = ({
         body: JSON.stringify(payload)
       });
       
-      console.log('[GroomingFlowModal] Response status:', response.status);
-      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[GroomingFlowModal] Error response:', errorText);
@@ -302,7 +299,6 @@ const GroomingFlowModal = ({
       }
       
       const result = await response.json();
-      console.log('[GroomingFlowModal] Success:', result);
       setTicketId(result.ticket?.ticket_id || result.id || result.ticket_id);
       setIsSuccess(true);
       

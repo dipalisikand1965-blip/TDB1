@@ -320,13 +320,12 @@ const VetVisitFlowModal = ({
   // Submit to Concierge®
   const handleSubmit = async () => {
     // ── tdc.book — canonical intent ticket ──
-    tdc.book({ service: service?.name || service?.type || 'a service', pillar: "care", pet, channel: "vet_visit_flow_modal" });
+    tdc.book({ service: 'vet_visit', pillar: "care", pet, channel: "vet_visit_flow_modal" });
 
     setIsSubmitting(true);
     
     try {
       const payload = buildVetVisitTicketPayload(formData, pet, user, entryPoint);
-      console.log('[VetVisitFlowModal] Submitting payload:', JSON.stringify(payload).substring(0, 500));
       
       const response = await fetch(`${API_URL}/api/tickets/`, {
         method: 'POST',
@@ -337,8 +336,6 @@ const VetVisitFlowModal = ({
         body: JSON.stringify(payload)
       });
       
-      console.log('[VetVisitFlowModal] Response status:', response.status);
-      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('[VetVisitFlowModal] Error response:', errorText);
@@ -346,7 +343,6 @@ const VetVisitFlowModal = ({
       }
       
       const result = await response.json();
-      console.log('[VetVisitFlowModal] Success:', result);
       setTicketId(result.ticket?.ticket_id || result.id || result.ticket_id);
       setIsSuccess(true);
       
