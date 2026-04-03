@@ -848,6 +848,52 @@ export default function MiraSearchPage() {
               </div>
             )}
 
+            {/* ── Service strip — 3 services matching the intent's pillar ── */}
+            {turn.services?.length > 0 && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.45s ease' }}>
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Services for {petName}
+                </p>
+                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+                  {turn.services.map((svc, i) => (
+                    <div key={svc.id || i}
+                      data-testid="service-chip"
+                      onClick={() => setConciergeService({ pillar: svc.pillar || 'services', name: svc.name, sub_category: svc.type || svc.category })}
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(124,58,237,0.06) 100%)',
+                        border: '1px solid rgba(124,58,237,0.25)',
+                        borderRadius: 12, padding: '10px 14px',
+                        minWidth: 170, maxWidth: 220, flexShrink: 0,
+                        cursor: 'pointer', transition: 'border-color 0.18s, transform 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.6)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'; e.currentTarget.style.transform = 'none'; }}
+                    >
+                      <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                        {svc.pillar || 'service'}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text, lineHeight: 1.3, marginBottom: 6 }}>
+                        {svc.name}
+                      </div>
+                      {svc.description && (
+                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.4, marginBottom: 6 }}>
+                          {svc.description.slice(0, 55)}{svc.description.length > 55 ? '…' : ''}
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        {(svc.base_price || svc.price) ? (
+                          <span style={{ fontSize: 12, color: C.amber, fontWeight: 700 }}>₹{svc.base_price || svc.price}</span>
+                        ) : (
+                          <span style={{ fontSize: 11, color: C.muted }}>Price on request</span>
+                        )}
+                        <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.9)', fontWeight: 600 }}>Book →</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* ── NearMe: geo denied — ask for city ── */}
             {turn.needsCity && !turn.places?.length && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>

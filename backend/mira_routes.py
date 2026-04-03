@@ -22858,12 +22858,14 @@ SEMANTIC_INTENTS = {
         "triggers": ["skin", "coat", "fur", "itchy", "scratch", "dry", "flaky", "shiny", "shedding", "dull coat", "dandruff", "hot spots"],
         "product_categories": ["grooming", "skin-care", "supplements"],
         "service_types": ["grooming"],
+        "service_pillar": "care",
         "product_tags": ["skin", "coat", "fur", "moisturizing", "anti-itch"],
         "why_message": "Supports healthy skin and coat"
     },
     "digestion_gut": {
         "triggers": ["digestion", "stomach", "tummy", "gut", "probiotic", "gas", "bloat", "sensitive stomach", "poop", "stool"],
         "product_categories": ["supplements", "food", "treats"],
+        "service_pillar": "dine",
         "product_tags": ["digestive", "probiotic", "gut-health", "sensitive"],
         "why_message": "Supports digestive health"
     },
@@ -22883,6 +22885,7 @@ SEMANTIC_INTENTS = {
         "triggers": ["train", "training", "behavior", "obedience", "command", "trick", "reward", "positive reinforcement", "puppy training"],
         "product_categories": ["treats", "training"],
         "service_types": ["training"],
+        "service_pillar": "learn",
         "product_tags": ["training", "reward", "small-bites"],
         "why_message": "Great for training rewards"
     },
@@ -22890,6 +22893,7 @@ SEMANTIC_INTENTS = {
         "triggers": ["travel", "trip", "car", "road trip", "vacation", "adventure", "outdoor", "hiking", "camping", "beach"],
         "product_categories": ["travel", "accessories", "carriers"],
         "service_types": ["travel", "boarding"],
+        "service_pillar": "go",
         "experience_types": ["pawcation", "travel"],
         "product_tags": ["travel", "portable", "outdoor"],
         "why_message": "Perfect for adventures"
@@ -22898,6 +22902,7 @@ SEMANTIC_INTENTS = {
         "triggers": ["birthday", "celebrate", "party", "special day", "anniversary", "gotcha day", "treat", "cake", "gift"],
         "product_categories": ["cakes", "treats", "gifts", "celebration"],
         "priority_filter": {"pillar": "celebrate", "category": "cakes"},
+        "service_pillar": "celebrate",
         "experience_types": ["party", "celebration"],
         "product_tags": ["birthday", "celebration", "party", "special"],
         "why_message": "For celebration moments"
@@ -22925,6 +22930,7 @@ SEMANTIC_INTENTS = {
         "triggers": ["play", "toy", "bored", "enrichment", "stimulate", "puzzle", "interactive", "fun", "fetch", "ball"],
         "product_categories": ["toys", "enrichment", "play_accessories", "Play Essentials"],
         "priority_filter": {"pillar": "play", "category": "enrichment"},
+        "service_pillar": "play",
         "product_tags": ["toy", "interactive", "puzzle", "enrichment"],
         "why_message": "For mental stimulation and fun"
     },
@@ -23185,21 +23191,30 @@ async def semantic_product_search(request: Request):
         logger.error(f"Semantic search error: {e}")
         products = []
     
-    # Fetch services from services_master (unified source)
+    # Fetch services from services_master — use service_pillar (preferred) or service_types
     services = []
-    if config.get("service_types"):
-        try:
+    service_pillar = config.get("service_pillar")
+    service_types  = config.get("service_types")
+    try:
+        if service_pillar:
+            # Pillar-based: guaranteed to return real services for this intent
+            service_cursor = db.services_master.find(
+                {"pillar": service_pillar, "is_active": True},
+                {"_id": 0, "id": 1, "name": 1, "type": 1, "pillar": 1, "description": 1, "base_price": 1, "price": 1, "icon": 1, "category": 1}
+            ).limit(3)
+            services = await service_cursor.to_list(3)
+        elif service_types:
             service_cursor = db.services_master.find(
                 {"$or": [
-                    {"type": {"$in": config["service_types"]}},
-                    {"pillar": {"$in": config["service_types"]}},
-                    {"category": {"$in": config["service_types"]}}
+                    {"type": {"$in": service_types}},
+                    {"pillar": {"$in": service_types}},
+                    {"category": {"$in": service_types}}
                 ]},
-                {"_id": 0, "id": 1, "name": 1, "type": 1, "pillar": 1, "description": 1, "base_price": 1}
-            ).limit(4)
-            services = await service_cursor.to_list(4)
-        except:
-            pass
+                {"_id": 0, "id": 1, "name": 1, "type": 1, "pillar": 1, "description": 1, "base_price": 1, "price": 1, "icon": 1}
+            ).limit(3)
+            services = await service_cursor.to_list(3)
+    except Exception as e:
+        logger.error(f"semantic-search: service fetch error: {e}")
     
     # Fetch experiences
     experiences = []
