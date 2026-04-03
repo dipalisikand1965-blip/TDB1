@@ -17,7 +17,7 @@ import logging
 import asyncio
 import os
 import base64
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,10 @@ _generation_status = {
     "started_at": None,
     "completed_at": None
 }
+
+# Stats cache — avoids event-loop blocking when generation is running
+_stats_cache = {"data": None, "at": None}
+_STATS_CACHE_TTL = 30  # seconds
 
 # Production sync state
 _sync_status = {
@@ -229,9 +233,15 @@ async def get_supported_product_types():
 
 @router.get("/stats")
 async def get_mockup_stats():
-    """Get statistics on breed products and mockup generation status."""
+    """Get statistics on breed products and mockup generation status. Cached 30s."""
+    global _stats_cache
     db = get_db()
-    
+
+    # Serve cached result if fresh
+    now = datetime.now(timezone.utc).timestamp()
+    if _stats_cache["data"] and _stats_cache["at"] and (now - _stats_cache["at"]) < _STATS_CACHE_TTL:
+        return _stats_cache["data"]
+
     total = await db.breed_products.count_documents({})
     # Count products with actual mockup URLs (not null, not empty string)
     with_mockups = await db.breed_products.count_documents({
@@ -247,7 +257,7 @@ async def get_mockup_stats():
             "with_mockups": {"$sum": {"$cond": [{"$and": [{"$ne": ["$mockup_url", None]}, {"$ne": ["$mockup_url", ""]}]}, 1, 0]}}
         }}
     ]
-    by_type = await db.breed_products.aggregate(pipeline).to_list(20)
+    by_type = await db.breed_products.aggregate(pipeline).to_list(200)
     
     # By breed
     pipeline = [
@@ -257,9 +267,9 @@ async def get_mockup_stats():
             "with_mockups": {"$sum": {"$cond": [{"$and": [{"$ne": ["$mockup_url", None]}, {"$ne": ["$mockup_url", ""]}]}, 1, 0]}}
         }}
     ]
-    by_breed = await db.breed_products.aggregate(pipeline).to_list(40)
+    by_breed = await db.breed_products.aggregate(pipeline).to_list(100)
     
-    return {
+    result = {
         "total_products": total,
         "products_with_mockups": with_mockups,
         "products_without_mockups": without_mockups,
@@ -268,6 +278,9 @@ async def get_mockup_stats():
         "by_breed": {item["_id"]: {"total": item["count"], "with_mockups": item["with_mockups"]} for item in by_breed if item["_id"]},
         "generation_status": _generation_status
     }
+    _stats_cache["data"] = result
+    _stats_cache["at"] = now
+    return result
 
 
 @router.get("/status")
