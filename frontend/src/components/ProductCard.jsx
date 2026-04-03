@@ -228,7 +228,6 @@ const isValidUrl = (url) => {
 const ROPE_TOY_PATTERNS = [
   '/tdc/products_master/enjoy/breed-',       // enrichment mat batch — rope toy content
   '/tdc/products_master/adopt/breed-',       // breed-specific adopt folders — 404, never uploaded
-  '/doggy/ai_generated/',                    // ai_generated batch — Cloudinary upload failed, 404
   '/tdc/products_master/celebrate/celebrate-', // breed custom cakes — AI uploaded toy images to cake paths
 ];
 
