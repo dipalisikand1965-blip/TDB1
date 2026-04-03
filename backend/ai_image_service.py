@@ -389,7 +389,8 @@ async def process_products_batch(pillar: Optional[str] = None):
             ]
         }
         
-        query = {"$and": [no_image_condition, {"is_active": True}]}
+        # Never touch products that already have a Shopify-synced original image
+        query = {"$and": [no_image_condition, {"is_active": True}, {"cloudinary_image_url": {"$in": [None, ""]}}]}
         
         if pillar:
             query = {
