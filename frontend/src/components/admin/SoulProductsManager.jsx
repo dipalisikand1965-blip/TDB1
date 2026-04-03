@@ -132,6 +132,9 @@ const SoulProductsManager = () => {
   // AI Mockup Generation status
   const [mockupGenStatus, setMockupGenStatus] = useState(null);
 
+  // AI Image Service status (products_master generation - separate system)
+  const [aiImageStatus, setAiImageStatus] = useState(null);
+
   // Cloud storage state
   const [cloudStatus, setCloudStatus] = useState(null);
   const [convertingToCloud, setConvertingToCloud] = useState(false);
@@ -431,6 +434,10 @@ const SoulProductsManager = () => {
         if (res.ok) {
           const status = await res.json();
           setMockupGenStatus(status);
+          // Refresh stat boxes on every tick while running
+          if (status.running) {
+            fetchMockupStats();
+          }
           if (!status.running && status.completed_at) {
             clearInterval(interval);
             fetchMockupStats();
@@ -438,7 +445,7 @@ const SoulProductsManager = () => {
           }
         }
       } catch {}
-    }, 5000);
+    }, 4000);
     setTimeout(() => clearInterval(interval), 60 * 60 * 1000);
   };
 
@@ -623,7 +630,7 @@ const SoulProductsManager = () => {
       });
       if (res.ok) {
         const data = await res.json();
-        toast({ title: '🎂 Breed Cake Art Started', description: `Generating flat-vector illustrations for ${data.breeds?.length || '?'} breeds. Check status below.` });
+        toast({ title: 'Breed Cake Art Started', description: `Generating flat-vector illustrations for ${data.breeds?.length || '?'} breeds. Check status below.` });
         pollGenerationStatus();
       } else {
         const err = await res.json();
@@ -634,6 +641,57 @@ const SoulProductsManager = () => {
     }
   };
 
+  // Seed the 16 missing product categories across all breeds
+  const seedMissingTypes = async () => {
+    const MISSING_TYPES = [
+      { type: 'toys',          pillars: ['play'], name: '{breed} Interactive Toy', price: 499 },
+      { type: 'bowls',         pillars: ['dine'], name: '{breed} Ceramic Food Bowl', price: 349 },
+      { type: 'leashes',       pillars: ['go'],   name: '{breed} Designer Leash', price: 599 },
+      { type: 'collars',       pillars: ['care'], name: '{breed} Custom Collar', price: 449 },
+      { type: 'harnesses',     pillars: ['go'],   name: '{breed} Comfort Harness', price: 799 },
+      { type: 'treat_jars',    pillars: ['dine'], name: '{breed} Treat Storage Jar', price: 299 },
+      { type: 'water_bottles', pillars: ['go'],   name: '{breed} Travel Water Bottle', price: 399 },
+      { type: 'food_mats',     pillars: ['dine'], name: '{breed} Waterproof Food Mat', price: 249 },
+      { type: 'tshirts',       pillars: ['shop'], name: '{breed} Fan T-Shirt', price: 549 },
+      { type: 'hoodies',       pillars: ['shop'], name: '{breed} Hoodie', price: 899 },
+      { type: 'socks',         pillars: ['shop'], name: '{breed} Novelty Socks', price: 199 },
+      { type: 'puzzles',       pillars: ['play'], name: '{breed} Enrichment Puzzle', price: 699 },
+      { type: 'books',         pillars: ['learn'],name: '{breed} Breed Guide Book', price: 349 },
+      { type: 'calendars',     pillars: ['shop'], name: '{breed} Photo Calendar', price: 299 },
+      { type: 'cushions',      pillars: ['shop'], name: '{breed} Sofa Cushion Cover', price: 449 },
+      { type: 'notebooks',     pillars: ['paperwork'], name: '{breed} Journal Notebook', price: 249 },
+    ];
+
+    toast({ title: 'Seeding 16 product types...', description: 'This may take a few seconds.' });
+
+    let totalSeeded = 0;
+    let errors = 0;
+    for (const t of MISSING_TYPES) {
+      try {
+        const res = await fetch(`${API_URL}/api/admin/breed-products/seed-type`, {
+          method: 'POST', headers: AUTH_HEADER,
+          body: JSON.stringify({
+            product_type: t.type,
+            name_template: t.name,
+            price: t.price,
+            pillars: t.pillars,
+            breeds: 'all',
+            description: `Personalized ${t.type.replace(/_/g,' ')} for your ${'{breed}'}`,
+          })
+        });
+        const data = await res.json();
+        totalSeeded += (data.seeded || 0);
+      } catch { errors++; }
+    }
+
+    toast({
+      title: `Seeded ${totalSeeded} new breed products`,
+      description: `16 types × breeds seeded with prompts. Click "Generate" to start AI image generation. ${errors > 0 ? `(${errors} types skipped)` : ''}`,
+      duration: 8000,
+    });
+    fetchMockupStats();
+  };
+
   const pollGenerationStatus = () => {
     const interval = setInterval(async () => {
       try {
@@ -642,6 +700,11 @@ const SoulProductsManager = () => {
           const status = await res.json();
           setGenerationStatus(status);
           
+          // Refresh stat boxes on every tick while running so numbers stay live
+          if (status.running) {
+            fetchMockupStats();
+          }
+
           // Stop polling when generation is complete
           if (!status.running && status.completed_at) {
             clearInterval(interval);
@@ -654,7 +717,7 @@ const SoulProductsManager = () => {
           }
         }
       } catch (error) {
-        console.error('Error polling status:', error);
+        // silent
       }
     }, 3000);
     
@@ -665,20 +728,29 @@ const SoulProductsManager = () => {
   // Load mockup data when switching to mockups tab
   useEffect(() => {
     if (activeSubTab === 'mockups') {
-      console.log('[SoulProducts] Mockups tab active, fetching data...');
       fetchMockupStats();
-      fetchBreedProducts(true); // Fetch products with mockups
-      fetchCloudStatus(); // Check cloud storage status
+      fetchBreedProducts(true);
+      fetchCloudStatus();
+
+      // Also fetch AI image service status (products_master generator)
+      const fetchAiImageStatus = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/ai-images/status`);
+          if (res.ok) { const d = await res.json(); setAiImageStatus(d); }
+        } catch {}
+      };
+      fetchAiImageStatus();
       
-      // Auto-refresh stats every 30 seconds when on mockups tab
+      // Refresh stats every 10s (fast enough to feel live without hammering the DB)
       const refreshInterval = setInterval(() => {
         fetchMockupStats();
-      }, 30000);
+        fetchAiImageStatus();
+      }, 10000);
       
       return () => clearInterval(refreshInterval);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSubTab]); // Only trigger on tab change
+  }, [activeSubTab]);
 
   // Fetch cloud storage status
   const fetchCloudStatus = async () => {
@@ -1433,10 +1505,38 @@ const SoulProductsManager = () => {
       {/* AI Mockups Tab */}
       {activeSubTab === 'mockups' && (
         <div className="space-y-6">
+
+          {/* ── AI Image Service Live Banner (products_master generator) ── */}
+          {aiImageStatus?.running && (
+            <div className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 border border-purple-200 rounded-xl flex items-start gap-3">
+              <Loader2 className="w-5 h-5 text-purple-600 animate-spin mt-0.5 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-purple-800 text-sm">
+                  AI Image Generation Active — Products Catalogue
+                </p>
+                <p className="text-xs text-purple-600 mt-0.5 truncate">
+                  Now: {aiImageStatus.current_item || 'Processing...'}
+                </p>
+                <div className="w-full bg-purple-200 rounded-full h-1.5 mt-2">
+                  <div
+                    className="bg-purple-600 h-1.5 rounded-full transition-all"
+                    style={{ width: `${aiImageStatus.progress || 0}%` }}
+                  />
+                </div>
+                <p className="text-xs text-purple-500 mt-1">
+                  {aiImageStatus.completed}/{aiImageStatus.total} done · {aiImageStatus.failed || 0} failed · {aiImageStatus.progress?.toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Stats Overview */}
           {mockupStats ? (
             <div className="grid grid-cols-4 gap-4">
-              <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50">
+              <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 relative overflow-hidden">
+                {(generationStatus?.running || mockupGenStatus?.running) && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full animate-pulse" title="Generation running" />
+                )}
                 <div className="text-3xl font-bold text-purple-700">{mockupStats.total_products}</div>
                 <div className="text-sm text-gray-600">Total Breed Products</div>
               </Card>
@@ -1445,7 +1545,9 @@ const SoulProductsManager = () => {
                 <div className="text-sm text-gray-600">With Mockups</div>
               </Card>
               <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50">
-                <div className="text-3xl font-bold text-amber-700">{mockupStats.products_without_mockups || 0}</div>
+                <div className={`text-3xl font-bold text-amber-700 ${(generationStatus?.running || mockupGenStatus?.running) ? 'animate-pulse' : ''}`}>
+                  {mockupStats.products_without_mockups || 0}
+                </div>
                 <div className="text-sm text-gray-600">Pending</div>
               </Card>
               <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -1610,6 +1712,14 @@ const SoulProductsManager = () => {
                   <span className="mr-1">🎂</span> Breed Cake Art
                 </Button>
                 <Button onClick={seedBreedProducts} variant="outline">Seed Products</Button>
+                <Button
+                  onClick={seedMissingTypes}
+                  variant="outline"
+                  className="border-indigo-500 text-indigo-700 hover:bg-indigo-50"
+                  title="Seeds 16 missing product categories (toys, bowls, leashes, etc.) across all breeds"
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Seed Missing Types
+                </Button>
                 <Button onClick={() => setNewTypeModal(true)} variant="outline" className="border-green-500 text-green-700">
                   <Plus className="w-4 h-4 mr-1" /> New Type
                 </Button>
@@ -1618,7 +1728,7 @@ const SoulProductsManager = () => {
                   Export CSV
                 </Button>
                 <Button onClick={() => exportMockupsCsv(true)} disabled={exportingCsv} variant="outline" className="border-amber-500 text-amber-700">
-                  <Download className="w-4 h-4 mr-1"/> Pending 705
+                  <Download className="w-4 h-4 mr-1"/> Pending {mockupStats?.products_without_mockups ?? '—'}
                 </Button>
               </div>
             </div>
