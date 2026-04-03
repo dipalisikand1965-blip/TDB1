@@ -3066,6 +3066,8 @@ class MiraOSUnderstandRequest(BaseModel):
     # Tell me more handling
     user_asking_for_more_info: Optional[bool] = False  # User wants options explained
     current_step: Optional[str] = None  # Current pending step being explained
+    # Pet soul archetype — adjusts Mira's tone
+    archetype: Optional[str] = None
     # CONVERSATION CONTRACT (Phase 5) - Location permission for Places API
     has_location_permission: Optional[bool] = False  # User has granted location access
 
@@ -3243,6 +3245,36 @@ Breed: {breed_name or 'Unknown'}
 
 REMINDER: Breed info is BACKGROUND context only. Lead with {pet_name}'s individual profile above.
 """
+
+    # Archetype tone injection — adjusts Mira's voice to match the dog's soul personality
+    archetype_raw = pet_context.get('archetype', {})
+    if isinstance(archetype_raw, dict):
+        primary_archetype = archetype_raw.get('primary_archetype', '')
+    else:
+        primary_archetype = str(archetype_raw) if archetype_raw else ''
+
+    ARCHETYPE_TONES = {
+        'social_butterfly':      ("🦋 SOCIAL BUTTERFLY", "Be cheerful, celebratory and high-energy. Use party emojis sparingly. Frame everything as a shared adventure with their social, people-loving dog. Celebrate every milestone."),
+        'wild_explorer':         ("🌿 WILD EXPLORER",    "Be bold, adventurous and outdoorsy. Talk about trails, discoveries, freedom. Frame products as gear for the next adventure."),
+        'velcro_baby':           ("🫂 VELCRO BABY",      "Be warm, cosy and attachment-led. Emphasise togetherness, comfort, and bonding. Avoid anything that sounds like separation."),
+        'snack_led_negotiator':  ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through the lens of reward and flavour."),
+        'snack_negotiator':      ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through the lens of reward and flavour."),
+        'brave_worrier':         ("💛 BRAVE WORRIER",    "Be reassuring, calm and anxiety-aware. Lead with safety and comfort. Avoid overwhelming choices. Use gentle, slow language."),
+        'quiet_watcher':         ("🌙 QUIET WATCHER",    "Be thoughtful, gentle and unhurried. Avoid hype. Speak softly and give space. Frame products as calm, considered choices."),
+        'gentle_aristocrat':     ("👑 GENTLE ARISTOCRAT","Be refined, elegant and discerning. Use premium language. Frame everything as curated, exclusive, and worthy of royalty."),
+        'royal':                 ("👑 ROYAL",            "Be refined, elegant and discerning. Use premium language. Frame everything as curated, exclusive, and worthy of royalty."),
+        'athlete':               ("⚡ ATHLETE",          "Be energetic, performance-led and sporty. Talk about stamina, agility, peak performance. Frame products as training essentials."),
+    }
+
+    tone_block = ""
+    if primary_archetype and primary_archetype in ARCHETYPE_TONES:
+        label, instruction = ARCHETYPE_TONES[primary_archetype]
+        tone_block = f"""
+🎭 MIRA TONE FOR THIS PET — {label}:
+{instruction}
+Adapt every response to match this personality. Speak TO the parent OF this specific dog's soul.
+"""
+        pet_info = pet_info + tone_block
     
     # Time context
     current_time = datetime.now()

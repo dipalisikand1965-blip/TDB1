@@ -32,6 +32,7 @@ class MiraStreamRequest(BaseModel):
     session_id: Optional[str] = None
     last_shown_items: Optional[List[Dict[str, Any]]] = []
     last_search_context: Optional[Dict[str, Any]] = None
+    archetype: Optional[str] = None
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -138,7 +139,8 @@ async def mira_stream_response(request: MiraStreamRequest):
             session_id=request.session_id,
             last_shown_items=request.last_shown_items,
             last_search_context=request.last_search_context,
-            include_products=True
+            include_products=True,
+            archetype=request.archetype
         )
         
         # Get the full response (non-streaming)
