@@ -231,8 +231,18 @@ const ROPE_TOY_PATTERNS = [
   '/doggy/ai_generated/',                    // ai_generated batch — Cloudinary upload failed, 404
   '/tdc/products_master/celebrate/celebrate-', // breed custom cakes — AI uploaded toy images to cake paths
 ];
-const isBadCloudinaryImage = (url) =>
-  url && url.includes('res.cloudinary.com') && ROPE_TOY_PATTERNS.some(p => url.includes(p));
+
+// Smart rule: block ANY tdc/products_master/ URL whose filename is NOT a Shopify-synced image.
+// Shopify-synced files follow: shopify-{numeric_id}.webp
+// AI-generated files follow: {pillar}-{slug}.webp or {pillar}-{slug}-{hash}.webp
+const AI_NAMED_FILE_RE = /tdc\/products_master\/.+\/(?!shopify-\d+\.)(?!breed-\d)/;
+
+const isBadCloudinaryImage = (url) => {
+  if (!url || !url.includes('res.cloudinary.com')) return false;
+  if (ROPE_TOY_PATTERNS.some(p => url.includes(p))) return true;
+  if (AI_NAMED_FILE_RE.test(url)) return true;
+  return false;
+};
 
 // ─── ONE shared image resolver — card thumbnail AND all modals use this ───────
 // Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → cloudinary_image_url (safe original) → image (cloudinary/shopify only)
