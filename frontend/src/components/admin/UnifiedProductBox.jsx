@@ -19,7 +19,7 @@ import {
   Gift, Eye, EyeOff, Tag, DollarSign, Shield, Bot, Truck,
   AlertTriangle, Check, ChevronDown, ChevronRight, RefreshCw,
   PawPrint, Heart, Sparkles, ShoppingBag, Loader2, BarChart3,
-  Download, Image, ImagePlus, Upload, Palette, Percent, Box, Layers
+  Download, Image, ImagePlus, Upload, Palette, Percent, Box, Layers, Archive, RotateCcw
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
@@ -78,6 +78,7 @@ const UnifiedProductBox = () => {
   const searchDebounceRef = useRef(null);  const [filterType, setFilterType] = useState('');
   const [filterPillar, setFilterPillar] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [viewMode, setViewMode] = useState('active'); // 'active' | 'archived'
   const [filterShipping, setFilterShipping] = useState('');
   const [filterRewardEligible, setFilterRewardEligible] = useState(null);
   const [filterBreed, setFilterBreed] = useState('');
@@ -137,7 +138,9 @@ const UnifiedProductBox = () => {
       if (filterType) params.append('product_type', filterType);
       // When a search term is active, search ALL pillars — drop pillar filter for cross-pillar discovery
       if (filterPillar && !debouncedSearch) params.append('pillar', filterPillar);
-      if (filterStatus) params.append('status', filterStatus);
+      // viewMode drives the status filter — Archived tab overrides the dropdown
+      const effectiveStatus = viewMode === 'archived' ? 'archived' : filterStatus;
+      if (effectiveStatus) params.append('status', effectiveStatus);
       if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
       if (filterBreed) params.append('breed', filterBreed);
@@ -157,7 +160,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory]);
+  }, [page, debouncedSearch, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint, filterSource, filterCategory, viewMode]);
 
   // Fetch stats — non-critical, uses AbortController so it never blocks product list
   const fetchStats = async () => {
@@ -1020,6 +1023,38 @@ const UnifiedProductBox = () => {
         </div>
       )}
 
+      {/* ── View Mode Tab: Active / Archived ─────────────────────────────── */}
+      <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg w-fit">
+        <button
+          onClick={() => { setViewMode('active'); setPage(0); }}
+          data-testid="tab-active-products"
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+            viewMode === 'active'
+              ? 'bg-white shadow text-gray-900'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Active Products
+        </button>
+        <button
+          onClick={() => { setViewMode('archived'); setPage(0); }}
+          data-testid="tab-archived-products"
+          className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${
+            viewMode === 'archived'
+              ? 'bg-amber-500 shadow text-white'
+              : 'text-gray-500 hover:text-amber-600'
+          }`}
+        >
+          <Archive className="w-3.5 h-3.5" />
+          Archived
+          {viewMode === 'archived' && total > 0 && (
+            <span className="bg-white text-amber-600 text-xs font-bold px-1.5 py-0.5 rounded-full">
+              {total}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Pillar Quick Filters */}
       <div className="flex flex-wrap gap-2">
         <Button
@@ -1618,6 +1653,28 @@ const UnifiedProductBox = () => {
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
+
+                          {/* Restore button — only shown in Archived tab */}
+                          {viewMode === 'archived' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              title="Restore product (make active)"
+                              data-testid={`restore-product-${product.id}`}
+                              className="text-amber-600 hover:text-amber-800 hover:bg-amber-50"
+                              onClick={async () => {
+                                try {
+                                  const res = await fetch(`${API_URL}/api/product-box/products/${product.id}/restore`, { method: 'PATCH' });
+                                  if (res.ok) {
+                                    setProducts(prev => prev.filter(p => p.id !== product.id));
+                                    toast({ title: '✅ Restored', description: `${product.name} is now active` });
+                                  }
+                                } catch (e) { toast({ title: 'Error', description: 'Could not restore product', variant: 'destructive' }); }
+                              }}
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
