@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { getApiUrl } from '../utils/api';
+import { getAllergiesFromPet } from '../utils/masterBriefing';
 import { toast, Toaster } from 'sonner';
 import CartSidebar from '../components/CartSidebar';
 import { ProductDetailModal } from '../components/ProductCard';
@@ -309,7 +310,8 @@ export default function MiraSearchPage() {
         body: JSON.stringify({
           query: turn.semanticQuery || turn.query,
           pet_id: petId, pet_name: _petName,
-          breed, limit: 6,
+          breed, allergens: getAllergiesFromPet(activePet),
+          limit: 6,
           offset: currentOffset,
         }),
       });
@@ -502,9 +504,10 @@ export default function MiraSearchPage() {
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
-      // ── Step 2: fallback to semantic-search (query-aware + breed-boosted) ──
+      // ── Step 2: fallback to semantic-search (query-aware + breed-boosted + allergen-safe) ──
       const petId  = activePet?.id || activePet?._id;
       const breed  = activePet?.breed || activePet?.identity?.breed || '';
+      const allergens = getAllergiesFromPet(activePet);
       if (prods.length === 0) {
         fetch(`${getApiUrl()}/api/mira/semantic-search`, {
           method: 'POST',
@@ -512,7 +515,7 @@ export default function MiraSearchPage() {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6, offset: 0 }),
+          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, allergens, limit: 6, offset: 0 }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
@@ -572,12 +575,8 @@ export default function MiraSearchPage() {
             } catch { /* silent — places are bonus content */ }
           },
           () => {
-            // Geo denied — fallback to Bengaluru
-            fetch(`${getApiUrl()}/api/places/care-providers?city=Bengaluru&type=${placeType}`,
-              { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-              .then(r => r.ok ? r.json() : null)
-              .then(d => { if (d?.places?.length) updateTurn({ places: d.places, placeType }); })
-              .catch(() => {});
+            // Geo denied — prompt user for city via turn state (no hardcoded city)
+            updateTurn({ places: [], placeType, needsCity: true });
           }
         );
       }
@@ -849,6 +848,36 @@ export default function MiraSearchPage() {
               </div>
             )}
 
+            {/* ── NearMe: geo denied — ask for city ── */}
+            {turn.needsCity && !turn.places?.length && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
+                <p style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>
+                  Location access was denied. Which city should Mira search in?
+                </p>
+                <form onSubmit={async e => {
+                  e.preventDefault();
+                  const city = e.target.city.value.trim();
+                  if (!city) return;
+                  patchTurn(turn.id, { needsCity: false });
+                  try {
+                    const res = await fetch(
+                      `${getApiUrl()}/api/places/care-providers?city=${encodeURIComponent(city)}&type=${turn.placeType || 'all'}`,
+                      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+                    );
+                    const d = res.ok ? await res.json() : null;
+                    if (d?.places?.length) patchTurn(turn.id, { places: d.places });
+                    else patchTurn(turn.id, { places: [] });
+                  } catch { patchTurn(turn.id, { places: [] }); }
+                }} style={{ display: 'flex', gap: 8 }}>
+                  <input name="city" placeholder="e.g. Bengaluru, Mumbai, Delhi" defaultValue=""
+                    style={{ flex: 1, padding: '7px 12px', borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.text, fontSize: 13, outline: 'none' }} />
+                  <button type="submit" style={{ padding: '7px 16px', borderRadius: 8, background: C.amber, color: '#000', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer' }}>
+                    Search
+                  </button>
+                </form>
+              </div>
+            )}
+
             {/* ── NearMe Place Cards — shown when query contains "near me" ── */}
             {turn.places?.length > 0 && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
@@ -915,7 +944,7 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Services CTA — fires when nearby_places flag is true, DB is currently empty */}
+            {/* Services CTA — show inline service strip via Concierge instead of navigating away */}
             {turn.servicesCta && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 10,
@@ -928,12 +957,15 @@ export default function MiraSearchPage() {
                 <span style={{ fontSize: 13, color: C.text, fontFamily: 'DM Sans, sans-serif', flex: 1 }}>
                   Looking for services near you?
                 </span>
-                <a href="/services" style={{
-                  fontSize: 13, fontWeight: 700, color: C.amber,
-                  textDecoration: 'none', whiteSpace: 'nowrap',
-                }}>
+                <button
+                  onClick={async () => {
+                    patchTurn(turn.id, { servicesCta: false });
+                    setConciergeService({ pillar: 'services', name: 'Find a Service' });
+                  }}
+                  style={{ fontSize: 13, fontWeight: 700, color: C.amber, background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', padding: 0 }}
+                >
                   Book via Concierge →
-                </a>
+                </button>
               </div>
             )}
 
