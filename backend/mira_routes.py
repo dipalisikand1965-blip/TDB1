@@ -22940,6 +22940,7 @@ async def semantic_product_search(request: Request):
     query = data.get("query", "").lower()
     pet_id = data.get("pet_id")
     pet_name = data.get("pet_name", "your pet")
+    breed = (data.get("breed") or "").lower().strip()
     limit = data.get("limit", 8)
     
     if not query:
@@ -22983,33 +22984,55 @@ async def semantic_product_search(request: Request):
         {"category": {"$regex": "|".join(config.get("product_categories", [])), "$options": "i"}} if config.get("product_categories") else {"_never": True}
     ]}
     
-    # Fetch products from products_master
+    # Fetch products from products_master — include breed + price + image fields
     products = []
     try:
         product_cursor = db.products_master.find(
             product_query,
-            {"_id": 0, "id": 1, "name": 1, "base_price": 1, "price": 1, "images": 1, "image": 1, "category": 1, "description": 1, "semantic_intents": 1}
-        ).limit(limit)
-        products_raw = await product_cursor.to_list(limit)
+            {
+                "_id": 0, "id": 1, "name": 1,
+                "original_price": 1, "base_price": 1, "price": 1,
+                "cloudinary_url": 1, "mockup_url": 1, "image_url": 1, "images": 1, "image": 1,
+                "category": 1, "description": 1,
+                "semantic_intents": 1, "breed_tags": 1
+            }
+        ).limit(limit * 3)  # fetch extra so breed re-ranking has candidates
+        products_raw = await product_cursor.to_list(limit * 3)
         
-        # Process and add why_for_pet message
-        for p in products_raw:
-            # Check if product has matching intent (priority signal)
+        # Score each product: intent match + breed boost
+        def _breed_score(p):
+            tags = [str(t).lower() for t in (p.get("breed_tags") or [])]
+            name_lower = (p.get("name") or "").lower()
+            has_intent = intent_key in (p.get("semantic_intents") or [])
+            # Breed-specific product for a DIFFERENT breed — deprioritize
+            if tags and "all_breeds" not in tags and breed and breed not in tags:
+                return (0, int(has_intent), 0)
+            # Exact breed match — top
+            if breed and breed in tags:
+                return (2, int(has_intent), 0)
+            # all_breeds or untagged — middle
+            return (1, int(has_intent), 0)
+
+        products_raw.sort(key=_breed_score, reverse=True)
+
+        for p in products_raw[:limit]:
             has_intent_match = intent_key in (p.get("semantic_intents") or [])
-            
+            img = (p.get("cloudinary_url") or p.get("mockup_url") or p.get("image_url")
+                   or (p.get("images") or [None])[0] or p.get("image"))
             products.append({
                 "id": p.get("id"),
                 "name": p.get("name", "Product"),
-                "price": p.get("base_price") or p.get("price"),
-                "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
+                "original_price": p.get("original_price") or p.get("base_price") or p.get("price"),
+                "price": p.get("original_price") or p.get("base_price") or p.get("price"),
+                "cloudinary_url": img,
+                "image": img,
                 "images": p.get("images", []),
                 "category": p.get("category", ""),
+                "breed_tags": p.get("breed_tags", []),
                 "why_for_pet": f"{config['why_message']} for {pet_name}" if has_intent_match else None,
                 "intent_match": has_intent_match
             })
         
-        # Sort by intent match first
-        products.sort(key=lambda x: (not x.get("intent_match", False)))
     except Exception as e:
         logger.error(f"Semantic search error: {e}")
         products = []
