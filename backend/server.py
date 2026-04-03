@@ -11908,6 +11908,10 @@ async def seed_new_product_type(request: dict):
     for breed in breeds:
         product_id = f"bp-{breed}-{product_type}-{'_'.join(pillars)}"
         display_name = name_template.replace("{breed}", breed.replace("_", " ").title()).replace("{product_type}", product_type.replace("_", " ").title())
+        pt_display = product_type.replace("_", " ").title()
+        breed_display = breed.replace("_", " ").title()
+        # Build a generic prompt so the batch generator can pick this up
+        mockup_prompt = f"Professional product photography of a {pt_display} featuring a beautiful watercolor illustration of a {breed_display} dog. The product is displayed on a clean surface with soft studio lighting. High-quality photorealistic product mockup."
         ops.append(UpdateOne(
             {"id": product_id},
             {"$setOnInsert": {
@@ -11919,6 +11923,7 @@ async def seed_new_product_type(request: dict):
                 "pillars": pillars,
                 "price": price,
                 "description": description,
+                "mockup_prompt": mockup_prompt,
                 "cloudinary_url": None,
                 "mockup_url": None,
                 "is_active": True,
