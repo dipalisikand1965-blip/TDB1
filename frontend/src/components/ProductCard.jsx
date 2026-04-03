@@ -234,7 +234,7 @@ const isBadCloudinaryImage = (url) =>
   url && url.includes('res.cloudinary.com') && ROPE_TOY_PATTERNS.some(p => url.includes(p));
 
 // ─── ONE shared image resolver — card thumbnail AND all modals use this ───────
-// Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (cloudinary/shopify only)
+// Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → cloudinary_image_url (safe original) → image (cloudinary/shopify only)
 const getProductImage = (p) => {
   const candidates = [
     p.watercolor_image,
@@ -242,6 +242,7 @@ const getProductImage = (p) => {
     p.mockup_url,
     p.primary_image,
     p.image_url,
+    p.cloudinary_image_url,  // Shopify-synced original — safe fallback when AI overwrites above
     (p.image && (p.image.includes('cloudinary') || p.image.includes('shopify.com'))) ? p.image : null,
   ];
   for (const url of candidates) {
