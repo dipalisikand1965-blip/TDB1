@@ -312,7 +312,7 @@ async def generate_ai_image(prompt: str) -> Optional[str]:
         image_base64 = base64.b64encode(images[0]).decode('utf-8')
         image_data_url = f"data:image/png;base64,{image_base64}"
         
-        # Upload to Cloudinary and return URL
+        # Upload to Cloudinary — run in executor so sync call never blocks event loop
         cloudinary.config(
             cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
             api_key=os.getenv("CLOUDINARY_API_KEY"),
@@ -322,14 +322,18 @@ async def generate_ai_image(prompt: str) -> Optional[str]:
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
         public_id = f"doggy/ai_generated/{timestamp}"
         
-        result = cloudinary.uploader.upload(
-            image_data_url,
-            public_id=public_id,
-            overwrite=True,
-            resource_type="image",
-            format="webp",
-            quality="auto:good"
-        )
+        def _upload():
+            return cloudinary.uploader.upload(
+                image_data_url,
+                public_id=public_id,
+                overwrite=True,
+                resource_type="image",
+                format="webp",
+                quality="auto:good"
+            )
+        
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _upload)
         
         return result.get("secure_url")
         

@@ -656,7 +656,10 @@ async def get_all_products(
             {"pillars": pillar},
             {"primary_pillar": pillar}
         ]})
-    if status:
+    if status == 'all':
+        # Admin mode: show everything except archived
+        and_conditions.append({"visibility.status": {"$ne": "archived"}})
+    elif status:
         and_conditions.append({"visibility.status": status})
     else:
         # Default: only show active products to consumers (exclude archived, inactive, draft)

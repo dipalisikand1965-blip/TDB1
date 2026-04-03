@@ -139,8 +139,9 @@ const UnifiedProductBox = () => {
       // When a search term is active, search ALL pillars — drop pillar filter for cross-pillar discovery
       if (filterPillar && !debouncedSearch) params.append('pillar', filterPillar);
       // viewMode drives the status filter — Archived tab overrides the dropdown
-      const effectiveStatus = viewMode === 'archived' ? 'archived' : filterStatus;
-      if (effectiveStatus) params.append('status', effectiveStatus);
+      // 'all' = admin default: shows active + inactive + draft (excludes only archived)
+      const effectiveStatus = viewMode === 'archived' ? 'archived' : (filterStatus || 'all');
+      params.append('status', effectiveStatus);
       if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
       if (filterBreed) params.append('breed', filterBreed);
