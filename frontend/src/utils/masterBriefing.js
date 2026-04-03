@@ -12,11 +12,49 @@
  *   - MiraCardActions.js (utility)
  */
 
-// ── Allergy extractor ──────────────────────────────────────────────────────
+// ── Allergy extractor — reads all 6 known sources, deduplicates, strips junk ─
+const ALLERGY_JUNK = /^(none|none known|no|no known|n\/a|unknown|healthy|all_healthy|null|undefined)$/i;
+
 export function getAllergiesFromPet(pet) {
-  const raw = pet?.allergies || pet?.health_conditions || [];
-  if (!Array.isArray(raw)) return [];
-  return raw.filter(a => typeof a === 'string' && a.trim().length > 0);
+  const s = new Set();
+
+  const add = v => {
+    if (Array.isArray(v)) {
+      v.forEach(x => {
+        const name = (typeof x === 'object' ? (x?.name || x?.value) : x);
+        if (name && typeof name === 'string' && name.trim() && !ALLERGY_JUNK.test(name.trim())) {
+          s.add(name.trim());
+        }
+      });
+    } else if (v && typeof v === 'string' && v.trim() && !ALLERGY_JUNK.test(v.trim())) {
+      s.add(v.trim());
+    }
+  };
+
+  // Source 1: soul questionnaire (PRIMARY — user-declared)
+  add(pet?.doggy_soul_answers?.food_allergies);
+  add(pet?.doggy_soul_answers?.allergies);
+
+  // Source 2: vault.allergies — vet-confirmed (HIGH TRUST)
+  if (pet?.vault?.allergies) {
+    const va = pet.vault.allergies;
+    if (Array.isArray(va)) {
+      va.forEach(alg => { const n = alg?.name || alg; add(n); });
+    } else {
+      add(va);
+    }
+  }
+
+  // Source 3: preferences
+  add(pet?.preferences?.allergies);
+
+  // Source 4: health_data
+  add(pet?.health_data?.allergies);
+
+  // Source 5: top-level fallback
+  add(pet?.allergies);
+
+  return [...s];
 }
 
 // ── Get auth (safe for hooks and utilities) ────────────────────────────────
