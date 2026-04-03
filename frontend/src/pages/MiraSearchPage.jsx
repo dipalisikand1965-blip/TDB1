@@ -258,6 +258,22 @@ function ResultChip({ item, type, pet, onBook, onCart, onCardClick }) {
   );
 }
 
+// ── Guided Path Map ───────────────────────────────────────────────────────
+const GUIDED_PATH_MAP = {
+  birthday_celebration: { path:'/celebrate-soul', title:"Plan [pet]'s Perfect Celebration", subtitle:'Mira walks you through every step' },
+  food_dining:          { path:'/dine',           title:"Build [pet]'s Nutrition Plan",      subtitle:'From soul to bowl — step by step' },
+  grooming_care:        { path:'/care',           title:"[pet]'s Complete Care Plan",        subtitle:'Coat, health and comfort arranged' },
+  adopt_rescue:         { path:'/adopt',          title:"Ready to Adopt?",                   subtitle:'Mira guides you home' },
+  farewell_memorial:    { path:'/farewell',       title:"Gentle Farewell Support",           subtitle:'We walk this path with you' },
+  training_behavior:    { path:'/learn',          title:"Train [pet] with Mira",             subtitle:'Step by step, your way' },
+  travel_adventure:     { path:'/go',             title:"Plan [pet]'s Perfect Trip",         subtitle:'Every detail arranged by Concierge' },
+  emergency_urgent:     { path:'/emergency',      title:"Emergency Help for [pet]",          subtitle:'Immediate routing and support' },
+  vet_health:           { path:'/care',           title:"[pet]'s Health Check Plan",         subtitle:'Vet, vaccines and wellness arranged' },
+  paperwork_docs:       { path:'/paperwork',      title:"[pet]'s Documents in Order",        subtitle:'Passport, microchip, insurance sorted' },
+  play_enrichment:      { path:'/play',           title:"[pet]'s Play & Enrichment Plan",    subtitle:'Mental stimulation and fun arranged' },
+  shop_accessories:     { path:'/shop',           title:"Shop for [pet]",                    subtitle:'Curated picks from Concierge' },
+};
+
 // ── Quick prompts ──────────────────────────────────────────────────────────
 const QUICK_PROMPTS = [
   { emoji: '🎂', label: 'Plan birthday' },
@@ -521,11 +537,12 @@ export default function MiraSearchPage() {
           .then(r => r.ok ? r.json() : null)
           .then(d => {
             const hits = d?.products || [];
+            const intent = d?.primary_intent || null;
             if (hits.length > 0) {
-              updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q });
+              updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q, intent });
             } else {
               // ── Step 3: no matches at all — show MiraImaginesBreed ──────
-              updateTurn({ showImagines: true, hasMore: false });
+              updateTurn({ showImagines: true, hasMore: false, intent });
             }
           })
           .catch(() => { updateTurn({ showImagines: true, hasMore: false }); });
@@ -891,6 +908,35 @@ export default function MiraSearchPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Guided Path Card ── */}
+            {GUIDED_PATH_MAP[turn.intent] && !turn.streaming && (
+              <div
+                onClick={() => navigate(GUIDED_PATH_MAP[turn.intent].path)}
+                style={{
+                  width:'100%', maxWidth:720,
+                  background:'linear-gradient(135deg,#1C1928,#2D1B69)',
+                  border:'1px solid rgba(124,58,237,0.3)',
+                  borderRadius:16, padding:'20px 24px',
+                  marginBottom:20, cursor:'pointer',
+                  animation:'fadeUp 0.5s ease',
+                }}
+                onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(167,139,250,0.5)'}
+                onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(124,58,237,0.3)'}
+              >
+                <div style={{fontSize:11,color:'#A78BFA',fontWeight:700,
+                  textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:6}}>
+                  ✦ Guided Path
+                </div>
+                <div style={{fontSize:16,fontWeight:700,color:'#F5F0E8',marginBottom:4,
+                  fontFamily:'Georgia,serif'}}>
+                  {GUIDED_PATH_MAP[turn.intent].title.replace('[pet]', activePet?.name || 'your dog')}
+                </div>
+                <div style={{fontSize:13,color:'rgba(245,240,232,0.55)'}}>
+                  {GUIDED_PATH_MAP[turn.intent].subtitle} →
                 </div>
               </div>
             )}
