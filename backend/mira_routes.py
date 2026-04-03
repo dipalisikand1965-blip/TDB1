@@ -22847,118 +22847,150 @@ async def detect_pet_mood(request: Request):
 
 # Intent-to-category mapping for semantic understanding
 SEMANTIC_INTENTS = {
-    "calm_anxiety": {
-        "triggers": ["calm", "anxious", "anxiety", "nervous", "scared", "fireworks", "thunder", "loud noise", "stress", "relax", "soothe", "panic", "shaking", "trembling"],
-        "product_categories": ["calming", "anxiety", "stress-relief", "wellness"],
-        "service_types": ["training", "behavior"],
-        "product_tags": ["calming", "anti-anxiety", "relaxing", "soothing"],
-        "why_message": "Helps with anxiety and stress"
-    },
-    "skin_coat": {
-        "triggers": ["skin", "coat", "fur", "itchy", "scratch", "dry", "flaky", "shiny", "shedding", "dull coat", "dandruff", "hot spots"],
-        "product_categories": ["grooming", "skin-care", "supplements"],
-        "service_types": ["grooming"],
-        "service_pillar": "care",
-        "product_tags": ["skin", "coat", "fur", "moisturizing", "anti-itch"],
-        "why_message": "Supports healthy skin and coat"
-    },
-    "digestion_gut": {
-        "triggers": ["digestion", "stomach", "tummy", "gut", "probiotic", "gas", "bloat", "sensitive stomach", "poop", "stool"],
-        "product_categories": ["supplements", "food", "treats"],
-        "service_pillar": "dine",
-        "product_tags": ["digestive", "probiotic", "gut-health", "sensitive"],
-        "why_message": "Supports digestive health"
-    },
-    "joint_mobility": {
-        "triggers": ["joint", "hip", "mobility", "arthritis", "stiff", "limping", "old dog", "senior", "glucosamine", "movement"],
-        "product_categories": ["supplements", "wellness"],
-        "product_tags": ["joint", "mobility", "senior", "glucosamine", "hip"],
-        "why_message": "Supports joint health and mobility"
-    },
-    "dental_oral": {
-        "triggers": ["dental", "teeth", "breath", "bad breath", "chew", "oral", "gum", "tartar", "plaque"],
-        "product_categories": ["dental", "treats", "grooming"],
-        "product_tags": ["dental", "teeth", "oral", "breath"],
-        "why_message": "Promotes dental health"
-    },
-    "training_behavior": {
-        "triggers": ["train", "training", "behavior", "obedience", "command", "trick", "reward", "positive reinforcement", "puppy training"],
-        "product_categories": ["treats", "training"],
-        "service_types": ["training"],
-        "service_pillar": "learn",
-        "product_tags": ["training", "reward", "small-bites"],
-        "why_message": "Great for training rewards"
-    },
-    "travel_adventure": {
-        "triggers": ["travel", "trip", "car", "road trip", "vacation", "adventure", "outdoor", "hiking", "camping", "beach"],
-        "product_categories": ["travel", "accessories", "carriers"],
-        "service_types": ["travel", "boarding"],
-        "service_pillar": "go",
-        "experience_types": ["pawcation", "travel"],
-        "product_tags": ["travel", "portable", "outdoor"],
-        "why_message": "Perfect for adventures"
-    },
     "birthday_celebration": {
         "triggers": ["birthday", "celebrate", "party", "special day", "anniversary", "gotcha day", "treat", "cake", "gift"],
-        "product_categories": ["cakes", "treats", "gifts", "celebration"],
         "priority_filter": {"pillar": "celebrate", "category": "cakes"},
-        "service_pillar": "celebrate",
-        "experience_types": ["party", "celebration"],
+        "product_categories": ["cakes", "party_accessories", "celebrate", "hampers"],
         "product_tags": ["birthday", "celebration", "party", "special"],
+        "service_pillar": "celebrate",
+        "service_types": ["birthday_party", "photography", "cake_consultation", "pawty", "venue", "gotcha_day"],
         "why_message": "For celebration moments"
     },
-    "puppy_essentials": {
-        "triggers": ["puppy", "new puppy", "baby dog", "young dog", "starter", "essentials", "first time", "new pet parent"],
-        "product_categories": ["puppy", "starter-kits", "essentials"],
-        "product_tags": ["puppy", "starter", "essential", "beginner"],
-        "why_message": "Essential for new puppies"
+    "grooming_care": {
+        "triggers": ["groom", "grooming", "spa", "wash", "nail", "haircut", "fur", "coat care", "bath time", "clean"],
+        "priority_filter": {"pillar": "care", "category": "grooming"},
+        "product_categories": ["grooming", "care", "care_accessories"],
+        "product_tags": ["grooming", "coat", "hygiene", "clean"],
+        "service_pillar": "care",
+        "service_types": ["grooming", "spa", "dental", "bath", "premium_grooming"],
+        "why_message": "For coat and hygiene care"
     },
-    "senior_care": {
-        "triggers": ["senior", "old", "aging", "elderly", "geriatric", "old age", "mature dog"],
-        "product_categories": ["senior", "supplements", "wellness"],
-        "product_tags": ["senior", "aging", "mature", "gentle"],
-        "why_message": "Specially formulated for seniors"
+    "vet_health": {
+        "triggers": ["vet", "doctor", "health", "sick", "vaccine", "vaccination", "checkup", "ill", "medicine", "hospital", "clinic"],
+        "priority_filter": {"pillar": "care", "category": "supplements"},
+        "product_categories": ["supplements", "care", "first-aid"],
+        "product_tags": ["health", "wellness", "supplement", "vet"],
+        "service_pillar": "care",
+        "service_types": ["vet_consult", "vet_home", "vet_specialty", "emergency", "health_check"],
+        "why_message": "For health and wellness"
     },
-    "weight_fitness": {
-        "triggers": ["weight", "diet", "fitness", "overweight", "slim", "healthy weight", "low calorie", "exercise", "active"],
-        "product_categories": ["diet", "fitness", "treats"],
-        "service_types": ["walks", "fitness"],
-        "product_tags": ["low-calorie", "diet", "fitness", "weight-management"],
-        "why_message": "Supports healthy weight"
+    "food_dining": {
+        "triggers": ["food", "eat", "meal", "restaurant", "cafe", "dine", "dining", "hungry", "feed", "nutrition", "diet", "treat"],
+        "priority_filter": {"pillar": "dine", "category": "Daily Meals"},
+        "product_categories": ["Daily Meals", "Treats & Rewards", "Frozen & Fresh", "Supplements"],
+        "product_tags": ["meal", "food", "nutrition", "treat"],
+        "service_pillar": "dine",
+        "service_types": ["restaurant_discovery", "nutrition_consult", "meal_prep", "allergy_diet"],
+        "why_message": "For dining and nutrition"
     },
     "play_enrichment": {
-        "triggers": ["play", "toy", "bored", "enrichment", "stimulate", "puzzle", "interactive", "fun", "fetch", "ball"],
-        "product_categories": ["toys", "enrichment", "play_accessories", "Play Essentials"],
+        "triggers": ["play", "toy", "bored", "enrichment", "stimulate", "puzzle", "interactive", "fun", "fetch", "ball", "game"],
         "priority_filter": {"pillar": "play", "category": "enrichment"},
-        "service_pillar": "play",
+        "product_categories": ["enrichment", "play_accessories", "Play Essentials", "play"],
         "product_tags": ["toy", "interactive", "puzzle", "enrichment"],
-        "why_message": "For mental stimulation and fun"
+        "service_pillar": "play",
+        "service_types": ["dog_walking", "playdate", "agility", "fitness", "adventure", "swimming"],
+        "why_message": "For play and mental stimulation"
     },
-    # NEW INTENTS for comprehensive coverage
-    "fashion_wearables": {
-        "triggers": ["collar", "bandana", "bow tie", "harness", "leash", "dress", "costume", "jacket", "sweater", "hoodie", "fashion", "style", "cute outfit"],
-        "product_categories": ["accessories", "wearables", "fashion"],
-        "product_tags": ["fashion", "wearable", "collar", "bandana", "harness", "outfit"],
-        "why_message": "Stylish accessories"
+    "travel_adventure": {
+        "triggers": ["travel", "trip", "hotel", "stay", "holiday", "vacation", "flight", "boarding", "journey", "road trip", "go"],
+        "priority_filter": {"pillar": "go", "category": "travel"},
+        "product_categories": ["travel", "go_accessories", "carriers"],
+        "product_tags": ["travel", "adventure", "portable", "carrier"],
+        "service_pillar": "go",
+        "service_types": ["pet_hotel", "pet_taxi", "flight_coordination", "boarding", "relocation"],
+        "why_message": "For travel and adventures"
     },
-    "dining_cafe": {
-        "triggers": ["cafe", "restaurant", "dine out", "outing", "bowl", "feeder", "food bowl", "water bowl", "slow feeder"],
-        "product_categories": ["dine", "bowls", "feeders"],
-        "product_tags": ["dining", "cafe", "bowl", "feeder"],
-        "why_message": "For dining experiences"
+    "training_behavior": {
+        "triggers": ["train", "training", "behaviour", "behavior", "obedience", "puppy class", "bark", "anxiety", "fear", "aggression", "learn"],
+        "priority_filter": {"pillar": "learn", "category": "training"},
+        "product_categories": ["training", "behavior", "enrichment"],
+        "product_tags": ["training", "behavior", "obedience", "calm"],
+        "service_pillar": "learn",
+        "service_types": ["obedience", "behavior_modification", "puppy_training", "agility", "breed_education"],
+        "why_message": "For training and behaviour"
     },
-    "home_decor": {
-        "triggers": ["home decor", "gift", "magnet", "coaster", "frame", "poster", "mug", "decoration"],
-        "product_categories": ["accessories", "gifts", "decor"],
-        "product_tags": ["home", "decor", "gift", "accessory"],
-        "why_message": "Pet-lover gifts and decor"
+    "paperwork_docs": {
+        "triggers": ["insurance", "passport", "microchip", "document", "register", "registration", "license", "certificate", "paperwork", "identity"],
+        "priority_filter": {"pillar": "paperwork", "category": "documents"},
+        "product_categories": ["documents", "Soul Documents", "Identity & Safety"],
+        "product_tags": ["document", "identity", "insurance", "passport"],
+        "service_pillar": "paperwork",
+        "service_types": ["microchipping", "pet_passport", "insurance_quote", "registration", "travel_docs"],
+        "why_message": "For documentation and paperwork"
     },
-    "fresh_food": {
-        "triggers": ["fresh food", "fresh meal", "homemade", "cooked food", "chicken meal", "natural food"],
-        "product_categories": ["fresh-meals", "food"],
-        "product_tags": ["fresh-food", "meal", "homemade", "natural"],
-        "why_message": "Freshly prepared meals"
-    }
+    "adopt_rescue": {
+        "triggers": ["adopt", "adoption", "rescue", "new pet", "new puppy", "new dog", "bring home", "first pet"],
+        "priority_filter": {"pillar": "adopt", "category": "essentials"},
+        "product_categories": ["adoption", "essentials"],
+        "product_tags": ["adoption", "starter", "new pet", "essential"],
+        "service_pillar": "adopt",
+        "service_types": ["pet_matching", "adoption_counseling", "home_readiness", "vet_registration"],
+        "why_message": "For adoption and new pets"
+    },
+    "emergency_urgent": {
+        "triggers": ["emergency", "urgent", "help", "accident", "lost", "missing", "hurt", "bleeding", "poisoned", "choking"],
+        "priority_filter": {"pillar": "emergency", "category": "first-aid"},
+        "product_categories": ["safety", "first-aid", "breed-emergency_cards", "breed-medical_alert_tags"],
+        "product_tags": ["emergency", "safety", "first-aid", "alert"],
+        "service_pillar": "emergency",
+        "service_types": ["emergency_helpline", "emergency_transport", "lost_pet_recovery", "first_aid"],
+        "why_message": "For emergency situations"
+    },
+    "farewell_memorial": {
+        "triggers": ["farewell", "memorial", "grief", "loss", "passed", "died", "rainbow bridge", "cremation", "end of life", "remember"],
+        "priority_filter": {"pillar": "farewell", "category": "memorial"},
+        "product_categories": ["memorial", "breed-memorial_ornaments", "breed-paw_print_frames", "breed-memory_boxes"],
+        "product_tags": ["memorial", "grief", "memory", "tribute"],
+        "service_pillar": "farewell",
+        "service_types": ["cremation", "memorial_service", "grief_counseling", "paw_print"],
+        "why_message": "For farewell and remembrance"
+    },
+    "shop_accessories": {
+        "triggers": ["shop", "buy", "accessories", "bed", "collar", "leash", "apparel", "clothes", "harness", "bowl", "source"],
+        "priority_filter": {"pillar": "shop", "category": "accessories"},
+        "product_categories": ["accessories", "beds", "toys", "apparel", "treats"],
+        "product_tags": ["accessory", "lifestyle", "essential", "daily"],
+        "service_pillar": "shop",
+        "service_types": ["personal_shopping", "emergency_sourcing", "vet_recommended"],
+        "why_message": "For shopping and accessories"
+    },
+    "skin_coat": {
+        "triggers": ["skin", "coat", "itch", "scratch", "dandruff", "dry skin", "shiny coat", "shed", "shedding", "rash"],
+        "priority_filter": {"pillar": "care", "category": "care"},
+        "product_categories": ["care", "grooming", "supplements"],
+        "product_tags": ["skin", "coat", "dermatology", "shedding"],
+        "service_pillar": "care",
+        "service_types": ["grooming", "vet_consult", "allergy_diet"],
+        "why_message": "For skin and coat health"
+    },
+    "calm_anxiety": {
+        "triggers": ["calm", "anxiety", "stress", "scared", "thunder", "fireworks", "separation", "nervous", "panic"],
+        "priority_filter": {"pillar": "care", "category": "supplements"},
+        "product_categories": ["supplements", "care", "enrichment"],
+        "product_tags": ["calm", "anxiety", "stress", "soothe"],
+        "service_pillar": "learn",
+        "service_types": ["behavior_modification", "training", "obedience"],
+        "why_message": "For calm and anxiety relief"
+    },
+    "senior_care": {
+        "triggers": ["senior", "old", "aging", "elderly", "geriatric", "old age", "mature", "arthritic", "mobility"],
+        "priority_filter": {"pillar": "care", "category": "supplements"},
+        "product_categories": ["supplements", "care", "enrichment"],
+        "product_tags": ["senior", "aging", "mobility", "gentle"],
+        "service_pillar": "care",
+        "service_types": ["vet_consult", "senior_mobility", "nutrition_consult"],
+        "why_message": "For senior pet care"
+    },
+    "puppy_essentials": {
+        "triggers": ["puppy", "new puppy", "baby dog", "young dog", "starter", "essentials", "first time", "new parent"],
+        "priority_filter": {"pillar": "adopt", "category": "essentials"},
+        "product_categories": ["essentials", "adoption", "training"],
+        "product_tags": ["puppy", "starter", "essential", "beginner"],
+        "service_pillar": "learn",
+        "service_types": ["puppy_training", "vet_registration", "home_readiness"],
+        "why_message": "Essential for new puppies"
+    },
 }
 
 
