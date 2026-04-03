@@ -230,6 +230,40 @@ export default function MiraSearchPage() {
   const [followUp, setFollowUp] = useState('');
   // turns = [{ id, query, response, products, services, streaming }]
   const [turns, setTurns] = useState([]);
+
+  // ── Component-level turn patcher (used by "Show more" button in render) ──
+  const patchTurn = useCallback((turnId, patch) =>
+    setTurns(prev => prev.map(t => t.id === turnId ? { ...t, ...patch } : t)),
+  []);
+
+  const loadMoreProducts = useCallback(async (turn) => {
+    if (!turn || turn.loadingMore) return;
+    patchTurn(turn.id, { loadingMore: true });
+    const petId = activePet?.id || activePet?._id;
+    const breed = activePet?.breed || activePet?.identity?.breed || '';
+    try {
+      const r = await fetch(`${getApiUrl()}/api/mira/semantic-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          query: turn.semanticQuery || turn.query,
+          pet_id: petId, pet_name: petName,
+          breed, limit: 6,
+          offset: turn.productsOffset || 6,
+        }),
+      });
+      const d = r.ok ? await r.json() : null;
+      const more = d?.products || [];
+      patchTurn(turn.id, {
+        products: [...(turn.products || []), ...more],
+        productsOffset: (turn.productsOffset || 6) + 6,
+        hasMore: d?.has_more === true,
+        loadingMore: false,
+      });
+    } catch {
+      patchTurn(turn.id, { loadingMore: false, hasMore: false });
+    }
+  }, [activePet, token, petName, patchTurn]);
   const [hasSearched, setHasSearched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
@@ -697,26 +731,7 @@ export default function MiraSearchPage() {
                 {turn.hasMore && !turn.loadingMore && (
                   <button
                     data-testid="show-more-products-btn"
-                    onClick={async () => {
-                      const petId = activePet?.id || activePet?._id;
-                      const breed = activePet?.breed || activePet?.identity?.breed || '';
-                      updateTurn({ loadingMore: true });
-                      try {
-                        const r = await fetch(`${getApiUrl()}/api/mira/semantic-search`, {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-                          body: JSON.stringify({ query: turn.semanticQuery || turn.query, pet_id: petId, pet_name: petName, breed, limit: 6, offset: turn.productsOffset || 6 }),
-                        });
-                        const d = r.ok ? await r.json() : null;
-                        const more = d?.products || [];
-                        updateTurn({
-                          products: [...(turn.products || []), ...more],
-                          productsOffset: (turn.productsOffset || 6) + 6,
-                          hasMore: d?.has_more === true,
-                          loadingMore: false,
-                        });
-                      } catch { updateTurn({ loadingMore: false, hasMore: false }); }
-                    }}
+                    onClick={() => loadMoreProducts(turn)}
                     style={{ marginTop: 10, fontSize: 12, color: C.amber, background: 'none', border: `1px solid ${C.amber}`, borderRadius: 20, padding: '4px 14px', cursor: 'pointer', fontWeight: 600 }}
                   >
                     Show more options →
