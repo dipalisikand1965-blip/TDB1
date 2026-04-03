@@ -58,7 +58,65 @@ def get_product_image_prompt(product: dict) -> str:
     name_lower = name.lower()
     category = (product.get("category") or "").lower()
     pillar = (product.get("pillar") or "").lower()
-    
+
+    # ── SOUL MADE™ BREED PRODUCTS — category starts with "breed-" ───────────
+    # These are personalised merchandise with a watercolour breed illustration printed on them.
+    # The breed name is stored in product.breed (e.g. "indie", "labrador", "golden retriever")
+    if category.startswith("breed-"):
+        breed_raw   = (product.get("breed") or "indie dog").strip()
+        breed_full  = breed_raw.replace("-", " ").title()
+        soul_style  = (
+            "professional product photography, clean white studio background, "
+            "photorealistic product mockup, sharp focus, commercial quality, 4K, "
+            f"beautiful watercolour illustration of a {breed_full} dog (expressive eyes, "
+            f"warm coat colours true to breed, friendly and soulful expression) "
+            "printed on the product surface, high-quality print visible, detailed breed likeness"
+        )
+        # Map category suffix → product-specific prompt
+        cat_suffix = category.replace("breed-", "").replace("_", " ")
+        breed_prompts = {
+            "mugs":             f"White ceramic coffee mug with a beautiful watercolour {breed_full} portrait on it, warm golden handle, steam rising, cozy morning light, {soul_style}",
+            "mug":              f"White ceramic coffee mug with a beautiful watercolour {breed_full} portrait on it, warm golden handle, {soul_style}",
+            "bandanas":         f"Soft cotton dog triangle bandana laid flat showing a watercolour {breed_full} portrait in the centre, warm earthy tones, {soul_style}",
+            "frames":           f"Elegant wooden picture frame displayed on a shelf containing a watercolour {breed_full} portrait, warm ambient light, {soul_style}",
+            "keychains":        f"Metal keychain charm with a laser-etched watercolour {breed_full} silhouette, photographed on white marble, {soul_style}",
+            "party hats":       f"Conical dog birthday party hat with watercolour {breed_full} illustration and gold confetti, festive styling, {soul_style}",
+            "party_hats":       f"Conical dog birthday party hat with watercolour {breed_full} illustration and gold confetti, festive styling, {soul_style}",
+            "cake toppers":     f"Acrylic birthday cake topper with watercolour {breed_full} silhouette, gold and ivory accents, clean background, {soul_style}",
+            "cake-toppers":     f"Acrylic birthday cake topper with watercolour {breed_full} silhouette, gold and ivory accents, clean background, {soul_style}",
+            "playdate cards":   f"Beautifully designed playdate invitation card featuring a watercolour {breed_full} portrait, printed on premium textured card stock, {soul_style}",
+            "playdate_cards":   f"Beautifully designed playdate invitation card featuring a watercolour {breed_full} portrait, printed on premium textured card stock, {soul_style}",
+            "towels":           f"Soft microfibre pet towel neatly folded showing watercolour {breed_full} illustration embroidered/printed on it, {soul_style}",
+            "pet_towels":       f"Soft microfibre pet towel neatly folded showing watercolour {breed_full} illustration printed on it, {soul_style}",
+            "robes":            f"Plush dog bathrobe hanging on a hook with watercolour {breed_full} monogram embroidery, luxury spa aesthetic, {soul_style}",
+            "pet_robes":        f"Plush dog bathrobe hanging on a hook with watercolour {breed_full} illustration embroidered, luxury aesthetic, {soul_style}",
+            "treat pouches":    f"Canvas dog treat pouch with watercolour {breed_full} illustration printed on front panel, training accessory, {soul_style}",
+            "treat_pouchs":     f"Canvas dog treat pouch with watercolour {breed_full} illustration printed on front panel, training accessory, {soul_style}",
+            "carrier tags":     f"Premium leather carrier tag with watercolour {breed_full} silhouette embossed, luggage tag style, {soul_style}",
+            "carrier_tags":     f"Premium leather carrier tag with watercolour {breed_full} silhouette embossed, luggage tag style, {soul_style}",
+            "collar tags":      f"Circular metal collar tag engraved with watercolour-style {breed_full} illustration, hanging on a leather collar close-up, {soul_style}",
+            "collar_tags":      f"Circular metal collar tag engraved with watercolour-style {breed_full} illustration, hanging on a leather collar, {soul_style}",
+            "play bandanas":    f"Soft cotton bandana with watercolour {breed_full} portrait, styled for outdoor adventure, {soul_style}",
+            "memorial ornaments": f"Ceramic memorial ornament with a hand-painted watercolour {breed_full} portrait, soft warm lighting, tribute aesthetic, {soul_style}",
+            "memorial_ornaments": f"Ceramic memorial ornament with a hand-painted watercolour {breed_full} portrait, soft warm lighting, tribute aesthetic, {soul_style}",
+            "paw print frames": f"Shadow-box frame containing an actual paw print with watercolour {breed_full} portrait, memorial keepsake, {soul_style}",
+            "paw_print_frames": f"Shadow-box frame containing an actual paw print with watercolour {breed_full} portrait, memorial keepsake, {soul_style}",
+            "memory boxes":     f"Lacquered wooden memory box with watercolour {breed_full} portrait on the lid, keepsake chest, {soul_style}",
+            "memory_boxes":     f"Lacquered wooden memory box with watercolour {breed_full} portrait on the lid, keepsake chest, {soul_style}",
+            "emergency cards":  f"Wallet-sized emergency card with watercolour {breed_full} ID portrait and contact details layout, {soul_style}",
+            "emergency_cards":  f"Wallet-sized emergency card with watercolour {breed_full} ID portrait and contact details layout, {soul_style}",
+            "medical alert tags": f"Medical alert collar tag with watercolour {breed_full} silhouette and red cross emblem, {soul_style}",
+            "medical_alert_tags": f"Medical alert collar tag with watercolour {breed_full} silhouette and red cross emblem, {soul_style}",
+            "passports":        f"Premium pet passport booklet with watercolour {breed_full} portrait on the cover, official-looking with gold emboss, {soul_style}",
+            "phone_cases":      f"Slim phone case with a vibrant watercolour {breed_full} portrait printed on the back, lifestyle flat-lay, {soul_style}",
+        }
+        # Look up by cleaned suffix
+        matched_prompt = breed_prompts.get(cat_suffix)
+        if matched_prompt:
+            return matched_prompt
+        # Fallback for unknown breed-* category
+        return f"Premium personalised pet product '{name}' featuring a beautiful watercolour {breed_full} illustration, {soul_style}"
+
     style = "clean white background, professional product photography, sharp focus, photorealistic, high detail, commercial quality, 4K"
     
     # ── DINE PILLAR: Food products ──────────────────────────────────────────
@@ -318,9 +376,12 @@ async def process_products_batch(pillar: Optional[str] = None):
         return
     
     try:
-        # Products needing AI images: missing image_url OR using Unsplash (never contextual)
+        # Products needing AI images: missing cloudinary_url OR image_url, or using Unsplash
         no_image_condition = {
             "$or": [
+                {"cloudinary_url": {"$exists": False}},
+                {"cloudinary_url": None},
+                {"cloudinary_url": ""},
                 {"image_url": {"$exists": False}},
                 {"image_url": None},
                 {"image_url": ""},
@@ -328,12 +389,13 @@ async def process_products_batch(pillar: Optional[str] = None):
             ]
         }
         
-        query = no_image_condition.copy()
+        query = {"$and": [no_image_condition, {"is_active": True}]}
         
         if pillar:
             query = {
                 "$and": [
                     no_image_condition,
+                    {"is_active": True},
                     {"$or": [
                         {"pillar": pillar},
                         {"pillars": pillar},
@@ -343,16 +405,15 @@ async def process_products_batch(pillar: Optional[str] = None):
             }
         
         # Query products_master — this is the SSOT for all products
-        products = await db.products_master.find(query, {"_id": 0}).to_list(length=500)
+        # Sort: breed-* products first (priority for Soul Made™ catalogue completeness)
+        all_products = await db.products_master.find(query, {"_id": 0}).to_list(length=3000)
         
-        # Also grab from legacy products collection (Shopify products)
-        legacy_products = await db.products.find(query, {"_id": 0}).to_list(length=200)
+        # Partition: breed-specific first, then everything else
+        breed_products = [p for p in all_products if (p.get("category") or "").lower().startswith("breed-")]
+        other_products = [p for p in all_products if not (p.get("category") or "").lower().startswith("breed-")]
+        products = breed_products + other_products
         
-        # Deduplicate by id
-        seen_ids = {p.get("id") for p in products}
-        for p in legacy_products:
-            if p.get("id") not in seen_ids:
-                products.append(p)
+        # Skip legacy products collection — products_master is the SSOT
         
         generation_status["total"] = len(products)
         generation_status["type"] = "products"
@@ -375,13 +436,14 @@ async def process_products_batch(pillar: Optional[str] = None):
                 cloudinary_url = await generate_ai_image(prompt)
                 
                 if cloudinary_url:
-                    # Update in products_master — set both image_url AND cloudinary_image_url
+                    # Update in products_master — set cloudinary_url, image_url, mockup_url, image
                     update_result = await db.products_master.update_one(
                         {"id": product_id},
                         {
                             "$set": {
+                                "cloudinary_url": cloudinary_url,
+                                "mockup_url": cloudinary_url,
                                 "image_url": cloudinary_url,
-                                "cloudinary_image_url": cloudinary_url,
                                 "image": cloudinary_url,
                                 "images": [cloudinary_url],
                                 "ai_generated_image": True,
