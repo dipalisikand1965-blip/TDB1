@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useConcierge } from '../hooks/useConcierge';
 import { getApiUrl } from '../utils/api';
+import { getAllergiesFromPet } from '../utils/masterBriefing';
 import { toast, Toaster } from 'sonner';
 import CartSidebar from '../components/CartSidebar';
 import { ProductDetailModal } from '../components/ProductCard';
@@ -137,13 +138,15 @@ function StreamingText({ text, streaming }) {
 
 
 // ── "Mira Imagines" chip — same card dimensions as ResultChip ─────────────
-const IMAGINE_TEMPLATES = [
-  { icon: '✨', label: 'Curated just for', suffix: '' },
-  { icon: '🐾', label: 'Sourced for', suffix: "'s breed" },
-  { icon: '🌿', label: 'Hand-picked for', suffix: '' },
-];
-function ImagineChip({ petName, breedLabel, idx, onConcierge }) {
-  const tpl = IMAGINE_TEMPLATES[idx % 3];
+const IMAGINE_ICONS = ['✨', '🐾', '🌿'];
+function ImagineChip({ petName, query, idx, onConcierge }) {
+  const icon = IMAGINE_ICONS[idx % 3];
+  const shortQuery = query ? query.replace(/\b(for|my|a|an|the|some)\b/gi, '').trim().slice(0, 28) : 'the right pick';
+  const labels = [
+    `Mira imagines a ${shortQuery} for ${petName}`,
+    `Concierge will source the perfect ${shortQuery}`,
+    `Tell us more about what ${petName} needs`,
+  ];
   return (
     <div style={{
       background: `linear-gradient(135deg, #1e1830 0%, #251d35 100%)`,
@@ -158,14 +161,14 @@ function ImagineChip({ petName, breedLabel, idx, onConcierge }) {
     >
       {/* Placeholder — amber shimmer */}
       <div style={{ width: '100%', height: 100, background: 'linear-gradient(135deg, rgba(201,151,58,0.15) 0%, rgba(201,151,58,0.06) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>
-        {tpl.icon}
+        {icon}
       </div>
       <div style={{ padding: '10px 10px 8px', flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <div style={{ fontSize: 10, color: 'rgba(201,151,58,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Mira Imagines
         </div>
         <div style={{ fontSize: 12, fontWeight: 600, color: '#f5f5f5', lineHeight: 1.3 }}>
-          {tpl.label} {petName}{tpl.suffix ? ` (${breedLabel})` : ''}
+          {labels[idx % 3]}
         </div>
       </div>
       <div style={{ padding: '0 10px 10px' }}>
@@ -307,7 +310,8 @@ export default function MiraSearchPage() {
         body: JSON.stringify({
           query: turn.semanticQuery || turn.query,
           pet_id: petId, pet_name: _petName,
-          breed, limit: 6,
+          breed, allergens: getAllergiesFromPet(activePet),
+          limit: 6,
           offset: currentOffset,
         }),
       });
@@ -342,7 +346,7 @@ export default function MiraSearchPage() {
   const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
 
   // ── Keyword regex patterns (order matters — most specific first) ───────────
-  const GROOMING_RE  = /grooming|groom|bath|spa|wash|trim|nail|haircut|coat\s|fur\s/i;
+  const GROOMING_RE  = /\bgroom(?:ing)?\b|\bspa\b|\bwash\b|nail\s*trim|haircut|fur\s*cut|coat\s*trim|\bshed(?:ding)?\b/i;
   const VET_RE       = /\bvet\b|veterinar|checkup|check.?up|vaccine|vaccin|doctor|consult|deworming|tick|flea|health\s+check/i;
   const BOARDING_RE  = /boarding|daycare|day.?care|pet.?sitting|overnight|kennel|pet hotel|home.?boarding/i;
   const TRAINING_RE  = /training|train|obedien|puppy class|agility|command|behav|discipline/i;
@@ -500,9 +504,10 @@ export default function MiraSearchPage() {
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
-      // ── Step 2: fallback to semantic-search (query-aware + breed-boosted) ──
+      // ── Step 2: fallback to semantic-search (query-aware + breed-boosted + allergen-safe) ──
       const petId  = activePet?.id || activePet?._id;
       const breed  = activePet?.breed || activePet?.identity?.breed || '';
+      const allergens = getAllergiesFromPet(activePet);
       if (prods.length === 0) {
         fetch(`${getApiUrl()}/api/mira/semantic-search`, {
           method: 'POST',
@@ -510,7 +515,7 @@ export default function MiraSearchPage() {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6, offset: 0 }),
+          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, allergens, limit: 6, offset: 0 }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
@@ -570,12 +575,8 @@ export default function MiraSearchPage() {
             } catch { /* silent — places are bonus content */ }
           },
           () => {
-            // Geo denied — fallback to Bengaluru
-            fetch(`${getApiUrl()}/api/places/care-providers?city=Bengaluru&type=${placeType}`,
-              { headers: token ? { Authorization: `Bearer ${token}` } : {} })
-              .then(r => r.ok ? r.json() : null)
-              .then(d => { if (d?.places?.length) updateTurn({ places: d.places, placeType }); })
-              .catch(() => {});
+            // Geo denied — prompt user for city via turn state (no hardcoded city)
+            updateTurn({ places: [], placeType, needsCity: true });
           }
         );
       }
@@ -847,6 +848,82 @@ export default function MiraSearchPage() {
               </div>
             )}
 
+            {/* ── Service strip — 3 services matching the intent's pillar ── */}
+            {turn.services?.length > 0 && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.45s ease' }}>
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Services for {petName}
+                </p>
+                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+                  {turn.services.map((svc, i) => (
+                    <div key={svc.id || i}
+                      data-testid="service-chip"
+                      onClick={() => setConciergeService({ pillar: svc.pillar || 'services', name: svc.name, sub_category: svc.type || svc.category })}
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(124,58,237,0.06) 100%)',
+                        border: '1px solid rgba(124,58,237,0.25)',
+                        borderRadius: 12, padding: '10px 14px',
+                        minWidth: 170, maxWidth: 220, flexShrink: 0,
+                        cursor: 'pointer', transition: 'border-color 0.18s, transform 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.6)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.25)'; e.currentTarget.style.transform = 'none'; }}
+                    >
+                      <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                        {svc.pillar || 'service'}
+                      </div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text, lineHeight: 1.3, marginBottom: 6 }}>
+                        {svc.name}
+                      </div>
+                      {svc.description && (
+                        <div style={{ fontSize: 11, color: C.muted, lineHeight: 1.4, marginBottom: 6 }}>
+                          {svc.description.slice(0, 55)}{svc.description.length > 55 ? '…' : ''}
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        {(svc.base_price || svc.price) ? (
+                          <span style={{ fontSize: 12, color: C.amber, fontWeight: 700 }}>₹{svc.base_price || svc.price}</span>
+                        ) : (
+                          <span style={{ fontSize: 11, color: C.muted }}>Price on request</span>
+                        )}
+                        <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.9)', fontWeight: 600 }}>Book →</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── NearMe: geo denied — ask for city ── */}
+            {turn.needsCity && !turn.places?.length && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
+                <p style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>
+                  Location access was denied. Which city should Mira search in?
+                </p>
+                <form onSubmit={async e => {
+                  e.preventDefault();
+                  const city = e.target.city.value.trim();
+                  if (!city) return;
+                  patchTurn(turn.id, { needsCity: false });
+                  try {
+                    const res = await fetch(
+                      `${getApiUrl()}/api/places/care-providers?city=${encodeURIComponent(city)}&type=${turn.placeType || 'all'}`,
+                      { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+                    );
+                    const d = res.ok ? await res.json() : null;
+                    if (d?.places?.length) patchTurn(turn.id, { places: d.places });
+                    else patchTurn(turn.id, { places: [] });
+                  } catch { patchTurn(turn.id, { places: [] }); }
+                }} style={{ display: 'flex', gap: 8 }}>
+                  <input name="city" placeholder="e.g. Bengaluru, Mumbai, Delhi" defaultValue=""
+                    style={{ flex: 1, padding: '7px 12px', borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.text, fontSize: 13, outline: 'none' }} />
+                  <button type="submit" style={{ padding: '7px 16px', borderRadius: 8, background: C.amber, color: '#000', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer' }}>
+                    Search
+                  </button>
+                </form>
+              </div>
+            )}
+
             {/* ── NearMe Place Cards — shown when query contains "near me" ── */}
             {turn.places?.length > 0 && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
@@ -892,7 +969,7 @@ export default function MiraSearchPage() {
                     <ImagineChip
                       key={i} idx={i}
                       petName={petName}
-                      breedLabel={activePet?.breed || 'your breed'}
+                      query={turn.query}
                       onConcierge={async () => {
                         try {
                           await conciergefire({
@@ -913,7 +990,7 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Services CTA — fires when nearby_places flag is true, DB is currently empty */}
+            {/* Services CTA — show inline service strip via Concierge instead of navigating away */}
             {turn.servicesCta && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 10,
@@ -926,12 +1003,15 @@ export default function MiraSearchPage() {
                 <span style={{ fontSize: 13, color: C.text, fontFamily: 'DM Sans, sans-serif', flex: 1 }}>
                   Looking for services near you?
                 </span>
-                <a href="/services" style={{
-                  fontSize: 13, fontWeight: 700, color: C.amber,
-                  textDecoration: 'none', whiteSpace: 'nowrap',
-                }}>
+                <button
+                  onClick={async () => {
+                    patchTurn(turn.id, { servicesCta: false });
+                    setConciergeService({ pillar: 'services', name: 'Find a Service' });
+                  }}
+                  style={{ fontSize: 13, fontWeight: 700, color: C.amber, background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', padding: 0 }}
+                >
                   Book via Concierge →
-                </a>
+                </button>
               </div>
             )}
 
