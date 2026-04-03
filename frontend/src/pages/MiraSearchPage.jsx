@@ -394,8 +394,9 @@ export default function MiraSearchPage() {
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false });
 
-      // ── Step 2: fallback to semantic-search (query-aware) if stream returned nothing ──
-      const petId = activePet?.id || activePet?._id;
+      // ── Step 2: fallback to semantic-search (query-aware + breed-boosted) ──
+      const petId  = activePet?.id || activePet?._id;
+      const breed  = activePet?.breed || activePet?.identity?.breed || '';
       if (prods.length === 0) {
         fetch(`${getApiUrl()}/api/mira/semantic-search`, {
           method: 'POST',
@@ -403,7 +404,7 @@ export default function MiraSearchPage() {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: q, pet_id: petId, limit: 6 }),
+          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6 }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
