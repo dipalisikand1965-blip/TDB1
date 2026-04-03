@@ -22923,7 +22923,8 @@ SEMANTIC_INTENTS = {
     },
     "play_enrichment": {
         "triggers": ["play", "toy", "bored", "enrichment", "stimulate", "puzzle", "interactive", "fun", "fetch", "ball"],
-        "product_categories": ["toys", "enrichment", "accessories"],
+        "product_categories": ["toys", "enrichment", "play_accessories", "Play Essentials"],
+        "priority_filter": {"pillar": "play", "category": "enrichment"},
         "product_tags": ["toy", "interactive", "puzzle", "enrichment"],
         "why_message": "For mental stimulation and fun"
     },
@@ -23007,7 +23008,11 @@ async def semantic_product_search(request: Request):
     priority_products = []
     if config.get("priority_filter"):
         try:
-            pf = {**config["priority_filter"], "is_active": True}
+            # Build query — supports flat values and MongoDB operators ($in, $regex, etc.)
+            pf = {}
+            for k, v in config["priority_filter"].items():
+                pf[k] = v
+            pf["is_active"] = True
             priority_cursor = db.products_master.find(
                 pf,
                 {
