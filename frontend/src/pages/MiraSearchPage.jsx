@@ -238,11 +238,22 @@ export default function MiraSearchPage() {
 
   const loadMoreProducts = useCallback(async (turn) => {
     if (!turn || turn.loadingMore) return;
-    patchTurn(turn.id, { loadingMore: true });
+    const turnId = turn.id;
+    patchTurn(turnId, { loadingMore: true });
     const _petName = activePet?.name || 'your dog';
     const petId = activePet?.id || activePet?._id;
     const breed = activePet?.breed || activePet?.identity?.breed || '';
     try {
+      // Read latest offset from state to avoid stale closure bug
+      let currentOffset = 6;
+      let currentProducts = [];
+      setTurns(prev => {
+        const t = prev.find(x => x.id === turnId);
+        currentOffset = t?.productsOffset || 6;
+        currentProducts = t?.products || [];
+        return prev; // no mutation, just reading
+      });
+
       const r = await fetch(`${getApiUrl()}/api/mira/semantic-search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -250,21 +261,23 @@ export default function MiraSearchPage() {
           query: turn.semanticQuery || turn.query,
           pet_id: petId, pet_name: _petName,
           breed, limit: 6,
-          offset: turn.productsOffset || 6,
+          offset: currentOffset,
         }),
       });
       const d = r.ok ? await r.json() : null;
-      const more = d?.products || [];
-      patchTurn(turn.id, {
-        products: [...(turn.products || []), ...more],
-        productsOffset: (turn.productsOffset || 6) + 6,
-        hasMore: d?.has_more === true,
+      const more = (d?.products || []).filter(p => !currentProducts.some(e => e.id === p.id));
+      // Use functional update so we always append to the LATEST products list
+      setTurns(prev => prev.map(t => t.id === turnId ? {
+        ...t,
+        products: [...(t.products || []), ...more],
+        productsOffset: (t.productsOffset || 6) + 6,
+        hasMore: d?.has_more === true && more.length > 0,
         loadingMore: false,
-      });
+      } : t));
     } catch {
-      patchTurn(turn.id, { loadingMore: false, hasMore: false });
+      patchTurn(turnId, { loadingMore: false, hasMore: false });
     }
-  }, [activePet, token, patchTurn]);
+  }, [activePet, token, patchTurn, setTurns]);
   const [hasSearched, setHasSearched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
@@ -289,6 +302,16 @@ export default function MiraSearchPage() {
   const PHOTO_RE     = /photo|photoshoot|photo.?shoot|portrait|picture|session|memories.*shoot|shoot.*dog/i;
   const CELEBRATE_RE = /birthday|celebrate|party|event|gotcha.?day|anniversary|paw.?ty|cake\s|festiv/i;
   const LEARN_RE     = /\bclass\b|\bclasses\b|lesson|course|workshop|behaviour school|puppy school|learn/i;
+
+  // ── Near-me detection ─────────────────────────────────────────────────────
+  const NEAR_ME_RE   = /near\s+me|nearby|near\s+by|close\s+to\s+me|find.*near|around\s+me|in\s+my\s+area|in\s+bangalore|in\s+bengaluru/i;
+  const PLACE_TYPE_MAP = [
+    [/grooming|groomer|groom|bath|spa|trim|nail/i, 'groomer'],
+    [/\bvet\b|veterinar|checkup|vaccine|doctor|clinic/i, 'vet'],
+    [/training|trainer|obedien|puppy class|agility/i, 'trainer'],
+    [/boarding|daycare|day.?care|kennel|pet hotel/i, 'daycare'],
+    [/park|walk|hike|outdoor|trail|dog park/i, 'park'],
+  ];
 
   const inputRef = useRef(null);
   const followUpRef = useRef(null);
@@ -475,6 +498,35 @@ export default function MiraSearchPage() {
         setTimeout(() => setConciergeService({ pillar: 'celebrate', name: '' }), MODAL_DELAY);
       } else if (LEARN_RE.test(q)) {
         setTimeout(() => setConciergeService({ pillar: 'learn', name: '' }), MODAL_DELAY);
+      }
+
+      // ── Near-me: fetch Google Places inline if query contains "near me" ───
+      if (NEAR_ME_RE.test(q)) {
+        const placeType = (PLACE_TYPE_MAP.find(([re]) => re.test(q)) || [])[1] || 'all';
+        navigator.geolocation?.getCurrentPosition(
+          async (pos) => {
+            try {
+              const { latitude: lat, longitude: lng } = pos.coords;
+              const res = await fetch(
+                `${getApiUrl()}/api/places/care-providers?lat=${lat}&lng=${lng}&type=${placeType}&radius=5000`,
+                { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+              );
+              const data = res.ok ? await res.json() : null;
+              const places = data?.places || [];
+              if (places.length > 0) {
+                updateTurn({ places, placeType });
+              }
+            } catch { /* silent — places are bonus content */ }
+          },
+          () => {
+            // Geo denied — fallback to Bengaluru
+            fetch(`${getApiUrl()}/api/places/care-providers?city=Bengaluru&type=${placeType}`,
+              { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+              .then(r => r.ok ? r.json() : null)
+              .then(d => { if (d?.places?.length) updateTurn({ places: d.places, placeType }); })
+              .catch(() => {});
+          }
+        );
       }
 
     } catch (err) {
@@ -741,6 +793,40 @@ export default function MiraSearchPage() {
                 {turn.loadingMore && (
                   <p style={{ marginTop: 8, fontSize: 12, color: C.muted }}>Loading more...</p>
                 )}
+              </div>
+            )}
+
+            {/* ── NearMe Place Cards — shown when query contains "near me" ── */}
+            {turn.places?.length > 0 && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Near you · {turn.places.length} {turn.placeType || 'places'} found
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {turn.places.slice(0, 5).map((place, i) => (
+                    <div key={place.place_id || i} data-testid="near-me-place-card"
+                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 8, background: C.amber + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
+                        {place.type === 'vet' ? '🏥' : place.type === 'trainer' ? '🎓' : place.type === 'daycare' ? '🏠' : '✂️'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 700, fontSize: 13, color: C.text }}>{place.name}</span>
+                          {place.tdc_verified && (
+                            <span style={{ fontSize: 10, background: C.amber + '33', color: C.amber, borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>TDC Verified</span>
+                          )}
+                        </div>
+                        <p style={{ fontSize: 12, color: C.muted, margin: '2px 0' }}>{place.vicinity}</p>
+                        {place.rating && (
+                          <span style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(place.rating))} {place.rating}</span>
+                        )}
+                        {place.mira_note && (
+                          <p style={{ fontSize: 11, color: C.amber, marginTop: 2, fontStyle: 'italic' }}>{place.mira_note}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
