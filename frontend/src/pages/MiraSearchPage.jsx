@@ -19,6 +19,7 @@ import VetVisitFlowModal from '../components/VetVisitFlowModal';
 import ServiceBookingModal from '../components/ServiceBookingModal';
 import GoConciergeModal from '../components/go/GoConciergeModal';
 import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
+import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -134,6 +135,52 @@ function StreamingText({ text, streaming }) {
   );
 }
 
+
+// ── "Mira Imagines" chip — same card dimensions as ResultChip ─────────────
+const IMAGINE_TEMPLATES = [
+  { icon: '✨', label: 'Curated just for', suffix: '' },
+  { icon: '🐾', label: 'Sourced for', suffix: "'s breed" },
+  { icon: '🌿', label: 'Hand-picked for', suffix: '' },
+];
+function ImagineChip({ petName, breedLabel, idx, onConcierge }) {
+  const tpl = IMAGINE_TEMPLATES[idx % 3];
+  return (
+    <div style={{
+      background: `linear-gradient(135deg, #1e1830 0%, #251d35 100%)`,
+      border: `1px solid rgba(201,151,58,0.35)`,
+      borderRadius: 14, overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
+      minWidth: 160, maxWidth: 200, flexShrink: 0,
+      transition: 'border-color 0.18s, transform 0.15s',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,151,58,0.7)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,151,58,0.35)'; e.currentTarget.style.transform = 'none'; }}
+    >
+      {/* Placeholder — amber shimmer */}
+      <div style={{ width: '100%', height: 100, background: 'linear-gradient(135deg, rgba(201,151,58,0.15) 0%, rgba(201,151,58,0.06) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>
+        {tpl.icon}
+      </div>
+      <div style={{ padding: '10px 10px 8px', flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <div style={{ fontSize: 10, color: 'rgba(201,151,58,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Mira Imagines
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#f5f5f5', lineHeight: 1.3 }}>
+          {tpl.label} {petName}{tpl.suffix ? ` (${breedLabel})` : ''}
+        </div>
+      </div>
+      <div style={{ padding: '0 10px 10px' }}>
+        <button
+          onClick={onConcierge}
+          style={{ width: '100%', padding: '6px 0', borderRadius: 8, border: `1px solid rgba(201,151,58,0.5)`, background: 'transparent', color: 'rgba(201,151,58,0.9)', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+        >
+          Ask Concierge →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
 // ── Product / service chip ─────────────────────────────────────────────────
 function ResultChip({ item, type, pet, onBook, onCart, onCardClick }) {
   const img = item.cloudinary_url || item.photo_url || item.image_url || item.image;
@@ -230,6 +277,54 @@ export default function MiraSearchPage() {
   const [followUp, setFollowUp] = useState('');
   // turns = [{ id, query, response, products, services, streaming }]
   const [turns, setTurns] = useState([]);
+
+  // ── Component-level turn patcher (used by "Show more" button in render) ──
+  const patchTurn = useCallback((turnId, patch) =>
+    setTurns(prev => prev.map(t => t.id === turnId ? { ...t, ...patch } : t)),
+  []);
+
+  const loadMoreProducts = useCallback(async (turn) => {
+    if (!turn || turn.loadingMore) return;
+    const turnId = turn.id;
+    patchTurn(turnId, { loadingMore: true });
+    const _petName = activePet?.name || 'your dog';
+    const petId = activePet?.id || activePet?._id;
+    const breed = activePet?.breed || activePet?.identity?.breed || '';
+    try {
+      // Read latest offset from state to avoid stale closure bug
+      let currentOffset = 6;
+      let currentProducts = [];
+      setTurns(prev => {
+        const t = prev.find(x => x.id === turnId);
+        currentOffset = t?.productsOffset || 6;
+        currentProducts = t?.products || [];
+        return prev; // no mutation, just reading
+      });
+
+      const r = await fetch(`${getApiUrl()}/api/mira/semantic-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          query: turn.semanticQuery || turn.query,
+          pet_id: petId, pet_name: _petName,
+          breed, limit: 6,
+          offset: currentOffset,
+        }),
+      });
+      const d = r.ok ? await r.json() : null;
+      const more = (d?.products || []).filter(p => !currentProducts.some(e => e.id === p.id));
+      // Use functional update so we always append to the LATEST products list
+      setTurns(prev => prev.map(t => t.id === turnId ? {
+        ...t,
+        products: [...(t.products || []), ...more],
+        productsOffset: (t.productsOffset || 6) + 6,
+        hasMore: d?.has_more === true && more.length > 0,
+        loadingMore: false,
+      } : t));
+    } catch {
+      patchTurn(turnId, { loadingMore: false, hasMore: false });
+    }
+  }, [activePet, token, patchTurn, setTurns]);
   const [hasSearched, setHasSearched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
@@ -241,6 +336,7 @@ export default function MiraSearchPage() {
   const [goOpen, setGoOpen] = useState(false);
   // ServiceConciergeModal: full service object { pillar, name, sub_category } | null
   const [conciergeService, setConciergeService] = useState(null);
+  const [bakeryCakeOpen, setBakeryCakeOpen] = useState(false);
 
   // useConcierge after activePet is declared (avoids temporal dead zone error)
   const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
@@ -254,6 +350,16 @@ export default function MiraSearchPage() {
   const PHOTO_RE     = /photo|photoshoot|photo.?shoot|portrait|picture|session|memories.*shoot|shoot.*dog/i;
   const CELEBRATE_RE = /birthday|celebrate|party|event|gotcha.?day|anniversary|paw.?ty|cake\s|festiv/i;
   const LEARN_RE     = /\bclass\b|\bclasses\b|lesson|course|workshop|behaviour school|puppy school|learn/i;
+
+  // ── Near-me detection ─────────────────────────────────────────────────────
+  const NEAR_ME_RE   = /near\s+me|nearby|near\s+by|close\s+to\s+me|find.*near|around\s+me|in\s+my\s+area|in\s+bangalore|in\s+bengaluru/i;
+  const PLACE_TYPE_MAP = [
+    [/grooming|groomer|groom|bath|spa|trim|nail/i, 'groomer'],
+    [/\bvet\b|veterinar|checkup|vaccine|doctor|clinic/i, 'vet'],
+    [/training|trainer|obedien|puppy class|agility/i, 'trainer'],
+    [/boarding|daycare|day.?care|kennel|pet hotel/i, 'daycare'],
+    [/park|walk|hike|outdoor|trail|dog park/i, 'park'],
+  ];
 
   const inputRef = useRef(null);
   const followUpRef = useRef(null);
@@ -392,7 +498,7 @@ export default function MiraSearchPage() {
 
       // ── Step 1: use enriched products from stream if available ────────────
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
-      updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false });
+      updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
       // ── Step 2: fallback to semantic-search (query-aware + breed-boosted) ──
       const petId  = activePet?.id || activePet?._id;
@@ -404,19 +510,19 @@ export default function MiraSearchPage() {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6 }),
+          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6, offset: 0 }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
             const hits = d?.products || [];
             if (hits.length > 0) {
-              updateTurn({ products: hits.slice(0, 6) });
+              updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q });
             } else {
               // ── Step 3: no matches at all — show MiraImaginesBreed ──────
-              updateTurn({ showImagines: true });
+              updateTurn({ showImagines: true, hasMore: false });
             }
           })
-          .catch(() => { updateTurn({ showImagines: true }); });
+          .catch(() => { updateTurn({ showImagines: true, hasMore: false }); });
       }
 
       // Focus the follow-up input
@@ -436,10 +542,42 @@ export default function MiraSearchPage() {
         setTimeout(() => setGoOpen(true), MODAL_DELAY);
       } else if (PHOTO_RE.test(q)) {
         setTimeout(() => setConciergeService({ pillar: 'celebrate', name: 'Photoshoot & Portrait', sub_category: 'photoshoot' }), MODAL_DELAY);
+      } else if (breed && /\bcake\b|cupcake|pawcake|custom.*cake|breed.*cake/i.test(q) && (q.toLowerCase().includes(breed.toLowerCase()) || /breed.specific|custom.*cake|made.*for.*breed/i.test(q))) {
+        // Breed + cake combo → open DoggyBakeryCakeModal (auto-filters by pet.breed)
+        setTimeout(() => setBakeryCakeOpen(true), MODAL_DELAY);
       } else if (CELEBRATE_RE.test(q)) {
         setTimeout(() => setConciergeService({ pillar: 'celebrate', name: '' }), MODAL_DELAY);
       } else if (LEARN_RE.test(q)) {
         setTimeout(() => setConciergeService({ pillar: 'learn', name: '' }), MODAL_DELAY);
+      }
+
+      // ── Near-me: fetch Google Places inline if query contains "near me" ───
+      if (NEAR_ME_RE.test(q)) {
+        const placeType = (PLACE_TYPE_MAP.find(([re]) => re.test(q)) || [])[1] || 'all';
+        navigator.geolocation?.getCurrentPosition(
+          async (pos) => {
+            try {
+              const { latitude: lat, longitude: lng } = pos.coords;
+              const res = await fetch(
+                `${getApiUrl()}/api/places/care-providers?lat=${lat}&lng=${lng}&type=${placeType}&radius=5000`,
+                { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+              );
+              const data = res.ok ? await res.json() : null;
+              const places = data?.places || [];
+              if (places.length > 0) {
+                updateTurn({ places, placeType });
+              }
+            } catch { /* silent — places are bonus content */ }
+          },
+          () => {
+            // Geo denied — fallback to Bengaluru
+            fetch(`${getApiUrl()}/api/places/care-providers?city=Bengaluru&type=${placeType}`,
+              { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+              .then(r => r.ok ? r.json() : null)
+              .then(d => { if (d?.places?.length) updateTurn({ places: d.places, placeType }); })
+              .catch(() => {});
+          }
+        );
       }
 
     } catch (err) {
@@ -693,31 +831,85 @@ export default function MiraSearchPage() {
                       onBook={() => {}} />
                   ))}
                 </div>
+                {/* ── Show more: fetch next page of the same intent ── */}
+                {turn.hasMore && !turn.loadingMore && (
+                  <button
+                    data-testid="show-more-products-btn"
+                    onClick={() => loadMoreProducts(turn)}
+                    style={{ marginTop: 10, fontSize: 12, color: C.amber, background: 'none', border: `1px solid ${C.amber}`, borderRadius: 20, padding: '4px 14px', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Show more options →
+                  </button>
+                )}
+                {turn.loadingMore && (
+                  <p style={{ marginTop: 8, fontSize: 12, color: C.muted }}>Loading more...</p>
+                )}
               </div>
             )}
 
-            {/* Step 3 — MiraImaginesBreed: shown when both stream + semantic-search returned nothing */}
+            {/* ── NearMe Place Cards — shown when query contains "near me" ── */}
+            {turn.places?.length > 0 && (
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Near you · {turn.places.length} {turn.placeType || 'places'} found
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {turn.places.slice(0, 5).map((place, i) => (
+                    <div key={place.place_id || i} data-testid="near-me-place-card"
+                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 8, background: C.amber + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
+                        {place.type === 'vet' ? '🏥' : place.type === 'trainer' ? '🎓' : place.type === 'daycare' ? '🏠' : '✂️'}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <span style={{ fontWeight: 700, fontSize: 13, color: C.text }}>{place.name}</span>
+                          {place.tdc_verified && (
+                            <span style={{ fontSize: 10, background: C.amber + '33', color: C.amber, borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>TDC Verified</span>
+                          )}
+                        </div>
+                        <p style={{ fontSize: 12, color: C.muted, margin: '2px 0' }}>{place.vicinity}</p>
+                        {place.rating && (
+                          <span style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(place.rating))} {place.rating}</span>
+                        )}
+                        {place.mira_note && (
+                          <p style={{ fontSize: 11, color: C.amber, marginTop: 2, fontStyle: 'italic' }}>{place.mira_note}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3 — Mira Imagines strip: same layout as real products ── */}
             {turn.showImagines && !turn.streaming && activePet && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
-                <MiraImaginesBreed
-                  pet={activePet}
-                  pillar="general"
-                  colour={C.amber}
-                  onConcierge={async () => {
-                    try {
-                      await conciergefire({
-                        type: 'request',
-                        name: `Mira Search: ${turn.query}`,
-                        note: turn.query,
-                        metadata: { query: turn.query, source: 'mira_search', imagines: true },
-                        silent: true,
-                      });
-                      toast.success('Sent to Concierge! 📥 We\'ll find the right match for ' + (activePet?.name || 'your dog'));
-                    } catch {
-                      toast.error('Could not send — please try again');
-                    }
-                  }}
-                />
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Mira imagines for {petName}
+                </p>
+                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+                  {[0, 1, 2].map(i => (
+                    <ImagineChip
+                      key={i} idx={i}
+                      petName={petName}
+                      breedLabel={activePet?.breed || 'your breed'}
+                      onConcierge={async () => {
+                        try {
+                          await conciergefire({
+                            type: 'request',
+                            name: `Mira Search: ${turn.query}`,
+                            note: turn.query,
+                            metadata: { query: turn.query, source: 'mira_search', imagines: true },
+                            silent: true,
+                          });
+                          toast.success('Sent to Concierge! We\'ll find the right match for ' + petName);
+                        } catch {
+                          toast.error('Could not send — please try again');
+                        }
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             )}
 
@@ -862,6 +1054,14 @@ export default function MiraSearchPage() {
           service={{ name: 'Go & Explore' }}
           token={token}
           onClose={() => setGoOpen(false)}
+        />
+      )}
+
+      {/* ── DoggyBakeryCakeModal — [breed] + cake queries ── */}
+      {bakeryCakeOpen && (
+        <DoggyBakeryCakeModal
+          pet={activePet}
+          onClose={() => setBakeryCakeOpen(false)}
         />
       )}
 

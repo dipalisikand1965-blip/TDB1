@@ -448,6 +448,28 @@ def filter_banned_openers(response_text: str, pet_name: str = None) -> str:
     return text
 
 
+# ── Brand phrase corrections — applied ANYWHERE in the response ────────────
+_BRAND_REPLACEMENTS = [
+    # "local pet bakery" variants → The Doggy Bakery
+    (re.compile(r'\ba\s+local\s+pet\s+bakery\b', re.I), 'The Doggy Bakery'),
+    (re.compile(r'\blocal\s+pet\s+baker(?:y|ies)\b', re.I), 'The Doggy Bakery'),
+    (re.compile(r'\blocal\s+bakery\b', re.I), 'The Doggy Bakery'),
+    (re.compile(r'\ba\s+bakery\s+near\s+you\b', re.I), 'The Doggy Bakery'),
+    (re.compile(r'\bpet\s+bakery\s+near\s+you\b', re.I), 'The Doggy Bakery'),
+    # "any pet store" / "a pet shop" → The Doggy Company
+    (re.compile(r'\bany\s+pet\s+store\b', re.I), 'The Doggy Company'),
+    (re.compile(r'\ba\s+pet\s+shop\s+near(?:by|\s+you)?\b', re.I), 'The Doggy Company'),
+]
+
+def apply_brand_corrections(text: str) -> str:
+    """Replace generic phrases with TDC brand names anywhere in the response."""
+    if not text:
+        return text
+    for pattern, replacement in _BRAND_REPLACEMENTS:
+        text = pattern.sub(replacement, text)
+    return text
+
+
 
 # Import Soul-First Response Generation Logic
 try:
@@ -1489,11 +1511,14 @@ Your job is not just to answer questions, but to be a calm, trusted presence for
 CRITICAL: NEVER recommend or mention any third-party platform, app, or service provider:
 ❌ Rover, Wag, BringFido, Supertails, HUFT, PetSmart, Chewy, or ANY competitor
 ❌ "You can find this on..." / "Try downloading..." / "I recommend the app..."
+❌ "local pet bakery" / "local bakery" / "a bakery near you" — ALWAYS say "The Doggy Bakery"
+❌ "any pet store" / "a pet shop nearby" — ALWAYS say "The Doggy Company"
 
 The Doggy Company IS the full-service concierge. You never outsource.
 ✅ ALWAYS say: "Our Concierge team will find this for you."
 ✅ ALWAYS say: "I'll have our team arrange that for you."
 ✅ ALWAYS say: "Let me connect you with our team right now."
+✅ For baked goods/cakes: ALWAYS say "The Doggy Bakery" — never "local pet bakery"
 
 ═══════════════════════════════════════════════════════════
 🌟 YOUR SOULFUL VOICE (THIS IS WHO YOU ARE)
@@ -13337,6 +13362,7 @@ async def mira_chat(
                 response_dict["response"], 
                 pet_name=pet_name_for_filter
             )
+            response_dict["response"] = apply_brand_corrections(response_dict["response"])
         
         # Only override picks if the Picks Engine returned results
         # Otherwise preserve picks that were set by the handler (e.g., celebrate flow)
@@ -19044,8 +19070,9 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 _nearby_places_data = {"show_nearme": True, "pillar": current_pillar, "trigger": "user_request"}
             # ─────────────────────────────────────────────────────────────────────
 
-            # Stream word-by-word — apply banned opener filter to full response first
+            # Stream word-by-word — apply banned opener filter + brand corrections
             _clean_response = filter_banned_openers(str(full_response).strip(), pet_name)
+            _clean_response = apply_brand_corrections(_clean_response)
             words = _clean_response.split(" ")
             for i, word in enumerate(words):
                 chunk = word + (" " if i < len(words) - 1 else "")
@@ -22943,6 +22970,7 @@ async def semantic_product_search(request: Request):
     pet_name = data.get("pet_name", "your pet")
     breed = (data.get("breed") or "").lower().strip()
     limit = data.get("limit", 8)
+    offset = int(data.get("offset", 0))  # pagination: 0 = first page, 6 = page 2, etc.
     
     if not query:
         return {"success": False, "error": "Query required"}
@@ -22988,7 +23016,7 @@ async def semantic_product_search(request: Request):
                     "cloudinary_url": 1, "mockup_url": 1, "image_url": 1, "images": 1, "image": 1,
                     "category": 1, "breed_tags": 1
                 }
-            ).limit(4)
+            ).skip(offset).limit(4)
             priority_products = await priority_cursor.to_list(4)
         except Exception as e:
             logger.error(f"Priority filter fetch error: {e}")
@@ -23015,7 +23043,7 @@ async def semantic_product_search(request: Request):
                 "category": 1, "description": 1,
                 "semantic_intents": 1, "breed_tags": 1
             }
-        ).limit(limit * 3)  # fetch extra so breed re-ranking has candidates
+        ).skip(offset).limit(limit * 3)  # skip for pagination; fetch extra for breed re-ranking
         products_raw = await product_cursor.to_list(limit * 3)
         
         # Score each product: intent match + breed boost
@@ -23126,7 +23154,11 @@ async def semantic_product_search(request: Request):
         "services": services,
         "experiences": experiences,
         "tray_context": f"{config['why_message']} for {pet_name}",
-        "total_results": len(products) + len(services) + len(experiences)
+        "total_results": len(products) + len(services) + len(experiences),
+        # Pagination metadata
+        "offset": offset,
+        "limit": limit,
+        "has_more": len(products) == limit,  # if we got a full page, assume there's more
     }
 
 
