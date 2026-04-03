@@ -19,6 +19,7 @@ import VetVisitFlowModal from '../components/VetVisitFlowModal';
 import ServiceBookingModal from '../components/ServiceBookingModal';
 import GoConciergeModal from '../components/go/GoConciergeModal';
 import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
+import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -133,6 +134,52 @@ function StreamingText({ text, streaming }) {
     </div>
   );
 }
+
+
+// ── "Mira Imagines" chip — same card dimensions as ResultChip ─────────────
+const IMAGINE_TEMPLATES = [
+  { icon: '✨', label: 'Curated just for', suffix: '' },
+  { icon: '🐾', label: 'Sourced for', suffix: "'s breed" },
+  { icon: '🌿', label: 'Hand-picked for', suffix: '' },
+];
+function ImagineChip({ petName, breedLabel, idx, onConcierge }) {
+  const tpl = IMAGINE_TEMPLATES[idx % 3];
+  return (
+    <div style={{
+      background: `linear-gradient(135deg, #1e1830 0%, #251d35 100%)`,
+      border: `1px solid rgba(201,151,58,0.35)`,
+      borderRadius: 14, overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
+      minWidth: 160, maxWidth: 200, flexShrink: 0,
+      transition: 'border-color 0.18s, transform 0.15s',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,151,58,0.7)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,151,58,0.35)'; e.currentTarget.style.transform = 'none'; }}
+    >
+      {/* Placeholder — amber shimmer */}
+      <div style={{ width: '100%', height: 100, background: 'linear-gradient(135deg, rgba(201,151,58,0.15) 0%, rgba(201,151,58,0.06) 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>
+        {tpl.icon}
+      </div>
+      <div style={{ padding: '10px 10px 8px', flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <div style={{ fontSize: 10, color: 'rgba(201,151,58,0.8)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Mira Imagines
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#f5f5f5', lineHeight: 1.3 }}>
+          {tpl.label} {petName}{tpl.suffix ? ` (${breedLabel})` : ''}
+        </div>
+      </div>
+      <div style={{ padding: '0 10px 10px' }}>
+        <button
+          onClick={onConcierge}
+          style={{ width: '100%', padding: '6px 0', borderRadius: 8, border: `1px solid rgba(201,151,58,0.5)`, background: 'transparent', color: 'rgba(201,151,58,0.9)', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
+        >
+          Ask Concierge →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 // ── Product / service chip ─────────────────────────────────────────────────
 function ResultChip({ item, type, pet, onBook, onCart, onCardClick }) {
@@ -289,6 +336,7 @@ export default function MiraSearchPage() {
   const [goOpen, setGoOpen] = useState(false);
   // ServiceConciergeModal: full service object { pillar, name, sub_category } | null
   const [conciergeService, setConciergeService] = useState(null);
+  const [bakeryCakeOpen, setBakeryCakeOpen] = useState(false);
 
   // useConcierge after activePet is declared (avoids temporal dead zone error)
   const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
@@ -494,6 +542,9 @@ export default function MiraSearchPage() {
         setTimeout(() => setGoOpen(true), MODAL_DELAY);
       } else if (PHOTO_RE.test(q)) {
         setTimeout(() => setConciergeService({ pillar: 'celebrate', name: 'Photoshoot & Portrait', sub_category: 'photoshoot' }), MODAL_DELAY);
+      } else if (breed && /\bcake\b|cupcake|pawcake|custom.*cake|breed.*cake/i.test(q) && (q.toLowerCase().includes(breed.toLowerCase()) || /breed.specific|custom.*cake|made.*for.*breed/i.test(q))) {
+        // Breed + cake combo → open DoggyBakeryCakeModal (auto-filters by pet.breed)
+        setTimeout(() => setBakeryCakeOpen(true), MODAL_DELAY);
       } else if (CELEBRATE_RE.test(q)) {
         setTimeout(() => setConciergeService({ pillar: 'celebrate', name: '' }), MODAL_DELAY);
       } else if (LEARN_RE.test(q)) {
@@ -830,28 +881,35 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Step 3 — MiraImaginesBreed: shown when both stream + semantic-search returned nothing */}
+            {/* Step 3 — Mira Imagines strip: same layout as real products ── */}
             {turn.showImagines && !turn.streaming && activePet && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
-                <MiraImaginesBreed
-                  pet={activePet}
-                  pillar="general"
-                  colour={C.amber}
-                  onConcierge={async () => {
-                    try {
-                      await conciergefire({
-                        type: 'request',
-                        name: `Mira Search: ${turn.query}`,
-                        note: turn.query,
-                        metadata: { query: turn.query, source: 'mira_search', imagines: true },
-                        silent: true,
-                      });
-                      toast.success('Sent to Concierge! 📥 We\'ll find the right match for ' + (activePet?.name || 'your dog'));
-                    } catch {
-                      toast.error('Could not send — please try again');
-                    }
-                  }}
-                />
+                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
+                  Mira imagines for {petName}
+                </p>
+                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+                  {[0, 1, 2].map(i => (
+                    <ImagineChip
+                      key={i} idx={i}
+                      petName={petName}
+                      breedLabel={activePet?.breed || 'your breed'}
+                      onConcierge={async () => {
+                        try {
+                          await conciergefire({
+                            type: 'request',
+                            name: `Mira Search: ${turn.query}`,
+                            note: turn.query,
+                            metadata: { query: turn.query, source: 'mira_search', imagines: true },
+                            silent: true,
+                          });
+                          toast.success('Sent to Concierge! We\'ll find the right match for ' + petName);
+                        } catch {
+                          toast.error('Could not send — please try again');
+                        }
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             )}
 
@@ -996,6 +1054,14 @@ export default function MiraSearchPage() {
           service={{ name: 'Go & Explore' }}
           token={token}
           onClose={() => setGoOpen(false)}
+        />
+      )}
+
+      {/* ── DoggyBakeryCakeModal — [breed] + cake queries ── */}
+      {bakeryCakeOpen && (
+        <DoggyBakeryCakeModal
+          pet={activePet}
+          onClose={() => setBakeryCakeOpen(false)}
         />
       )}
 
