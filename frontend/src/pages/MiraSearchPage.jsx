@@ -446,6 +446,7 @@ export default function MiraSearchPage() {
       pet_name: activePet?.name,
       pet_breed: activePet?.breed || activePet?.identity?.breed || null,
       soul_answers: activePet?.doggy_soul_answers || {},
+      archetype: activePet?.archetype?.primary_archetype || activePet?.soul_archetype || null,
       history,
     };
 
