@@ -21,6 +21,9 @@ import ServiceBookingModal from '../components/ServiceBookingModal';
 import GoConciergeModal from '../components/go/GoConciergeModal';
 import ServiceConciergeModal from '../components/services/ServiceConciergeModal';
 import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
+import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
+import GuidedCarePaths from '../components/care/GuidedCarePaths';
+import GuidedCelebrationPaths from '../components/celebrate/GuidedCelebrationPaths';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -357,6 +360,7 @@ export default function MiraSearchPage() {
   // ServiceConciergeModal: full service object { pillar, name, sub_category } | null
   const [conciergeService, setConciergeService] = useState(null);
   const [bakeryCakeOpen, setBakeryCakeOpen] = useState(false);
+  const [guidedPathOpen, setGuidedPathOpen] = useState(null);
 
   // useConcierge after activePet is declared (avoids temporal dead zone error)
   const { fire: conciergefire } = useConcierge({ pet: activePet, pillar: 'general' });
@@ -915,7 +919,7 @@ export default function MiraSearchPage() {
             {/* ── Guided Path Card ── */}
             {GUIDED_PATH_MAP[turn.intent] && !turn.streaming && (
               <div
-                onClick={() => navigate(GUIDED_PATH_MAP[turn.intent].path)}
+                onClick={() => setGuidedPathOpen(turn.intent)}
                 style={{
                   width:'100%', maxWidth:720,
                   background:'linear-gradient(135deg,#1C1928,#2D1B69)',
@@ -1199,6 +1203,28 @@ export default function MiraSearchPage() {
           pet={activePet}
           user={user}
           onClose={() => setConciergeService(null)}
+        />
+      )}
+
+      {/* ── Guided Path Modals ── */}
+      {guidedPathOpen === 'food_dining' && (
+        <GuidedNutritionPaths pet={activePet} onClose={() => setGuidedPathOpen(null)} />
+      )}
+      {guidedPathOpen === 'grooming_care' && (
+        <GuidedCarePaths pet={activePet} onClose={() => setGuidedPathOpen(null)} />
+      )}
+      {guidedPathOpen === 'birthday_celebration' && (
+        <GuidedCelebrationPaths pet={activePet} onClose={() => setGuidedPathOpen(null)} />
+      )}
+      {['travel_adventure','training_behavior','play_enrichment',
+        'farewell_memorial','emergency_urgent','paperwork_docs','adopt_rescue']
+        .includes(guidedPathOpen) && (
+        <ServiceConciergeModal
+          service={{ pillar: GUIDED_PATH_MAP[guidedPathOpen]?.path.replace('/',''), name: GUIDED_PATH_MAP[guidedPathOpen]?.title }}
+          pet={activePet}
+          user={user}
+          onClose={() => setGuidedPathOpen(null)}
+          onBooked={() => setGuidedPathOpen(null)}
         />
       )}
 
