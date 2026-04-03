@@ -392,7 +392,7 @@ export default function MiraSearchPage() {
 
       // ── Step 1: use enriched products from stream if available ────────────
       const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
-      updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false });
+      updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
       // ── Step 2: fallback to semantic-search (query-aware + breed-boosted) ──
       const petId  = activePet?.id || activePet?._id;
@@ -404,19 +404,19 @@ export default function MiraSearchPage() {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6 }),
+          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, limit: 6, offset: 0 }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
             const hits = d?.products || [];
             if (hits.length > 0) {
-              updateTurn({ products: hits.slice(0, 6) });
+              updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q });
             } else {
               // ── Step 3: no matches at all — show MiraImaginesBreed ──────
-              updateTurn({ showImagines: true });
+              updateTurn({ showImagines: true, hasMore: false });
             }
           })
-          .catch(() => { updateTurn({ showImagines: true }); });
+          .catch(() => { updateTurn({ showImagines: true, hasMore: false }); });
       }
 
       // Focus the follow-up input
@@ -693,6 +693,38 @@ export default function MiraSearchPage() {
                       onBook={() => {}} />
                   ))}
                 </div>
+                {/* ── Show more: fetch next page of the same intent ── */}
+                {turn.hasMore && !turn.loadingMore && (
+                  <button
+                    data-testid="show-more-products-btn"
+                    onClick={async () => {
+                      const petId = activePet?.id || activePet?._id;
+                      const breed = activePet?.breed || activePet?.identity?.breed || '';
+                      updateTurn({ loadingMore: true });
+                      try {
+                        const r = await fetch(`${getApiUrl()}/api/mira/semantic-search`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                          body: JSON.stringify({ query: turn.semanticQuery || turn.query, pet_id: petId, pet_name: petName, breed, limit: 6, offset: turn.productsOffset || 6 }),
+                        });
+                        const d = r.ok ? await r.json() : null;
+                        const more = d?.products || [];
+                        updateTurn({
+                          products: [...(turn.products || []), ...more],
+                          productsOffset: (turn.productsOffset || 6) + 6,
+                          hasMore: d?.has_more === true,
+                          loadingMore: false,
+                        });
+                      } catch { updateTurn({ loadingMore: false, hasMore: false }); }
+                    }}
+                    style={{ marginTop: 10, fontSize: 12, color: C.amber, background: 'none', border: `1px solid ${C.amber}`, borderRadius: 20, padding: '4px 14px', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Show more options →
+                  </button>
+                )}
+                {turn.loadingMore && (
+                  <p style={{ marginTop: 8, fontSize: 12, color: C.muted }}>Loading more...</p>
+                )}
               </div>
             )}
 
