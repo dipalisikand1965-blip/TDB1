@@ -22972,10 +22972,67 @@ async def semantic_product_search(request: Request):
     breed = (data.get("breed") or "").lower().strip()
     limit = data.get("limit", 8)
     offset = int(data.get("offset", 0))  # pagination: 0 = first page, 6 = page 2, etc.
-    
+    # Allergens can be passed directly from frontend OR fetched via pet_id (backend is authoritative)
+    client_allergens = [a.lower().strip() for a in (data.get("allergens") or []) if a]
+
     if not query:
         return {"success": False, "error": "Query required"}
-    
+
+    # ── SAFETY: Fetch pet allergens from DB (authoritative source) ────────────
+    # Merges health_data.allergies + vault.allergies + doggy_soul_answers.food_allergies
+    pet_allergens: set = set(client_allergens)
+    if pet_id:
+        try:
+            pet_doc = await db.pets.find_one(
+                {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+                {"_id": 0, "health_data": 1, "vault": 1, "doggy_soul_answers": 1, "allergies": 1}
+            )
+            if pet_doc:
+                # Source 1: health_data.allergies (vet-confirmed, highest trust)
+                for a in (pet_doc.get("health_data") or {}).get("allergies") or []:
+                    if a: pet_allergens.add(str(a).lower().strip())
+                # Source 2: vault.allergies
+                vault_allgs = ((pet_doc.get("vault") or {}).get("allergies")) or []
+                for entry in (vault_allgs if isinstance(vault_allgs, list) else []):
+                    name = entry.get("name") if isinstance(entry, dict) else entry
+                    if name: pet_allergens.add(str(name).lower().strip())
+                # Source 3: soul answers
+                for a in (pet_doc.get("doggy_soul_answers") or {}).get("food_allergies") or []:
+                    if a: pet_allergens.add(str(a).lower().strip())
+                # Source 4: top-level fallback
+                for a in (pet_doc.get("allergies") or []):
+                    if a: pet_allergens.add(str(a).lower().strip())
+        except Exception as e:
+            logger.error(f"semantic-search: pet allergen fetch error: {e}")
+
+    # Build synonym expansion so "chicken" also blocks "poultry", "fowl", "roast chicken"
+    _ALLERGEN_SYNONYMS = {
+        "chicken":   ["chicken", "poultry", "fowl", "hen", "roast chicken", "chicken liver", "chicken meal"],
+        "soy":       ["soy", "soya", "tofu", "edamame"],
+        "wheat":     ["wheat", "gluten", "flour", "barley"],
+        "dairy":     ["milk", "cheese", "butter", "lactose", "whey", "dairy"],
+        "eggs":      ["egg", "eggs"],
+        "beef":      ["beef", "bovine"],
+        "pork":      ["pork", "ham", "bacon"],
+        "lamb":      ["lamb", "mutton"],
+        "fish":      ["fish", "salmon", "tuna", "cod", "anchovy"],
+        "shellfish": ["shrimp", "prawn", "crab", "lobster", "shellfish"],
+    }
+    blocked_terms: set = set()
+    for allergen in pet_allergens:
+        syns = _ALLERGEN_SYNONYMS.get(allergen, [allergen])
+        blocked_terms.update(syns)
+
+    def _is_allergen_safe(p: dict) -> bool:
+        """Return False if product name or tags contain any blocked allergen term."""
+        if not blocked_terms:
+            return True
+        name_lower = (p.get("name") or "").lower()
+        tags_lower = " ".join(str(t) for t in (p.get("semantic_tags") or []) + (p.get("tags") or [])).lower()
+        ingredients_lower = (p.get("ingredients") or "").lower()
+        combined = f"{name_lower} {tags_lower} {ingredients_lower}"
+        return not any(term in combined for term in blocked_terms)
+
     # Detect intent from query
     detected_intents = []
     for intent_key, intent_config in SEMANTIC_INTENTS.items():
@@ -23019,10 +23076,12 @@ async def semantic_product_search(request: Request):
                     "_id": 0, "id": 1, "name": 1,
                     "original_price": 1, "base_price": 1, "price": 1,
                     "cloudinary_url": 1, "mockup_url": 1, "image_url": 1, "images": 1, "image": 1,
-                    "category": 1, "breed_tags": 1
+                    "category": 1, "breed_tags": 1, "semantic_tags": 1, "tags": 1, "ingredients": 1
                 }
-            ).skip(offset).limit(4)
-            priority_products = await priority_cursor.to_list(4)
+            ).skip(offset).limit(4 + len(blocked_terms) * 2)  # fetch extra to account for allergen drops
+            raw_priority = await priority_cursor.to_list(4 + len(blocked_terms) * 2)
+            # ── SAFETY: strip allergen products from priority list ──
+            priority_products = [p for p in raw_priority if _is_allergen_safe(p)][:4]
         except Exception as e:
             logger.error(f"Priority filter fetch error: {e}")
     
@@ -23046,10 +23105,15 @@ async def semantic_product_search(request: Request):
                 "original_price": 1, "base_price": 1, "price": 1,
                 "cloudinary_url": 1, "mockup_url": 1, "image_url": 1, "images": 1, "image": 1,
                 "category": 1, "description": 1,
-                "semantic_intents": 1, "breed_tags": 1
+                "semantic_intents": 1, "breed_tags": 1, "semantic_tags": 1, "tags": 1, "ingredients": 1
             }
-        ).skip(offset).limit(limit * 3)  # skip for pagination; fetch extra for breed re-ranking
-        products_raw = await product_cursor.to_list(limit * 3)
+        ).skip(offset).limit(limit * 4)  # fetch extra: breed re-rank + allergen drops
+        products_raw_all = await product_cursor.to_list(limit * 4)
+
+        # ── SAFETY: strip allergen products BEFORE ranking ───────────────────
+        products_raw = [p for p in products_raw_all if _is_allergen_safe(p)]
+        if blocked_terms and len(products_raw) < len(products_raw_all):
+            logger.info(f"semantic-search: blocked {len(products_raw_all) - len(products_raw)} allergen products for pet {pet_id} (allergens: {pet_allergens})")
         
         # Score each product: intent match + breed boost
         def _breed_score(p):
