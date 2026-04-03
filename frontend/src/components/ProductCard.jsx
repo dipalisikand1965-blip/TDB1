@@ -232,10 +232,10 @@ const ROPE_TOY_PATTERNS = [
   '/tdc/products_master/celebrate/celebrate-', // breed custom cakes — AI uploaded toy images to cake paths
 ];
 
-// Smart rule: block ANY tdc/products_master/ URL whose filename is NOT a Shopify-synced image.
-// Shopify-synced files follow: shopify-{numeric_id}.webp
-// AI-generated files follow: {pillar}-{slug}.webp or {pillar}-{slug}-{hash}.webp
-const AI_NAMED_FILE_RE = /tdc\/products_master\/.+\/(?!shopify-\d+\.)(?!breed-\d)/;
+// Smart rule: block AI-generated TDC files — the AI generator named files with pillar prefixes
+// e.g. dine-fresh-breath.webp, celebrate-shihtzu-cake.webp, fit-breed-labrador-walking_set.webp
+// Safe files: shopify-{id}.webp (Shopify-synced) — always allowed
+const AI_NAMED_FILE_RE = /tdc\/products_master\/.+\/(?:dine|go|care|celebrate|play|learn|paperwork|adopt|emergency|farewell|fit|shop|services|advisory)-/i;
 
 const isBadCloudinaryImage = (url) => {
   if (!url || !url.includes('res.cloudinary.com')) return false;
