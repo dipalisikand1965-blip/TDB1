@@ -36,6 +36,7 @@ import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
 import DocumentVault from "../components/paperwork/DocumentVault";
 import PaperworkNearMe from "../components/paperwork/PaperworkNearMe";
 import { API_URL } from "../utils/api";
+import { filterBreedProducts } from "../hooks/useMiraFilter";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
@@ -445,9 +446,17 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
       return;
     }
     const catLabel={identity:"Identity & Safety",health:"Health Records",travel:"Travel Documents",insurance:"Insurance & Finance",breeds:"Breed & Advisory",advisory:"Expert Advisory",soul:"Soul Documents"}[category]||category;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(catLabel)}&limit=16`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
-      .then(r=>r.json()).then(d=>setProducts(d.products||[])).catch(()=>setProducts([])).finally(()=>setLoading(false));
-  },[isOpen,category,pet?.id]);
+    // breed-specific categories have 33 variants — fetch all so filter can pick the right breed
+    const isBreedCat = category === 'breeds' || category === 'soul';
+    const limit = isBreedCat ? 50 : 20;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(catLabel)}&limit=${limit}`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.json()).then(d=>{
+        const all = d.products || [];
+        // For breed-specific categories apply strict breed filter so Mojo (Indie) only sees Indie products
+        const filtered = isBreedCat ? filterBreedProducts(all, pet?.breed) : all;
+        setProducts(filtered);
+      }).catch(()=>setProducts([])).finally(()=>setLoading(false));
+  },[isOpen,category,pet?.id,pet?.breed]);
   if(!isOpen)return null;
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
