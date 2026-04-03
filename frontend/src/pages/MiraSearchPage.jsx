@@ -239,6 +239,7 @@ export default function MiraSearchPage() {
   const loadMoreProducts = useCallback(async (turn) => {
     if (!turn || turn.loadingMore) return;
     patchTurn(turn.id, { loadingMore: true });
+    const _petName = activePet?.name || 'your dog';
     const petId = activePet?.id || activePet?._id;
     const breed = activePet?.breed || activePet?.identity?.breed || '';
     try {
@@ -247,7 +248,7 @@ export default function MiraSearchPage() {
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({
           query: turn.semanticQuery || turn.query,
-          pet_id: petId, pet_name: petName,
+          pet_id: petId, pet_name: _petName,
           breed, limit: 6,
           offset: turn.productsOffset || 6,
         }),
@@ -263,7 +264,7 @@ export default function MiraSearchPage() {
     } catch {
       patchTurn(turn.id, { loadingMore: false, hasMore: false });
     }
-  }, [activePet, token, petName, patchTurn]);
+  }, [activePet, token, patchTurn]);
   const [hasSearched, setHasSearched] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [selProduct, setSelProduct] = useState(null);
