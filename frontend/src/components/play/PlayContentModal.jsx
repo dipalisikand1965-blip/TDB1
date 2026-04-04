@@ -244,10 +244,8 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
       // ── Soul Made™: breed-specific products ──────
       if (category === 'soul_made') {
         const breedParam = encodeURIComponent(petBreed);
-        const [r1, r2, r3] = await Promise.all([
+        const [r1] = await Promise.all([
           fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=play&limit=60`),
-          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
-          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&product_type=birthday_cake&limit=10`),
         ]);
         const data1 = r1.ok ? await r1.json() : { products: [] };
         const bp = (data1.products || []).filter(p =>
@@ -256,10 +254,8 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
         const subCats = [...new Set(bp.map(p => p.sub_category || p.product_type).filter(Boolean))];
         setTabs(subCats.length > 0 ? subCats : []);
         setProducts(bp);
-        const data2 = r2.ok ? await r2.json() : { products: [] };
-        setFlatArtProducts(data2.products || []);
-        const data3 = r3.ok ? await r3.json() : { products: [] };
-        setYappyIllustrations(data3.products || []);
+        setFlatArtProducts([]);
+        setYappyIllustrations([]);
         setLoading(false);
         return;
       }
@@ -272,7 +268,7 @@ const PlayContentModal = ({ isOpen, onClose, category, pet, onNavigateToNearMe }
           'training_kit', 'rope_toy', 'fetch_toy_set', 'walking_set', 'treat_pouch',
         ]);
         const [r1, r2] = await Promise.all([
-          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&limit=80`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
+          fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=play&limit=80`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
           fetch(`${apiUrl}/api/admin/pillar-products?pillar=play&category=soul&limit=30`).then(r=>r.ok?r.json():{products:[]}).catch(()=>({products:[]})),
         ]);
         const breedProds = (r1.products || []).filter(p => SOUL_PLAY_TYPES.has(p.product_type));
