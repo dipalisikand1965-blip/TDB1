@@ -285,7 +285,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
                   )}
                   <button
                     onClick={async(e)=>{e.stopPropagation();
-                      if (pick.soul_made || pick.category?.startsWith('breed-')) {
+                      if (isService || pick.soul_made || pick.category?.startsWith('breed-')) {
                         const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});
                         const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});
                       } else {
