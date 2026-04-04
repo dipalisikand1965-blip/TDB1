@@ -631,7 +631,8 @@ async def get_all_products(
     size: Optional[str] = None,
     has_mira_hint: Optional[str] = None,
     source: Optional[str] = None,  # NEW: Filter by source (shopify, soul_made, manual)
-    include_soul_made: bool = True  # NEW: Include Soul Made products from breed_products
+    include_soul_made: bool = True,  # NEW: Include Soul Made products from breed_products
+    soul_made: Optional[bool] = None  # Filter by soul_made boolean field
 ):
     """Get all products with filtering - includes Soul Made products"""
     if db is None:
@@ -682,13 +683,19 @@ async def get_all_products(
             and_conditions.append({"shopify_id": {"$exists": False}})
             and_conditions.append({"soul_tier": {"$ne": "soul_made"}})
     
-    # Breed Intelligence Filters
+    # soul_made boolean filter (for Soul Box admin)
+    if soul_made is True:
+        and_conditions.append({"soul_made": True})
+    elif soul_made is False:
+        and_conditions.append({"$or": [{"soul_made": False}, {"soul_made": {"$exists": False}}]})
+    
+    # Breed filter — for Soul Box, use exact breed match on soul_made products
     if breed:
         and_conditions.append({"$or": [
             {"breed_metadata.breeds": breed},
-            {"breed_metadata.breeds": {"$size": 0}},  # Universal products
+            {"breed_metadata.breeds": {"$size": 0}},
             {"breed_tags": {"$regex": breed, "$options": "i"}},
-            {"breed": {"$regex": breed, "$options": "i"}}  # For soul_made products
+            {"breed": {"$regex": breed, "$options": "i"}}
         ]})
     if size:
         and_conditions.append({"$or": [
