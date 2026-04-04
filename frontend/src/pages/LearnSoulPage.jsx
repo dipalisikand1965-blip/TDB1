@@ -732,9 +732,9 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
               {products.map(b=>(
                 <div key={b.id||b._id} style={{borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",background:"#fff"}}>
                   {/* Bundle watercolour image */}
-                  {(b.watercolor_image||b.image_url||b.mockup_url) ? (
+                  {(b.cloudinary_url||b.mockup_url||b.image_url) ? (
                     <div style={{height:120,overflow:"hidden"}}>
-                      <img src={b.watercolor_image||b.image_url||b.mockup_url} alt={b.name}
+                      <img src={b.cloudinary_url||b.mockup_url||b.image_url} alt={b.name}
                         style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
                     </div>
                   ) : (
