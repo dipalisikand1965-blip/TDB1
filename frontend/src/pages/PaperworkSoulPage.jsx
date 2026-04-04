@@ -25,7 +25,7 @@ import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
-import SharedProductCard, { ConciergeOnlyProductDetailModal } from "../components/ProductCard";
+import SharedProductCard, { ConciergeOnlyProductDetailModal, ProductDetailModal } from "../components/ProductCard";
 import ServiceBookingModal from "../components/ServiceBookingModal";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
@@ -206,94 +206,78 @@ const PAPER_SERVICES = [
 ];
 
 // ─── MIRA PICKS ────────────────────────────────────────────
-function MiraPicksSection({ pet, onSelectProd }) {
-  const [picks,setpicks]=useState([]); const [loading,setLoading]=useState(true);
+function MiraPicksSection({ pet, token, onOpenService }) {
+  const [picks,setPicks]=useState([]); const [picksLoading,setPicksLoading]=useState(true);
+  const [selPick,setSelPick]=useState(null);
   const petName=pet?.name||"your dog";
-  const miraImagines=[
-    {emoji:"🪪",name:"ID Tag Set",desc:"Engraved + QR code",reason:"Because identity protection is first"},
-    {emoji:"🛡️",name:"Insurance Review",desc:"Coverage comparison + guidance",reason:"Because every dog deserves cover"},
-    {emoji:"📚",name:"Breed Guide Report",desc:"12-page breed-specific report",reason:"Because knowing is protecting"},
-    {emoji:"✈️",name:"Travel Document Kit",desc:"Passport + health cert + checklist",reason:"Because adventure needs preparation"},
-  ];
-  useEffect(()=>{
-    if(!pet?.id){setLoading(false);return;}
-    const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=60&entity_type=product&breed=${breed}`)
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{if(d?.picks?.length)setpicks(d.picks.slice(0,8));setLoading(false);})
-      .catch(()=>setLoading(false));
-  },[pet?.id]);
 
-  const showImagines=!loading&&picks.length===0;
-  const hasScoredProducts = picks.some((pick) => !(pick.entity_type === 'service' || pick.type === 'service'));
+  useEffect(()=>{
+    if(!pet?.id){setPicksLoading(false);return;}
+    const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
+    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=40&breed=${breed}`,
+      {headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{
+        if(!d){setPicksLoading(false);return;}
+        const prods=(d.picks||[]).filter(p=>p.entity_type==='product'||p.type==='product'||(!p.entity_type&&!p.type));
+        const svcs=(d.picks||[]).filter(p=>p.entity_type==='service'||p.type==='service');
+        const merged=[];let pi=0,si=0;
+        while(pi<prods.length||si<svcs.length){
+          if(pi<prods.length)merged.push(prods[pi++]);
+          if(pi<prods.length)merged.push(prods[pi++]);
+          if(si<svcs.length)merged.push(svcs[si++]);
+        }
+        if(merged.length)setPicks(merged.slice(0,12));
+        setPicksLoading(false);
+      })
+      .catch(()=>setPicksLoading(false));
+  },[pet?.id,token]);
+
+  const productPicks=picks.filter(p=>p.entity_type==='product'||p.type==='product'||(!p.entity_type&&!p.type));
+  const servicePicks=picks.filter(p=>p.entity_type==='service'||p.type==='service');
+  const badgeLabel=productPicks.length>0?'AI Scored':servicePicks.length>0?'Concierge® Curated':'Curated';
+
   return (
-    <section style={{marginBottom:32}}>
+    <section style={{marginBottom:28}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
-        <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
-          Mira's Safety Picks for <span style={{color:G.teal}}>{petName}</span>
-        </h3>
-        {hasScoredProducts && <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>AI Scored</span>}
+        <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>Mira's Paperwork Picks for <span style={{color:G.teal}}>{petName}</span></h3>
+        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{badgeLabel}</span>
       </div>
-      <p style={{fontSize:12,color:"#888",marginBottom:16}}>Products and services prioritised for {petName}'s protection and documentation needs.</p>
-      {showImagines ? (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))",gap:14}}>
-          {miraImagines.map((c,i)=>(
-            <div key={i} style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"20px 16px 16px",position:"relative"}}>
-              <div style={{position:"absolute",top:12,left:12,background:"rgba(255,255,255,0.18)",borderRadius:20,padding:"3px 10px",fontSize:10,fontWeight:700,color:"#fff"}}>Mira Imagines</div>
-              <div style={{fontSize:40,textAlign:"center",marginTop:20,marginBottom:10}}>{c.emoji}</div>
-              <div style={{fontSize:13,fontWeight:700,color:"#fff",textAlign:"center",marginBottom:4}}>{c.name}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.60)",textAlign:"center",marginBottom:3}}>{c.desc}</div>
-              <div style={{fontSize:11,color:G.light,fontStyle:"italic",textAlign:"center",marginBottom:12}}>{c.reason}</div>
-              <button style={{width:"100%",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"9px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Get this →</button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:8}}>
+      <p style={{fontSize:13,color:"#888",marginBottom:16}}>Documents, identity and services prioritised for {petName}'s protection.</p>
+      {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><span style={{fontSize:12}}>Mira is preparing picks…</span></div>}
+      {!picksLoading&&picks.length>0&&(
+        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
           {picks.map((pick,i)=>{
-            const isService = pick.entity_type === 'service' || pick.type === 'service';
-            const score=isService ? 0 : (pick.mira_score||0);
-            const scoreColor=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
-            return (
-              <div key={i} 
-                style={{flexShrink:0,width:160,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}
-                onClick={() => {
-                  if (pick.soul_made || pick.category?.startsWith('breed-')) {
-                    import('../utils/MiraCardActions').then(({bookViaConcierge}) =>
-                      bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price})
-                    );
-                  } else {
-                    onSelectProd && onSelectProd(pick);
-                  }
-                }}>
-                {/* Real product image — NOT hardcoded emoji */}
-                <div style={{height:100,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,overflow:"hidden"}}>
-                  {(pick.cloudinary_url||pick.mockup_url||pick.image_url||pick.image)
-                    ? <img src={pick.cloudinary_url||pick.mockup_url||pick.image_url||pick.image} alt={pick.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
-                    : <span>📋</span>}
+            const isService=pick.entity_type==='service'||pick.type==='service';
+            const score=pick.mira_score||0;
+            const col=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
+            const _ri=[pick.cloudinary_url,pick.mockup_url,pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;
+            const img=_ri&&(!_ri.includes("ai_generated")||_ri.includes("cloudinary.com"))?_ri:null;
+            return(
+              <div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}
+                onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)}
+                onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
+                onMouseLeave={e=>e.currentTarget.style.transform=""}>
+                <div style={{width:"100%",height:130,background:G.pale,overflow:"hidden"}}>
+                  {img
+                    ?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                    :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.teal})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,24)}</div>}
                 </div>
-                <div style={{padding:"9px 10px 11px"}}>
-                  <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:5}}>{pick.name||"—"}</div>
-                  {!isService && (
-                    <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
-                      <div style={{flex:1,height:3,background:G.pale,borderRadius:3}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:3}}/></div>
-                      <span style={{fontSize:10,fontWeight:800,color:scoreColor}}>{score}</span>
-                    </div>
-                  )}
-                  {isService ? null : (
-                    pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>
-                  )}
+                <div style={{padding:"10px 11px 12px"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>
+                  {isService
+                    ?<p style={{fontSize:11,color:G.teal,lineHeight:1.45,margin:'0 0 8px'}}>Concierge® can arrange this for {petName}.</p>
+                    :<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}>
+                      <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div>
+                      <span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span>
+                    </div>}
                   <button
-                    onClick={async(e)=>{e.stopPropagation();
-                      if (isService || pick.soul_made || pick.category?.startsWith('breed-')) {
-                        const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});
-                        const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});
-                      } else {
-                        onSelectProd && onSelectProd(pick);
-                      }
+                    onClick={e=>{e.stopPropagation();
+                      if(isService){tdc.book({service:pick.name,pillar:'paperwork',pet,channel:'paperwork_mira_picks_service'});onOpenService?.(pick.name);}
+                      else{setSelPick(pick);}
                     }}
-                    style={{marginTop:6,width:"100%",padding:"5px 0",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:8,fontSize:10,fontWeight:700,cursor:"pointer"}}>
-                    Book for {petName} →
+                    style={{width:'100%',background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+                    {isService?'Talk to Mira →':'View details →'}
                   </button>
                 </div>
               </div>
@@ -301,6 +285,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
           })}
         </div>
       )}
+      {selPick&&<ProductDetailModal product={selPick} pillar="paperwork" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
     </section>
   );
 }
