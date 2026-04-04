@@ -257,11 +257,19 @@ function MiraPicksSection({ pet, onSelectProd }) {
             return (
               <div key={i} 
                 style={{flexShrink:0,width:160,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}
-                onClick={() => onSelectProd && onSelectProd(pick)}>
+                onClick={() => {
+                  if (pick.soul_made || pick.category?.startsWith('breed-')) {
+                    import('../utils/MiraCardActions').then(({bookViaConcierge}) =>
+                      bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price})
+                    );
+                  } else {
+                    onSelectProd && onSelectProd(pick);
+                  }
+                }}>
                 {/* Real product image — NOT hardcoded emoji */}
                 <div style={{height:100,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,overflow:"hidden"}}>
-                  {(pick.cloudinary_image_url||pick.image_url)
-                    ? <img src={pick.cloudinary_image_url||pick.image_url} alt={pick.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
+                  {(pick.cloudinary_url||pick.mockup_url||pick.image_url||pick.image)
+                    ? <img src={pick.cloudinary_url||pick.mockup_url||pick.image_url||pick.image} alt={pick.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
                     : <span>📋</span>}
                 </div>
                 <div style={{padding:"9px 10px 11px"}}>
@@ -276,7 +284,14 @@ function MiraPicksSection({ pet, onSelectProd }) {
                     pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>
                   )}
                   <button
-                    onClick={async(e)=>{e.stopPropagation();const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});}}
+                    onClick={async(e)=>{e.stopPropagation();
+                      if (pick.soul_made || pick.category?.startsWith('breed-')) {
+                        const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});
+                        const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});
+                      } else {
+                        onSelectProd && onSelectProd(pick);
+                      }
+                    }}
                     style={{marginTop:6,width:"100%",padding:"5px 0",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:8,fontSize:10,fontWeight:700,cursor:"pointer"}}>
                     Book for {petName} →
                   </button>
