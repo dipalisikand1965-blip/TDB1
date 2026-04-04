@@ -543,17 +543,26 @@ async def get_breed_products(
         "jack_russell_terrier": "jack_russell",
     }
 
+    # Reverse alias map: canonical breed → all stored variants in DB
+    # (e.g. "indie" products may be stored as "indian_pariah" in some entries)
+    REVERSE_ALIASES = {
+        "indie": ["indie", "indian_pariah", "indian_pariah_dog", "desi_dog", "street_dog"],
+        "husky": ["husky", "black_husky", "grey_husky", "white_husky", "siberian_husky"],
+        "labrador": ["labrador", "labrador_retriever", "lab"],
+        "yorkshire": ["yorkshire", "yorkshire_terrier", "yorkie"],
+        "poodle": ["poodle", "toy_poodle", "miniature_poodle"],
+        "st_bernard": ["st_bernard", "saint_bernard"],
+        "schnoodle": ["schnoodle", "shnoodle"],
+    }
+
     # flat_only mode: return only flat-art overlay products
     if flat_only:
         query = {"is_mockup": True, "product_type": {"$regex": "^flat_"}}
         if breed:
             breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
             breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
-            query["$or"] = [
-                {"breed": breed_resolved},
-                {"breed": breed_norm},
-                {"breed": breed.lower()},
-            ]
+            all_variants = REVERSE_ALIASES.get(breed_resolved, [breed_resolved, breed_norm])
+            query["$or"] = [{"breed": v} for v in set(all_variants)]
         if search:
             text_cond = {"$or": [
                 {"name": {"$regex": search, "$options": "i"}},
@@ -564,16 +573,12 @@ async def get_breed_products(
         products = await db.breed_products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
         return {"products": products, "total": total, "count": len(products)}
 
-    query = {"is_mockup": True}
+    query = {"is_mockup": True, "is_active": {"$ne": False}, "visibility.status": {"$ne": "archived"}}
     if breed:
         breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
         breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
-        query["$or"] = [
-            {"breed": breed_resolved},
-            {"breed": breed_norm},
-            {"breed": breed.lower()},
-            {"breed": "all"},
-        ]
+        all_variants = REVERSE_ALIASES.get(breed_resolved, [breed_resolved, breed_norm])
+        query["$or"] = [{"breed": v} for v in set(all_variants)] + [{"breed": "all"}]
     if product_type:
         query["product_type"] = product_type
     if pillar:
