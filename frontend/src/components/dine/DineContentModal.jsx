@@ -573,10 +573,10 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
           setProducts([]); // No breed info → show empty state
           return;
         }
-        const breedCats = ['breed-bowls', 'breed-treat_jars', 'breed-mugs', 'breed-bandanas', 'breed-frames', 'breed-keychains', 'breed-tote_bags'];
-        const responses = await Promise.all(breedCats.map(cat => fetch(`${apiUrl}/api/products?category=${cat}&limit=40`)));
-        const datasets = await Promise.all(responses.map(r => r.ok ? r.json() : { products: [] }));
-        const allMerch = datasets.flatMap(d => d.products || []);
+        const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
+        const res = await fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=dine&limit=60`);
+        const data = res.ok ? await res.json() : { products: [] };
+        const allMerch = (data.products || []);
         // Only show merchandise matching this pet's exact breed — never show wrong breed
         // Deduplicate by name (same product can appear across multiple categories with different IDs)
         const seen = new Map();
