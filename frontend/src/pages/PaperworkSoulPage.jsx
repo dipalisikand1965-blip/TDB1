@@ -206,21 +206,25 @@ const PAPER_SERVICES = [
 ];
 
 // ─── MIRA PICKS ────────────────────────────────────────────
-function MiraPicksSection({ pet, token, onOpenService }) {
+function MiraPicksSection({ pet, onOpenService }) {
   const [picks,setPicks]=useState([]); const [picksLoading,setPicksLoading]=useState(true);
   const [selPick,setSelPick]=useState(null);
+  const { token } = useAuth(); // Fix 1: get token internally like AdoptSoulPage
   const petName=pet?.name||"your dog";
 
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
     const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=40&breed=${breed}`,
-      {headers:token?{Authorization:`Bearer ${token}`}:{}})
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{
-        if(!d){setPicksLoading(false);return;}
-        const prods=(d.picks||[]).filter(p=>p.entity_type==='product'||p.type==='product'||(!p.entity_type&&!p.type));
-        const svcs=(d.picks||[]).filter(p=>p.entity_type==='service'||p.type==='service');
+    // Fix 3: no entity_type filter — fetch both products and services in one call
+    Promise.all([
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=40&breed=${breed}&entity_type=product`,
+        {headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.ok?r.json():null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=6&min_score=40&entity_type=service`,
+        {headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.ok?r.json():null),
+    ])
+      .then(([pData, sData])=>{
+        const prods=pData?.picks||[];
+        const svcs=sData?.picks||[];
         const merged=[];let pi=0,si=0;
         while(pi<prods.length||si<svcs.length){
           if(pi<prods.length)merged.push(prods[pi++]);
@@ -244,7 +248,7 @@ function MiraPicksSection({ pet, token, onOpenService }) {
         <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{badgeLabel}</span>
       </div>
       <p style={{fontSize:13,color:"#888",marginBottom:16}}>Documents, identity and services prioritised for {petName}'s protection.</p>
-      {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><span style={{fontSize:12}}>Mira is preparing picks…</span></div>}
+      {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.teal}}/><span style={{fontSize:12}}>Mira is preparing picks…</span></div>}
       {!picksLoading&&picks.length>0&&(
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
           {picks.map((pick,i)=>{
@@ -383,7 +387,7 @@ export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], on
                     <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{svc.name}</div>
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-                      <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
+                      <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book via Concierge® →</button>
                     </div>
                   </div>
                 </div>
@@ -437,7 +441,7 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
     }
     if(category==="mira"){
       if(!pet?.id){setLoading(false);return;}
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40&entity_type=product`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
         .then(r=>r.json()).then(d=>{
           const scored=d.picks||[];
           if(scored.length>0){setProducts(scored);setLoading(false);return;}
@@ -770,7 +774,7 @@ const PaperworkSoulPage = () => {
             />
 
             {/* Mira picks */}
-            <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
+            <div ref={miraRef}><MiraPicksSection pet={petData} onOpenService={(name)=>handleBook({name})}/></div>
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
 
