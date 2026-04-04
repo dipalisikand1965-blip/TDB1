@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '../../utils/api';
 import ProductBoxEditor from './ProductBoxEditor';
-import { useToast } from '../ui/use-toast';
+import { toast } from '../../hooks/use-toast';
 
 const PILLARS = ['','dine','celebrate','go','care','play','learn','farewell','paperwork','emergency','shop','adopt'];
 const BREEDS = [
@@ -19,7 +19,6 @@ const BREEDS = [
 const ADMIN_AUTH = 'Basic ' + btoa('aditya:lola4304');
 
 export default function SoulBox() {
-  const { toast } = useToast();
 
   // List state
   const [products, setProducts]       = useState([]);
