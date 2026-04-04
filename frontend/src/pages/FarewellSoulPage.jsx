@@ -267,7 +267,7 @@ const FarewellSoulPage = () => {
   useEffect(()=>{
     if(!petData?.breed) return;
     const breedKey = encodeURIComponent(petData.breed.split("(")[0].trim().toLowerCase());
-    fetch(`${API_URL}/api/admin/breed-products?breed=${breedKey}&is_active=true&limit=50`)
+    fetch(`${API_URL}/api/admin/breed-products?breed=${breedKey}&pillar=farewell&is_active=true&limit=50`)
       .then(r=>r.ok?r.json():null)
       .then(d=>{
         const prods = (d?.products||[]).filter(p=>{

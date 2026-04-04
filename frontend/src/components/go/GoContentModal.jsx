@@ -300,15 +300,11 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
       const breedParam = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
       Promise.all([
         fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&pillar=go&limit=60`),
-        fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&flat_only=true&limit=60`),
-        fetch(`${apiUrl}/api/mockups/breed-products?breed=${breedParam}&product_type=birthday_cake&limit=3`),
       ])
-        .then(([r1, r2, r3]) => Promise.all([
+        .then(([r1]) => Promise.all([
           r1.ok ? r1.json() : { products: [] },
-          r2.ok ? r2.json() : { products: [] },
-          r3.ok ? r3.json() : { products: [] },
         ]))
-        .then(([data1, data2, data3]) => {
+        .then(([data1]) => {
           const bp = (data1.products || []).filter(p =>
             p.product_type !== 'birthday_cake' && p.product_type !== 'Birthday Cake'
           );
@@ -317,8 +313,8 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
           const filteredCats = subCats.filter(t => !/-play$|-shop$|-go$|-travel$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
           setTabs(filteredCats.length > 0 ? ['All', ...filteredCats] : ['All']);
           setProducts(bp);
-          setFlatArtProducts(data2.products || []);
-          setYappyIllustrations(data3.products || []);
+          setFlatArtProducts([]);
+          setYappyIllustrations([]);
           setArtStyle('watercolour');
         })
         .catch(err => console.error('[GoContentModal soul_made]', err))
