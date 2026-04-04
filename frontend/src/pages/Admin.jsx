@@ -65,6 +65,7 @@ import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
 import SoulProductsManager from '../components/admin/SoulProductsManager';
+import SoulBox from '../components/admin/SoulBox';
 import BreedCakeManager from '../components/admin/BreedCakeManager';
 import CakeBox from '../components/admin/CakeBox';
 import BundlesManager from '../components/admin/BundlesManager';
@@ -3135,6 +3136,7 @@ const Admin = () => {
                         { id: 'pricing', label: 'Pricing', icon: DollarSign },
                         { id: 'experiences', label: 'Experiences', icon: Calendar },
                         { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
+                        { id: 'soul-box', label: 'Soul Box', icon: Sparkles },
                         { id: 'cake-box',     label: '🎂 Cake Box',  icon: Sparkles },
                         { id: 'bundles', label: 'Bundles', icon: Package },
                       ].map(tab => (
@@ -3272,6 +3274,7 @@ const Admin = () => {
               { id: 'bundle-box', label: 'Bundle Box', icon: Gift },
               { id: 'topic-products', label: 'Topic Products', icon: GraduationCap },
               { id: 'soul-products', label: 'Soul Products', icon: Sparkles },
+              { id: 'soul-box', label: 'Soul Box', icon: Sparkles },
               { id: 'cake-box',     label: '🎂 Cake Box',  icon: Sparkles },
               { id: 'bundles', label: 'Bundles', icon: Gift },
               { id: 'collections', label: 'Collections', icon: Layers },
@@ -4112,6 +4115,10 @@ const Admin = () => {
         {/* Soul Products Manager Tab */}
         {activeTab === 'soul-products' && (
           <SoulProductsManager />
+        )}
+
+        {activeTab === 'soul-box' && (
+          <SoulBox />
         )}
 
         {/* Cake Box Tab — Orders, Catalogue, Config, Breed Illustrations */}
