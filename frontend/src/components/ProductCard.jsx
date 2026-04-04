@@ -267,7 +267,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   const { user, token } = useAuth();
   const isServiceProduct = (product.product_type === 'service') || (product.category === 'service') || (product.entity_type === 'service');
   const effectiveSelectedPet = selectedPet || pet;
-  const isConciergeOnly = pillar === 'paperwork';
+  // Soul Documents (e.g. Passport Holders) are real purchasable products — use regular modal
+  const isConciergeOnly = pillar === 'paperwork' && product?.category !== 'Soul Documents';
   
   // Default miraContext if not provided - generates pillar-appropriate messaging
   const defaultMiraContext = {
