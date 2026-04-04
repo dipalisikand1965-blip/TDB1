@@ -1252,8 +1252,8 @@ export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], on
                     onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 2px 8px rgba(124,58,237,0.06)";}}>
                     <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
                       display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                      {(svc.watercolor_image||svc.image_url) && !(svc.watercolor_image||svc.image_url||"").includes("bandana") && !(svc.watercolor_image||svc.image_url||"").includes("default")
-                        ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name}
+                      {(svc.cloudinary_url||svc.mockup_url||svc.image_url) && !(svc.cloudinary_url||svc.mockup_url||svc.image_url||"").includes("bandana") && !(svc.cloudinary_url||svc.mockup_url||svc.image_url||"").includes("default")
+                        ? <img src={svc.cloudinary_url||svc.mockup_url||svc.image_url} alt={svc.name}
                             style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                         : <span style={{fontSize:36}}>{svc.icon||dim.icon||"🎓"}</span>}
                       {svc.popular&&<span style={{position:"absolute",top:7,right:7,background:accent,color:"#fff",
@@ -1475,7 +1475,7 @@ export function MiraPicksSection({ pet }) {
           <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==="service";
-            const _rawImg=[pick.watercolor_image,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+            const _rawImg=[pick.cloudinary_url,pick.mockup_url,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
             const img=_rawImg&&(!_rawImg.includes('ai_generated') || _rawImg.includes('cloudinary.com'))?_rawImg:null;
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
@@ -2254,8 +2254,8 @@ const LearnSoulPage = () => {
                     {/* Image / Watercolour */}
                     <div style={{height:110,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
                       display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                      {(svc.watercolor_image||svc.image_url) && !(svc.watercolor_image||svc.image_url||"").includes("bandana")
-                        ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                      {(svc.cloudinary_url||svc.mockup_url||svc.image_url) && !(svc.cloudinary_url||svc.mockup_url||svc.image_url||"").includes("bandana")
+                        ? <img src={svc.cloudinary_url||svc.mockup_url||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                         : <span style={{fontSize:38}}>{svc.icon||"🎓"}</span>}
                       {svc.popular&&<span style={{position:"absolute",top:8,right:8,background:accent,color:"#fff",fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 8px"}}>Popular</span>}
                     </div>
