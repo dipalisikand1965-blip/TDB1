@@ -31,6 +31,7 @@ import PlayCategoryStrip from "../components/play/PlayCategoryStrip";
 import PlayContentModal from "../components/play/PlayContentModal";
 import GuidedPlayPaths from "../components/play/GuidedPlayPaths";
 import PlayConciergeSection from "../components/play/PlayConciergeSection";
+import PlayConciergeModal from "../components/play/PlayConciergeModal";
 import PlayNearMe from "../components/play/PlayNearMe";
 import BuddyMeetup from "../components/play/BuddyMeetup";
 import ConciergeToast from "../components/common/ConciergeToast";
@@ -288,7 +289,7 @@ function MiraImagineCard({ card, pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // MIRA PICKS SECTION
 // ─────────────────────────────────────────────────────────────
-export function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet, onOpenService }) {
   const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]       = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -438,7 +439,7 @@ export function MiraPicksSection({ pet }) {
             return (
               <div key={pick.id||i}
                 style={{ flexShrink:0, width:168, background:"#fff", borderRadius:14, border:`1.5px solid ${G.borderLight}`, overflow:"hidden", cursor:"pointer", transition:"transform 0.15s" }}
-                onClick={() => isService?setConciergeService(pick):setSelectedPick(pick)}
+                onClick={() => isService?onOpenService?.(pick):setSelectedPick(pick)}
                 onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-2px)"; }}
                 onMouseLeave={e=>{ e.currentTarget.style.transform=""; }}
                 data-testid={`play-pick-card-${i}`}>
@@ -937,7 +938,7 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {}, apiLoading = 
       )}
 
       {dim.id === "mira" ? (
-        <MiraPicksSection pet={pet} />
+        <MiraPicksSection pet={pet} onOpenService={(pick)=>setPlayPickSvc(pick)} />
       ) : dimTab === "personalised" ? (
         <div>
           <PersonalisedBreedSection pet={pet} pillar="play" />
@@ -1366,6 +1367,7 @@ const PlaySoulPage = () => {
   const [activeTab, setActiveTab]     = useState("play");
   const [openDim, setOpenDim]         = useState(null);
   const [playConciergOpen, setPlayConciergOpen] = useState(false);
+  const [playPickSvc, setPlayPickSvc] = useState(null); // service pick → PlayConciergeModal
   const [modalCategory, setModalCategory]     = useState(null); // PlayContentModal category
   useScrollLock(playConciergOpen || !!openDim || !!modalCategory);
   const [petData, setPetData]         = useState(null);
@@ -1543,7 +1545,7 @@ const PlaySoulPage = () => {
 
             {/* Mira's Picks — AI scored, same as Dine */}
             <div ref={miraPicksRef}>
-              <MiraPicksSection pet={petData} />
+              <MiraPicksSection pet={petData} onOpenService={(pick)=>setPlayPickSvc(pick)} />
             </div>
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
@@ -1704,6 +1706,7 @@ const PlaySoulPage = () => {
         onClose={() => setModalCategory(null)}
         onNavigateToNearMe={() => { setModalCategory(null); setActiveTab("nearme"); }}
       />
+      {playPickSvc && <PlayConciergeModal pet={petData} service={playPickSvc} token={token} onClose={()=>setPlayPickSvc(null)} />}
     </PillarPageLayout>
   );
 };

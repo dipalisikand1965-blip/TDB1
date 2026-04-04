@@ -732,9 +732,9 @@ export function LearnContentModal({ isOpen, onClose, category, pet }) {
               {products.map(b=>(
                 <div key={b.id||b._id} style={{borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",background:"#fff"}}>
                   {/* Bundle watercolour image */}
-                  {(b.watercolor_image||b.image_url||b.mockup_url) ? (
+                  {(b.cloudinary_url||b.mockup_url||b.image_url) ? (
                     <div style={{height:120,overflow:"hidden"}}>
-                      <img src={b.watercolor_image||b.image_url||b.mockup_url} alt={b.name}
+                      <img src={b.cloudinary_url||b.mockup_url||b.image_url} alt={b.name}
                         style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
                     </div>
                   ) : (
@@ -1252,8 +1252,8 @@ export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], on
                     onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="0 2px 8px rgba(124,58,237,0.06)";}}>
                     <div style={{height:100,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
                       display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                      {(svc.watercolor_image||svc.image_url) && !(svc.watercolor_image||svc.image_url||"").includes("bandana") && !(svc.watercolor_image||svc.image_url||"").includes("default")
-                        ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name}
+                      {(svc.cloudinary_url||svc.mockup_url||svc.image_url) && !(svc.cloudinary_url||svc.mockup_url||svc.image_url||"").includes("bandana") && !(svc.cloudinary_url||svc.mockup_url||svc.image_url||"").includes("default")
+                        ? <img src={svc.cloudinary_url||svc.mockup_url||svc.image_url} alt={svc.name}
                             style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                         : <span style={{fontSize:36}}>{svc.icon||dim.icon||"🎓"}</span>}
                       {svc.popular&&<span style={{position:"absolute",top:7,right:7,background:accent,color:"#fff",
@@ -1371,7 +1371,7 @@ function MiraLearnImagineCard({ item, pet, token }) {
   );
 }
 
-export function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet, onOpenService }) {
   const [picks,       setPicks]       = useState([]);
   const [picksLoading,setPicksLoading]= useState(true);
   const [selectedPick,setSelectedPick]= useState(null);
@@ -1475,27 +1475,14 @@ export function MiraPicksSection({ pet }) {
           <style>{`.learn-picks-scroll::-webkit-scrollbar{height:4px}.learn-picks-scroll::-webkit-scrollbar-thumb{background:${G.violet}50;border-radius:4px}`}</style>
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==="service";
-            const _rawImg=[pick.watercolor_image,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+            const _rawImg=[pick.cloudinary_url,pick.mockup_url,pick.image_url,pick.image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
             const img=_rawImg&&(!_rawImg.includes('ai_generated') || _rawImg.includes('cloudinary.com'))?_rawImg:null;
             const score=pick.mira_score||0;
             const scoreColor=score>=80?"#16A34A":score>=70?G.violet:"#6B7280";
             return (
               <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
                 onClick={()=>{
-                  if(isService) {
-                    // Service pick: create ticket directly (canonical rule)
-                    const u=JSON.parse(localStorage.getItem('user')||'{}');
-                    fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
-                      method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},
-                      body:JSON.stringify({parent_id:u?.id||u?.email||'guest',pet_id:pet?.id||'unknown',pillar:'learn',
-                        intent_primary:'service_booking',intent_secondary:[pick.name||'Learn Service'],
-                        life_state:'learn',channel:'learn_mira_picks',
-                        initial_message:{sender:'parent',text:`I'd like to book ${pick.name||'this service'} for ${petName}.`}})
-                    }).catch(()=>{});
-                    setSelectedPick({...pick, _booked:true});
-                  } else {
-                    setSelectedPick(pick);
-                  }
+                  if(isService){ onOpenService?.(pick.name||pick.entity_name); } else { setSelectedPick(pick); }
                 }}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
@@ -2145,7 +2132,7 @@ const LearnSoulPage = () => {
             </div>
 
             {/* Mira Picks */}
-            <div ref={miraPicksRef}><MiraPicksSection pet={petData}/></div>
+            <div ref={miraPicksRef}><MiraPicksSection pet={petData} onOpenService={(name)=>{ setConciergeType(name||''); setConciergeOpen(true); }}/></div>
             {/* Concierge CTA — desktop */}
             <ConciergeCTA pillar="learn" />
 
@@ -2254,8 +2241,8 @@ const LearnSoulPage = () => {
                     {/* Image / Watercolour */}
                     <div style={{height:110,background:`linear-gradient(135deg,${G.pale},${G.cream})`,
                       display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",position:"relative"}}>
-                      {(svc.watercolor_image||svc.image_url) && !(svc.watercolor_image||svc.image_url||"").includes("bandana")
-                        ? <img src={svc.watercolor_image||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                      {(svc.cloudinary_url||svc.mockup_url||svc.image_url) && !(svc.cloudinary_url||svc.mockup_url||svc.image_url||"").includes("bandana")
+                        ? <img src={svc.cloudinary_url||svc.mockup_url||svc.image_url} alt={svc.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                         : <span style={{fontSize:38}}>{svc.icon||"🎓"}</span>}
                       {svc.popular&&<span style={{position:"absolute",top:8,right:8,background:accent,color:"#fff",fontSize:9,fontWeight:700,borderRadius:20,padding:"2px 8px"}}>Popular</span>}
                     </div>

@@ -15,6 +15,7 @@ Benefits:
 """
 
 import os
+import asyncio
 import base64
 import cloudinary
 import cloudinary.uploader
@@ -80,21 +81,25 @@ async def upload_base64_to_cloudinary(base64_data: str, product_id: str, breed: 
         # Create a unique public_id
         public_id = f"doggy/mockups/{clean_breed}/{product_id}"
         
-        # Upload to Cloudinary
-        result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{base64_data}",
-            public_id=public_id,
-            overwrite=True,
-            resource_type="image",
-            folder="",  # Folder is in public_id
-            format="webp",  # Convert to webp for smaller size
-            quality="auto:good",
-            transformation=[
-                {"width": 800, "height": 800, "crop": "limit"},  # Max size
-                {"quality": "auto:good"},
-                {"fetch_format": "auto"}
-            ]
-        )
+        # Upload to Cloudinary — run_in_executor so sync call never blocks event loop
+        payload = f"data:image/png;base64,{base64_data}"
+        def _upload():
+            return cloudinary.uploader.upload(
+                payload,
+                public_id=public_id,
+                overwrite=True,
+                resource_type="image",
+                folder="",
+                format="webp",
+                quality="auto:good",
+                transformation=[
+                    {"width": 800, "height": 800, "crop": "limit"},
+                    {"quality": "auto:good"},
+                    {"fetch_format": "auto"}
+                ]
+            )
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _upload)
         
         logger.info(f"Uploaded mockup to Cloudinary: {result.get('secure_url')}")
         return result.get("secure_url")
@@ -453,20 +458,24 @@ async def upload_url_to_cloudinary(image_url: str, product_id: str, category: st
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
         public_id = f"doggy/products/{clean_category}/{product_id}_{timestamp}"
         
-        # Upload to Cloudinary from URL
-        result = cloudinary.uploader.upload(
-            image_url,
-            public_id=public_id,
-            overwrite=True,
-            resource_type="image",
-            format="webp",
-            quality="auto:good",
-            transformation=[
-                {"width": 1000, "height": 1000, "crop": "limit"},
-                {"quality": "auto:good"},
-                {"fetch_format": "auto"}
-            ]
-        )
+        # Upload to Cloudinary from URL — run_in_executor so sync call never blocks event loop
+        url_to_upload = image_url
+        def _upload_url():
+            return cloudinary.uploader.upload(
+                url_to_upload,
+                public_id=public_id,
+                overwrite=True,
+                resource_type="image",
+                format="webp",
+                quality="auto:good",
+                transformation=[
+                    {"width": 1000, "height": 1000, "crop": "limit"},
+                    {"quality": "auto:good"},
+                    {"fetch_format": "auto"}
+                ]
+            )
+        loop = asyncio.get_event_loop()
+        result = await loop.run_in_executor(None, _upload_url)
         
         logger.info(f"Uploaded AI image to Cloudinary: {result.get('secure_url')}")
         return result.get("secure_url")

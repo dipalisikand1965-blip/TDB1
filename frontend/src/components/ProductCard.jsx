@@ -226,13 +226,25 @@ const isValidUrl = (url) => {
 // Rope-toy bad cloudinary patterns — these were bulk-generated with wrong image content.
 // When detected, getProductImage returns null → card shows gradient placeholder instead.
 const ROPE_TOY_PATTERNS = [
-  '/tdc/products_master/enjoy/breed-',  // enrichment mat batch — rope toy content
+  '/tdc/products_master/enjoy/breed-',       // enrichment mat batch — rope toy content
+  '/tdc/products_master/adopt/breed-',       // breed-specific adopt folders — 404, never uploaded
+  '/tdc/products_master/celebrate/celebrate-', // breed custom cakes — AI uploaded toy images to cake paths
 ];
-const isBadCloudinaryImage = (url) =>
-  url && url.includes('res.cloudinary.com') && ROPE_TOY_PATTERNS.some(p => url.includes(p));
+
+// Smart rule: block AI-generated TDC files — the AI generator named files with pillar prefixes
+// e.g. dine-fresh-breath.webp, celebrate-shihtzu-cake.webp, fit-breed-labrador-walking_set.webp
+// Safe files: shopify-{id}.webp (Shopify-synced) — always allowed
+const AI_NAMED_FILE_RE = /tdc\/products_master\/.+\/(?:dine|go|care|celebrate|play|learn|paperwork|adopt|emergency|farewell|fit|shop|services|advisory)-/i;
+
+const isBadCloudinaryImage = (url) => {
+  if (!url || !url.includes('res.cloudinary.com')) return false;
+  if (ROPE_TOY_PATTERNS.some(p => url.includes(p))) return true;
+  if (AI_NAMED_FILE_RE.test(url)) return true;
+  return false;
+};
 
 // ─── ONE shared image resolver — card thumbnail AND all modals use this ───────
-// Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → image (cloudinary/shopify only)
+// Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → cloudinary_image_url (safe original) → image (cloudinary/shopify only)
 const getProductImage = (p) => {
   const candidates = [
     p.watercolor_image,
@@ -240,6 +252,7 @@ const getProductImage = (p) => {
     p.mockup_url,
     p.primary_image,
     p.image_url,
+    p.cloudinary_image_url,  // Shopify-synced original — safe fallback when AI overwrites above
     (p.image && (p.image.includes('cloudinary') || p.image.includes('shopify.com'))) ? p.image : null,
   ];
   for (const url of candidates) {
@@ -254,7 +267,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
   const { user, token } = useAuth();
   const isServiceProduct = (product.product_type === 'service') || (product.category === 'service') || (product.entity_type === 'service');
   const effectiveSelectedPet = selectedPet || pet;
-  const isConciergeOnly = pillar === 'paperwork';
+  // Soul Documents (e.g. Passport Holders) are real purchasable products — use regular modal
+  const isConciergeOnly = pillar === 'paperwork' && product?.category !== 'Soul Documents';
   
   // Default miraContext if not provided - generates pillar-appropriate messaging
   const defaultMiraContext = {

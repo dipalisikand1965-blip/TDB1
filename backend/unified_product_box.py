@@ -656,7 +656,10 @@ async def get_all_products(
             {"pillars": pillar},
             {"primary_pillar": pillar}
         ]})
-    if status:
+    if status == 'all':
+        # Admin mode: show everything except archived
+        and_conditions.append({"visibility.status": {"$ne": "archived"}})
+    elif status:
         and_conditions.append({"visibility.status": status})
     else:
         # Default: only show active products to consumers (exclude archived, inactive, draft)
@@ -1061,6 +1064,33 @@ async def delete_product(product_id: str):
         raise HTTPException(status_code=404, detail="Product not found")
     
     return {"message": "Product archived", "product_id": product_id}
+
+
+@product_box_router.patch("/{product_id}/restore")
+async def restore_product(product_id: str):
+    """Restore (unarchive) a product — sets visibility.status back to active"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+    try:
+        oid = ObjectId(product_id)
+    except Exception:
+        oid = None
+
+    query = {"$or": [{"id": product_id}, {"_id": oid}]} if oid else {"id": product_id}
+
+    result = await db.products_master.update_one(
+        query,
+        {"$set": {"visibility": {"status": "active"}, "is_active": True}}
+    )
+    if result.modified_count == 0:
+        # Try soul_made_products
+        result2 = await db.soul_made_products.update_one(
+            query,
+            {"$set": {"archived": False, "is_active": True}}
+        )
+        if result2.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+    return {"message": "Product restored", "product_id": product_id}
 
 
 @product_box_router.put("/soul-made/{product_id}")

@@ -25,7 +25,7 @@ import { ChevronDown, Loader2, Check } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
-import SharedProductCard, { ConciergeOnlyProductDetailModal } from "../components/ProductCard";
+import SharedProductCard, { ConciergeOnlyProductDetailModal, ProductDetailModal } from "../components/ProductCard";
 import ServiceBookingModal from "../components/ServiceBookingModal";
 import SoulMadeCollection from "../components/SoulMadeCollection";
 import SoulMadeModal from "../components/SoulMadeModal";
@@ -36,6 +36,7 @@ import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
 import DocumentVault from "../components/paperwork/DocumentVault";
 import PaperworkNearMe from "../components/paperwork/PaperworkNearMe";
 import { API_URL } from "../utils/api";
+import { filterBreedProducts } from "../hooks/useMiraFilter";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
@@ -205,79 +206,89 @@ const PAPER_SERVICES = [
 ];
 
 // ─── MIRA PICKS ────────────────────────────────────────────
-function MiraPicksSection({ pet, onSelectProd }) {
-  const [picks,setpicks]=useState([]); const [loading,setLoading]=useState(true);
+function MiraPicksSection({ pet, onOpenService }) {
+  const [picks,setPicks]=useState([]); const [picksLoading,setPicksLoading]=useState(true);
+  const [selPick,setSelPick]=useState(null);
+  const { token } = useAuth(); // Fix 1: get token internally like AdoptSoulPage
   const petName=pet?.name||"your dog";
-  const miraImagines=[
-    {emoji:"🪪",name:"ID Tag Set",desc:"Engraved + QR code",reason:"Because identity protection is first"},
-    {emoji:"🛡️",name:"Insurance Review",desc:"Coverage comparison + guidance",reason:"Because every dog deserves cover"},
-    {emoji:"📚",name:"Breed Guide Report",desc:"12-page breed-specific report",reason:"Because knowing is protecting"},
-    {emoji:"✈️",name:"Travel Document Kit",desc:"Passport + health cert + checklist",reason:"Because adventure needs preparation"},
-  ];
-  useEffect(()=>{
-    if(!pet?.id){setLoading(false);return;}
-    const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=60&entity_type=product&breed=${breed}`)
-      .then(r=>r.ok?r.json():null)
-      .then(d=>{if(d?.picks?.length)setpicks(d.picks.slice(0,8));setLoading(false);})
-      .catch(()=>setLoading(false));
-  },[pet?.id]);
 
-  const showImagines=!loading&&picks.length===0;
-  const hasScoredProducts = picks.some((pick) => !(pick.entity_type === 'service' || pick.type === 'service'));
+  useEffect(()=>{
+    if(!pet?.id){setPicksLoading(false);return;}
+    const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
+    // Fix 3: no entity_type filter — fetch both products and services in one call
+    Promise.all([
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=40&breed=${breed}&entity_type=product`,
+        {headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.ok?r.json():null),
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=6&min_score=40&entity_type=service`,
+        {headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.ok?r.json():null),
+    ])
+      .then(([pData, sData])=>{
+        const prods=pData?.picks||[];
+        const svcs=sData?.picks||[];
+        const merged=[];let pi=0,si=0;
+        while(pi<prods.length||si<svcs.length){
+          if(pi<prods.length)merged.push(prods[pi++]);
+          if(pi<prods.length)merged.push(prods[pi++]);
+          if(si<svcs.length)merged.push(svcs[si++]);
+        }
+        // Deduplicate by id/name so no item appears twice
+        const seen=new Set();
+        const deduped=merged.filter(p=>{
+          const key=p.id||p._id||p.name||JSON.stringify(p);
+          if(seen.has(key))return false;
+          seen.add(key);return true;
+        });
+        if(deduped.length)setPicks(deduped.slice(0,12));
+        setPicksLoading(false);
+      })
+      .catch(()=>setPicksLoading(false));
+  },[pet?.id,token]);
+
+  const productPicks=picks.filter(p=>p.entity_type==='product'||p.type==='product'||(!p.entity_type&&!p.type));
+  const servicePicks=picks.filter(p=>p.entity_type==='service'||p.type==='service');
+  const badgeLabel=productPicks.length>0?'AI Scored':servicePicks.length>0?'Concierge® Curated':'Curated';
+
   return (
-    <section style={{marginBottom:32}}>
+    <section style={{marginBottom:28}}>
       <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:4}}>
-        <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>
-          Mira's Safety Picks for <span style={{color:G.teal}}>{petName}</span>
-        </h3>
-        {hasScoredProducts && <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>AI Scored</span>}
+        <h3 style={{fontSize:"clamp(1.125rem,2.5vw,1.375rem)",fontWeight:800,color:G.darkText,margin:0,fontFamily:"Georgia,serif"}}>Mira's Paperwork Picks for <span style={{color:G.teal}}>{petName}</span></h3>
+        <span style={{fontSize:11,background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",borderRadius:20,padding:"2px 10px",fontWeight:700}}>{badgeLabel}</span>
       </div>
-      <p style={{fontSize:12,color:"#888",marginBottom:16}}>Products and services prioritised for {petName}'s protection and documentation needs.</p>
-      {showImagines ? (
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))",gap:14}}>
-          {miraImagines.map((c,i)=>(
-            <div key={i} style={{background:`linear-gradient(135deg,${G.deep},${G.mid})`,borderRadius:16,padding:"20px 16px 16px",position:"relative"}}>
-              <div style={{position:"absolute",top:12,left:12,background:"rgba(255,255,255,0.18)",borderRadius:20,padding:"3px 10px",fontSize:10,fontWeight:700,color:"#fff"}}>Mira Imagines</div>
-              <div style={{fontSize:40,textAlign:"center",marginTop:20,marginBottom:10}}>{c.emoji}</div>
-              <div style={{fontSize:13,fontWeight:700,color:"#fff",textAlign:"center",marginBottom:4}}>{c.name}</div>
-              <div style={{fontSize:11,color:"rgba(255,255,255,0.60)",textAlign:"center",marginBottom:3}}>{c.desc}</div>
-              <div style={{fontSize:11,color:G.light,fontStyle:"italic",textAlign:"center",marginBottom:12}}>{c.reason}</div>
-              <button style={{width:"100%",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"9px",fontSize:12,fontWeight:700,cursor:"pointer"}}>Get this →</button>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:8}}>
+      <p style={{fontSize:13,color:"#888",marginBottom:16}}>Documents, identity and services prioritised for {petName}'s protection.</p>
+      {picksLoading&&<div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",color:G.mutedText}}><Loader2 size={14} style={{animation:"spin 1s linear infinite",color:G.teal}}/><span style={{fontSize:12}}>Mira is preparing picks…</span></div>}
+      {!picksLoading&&picks.length>0&&(
+        <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
           {picks.map((pick,i)=>{
-            const isService = pick.entity_type === 'service' || pick.type === 'service';
-            const score=isService ? 0 : (pick.mira_score||0);
-            const scoreColor=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
-            return (
-              <div key={i} 
-                style={{flexShrink:0,width:160,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}
-                onClick={() => onSelectProd && onSelectProd(pick)}>
-                {/* Real product image — NOT hardcoded emoji */}
-                <div style={{height:100,background:G.pale,display:"flex",alignItems:"center",justifyContent:"center",fontSize:32,overflow:"hidden"}}>
-                  {(pick.cloudinary_image_url||pick.image_url)
-                    ? <img src={pick.cloudinary_image_url||pick.image_url} alt={pick.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.target.style.display="none";}}/>
-                    : <span>📋</span>}
+            const isService=pick.entity_type==='service'||pick.type==='service';
+            const score=pick.mira_score||0;
+            const col=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
+            const _ri=[pick.cloudinary_url,pick.mockup_url,pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;
+            const img=_ri&&(!_ri.includes("ai_generated")||_ri.includes("cloudinary.com"))?_ri:null;
+            return(
+              <div key={i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer"}}
+                onClick={()=>isService?onOpenService?.(pick.name):setSelPick(pick)}
+                onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"}
+                onMouseLeave={e=>e.currentTarget.style.transform=""}>
+                <div style={{width:"100%",height:130,background:G.pale,overflow:"hidden"}}>
+                  {img
+                    ?<img src={img} alt={pick.name||""} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
+                    :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:`linear-gradient(135deg,${G.deep},${G.teal})`,color:"#fff",fontSize:12,fontWeight:700,padding:8,textAlign:"center"}}>{(pick.name||"").slice(0,24)}</div>}
                 </div>
-                <div style={{padding:"9px 10px 11px"}}>
-                  <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:5}}>{pick.name||"—"}</div>
-                  {!isService && (
-                    <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
-                      <div style={{flex:1,height:3,background:G.pale,borderRadius:3}}><div style={{width:`${score}%`,height:"100%",background:scoreColor,borderRadius:3}}/></div>
-                      <span style={{fontSize:10,fontWeight:800,color:scoreColor}}>{score}</span>
-                    </div>
-                  )}
-                  {isService ? null : (
-                    pick.mira_reason && !pick.mira_reason.toLowerCase().includes('celebrat') && <p style={{fontSize:10,color:"#888",lineHeight:1.4,margin:0,fontStyle:"italic"}}>{pick.mira_reason}</p>
-                  )}
+                <div style={{padding:"10px 11px 12px"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>
+                  {isService
+                    ?<p style={{fontSize:11,color:G.teal,lineHeight:1.45,margin:'0 0 8px'}}>Concierge® can arrange this for {petName}.</p>
+                    :<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}>
+                      <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div>
+                      <span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span>
+                    </div>}
                   <button
-                    onClick={async(e)=>{e.stopPropagation();const{tdc}=await import('../utils/tdc_intent');tdc.book({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks"});const{bookViaConcierge}=await import('../utils/MiraCardActions');bookViaConcierge({service:pick.name,pillar:"paperwork",pet,channel:"paperwork_safety_picks",amount:pick.price});}}
-                    style={{marginTop:6,width:"100%",padding:"5px 0",background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:8,fontSize:10,fontWeight:700,cursor:"pointer"}}>
-                    Book for {petName} →
+                    onClick={e=>{e.stopPropagation();
+                      if(isService){tdc.book({service:pick.name,pillar:'paperwork',pet,channel:'paperwork_mira_picks_service'});onOpenService?.(pick.name);}
+                      else{setSelPick(pick);}
+                    }}
+                    style={{width:'100%',background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:'#fff',border:'none',borderRadius:10,padding:'8px 10px',fontSize:12,fontWeight:700,cursor:'pointer'}}>
+                    {isService?'Talk to Mira →':'View details →'}
                   </button>
                 </div>
               </div>
@@ -285,6 +296,7 @@ function MiraPicksSection({ pet, onSelectProd }) {
           })}
         </div>
       )}
+      {selPick&&<ProductDetailModal product={selPick} pillar="paperwork" selectedPet={pet} onClose={()=>setSelPick(null)}/>}
     </section>
   );
 }
@@ -382,7 +394,7 @@ export function DimExpanded({ dim, pet, onClose, apiProducts={}, services=[], on
                     <div style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{svc.name}</div>
                     <div style={{fontSize:11,color:"#888",lineHeight:1.4,marginBottom:8,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{t(svc.desc,petName)}</div>
                     <div style={{display:"flex",alignItems:"center",justifyContent:"flex-end"}}>
-                      <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book for {petName} →</button>
+                      <button data-testid={`paperwork-service-card-${svc.id}`} style={{background:G.teal,color:"#fff",border:"none",borderRadius:20,padding:"5px 12px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Book via Concierge® →</button>
                     </div>
                   </div>
                 </div>
@@ -436,7 +448,7 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
     }
     if(category==="mira"){
       if(!pet?.id){setLoading(false);return;}
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40&entity_type=product`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
         .then(r=>r.json()).then(d=>{
           const scored=d.picks||[];
           if(scored.length>0){setProducts(scored);setLoading(false);return;}
@@ -445,20 +457,34 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
       return;
     }
     const catLabel={identity:"Identity & Safety",health:"Health Records",travel:"Travel Documents",insurance:"Insurance & Finance",breeds:"Breed & Advisory",advisory:"Expert Advisory",soul:"Soul Documents"}[category]||category;
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(catLabel)}&limit=16`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
-      .then(r=>r.json()).then(d=>setProducts(d.products||[])).catch(()=>setProducts([])).finally(()=>setLoading(false));
-  },[isOpen,category,pet?.id]);
+    // breed-specific categories have 33 variants — fetch all so filter can pick the right breed
+    const isBreedCat = category === 'breeds' || category === 'soul';
+    const limit = isBreedCat ? 50 : 20;
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(catLabel)}&limit=${limit}`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
+      .then(r=>r.json()).then(d=>{
+        const all = d.products || [];
+        // For breed-specific categories apply strict breed filter so Mojo (Indie) only sees Indie products
+        const filtered = isBreedCat ? filterBreedProducts(all, pet?.breed) : all;
+        setProducts(filtered);
+      }).catch(()=>setProducts([])).finally(()=>setLoading(false));
+  },[isOpen,category,pet?.id,pet?.breed]);
   if(!isOpen)return null;
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:11000,background:"rgba(0,0,0,0.72)",display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      {/* X button — fixed outside the scrollable content so it's always clickable */}
+      <button
+        type="button"
+        onClick={e=>{ e.stopPropagation(); onClose(); }}
+        style={{position:"fixed",top:20,right:20,zIndex:11001,background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:999,width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#fff",fontSize:18,pointerEvents:"all"}}
+        aria-label="Close"
+      >✕</button>
       <div onClick={e=>e.stopPropagation()} style={{width:"min(700px,100%)",maxHeight:"88vh",overflowY:"auto",borderRadius:20,background:"#fff",boxShadow:"0 24px 80px rgba(0,0,0,0.45)",display:"flex",flexDirection:"column"}}>
-        <div style={{borderRadius:"20px 20px 0 0",padding:"20px 22px 16px",background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 70%,#0F766E 100%)`,flexShrink:0,position:"sticky",top:0,zIndex:2}}>
+        <div style={{borderRadius:"20px 20px 0 0",padding:"20px 22px 16px",background:`linear-gradient(135deg,${G.deep} 0%,${G.mid} 70%,#0F766E 100%)`,flexShrink:0}}>
           <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
             <div style={{display:"flex",alignItems:"center",gap:10}}>
               <div style={{width:38,height:38,borderRadius:10,background:cfg.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20}}>{cfg.icon}</div>
               <div><p style={{fontWeight:800,color:"#fff",fontSize:15,margin:0}}>{cfg.label}</p><p style={{color:"rgba(255,255,255,0.55)",fontSize:11,margin:0}}>For {petName}{breed?` · ${breed}`:""}</p></div>
             </div>
-            <button onClick={onClose} style={{background:"rgba(255,255,255,0.10)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:20,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"rgba(255,255,255,0.70)",fontSize:16}}>✕</button>
           </div>
           <div style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:10,padding:"8px 12px",display:"flex",alignItems:"flex-start",gap:8}}>
             <span style={{fontSize:13,color:G.light,flexShrink:0}}>✦</span>
@@ -500,6 +526,84 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
 }
 
 
+// ─── PAPERWORK CONCIERGE MODAL ────────────────────────────
+const PW_CONCIERGE_OPTIONS = [
+  "Microchip registration",
+  "Pet insurance setup",
+  "Vaccination record help",
+  "Society or housing registration",
+  "Pet passport & travel documents",
+  "Insurance claim assistance",
+  "Breed document guidance",
+  "Life planning & advisory",
+  "Just — help me get organised",
+];
+
+function PaperworkConciergeModal({ isOpen, onClose, petName, petId, token, preSelected }) {
+  const [sel,setSel]=useState(""); const [notes,setNotes]=useState(""); const [sending,setSending]=useState(false); const [sent,setSent]=useState(false);
+  useEffect(()=>{
+    if(isOpen){ setSent(false); setNotes(""); setSel(preSelected||""); }
+  },[isOpen,preSelected]);
+  if(!isOpen)return null;
+  const send=async()=>{
+    if(!sel||sending)return; setSending(true);
+    tdc.request({text:`Paperwork enquiry: ${sel}`,pillar:"paperwork",pet:{id:petId,name:petName},channel:"paperwork_concierge_modal"});
+    try{
+      const u=JSON.parse(localStorage.getItem("user")||"{}");
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+        body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:petId||"unknown",pillar:"paperwork",intent_primary:"paperwork_guidance",channel:"paperwork_concierge_modal",initial_message:{sender:"parent",text:`Paperwork help needed for ${petName}: ${sel}.${notes?" Notes: "+notes:""}`}}),
+      });
+    }catch{}
+    setSending(false); setSent(true);
+  };
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,padding:32,maxWidth:480,width:"100%",maxHeight:"90vh",overflowY:"auto",position:"relative"}}>
+        {sent?(
+          <div style={{textAlign:"center",padding:"16px 0"}}>
+            <div style={{fontSize:40,marginBottom:16}}>✅</div>
+            <h3 style={{fontSize:18,fontWeight:800,color:G.darkText,marginBottom:10}}>Mira has your request</h3>
+            <p style={{fontSize:14,color:G.mutedText,marginBottom:24,lineHeight:1.7}}>Our Concierge® team will follow up within 24 hours — everything handled for {petName}.</p>
+            <button onClick={onClose} style={{background:G.teal,color:"#fff",border:"none",borderRadius:12,padding:"12px 28px",fontSize:14,fontWeight:700,cursor:"pointer"}}>Done</button>
+          </div>
+        ):(
+          <>
+            <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:G.pale,border:`1px solid ${G.border}`,borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
+              <span style={{fontSize:11,fontWeight:600,color:G.teal,letterSpacing:"0.06em",textTransform:"uppercase"}}>📋 {petName}'s Paperwork Concierge®</span>
+            </div>
+            <h2 style={{fontSize:22,fontWeight:800,color:G.darkText,fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>How can Mira help protect <span style={{color:G.teal}}>{petName}</span>?</h2>
+            <p style={{fontSize:14,color:"#888",marginBottom:8,lineHeight:1.7}}>We handle everything — just tell us what {petName} needs.</p>
+            <p style={{fontSize:12,color:G.mutedText,fontStyle:"italic",marginBottom:20,lineHeight:1.6}}>"Every document {petName} needs — I'll make sure it's sorted." — Mira</p>
+            <p style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:12}}>What would help most right now?</p>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
+              {PW_CONCIERGE_OPTIONS.map(opt=>(
+                <button key={opt} onClick={()=>setSel(opt)}
+                  style={{borderRadius:9999,padding:"8px 16px",fontSize:13,cursor:"pointer",
+                    background:sel===opt?G.pale:"#fff",
+                    border:`1.5px solid ${sel===opt?G.teal:"rgba(13,148,136,0.25)"}`,
+                    color:sel===opt?G.teal:"#555"}}>
+                  {opt}
+                </button>
+              ))}
+            </div>
+            <textarea
+              placeholder={`Anything you'd like Mira to know about ${petName}'s situation… (optional)`}
+              value={notes} onChange={e=>setNotes(e.target.value)}
+              style={{width:"100%",border:`1.5px solid ${G.border}`,borderRadius:12,padding:"12px 14px",fontSize:13,outline:"none",resize:"none",minHeight:80,marginBottom:24,boxSizing:"border-box"}}/>
+            <button onClick={send} disabled={!sel||sending}
+              style={{width:"100%",background:!sel?`${G.teal}44`:`linear-gradient(135deg,${G.teal},${G.mid})`,color:!sel?"#999":"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:!sel?"not-allowed":"pointer"}}>
+              {sending?"Sending…":"📋 Send to Concierge®"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function LoadingState(){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{width:48,height:48,borderRadius:"50%",background:MIRA_ORB,margin:"0 auto 16px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#fff"}}>✦</div><div style={{fontSize:16,color:G.darkText,fontWeight:600}}>Preparing <span style={{color:G.teal}}>your safety documents…</span></div></div>);}
 function NoPetState({onAddPet}){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{fontSize:48,marginBottom:16}}>📋</div><div style={{fontSize:18,fontWeight:800,color:G.darkText,marginBottom:8}}>Add a pet to manage documents</div><p style={{fontSize:14,color:G.mutedText,marginBottom:24}}>Mira keeps every document, record and certificate organised.</p><button onClick={onAddPet} style={{background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:16,fontWeight:600,cursor:"pointer"}}>Add your dog →</button></div>);}
 
@@ -538,6 +642,8 @@ const PaperworkSoulPage = () => {
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
   const [selProd,       setSelProd]       = useState(null); // ProductDetailModal
+  const [conciergeOpen, setConciergeOpen] = useState(false); // Paperwork Concierge Modal
+  const [conciergeSvc,  setConciergeSvc]  = useState("");   // pre-selected service option
   const miraRef = useRef(null);
   const topTabs = [
     { id: 'documents', label: 'Documents' },
@@ -546,23 +652,24 @@ const PaperworkSoulPage = () => {
   ];
 
   const handleBook = useCallback(async (svc) => {
-    const petName = petData?.name||"your dog";
     const svcName = svc?.name||"this service";
     // Fire tdc tracking immediately
     tdc.book({ service: svcName, pillar: "paperwork", pet: petData, channel: "paperwork_page", amount: svc?.base_price||svc?.price });
     const knownSvc = PAPER_SERVICES.find(s=>s.name===svcName||s.id===svc?.id);
     if (knownSvc) { setActiveService(knownSvc); return; }
-    // Fallback: fire ticket
-    try {
-      const user = JSON.parse(localStorage.getItem("user")||"{}");
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-        body:JSON.stringify({parent_id:user?.id||"guest",pet_id:petData?.id||"",pillar:"paperwork",intent_primary:"service_request",life_state:"PLAN",intent_secondary:[svcName],initial_message:{sender:"parent",source:"paperwork_page",text:`Hi! ${petName}'s parent would like to book ${svcName}. Please arrange and confirm.`}}),
-      });
-    } catch(e){console.error("[PaperworkSoulPage] handleBook",e);}
-    setToastSvc(svcName); setToastVisible(true);
-  },[petData,token]);
+    // Any other service → open Paperwork Concierge Modal so user can choose options first
+    // Map service name to a relevant pre-selected option in the modal
+    const nameMap = {
+      "microchip":"Microchip registration","insurance":"Pet insurance setup","vaccination":"Vaccination record help",
+      "registration":"Society or housing registration","passport":"Pet passport & travel documents",
+      "travel":"Pet passport & travel documents","claim":"Insurance claim assistance",
+      "breed":"Breed document guidance","planning":"Life planning & advisory","advisory":"Life planning & advisory",
+    };
+    const lc = svcName.toLowerCase();
+    const matched = Object.entries(nameMap).find(([k])=>lc.includes(k));
+    setConciergeSvc(matched?matched[1]:svcName);
+    setConciergeOpen(true);
+  },[petData]);
 
   useEffect(()=>{
     const CATS=["Identity & Safety","Health Records","Travel Documents","Insurance & Finance","Breed & Advisory","Expert Advisory","Soul Documents","bundles"];
@@ -755,7 +862,13 @@ const PaperworkSoulPage = () => {
             />
 
             {/* Mira picks */}
-            <div ref={miraRef}><MiraPicksSection pet={petData} onSelectProd={setSelProd}/></div>
+            <div ref={miraRef}><MiraPicksSection pet={petData} onOpenService={(name)=>{
+              const lc=(name||"").toLowerCase();
+              const nameMap={"microchip":"Microchip registration","insurance":"Pet insurance setup","vaccination":"Vaccination record help","registration":"Society or housing registration","passport":"Pet passport & travel documents","travel":"Pet passport & travel documents","claim":"Insurance claim assistance","breed":"Breed document guidance","planning":"Life planning & advisory","advisory":"Life planning & advisory"};
+              const matched=Object.entries(nameMap).find(([k])=>lc.includes(k));
+              setConciergeSvc(matched?matched[1]:name||"");
+              setConciergeOpen(true);
+            }}/></div>
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
 
@@ -856,6 +969,16 @@ const PaperworkSoulPage = () => {
           onClose={() => setSelProd(null)}
         />
       )}
+
+      {/* Paperwork Concierge Modal — opens when service card clicked */}
+      <PaperworkConciergeModal
+        isOpen={conciergeOpen}
+        onClose={()=>setConciergeOpen(false)}
+        petName={petData?.name||"your dog"}
+        petId={petData?.id}
+        token={token}
+        preSelected={conciergeSvc}
+      />
 
     </PillarPageLayout>  );
 };
