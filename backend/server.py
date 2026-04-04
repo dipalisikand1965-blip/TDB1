@@ -7153,17 +7153,19 @@ async def admin_delete_bundle(bundle_id: str, username: str = Depends(verify_adm
 
 @admin_router.post("/bundles/all/{bundle_id}/toggle")
 async def admin_toggle_bundle_active(bundle_id: str, username: str = Depends(verify_admin)):
-    """Toggle is_active for a bundle."""
+    """Toggle is_active for a bundle — syncs both is_active AND active fields."""
     from datetime import datetime, timezone
     existing = await db.bundles.find_one(
-        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "is_active": 1, "name": 1}
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "is_active": 1, "active": 1, "name": 1}
     )
     if existing is None:
         raise HTTPException(status_code=404, detail="Bundle not found")
-    new_status = not existing.get("is_active", True)
+    # Determine current status from either field (is_active takes precedence if set)
+    current = existing.get("is_active") if existing.get("is_active") is not None else existing.get("active", True)
+    new_status = not current
     await db.bundles.update_one(
         {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
-        {"$set": {"is_active": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"is_active": new_status, "active": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     return {"success": True, "id": bundle_id, "is_active": new_status, "name": existing.get("name")}
 
@@ -25318,17 +25320,19 @@ async def toggle_admin_bundle_active(
     bundle_id: str,
     current_user: dict = Depends(verify_admin)
 ):
-    """Toggle is_active for a bundle in the master bundles collection."""
+    """Toggle is_active for a bundle — syncs both is_active AND active fields."""
     from datetime import datetime, timezone
     existing = await db.bundles.find_one(
-        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "is_active": 1, "name": 1}
+        {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0, "is_active": 1, "active": 1, "name": 1}
     )
     if existing is None:
         raise HTTPException(status_code=404, detail="Bundle not found")
-    new_status = not existing.get("is_active", True)
+    # Determine current status from either field (is_active takes precedence if set)
+    current = existing.get("is_active") if existing.get("is_active") is not None else existing.get("active", True)
+    new_status = not current
     await db.bundles.update_one(
         {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
-        {"$set": {"is_active": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"is_active": new_status, "active": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
     return {"success": True, "id": bundle_id, "is_active": new_status, "name": existing.get("name")}
 
