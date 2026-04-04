@@ -231,7 +231,14 @@ function MiraPicksSection({ pet, onOpenService }) {
           if(pi<prods.length)merged.push(prods[pi++]);
           if(si<svcs.length)merged.push(svcs[si++]);
         }
-        if(merged.length)setPicks(merged.slice(0,12));
+        // Deduplicate by id/name so no item appears twice
+        const seen=new Set();
+        const deduped=merged.filter(p=>{
+          const key=p.id||p._id||p.name||JSON.stringify(p);
+          if(seen.has(key))return false;
+          seen.add(key);return true;
+        });
+        if(deduped.length)setPicks(deduped.slice(0,12));
         setPicksLoading(false);
       })
       .catch(()=>setPicksLoading(false));
@@ -519,6 +526,84 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
 }
 
 
+// ─── PAPERWORK CONCIERGE MODAL ────────────────────────────
+const PW_CONCIERGE_OPTIONS = [
+  "Microchip registration",
+  "Pet insurance setup",
+  "Vaccination record help",
+  "Society or housing registration",
+  "Pet passport & travel documents",
+  "Insurance claim assistance",
+  "Breed document guidance",
+  "Life planning & advisory",
+  "Just — help me get organised",
+];
+
+function PaperworkConciergeModal({ isOpen, onClose, petName, petId, token, preSelected }) {
+  const [sel,setSel]=useState(""); const [notes,setNotes]=useState(""); const [sending,setSending]=useState(false); const [sent,setSent]=useState(false);
+  useEffect(()=>{
+    if(isOpen){ setSent(false); setNotes(""); setSel(preSelected||""); }
+  },[isOpen,preSelected]);
+  if(!isOpen)return null;
+  const send=async()=>{
+    if(!sel||sending)return; setSending(true);
+    tdc.request({text:`Paperwork enquiry: ${sel}`,pillar:"paperwork",pet:{id:petId,name:petName},channel:"paperwork_concierge_modal"});
+    try{
+      const u=JSON.parse(localStorage.getItem("user")||"{}");
+      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
+        body:JSON.stringify({parent_id:u?.id||u?.email||"guest",pet_id:petId||"unknown",pillar:"paperwork",intent_primary:"paperwork_guidance",channel:"paperwork_concierge_modal",initial_message:{sender:"parent",text:`Paperwork help needed for ${petName}: ${sel}.${notes?" Notes: "+notes:""}`}}),
+      });
+    }catch{}
+    setSending(false); setSent(true);
+  };
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.50)",zIndex:10006,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,padding:32,maxWidth:480,width:"100%",maxHeight:"90vh",overflowY:"auto",position:"relative"}}>
+        {sent?(
+          <div style={{textAlign:"center",padding:"16px 0"}}>
+            <div style={{fontSize:40,marginBottom:16}}>✅</div>
+            <h3 style={{fontSize:18,fontWeight:800,color:G.darkText,marginBottom:10}}>Mira has your request</h3>
+            <p style={{fontSize:14,color:G.mutedText,marginBottom:24,lineHeight:1.7}}>Our Concierge® team will follow up within 24 hours — everything handled for {petName}.</p>
+            <button onClick={onClose} style={{background:G.teal,color:"#fff",border:"none",borderRadius:12,padding:"12px 28px",fontSize:14,fontWeight:700,cursor:"pointer"}}>Done</button>
+          </div>
+        ):(
+          <>
+            <button onClick={onClose} style={{position:"absolute",top:16,right:16,background:"none",border:"none",cursor:"pointer",color:"#999",fontSize:18}}>✕</button>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:G.pale,border:`1px solid ${G.border}`,borderRadius:9999,padding:"4px 14px",marginBottom:20}}>
+              <span style={{fontSize:11,fontWeight:600,color:G.teal,letterSpacing:"0.06em",textTransform:"uppercase"}}>📋 {petName}'s Paperwork Concierge®</span>
+            </div>
+            <h2 style={{fontSize:22,fontWeight:800,color:G.darkText,fontFamily:"Georgia,serif",lineHeight:1.2,marginBottom:8}}>How can Mira help protect <span style={{color:G.teal}}>{petName}</span>?</h2>
+            <p style={{fontSize:14,color:"#888",marginBottom:8,lineHeight:1.7}}>We handle everything — just tell us what {petName} needs.</p>
+            <p style={{fontSize:12,color:G.mutedText,fontStyle:"italic",marginBottom:20,lineHeight:1.6}}>"Every document {petName} needs — I'll make sure it's sorted." — Mira</p>
+            <p style={{fontSize:13,fontWeight:700,color:G.darkText,marginBottom:12}}>What would help most right now?</p>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:24}}>
+              {PW_CONCIERGE_OPTIONS.map(opt=>(
+                <button key={opt} onClick={()=>setSel(opt)}
+                  style={{borderRadius:9999,padding:"8px 16px",fontSize:13,cursor:"pointer",
+                    background:sel===opt?G.pale:"#fff",
+                    border:`1.5px solid ${sel===opt?G.teal:"rgba(13,148,136,0.25)"}`,
+                    color:sel===opt?G.teal:"#555"}}>
+                  {opt}
+                </button>
+              ))}
+            </div>
+            <textarea
+              placeholder={`Anything you'd like Mira to know about ${petName}'s situation… (optional)`}
+              value={notes} onChange={e=>setNotes(e.target.value)}
+              style={{width:"100%",border:`1.5px solid ${G.border}`,borderRadius:12,padding:"12px 14px",fontSize:13,outline:"none",resize:"none",minHeight:80,marginBottom:24,boxSizing:"border-box"}}/>
+            <button onClick={send} disabled={!sel||sending}
+              style={{width:"100%",background:!sel?`${G.teal}44`:`linear-gradient(135deg,${G.teal},${G.mid})`,color:!sel?"#999":"#fff",border:"none",borderRadius:12,padding:"14px",fontSize:15,fontWeight:800,cursor:!sel?"not-allowed":"pointer"}}>
+              {sending?"Sending…":"📋 Send to Concierge®"}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function LoadingState(){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{width:48,height:48,borderRadius:"50%",background:MIRA_ORB,margin:"0 auto 16px",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#fff"}}>✦</div><div style={{fontSize:16,color:G.darkText,fontWeight:600}}>Preparing <span style={{color:G.teal}}>your safety documents…</span></div></div>);}
 function NoPetState({onAddPet}){return(<div style={{textAlign:"center",padding:"80px 20px"}}><div style={{fontSize:48,marginBottom:16}}>📋</div><div style={{fontSize:18,fontWeight:800,color:G.darkText,marginBottom:8}}>Add a pet to manage documents</div><p style={{fontSize:14,color:G.mutedText,marginBottom:24}}>Mira keeps every document, record and certificate organised.</p><button onClick={onAddPet} style={{background:`linear-gradient(135deg,${G.teal},${G.mid})`,color:"#fff",border:"none",borderRadius:9999,padding:"12px 28px",fontSize:16,fontWeight:600,cursor:"pointer"}}>Add your dog →</button></div>);}
 
@@ -557,6 +642,8 @@ const PaperworkSoulPage = () => {
   const [toastVisible,  setToastVisible]  = useState(false);
   const [toastSvc,      setToastSvc]      = useState("");
   const [selProd,       setSelProd]       = useState(null); // ProductDetailModal
+  const [conciergeOpen, setConciergeOpen] = useState(false); // Paperwork Concierge Modal
+  const [conciergeSvc,  setConciergeSvc]  = useState("");   // pre-selected service option
   const miraRef = useRef(null);
   const topTabs = [
     { id: 'documents', label: 'Documents' },
@@ -565,23 +652,24 @@ const PaperworkSoulPage = () => {
   ];
 
   const handleBook = useCallback(async (svc) => {
-    const petName = petData?.name||"your dog";
     const svcName = svc?.name||"this service";
     // Fire tdc tracking immediately
     tdc.book({ service: svcName, pillar: "paperwork", pet: petData, channel: "paperwork_page", amount: svc?.base_price||svc?.price });
     const knownSvc = PAPER_SERVICES.find(s=>s.name===svcName||s.id===svc?.id);
     if (knownSvc) { setActiveService(knownSvc); return; }
-    // Fallback: fire ticket
-    try {
-      const user = JSON.parse(localStorage.getItem("user")||"{}");
-      await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
-        method:"POST",
-        headers:{"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},
-        body:JSON.stringify({parent_id:user?.id||"guest",pet_id:petData?.id||"",pillar:"paperwork",intent_primary:"service_request",life_state:"PLAN",intent_secondary:[svcName],initial_message:{sender:"parent",source:"paperwork_page",text:`Hi! ${petName}'s parent would like to book ${svcName}. Please arrange and confirm.`}}),
-      });
-    } catch(e){console.error("[PaperworkSoulPage] handleBook",e);}
-    setToastSvc(svcName); setToastVisible(true);
-  },[petData,token]);
+    // Any other service → open Paperwork Concierge Modal so user can choose options first
+    // Map service name to a relevant pre-selected option in the modal
+    const nameMap = {
+      "microchip":"Microchip registration","insurance":"Pet insurance setup","vaccination":"Vaccination record help",
+      "registration":"Society or housing registration","passport":"Pet passport & travel documents",
+      "travel":"Pet passport & travel documents","claim":"Insurance claim assistance",
+      "breed":"Breed document guidance","planning":"Life planning & advisory","advisory":"Life planning & advisory",
+    };
+    const lc = svcName.toLowerCase();
+    const matched = Object.entries(nameMap).find(([k])=>lc.includes(k));
+    setConciergeSvc(matched?matched[1]:svcName);
+    setConciergeOpen(true);
+  },[petData]);
 
   useEffect(()=>{
     const CATS=["Identity & Safety","Health Records","Travel Documents","Insurance & Finance","Breed & Advisory","Expert Advisory","Soul Documents","bundles"];
@@ -774,7 +862,13 @@ const PaperworkSoulPage = () => {
             />
 
             {/* Mira picks */}
-            <div ref={miraRef}><MiraPicksSection pet={petData} onOpenService={(name)=>handleBook({name})}/></div>
+            <div ref={miraRef}><MiraPicksSection pet={petData} onOpenService={(name)=>{
+              const lc=(name||"").toLowerCase();
+              const nameMap={"microchip":"Microchip registration","insurance":"Pet insurance setup","vaccination":"Vaccination record help","registration":"Society or housing registration","passport":"Pet passport & travel documents","travel":"Pet passport & travel documents","claim":"Insurance claim assistance","breed":"Breed document guidance","planning":"Life planning & advisory","advisory":"Life planning & advisory"};
+              const matched=Object.entries(nameMap).find(([k])=>lc.includes(k));
+              setConciergeSvc(matched?matched[1]:name||"");
+              setConciergeOpen(true);
+            }}/></div>
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
 
@@ -875,6 +969,16 @@ const PaperworkSoulPage = () => {
           onClose={() => setSelProd(null)}
         />
       )}
+
+      {/* Paperwork Concierge Modal — opens when service card clicked */}
+      <PaperworkConciergeModal
+        isOpen={conciergeOpen}
+        onClose={()=>setConciergeOpen(false)}
+        petName={petData?.name||"your dog"}
+        petId={petData?.id}
+        token={token}
+        preSelected={conciergeSvc}
+      />
 
     </PillarPageLayout>  );
 };
