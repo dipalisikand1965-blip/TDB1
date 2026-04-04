@@ -1371,7 +1371,7 @@ function MiraLearnImagineCard({ item, pet, token }) {
   );
 }
 
-export function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet, onOpenService }) {
   const [picks,       setPicks]       = useState([]);
   const [picksLoading,setPicksLoading]= useState(true);
   const [selectedPick,setSelectedPick]= useState(null);
@@ -1482,20 +1482,7 @@ export function MiraPicksSection({ pet }) {
             return (
               <div key={pick.id||i} style={{flexShrink:0,width:168,background:"#fff",borderRadius:14,border:`1.5px solid ${G.borderLight}`,overflow:"hidden",cursor:"pointer",transition:"transform 0.15s,box-shadow 0.15s"}}
                 onClick={()=>{
-                  if(isService) {
-                    // Service pick: create ticket directly (canonical rule)
-                    const u=JSON.parse(localStorage.getItem('user')||'{}');
-                    fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`,{
-                      method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},
-                      body:JSON.stringify({parent_id:u?.id||u?.email||'guest',pet_id:pet?.id||'unknown',pillar:'learn',
-                        intent_primary:'service_booking',intent_secondary:[pick.name||'Learn Service'],
-                        life_state:'learn',channel:'learn_mira_picks',
-                        initial_message:{sender:'parent',text:`I'd like to book ${pick.name||'this service'} for ${petName}.`}})
-                    }).catch(()=>{});
-                    setSelectedPick({...pick, _booked:true});
-                  } else {
-                    setSelectedPick(pick);
-                  }
+                  if(isService){ onOpenService?.(pick.name||pick.entity_name); } else { setSelectedPick(pick); }
                 }}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(124,58,237,0.12)`;}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
@@ -2145,7 +2132,7 @@ const LearnSoulPage = () => {
             </div>
 
             {/* Mira Picks */}
-            <div ref={miraPicksRef}><MiraPicksSection pet={petData}/></div>
+            <div ref={miraPicksRef}><MiraPicksSection pet={petData} onOpenService={(name)=>{ setConciergeType(name||''); setConciergeOpen(true); }}/></div>
             {/* Concierge CTA — desktop */}
             <ConciergeCTA pillar="learn" />
 

@@ -377,7 +377,7 @@ function MiraImagineCard({ item, pet, token }) {
 }
 
 
-export function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet, onOpenService }) {
   const [picks, setPicks]               = useState([]);
   const [scoringPending, setScoringPending] = useState(false);
   const [loading, setLoading]           = useState(true);
@@ -541,7 +541,7 @@ export function MiraPicksSection({ pet }) {
           return (
             <div key={pick.id || i}
               style={{ flexShrink:0, width:168, background:"#fff", borderRadius:14, border:`1.5px solid ${G.borderLight}`, overflow:"hidden", cursor:"pointer", transition:"transform 0.15s,box-shadow 0.15s" }}
-              onClick={() => isService ? setConciergeService(pick) : setSelectedPick(pick)}
+              onClick={() => isService ? onOpenService?.(pick.name||pick.entity_name) : setSelectedPick(pick)}
               onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow=`0 6px 20px rgba(45,106,79,0.12)`; }}
               onMouseLeave={e => { e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow=""; }}
               data-testid={`care-pick-card-${i}`}
@@ -2209,6 +2209,8 @@ export default function CareSoulPage() {
   const [apiProducts, setApiProducts] = useState({});
   const [conciergeToast, setConciergeToast] = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
+  const [picksConciergOpen, setPicksConciergOpen] = useState(false); // from Mira picks service click
+  const [picksSvcType,   setPicksSvcType]   = useState('');          // pre-selected type
   // ── tdc page visit tracking ──────────────────────────────────────────────
   usePlatformTracking({ pillar: "care", pet: currentPet });
 
@@ -2404,7 +2406,7 @@ export default function CareSoulPage() {
               </div>
 
               {/* Mira's Picks */}
-              <MiraPicksSection pet={petData} />
+              <MiraPicksSection pet={petData} onOpenService={(name)=>{ setPicksSvcType(name||''); setPicksConciergOpen(true); }} />
 
               {/* Concierge CTA — desktop */}
               <ConciergeCTA pillar="care" />
@@ -2509,6 +2511,15 @@ export default function CareSoulPage() {
         </div>
       </div>
     <ConciergeToast toast={conciergeToast} onClose={() => setConciergeToast(null)} />
+    {picksConciergOpen && (
+      <CareConciergeModal
+        isOpen={picksConciergOpen}
+        onClose={() => setPicksConciergOpen(false)}
+        serviceType={picksSvcType}
+        petName={petData?.name}
+        petId={petData?.id}
+      />
+    )}
     </PillarPageLayout>
   );
 }
