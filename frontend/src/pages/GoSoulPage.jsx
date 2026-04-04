@@ -35,6 +35,7 @@ import GoHero from "../components/go/GoHero";
 import GoCategoryStrip from "../components/go/GoCategoryStrip";
 import GuidedGoPaths from "../components/go/GuidedGoPaths";
 import GoConciergeSection from "../components/go/GoConciergeSection";
+import GoConciergeModal from "../components/go/GoConciergeModal";
 import PetFriendlyStays from "../components/go/PetFriendlyStays";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
@@ -314,7 +315,7 @@ function resolvePickImage(pick) {
   return candidates.find(url => url && url.startsWith("http")) || null;
 }
 
-export function MiraPicksSection({ pet }) {
+export function MiraPicksSection({ pet, onOpenService }) {
   const [scoringPending, setScoringPending] = useState(false);
   const [picks, setPicks]               = useState([]);
   const [loading, setLoading]           = useState(true);
@@ -423,7 +424,7 @@ export function MiraPicksSection({ pet }) {
             return (
               <div key={pick.id || i}
                 style={{ flexShrink:0, width:168, background:"#fff", borderRadius:14, border:`1.5px solid ${G.borderLight}`, overflow:"hidden", cursor:"pointer", transition:"transform 0.15s" }}
-                onClick={() => isService ? setConciergeService(pick) : setSelectedPick(pick)}
+                onClick={() => isService ? onOpenService?.(pick) : setSelectedPick(pick)}
                 onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.transform=""; }}
                 data-testid={`go-pick-card-${i}`}>
@@ -1895,6 +1896,7 @@ const GoSoulPage = () => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab]   = useState(searchParams.get('tab') === 'nearme' ? 'stay' : 'go');
   const [goConciergOpen, setGoConciergOpen] = useState(false);
+  const [goPickSvc, setGoPickSvc] = useState(null); // service pick → GoConciergeModal
   const [openDim, setOpenDim]       = useState(null);
   const [petData, setPetData]       = useState(null);
   const [soulScore, setSoulScore]   = useState(0);
@@ -2069,7 +2071,7 @@ const GoSoulPage = () => {
             </section>
 
             {/* Mira's Picks */}
-            <MiraPicksSection pet={petData} />
+            <MiraPicksSection pet={petData} onOpenService={(pick)=>setGoPickSvc(pick)} />
 
             {/* Soul Made handled inside PersonalisedBreedSection */}
 
@@ -2205,6 +2207,7 @@ const GoSoulPage = () => {
         </div>
       </div>
     )}
+    {goPickSvc && <GoConciergeModal pet={petData} service={goPickSvc} token={token} onClose={()=>setGoPickSvc(null)} />}
     </PillarPageLayout>
   );
 };
