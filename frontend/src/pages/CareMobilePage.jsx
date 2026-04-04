@@ -156,7 +156,7 @@ export default function CareMobilePage() {
   useEffect(() => {
     if (!currentPet) return;
     const petBreed = (currentPet?.breed || 'indie').toLowerCase().trim();
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=600`)
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=600&breed=${encodeURIComponent(petBreed)}`)
       .then(r => r.ok ? r.json() : null)
       .then(async data => {
         if (!data?.products?.length) return;
