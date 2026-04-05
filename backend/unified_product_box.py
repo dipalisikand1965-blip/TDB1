@@ -1026,6 +1026,21 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
             {"$set": updates}
         )
         
+        # If this is a soul_made product, propagate visibility/active state to breed_products too.
+        # This ensures archive/restore is respected by pages that read directly from breed_products.
+        propagate_fields = {}
+        if "visibility" in updates:
+            propagate_fields["visibility"] = updates["visibility"]
+        if "is_active" in updates:
+            propagate_fields["is_active"] = updates["is_active"]
+        if propagate_fields:
+            existing_soul = await db.products_master.find_one({"id": product_id}, {"_id": 0, "soul_made": 1})
+            if existing_soul and existing_soul.get("soul_made"):
+                await db.breed_products.update_one(
+                    {"id": product_id},
+                    {"$set": propagate_fields}
+                )
+        
         # Get updated product
         updated = await db[collection_name].find_one({"id": product_id}, {"_id": 0})
         
@@ -1097,6 +1112,11 @@ async def restore_product(product_id: str):
         )
         if result2.modified_count == 0:
             raise HTTPException(status_code=404, detail="Product not found")
+    # Also propagate restore to breed_products (for pages that read directly from it)
+    await db.breed_products.update_one(
+        {"id": product_id},
+        {"$set": {"visibility": {"status": "active"}, "is_active": True}}
+    )
     return {"message": "Product restored", "product_id": product_id}
 
 
