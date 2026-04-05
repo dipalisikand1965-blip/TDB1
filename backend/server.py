@@ -11724,11 +11724,12 @@ async def get_admin_breed_products(
     search: Optional[str] = None,
     has_mockup: Optional[str] = None,
     is_active: Optional[bool] = None,
+    include_all: bool = False,
     limit: int = 100,
     skip: int = 0
 ):
     """Get breed products for admin management (is_mockup=True by default — proper mockups only)"""
-    query = {"is_mockup": True}   # Only show proper product mockups, not portrait-only
+    query = {} if include_all else {"is_mockup": True}   # include_all bypasses mockup filter for shop management
     if breed:
         # Normalize breed and create regex pattern for matching
         from breed_normalise import normalise_breed
@@ -11742,7 +11743,11 @@ async def get_admin_breed_products(
     if category:
         query["category"] = {"$regex": category, "$options": "i"}
     if pillar:
-        query["pillars"] = {"$in": [pillar.lower()]}
+        query["$or"] = query.get("$or", []) or [
+            {"pillar": pillar.lower()},
+            {"pillars": pillar.lower()},
+            {"pillars": {"$in": [pillar.lower()]}},
+        ]
     if search:
         query["name"] = {"$regex": search, "$options": "i"}
     if has_mockup == "true":
