@@ -68,6 +68,45 @@ def get_db():
     return _db
 
 
+async def _sync_to_products_master(db, breed_doc: dict):
+    """Write-through helper: keeps products_master in sync with breed_products."""
+    pid = breed_doc.get("id") or breed_doc.get("product_id")
+    if not pid:
+        return
+    img = breed_doc.get("cloudinary_url") or breed_doc.get("mockup_url")
+    await db.products_master.update_one(
+        {"id": pid},
+        {
+            "$set": {
+                "soul_made": True,
+                "soul_product": True,
+                "soul_tier": "soul_made",
+                "cloudinary_url": img,
+                "mockup_url": breed_doc.get("mockup_url"),
+                "image_url": img,
+                "image": img,
+                "breed": breed_doc.get("breed"),
+                "breed_tags": [breed_doc.get("breed", "").lower()],
+                "pillar": breed_doc.get("pillar") or (
+                    breed_doc.get("pillars")[0]
+                    if isinstance(breed_doc.get("pillars"), list)
+                    else breed_doc.get("pillars") or ""
+                ),
+                "category": breed_doc.get("category"),
+                "name": breed_doc.get("name"),
+                "product_type": breed_doc.get("product_type") or breed_doc.get("category"),
+                "is_active": breed_doc.get("is_active", True),
+                "original_price": breed_doc.get("original_price") or breed_doc.get("price"),
+            },
+            "$setOnInsert": {
+                # Only set visibility on new records — don't overwrite admin-managed status
+                "visibility": {"status": "active"},
+            },
+        },
+        upsert=True
+    )
+
+
 class MockupRequest(BaseModel):
     product_name: str
     pet_name: str
@@ -398,21 +437,14 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
                         {"_id": product["_id"]},
                         {"$set": update_fields}
                     )
-                    # Also upsert into products_master with pillar tag
-                    if tag_pillar:
-                        prod_doc = dict(product)
-                        prod_doc.pop("_id", None)
-                        prod_doc["mockup_url"] = mockup_url
-                        prod_doc["image_url"] = mockup_url
-                        prod_doc["pillar"] = tag_pillar
-                        prod_doc["soul_product"] = True
-                        prod_id = prod_doc.get("id")
-                        if prod_id:
-                            await db.products_master.update_one(
-                                {"id": prod_id},
-                                {"$set": prod_doc},
-                                upsert=True
-                            )
+                    # Write-through to products_master (always, not just when tag_pillar)
+                    await _sync_to_products_master(db, {
+                        **{k: v for k, v in product.items() if k != '_id'},
+                        "mockup_url": mockup_url,
+                        "image_url": mockup_url,
+                        "cloudinary_url": mockup_url,
+                        "pillar": tag_pillar or product.get("pillar"),
+                    })
                     _generation_status["generated"] += 1
                     logger.info(f"✓ Generated mockup for {slug}{' → '+tag_pillar if tag_pillar else ''}")
                 else:
@@ -543,17 +575,26 @@ async def get_breed_products(
         "jack_russell_terrier": "jack_russell",
     }
 
+    # Reverse alias map: canonical breed → all stored variants in DB
+    # (e.g. "indie" products may be stored as "indian_pariah" in some entries)
+    REVERSE_ALIASES = {
+        "indie": ["indie", "indian_pariah", "indian_pariah_dog", "desi_dog", "street_dog"],
+        "husky": ["husky", "black_husky", "grey_husky", "white_husky", "siberian_husky"],
+        "labrador": ["labrador", "labrador_retriever", "lab"],
+        "yorkshire": ["yorkshire", "yorkshire_terrier", "yorkie"],
+        "poodle": ["poodle", "toy_poodle", "miniature_poodle"],
+        "st_bernard": ["st_bernard", "saint_bernard"],
+        "schnoodle": ["schnoodle", "shnoodle"],
+    }
+
     # flat_only mode: return only flat-art overlay products
     if flat_only:
         query = {"is_mockup": True, "product_type": {"$regex": "^flat_"}}
         if breed:
             breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
             breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
-            query["$or"] = [
-                {"breed": breed_resolved},
-                {"breed": breed_norm},
-                {"breed": breed.lower()},
-            ]
+            all_variants = REVERSE_ALIASES.get(breed_resolved, [breed_resolved, breed_norm])
+            query["$or"] = [{"breed": v} for v in set(all_variants)]
         if search:
             text_cond = {"$or": [
                 {"name": {"$regex": search, "$options": "i"}},
@@ -564,16 +605,12 @@ async def get_breed_products(
         products = await db.breed_products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
         return {"products": products, "total": total, "count": len(products)}
 
-    query = {"is_mockup": True}
+    query = {"is_mockup": True, "is_active": {"$ne": False}, "visibility.status": {"$ne": "archived"}}
     if breed:
         breed_norm = breed.lower().strip().replace(" ", "_").replace("-", "_")
         breed_resolved = BREED_ALIASES.get(breed_norm, breed_norm)
-        query["$or"] = [
-            {"breed": breed_resolved},
-            {"breed": breed_norm},
-            {"breed": breed.lower()},
-            {"breed": "all"},
-        ]
+        all_variants = REVERSE_ALIASES.get(breed_resolved, [breed_resolved, breed_norm])
+        query["$or"] = [{"breed": v} for v in set(all_variants)] + [{"breed": "all"}]
     if product_type:
         query["product_type"] = product_type
     if pillar:
@@ -712,6 +749,8 @@ async def seed_new_product_types():
                 },
                 upsert=True
             )
+            # Sync to products_master (establishes record; image filled in later)
+            await _sync_to_products_master(db, {**updatable_fields, "id": product_id})
             products_created += 1
     
     return {
@@ -934,6 +973,7 @@ async def import_mockup_urls(data: dict):
                 {"breed": breed, "product_type": product_type},
                 {"$set": product}
             )
+            await _sync_to_products_master(db, product)
             updated += 1
         else:
             # Insert new product
@@ -1357,6 +1397,13 @@ async def update_soul_made_product(product_id: str, update: SoulMadeProductUpdat
         {"id": product_id},
         {"$set": update_dict}
     )
+
+    # Write-through: fetch updated doc and sync to products_master
+    if result.modified_count > 0:
+        updated_doc = await db.breed_products.find_one({"id": product_id})
+        if updated_doc:
+            updated_doc.pop("_id", None)
+            await _sync_to_products_master(db, updated_doc)
     
     if result.modified_count == 0:
         # Try products_master collection as fallback
@@ -1515,6 +1562,12 @@ async def _auto_assign_pillars_background(db, use_ai: bool = True):
                     {"_id": product["_id"]},
                     {"$set": {"pillar": pillar, "pillars": pillars, "updated_at": datetime.utcnow().isoformat()}}
                 )
+                # Sync updated pillar info to products_master
+                await _sync_to_products_master(db, {
+                    **{k: v for k, v in product.items() if k != "_id"},
+                    "pillar": pillar,
+                    "pillars": pillars,
+                })
                 _pillar_assign_status["assigned"] += 1
             except Exception as e:
                 logger.error(f"[PILLAR-ASSIGN] Error: {e}")
@@ -1840,6 +1893,8 @@ async def _generate_breed_cake_art(db, breeds: list):
                         {"$set": doc},
                         upsert=True
                     )
+                    # Write-through to products_master
+                    await _sync_to_products_master(db, doc)
                     _mockup_gen_status["generated"] += 1
                     logger.info(f"[CAKE-ART] ✓ {display_name}")
                 else:
@@ -1886,29 +1941,32 @@ async def _generate_mockups_for_type(db, product_type: str, breeds: List[str], p
                 
                 if mockup_url:
                     pillar = pillars[0] if pillars else _guess_pillar(product_type, display_name)[0]
+                    set_doc = {
+                        "id": product_id,
+                        "name": display_name,
+                        "product_type": product_type,
+                        "breed": breed,
+                        "pillar": pillar,
+                        "pillars": pillars if pillars else [pillar],
+                        "price": price,
+                        "description": description or f"Beautiful {display_name} featuring soulful watercolor breed illustration.",
+                        "mockup_url": mockup_url,
+                        "cloudinary_url": mockup_url if mockup_url.startswith("http") else None,
+                        "image_url": mockup_url,
+                        "is_mockup": True,
+                        "is_active": True,
+                        "active": True,
+                        "mockup_generated_at": datetime.utcnow().isoformat(),
+                        "updated_at": datetime.utcnow().isoformat(),
+                    }
                     await db.breed_products.update_one(
                         {"breed": breed, "product_type": product_type},
-                        {"$set": {
-                            "id": product_id,
-                            "name": display_name,
-                            "product_type": product_type,
-                            "breed": breed,
-                            "pillar": pillar,
-                            "pillars": pillars if pillars else [pillar],
-                            "price": price,
-                            "description": description or f"Beautiful {display_name} featuring soulful watercolor breed illustration.",
-                            "mockup_url": mockup_url,
-                            "cloudinary_url": mockup_url if mockup_url.startswith("http") else None,
-                            "image_url": mockup_url,
-                            "is_mockup": True,
-                            "is_active": True,
-                            "active": True,
-                            "mockup_generated_at": datetime.utcnow().isoformat(),
-                            "updated_at": datetime.utcnow().isoformat(),
-                        },
+                        {"$set": set_doc,
                         "$setOnInsert": {"created_at": datetime.utcnow().isoformat()}},
                         upsert=True
                     )
+                    # Write-through to products_master
+                    await _sync_to_products_master(db, set_doc)
                     _mockup_gen_status["generated"] += 1
                     logger.info(f"[MOCKUP-GEN] Generated {slug}")
                 else:
@@ -2050,6 +2108,8 @@ async def _generate_missing_breed_products(db, breeds: list, product_types: list
                         await db.breed_products.update_one(
                             {"id": product_id}, {"$set": doc}, upsert=True
                         )
+                        # Write-through to products_master
+                        await _sync_to_products_master(db, doc)
                         _mockup_gen_status["generated"] += 1
                     else:
                         _mockup_gen_status["failed"] += 1

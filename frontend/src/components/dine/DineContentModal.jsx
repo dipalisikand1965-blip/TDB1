@@ -579,14 +579,14 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         const allMerch = (data.products || []);
         // Only show merchandise matching this pet's exact breed — never show wrong breed
         // Deduplicate by name (same product can appear across multiple categories with different IDs)
+        // Backend already returns only breed-correct products via the breed param + reverse alias.
+        // Deduplicate by name only (same product can have multiple IDs).
         const seen = new Map();
-        allMerch
-          .filter(p => (p.name || '').toLowerCase().includes(breedSearch))
-          .forEach(p => {
-            const key = (p.name || '').toLowerCase().trim();
-            if (!seen.has(key)) seen.set(key, p);
-          });
-        setProducts([...seen.values()]); // Empty if no breed match (correct — don't show wrong breed)
+        allMerch.forEach(p => {
+          const key = (p.name || '').toLowerCase().trim();
+          if (!seen.has(key)) seen.set(key, p);
+        });
+        setProducts([...seen.values()]);
         return;
       }
 

@@ -109,6 +109,11 @@ const KNOWN_BREEDS = [
   // Extended — breeds with grooming kits in DB
   'akita','australian shepherd','corgi','samoyed','spitz',
   'bernese mountain dog','bulldog','shiba inu','weimaraner',
+  // Doodle / mixed breeds — MUST be here to block cross-breed contamination
+  'maltipoo','labradoodle','goldendoodle','cockapoo','cavapoo',
+  // Additional breeds verified in DB
+  'collie','malamute','alaskan malamute','bichon frise','havanese',
+  'boston terrier','whippet','greyhound','basset hound','bloodhound',
 ];
 
 function filterBreedProducts(products, petBreed) {
@@ -335,7 +340,8 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
 
       // ── Soul Care: breed merch (Breed Collection) + Care Essentials ──────
       if (category === 'soul') {
-        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
+        const breedQ = encodeURIComponent((pet?.breed || '').trim());
+        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600&breed=${breedQ}`);
         const data = r.ok ? await r.json() : { products: [] };
         const allCare = data.products || [];
 
@@ -383,7 +389,8 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
           return;
         }
         // Fallback: fetch all care products, sort by mira_score, apply breed filter
-        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
+        const breedQ = encodeURIComponent((pet?.breed || '').trim());
+        const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600&breed=${breedQ}`);
         const data = r.ok ? await r.json() : { products: [] };
         const all = filterBreedProducts(
           (data.products || []).filter(p => p.mira_score || p.mira_tag),
@@ -400,7 +407,8 @@ const CareContentModal = ({ isOpen, onClose, category, pet }) => {
       const dimKey = config.dimKey;
       if (!dimKey) { setLoading(false); return; }
 
-      const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600`);
+      const breedQ = encodeURIComponent((pet?.breed || '').trim());
+      const r = await fetch(`${apiUrl}/api/admin/pillar-products?pillar=care&limit=600&breed=${breedQ}`);
       const data = r.ok ? await r.json() : { products: [] };
       // Filter to this dimension, then apply global breed filter
       const dimProds = filterBreedProducts(
