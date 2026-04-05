@@ -124,7 +124,25 @@ def _should_show_for_breed(product: dict, req_breed: str) -> bool:
     if not req_breed:
         return True
 
+    # ── Alias expansion ────────────────────────────────────────────────────────
+    BREED_ALIASES = {
+        "indie":                   ["indie", "indian pariah", "indian_pariah"],
+        "indian pariah":           ["indie", "indian pariah", "indian_pariah"],
+        "indian_pariah":           ["indie", "indian pariah", "indian_pariah"],
+        "cavalier":                ["cavalier", "cavalier king charles", "cavalier_king_charles"],
+        "cavalier king charles":   ["cavalier", "cavalier king charles", "cavalier_king_charles"],
+        "yorkshire":               ["yorkshire", "yorkshire terrier", "yorkshire_terrier"],
+        "yorkshire terrier":       ["yorkshire", "yorkshire terrier", "yorkshire_terrier"],
+        "bulldog":                 ["bulldog", "english bulldog", "english_bulldog"],
+        "english bulldog":         ["bulldog", "english bulldog", "english_bulldog"],
+        "st bernard":              ["st bernard", "saint bernard"],
+        "saint bernard":           ["st bernard", "saint bernard"],
+        "siberian husky":          ["siberian husky", "husky"],
+        "husky":                   ["siberian husky", "husky"],
+    }
+
     req = req_breed.lower().strip().replace("_", " ")
+    req_aliases = BREED_ALIASES.get(req, [req])   # all slugs this breed should match
     name_lower = (product.get("name") or "").lower()
     ptype = (product.get("product_type") or "").lower()
     soul  = (product.get("soul_tier")    or "").lower()
@@ -133,11 +151,11 @@ def _should_show_for_breed(product: dict, req_breed: str) -> bool:
     # "Bernese Mountain Dog Bandana" tagged all_breeds? → still Bernese-only.
     detected_in_name = _detect_product_breed(name_lower)
     if detected_in_name:
-        return req in detected_in_name or detected_in_name in req
+        return any(alias in detected_in_name or detected_in_name in alias for alias in req_aliases)
 
     # ── 2. Explicit breed_pick / soul_made (edge case: breed not in name) ─────
     if ptype in ("breed_pick", "soul_made") or soul == "soul_made":
-        return req in name_lower
+        return any(alias in name_lower for alias in req_aliases)
 
     # ── 3. breed_tags present ────────────────────────────────────────────────
     tags = product.get("breed_tags") or []
@@ -145,11 +163,11 @@ def _should_show_for_breed(product: dict, req_breed: str) -> bool:
         # Universal?
         if all((t or "").lower().replace("_", " ") in ("all breeds", "all", "all_breeds", "") for t in tags):
             return True  # genuinely universal (name check passed above)
-        # Any tag is a known breed → strict match
+        # Any tag is a known breed → strict match using aliases
         for t in tags:
             t_norm = (t or "").lower().replace("_", " ")
             if any(b == t_norm or b in t_norm or t_norm in b for b in KNOWN_BREED_NAMES):
-                return req in t_norm or t_norm in req
+                return any(alias in t_norm or t_norm in alias for alias in req_aliases)
         return True  # tags present but no known breed → universal
 
     # ── 4. No breed signal → universal ──────────────────────────────────────

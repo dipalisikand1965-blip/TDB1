@@ -111,17 +111,22 @@ PillarSoulPage.jsx (parent)
 
 ---
 
-## 6. DATABASE STATE (2026-03-25)
+## 6. DATABASE STATE (2026-04-06 — Session 9 Verified)
 
 | Collection | Count | Notes |
 |---|---|---|
-| products_master | 6,042 | 457 soul_made, 5,585 regular |
+| products_master | 9,348 total | **7,737 visible to members** (active + not archived) |
+| breed_products | 4,941 | Soul Generator source. 4,569 with image. 372 pending generation. |
 | services_master | 1,021 | All 12 pillars mapped |
-| breed_products | 3,448 | Soul catalog — needs "Add to catalog" for pillar pages |
 | bundles_master | 20+ | Care and others |
 | service_desk_tickets | many | Mira service requests per pillar |
-| services (old) | 46 | Pre-migration, OLD names — import PENDING user confirmation |
-| service_catalog (old) | 97 | Pre-migration, OLD names — import PENDING user confirmation |
+
+### Product Visibility Status (Session 9 Audit — VERIFIED)
+- **Members ARE seeing all soul products.** The previously assumed 3,264-product sync gap was a false alarm.
+- products_master contains more breed-specific products than breed_products because it includes additional items from Shopify sync, birthday cakes, and portrait frames.
+- **Total visible breed-specific products: 6,905 vs 4,941 in breed_products source**
+- **Only confirmed gap: 1 Play product missing for 12 breeds** (Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier).
+- Full breed × pillar matrix documented in `/app/complete-documentation.html` → "Product Visibility Audit" section.
 
 ---
 
