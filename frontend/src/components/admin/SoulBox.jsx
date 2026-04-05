@@ -27,7 +27,8 @@ export default function SoulBox() {
   const [page, setPage]               = useState(0);
   const [pillar, setPillar]           = useState('');
   const [breed, setBreed]             = useState('');
-  const [search, setSearch]           = useState('');
+  const [searchInput, setSearchInput] = useState('');   // what user types (instant)
+  const [search, setSearch]           = useState('');   // debounced — sent to API
   const [statusFilter, setStatus]     = useState('all');
   const [generatingId, setGenerating] = useState(null);
 
@@ -37,6 +38,12 @@ export default function SoulBox() {
   const [saving, setSaving]                   = useState(false);
 
   const LIMIT = 50;
+
+  // Debounce: fire API only 400ms after user stops typing
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setPage(0); }, 400);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -56,7 +63,7 @@ export default function SoulBox() {
   }, [page, pillar, breed, search, statusFilter]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
-  useEffect(() => { setPage(0); }, [pillar, breed, search, statusFilter]);
+  useEffect(() => { setPage(0); }, [pillar, breed, statusFilter]);
 
   // ── Open editor on row click ───────────────────────────────────────────────
   const openEditor = (product) => {
@@ -184,7 +191,7 @@ export default function SoulBox() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' }}>
         <select value={pillar} onChange={e => setPillar(e.target.value)} style={sel}>
           <option value="">All Pillars</option>
           {PILLARS.filter(Boolean).map(p => <option key={p} value={p}>{p}</option>)}
@@ -198,9 +205,32 @@ export default function SoulBox() {
           <option value="active">Active only</option>
           <option value="archived">Archived only</option>
         </select>
-        <input placeholder="Search name…" value={search} onChange={e => setSearch(e.target.value)} style={{ ...sel, minWidth: 200 }} />
+        {/* Search with clear button */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <span style={{ position: 'absolute', left: 10, color: '#9ca3af', fontSize: 14, pointerEvents: 'none' }}>🔍</span>
+          <input
+            placeholder="Search by name, breed, product type…"
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+            onKeyDown={e => e.key === 'Escape' && (setSearchInput(''), setSearch(''))}
+            style={{ ...sel, minWidth: 260, paddingLeft: 30, paddingRight: searchInput ? 28 : 10 }}
+          />
+          {searchInput && (
+            <button
+              onClick={() => { setSearchInput(''); setSearch(''); }}
+              style={{ position: 'absolute', right: 8, background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', fontSize: 16, lineHeight: 1, padding: 0 }}
+              title="Clear search"
+            >×</button>
+          )}
+        </div>
         <button onClick={fetchProducts} style={{ padding: '7px 16px', borderRadius: 8, background: '#111', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 13 }}>Refresh</button>
       </div>
+      {/* Search status hint */}
+      {search && (
+        <div style={{ marginBottom: 10, fontSize: 12, color: '#6b7280' }}>
+          {loading ? 'Searching…' : `${total.toLocaleString()} result${total !== 1 ? 's' : ''} for "${search}"`}
+        </div>
+      )}
 
       {/* Table */}
       <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
