@@ -335,7 +335,29 @@ Script: /app/backend/scripts/seed_missing_adopt_farewell.py
 - All have is_mockup=False (no image yet) — READY FOR AI GENERATION
 - Will auto-sync to products_master when images are generated
 
-### Step 9 — Generate AI images for the 84 seeded entries (NEXT)
+### Step 9 — Generate AI images for adopt + farewell + sparse breeds ✅ IN PROGRESS
+
+ADOPT (34 entries, 2 per breed):
+- Triggered: POST /api/mockups/generate-batch {"pillar":"adopt","limit":100}
+- Status: RUNNING — 66 generated so far, 38 still pending
+- When complete: trigger farewell batch
+
+FAREWELL (63 entries, 7 per breed):
+- Trigger after adopt completes: POST /api/mockups/generate-batch {"pillar":"farewell","limit":100}
+
+SPARSE BREEDS — 228 entries seeded with correct prompts ✅ DONE
+Script: /app/backend/scripts/seed_sparse_breeds.py
+- saint_bernard: 57 new entries
+- bichon_frise:  57 new entries
+- basenji:       57 new entries
+- corgi:         57 new entries
+Generate ONE breed at a time after farewell completes:
+  POST /api/mockups/generate-batch {"breed_filter":"corgi","limit":100}
+  POST /api/mockups/generate-batch {"breed_filter":"basenji","limit":100}
+  POST /api/mockups/generate-batch {"breed_filter":"bichon_frise","limit":100}
+  POST /api/mockups/generate-batch {"breed_filter":"saint_bernard","limit":100}
+
+### Step 10 — Verify app + Mira explains why (NEXT AFTER GENERATION)
 Diagnose why members see far fewer products than exist in soul gen.
 Check: what is breed_tags actually set to in products_master for these breeds?
 Fix: normalize to correct underscore slug.
@@ -374,6 +396,12 @@ Then care, play, go, learn, shop, paperwork, emergency, farewell, adopt.
 | GET /api/product-box/products | View Soul Box products | ?soul_made=true&breed=labrador |
 
 ---
+
+## SPARSE BREED PROMPT LIBRARY
+Script with all 57 product prompts per breed: /app/backend/scripts/seed_sparse_breeds.py
+Covers all 9 non-adopt/farewell pillars: dine, care, play, go, learn, celebrate, shop, paperwork, emergency
+Prompt style: same watercolor portrait-on-product style as healthy breeds.
+DO NOT re-run this script — entries already exist. Only re-run if a breed is fully deleted.
 
 ## ADOPT PROMPT TEMPLATES (use these exactly — do not invent new ones)
 
