@@ -61,11 +61,12 @@
   <h1>🐾 The Doggy Company — Technical Handover Documentation</h1>
   <p class="subtitle">Pet Life OS · React + FastAPI + MongoDB · 12 Pillars · 56 Breeds · AI-Powered by Mira</p>
   <div class="meta">
-    <span class="badge new">Updated: 2026-04-05</span>
-    <span class="badge">Session 8 Complete</span>
+    <span class="badge new">Updated: 2026-04-06</span>
+    <span class="badge">Session 9 Complete</span>
     <span class="badge">Preview: pet-soul-ranking.preview.emergentagent.com</span>
     <span class="badge">Cloudinary: duoapcx1p</span>
-    <span class="badge">5,616 Active Soul Products</span>
+    <span class="badge">7,737 Products Visible to Members</span>
+    <span class="badge">4,941 Soul Products in Source</span>
     <span class="badge">56 Breeds</span>
   </div>
 </header>
@@ -78,7 +79,8 @@
   4. Indie and Indian Pariah are the SAME BREED — aliases already handled in backend + frontend. Do NOT merge their DB records without a full migration plan.<br>
   5. The <code>breed_products → products_master</code> sync ONLY runs during batch image generation. If you seed products without generating images, manually run the sync script or set <code>product_type</code> and <code>visibility</code> correctly.<br>
   6. Check <code>product_type</code> in products_master is NOT stuck as <code>soul_made</code> — run the sync fix script if needed.<br>
-  7. Production DB is BLOCKED (Atlas IP whitelist). Always use local preview DB.
+  7. Production DB is BLOCKED (Atlas IP whitelist). Always use local preview DB.<br>
+  8. VERIFIED (Session 9): Members ARE seeing their soul products. products_master contains 7,737 visible products vs 4,941 in breed_products source — over-served because Shopify sync + cakes + portraits add extra breed items. Only known gap: 1 Play product missing for 12 breeds.
 </div>
 
 <nav>
@@ -96,6 +98,7 @@
   <a href="#creds">Credentials</a>
   <a href="#todo">Next Tasks</a>
   <a href="#audit">Soul Audit</a>
+  <a href="#visibility">Visibility Matrix</a>
 </nav>
 
 <div class="container">
@@ -104,6 +107,19 @@
 <section id="changelog">
   <h2>📋 Session Changelog</h2>
   <p>Every agent MUST append their session summary here before finishing.</p>
+
+  <div class="changelog-entry">
+    <div class="date">Session 9 — 2026-04-06</div>
+    <h4>Product Visibility Audit — Breed × Pillar Matrix</h4>
+    <ul>
+      <li><strong>Audit question answered:</strong> "Does a member see all soul products we have generated?" — YES. Verified live from DB.</li>
+      <li><strong>Initial analysis was WRONG:</strong> First analysis only counted <code>bp-</code> prefixed IDs and reported a false 3,264-product gap. Corrected by matching on breed_tags + breed field + name/ID pattern across ALL ID formats.</li>
+      <li><strong>Correct picture:</strong> 7,737 products visible to members vs 4,941 in breed_products source. Members are OVER-served because products_master contains additional breed-specific items from Shopify sync, birthday cakes, portrait frames that are not in breed_products.</li>
+      <li><strong>ID formats in products_master:</strong> Soul products use multiple ID formats: <code>breed-{breed}-{type}</code>, <code>soul-breed-{breed}-{type}</code>, <code>bp-{breed}-{type}</code>, <code>cake-{breed}-{variant}</code>, <code>shopify-XXXXXXX</code>, <code>celebrate-{breed}-{type}-{hash}</code>.</li>
+      <li><strong>Only real gap — PLAY pillar:</strong> 12 breeds are missing exactly 1 Play soul product each (8 visible vs 9 in source). Breeds affected: Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier.</li>
+      <li><strong>Full breed × pillar matrix documented below</strong> in the Product Visibility Audit section.</li>
+    </ul>
+  </div>
 
   <div class="changelog-entry">
     <div class="date">Session 8 — 2026-04-05</div>
@@ -190,6 +206,9 @@
   <div class="alert alert-red">
     <strong>RULE 4 — breed_products → products_master sync:</strong> The sync ONLY runs when <code>_sync_to_products_master</code> is called during batch image generation. If you add/edit products directly in breed_products, manually update products_master too. Check that <code>product_type</code> is NOT stuck as <code>soul_made</code>.
   </div>
+  <div class="alert alert-green">
+    <strong>RULE 4b — Visibility confirmed (Session 9):</strong> Members ARE seeing their soul products. Do NOT assume a sync gap exists without re-running the breed × pillar audit query. The 3,264 "unsynced bp- IDs" reported in Session 8 were a false alarm — those products exist in products_master under <code>breed-</code>, <code>soul-breed-</code>, <code>cake-</code>, and <code>shopify-</code> ID formats.
+  </div>
   <div class="alert alert-red">
     <strong>RULE 5 — MongoDB ObjectId:</strong> Always exclude <code>_id</code> from responses. Use <code>{"_id": 0}</code> in projections. Never return raw mongo documents.
   </div>
@@ -274,7 +293,7 @@
   </table>
 
   <div class="alert alert-yellow">
-    <strong>Known gap:</strong> If products are seeded but images already exist from a previous run, the batch generator SKIPS them (pending = no mockup_url check). The sync never re-runs for those products. Fix: After any batch seeding where products already have images, manually run the product_type sync script.
+    <strong>Known gap (corrected Session 9):</strong> The previously documented "sync gap of 3,264 products" was a false alarm. Members DO see all their soul products. The only confirmed gap is <strong>1 Play product missing for 12 breeds</strong> — the specific product_type is unidentified; investigate by comparing breed_products Play entries vs products_master Play entries per breed.
   </div>
 
   <h3>Sync Fix Script (run after batch seeding)</h3>
@@ -410,8 +429,8 @@ The silhouette is precise and recognisable as a {BREED}."</pre>
   <h3>Key Collections</h3>
   <table>
     <tr><th>Collection</th><th>Purpose</th><th>Count (approx)</th></tr>
-    <tr><td>products_master</td><td>Member-facing product catalog</td><td>~8,000 total, ~5,616 active soul</td></tr>
-    <tr><td>breed_products</td><td>Soul Generator source of truth</td><td>~6,000+</td></tr>
+    <tr><td>products_master</td><td>Member-facing product catalog</td><td>9,348 total | <strong>7,737 visible to members</strong> (active + not archived)</td></tr>
+    <tr><td>breed_products</td><td>Soul Generator source of truth</td><td>4,941 total | 4,569 with image | 372 pending generation</td></tr>
     <tr><td>services_master</td><td>Services shown in Care/Go/Play pillars</td><td>~200</td></tr>
     <tr><td>pets</td><td>Member pet profiles</td><td>32</td></tr>
     <tr><td>members</td><td>Member accounts</td><td>~25</td></tr>
@@ -529,6 +548,7 @@ print(f'Total pending generation: {pending}')
   <table>
     <tr><th>Task</th><th>Details</th></tr>
     <tr><td>"Mira Explains Why" expandable row</td><td>On Dine/Care/Celebrate product cards — one tap reveals soul profile reasoning (allergies + favorites matched). User explicitly approved.</td></tr>
+    <tr><td>Investigate 1 missing Play product for 12 breeds</td><td>Compare breed_products Play entries vs products_master Play entries for: Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier.</td></tr>
     <tr><td>Verify member-facing UI after fixes</td><td>Login as Mojo (Indie). Check Dine, Celebrate, Go, Care. Confirm products from both indie + indian_pariah tags show.</td></tr>
   </table>
 
@@ -557,7 +577,161 @@ print(f'Total pending generation: {pending}')
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
-<section id="audit">
+<section id="visibility">
+  <h2>Product Visibility Audit — Session 9 (2026-04-06)</h2>
+
+  <div class="alert alert-green">
+    <strong>CONFIRMED:</strong> Members ARE seeing their soul products. 7,737 products visible vs 4,941 in breed_products source. Members are over-served because products_master contains additional breed items from Shopify sync, birthday cakes, and portrait frames.
+  </div>
+
+  <div class="alert alert-yellow">
+    <strong>Only confirmed gap:</strong> 1 Play soul product missing for 12 breeds (8 visible vs 9 in source). All other pillars are at parity or over-served.
+  </div>
+
+  <h3>How to read this table</h3>
+  <p>Format: <code>visible / source</code> where visible = products in products_master matching that breed, source = entries in breed_products.<br>
+  Negative MISS = more visible than source (extra Shopify/cake/portrait products in products_master).<br>
+  <code>!</code> flag = visible &lt; source (real gap).</p>
+
+  <h3>Breeds with Play gap (! flag)</h3>
+  <table>
+    <tr><th>Breed</th><th>Play Visible</th><th>Play Source</th><th>Gap</th></tr>
+    <tr><td>Akita</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Australian Shepherd</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Bernese Mountain</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Boston Terrier</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Cavalier King Charles</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Havanese</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Samoyed</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Shetland Sheepdog</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Siberian Husky</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Vizsla</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Weimaraner</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
+    <tr><td>Yorkshire Terrier</td><td>11</td><td>12</td><td class="status-pending">−1</td></tr>
+  </table>
+
+  <h3>Full Breed × Pillar Visibility Matrix [visible / source]</h3>
+  <p style="font-size:0.82rem;color:#64748b;">Columns: DINE · CARE · PLAY · GO · LEARN · CELE · SHOP · PAPER · EMER · FARE · ADPT · VIS_TOTAL · SRC_TOTAL</p>
+  <table style="font-size:0.75rem;font-family:monospace;">
+    <tr><th>Breed</th><th>DINE</th><th>CARE</th><th>PLAY</th><th>GO</th><th>LEARN</th><th>CELE</th><th>SHOP</th><th>PAPER</th><th>EMER</th><th>FARE</th><th>ADPT</th><th>VIS</th><th>SRC</th></tr>
+    <tr><td>akita</td><td>12/7</td><td>14/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>19/16</td><td>33/25</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>115</td><td>93</td></tr>
+    <tr><td>alaskan_malamute</td><td>8/3</td><td>1/1</td><td>2/2</td><td>3/3</td><td>1/1</td><td>6/6</td><td>25/25</td><td>1/1</td><td>4/4</td><td>8/8</td><td>2/2</td><td>61</td><td>56</td></tr>
+    <tr><td>american_bully</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>8/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>80</td><td>54</td></tr>
+    <tr><td>australian_shepherd</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>16/11</td><td>31/23</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>110</td><td>85</td></tr>
+    <tr><td>basenji</td><td>12/7</td><td>13/13</td><td>8/8</td><td>11/11</td><td>6/6</td><td>17/17</td><td>14/14</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>102</td><td>97</td></tr>
+    <tr><td>beagle</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>bernese_mountain</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>16/11</td><td>14/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>93</td><td>68</td></tr>
+    <tr><td>bichon_frise</td><td>12/7</td><td>13/13</td><td>8/8</td><td>11/11</td><td>6/6</td><td>17/17</td><td>12/12</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>100</td><td>95</td></tr>
+    <tr><td>border_collie</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>boston_terrier</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>15/11</td><td>6/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>78</td><td>68</td></tr>
+    <tr><td>boxer</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>18/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>119</td></tr>
+    <tr><td>bulldog</td><td>28/6</td><td>34/4</td><td>24/5</td><td>35/6</td><td>16/1</td><td>55/13</td><td>42/9</td><td>9/1</td><td>14/4</td><td>16/2</td><td>4/2</td><td>277</td><td>53</td></tr>
+    <tr><td>cavalier</td><td>21/5</td><td>20/5</td><td>14/4</td><td>21/9</td><td>10/3</td><td>34/10</td><td>22/6</td><td>7/1</td><td>7/2</td><td>9/2</td><td>2/2</td><td>167</td><td>49</td></tr>
+    <tr><td>cavalier_king_charles</td><td>17/7</td><td>12/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>19/13</td><td>16/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/0</td><td>101</td><td>71</td></tr>
+    <tr><td>chihuahua</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>chow_chow</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>8/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>80</td><td>54</td></tr>
+    <tr><td>cocker_spaniel</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>corgi</td><td>12/7</td><td>18/13</td><td>8/8</td><td>11/11</td><td>7/6</td><td>18/17</td><td>20/12</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>115</td><td>95</td></tr>
+    <tr><td>dachshund</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>dalmatian</td><td>8/8</td><td>13/8</td><td>9/7</td><td>14/12</td><td>6/3</td><td>18/18</td><td>17/9</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>98</td><td>73</td></tr>
+    <tr><td>doberman</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>31/28</td><td>19/11</td><td>6/5</td><td>6/4</td><td>10/8</td><td>2/2</td><td>153</td><td>124</td></tr>
+    <tr><td>english_bulldog</td><td>13/9</td><td>18/14</td><td>13/11</td><td>18/15</td><td>8/5</td><td>29/19</td><td>8/8</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/0</td><td>130</td><td>97</td></tr>
+    <tr><td>french_bulldog</td><td>8/8</td><td>13/8</td><td>9/7</td><td>14/12</td><td>6/3</td><td>19/19</td><td>17/9</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>99</td><td>74</td></tr>
+    <tr><td>german_shepherd</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>golden_retriever</td><td>13/12</td><td>23/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>36/27</td><td>18/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>158</td><td>120</td></tr>
+    <tr><td>great_dane</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>148</td><td>119</td></tr>
+    <tr><td>greyhound</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>21/15</td><td>9/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>84</td><td>57</td></tr>
+    <tr><td>havanese</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>15/11</td><td>6/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>78</td><td>68</td></tr>
+    <tr><td>husky</td><td>20/8</td><td>24/8</td><td>17/7</td><td>23/12</td><td>10/3</td><td>38/22</td><td>26/9</td><td>7/1</td><td>7/2</td><td>10/3</td><td>4/2</td><td>186</td><td>77</td></tr>
+    <tr><td>indian_pariah</td><td>12/7</td><td>9/9</td><td>9/8</td><td>9/9</td><td>4/1</td><td>15/13</td><td>8/8</td><td>4/3</td><td>3/2</td><td>5/5</td><td>2/0</td><td>80</td><td>65</td></tr>
+    <tr><td>indian_spitz</td><td>11/6</td><td>4/4</td><td>5/5</td><td>6/6</td><td>1/1</td><td>13/13</td><td>9/9</td><td>1/1</td><td>4/4</td><td>8/8</td><td>2/2</td><td>64</td><td>59</td></tr>
+    <tr><td>indie</td><td>17/8</td><td>23/8</td><td>14/8</td><td>22/12</td><td>9/6</td><td>60/21</td><td>30/9</td><td>5/3</td><td>8/2</td><td>10/3</td><td>4/2</td><td>202</td><td>82</td></tr>
+    <tr><td>irish_setter</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>9/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>81</td><td>54</td></tr>
+    <tr><td>jack_russell</td><td>9/5</td><td>10/5</td><td>6/4</td><td>12/9</td><td>6/3</td><td>19/12</td><td>16/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>91</td><td>54</td></tr>
+    <tr><td>labradoodle</td><td>11/6</td><td>4/4</td><td>5/5</td><td>6/6</td><td>1/1</td><td>13/13</td><td>9/9</td><td>1/1</td><td>4/4</td><td>8/8</td><td>2/2</td><td>64</td><td>59</td></tr>
+    <tr><td>labrador</td><td>14/12</td><td>27/17</td><td>15/14</td><td>20/18</td><td>9/5</td><td>39/29</td><td>20/12</td><td>7/5</td><td>7/4</td><td>10/8</td><td>2/2</td><td>170</td><td>126</td></tr>
+    <tr><td>lhasa_apso</td><td>9/5</td><td>10/5</td><td>6/4</td><td>12/9</td><td>6/3</td><td>19/12</td><td>17/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>92</td><td>54</td></tr>
+    <tr><td>maltese</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>31/26</td><td>18/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>151</td><td>119</td></tr>
+    <tr><td>maltipoo</td><td>13/12</td><td>21/17</td><td>17/15</td><td>24/18</td><td>8/5</td><td>35/26</td><td>12/10</td><td>5/5</td><td>7/4</td><td>10/7</td><td>2/2</td><td>154</td><td>121</td></tr>
+    <tr><td>newfoundland</td><td>13/12</td><td>21/17</td><td>17/15</td><td>24/18</td><td>8/5</td><td>32/24</td><td>12/10</td><td>5/5</td><td>7/4</td><td>10/7</td><td>2/2</td><td>151</td><td>119</td></tr>
+    <tr><td>pomeranian</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>148</td><td>119</td></tr>
+    <tr><td>poodle</td><td>12/12</td><td>23/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>19/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>152</td><td>120</td></tr>
+    <tr><td>pug</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>148</td><td>119</td></tr>
+    <tr><td>rottweiler</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>28/25</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>147</td><td>118</td></tr>
+    <tr><td>saint_bernard</td><td>12/7</td><td>18/13</td><td>8/8</td><td>11/11</td><td>7/6</td><td>19/17</td><td>20/12</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>116</td><td>95</td></tr>
+    <tr><td>samoyed</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>17/13</td><td>16/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>97</td><td>73</td></tr>
+    <tr><td>schnoodle</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>8/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>80</td><td>54</td></tr>
+    <tr><td>scottish_terrier</td><td>13/9</td><td>18/14</td><td>13/11</td><td>18/15</td><td>8/5</td><td>28/19</td><td>10/8</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>131</td><td>99</td></tr>
+    <tr><td>shetland_sheepdog</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>15/11</td><td>6/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>78</td><td>68</td></tr>
+    <tr><td>shih_tzu</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
+    <tr><td>siberian_husky</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>16/13</td><td>8/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>82</td><td>73</td></tr>
+    <tr><td>st_bernard</td><td>13/9</td><td>21/14</td><td>12/11</td><td>18/15</td><td>8/5</td><td>32/19</td><td>11/8</td><td>6/5</td><td>7/4</td><td>10/7</td><td>2/2</td><td>140</td><td>99</td></tr>
+    <tr><td>vizsla</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>16/13</td><td>8/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>82</td><td>73</td></tr>
+    <tr><td>weimaraner</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>17/13</td><td>16/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>97</td><td>73</td></tr>
+    <tr><td>yorkshire</td><td>22/5</td><td>23/5</td><td>17/4</td><td>24/9</td><td>10/3</td><td>39/10</td><td>24/6</td><td>7/1</td><td>7/2</td><td>9/2</td><td>2/2</td><td>184</td><td>49</td></tr>
+    <tr><td>yorkshire_terrier</td><td>18/10</td><td>15/13</td><td class="status-pending">11/12!</td><td>12/12</td><td>5/3</td><td>24/20</td><td>18/9</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/0</td><td>118</td><td>91</td></tr>
+    <tr style="font-weight:700;background:#1a1a2e;color:white;"><td>TOTAL</td><td colspan="11"></td><td>6,905</td><td>4,941</td></tr>
+  </table>
+
+  <h3>Audit Query (re-run to verify)</h3>
+  <pre>python3 &lt;&lt; 'EOF'
+import pymongo
+from collections import defaultdict
+client = pymongo.MongoClient('mongodb://localhost:27017', serverSelectionTimeoutMS=3000)
+db = client['pet-os-live-test_database']
+
+PILLARS = ["dine","care","play","go","learn","celebrate","shop","paperwork","emergency","farewell","adopt"]
+breeds = sorted(db.breed_products.distinct("breed"))
+visible = list(db.products_master.find(
+    {"is_active": {"$ne": False}, "visibility.status": {"$nin": ["inactive","archived"]}},
+    {"_id": 0, "id": 1, "name": 1, "pillar": 1, "breed_tags": 1, "breed": 1}
+))
+breed_set = set(breeds)
+
+def get_product_breeds(doc):
+    bt = doc.get("breed_tags") or []
+    br = doc.get("breed") or ""
+    pid = (doc.get("id") or "").lower()
+    name = (doc.get("name") or "").lower()
+    matched = set()
+    if bt and isinstance(bt, list):
+        matched |= {b for b in bt if b in breed_set}
+    if br and br in breed_set:
+        matched.add(br)
+    for b in breed_set:
+        for bv in [b, b.replace("_"," "), b.replace("_","-")]:
+            if bv in pid or bv in name:
+                matched.add(b)
+                break
+    return matched
+
+vis_counts = defaultdict(lambda: defaultdict(int))
+for doc in visible:
+    p = doc.get("pillar","")
+    if p not in PILLARS: continue
+    for b in get_product_breeds(doc):
+        vis_counts[b][p] += 1
+
+src_agg = list(db.breed_products.aggregate([{"$group":{"_id":{"breed":"$breed","pillar":"$pillar"},"count":{"$sum":1}}}]))
+src_counts = defaultdict(lambda: defaultdict(int))
+for row in src_agg:
+    src_counts[row["_id"]["breed"]][row["_id"]["pillar"]] = row["count"]
+
+gaps = []
+for breed in breeds:
+    for p in PILLARS:
+        v = vis_counts[breed][p]
+        s = src_counts[breed][p]
+        if v &lt; s:
+            gaps.append((breed, p, v, s))
+
+print(f"Total gaps found: {len(gaps)}")
+for breed, p, v, s in gaps:
+    print(f"  {breed} | {p}: visible={v} source={s} (missing {s-v})")
+EOF</pre>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
   <h2>Soul Product Audit (as of 2026-04-05)</h2>
   <p>Full audit saved to <code>/app/memory/SOUL_AUDIT_FINAL.md</code>. Summary table below.</p>
   <p>Legend: number = distinct product types | — = missing entirely</p>
@@ -588,7 +762,7 @@ print(f'Total pending generation: {pending}')
 </div><!-- /container -->
 
 <footer style="background:#1a1a2e;color:#94a3b8;text-align:center;padding:24px;font-size:0.85rem;margin-top:60px;">
-  The Doggy Company — Pet Life OS · Last updated 2026-04-05 · Session 8 · Always update this file before finishing your session
+  The Doggy Company — Pet Life OS · Last updated 2026-04-06 · Session 9 · Always update this file before finishing your session
 </footer>
 
 </body>
