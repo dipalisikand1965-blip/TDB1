@@ -310,7 +310,32 @@ Fixed st_bernard (108), irish_setter (55), jack_russell (52) + swept ALL 56 bree
 683 more products fixed. Zero breed_tags with spaces remaining anywhere.
 Result: 27 HEALTHY breeds (90+), 25 GOOD (40-89), 4 LOW (basenji/bichon_frise/corgi/saint_bernard)
 
-### Step 6 — Generate missing adopt + farewell products (NEXT)
+### Step 6 — Wrong-image GROUP 2 dine products fixed ✅ DONE
+- Scanned all GROUP 2 (hash-suffix) products across all 11 pillars
+- Only dine had wrong images. Other pillars were clean.
+- 21 recipe cards archived (showed bowl image — no correct image exists)
+  Affected breeds: beagle, border_collie, boxer, chihuahua, cocker_spaniel, dachshund,
+  dalmatian, doberman, french_bulldog, german_shepherd, golden_retriever, great_dane,
+  husky, indie, labrador, maltese, pomeranian, poodle, pug, rottweiler, shih_tzu
+- 4 food mats fixed with correct feeding_mat.webp image (indie, husky, french_bulldog, dalmatian)
+- 38 ceramic bowl products left untouched (correctly using bowl image ✓)
+
+### Step 7 — All breed_tags space→underscore sweep ✅ DONE
+Fixed 683 additional products across all 56 breeds. Zero breed_tags with spaces remaining.
+Full mapping: border collie→border_collie, great dane→great_dane, shih tzu→shih_tzu, etc.
+
+### Step 8 — Seeded 84 missing adopt + farewell entries with correct prompts ✅ DONE
+Script: /app/backend/scripts/seed_missing_adopt_farewell.py
+- 34 new ADOPT entries (21 breeds × 2 types: welcome_kit, adoption_folder)
+  8 already existed so skipped
+- 50 new FAREWELL entries (8 breeds × 7 types: memorial_ornament, memory_box,
+  paw_print_frame, paw_print_kit, keepsake_box, memorial_candle, remembrance_card)
+  6 already existed so skipped
+- All have CORRECT breed-specific prompts
+- All have is_mockup=False (no image yet) — READY FOR AI GENERATION
+- Will auto-sync to products_master when images are generated
+
+### Step 9 — Generate AI images for the 84 seeded entries (NEXT)
 Diagnose why members see far fewer products than exist in soul gen.
 Check: what is breed_tags actually set to in products_master for these breeds?
 Fix: normalize to correct underscore slug.
@@ -349,4 +374,72 @@ Then care, play, go, learn, shop, paperwork, emergency, farewell, adopt.
 | GET /api/product-box/products | View Soul Box products | ?soul_made=true&breed=labrador |
 
 ---
-*Document written 2026-04 to ensure no agent ever loses context on soul products.*
+
+## ADOPT PROMPT TEMPLATES (use these exactly — do not invent new ones)
+
+```
+welcome_kit:
+"Professional product photography of a new pet welcome home kit for {BREED_NAME} dogs,
+includes welcome banner, first toy, treat jar, collar, and certificate,
+gift presentation, white background. Warm joyful colours, celebration of a new family member."
+
+adoption_folder:
+"Professional product photography of a pet adoption document folder with {BREED_NAME} dog design,
+holds adoption certificate and papers, keepsake organizer, new pet paperwork, white background.
+Premium quality, tasteful design."
+```
+
+## FAREWELL PROMPT TEMPLATES (use these exactly — do not invent new ones)
+
+```
+memorial_ornament:
+"A beautiful memorial Christmas ornament photographed on a soft white background.
+The ornament features a beautiful soulful watercolor illustration of a {BREED_NAME} dog face
+ON the ceramic surface. Angel wings surrounding the portrait, soft golden halo effect.
+'Forever in Our Hearts' text delicately hand-lettered below the portrait.
+Warm, comforting, memorial aesthetic."
+
+memory_box:
+"Beautifully crafted wooden memory box with {BREED_NAME} silhouette engraved on lid,
+velvet interior, keepsake quality, warm amber wood tones, studio photography, white background."
+
+paw_print_frame:
+"A premium memorial frame with paw print impression area photographed on a clean white background.
+The frame features a beautiful soulful watercolor illustration of a {BREED_NAME} dog in the main photo area.
+Space for clay paw print impression on the side.
+'Always With Me' text elegantly engraved on the frame border."
+
+paw_print_kit:
+"Professional product photography of a pet paw print impression kit for {BREED_NAME} dogs,
+clay and frame included, memorial keepsake, sample paw print visible,
+sentimental memorial product, white background."
+
+keepsake_box:
+"Professional product photography of a beautiful wooden pet memorial keepsake box
+with engraved {BREED_NAME} dog design, velvet interior visible,
+collar and photo inside, remembrance storage, white background."
+
+memorial_candle:
+"Professional product photography of a pet memorial candle in glass jar with
+{BREED_NAME} dog silhouette design, soft glowing light, remembrance tribute,
+peaceful and calming aesthetic, white background."
+
+remembrance_card:
+"Professional product photography of a set of pet remembrance memorial cards
+featuring beautiful {BREED_NAME} dog artwork, sympathy cards with envelopes,
+tasteful design, tribute stationery, white background."
+```
+
+## HOW TO GENERATE IMAGES FOR THE 84 SEEDED ENTRIES
+
+Run the batch API — one breed at a time:
+```
+POST /api/mockups/generate-batch
+{"pillar": "adopt",   "breed_filter": "corgi",   "limit": 2}
+{"pillar": "farewell","breed_filter": "corgi",   "limit": 7}
+```
+After generation: images upload to Cloudinary → auto-sync to products_master → visible to members.
+Script to re-run seeding if needed: /app/backend/scripts/seed_missing_adopt_farewell.py
+
+---
+*Document updated 2026-04. All fixes applied, 84 entries seeded with correct prompts.*
