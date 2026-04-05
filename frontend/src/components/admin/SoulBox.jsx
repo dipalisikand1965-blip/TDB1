@@ -137,22 +137,24 @@ export default function SoulBox() {
   const archiveProduct = async (e, product) => {
     e.stopPropagation();
     if (!window.confirm(`Archive "${product.name}"?`)) return;
-    const res = await fetch(`${API_URL}/api/product-box/products/${product.id}`, {
+    const res = await fetch(`${API_URL}/api/admin/breed-products/${product.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: ADMIN_AUTH },
       body: JSON.stringify({ visibility: { status: 'archived' }, is_active: false })
     });
     if (res.ok) { toast({ title: `Archived: ${product.name}` }); fetchProducts(); }
+    else { const err = await res.json().catch(()=>{}); toast({ title: 'Archive failed', description: err?.detail || res.status, variant: 'destructive' }); }
   };
 
   const restoreProduct = async (e, product) => {
     e.stopPropagation();
-    const res = await fetch(`${API_URL}/api/product-box/products/${product.id}`, {
+    const res = await fetch(`${API_URL}/api/admin/breed-products/${product.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', Authorization: ADMIN_AUTH },
       body: JSON.stringify({ visibility: { status: 'active' }, is_active: true })
     });
     if (res.ok) { toast({ title: `Restored: ${product.name}` }); fetchProducts(); }
+    else { const err = await res.json().catch(()=>{}); toast({ title: 'Restore failed', description: err?.detail || res.status, variant: 'destructive' }); }
   };
 
   // ── Generate mockup image ──────────────────────────────────────────────────
