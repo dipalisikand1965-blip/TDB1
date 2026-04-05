@@ -372,7 +372,7 @@ async def _generate_mockup_image(prompt: str, slug: str, breed: str = "unknown")
         return None
 
 
-async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter: Optional[str] = None, product_type_filter: Optional[str] = None, tag_pillar: Optional[str] = None):
+async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter: Optional[str] = None, product_type_filter: Optional[str] = None, tag_pillar: Optional[str] = None, pillar_filter: Optional[str] = None):
     """Background task to generate mockups for all pending products."""
     global _generation_status
     
@@ -396,6 +396,8 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
             query["$and"].append({"breed": breed_filter})
         if product_type_filter:
             query["$and"].append({"product_type": product_type_filter})
+        if pillar_filter:
+            query["$and"].append({"pillar": pillar_filter})
         
         cursor = db.breed_products.find(query)
         if limit:
@@ -429,10 +431,10 @@ async def _batch_generate_mockups(db, limit: Optional[int] = None, breed_filter:
                     update_fields = {
                         "mockup_url": mockup_url,
                         "mockup_generated_at": datetime.utcnow().isoformat(),
-                        "image_url": mockup_url,      # also set as main image_url
+                        "image_url": mockup_url,
                     }
-                    if tag_pillar:
-                        update_fields["pillar"] = tag_pillar
+                    # NOTE: never write tag_pillar back to breed_products — it is the pillar
+                    # source of truth. tag_pillar is only for products_master sync below.
                     await db.breed_products.update_one(
                         {"_id": product["_id"]},
                         {"$set": update_fields}
@@ -514,7 +516,8 @@ async def start_batch_generation(request: BatchGenerationRequest, background_tas
         request.limit, 
         request.breed_filter, 
         request.product_type_filter,
-        request.tag_pillar or request.pillar   # tag generated products with pillar
+        request.tag_pillar,           # only used for products_master pillar fallback
+        request.pillar                # pillar_filter: restricts which products are fetched
     )
     
     return {
