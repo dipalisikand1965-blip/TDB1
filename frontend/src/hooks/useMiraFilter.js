@@ -659,9 +659,28 @@ export function filterBreedProducts(products, petBreed) {
   // If pet breed is a known universal fallback → show all products
   if (petBreedKey === '__universal__') return products;
 
+  // Alias expansion — indie ↔ indian_pariah etc.
+  const BREED_ALIASES = {
+    'indie':                   ['indie', 'indian_pariah', 'indian pariah'],
+    'indian_pariah':           ['indie', 'indian_pariah', 'indian pariah'],
+    'indian pariah':           ['indie', 'indian_pariah', 'indian pariah'],
+    'cavalier':                ['cavalier', 'cavalier_king_charles', 'cavalier king charles'],
+    'cavalier_king_charles':   ['cavalier', 'cavalier_king_charles', 'cavalier king charles'],
+    'yorkshire':               ['yorkshire', 'yorkshire_terrier', 'yorkshire terrier'],
+    'yorkshire_terrier':       ['yorkshire', 'yorkshire_terrier', 'yorkshire terrier'],
+    'bulldog':                 ['bulldog', 'english_bulldog', 'english bulldog'],
+    'english_bulldog':         ['bulldog', 'english_bulldog', 'english bulldog'],
+  };
+  const aliasGroup = BREED_ALIASES[pl] || null;
+
   const synonyms = petBreedKey && petBreedKey !== '__universal__'
     ? (BREED_SYNONYMS[petBreedKey] || [petBreedKey])
     : (pl ? [pl] : []);
+
+  // Merge alias group into synonyms
+  const allMatchTerms = aliasGroup
+    ? [...new Set([...synonyms, ...aliasGroup])]
+    : synonyms;
 
   // Sort by length desc so "golden retriever" beats "retriever"
   const sortedBreeds = [...KNOWN_BREEDS].sort((a, b) => b.length - a.length);
@@ -676,7 +695,7 @@ export function filterBreedProducts(products, petBreed) {
   function breedMatchesPet(detectedBreed) {
     if (!pl) return false;
     if (pl === detectedBreed || pl.includes(detectedBreed) || detectedBreed.includes(pl)) return true;
-    return synonyms.some(s => s === detectedBreed || s.includes(detectedBreed) || detectedBreed.includes(s));
+    return allMatchTerms.some(s => s === detectedBreed || s.includes(detectedBreed) || detectedBreed.includes(s));
   }
 
   return products.filter(p => {
@@ -714,7 +733,7 @@ export function filterBreedProducts(products, petBreed) {
       return breedTags.some(t => {
         const norm = (t || '').toLowerCase().replace(/[_-]/g, ' ').trim();
         if (pl && (norm === pl || norm.includes(pl) || pl.includes(norm))) return true;
-        return synonyms.some(s => norm === s || norm.includes(s) || s.includes(norm));
+        return allMatchTerms.some(s => norm === s || norm.includes(s) || s.includes(norm));
       });
     }
 

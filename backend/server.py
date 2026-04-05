@@ -8113,10 +8113,23 @@ async def get_public_products(
     # Add breed filter if specified
     if breed:
         breed_lower = breed.lower()
+        # Alias expansion — treat these as the same breed
+        BREED_ALIASES = {
+            "indie":          ["indie", "indian_pariah"],
+            "indian_pariah":  ["indie", "indian_pariah"],
+            "cavalier":       ["cavalier", "cavalier_king_charles"],
+            "cavalier_king_charles": ["cavalier", "cavalier_king_charles"],
+            "yorkshire":      ["yorkshire", "yorkshire_terrier"],
+            "yorkshire_terrier": ["yorkshire", "yorkshire_terrier"],
+            "bulldog":        ["bulldog", "english_bulldog"],
+            "english_bulldog":["bulldog", "english_bulldog"],
+        }
+        breed_slugs = BREED_ALIASES.get(breed_lower, [breed_lower])
         breed_query = {
             "$or": [
+                {"breed_tags": {"$in": breed_slugs}},
+                {"tags": {"$in": breed_slugs}},
                 {"breed_tags": {"$regex": breed_lower, "$options": "i"}},
-                {"tags": {"$regex": breed_lower, "$options": "i"}}
             ]
         }
         if query:
@@ -8322,9 +8335,21 @@ async def get_services(
     
     if breed:
         breed_lower = breed.lower()
+        BREED_ALIASES = {
+            "indie":          ["indie", "indian_pariah"],
+            "indian_pariah":  ["indie", "indian_pariah"],
+            "cavalier":       ["cavalier", "cavalier_king_charles"],
+            "cavalier_king_charles": ["cavalier", "cavalier_king_charles"],
+            "yorkshire":      ["yorkshire", "yorkshire_terrier"],
+            "yorkshire_terrier": ["yorkshire", "yorkshire_terrier"],
+            "bulldog":        ["bulldog", "english_bulldog"],
+            "english_bulldog":["bulldog", "english_bulldog"],
+        }
+        breed_slugs = BREED_ALIASES.get(breed_lower, [breed_lower])
         query["$or"] = [
+            {"breed_tags": {"$in": breed_slugs}},
+            {"tags": {"$in": breed_slugs}},
             {"breed_tags": {"$regex": breed_lower, "$options": "i"}},
-            {"tags": {"$regex": breed_lower, "$options": "i"}}
         ]
     
     # Try services_master first (main collection with 700+ services), fallback to services
