@@ -123,6 +123,27 @@ For a product to appear in Soul Box:
 
 ---
 
+## RULE 9: Three fixes applied 2026-04 — DO NOT RE-RUN
+
+The following fixes were already applied. Running them again will do nothing harmful
+but wastes time. They are already baked into the DB.
+
+1. **Fix 1 — Restored 693 archived products** (celebrate + dine pillar, all breeds)
+   - These had `visibility.status: 'archived'` in products_master but `is_active:True` in breed_products
+   - All restored to `visibility.status: 'active'`
+
+2. **Fix 2 — Backfilled breed_tags for 1,110 products**
+   - Products had `breed: 'labrador'` but `breed_tags: None` → frontend couldn't find them
+   - Set `breed_tags: ['$breed']` via aggregation pipeline update
+   - ALWAYS use `$nin: [None, '']` not duplicate `$ne` keys (Python dict bug)
+
+3. **Fix 3 — Stamped is_mockup:True for 1,838 breed_products**
+   - Soul Generator only shows `is_mockup:True` products
+   - Products had valid Cloudinary images but flag was missing
+   - Newfoundland went from 2 → 118 visible in Soul Generator
+
+---
+
 ## KNOWN TECHNICAL DEBT (do not fix without user approval)
 
 - `server.py` 25,000+ lines — needs route splitting (P2, do not touch)
