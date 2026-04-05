@@ -1,6 +1,27 @@
 # CHANGELOG
 
-## 2026-04-01 (Session 48 — Production Build + Insights Redesign)
+## 2026-04-05 (Session 52 — Write-Through Sync + Task 2 Backfill)
+
+### Architecture: Single Source of Truth (products_master)
+
+1. **`_sync_to_products_master` helper** — Added to `/app/backend/app/api/mockup_routes.py`
+   - Writes `soul_made: True`, `soul_tier: "soul_made"`, `cloudinary_url`, `image_url`, `breed_tags`, `pillar`, `original_price` to `products_master` on every breed product write
+   - Pillar safety fix included: handles both list and string `pillars` field
+   - `$setOnInsert: visibility.status: "active"` ensures new records are consumer-visible immediately
+   - Applied at all 8 `breed_products.update_one` locations
+
+2. **Backfill** — 1,946 orphan `breed_products` (active) synced to `products_master` with `soul_made: True`
+   - Zero orphans remaining
+   - `products_master` soul_made total: 5,557
+
+3. **Visibility fix** — 1,069 existing soul_made records in `products_master` that were missing `visibility.status` field got patched to `visibility.status: "active"`
+
+### Verified
+- 1 live generation test: German Shepherd Sofa Cushion Cover → synced to `products_master` in real-time ✅
+- Soul Box admin shows newly generated products immediately ✅
+- Consumer-facing pages now see all active soul products ✅
+
+
 
 ### Performance
 1. **Production build** — `yarn build` completed in 70s. Build artifacts in `/app/frontend/build/`.
