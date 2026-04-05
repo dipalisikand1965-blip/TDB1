@@ -31,14 +31,24 @@ def log(msg):
 
 
 def check_generation(db):
+    """Check using mockup_url presence — the correct completion metric."""
     results = []
     all_done = True
     for item in GENERATION_CHECKS:
-        total = db.breed_products.count_documents(item["q"])
-        done  = db.breed_products.count_documents({**item["q"], "is_mockup": True})
-        pct   = int(done/total*100) if total else 100
-        results.append(f"  {item['label']:<15}: {done:>3}/{total:<3} ({pct}%)")
-        if done < total:
+        q = item["q"]
+        total = db.breed_products.count_documents(q)
+        # pending = has prompt but no url yet
+        pending_q = {"$and": [
+            q,
+            {"is_active": True},
+            {"mockup_prompt": {"$exists": True, "$ne": ""}},
+            {"$or": [{"mockup_url": {"$in": [None, ""]}}, {"mockup_url": {"$exists": False}}]}
+        ]}
+        pending = db.breed_products.count_documents(pending_q)
+        done = total - pending
+        pct  = int(done / total * 100) if total else 100
+        results.append(f"  {item['label']:<15}: {done:>3}/{total:<3} ({pct}%) — {pending} pending")
+        if pending > 0:
             all_done = False
     return all_done, "\n".join(results)
 
@@ -47,14 +57,14 @@ def topper_pending(db):
     return db.breed_products.count_documents({
         "product_type": "birthday_cake_topper",
         "is_active": True,
-        "$or": [{"mockup_url": None}, {"mockup_url": ""}, {"mockup_url": {"$exists": False}}]
+        "$or": [{"mockup_url": {"$in": [None, ""]}}, {"mockup_url": {"$exists": False}}]
     })
 
 
 def topper_done(db):
     return db.breed_products.count_documents({
         "product_type": "birthday_cake_topper",
-        "is_mockup": True
+        "mockup_url": {"$nin": [None, ""], "$exists": True}
     })
 
 
