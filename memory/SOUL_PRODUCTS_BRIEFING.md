@@ -168,7 +168,13 @@ yorkshire_terrier  |  85 | 85  | ALL 11 PILLARS ✓
 
 ## REMAINING ISSUES (In Priority Order)
 
-### ISSUE A — breed_tags GAP breeds (P0) — DO NEXT
+### ISSUE A — breed_tags GAP breeds ✅ FIXED (Step 5)
+Fixed 2026-04. Three breeds had breed_tags stored with spaces instead of underscores.
+- "saint bernard" → "st_bernard" (108 products fixed) → members: 25 → 133
+- "irish setter" → "irish_setter" (55 products fixed) → members: 21 → 76
+- "jack russell" → "jack_russell" (52 products fixed) → members: 25 → 77
+
+### ISSUE A (RESOLVED) — breed_tags GAP breeds (was P0)
 These breeds have products in breed_products but they're not reaching members.
 The soul_gen count is much higher than member count. This means products_master
 has them BUT breed_tags field is set incorrectly (wrong breed slug format).
@@ -299,7 +305,12 @@ bandana — just the beautiful dog portrait illustration."
 
 ## STEP BY STEP PLAN (What To Do Next)
 
-### Step 5 — Fix st_bernard, irish_setter, jack_russell breed_tags gap (NEXT)
+### Step 5 — Fix all breed_tags with spaces ✅ DONE
+Fixed st_bernard (108), irish_setter (55), jack_russell (52) + swept ALL 56 breeds.
+683 more products fixed. Zero breed_tags with spaces remaining anywhere.
+Result: 27 HEALTHY breeds (90+), 25 GOOD (40-89), 4 LOW (basenji/bichon_frise/corgi/saint_bernard)
+
+### Step 6 — Generate missing adopt + farewell products (NEXT)
 Diagnose why members see far fewer products than exist in soul gen.
 Check: what is breed_tags actually set to in products_master for these breeds?
 Fix: normalize to correct underscore slug.
