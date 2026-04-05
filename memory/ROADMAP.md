@@ -121,16 +121,23 @@
 
 ---
 
-## DATABASE STATE (2026-03-25)
+## DATABASE STATE (2026-04-05)
 
 | Collection | Count | Notes |
 |---|---|---|
-| products_master | 6,042 | 457 soul_made, 5,585 regular |
+| products_master | 6,042+ | 457 soul_made, 5,585 regular |
 | services_master | 1,021 | All 12 pillars mapped correctly |
-| breed_products | 3,448 | Soul catalog — NOT auto-shown on pillar pages |
+| breed_products | 4,577 | Soul catalog — 4,260 active (295 freshly regenerated with breed-specific images) |
 | bundles_master | ~20+ | Care and other pillars |
 | services (old) | 46 | Pre-migration, OLD pillar names |
 | service_catalog (old) | 97 | Pre-migration, OLD pillar names |
+
+## BREED COVERAGE AUDIT (2026-04-05)
+- **22/56 breeds HEALTHY** (≥94 products, all pillars)
+- **34/56 breeds need attention** (see AGENT_RULES.md RULE 7 for full list)
+- **Critical gap: `adopt` pillar only covers 35/56 breeds** — 21 breeds missing adopt products
+- Average products per breed: 76.1 (vs target 94)
+- Duplicate breed slugs inflating gap numbers: indie=indian_pariah, husky=siberian_husky, etc.
 
 ---
 

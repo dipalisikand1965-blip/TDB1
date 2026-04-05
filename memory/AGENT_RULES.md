@@ -33,9 +33,11 @@ completely generic, non-breed-specific prompt:
 
 These images are WRONG — generic stock photos, not breed-specific watercolor art.
 
-**STATUS AS OF 2026-04-05:**
+**STATUS AS OF 2026-04-05 (COMPLETE):**
 - 168 confirmed duplicates → ARCHIVED (do NOT restore, proper versions exist)
-- 295 unique products → REGENERATED with proper breed-specific prompts
+- 295 unique products → REGENERATED with breed-specific watercolor prompts ✓
+  - Script: `/app/backend/scripts/prep_group2_regen.py` (already run — do NOT re-run)
+  - All 295 now have Cloudinary URLs under `doggy/mockups/{breed}/` paths
 
 **DO NOT restore the 168 archived hash-suffix products. Proper versions exist.**
 
@@ -80,6 +82,34 @@ This is implemented in `unified_product_box.py` PUT endpoint.
 
 Each of the 56 breeds should have approximately 94 products.
 Significantly fewer = missing or incorrectly archived products. Investigate before touching.
+
+### AUDIT RESULTS (2026-04-05)
+Run script: `/app/backend/scripts/breed_audit.py`
+
+**HEALTHY (22 breeds ≥ 94 products, all pillars):**
+beagle, border_collie, boxer, chihuahua, cocker_spaniel, dachshund, doberman, english_bulldog,
+german_shepherd, golden_retriever, great_dane, labrador, maltese, maltipoo, newfoundland,
+pomeranian, poodle, pug, rottweiler, scottish_terrier, shih_tzu, st_bernard
+
+**EFFECTIVE DUPLICATES (breed name aliases — show combined products to members):**
+- indie (64) + indian_pariah (66) = 130 ✅ (RULE 3)
+- husky (62) + siberian_husky (71) = 133 ✅
+- bulldog (47) + english_bulldog (97) = 144 ✅
+- saint_bernard (29) + st_bernard (96) = 125 ✅
+- cavalier (44) + cavalier_king_charles (72) = 116 ✅
+- yorkshire (44) + yorkshire_terrier (90) = 134 ✅
+
+**GENUINE GAPS (need seeding — P1):**
+bichon_frise(28), corgi(28), basenji(30), alaskan_malamute(44),
+labradoodle(48), american_bully(49), chow_chow(49), irish_setter(49),
+jack_russell(49), lhasa_apso(49), schnoodle(49), greyhound(52),
+dalmatian(58), french_bulldog(59), bernese_mountain(66),
+boston_terrier(66), havanese(66), shetland_sheepdog(66),
+samoyed(71), vizsla(71), weimaraner(71), australian_shepherd(82), akita(89)
+
+**STRUCTURAL GAP (P0 — most impactful):**
+`adopt` pillar is MISSING for 21 breeds. Only 35/56 breeds have adopt products.
+Breeds without adopt: all the genuine-gap breeds above + some others.
 
 ---
 
