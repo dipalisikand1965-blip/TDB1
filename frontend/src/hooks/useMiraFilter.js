@@ -756,8 +756,8 @@ const CLEAN_NONE_EXPORT = /^(no|none|none known|none_confirmed|no_allergies|no a
 export function getAllergiesFromPet(pet) {
   const s = new Set();
   const addStr = v => {
-    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE_EXPORT.test(String(x).trim())) s.add(String(x).trim()); });
-    else if (v && !CLEAN_NONE_EXPORT.test(String(v).trim())) s.add(String(v).trim());
+    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE_EXPORT.test(String(x).trim())) s.add(String(x).trim().toLowerCase()); });
+    else if (v && !CLEAN_NONE_EXPORT.test(String(v).trim())) s.add(String(v).trim().toLowerCase());
   };
   addStr(pet?.preferences?.allergies);
   addStr(pet?.doggy_soul_answers?.food_allergies);
@@ -766,7 +766,7 @@ export function getAllergiesFromPet(pet) {
   // vault.allergies — primary store
   if (Array.isArray(pet?.vault?.allergies)) {
     pet.vault.allergies.forEach(alg => {
-      if (alg?.name && !CLEAN_NONE_EXPORT.test(String(alg.name).trim())) s.add(String(alg.name).trim());
+      if (alg?.name && !CLEAN_NONE_EXPORT.test(String(alg.name).trim())) s.add(String(alg.name).trim().toLowerCase());
     });
   }
   addStr(pet?.health_data?.allergies);
