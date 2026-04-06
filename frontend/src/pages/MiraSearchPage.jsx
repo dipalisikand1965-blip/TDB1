@@ -254,7 +254,7 @@ function ImagineChip({ petName, query, idx, onConcierge, onAmazonClick }) {
           rel="noopener noreferrer"
           style={{ fontSize: 11, color: '#FF9900', textDecoration: 'none', fontWeight: 600, textAlign: 'center', display: 'block', padding: '2px 0', cursor: 'pointer' }}
         >
-          Search Amazon →
+          Your Concierge recommends exploring here →
         </a>
       </div>
     </div>
