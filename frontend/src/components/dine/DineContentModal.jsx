@@ -701,14 +701,38 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
         const petAllergiesStr = getAllergiesFromPet(pet);
         const allergenParam = petAllergiesStr.length > 0 ? `&allergens=${encodeURIComponent(petAllergiesStr.join(','))}` : '';
         const url = `${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=100${breedFilter2}${allergenParam}`;
-        const r = await fetch(url);
+
+        // For Daily Meals: also fetch dining accessories (bowls, mats) which live under breed-bowls / dine_accessories
+        const isDaily = category === 'daily-meals';
+        const fetchAcc = isDaily
+          ? Promise.all([
+              fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=breed-bowls&limit=40${breedFilter2}${allergenParam}`)
+                .then(r => r.ok ? r.json() : { products: [] }).catch(() => ({ products: [] })),
+              fetch(`${apiUrl}/api/admin/pillar-products?pillar=dine&category=dine_accessories&limit=20${breedFilter2}${allergenParam}`)
+                .then(r => r.ok ? r.json() : { products: [] }).catch(() => ({ products: [] })),
+            ]).then(([d1, d2]) => ({ products: [...(d1.products||[]), ...(d2.products||[])] }))
+          : Promise.resolve({ products: [] });
+
+        const [r, accData] = await Promise.all([fetch(url), fetchAcc]);
         if (r.ok) {
           const d = await r.json();
           const prods = d.products || [];
+
+          // Tag accessories with sub_category so they appear under the Accessories tab
+          const accProds = (accData.products || []).map(p => ({
+            ...p,
+            sub_category: p.sub_category || 'accessories',
+          }));
+
+          // Merge, deduplicate by id
+          const seen = new Map();
+          [...prods, ...accProds].forEach(p => { if (!seen.has(p.id)) seen.set(p.id, p); });
+          const merged = [...seen.values()];
+
           // Apply full Mira filter: REMOVES allergen products + ranks loved items first
-          const filtered = applyMiraFilter(prods, pet);
+          const filtered = applyMiraFilter(merged, pet);
           setProducts(filtered);
-          const uniqueTabs = [...new Set(prods.map(p => p.sub_category).filter(Boolean))];
+          const uniqueTabs = [...new Set(merged.map(p => p.sub_category).filter(Boolean))];
           const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
           const filteredTabs = uniqueTabs.filter(t => !/-play$|-shop$|-dine$|-food$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
           setTabs(filteredTabs);
@@ -726,7 +750,11 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
 
   const filteredProducts = activeTab === 'all'
     ? products
-    : products.filter(p => (p.sub_category === activeTab) || (p.category === activeTab) || (p.product_type === activeTab));
+    : products.filter(p =>
+        (p.sub_category || '').toLowerCase() === activeTab.toLowerCase() ||
+        (p.category || '').toLowerCase() === activeTab.toLowerCase() ||
+        (p.product_type || '').toLowerCase() === activeTab.toLowerCase()
+      );
 
   if (!isOpen) return null;
 
@@ -1016,9 +1044,43 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
               )
             ) : (
               !loading && imagines.length === 0 && (
-                <div className="text-center py-12">
-                  <p style={{ fontSize: 36 }}>{config.emoji}</p>
-                  <p className="text-sm text-gray-500 mt-2">Personalised picks being curated for {petName}!</p>
+                // ── Universal rule: empty tab/category → Mira Imagine card ──
+                <div style={{ marginTop: 8 }}>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,140,66,0.85)', marginBottom: 10, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                    ✦ MIRA IMAGINES — NOT YET IN CATALOG
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))', gap: 14 }}>
+                    <MiraImaginesCard
+                      item={{
+                        id: `imagine-tab-${activeTab}-${category}`,
+                        isImagined: true,
+                        emoji: config.emoji || '🍽️',
+                        name: activeTab === 'all'
+                          ? `${petName}'s ${config.label} Box`
+                          : `${petName}'s ${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Pack`,
+                        description: activeTab === 'all'
+                          ? `Mira is curating the best ${config.label.toLowerCase()} for ${petName}. Concierge® can source it today.`
+                          : `Mira would handpick the best ${activeTab} options for ${petName}'s profile. Ask Concierge® to source them.`,
+                      }}
+                      pet={pet}
+                      apiUrl={getApiUrl()}
+                      token={token}
+                    />
+                    {allergies.length > 0 && (
+                      <MiraImaginesCard
+                        item={{
+                          id: `imagine-safe-${activeTab}-${category}`,
+                          isImagined: true,
+                          emoji: '🛡️',
+                          name: `${allergies.map(a => a.charAt(0).toUpperCase() + a.slice(1) + '-Free').join(' & ')} ${activeTab === 'all' ? config.label : activeTab}`,
+                          description: `Every option guaranteed ${allergies.join(' & ')}-free. Curated specifically for ${petName}'s safety.`,
+                        }}
+                        pet={pet}
+                        apiUrl={getApiUrl()}
+                        token={token}
+                      />
+                    )}
+                  </div>
                 </div>
               )
             )}
