@@ -1904,6 +1904,7 @@ const ProductBoxEditor = ({
                   category={getValue('category', '')}
                   breed={getValue('target_breed', '') || (getValue('target_breeds', []) || [])[0] || ''}
                   currentImageUrl={getValue('image_url', '') || getValue('watercolor_image', '')}
+                  generateImageBasePath={imageGenBasePath}
                   onPromptChange={val => { updateField('ai_image_prompt', val); updateField('ai_prompt', val); }}
                   onImageGenerated={(url, usedPrompt) => {
                     // Single functional update — avoids race condition from multiple updateField calls
