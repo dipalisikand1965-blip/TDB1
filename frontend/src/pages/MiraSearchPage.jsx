@@ -25,6 +25,7 @@ import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
 import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import GuidedCelebrationPaths from '../components/celebrate/GuidedCelebrationPaths';
 import Navbar from '../components/Navbar';
+import { usePillarContext } from '../context/PillarContext';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -118,40 +119,6 @@ function ScrollStrip({ children, gap = 12 }) {
 
 
 // ── Pet selector chip ──────────────────────────────────────────────────────
-function PetChip({ pet, active, onClick }) {
-  const score = Math.round(pet?.overall_score || 0);
-  const img = pet?.photo_url || pet?.profile_image;
-  return (
-    <button onClick={onClick} style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '6px 12px 6px 6px', borderRadius: 999,
-      border: `1.5px solid ${active ? C.amber : C.border}`,
-      background: active ? 'rgba(201,151,58,0.1)' : C.card,
-      cursor: 'pointer', transition: 'all 0.18s',
-    }}>
-      <div style={{
-        width: 28, height: 28, borderRadius: '50%',
-        overflow: 'hidden', flexShrink: 0,
-        background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {img
-          ? <img src={img} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <span style={{ fontSize: 12 }}>🐾</span>}
-      </div>
-      <span style={{ fontSize: 13, fontWeight: 600, color: active ? C.amber : C.text, fontFamily: 'DM Sans, sans-serif' }}>
-        {pet?.name}
-      </span>
-      <span style={{
-        fontSize: 11, fontWeight: 700,
-        color: soulColor(score), fontFamily: 'DM Sans, sans-serif',
-      }}>
-        {score}%
-      </span>
-    </button>
-  );
-}
-
 // ── Streaming text renderer ────────────────────────────────────────────────
 function StreamingText({ text, streaming }) {
   if (!text) return null;
@@ -369,8 +336,7 @@ export default function MiraSearchPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const [pets, setPets] = useState([]);
-  const [activePet, setActivePet] = useState(null);
+  const { currentPet: activePet, pets } = usePillarContext();
   const [query, setQuery] = useState('');
   const [followUp, setFollowUp] = useState('');
   // turns = [{ id, query, response, products, services, streaming }]
@@ -489,21 +455,6 @@ export default function MiraSearchPage() {
       navigate('/login?redirect=/mira-search');
     }
   }, [user, token, navigate]);
-
-  // ── Load pets ─────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!token) return;
-    fetch(`${getApiUrl()}/api/pets`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(r => r.ok ? r.json() : [])
-      .then(data => {
-        const list = Array.isArray(data) ? data : (data.pets || []);
-        setPets(list);
-        setActivePet(list[0] || null);
-      })
-      .catch(() => {});
-  }, [token]);
 
   // ── Focus input on mount ──────────────────────────────────────────────────
   useEffect(() => {
@@ -759,16 +710,8 @@ export default function MiraSearchPage() {
           <span style={{ fontSize: 17, fontWeight: 700, color: C.ivory, letterSpacing: '-0.02em' }}>Mira</span>
         </div>
 
-        {/* Pet selector + cart icon */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          {pets.slice(0, 4).map(pet => (
-            <PetChip
-              key={pet.id || pet._id}
-              pet={pet}
-              active={activePet?.id === pet.id || activePet?._id === pet._id}
-              onClick={() => setActivePet(pet)}
-            />
-          ))}
+        {/* Icons row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {/* My Requests */}
           <button
             onClick={() => navigate('/my-requests')}
