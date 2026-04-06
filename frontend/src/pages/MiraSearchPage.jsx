@@ -177,12 +177,28 @@ function StreamingText({ text, streaming }) {
 
 // ── "Mira Imagines" chip — same card dimensions as ResultChip ─────────────
 const IMAGINE_ICONS = ['✨', '🐾', '🌿'];
+
+// Map raw query → clean intent label (never slice raw text mid-word)
+function resolveImagineLabel(query = '') {
+  const q = query.toLowerCase();
+  if (/birthday|cake|celebrat|party|gotcha/i.test(q))        return 'a perfect birthday celebration';
+  if (/groom|spa|bath|haircut|trim/i.test(q))                return 'a premium grooming experience';
+  if (/food|eat|meal|treat|diet|salmon|chicken|dine/i.test(q)) return 'the perfect meal or treat';
+  if (/walk|park|trail|outdoor|adventure|go|explore/i.test(q)) return 'an outdoor adventure';
+  if (/play|toy|fun|game|social|buddy|friend/i.test(q))       return 'a perfect play session';
+  if (/vet|health|doctor|medicine|care|sick/i.test(q))        return 'the best care option';
+  if (/stay|hotel|travel|trip|holiday/i.test(q))              return 'a pet-friendly stay';
+  if (/learn|train|class|school|behaviour/i.test(q))          return 'the ideal training plan';
+  if (/day|plan|routine|schedule/i.test(q))                   return 'a perfect day plan';
+  return 'the ideal experience';
+}
+
 function ImagineChip({ petName, query, idx, onConcierge }) {
   const icon = IMAGINE_ICONS[idx % 3];
-  const shortQuery = query ? query.replace(/\b(for|my|a|an|the|some)\b/gi, '').trim().slice(0, 28) : 'the right pick';
+  const intentLabel = resolveImagineLabel(query);
   const labels = [
-    `Mira imagines a ${shortQuery} for ${petName}`,
-    `Concierge will source the perfect ${shortQuery}`,
+    `Mira imagines ${intentLabel} for ${petName}`,
+    `Concierge will source ${intentLabel} for ${petName}`,
     `Tell us more about what ${petName} needs`,
   ];
   return (
