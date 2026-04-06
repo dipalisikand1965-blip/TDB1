@@ -1021,17 +1021,19 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* ── NearMe: geo denied — ask for city ── */}
-            {turn.needsCity && !turn.places?.length && (
+            {/* ── NearMe: geo denied OR city override ── */}
+            {(turn.needsCity || turn.showCityInput) && !turn.places?.length && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
                 <p style={{ fontSize: 12, color: C.muted, marginBottom: 8 }}>
-                  Location access was denied. Which city should Mira search in?
+                  {turn.needsCity
+                    ? 'Location access was denied. Which city should Mira search in?'
+                    : 'Search in a different city:'}
                 </p>
                 <form onSubmit={async e => {
                   e.preventDefault();
                   const city = e.target.city.value.trim();
                   if (!city) return;
-                  patchTurn(turn.id, { needsCity: false });
+                  patchTurn(turn.id, { needsCity: false, showCityInput: false });
                   try {
                     const res = await fetch(
                       `${getApiUrl()}/api/places/care-providers?city=${encodeURIComponent(city)}&type=${turn.placeType || 'all'}`,
@@ -1042,7 +1044,8 @@ export default function MiraSearchPage() {
                     else patchTurn(turn.id, { places: [] });
                   } catch { patchTurn(turn.id, { places: [] }); }
                 }} style={{ display: 'flex', gap: 8 }}>
-                  <input name="city" placeholder="e.g. Bengaluru, Mumbai, Delhi" defaultValue=""
+                  <input name="city" placeholder="e.g. Goa, Mumbai, London, Tokyo"
+                    defaultValue={activePet?.city || ''}
                     style={{ flex: 1, padding: '7px 12px', borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.text, fontSize: 13, outline: 'none' }} />
                   <button type="submit" style={{ padding: '7px 16px', borderRadius: 8, background: C.amber, color: '#000', fontSize: 12, fontWeight: 700, border: 'none', cursor: 'pointer' }}>
                     Search
@@ -1051,37 +1054,69 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* ── NearMe Place Cards — shown when query contains "near me" ── */}
+            {/* ── NearMe Place Cards — horizontal chip scroll strip ── */}
             {turn.places?.length > 0 && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
-                <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
-                  Near you · {turn.places.length} {turn.placeType || 'places'} found
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {turn.places.slice(0, 5).map((place, i) => (
-                    <div key={place.place_id || i} data-testid="near-me-place-card"
-                      style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                      <div style={{ width: 36, height: 36, borderRadius: 8, background: C.amber + '22', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
-                        {place.type === 'vet' ? '🏥' : place.type === 'trainer' ? '🎓' : place.type === 'daycare' ? '🏠' : '✂️'}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                          <span style={{ fontWeight: 700, fontSize: 13, color: C.text }}>{place.name}</span>
-                          {place.tdc_verified && (
-                            <span style={{ fontSize: 10, background: C.amber + '33', color: C.amber, borderRadius: 8, padding: '1px 6px', fontWeight: 600 }}>TDC Verified</span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, margin: 0 }}>
+                    Near you · {turn.places.length} {turn.placeType || 'places'} found
+                  </p>
+                  <button
+                    onClick={() => patchTurn(turn.id, { showCityInput: !turn.showCityInput, places: [] })}
+                    style={{ fontSize: 11, color: C.amber, background: 'none', border: `1px solid ${C.amber}44`, borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontWeight: 600 }}>
+                    Change city
+                  </button>
+                </div>
+                <ScrollStrip gap={12}>
+                  {turn.places.slice(0, 6).map((place, i) => {
+                    const placeIcon = place.type === 'vet' ? '🏥' : place.type === 'trainer' ? '🎓' : place.type === 'daycare' ? '🏠' : '✂️';
+                    return (
+                      <div key={place.place_id || i} data-testid="near-me-place-card"
+                        style={{
+                          display: 'inline-flex', flexDirection: 'column',
+                          minWidth: 160, maxWidth: 200, flexShrink: 0,
+                          background: C.card, border: `1px solid ${C.border}`,
+                          borderRadius: 14, overflow: 'hidden', cursor: 'default',
+                          transition: 'border-color 0.15s, transform 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = C.amber; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = 'none'; }}
+                      >
+                        {/* Icon banner */}
+                        <div style={{ height: 64, background: `${C.amber}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
+                          {placeIcon}
+                        </div>
+                        {/* Content */}
+                        <div style={{ padding: '10px 12px', flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
+                            <span style={{ fontWeight: 700, fontSize: 12, color: C.text, lineHeight: 1.3 }}>{place.name}</span>
+                            {place.tdc_verified && (
+                              <span style={{ fontSize: 9, background: `${C.amber}33`, color: C.amber, borderRadius: 8, padding: '1px 5px', fontWeight: 700, whiteSpace: 'nowrap' }}>✓ TDC</span>
+                            )}
+                          </div>
+                          <p style={{ fontSize: 11, color: C.muted, margin: 0, lineHeight: 1.3 }}>{place.vicinity}</p>
+                          {place.rating && (
+                            <span style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(place.rating))} {place.rating}</span>
+                          )}
+                          {place.mira_note && (
+                            <p style={{ fontSize: 10, color: C.amber, margin: 0, fontStyle: 'italic', lineHeight: 1.3 }}>{place.mira_note}</p>
                           )}
                         </div>
-                        <p style={{ fontSize: 12, color: C.muted, margin: '2px 0' }}>{place.vicinity}</p>
-                        {place.rating && (
-                          <span style={{ fontSize: 11, color: '#f59e0b' }}>{'★'.repeat(Math.round(place.rating))} {place.rating}</span>
-                        )}
-                        {place.mira_note && (
-                          <p style={{ fontSize: 11, color: C.amber, marginTop: 2, fontStyle: 'italic' }}>{place.mira_note}</p>
-                        )}
+                        {/* Book CTA */}
+                        <div style={{ padding: '0 12px 10px' }}>
+                          <button
+                            onClick={() => {
+                              if (place.phone) window.open(`tel:${place.phone}`);
+                              else if (place.url) window.open(place.url, '_blank');
+                            }}
+                            style={{ width: '100%', padding: '6px 0', borderRadius: 8, border: 'none', background: C.amber, color: '#000', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                            Book / Call →
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    );
+                  })}
+                </ScrollStrip>
               </div>
             )}
 
