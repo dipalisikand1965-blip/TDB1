@@ -22880,7 +22880,7 @@ async def detect_pet_mood(request: Request):
 # Intent-to-category mapping for semantic understanding
 SEMANTIC_INTENTS = {
     "birthday_celebration": {
-        "triggers": ["birthday", "celebrate", "party", "special day", "anniversary", "gotcha day", "treat", "cake", "gift"],
+        "triggers": ["birthday", "celebrate", "party", "special day", "anniversary", "gotcha day", "cake"],
         "priority_filter": {"pillar": "celebrate", "category": "cakes"},
         "product_categories": ["cakes", "party_accessories", "celebrate", "hampers"],
         "product_tags": ["birthday", "celebration", "party", "special"],
