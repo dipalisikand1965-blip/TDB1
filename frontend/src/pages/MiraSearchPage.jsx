@@ -177,12 +177,28 @@ function StreamingText({ text, streaming }) {
 
 // ── "Mira Imagines" chip — same card dimensions as ResultChip ─────────────
 const IMAGINE_ICONS = ['✨', '🐾', '🌿'];
+
+// Map raw query → clean intent label (never slice raw text mid-word)
+function resolveImagineLabel(query = '') {
+  const q = query.toLowerCase();
+  if (/birthday|cake|celebrat|party|gotcha/i.test(q))        return 'a perfect birthday celebration';
+  if (/groom|spa|bath|haircut|trim/i.test(q))                return 'a premium grooming experience';
+  if (/food|eat|meal|treat|diet|salmon|chicken|dine/i.test(q)) return 'the perfect meal or treat';
+  if (/walk|park|trail|outdoor|adventure|go|explore/i.test(q)) return 'an outdoor adventure';
+  if (/play|toy|fun|game|social|buddy|friend/i.test(q))       return 'a perfect play session';
+  if (/vet|health|doctor|medicine|care|sick/i.test(q))        return 'the best care option';
+  if (/stay|hotel|travel|trip|holiday/i.test(q))              return 'a pet-friendly stay';
+  if (/learn|train|class|school|behaviour/i.test(q))          return 'the ideal training plan';
+  if (/day|plan|routine|schedule/i.test(q))                   return 'a perfect day plan';
+  return 'the ideal experience';
+}
+
 function ImagineChip({ petName, query, idx, onConcierge }) {
   const icon = IMAGINE_ICONS[idx % 3];
-  const shortQuery = query ? query.replace(/\b(for|my|a|an|the|some)\b/gi, '').trim().slice(0, 28) : 'the right pick';
+  const intentLabel = resolveImagineLabel(query);
   const labels = [
-    `Mira imagines a ${shortQuery} for ${petName}`,
-    `Concierge will source the perfect ${shortQuery}`,
+    `Mira imagines ${intentLabel} for ${petName}`,
+    `Concierge will source ${intentLabel} for ${petName}`,
     `Tell us more about what ${petName} needs`,
   ];
   return (
@@ -411,7 +427,24 @@ export default function MiraSearchPage() {
   const LEARN_RE     = /\bclass\b|\bclasses\b|lesson|course|workshop|behaviour school|puppy school|learn/i;
 
   // ── Near-me detection ─────────────────────────────────────────────────────
-  const NEAR_ME_RE   = /near\s+me|nearby|near\s+by|close\s+to\s+me|find.*near|around\s+me|in\s+my\s+area|in\s+bangalore|in\s+bengaluru/i;
+  // Matches: "near me", "nearby", explicit cities, "where can I find", "in [any city]"
+  // Designed to catch any world city — not a hardcoded list
+  const NEAR_ME_RE = new RegExp(
+    [
+      'near\\s+me', 'nearby', 'near\\s+by',
+      'close\\s+to\\s+me', 'find.*near', 'around\\s+me',
+      'in\\s+my\\s+area', 'in\\s+my\\s+city',
+      'where\\s+can\\s+i\\s+find', 'where\\s+do\\s+i\\s+find',
+      'where.*find.*near', 'find.*in\\s+[a-z]',
+      // Any "in [Capitalised word]" pattern → catches all world cities
+      'in\\s+[A-Z][a-z]{2,}',
+      // Explicit common queries kept as anchors
+      'in\\s+goa', 'in\\s+mumbai', 'in\\s+delhi', 'in\\s+pune',
+      'in\\s+hyderabad', 'in\\s+chennai', 'in\\s+ooty',
+      'in\\s+bangalore', 'in\\s+bengaluru', 'in\\s+kolkata',
+    ].join('|'),
+    'i'
+  );
   const PLACE_TYPE_MAP = [
     [/grooming|groomer|groom|bath|spa|trim|nail/i, 'groomer'],
     [/\bvet\b|veterinar|checkup|vaccine|doctor|clinic/i, 'vet'],
@@ -954,32 +987,37 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Services CTA */}
+            {/* Guided Path — chip-sized card, scrolls with product strip */}
             {GUIDED_PATH_MAP[turn.intent] && !turn.streaming && (
-              <div
-                onClick={() => setGuidedPathOpen(turn.intent)}
-                style={{
-                  width:'100%', maxWidth:720,
-                  background:'linear-gradient(135deg,#1C1928,#2D1B69)',
-                  border:'1px solid rgba(124,58,237,0.3)',
-                  borderRadius:16, padding:'20px 24px',
-                  marginBottom:20, cursor:'pointer',
-                  animation:'fadeUp 0.5s ease',
-                }}
-                onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(167,139,250,0.5)'}
-                onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(124,58,237,0.3)'}
-              >
-                <div style={{fontSize:11,color:'#A78BFA',fontWeight:700,
-                  textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:6}}>
-                  ✦ Guided Path
-                </div>
-                <div style={{fontSize:16,fontWeight:700,color:'#F5F0E8',marginBottom:4,
-                  fontFamily:'Georgia,serif'}}>
-                  {GUIDED_PATH_MAP[turn.intent].title.replace('[pet]', activePet?.name || 'your dog')}
-                </div>
-                <div style={{fontSize:13,color:'rgba(245,240,232,0.55)'}}>
-                  {GUIDED_PATH_MAP[turn.intent].subtitle} →
-                </div>
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.5s ease' }}>
+                <ScrollStrip gap={12}>
+                  <div
+                    onClick={() => setGuidedPathOpen(turn.intent)}
+                    data-testid="guided-path-chip"
+                    style={{
+                      display: 'inline-flex', flexDirection: 'column',
+                      minWidth: 160, maxWidth: 200, flexShrink: 0,
+                      background: '#1C1928',
+                      border: '1px solid rgba(124,58,237,0.3)',
+                      borderRadius: 14, padding: '12px 14px',
+                      cursor: 'pointer', transition: 'border-color 0.18s, transform 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(167,139,250,0.6)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'; e.currentTarget.style.transform = 'none'; }}
+                  >
+                    <div style={{ fontSize: 10, color: '#F5F0E8', fontWeight: 700,
+                      textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+                      ✦ Guided Path
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#F5F0E8',
+                      lineHeight: 1.3, marginBottom: 4, fontFamily: 'Georgia,serif' }}>
+                      {GUIDED_PATH_MAP[turn.intent].title.replace('[pet]', activePet?.name || 'your dog')}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.8)', lineHeight: 1.3 }}>
+                      {GUIDED_PATH_MAP[turn.intent].subtitle} →
+                    </div>
+                  </div>
+                </ScrollStrip>
               </div>
             )}
 
@@ -1255,7 +1293,8 @@ export default function MiraSearchPage() {
         <GuidedCelebrationPaths pet={activePet} onClose={() => setGuidedPathOpen(null)} />
       )}
       {['travel_adventure','training_behavior','play_enrichment',
-        'farewell_memorial','emergency_urgent','paperwork_docs','adopt_rescue']
+        'farewell_memorial','emergency_urgent','paperwork_docs','adopt_rescue',
+        'vet_health','shop_accessories']
         .includes(guidedPathOpen) && (
         <ServiceConciergeModal
           service={{ pillar: GUIDED_PATH_MAP[guidedPathOpen]?.path.replace('/',''), name: GUIDED_PATH_MAP[guidedPathOpen]?.title }}
