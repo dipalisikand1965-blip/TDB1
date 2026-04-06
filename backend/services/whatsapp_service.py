@@ -98,7 +98,7 @@ async def _log(
                 "message_id":      result.get("message_id"),
                 "error":           result.get("error"),
                 "sent_at":         datetime.now(timezone.utc).isoformat(),
-                "templates_mode":  TEMPLATES_APPROVED,
+                "templates_mode":  _templates_approved(),
             }},
             upsert=True
         )
