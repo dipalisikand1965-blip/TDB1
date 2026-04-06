@@ -25246,6 +25246,10 @@ app.include_router(pawrent_journey_router)  # Pawrent Journey — must be after 
 from concierge_intent_routes import concierge_intent_router
 app.include_router(concierge_intent_router, prefix="/api")
 
+# ── DB Restore (Migration Tool) ───────────────────────────────────────────────
+from db_restore_routes import restore_router
+app.include_router(restore_router)  # DB restore at /api/admin/db/*
+
 # ─── ADMIN SERVICES CRUD ──────────────────────────────────────────────────────
 @api_router.get("/admin/services")
 async def get_admin_services(
