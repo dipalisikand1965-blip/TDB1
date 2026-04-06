@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"f1e67dee134a4c9098be7a683dc3225d","collectionName":"mira_sessions","type":"collection"}

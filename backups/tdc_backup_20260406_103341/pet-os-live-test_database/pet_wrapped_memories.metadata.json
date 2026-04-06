@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"897fb2c20c7245f6a663c0d6b4eb55f7","collectionName":"pet_wrapped_memories","type":"collection"}
