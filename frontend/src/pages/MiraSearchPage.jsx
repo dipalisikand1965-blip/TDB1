@@ -233,8 +233,8 @@ function ImagineChip({ petName, query, idx, onConcierge, onAmazonClick }) {
           Ask Concierge →
         </button>
         <a
-          onClick={e => { e.preventDefault(); onAmazonClick?.(); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(query)}&tag=thedoggyco-21`, '_blank'); }}
-          href={`https://www.amazon.in/s?k=${encodeURIComponent(query)}&tag=thedoggyco-21`}
+          onClick={e => { e.preventDefault(); onAmazonClick?.(); window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(query)}&tag=thedoggyco-21`, '_blank'); }}
+          href={`https://www.amazon.in/s?k=dog+${encodeURIComponent(query)}&tag=thedoggyco-21`}
           rel="noopener noreferrer"
           style={{ fontSize: 11, color: '#FF9900', textDecoration: 'none', fontWeight: 600, textAlign: 'center', display: 'block', padding: '2px 0', cursor: 'pointer' }}
         >
