@@ -951,6 +951,10 @@ export default function MiraSearchPage() {
                     </div>
                   ))}
                 </ScrollStrip>
+              </div>
+            )}
+
+            {/* Services CTA */}
             {GUIDED_PATH_MAP[turn.intent] && !turn.streaming && (
               <div
                 onClick={() => setGuidedPathOpen(turn.intent)}
