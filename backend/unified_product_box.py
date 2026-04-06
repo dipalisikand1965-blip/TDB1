@@ -787,29 +787,42 @@ async def get_all_products(
         # (to avoid cross-contamination of unrelated breed products into filtered results)
         if include_soul_made and not source and not category and not pillar and len(all_products) < limit:
             remaining = limit - len(all_products)
-            breed_query = {}
+            breed_query: dict = {}
             if search:
                 breed_query["$or"] = [
                     {"name": {"$regex": search, "$options": "i"}},
                     {"breed": {"$regex": search, "$options": "i"}},
                     {"breed_name": {"$regex": search, "$options": "i"}}
                 ]
-            
-            # Get soul_made products that are NOT in products_master
+            # Mirror the same visibility filter as products_master so archived breed products stay hidden
+            if status == 'all':
+                breed_query["visibility.status"] = {"$ne": "archived"}
+                breed_query["archived"] = {"$ne": True}
+            elif status:
+                breed_query["visibility.status"] = status
+            else:
+                breed_query["$and"] = breed_query.get("$and", []) + [
+                    {"$or": [{"archived": {"$ne": True}}, {"archived": {"$exists": False}}]},
+                    {"$or": [{"visibility.status": "active"}, {"visibility.status": {"$exists": False}}]}
+                ]
+
+            # Get soul_made products that are NOT in products_master — O(1) set dedup
+            seen_ids = {mp.get("id") for mp in all_products}
             soul_products = await db.breed_products.find(
                 breed_query, {"_id": 0}
             ).limit(remaining).to_list(remaining)
-            
+
             for p in soul_products:
                 p["source"] = "soul_made"
                 p["soul_tier"] = "soul_made"
                 # Preserve watercolor_image/cloudinary_url — only fall back to mockup_url if no better image
                 if not p.get("watercolor_image") and not p.get("cloudinary_url"):
                     p["image"] = p.get("mockup_url") or p.get("image", "")
-                # Only add if not already in products_master (dedup by id)
-                if not any(mp.get("id") == p.get("id") for mp in all_products):
+                pid = p.get("id")
+                if pid not in seen_ids:
+                    seen_ids.add(pid)
                     all_products.append(p)
-            
+
             breed_total = await db.breed_products.count_documents(breed_query)
             total += breed_total
     

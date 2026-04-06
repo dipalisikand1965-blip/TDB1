@@ -1,5 +1,5 @@
 # The Doggy Company — Product Requirements Document
-## Last Updated: 2026-04-05 (Session 52 — Write-through sync + Task 2 backfill complete)
+## Last Updated: 2026-04-06 (Session 53 — Complete Admin Box Audit + All Bugs Fixed)
 
 ## IRON RULE #1: NO STOCK PHOTOS
 - **NEVER** use Unsplash, Pexels, Picsum, Lorem Picsum, or any stock photo service
@@ -318,13 +318,49 @@ None.
 1. Watch & Learn YouTube sections (Care + Go)
 2. Add LearnNearMe, PaperworkNearMe, GoNearMe components to mobile pages
 
+### P0 — Next Session
+1. Add "Mira explains why" expandable row on product cards — one tap reveals soul profile reasoning (allergens blocked, breed match, favorite food). User explicitly approved this feature.
+
+### P1 — Upcoming
+2. Celebrate mobile parity: `BirthdayCountdown`, `CelebrationMemoryWall`, `MiraSoulNudge` missing from `CelebrateMobilePage`
+3. `LearnNearMe`, `PaperworkNearMe`, `GoNearMe` components on mobile pages
+
 ### P2 — Future
 1. Production DB (Atlas IP whitelist)
 2. Refactor Admin.jsx (7k lines)
 3. Refactor server.py (24k lines)
 4. Build Love pillar
 
-### Completed in Session 14 (SOS + Shop Parity + Celebrate Plan Day)
+### Session 53 — Complete Admin Box Audit (2026-04-06)
+✅ AUDIT COMPLETE — 28/28 tests pass
+
+**Product Box (products_master):**
+- ✅ Image generation background job saves `watercolor_image`, `cloudinary_url`, `image_url`, `image`, `images[0]` — DOMINANT & PERSISTENT
+- ✅ Archive → sets `visibility.status="archived"` → hidden from all consumer views
+- ✅ Restore → resets to `visibility.status="active"` — fixed for ALL product types
+- ✅ Edit/PUT → saves all fields correctly
+
+**Service Box (services_master):**
+- ✅ AI image generation synchronous → saves `image_url`, `image`, `watercolor_image` immediately
+- ✅ Archive → soft-delete via `approval_status="archived"` (no data loss)
+- ✅ Restored → `PATCH /api/service-box/services/{id}/restore`
+- ✅ Admin list (`admin_get_services`) now filters out archived services
+- ✅ New `GET /api/service-box/services/archived` endpoint added
+- ✅ ServiceBox UI: "Show Archived" toggle + Restore buttons added
+- ✅ `admin_delete_service` converted from hard delete → soft archive
+- ✅ Delete dialog text updated to "Archive (restorable)"
+
+**Soul Box (breed_products):**
+- ✅ Inline ✨ Gen button now sends `entity_type: "breed_product"` + `entity_id` → image SAVED to breed_products
+- ✅ ProductBoxEditor in SoulBox uses `entityConfig` pointing to `/api/product-box/breed-products/{id}/generate-image`
+- ✅ New dedicated endpoint saves watercolor_image, cloudinary_url, image_url to breed_products
+- ✅ Archive/restore works correctly for `bp-*` prefix products (products_master) and `breed-*` prefix (breed_products)
+
+**Performance/Data:**
+- ✅ Fixed O(n) duplicate scan → O(1) set lookup in breed_products supplement query
+- ✅ breed_products supplement now respects visibility.status filter (archived products stay hidden)
+- ✅ Removed duplicate `bp-akita-designer-bandana-969f46` from products_master (React key error fixed)
+- ✅ Removed duplicate `BulkCategoryAssign` class definition
 1. ✅ SOS: Admin ServiceBox null crash fixed (selectedService?.is_active guard)
 2. ✅ Shop mobile SHOP_CATS: 7 pills matching desktop exactly (mira, bakery, breed, treats, hampers, merch, toys)
 3. ✅ Shop "See all X products on thedoggybakery.com" → internal "Browse all X" toggle button
