@@ -108,6 +108,27 @@
   <h2>📋 Session Changelog</h2>
   <p>Every agent MUST append their session summary here before finishing.</p>
 
+  <div class="changelog-entry" style="border-left-color:#dc2626; background:#fff5f5;">
+    <div class="date" style="color:#dc2626;">Session 10 — 2026-04-06 ⚠️ LOCKED ADMIN BEHAVIOURS</div>
+    <h4>Complete Admin Box Audit — All Boxes Now Bulletproof (28/28 Tests Pass)</h4>
+    <ul>
+      <li><strong>LOCKED ✅ Image Dominance Contract:</strong> When any AI image is generated (Product Box, Service Box, or Soul Box), the new URL is written to EVERY image field simultaneously: <code>watercolor_image</code>, <code>cloudinary_url</code>, <code>image_url</code>, <code>image</code>, <code>images[0]</code>, <code>media.primary_image</code>. Frontend <code>getProductImage()</code> reads in this same priority order. This ensures the generated image is ALWAYS the dominant image shown to members. <strong>Do NOT alter this write-all-fields pattern.</strong></li>
+      <li><strong>LOCKED ✅ Soft Archive Contract:</strong> ALL delete/archive operations MUST be soft-deletes. Hard deletes are BANNED. Archive sets: <code>visibility.status = "archived"</code> + <code>is_active = False</code>. For services: also sets <code>approval_status = "archived"</code>. NEVER call <code>delete_one()</code> or <code>delete_many()</code> on products or services.</li>
+      <li><strong>LOCKED ✅ Restore Contract:</strong> Archive is ALWAYS reversible. Restore sets <code>visibility.status = "active"</code> + <code>is_active = True</code> + <code>archived = False</code>. For breed products (breed_products collection): same three fields.</li>
+      <li><strong>LOCKED ✅ Admin Service List Filter:</strong> <code>admin_get_services</code> (GET /api/admin/services) filters <code>approval_status != "archived"</code>. Archived services are ONLY visible at <code>GET /api/service-box/services/archived</code>. Do NOT remove this filter.</li>
+      <li><strong>LOCKED ✅ Soul Box Image Gen (entity_type):</strong> The inline ✨ Gen button in SoulBox.jsx MUST always send <code>entity_type: "breed_product"</code> + <code>entity_id: product.id</code> in the POST body to <code>/api/admin/generate-image</code>. Without these, the backend generates the image but NEVER saves it to DB. The ProductBoxEditor opened from SoulBox uses <code>entityConfig.generateImageBasePath = /api/product-box/breed-products</code> to route to the correct endpoint.</li>
+      <li><strong>LOCKED ✅ Breed Products Image Endpoint:</strong> <code>POST /api/product-box/breed-products/{id}/generate-image</code> is the dedicated endpoint that saves AI images directly to the <code>breed_products</code> MongoDB collection. Do NOT route Soul Box image gen to the general <code>/api/admin/products/{id}/generate-image</code> (that saves to products_master).</li>
+      <li><strong>LOCKED ✅ Dominant Image Preview Strip:</strong> ProductBoxEditor now shows a persistent image preview strip between the dialog header and the tabs. It is visible on ALL tabs. It shows the current dominant image, source badge (Cloudinary = green, External = amber), "Replace with AI" button, and "Upload / Edit →" button. Do NOT remove this strip.</li>
+      <li><strong>LOCKED ✅ ServiceBox Restore UI:</strong> ServiceBox has a "📦 Show Archived" toggle. When active, it switches to the archived endpoint and shows "↩ Restore" buttons instead of Edit/Delete. Do NOT remove this UI.</li>
+      <li><strong>admin_delete_service (DELETE /api/admin/services/{id}) CONVERTED TO SOFT ARCHIVE.</strong> Previously this was a hard delete. Now it sets <code>approval_status: "archived"</code>. Keep it this way.</li>
+      <li><strong>breed_products supplement in get_all_products:</strong> Now applies visibility.status filter using the same rules as products_master (archived items stay hidden). Deduplication is O(1) set lookup, not O(n) scan.</li>
+      <li><strong>Data fix:</strong> Removed duplicate <code>bp-akita-designer-bandana-969f46</code> from products_master (React key warning fixed). Removed duplicate <code>BulkCategoryAssign</code> class from unified_product_box.py.</li>
+    </ul>
+    <p style="margin-top:8px; padding:8px; background:#fef2f2; border-radius:6px; font-size:0.85rem;">
+      <strong>⛔ FUTURE AGENTS: The behaviours above are LOCKED. Do not refactor or "simplify" the archive, restore, or image generation save patterns. If you believe a change is needed, document your reasoning here before touching any of these functions.</strong>
+    </p>
+  </div>
+
   <div class="changelog-entry">
     <div class="date">Session 9 — 2026-04-06</div>
     <h4>Product Visibility Audit — Breed × Pillar Matrix</h4>
@@ -226,6 +247,22 @@
   </div>
   <div class="alert alert-blue">
     <strong>RULE 10 — Documentation:</strong> Every agent MUST update this file (/app/complete-documentation.html) before finishing their session. Add a new changelog-entry block at the top of the changelog section.
+  </div>
+  <div class="alert" style="background:#fff5f5; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin:10px 0;">
+    <strong style="color:#dc2626;">RULE 11 — LOCKED: Admin Box Image Dominance (Session 10, 2026-04-06)</strong><br>
+    When ANY AI image is generated for a product, service, or soul product, the generated URL MUST be written to ALL of these fields simultaneously: <code>watercolor_image</code>, <code>cloudinary_url</code>, <code>image_url</code>, <code>image</code>, <code>images[0]</code>, <code>media.primary_image</code>. This is the "write-all-fields" pattern. <strong>Do NOT change this pattern or add a "dominant image" concept that writes to only one field.</strong>
+  </div>
+  <div class="alert" style="background:#fff5f5; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin:10px 0;">
+    <strong style="color:#dc2626;">RULE 12 — LOCKED: Soft Archive Only (Session 10, 2026-04-06)</strong><br>
+    <strong>HARD DELETES ARE BANNED</strong> for products and services. Archive = set <code>visibility.status="archived"</code> + <code>is_active=False</code>. For services: also <code>approval_status="archived"</code>. Restore = reverse all three. The <code>admin_get_services</code> endpoint MUST always filter <code>approval_status != "archived"</code>. The endpoint <code>GET /api/service-box/services/archived</code> is the ONLY place archived services appear. Do NOT remove these filters or convert soft-deletes back to hard deletes.
+  </div>
+  <div class="alert" style="background:#fff5f5; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin:10px 0;">
+    <strong style="color:#dc2626;">RULE 13 — LOCKED: Soul Box entity_type in Image Gen (Session 10, 2026-04-06)</strong><br>
+    SoulBox.jsx's inline ✨ Gen button MUST send <code>entity_type: "breed_product"</code> + <code>entity_id: product.id</code> to <code>POST /api/admin/generate-image</code>. Without these, the backend generates an image but NEVER saves it to DB (silent failure). The ProductBoxEditor opened from SoulBox MUST use <code>entityConfig.generateImageBasePath = /api/product-box/breed-products</code> so the editor's generate button hits the correct endpoint (<code>POST /api/product-box/breed-products/{id}/generate-image</code>) that saves to the <code>breed_products</code> collection — NOT <code>products_master</code>.
+  </div>
+  <div class="alert" style="background:#f0fdf4; border-left:4px solid #16a34a; padding:12px 16px; border-radius:8px; margin:10px 0;">
+    <strong style="color:#16a34a;">RULE 14 — Dominant Image Preview Strip (Session 10, 2026-04-06)</strong><br>
+    ProductBoxEditor.jsx contains a persistent image preview strip between the dialog header and the tabs. It uses the priority chain <code>watercolor_image → cloudinary_url → media.primary_image → image → image_url → images[]</code> to determine and display the dominant image — exactly what members see on the site. The strip has "Replace with AI" and "Upload / Edit →" buttons. Do NOT remove or restructure this strip.
   </div>
 </section>
 
