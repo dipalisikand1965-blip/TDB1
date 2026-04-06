@@ -285,20 +285,21 @@ async def process_gupshup_webhook(body: dict):
                     },
                     sort=[("updated_at", -1)],
                 )
+                wa_msg = {
+                    "id": str(uuid.uuid4()),
+                    "sender": "member",
+                    "sender_name": sender_name,
+                    "text": content,
+                    "channel": "whatsapp",
+                    "timestamp": now,
+                    "source": "whatsapp_inbound",
+                    "direction": "incoming",
+                }
                 if sd_ticket:
-                    sd_msg = {
-                        "id": str(uuid.uuid4()),
-                        "sender": "member",
-                        "sender_name": sender_name,
-                        "text": content,
-                        "channel": "whatsapp",
-                        "timestamp": now,
-                        "source": "whatsapp_inbound",
-                    }
                     await db.service_desk_tickets.update_one(
                         {"_id": sd_ticket["_id"]},
                         {
-                            "$push": {"conversation": sd_msg},
+                            "$push": {"conversation": wa_msg},
                             "$set": {
                                 "updated_at": now,
                                 "has_unread_member_reply": True,
@@ -306,7 +307,6 @@ async def process_gupshup_webhook(body: dict):
                             },
                         },
                     )
-                    # Admin bell
                     sd_ticket_id = sd_ticket.get("ticket_id") or sd_ticket.get("id")
                     member_label = sd_ticket.get("member", {}).get("name") or sender_name
                     pet_label    = sd_ticket.get("pet_name", "")
@@ -320,11 +320,102 @@ async def process_gupshup_webhook(body: dict):
                         "metadata": {"from_phone": from_number, "text_preview": content[:200]},
                     })
                     logger.info(f"[GUPSHUP] ✅ service_desk_ticket {sd_ticket_id} updated with WA reply")
+                else:
+                    # No matching service_desk_ticket — create one so admin can see this conversation
+                    # Look up the registered member by phone for enrichment
+                    phone_10 = ''.join(filter(str.isdigit, str(from_number)))[-10:]
+                    found_user = await db.users.find_one(
+                        {"$or": [{"phone": {"$regex": phone_10}}, {"whatsapp": {"$regex": phone_10}}]},
+                        {"_id": 0, "email": 1, "name": 1, "parent_name": 1, "phone": 1}
+                    )
+                    enrich_email = found_user.get("email") if found_user else None
+                    enrich_name = (found_user.get("name") or found_user.get("parent_name") or sender_name) if found_user else sender_name
+                    enrich_pets = []
+                    if enrich_email:
+                        enrich_pets = await db.pets.find(
+                            {"owner_email": enrich_email},
+                            {"_id": 0, "id": 1, "name": 1, "breed": 1, "allergies": 1, "fav_food": 1, "city": 1}
+                        ).to_list(3)
+                    first_pet = enrich_pets[0] if enrich_pets else None
+                    
+                    allergy_parts = []
+                    if first_pet:
+                        raw = first_pet.get("allergies", "")
+                        allergy_parts = raw if isinstance(raw, list) else [a.strip() for a in str(raw).split(",") if a.strip()]
+                    
+                    legacy_tid = ticket.get("ticket_id") or str(uuid.uuid4())[:8].upper()
+                    new_sd = {
+                        "id": legacy_tid,
+                        "ticket_id": legacy_tid,
+                        "type": "whatsapp_inquiry",
+                        "category": "support",
+                        "subject": f"WhatsApp Inquiry: {content[:80]}",
+                        "description": content,
+                        "status": "open",
+                        "priority": "normal",
+                        "channel": "whatsapp",
+                        "source": "whatsapp",
+                        "pillar": "support",
+                        "member": {
+                            "name": enrich_name,
+                            "email": enrich_email,
+                            "phone": from_number,
+                            "whatsapp": from_number,
+                        },
+                        "user_phone": from_number,
+                        "user_name": enrich_name,
+                        "user_email": enrich_email,
+                        "pet_name": first_pet.get("name") if first_pet else None,
+                        "pet_names": [p.get("name") for p in enrich_pets if p.get("name")],
+                        "allergy_alert": f"No {', '.join(allergy_parts)} in ANY product" if allergy_parts else None,
+                        "mira_briefing": (
+                            f"🔴 ALLERGY ALERT: No {', '.join(allergy_parts)} in ANY product\nPlease confirm via WhatsApp within 2 hours." if allergy_parts else None
+                        ),
+                        "conversation": [wa_msg],
+                        "has_unread_member_reply": True,
+                        "last_member_reply_at": now,
+                        "created_at": now,
+                        "updated_at": now,
+                        "assigned_to": None,
+                    }
+                    await db.service_desk_tickets.insert_one(new_sd)
+                    logger.info(f"[GUPSHUP] ✅ Created new service_desk_ticket {legacy_tid} for existing legacy ticket")
             else:
                 # ═══════════════════════════════════════════════════════════════════════════
                 # HANDOFF TO SPINE - Create new ticket from WhatsApp message (Gupshup)
                 # MIGRATED to handoff_to_spine() per Bible Section 12.0.
                 # ═══════════════════════════════════════════════════════════════════════════
+                
+                # ── Step 1: Look up the registered member by phone number ─────────────────
+                phone_digits = ''.join(filter(str.isdigit, str(from_number)))
+                phone_10 = phone_digits[-10:] if len(phone_digits) >= 10 else phone_digits
+                
+                found_user = await db.users.find_one(
+                    {"$or": [
+                        {"phone": {"$regex": phone_10}},
+                        {"whatsapp": {"$regex": phone_10}},
+                    ]},
+                    {"_id": 0, "email": 1, "name": 1, "parent_name": 1, "phone": 1, "whatsapp": 1}
+                )
+                
+                member_email = None
+                member_name = sender_name
+                found_pets = []
+                first_pet = None
+                
+                if found_user:
+                    member_email = found_user.get("email")
+                    member_name = found_user.get("name") or found_user.get("parent_name") or sender_name
+                    # Get their pets
+                    found_pets = await db.pets.find(
+                        {"owner_email": member_email},
+                        {"_id": 0, "id": 1, "name": 1, "breed": 1, "allergies": 1, "fav_food": 1, "city": 1}
+                    ).to_list(5)
+                    first_pet = found_pets[0] if found_pets else None
+                    logger.info(f"[GUPSHUP] Matched member {member_email} with {len(found_pets)} pet(s)")
+                else:
+                    logger.info(f"[GUPSHUP] No registered member found for {phone_10} — creating anonymous ticket")
+                
                 intent = f"WhatsApp Inquiry: {content[:100]}" if content else "WhatsApp Inquiry"
                 
                 spine_result = await handoff_to_spine(
@@ -335,11 +426,11 @@ async def process_gupshup_webhook(body: dict):
                     category="whatsapp_inquiry",
                     intent=intent,
                     user={
-                        "email": None,
-                        "name": sender_name,
+                        "email": member_email,
+                        "name": member_name,
                         "phone": from_number
                     },
-                    pet=None,
+                    pet={"id": first_pet.get("id"), "name": first_pet.get("name"), "breed": first_pet.get("breed")} if first_pet else None,
                     payload={
                         "provider": "gupshup",
                         "message_type": message_type,
@@ -367,23 +458,153 @@ async def process_gupshup_webhook(body: dict):
                 
                 ticket_id = spine_result.get("ticket_id", f"WA-{uuid.uuid4().hex[:8].upper()}")
                 logger.info(f"[SPINE-MIGRATED] whatsapp_routes.py (gupshup) → {ticket_id} | pillar=support category=whatsapp_inquiry")
+                
+                # ── Step 2: Enrich the service_desk_ticket with full member/pet/conversation ──
+                # The spine creates a minimal record; we patch it to match the Admin UI schema
+                try:
+                    allergy_parts = []
+                    if first_pet:
+                        raw_allergy = first_pet.get("allergies", "")
+                        if isinstance(raw_allergy, list):
+                            allergy_parts = [a for a in raw_allergy if a]
+                        elif raw_allergy:
+                            allergy_parts = [a.strip() for a in str(raw_allergy).split(",") if a.strip()]
+                    
+                    allergy_alert = (
+                        f"No {', '.join(allergy_parts)} in ANY product" if allergy_parts else None
+                    )
+                    
+                    pet_names_list = [p.get("name") for p in found_pets if p.get("name")]
+                    
+                    enrichment = {
+                        "member": {
+                            "name": member_name,
+                            "email": member_email,
+                            "phone": from_number,
+                            "whatsapp": from_number,
+                        },
+                        "user_phone": from_number,
+                        "user_name": member_name,
+                        "user_email": member_email,
+                        "source": "whatsapp",
+                        "channel": "whatsapp",
+                        "pet_name": first_pet.get("name") if first_pet else None,
+                        "pet_names": pet_names_list,
+                        "pet_profile": {
+                            "name": first_pet.get("name"),
+                            "breed": first_pet.get("breed"),
+                            "allergies": allergy_parts,
+                            "fav_food": first_pet.get("fav_food", []),
+                            "city": first_pet.get("city"),
+                        } if first_pet else None,
+                        "allergy_alert": allergy_alert,
+                        "mira_briefing": (
+                            f"🔴 ALLERGY ALERT: No {', '.join(allergy_parts)} in ANY product\n"
+                            f"Please confirm via WhatsApp within 2 hours." if allergy_alert else None
+                        ),
+                        "conversation": [{
+                            "id": str(uuid.uuid4()),
+                            "sender": "member",
+                            "sender_name": sender_name,
+                            "text": content,
+                            "channel": "whatsapp",
+                            "timestamp": now,
+                            "direction": "incoming",
+                            "source": "whatsapp_inbound",
+                        }],
+                        "has_unread_member_reply": True,
+                        "last_member_reply_at": now,
+                    }
+                    await db.service_desk_tickets.update_one(
+                        {"ticket_id": ticket_id}, {"$set": enrichment}
+                    )
+                    # Also patch the tickets collection so follow-up messages can find it by phone
+                    await db.tickets.update_one(
+                        {"ticket_id": ticket_id},
+                        {"$set": {
+                            "member.phone": from_number,
+                            "member.whatsapp": from_number,
+                            "member.name": member_name,
+                            "member.email": member_email,
+                        }}
+                    )
+                    logger.info(f"[GUPSHUP] ✅ service_desk_ticket {ticket_id} enriched with member/pet/conversation")
+                except Exception as enrich_err:
+                    logger.error(f"[GUPSHUP] service_desk_ticket enrichment failed: {enrich_err}")
             
             # Send real-time notification to admin
             try:
-                await notification_manager.broadcast_to_group("concierge_admins", {
+                resolved_ticket_id = ticket.get("ticket_id") if ticket else ticket_id
+                await notification_manager.emit_new_ticket({
                     "type": "whatsapp_message",
-                    "ticket_id": ticket.get("ticket_id") if ticket else ticket_id,
+                    "ticket_id": resolved_ticket_id,
                     "from": from_number,
                     "sender_name": sender_name,
                     "message": content[:200],
+                    "channel": "whatsapp",
                     "timestamp": now
                 })
             except Exception as notif_err:
                 logger.warning(f"[GUPSHUP] Notification failed: {notif_err}")
+            
+            # ── Mira auto-acknowledgement ──────────────────────────────────────────
+            # Send a warm, personalised ack back to the WhatsApp user immediately
+            try:
+                await send_mira_ack(from_number, content, sender_name, db)
+            except Exception as ack_err:
+                logger.warning(f"[GUPSHUP] Mira ack failed (non-critical): {ack_err}")
                 
     except Exception as e:
         logger.error(f"[GUPSHUP] Processing error: {e}")
         raise
+
+
+async def send_mira_ack(from_number: str, user_message: str, sender_name: str, db) -> None:
+    """
+    Send Mira's warm auto-acknowledgement back to the WhatsApp user.
+    Personalised with pet name if the user is a registered member.
+    Non-blocking — failures are logged but do not affect ticket creation.
+    """
+    try:
+        # Look up the member + pet for personalisation
+        phone_10 = ''.join(filter(str.isdigit, str(from_number)))[-10:]
+        found_user = await db.users.find_one(
+            {"$or": [{"phone": {"$regex": phone_10}}, {"whatsapp": {"$regex": phone_10}}]},
+            {"_id": 0, "name": 1, "parent_name": 1, "email": 1}
+        )
+        member_name = (found_user.get("name") or found_user.get("parent_name") or sender_name) if found_user else sender_name
+        
+        pet_name = None
+        if found_user and found_user.get("email"):
+            first_pet = await db.pets.find_one(
+                {"owner_email": found_user["email"]},
+                {"_id": 0, "name": 1}
+            )
+            pet_name = first_pet.get("name") if first_pet else None
+        
+        # Build a friendly, personalised ack
+        first_name = member_name.split()[0] if member_name else "there"
+        
+        if pet_name:
+            ack = (
+                f"Hi {first_name}! I'm Mira, {pet_name}'s Concierge® 🐾\n\n"
+                f"Got your message! Our Concierge team will review it and get back to you shortly.\n\n"
+                f"Is there anything specific about {pet_name} I can help you with right now?"
+            )
+        else:
+            ack = (
+                f"Hi {first_name}! I'm Mira from The Doggy Company 🐾\n\n"
+                f"Got your message! Our Concierge team will review it and get back to you shortly.\n\n"
+                f"Can I help you with anything else in the meantime?"
+            )
+        
+        result = await send_mira_reply(from_number, ack)
+        if result.get("success"):
+            logger.info(f"[MIRA-ACK] ✅ Sent ack to {phone_10[:6]}*** | pet={pet_name}")
+        else:
+            logger.warning(f"[MIRA-ACK] Failed: {result.get('error')}")
+    except Exception as e:
+        logger.error(f"[MIRA-ACK] Error: {e}")
 
 
 async def process_incoming_message(message: dict, contacts: list):
@@ -768,7 +989,7 @@ async def send_gupshup_message(message: WhatsAppMessage):
             
             result = response.json()
             
-            if response.status_code != 200 or result.get("status") == "error":
+            if response.status_code not in [200, 202] or result.get("status") == "error":
                 logger.error(f"Gupshup API error: {result}")
                 raise HTTPException(
                     status_code=response.status_code, 
