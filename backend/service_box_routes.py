@@ -195,6 +195,24 @@ async def list_services(
     }
 
 
+@router.get("/services/archived")
+async def list_archived_services(
+    pillar: Optional[str] = None,
+    limit: int = 200,
+):
+    """List soft-archived services for admin restore view."""
+    db = get_db()
+    query: dict = {"approval_status": "archived"}
+    if pillar:
+        query["pillar"] = pillar
+    services = await db.services_master.find(query, {"_id": 0}).sort("updated_at", -1).limit(limit).to_list(limit)
+    for svc in services:
+        preferred = svc.get("watercolor_image") or svc.get("image_url") or svc.get("image")
+        if preferred:
+            svc["image_url"] = preferred
+    return {"services": services, "total": len(services)}
+
+
 # ==================== GET SERVICE ====================
 
 @router.get("/services/{service_id}")
