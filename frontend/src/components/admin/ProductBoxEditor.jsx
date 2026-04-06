@@ -419,7 +419,26 @@ const ProductBoxEditor = ({
   };
   
   const isNew = !product.id || product.id?.startsWith('NEW-');
-  
+
+  // Resolve the single dominant image (same priority order as the consumer ProductCard)
+  const dominantImage = (
+    product?.watercolor_image ||
+    product?.cloudinary_url ||
+    product?.media?.primary_image ||
+    product?.image ||
+    product?.image_url ||
+    (Array.isArray(product?.images) ? product.images.find(u => u && !u.includes('emergentagent.com')) : '') ||
+    ''
+  );
+
+  const imageSource = product?.watercolor_image || product?.cloudinary_url
+    ? { label: 'Cloudinary · Persistent', color: '#065f46', bg: '#d1fae5' }
+    : product?.image_url?.includes('cloudinary')
+      ? { label: 'Cloudinary URL', color: '#065f46', bg: '#d1fae5' }
+      : dominantImage
+        ? { label: 'External URL', color: '#92400e', bg: '#fef3c7' }
+        : { label: 'No image set', color: '#991b1b', bg: '#fee2e2' };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[92vh] overflow-y-auto">
@@ -432,7 +451,120 @@ const ProductBoxEditor = ({
             )}
           </DialogTitle>
         </DialogHeader>
-        
+
+        {/* ── DOMINANT IMAGE PREVIEW ── always visible across all tabs ───────── */}
+        <div
+          data-testid="dominant-image-preview-strip"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            background: 'linear-gradient(135deg, #f9f5ff 0%, #fdf4ff 100%)',
+            border: '1.5px solid #e9d5ff', borderRadius: 12,
+            padding: '10px 14px', marginBottom: 2,
+          }}
+        >
+          {/* Thumbnail */}
+          <div style={{ position: 'relative', flexShrink: 0 }}>
+            {dominantImage ? (
+              <img
+                src={dominantImage}
+                alt="Dominant"
+                data-testid="dominant-image-thumbnail"
+                style={{
+                  width: 80, height: 80, objectFit: 'cover',
+                  borderRadius: 10, border: '2px solid #a855f7',
+                  boxShadow: '0 2px 8px rgba(168,85,247,0.25)',
+                }}
+                onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+              />
+            ) : null}
+            <div style={{
+              display: dominantImage ? 'none' : 'flex',
+              width: 80, height: 80, borderRadius: 10,
+              border: '2px dashed #d8b4fe', background: '#f3e8ff',
+              alignItems: 'center', justifyContent: 'center',
+              fontSize: 11, color: '#9333ea', fontWeight: 600, flexDirection: 'column', gap: 2,
+            }}>
+              <span style={{ fontSize: 22 }}>🖼️</span>
+              <span>No image</span>
+            </div>
+            {generatingImage && (
+              <div style={{
+                position: 'absolute', inset: 0, borderRadius: 10,
+                background: 'rgba(88,28,135,0.65)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <div style={{
+                  width: 20, height: 20, border: '2.5px solid #fff', borderTopColor: 'transparent',
+                  borderRadius: '50%', animation: 'spin 0.7s linear infinite',
+                }} />
+              </div>
+            )}
+          </div>
+
+          {/* Labels */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#581c87', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                What members see
+              </span>
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 20,
+                background: imageSource.bg, color: imageSource.color,
+              }}>
+                {imageSource.label}
+              </span>
+            </div>
+            {dominantImage ? (
+              <p style={{
+                fontSize: 11, color: '#6b21a8', margin: 0,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                maxWidth: 340, fontFamily: 'monospace',
+              }}>
+                {dominantImage}
+              </p>
+            ) : (
+              <p style={{ fontSize: 11, color: '#9ca3af', margin: 0 }}>
+                Upload or generate an image — this slot is shown on all pillar cards
+              </p>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0 }}>
+            <button
+              data-testid="replace-with-ai-btn"
+              onClick={() => { setActiveTab('media'); handleGenerateAIImage(); }}
+              disabled={generatingImage || isNew}
+              style={{
+                padding: '6px 14px', borderRadius: 8, border: 'none', cursor: generatingImage || isNew ? 'not-allowed' : 'pointer',
+                background: generatingImage ? '#e9d5ff' : 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: '#fff', fontSize: 12, fontWeight: 700,
+                display: 'flex', alignItems: 'center', gap: 5,
+                opacity: isNew ? 0.5 : 1,
+                boxShadow: generatingImage ? 'none' : '0 2px 6px rgba(124,58,237,0.35)',
+                transition: 'all 0.15s ease',
+              }}
+              title={isNew ? 'Save the product first before generating an image' : 'Generate a new AI watercolor image and replace the current one'}
+            >
+              <span style={{ fontSize: 14 }}>✨</span>
+              {generatingImage ? 'Generating…' : 'Replace with AI'}
+            </button>
+            <button
+              data-testid="go-to-media-tab-btn"
+              onClick={() => setActiveTab('media')}
+              style={{
+                padding: '5px 14px', borderRadius: 8, border: '1.5px solid #d8b4fe',
+                background: '#fff', color: '#7c3aed', fontSize: 11, fontWeight: 600,
+                cursor: 'pointer', textAlign: 'center',
+              }}
+            >
+              Upload / Edit →
+            </button>
+          </div>
+        </div>
+        {/* spinner keyframes */}
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
           {(() => {
             const isCake = product?.product_type === 'birthday_cake' || product?.category === 'cakes' || product?.category === 'breed-cakes';

@@ -331,36 +331,20 @@ None.
 3. Refactor server.py (24k lines)
 4. Build Love pillar
 
-### Session 53 — Complete Admin Box Audit (2026-04-06)
-✅ AUDIT COMPLETE — 28/28 tests pass
-
-**Product Box (products_master):**
-- ✅ Image generation background job saves `watercolor_image`, `cloudinary_url`, `image_url`, `image`, `images[0]` — DOMINANT & PERSISTENT
-- ✅ Archive → sets `visibility.status="archived"` → hidden from all consumer views
-- ✅ Restore → resets to `visibility.status="active"` — fixed for ALL product types
-- ✅ Edit/PUT → saves all fields correctly
-
-**Service Box (services_master):**
-- ✅ AI image generation synchronous → saves `image_url`, `image`, `watercolor_image` immediately
-- ✅ Archive → soft-delete via `approval_status="archived"` (no data loss)
-- ✅ Restored → `PATCH /api/service-box/services/{id}/restore`
-- ✅ Admin list (`admin_get_services`) now filters out archived services
-- ✅ New `GET /api/service-box/services/archived` endpoint added
-- ✅ ServiceBox UI: "Show Archived" toggle + Restore buttons added
-- ✅ `admin_delete_service` converted from hard delete → soft archive
-- ✅ Delete dialog text updated to "Archive (restorable)"
-
-**Soul Box (breed_products):**
-- ✅ Inline ✨ Gen button now sends `entity_type: "breed_product"` + `entity_id` → image SAVED to breed_products
-- ✅ ProductBoxEditor in SoulBox uses `entityConfig` pointing to `/api/product-box/breed-products/{id}/generate-image`
-- ✅ New dedicated endpoint saves watercolor_image, cloudinary_url, image_url to breed_products
-- ✅ Archive/restore works correctly for `bp-*` prefix products (products_master) and `breed-*` prefix (breed_products)
-
-**Performance/Data:**
-- ✅ Fixed O(n) duplicate scan → O(1) set lookup in breed_products supplement query
-- ✅ breed_products supplement now respects visibility.status filter (archived products stay hidden)
-- ✅ Removed duplicate `bp-akita-designer-bandana-969f46` from products_master (React key error fixed)
-- ✅ Removed duplicate `BulkCategoryAssign` class definition
+### Session 53 — Complete Admin Box Audit + Dominant Image Preview (2026-04-06)
+**Locked behaviours — future agents must not alter these:**
+- ✅ Image dominance: write-all-fields pattern (watercolor_image, cloudinary_url, image_url, image, images[0], media.primary_image) on every generate
+- ✅ Soft archive contract: visibility.status="archived" + is_active=False; HARD DELETES BANNED
+- ✅ Restore contract: always reversible
+- ✅ admin_get_services filters approval_status != "archived"
+- ✅ GET /api/service-box/services/archived — archived service list endpoint
+- ✅ Soul Box entity_type + entity_id required in generate-image payload
+- ✅ POST /api/product-box/breed-products/{id}/generate-image — saves to breed_products
+- ✅ ProductBoxEditor persistent dominant image preview strip (all tabs)
+- ✅ ServiceBox "Show Archived" toggle + Restore buttons
+- ✅ admin_delete_service converted to soft-archive
+- ✅ breed_products supplement visibility filter + O(1) dedup
+- ✅ 28/28 automated tests pass (test report: /app/test_reports/iteration_260.json)
 1. ✅ SOS: Admin ServiceBox null crash fixed (selectedService?.is_active guard)
 2. ✅ Shop mobile SHOP_CATS: 7 pills matching desktop exactly (mira, bakery, breed, treats, hampers, merch, toys)
 3. ✅ Shop "See all X products on thedoggybakery.com" → internal "Browse all X" toggle button
