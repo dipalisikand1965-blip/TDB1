@@ -13,6 +13,42 @@ export default function DataMigration({ adminAuth }) {
   const [seeding, setSeeding] = useState(false);
   const [message, setMessage] = useState(null);
   const [exportData, setExportData] = useState(null);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreStatus, setRestoreStatus] = useState(null);
+  const [restoreResult, setRestoreResult] = useState(null);
+
+  const checkRestoreStatus = async () => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/admin/db/restore-status`);
+      if (res.ok) setRestoreStatus(await res.json());
+    } catch (e) { /* silent */ }
+  };
+
+  const handleRestore = async () => {
+    if (!window.confirm('This will load all backed-up data (products, pets, services, members) into the current database.\n\nSafe to run — it will not delete existing data.\n\nContinue?')) return;
+    setRestoring(true);
+    setRestoreResult(null);
+    setMessage(null);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/admin/db/restore`, {
+        method: 'POST',
+        headers: { 'Authorization': `Basic ${adminAuth}` }
+      });
+      const data = await res.json();
+      if (data.status?.startsWith('complete')) {
+        setRestoreResult(data);
+        setMessage({ type: 'success', text: `✅ Restored ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s — database is ready!` });
+        fetchStats();
+      } else {
+        setMessage({ type: 'error', text: `Restore failed: ${JSON.stringify(data.errors)}` });
+      }
+    } catch (e) {
+      setMessage({ type: 'error', text: `Error: ${e.message}` });
+    }
+    setRestoring(false);
+  };
+
+  useEffect(() => { checkRestoreStatus(); }, []);
 
   const fetchStats = async () => {
     setLoading(true);
@@ -147,6 +183,60 @@ export default function DataMigration({ adminAuth }) {
           </AlertDescription>
         </Alert>
       )}
+
+      {/* ── RESTORE FROM BACKUP — use after fresh deployment ── */}
+      <Card className="border-2 border-emerald-400 bg-emerald-50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-emerald-800">
+            <Database className="w-5 h-5 text-emerald-600" />
+            Restore Database from Backup
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-emerald-800">
+            Use this after a fresh deployment to load all your data — products, soul products, services, pets, members and more — into the live database. Safe to run anytime (won't create duplicates).
+          </p>
+
+          {restoreStatus && (
+            <div className="grid grid-cols-3 gap-2 text-center">
+              {['products_master','breed_products','services_master','pets','users','guided_paths'].map(col => {
+                const info = restoreStatus.collections?.[col];
+                return info?.ready ? (
+                  <div key={col} className="bg-white rounded p-2 text-xs">
+                    <div className="font-bold text-emerald-700">{info.docs?.toLocaleString()}</div>
+                    <div className="text-gray-500">{col.replace('_master','').replace('_',' ')}</div>
+                  </div>
+                ) : null;
+              })}
+            </div>
+          )}
+
+          {restoreResult && (
+            <div className="bg-white rounded-lg p-3 text-xs space-y-1 max-h-48 overflow-y-auto">
+              {Object.entries(restoreResult.collections || {}).map(([col, r]) => (
+                <div key={col} className="flex justify-between text-gray-600">
+                  <span>{col}</span>
+                  <span className="text-emerald-600">{r.inserted} new, {r.updated} updated</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Button
+            onClick={handleRestore}
+            disabled={restoring}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3"
+            data-testid="restore-db-btn"
+          >
+            {restoring ? (
+              <><RefreshCw className="w-4 h-4 mr-2 animate-spin" /> Restoring... (takes ~20 seconds)</>
+            ) : (
+              <><Database className="w-4 h-4 mr-2" /> Restore All Data to Live Database</>
+            )}
+          </Button>
+          <p className="text-xs text-emerald-700 text-center">Run this once after every fresh deployment</p>
+        </CardContent>
+      </Card>
 
       {/* Current Database Stats */}
       <Card>
