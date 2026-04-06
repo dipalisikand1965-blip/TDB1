@@ -693,12 +693,13 @@ export default function MiraSearchPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: '100dvh', background: C.night, fontFamily: 'DM Sans, sans-serif' }}>
+    <div style={{ minHeight: 'calc(100dvh - 140px)', background: C.night, fontFamily: 'DM Sans, sans-serif' }}>
       <Navbar />
       <div style={{
         display: 'flex', flexDirection: 'column',
         alignItems: 'center',
         padding: '0 16px 120px',
+        minHeight: 'calc(100dvh - 140px)',
       }}>
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
