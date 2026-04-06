@@ -24,6 +24,7 @@ import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
 import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import GuidedCelebrationPaths from '../components/celebrate/GuidedCelebrationPaths';
+import Navbar from '../components/Navbar';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -718,13 +719,13 @@ export default function MiraSearchPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={{
-      minHeight: '100dvh', background: C.night,
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center',
-      fontFamily: 'DM Sans, sans-serif',
-      padding: '0 16px 120px',
-    }}>
+    <div style={{ minHeight: '100dvh', background: C.night, fontFamily: 'DM Sans, sans-serif' }}>
+      <Navbar />
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center',
+        padding: '0 16px 120px',
+      }}>
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
@@ -1384,6 +1385,7 @@ export default function MiraSearchPage() {
         toastOptions={{ style: { marginBottom: 80 } }}
         richColors
       />
+      </div>
     </div>
   );
 }
