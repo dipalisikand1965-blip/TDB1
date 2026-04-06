@@ -45,6 +45,7 @@ COLLECTIONS_CONFIG = [
     ("product_soul_tiers", "product_soul_tiers", "id"),
     ("guided_paths",       "guided_paths",       "id"),
     ("learn_guides",       "learn_guides",       "id"),
+    ("care_bundles",       "care_bundles",       "id"),
     ("service_desk_tickets","service_desk_tickets","ticket_id"),
     ("mira_conversations", "mira_conversations", "id"),
 ]
