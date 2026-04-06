@@ -203,6 +203,18 @@ const PILLAR_PATHS = [
   '/mira', '/admin',
 ];
 
+// ── Amazon query cleaner — strips pet names, filler, leaves core product noun ──
+function buildAmazonQuery(rawQuery, petName = '') {
+  let q = rawQuery || '';
+  if (petName) q = q.replace(new RegExp(petName, 'gi'), '');
+  q = q
+    .replace(/\b(i want|i need|find me|get me|show me|looking for|can you find|please|help me find|what about|is there|do you have|do you sell|where can i get|where can i find|wants?|needs?|loves?|would like|my dog|my pet|my pup|my puppy|for my|for him|for her|for them|a good|the best|some|any)\b/gi, ' ')
+    .replace(/\b(a|an|the|for|of|with|in|on|at|to|and|or|but|my|your|his|her|their|our)\b/gi, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return q || rawQuery;
+}
+
 const MiraChatWidget = ({ 
   pillar: pillarProp = 'general',
   onProductClick = null,
@@ -2375,7 +2387,7 @@ const MiraChatWidget = ({
                                       body: JSON.stringify({ type: 'request', note: `Amazon click (widget): ${prevUserMsg}`, metadata: { source: 'amazon_click_widget', query: prevUserMsg } }),
                                     });
                                   } catch (_) {}
-                                  window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(prevUserMsg)}&tag=thedoggyco-21`, '_blank');
+                                  window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(prevUserMsg, selectedPet?.name))}&tag=thedoggyco-21`, '_blank');
                                 }}
                                 style={{ fontSize: 11, color: '#FF9900', fontWeight: 600, textDecoration: 'none', cursor: 'pointer', display: 'block', opacity: 0.85 }}
                               >

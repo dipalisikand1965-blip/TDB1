@@ -175,7 +175,23 @@ function StreamingText({ text, streaming }) {
 }
 
 
-// ── "Mira Imagines" chip — same card dimensions as ResultChip ─────────────
+// ── Amazon query cleaner — strips pet names, filler, leaves core product noun ──
+// "Mojo wants a bath tub" → "bath tub"
+// "find me salmon treats for my dog" → "salmon treats"
+function buildAmazonQuery(rawQuery, petName = '') {
+  let q = rawQuery || '';
+  // Strip pet name (case-insensitive)
+  if (petName) q = q.replace(new RegExp(petName, 'gi'), '');
+  // Strip conversational filler
+  q = q
+    .replace(/\b(i want|i need|find me|get me|show me|looking for|can you find|please|help me find|what about|is there|do you have|do you sell|where can i get|where can i find|wants?|needs?|loves?|would like|my dog|my pet|my pup|my puppy|for my|for him|for her|for them|a good|the best|some|any)\b/gi, ' ')
+    .replace(/\b(a|an|the|for|of|with|in|on|at|to|and|or|but|my|your|his|her|their|our)\b/gi, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return q || rawQuery; // fallback to original if stripping left nothing
+}
+
+// ── ImagineChip ── "Mira Imagines" chip ──────────────────────────────────────
 const IMAGINE_ICONS = ['✨', '🐾', '🌿'];
 
 // Map raw query → clean intent label (never slice raw text mid-word)
@@ -233,8 +249,8 @@ function ImagineChip({ petName, query, idx, onConcierge, onAmazonClick }) {
           Ask Concierge →
         </button>
         <a
-          onClick={e => { e.preventDefault(); onAmazonClick?.(); window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(query)}&tag=thedoggyco-21`, '_blank'); }}
-          href={`https://www.amazon.in/s?k=dog+${encodeURIComponent(query)}&tag=thedoggyco-21`}
+          onClick={e => { e.preventDefault(); onAmazonClick?.(); window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(query, petName))}&tag=thedoggyco-21`, '_blank'); }}
+          href={`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(query, petName))}&tag=thedoggyco-21`}
           rel="noopener noreferrer"
           style={{ fontSize: 11, color: '#FF9900', textDecoration: 'none', fontWeight: 600, textAlign: 'center', display: 'block', padding: '2px 0', cursor: 'pointer' }}
         >
