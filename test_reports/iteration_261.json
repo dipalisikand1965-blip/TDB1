@@ -1,0 +1,121 @@
+{
+  "summary": "Pre-launch audit iteration 261 covering: service desk tickets (8a/8b/8c), WhatsApp notifications (8d), allergen safety chain (9a/9b/9c/9d), mobile modal z-index (10a/10b/10c), pet switching (11a/11b). All 26 backend tests pass. Frontend UI tests pass. Two bugs found: TEMPLATES_APPROVED NameError in WhatsApp logging, and duplicate allergen badges from getAllergiesFromPet not normalizing case.",
+
+  "audit_results_table": {
+    "8a_service_desk_endpoint": "PASS — GET /api/service_desk/tickets returns 200, 114 open tickets visible in admin",
+    "8a_care_booking_ticket": "PASS — Care booking ticket created (TDB-2026-0091), appears in admin service desk with pet_name and pillar fields",
+    "8b_celebrate_booking_ticket": "PASS — Celebrate birthday cake ticket created (TDB-2026-0092), appears in admin service desk",
+    "8c_mira_briefing_field_present": "PASS — All tickets have mira_briefing key present",
+    "8c_allergy_alert_in_briefing": "PASS (with real pet_id) — TDB-2026-0090 briefing shows '⚠️ CONFIRMED ALLERGIES: Chicken, Beef — NEVER suggest these'. Tickets with fake/empty pet_id have empty briefing (expected behavior)",
+    "8d_gupshup_configured": "PASS — configured=true, app_name='The Doggy Company', source=918971702582",
+    "8d_whatsapp_webhook": "PASS — POST /api/whatsapp/webhook returns status=ok",
+    "8d_notification_fires": "WARNING — Notification fire is confirmed (asyncio.ensure_future called). But _log_send fails with NameError: 'TEMPLATES_APPROVED' not defined (line 101 of services/whatsapp_service.py). Should be _templates_approved(). Send logs NOT persisted to DB.",
+    "9a_login": "PASS — dipali@clubconcierge.in / test123 login succeeds, token returned",
+    "9a_pets_api": "PASS — 17 pets returned. Mojo (breed: Indie, allergies: ['chicken','beef'] from soul+vault). Note: 'Indie' in credentials refers to Mojo's breed (Indian Pariah Dog), not a separate pet",
+    "9a_allergy_inconsistency": "WARNING — Mojo's top-level pet.allergies=[] (empty) but doggy_soul_answers.food_allergies=['chicken','beef'] and vault.allergies=[Chicken(severe),Beef(moderate)]. Frontend useMiraFilter reads from soul+vault, so filtering WORKS. But top-level field is inconsistent vs Mystique (allergies=['chicken'])",
+    "9b_dine_products": "PASS — 215 dine products returned. 19 contain chicken/beef. Backend returns all — frontend useMiraFilter blocks them for Mojo/Indie-breed pets. Expected behavior.",
+    "9c_mira_understand_allergen": "PASS — POST /api/mira/os/understand-with-products correctly loads Mojo's soul from DB and responds: 'strictly avoid chicken, beef, and soy while keeping his love for salmon'. No chicken picks returned for Mojo.",
+    "9c_endpoint_naming": "CLARIFICATION — Review request mentioned '/api/mira/understand' which does NOT exist. Correct endpoints are /api/mira/os/understand (basic, no pet DB lookup) and /api/mira/os/understand-with-products (allergen-aware, loads pet soul from DB)",
+    "9d_mira_search_page": "PASS — /mira-search loads without errors. Shows pet selector, search input, quick prompts.",
+    "10a_care_modal_mobile": "PASS — Grooming modal opens on mobile (390x844). z-index=9999 vs navbar z=50. Modal is fully above navbar. Dialog.jsx overlay z-[9998], content z-[9999].",
+    "10b_celebrate_modal_mobile": "PASS — Birthday Cakes modal opens on mobile. DoggyBakeryCakeModal uses z-indices 9999, 2147483640, 2147483641. Fully visible above navbar.",
+    "10c_close_button": "PASS — Close button (aria-label close, X icon) visible and accessible in both modals. 1 close button found by aria-label selector.",
+    "11a_pet_switching": "PASS — Pet switch on Dine page: Mojo (No chicken, No beef, Loves salmon) → Mystique (No Chicken, Loves liver) → Bruno (No None known, Loves Chicken). Product section titles change per pet.",
+    "11b_mira_pet_context": "PASS — Dine page shows 'I've already removed everything containing chicken and beef' for Mojo. Mira's Picks shows only allergen-safe products. After switch to Mystique, context changes to chicken-only block.",
+    "db_restore_endpoint": "PASS — GET /api/admin/db/restore-status returns 200 with migration data info"
+  },
+
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "services/whatsapp_service.py line 101",
+        "issue": "NameError: 'TEMPLATES_APPROVED' not defined. The _log_send() function uses 'TEMPLATES_APPROVED' as a bare variable but the function is '_templates_approved()'. Fix: change TEMPLATES_APPROVED → _templates_approved() on line 101. Impact: WhatsApp send logs NOT persisted to DB, but actual Gupshup API calls still fire.",
+        "priority": "MEDIUM"
+      },
+      {
+        "endpoint": "/api/pets (GET)",
+        "issue": "Mojo's top-level allergies field is [] (empty) while soul.food_allergies=['chicken','beef'] and vault.allergies=[Chicken,Beef]. Mystique correctly has allergies=['chicken']. Data inconsistency. Frontend still works because it reads from soul+vault. Consider backfill migration to populate top-level allergies from vault for all pets.",
+        "priority": "LOW"
+      }
+    ]
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "DineMobilePage / getAllergiesFromPet (useMiraFilter.js line 756)",
+        "issue": "Duplicate allergen badges: 'No chicken' AND 'No Chicken' both appear because getAllergiesFromPet() does NOT normalize to lowercase before adding to Set (unlike the internal extractAllergies function which does). Soul answers provide 'chicken' (lowercase) and vault provides 'Chicken' (capitalized) → two entries. Fix: add .toLowerCase() to line 759: s.add(String(x).trim().toLowerCase())",
+        "selector": "span with '⚠️ No' prefix in DineMobilePage allergyList.map",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Dine page mobile — Mojo allergen section",
+        "issues": [
+          "Four allergy badges shown: '⚠️ No chicken', '⚠️ No beef', '⚠️ No Chicken', '⚠️ No Beef' — should show only '⚠️ No Chicken', '⚠️ No Beef' (deduplicated)"
+        ]
+      }
+    ]
+  },
+
+  "test_report_links": [
+    "/app/backend/tests/test_prelaunch_audit_261.py",
+    "/app/test_reports/pytest/prelaunch_261.xml"
+  ],
+
+  "action_items": [
+    "FIX: services/whatsapp_service.py line 101 — change TEMPLATES_APPROVED to _templates_approved() to fix NameError in _log_send()",
+    "FIX: frontend/src/hooks/useMiraFilter.js line 759 — add .toLowerCase() to getAllergiesFromPet() to prevent duplicate case-variant badges",
+    "CONSIDER: Run data migration to populate pet.allergies (top-level) from vault.allergies for all pets (Mojo and others with empty allergies field)"
+  ],
+
+  "critical_code_review_comments": [
+    "whatsapp_service.py line 101: 'TEMPLATES_APPROVED' bare variable reference will always throw NameError since the function is named '_templates_approved()'. This means every WhatsApp send attempt fails to log to DB. The silent exception catch (line 105-106) masks this.",
+    "useMiraFilter.js getAllergiesFromPet() (line 756-777): Does NOT call .toLowerCase() on line 759, unlike the internal extractAllergies() function (line 128). This creates duplicate case-variant entries when data comes from both soul_answers (lowercase) and vault (capitalized). Result: 4 badges instead of 2 for Mojo.",
+    "mira_service_desk.py ticket creation: When pet_id is '' or fake/non-existent, briefing is empty (briefing=no logged). Only real pet_ids produce enriched briefings. Consider returning a warning in the ticket when pet_id lookup fails.",
+    "Endpoint naming: /api/mira/os/understand vs /api/mira/os/understand-with-products have very different behaviors. The simpler endpoint ignores pet_id for DB lookup. Documentation/naming should clarify this distinction."
+  ],
+
+  "updated_files": [],
+
+  "success_rate": {
+    "backend": "26/26 = 100%",
+    "frontend": "All UI flows pass — 2 minor bugs found (no blocking issues)"
+  },
+
+  "test_credentials": {
+    "member": "dipali@clubconcierge.in / test123 (17 pets, Mojo breed=Indie with chicken+beef allergies, Mystique with chicken allergy)",
+    "admin": "aditya / lola4304",
+    "note": "Credentials in review request state 'Pet: Mojo, Indie' — 'Indie' is Mojo's breed (Indian Pariah Dog), not a separate pet name"
+  },
+
+  "seed_data_creation": "Created ~15 test service_desk tickets during testing (TDB-2026-0080 to 0095). These are real DB entries with parent_id=dipali@clubconcierge.in and various test pet_ids.",
+
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+
+  "context_for_next_testing_agent": "All 26 backend tests pass. WhatsApp integration works (Gupshup configured, sends fire) but _log_send has NameError (TEMPLATES_APPROVED undefined). Service desk tickets are created correctly with mira_briefing when real pet_id is provided. Mobile modals (Care grooming, Celebrate birthday cake) have proper z-index (9999+) above navbar (z-50). Pet switching on Dine page updates allergen context correctly. Duplicate allergen badges (cosmetic bug) from case-normalization issue in getAllergiesFromPet(). MiraSearchPage loads correctly. Allergen blocking in Mira uses /api/mira/os/understand-with-products (not the simpler /os/understand).",
+
+  "rca_of_issues": {
+    "whatsapp_log_bug": {
+      "issue": "NameError: name 'TEMPLATES_APPROVED' is not defined",
+      "file": "backend/services/whatsapp_service.py",
+      "line": 101,
+      "root_cause": "Line 101 uses bare variable 'TEMPLATES_APPROVED' but the function is '_templates_approved()' (with underscore prefix and parentheses). Python throws NameError when _log_send() tries to access this variable.",
+      "impact": "WhatsApp send attempts are never logged to DB (db.whatsapp_logs collection is not updated). Actual Gupshup API calls may still succeed.",
+      "mitigation": "Change line 101: 'templates_mode': TEMPLATES_APPROVED → 'templates_mode': _templates_approved()",
+      "reproduction": "Trigger any ticket creation (POST /api/service_desk/attach_or_create_ticket) and check backend logs for '[WA] Log error: name TEMPLATES_APPROVED is not defined'"
+    },
+    "duplicate_allergen_badge_bug": {
+      "issue": "Duplicate allergen badges on Dine/Celebrate mobile pages",
+      "file": "frontend/src/hooks/useMiraFilter.js",
+      "line": 759,
+      "root_cause": "getAllergiesFromPet() does not lowercase strings before adding to Set. soul.food_allergies=['chicken'] and vault.allergies=[{name:'Chicken'}] both get added as different Set entries ('chicken' vs 'Chicken').",
+      "impact": "UI shows 4 allergen badges (No chicken, No beef, No Chicken, No Beef) instead of 2 (No Chicken, No Beef).",
+      "mitigation": "Change line 759: s.add(String(x).trim()) → s.add(String(x).trim().toLowerCase()). Also update the display in DineMobilePage to capitalize the first letter when rendering (which it already does at line 354: a.charAt(0).toUpperCase() + a.slice(1))."
+    }
+  }
+}
