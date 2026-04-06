@@ -599,6 +599,43 @@ const PetHomePage = () => {
           </button>
         </div>
 
+        {/* Mira Teaser Bar */}
+        <button
+          data-testid="mira-teaser-bar"
+          onClick={() => navigate('/mira-search')}
+          style={{
+            width: '100%',
+            display: 'flex', alignItems: 'center', gap: 12,
+            background: 'linear-gradient(135deg, rgba(109,40,217,0.35), rgba(124,58,237,0.2))',
+            border: '1.5px solid rgba(139,92,246,0.45)',
+            borderRadius: 16,
+            padding: '13px 18px',
+            marginBottom: 16,
+            cursor: 'pointer',
+            textAlign: 'left',
+            transition: 'border-color 0.18s, background 0.18s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.8)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.45)'}
+        >
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+            background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <span style={{ fontSize: 15 }}>✦</span>
+          </div>
+          <span style={{ flex: 1, fontSize: 14, color: 'rgba(233,213,255,0.7)', fontStyle: 'italic' }}>
+            What can Mira do for {selectedPet?.name || 'your pet'} today?
+          </span>
+          <span style={{
+            fontSize: 12, fontWeight: 700, color: '#a78bfa',
+            background: 'rgba(109,40,217,0.3)', borderRadius: 8,
+            padding: '4px 10px', border: '1px solid rgba(139,92,246,0.4)',
+            whiteSpace: 'nowrap',
+          }}>Ask →</span>
+        </button>
+
         {/* Pet Selector (multi-pet) */}
         <PetSelector 
           pets={pets} 
