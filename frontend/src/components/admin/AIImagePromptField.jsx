@@ -78,24 +78,22 @@ export default function AIImagePromptField({
   currentPrompt = '',
   onImageGenerated,
   onPromptChange,
-  // New props for smart defaults
   productName = '',
   pillar = '',
   category = '',
   breed = '',
-  currentImageUrl = '', // existing Cloudinary image if any
+  currentImageUrl = '',
+  generateImageBasePath = null, // override base URL for bg-job generation
 }) {
   const defaultPrompt = buildDefaultPrompt({ productName, pillar, category, breed, entityType });
-  
-  // Use saved ai_prompt → or the default built from product attributes
   const initialPrompt = currentPrompt || defaultPrompt;
-  
-  const [prompt, setPrompt]   = useState(initialPrompt);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult]   = useState(null);
-  const [error, setError]     = useState(null);
 
-  // When props change (new product loaded), reset prompt to new default
+  const [prompt, setPrompt]     = useState(initialPrompt);
+  const [loading, setLoading]   = useState(false);
+  const [result, setResult]     = useState(null);
+  const [error, setError]       = useState(null);
+  const [elapsed, setElapsed]   = useState(0); // seconds counter shown while generating
+
   useEffect(() => {
     const next = currentPrompt || defaultPrompt;
     setPrompt(next);
@@ -104,15 +102,15 @@ export default function AIImagePromptField({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityId, productName, currentPrompt]);
 
-  const handleChange = (val) => {
-    setPrompt(val);
-    onPromptChange?.(val);
-  };
+  // Tick timer while loading so the admin sees progress, not a frozen button
+  useEffect(() => {
+    if (!loading) { setElapsed(0); return; }
+    const t = setInterval(() => setElapsed(s => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [loading]);
 
-  const handleResetToDefault = () => {
-    setPrompt(defaultPrompt);
-    onPromptChange?.(defaultPrompt);
-  };
+  const handleChange = (val) => { setPrompt(val); onPromptChange?.(val); };
+  const handleResetToDefault = () => { setPrompt(defaultPrompt); onPromptChange?.(defaultPrompt); };
 
   const handleGenerate = async () => {
     const trimmed = prompt.trim();
@@ -121,47 +119,100 @@ export default function AIImagePromptField({
     setError(null);
     setResult(null);
 
+    const auth = getAdminAuthHeader();
+
     try {
-      // Services → service-box endpoint (applies watercolour style suffix automatically)
-      // Bundles  → admin/bundles endpoint (same watercolour pipeline)
-      // Products → generic admin/generate-image endpoint
-      let res;
+      // ── SERVICES: synchronous, typically < 15s ─────────────────────────────
       if (entityType === 'service' && entityId) {
-        res = await fetch(`${API_URL}/api/service-box/services/${entityId}/generate-image`, {
+        const res = await fetch(`${API_URL}/api/service-box/services/${entityId}/generate-image`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          headers: { 'Content-Type': 'application/json', Authorization: auth },
           body: JSON.stringify({ prompt: trimmed, breed: breed || '' }),
         });
-      } else if (entityType === 'bundle' && entityId) {
-        res = await fetch(`${API_URL}/api/admin/bundles/${entityId}/generate-image`, {
+        if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.detail || `Failed (${res.status})`); }
+        const data = await res.json();
+        const url = data.url || data.image_url;
+        setResult(url); onImageGenerated?.(url, trimmed);
+        return;
+      }
+
+      // ── BUNDLES: synchronous ───────────────────────────────────────────────
+      if (entityType === 'bundle' && entityId) {
+        const res = await fetch(`${API_URL}/api/admin/bundles/${entityId}/generate-image`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
+          headers: { 'Content-Type': 'application/json', Authorization: auth },
           body: JSON.stringify({ prompt: trimmed }),
         });
-      } else {
-        res = await fetch(`${API_URL}/api/admin/generate-image`, {
+        if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.detail || `Failed (${res.status})`); }
+        const data = await res.json();
+        const url = data.url || data.image_url;
+        setResult(url); onImageGenerated?.(url, trimmed);
+        return;
+      }
+
+      // ── PRODUCTS (incl. soul/breed) with entityId: background-job + poll ──
+      // Returns immediately so the proxy never times out (502 fix)
+      if (entityId) {
+        const basePath = generateImageBasePath || `${API_URL}/api/admin/products`;
+        const startRes = await fetch(`${basePath}/${encodeURIComponent(entityId)}/generate-image`, {
           method: 'POST',
-          credentials: 'omit',
-          headers: { 'Content-Type': 'application/json', 'Authorization': getAdminAuthHeader() },
-          body: JSON.stringify({
-            prompt:      trimmed,
-            entity_type: entityType,
-            entity_id:   entityId || '',
-            save_prompt: true,
-          }),
+          headers: { 'Content-Type': 'application/json', Authorization: auth },
+          body: JSON.stringify({ prompt: trimmed }),
         });
+        if (!startRes.ok) { const e = await startRes.json().catch(()=>({})); throw new Error(e.detail || `Failed (${startRes.status})`); }
+        const startData = await startRes.json();
+
+        // Synchronous path (soul/breed endpoint returns image_url immediately)
+        if (startData.image_url || startData.url) {
+          const url = startData.image_url || startData.url;
+          setResult(url); onImageGenerated?.(url, trimmed);
+          return;
+        }
+
+        // Background job path — poll image-status
+        if (startData.status === 'generating' || startData.job_id) {
+          let attempts = 0;
+          const maxAttempts = 45; // 3 min at 4s intervals
+          await new Promise((resolve, reject) => {
+            const poll = setInterval(async () => {
+              attempts++;
+              try {
+                const statusRes = await fetch(`${basePath}/${encodeURIComponent(entityId)}/image-status`, {
+                  headers: { Authorization: auth },
+                });
+                const sd = await statusRes.json();
+                if (sd.status === 'complete' && (sd.image_url || sd.url)) {
+                  clearInterval(poll);
+                  const url = sd.image_url || sd.url;
+                  setResult(url); onImageGenerated?.(url, trimmed);
+                  resolve();
+                } else if (sd.status === 'error') {
+                  clearInterval(poll); reject(new Error(sd.error || 'Generation failed'));
+                } else if (attempts >= maxAttempts) {
+                  clearInterval(poll);
+                  reject(new Error('Taking longer than expected — check back in 2 minutes'));
+                }
+              } catch (pollErr) { console.warn('Poll error (will retry):', pollErr); }
+            }, 4000);
+          });
+          return;
+        }
+
+        throw new Error(startData.detail || 'Unexpected response from image generation');
       }
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || `Generation failed (${res.status})`);
-      }
-
+      // ── NO entityId: generic synchronous endpoint ──────────────────────────
+      const res = await fetch(`${API_URL}/api/admin/generate-image`, {
+        method: 'POST',
+        credentials: 'omit',
+        headers: { 'Content-Type': 'application/json', Authorization: auth },
+        body: JSON.stringify({ prompt: trimmed, entity_type: entityType, entity_id: '', save_prompt: true }),
+      });
+      if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.detail || `Failed (${res.status})`); }
       const data = await res.json();
-      // Normalise response: service-box returns {image_url}, admin returns {url}
-      const imageUrl = data.url || data.image_url;
-      setResult(imageUrl);
-      onImageGenerated?.(imageUrl, trimmed);
+      const url = data.url || data.image_url;
+      setResult(url); onImageGenerated?.(url, trimmed);
+
     } catch (e) {
       setError(e.message || 'Failed to generate. Try a more descriptive prompt.');
     } finally {
@@ -215,7 +266,7 @@ export default function AIImagePromptField({
           data-testid="ai-generate-image-btn"
         >
           {loading
-            ? <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generating…</>
+            ? <><Loader2 className="w-3 h-3 mr-1 animate-spin" /> Generating… {elapsed > 0 ? `(${elapsed}s)` : ''}</>
             : <><Sparkles className="w-3 h-3 mr-1" /> Generate with AI</>}
         </Button>
         {result && <span className="text-xs text-green-600 font-semibold">✓ Generated &amp; saved</span>}
