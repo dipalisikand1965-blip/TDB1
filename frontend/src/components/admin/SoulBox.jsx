@@ -165,7 +165,12 @@ export default function SoulBox() {
       const res = await fetch(`${API_URL}/api/admin/generate-image`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: ADMIN_AUTH },
-        body: JSON.stringify({ product_id: product.id, product_name: product.name, breed: product.breed })
+        body: JSON.stringify({
+          prompt: product.ai_image_prompt || product.ai_prompt ||
+            `Soulful watercolor illustration of "${product.name}" for a ${(product.breed || '').replace(/_/g,' ')} dog, premium editorial composition, no text, white background`,
+          entity_type: 'breed_product',
+          entity_id: product.id,
+        })
       });
       const data = res.ok ? await res.json() : {};
       if (data.image_url || data.cloudinary_url) {
@@ -349,6 +354,12 @@ export default function SoulBox() {
           onSave={saveProduct}
           saving={saving}
           onGenerateMiraHint={generateMiraHint}
+          entityConfig={{
+            prefix: 'breed-products',
+            uploadPrefix: 'soul',
+            entityLabel: 'Soul Product',
+            generateImageBasePath: `${API_URL}/api/product-box/breed-products`,
+          }}
         />
       )}
     </div>
