@@ -193,7 +193,7 @@ function resolveImagineLabel(query = '') {
   return 'the ideal experience';
 }
 
-function ImagineChip({ petName, query, idx, onConcierge }) {
+function ImagineChip({ petName, query, idx, onConcierge, onAmazonClick }) {
   const icon = IMAGINE_ICONS[idx % 3];
   const intentLabel = resolveImagineLabel(query);
   const labels = [
@@ -225,13 +225,21 @@ function ImagineChip({ petName, query, idx, onConcierge }) {
           {labels[idx % 3]}
         </div>
       </div>
-      <div style={{ padding: '0 10px 10px' }}>
+      <div style={{ padding: '0 10px 10px', display: 'flex', flexDirection: 'column', gap: 5 }}>
         <button
           onClick={onConcierge}
           style={{ width: '100%', padding: '6px 0', borderRadius: 8, border: `1px solid rgba(201,151,58,0.5)`, background: 'transparent', color: 'rgba(201,151,58,0.9)', fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}
         >
           Ask Concierge →
         </button>
+        <a
+          onClick={e => { e.preventDefault(); onAmazonClick?.(); window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(query)}&tag=thedoggyco-21`, '_blank'); }}
+          href={`https://www.amazon.in/s?k=dog+${encodeURIComponent(query)}&tag=thedoggyco-21`}
+          rel="noopener noreferrer"
+          style={{ fontSize: 11, color: '#FF9900', textDecoration: 'none', fontWeight: 600, textAlign: 'center', display: 'block', padding: '2px 0', cursor: 'pointer' }}
+        >
+          Search Amazon →
+        </a>
       </div>
     </div>
   );
@@ -1138,7 +1146,7 @@ export default function MiraSearchPage() {
                             type: 'request',
                             name: `Mira Search: ${turn.query}`,
                             note: turn.query,
-                            metadata: { query: turn.query, source: 'mira_search', imagines: true },
+                            metadata: { query: turn.query, intent: turn.intent, source: 'mira_search', imagines: true },
                             silent: true,
                           });
                           toast.success('Sent to Concierge! We\'ll find the right match for ' + petName);
@@ -1146,6 +1154,7 @@ export default function MiraSearchPage() {
                           toast.error('Could not send — please try again');
                         }
                       }}
+                      onAmazonClick={() => conciergefire({ type: 'request', note: `Amazon search: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } })}
                     />
                   ))}
                 </ScrollStrip>
