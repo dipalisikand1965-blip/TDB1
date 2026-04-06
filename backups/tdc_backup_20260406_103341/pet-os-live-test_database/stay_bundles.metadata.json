@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"61af267f49b844c490132213b5b27c70","collectionName":"stay_bundles","type":"collection"}

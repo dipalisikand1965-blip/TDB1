@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"f65ff94172594d969d5e0e1902cba13c","collectionName":"nudge_schedules","type":"collection"}
