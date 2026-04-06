@@ -12,6 +12,7 @@ import { useResizeMobile } from '../../hooks/useResizeMobile';
 import DrawerBottomBar from '../celebrate/DrawerBottomBar';
 import ProductDetailModal from '../celebrate/ProductDetailModal';
 import { getApiUrl } from '../../utils/api';
+import { applyMiraFilter, getAllergiesFromPet } from '../../hooks/useMiraFilter';
 
 const API_BASE = process.env.REACT_APP_BACKEND_URL;
 
@@ -38,15 +39,32 @@ const DineDimensionExpanded = ({ dimension, pet, token, onClose }) => {
     setLoading(true);
     setProducts([]);
     const controller = new AbortController();
-    fetch(`${getApiUrl()}/api/products?pillar=dine&category=${dimension.productCategory}&limit=20`, {
-      signal: controller.signal,
-    })
+
+    // Build allergen + breed params for server-side pre-filtering
+    const petAllergies = getAllergiesFromPet(pet);
+    const allergenParam = petAllergies.length > 0
+      ? `&allergens=${encodeURIComponent(petAllergies.join(','))}`
+      : '';
+    const breedParam = pet?.breed
+      ? `&breed=${encodeURIComponent(pet.breed)}`
+      : '';
+    const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+
+    fetch(
+      `${getApiUrl()}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(dimension.productCategory)}&limit=60${breedParam}${allergenParam}`,
+      { signal: controller.signal, headers: authHeaders }
+    )
       .then(r => r.json())
-      .then(data => setProducts(Array.isArray(data.products) ? data.products : Array.isArray(data) ? data : []))
+      .then(data => {
+        const raw = Array.isArray(data.products) ? data.products : Array.isArray(data) ? data : [];
+        // Apply client-side Mira allergen filter + ranking as second safety layer
+        const filtered = applyMiraFilter(raw, pet);
+        setProducts(filtered);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [dimension]);
+  }, [dimension, pet, token]);
 
   if (!dimension) return null;
 

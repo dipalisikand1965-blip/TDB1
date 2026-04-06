@@ -368,8 +368,11 @@ const GoContentModal = ({ isOpen, onClose, category, pet }) => {
     const catConfig = CAT_CONFIG[category] || { keywords: [] };
     const keywords = catConfig.keywords || [];
 
-    // Fetch all go products
-    fetch(`${apiUrl}/api/admin/pillar-products?pillar=go&limit=200`)
+    // Fetch all go products — with breed + allergen filtering
+    const breedQ = encodeURIComponent((pet?.breed || '').trim().toLowerCase());
+    const petAllergiesStr = petAllergies && petAllergies.length > 0 ? `&allergens=${encodeURIComponent(petAllergies.join(','))}` : '';
+    const breedFilter = breedQ ? `&breed=${breedQ}` : '';
+    fetch(`${apiUrl}/api/admin/pillar-products?pillar=go&limit=200${breedFilter}${petAllergiesStr}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const all = data?.products || [];
