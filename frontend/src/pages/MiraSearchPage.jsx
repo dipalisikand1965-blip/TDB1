@@ -81,6 +81,41 @@ function SoulNudge({ pet }) {
   );
 }
 
+// ── Horizontally scrollable strip with desktop arrow buttons ──────────────
+function ScrollStrip({ children, gap = 12 }) {
+  const ref = useRef(null);
+  const scroll = (dir) => {
+    if (ref.current) ref.current.scrollBy({ left: dir * 220, behavior: 'smooth' });
+  };
+  return (
+    <div className="ms-scroll-wrap" style={{ position: 'relative' }}>
+      {/* Left arrow */}
+      <button className="ms-scroll-arrow" onClick={() => scroll(-1)} style={{
+        position: 'absolute', left: -16, top: '50%', transform: 'translateY(-50%)',
+        zIndex: 10, width: 30, height: 30, borderRadius: '50%',
+        background: 'rgba(26,23,36,0.92)', border: '1px solid rgba(201,151,58,0.35)',
+        color: '#C9973A', cursor: 'pointer', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', fontSize: 16, lineHeight: 1,
+      }}>‹</button>
+      {/* Strip */}
+      <div ref={ref} className="ms-chip-scroll"
+        style={{ display: 'flex', gap, overflowX: 'auto', paddingBottom: 8 }}>
+        {children}
+      </div>
+      {/* Right arrow */}
+      <button className="ms-scroll-arrow" onClick={() => scroll(1)} style={{
+        position: 'absolute', right: -16, top: '50%', transform: 'translateY(-50%)',
+        zIndex: 10, width: 30, height: 30, borderRadius: '50%',
+        background: 'rgba(26,23,36,0.92)', border: '1px solid rgba(201,151,58,0.35)',
+        color: '#C9973A', cursor: 'pointer', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', fontSize: 16, lineHeight: 1,
+      }}>›</button>
+    </div>
+  );
+}
+
+
+
 // ── Pet selector chip ──────────────────────────────────────────────────────
 function PetChip({ pet, active, onClick }) {
   const score = Math.round(pet?.overall_score || 0);
@@ -640,6 +675,9 @@ export default function MiraSearchPage() {
         .ms-chip-scroll::-webkit-scrollbar { display:none; }
         .ms-chip-scroll { scrollbar-width:none; }
         .ms-qp-btn:hover { background: rgba(201,151,58,0.12) !important; border-color: rgba(201,151,58,0.4) !important; }
+        .ms-scroll-arrow { opacity:0; transition: opacity 0.2s; pointer-events:none; }
+        .ms-scroll-wrap:hover .ms-scroll-arrow { opacity:1; pointer-events:all; }
+        @media (max-width: 640px) { .ms-scroll-arrow { display:none !important; } }
       `}</style>
 
       {/* ── Top bar ── */}
@@ -846,14 +884,14 @@ export default function MiraSearchPage() {
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
                   Mira picks for {petName}
                 </p>
-                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+                <ScrollStrip gap={12}>
                   {turn.products.map((p, i) => (
                     <ResultChip key={p.id || p._id || i} item={p} type="product" pet={activePet}
                       onCardClick={item => setSelProduct(item)}
                       onCart={item => { addToCart(item); toast.success(`${item.name} added to cart! 🛒`); }}
                       onBook={() => {}} />
                   ))}
-                </div>
+                </ScrollStrip>
                 {/* ── Show more: fetch next page of the same intent ── */}
                 {turn.hasMore && !turn.loadingMore && (
                   <button
@@ -876,7 +914,7 @@ export default function MiraSearchPage() {
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
                   Services for {petName}
                 </p>
-                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+                <ScrollStrip gap={10}>
                   {turn.services.map((svc, i) => (
                     <div key={svc.id || i}
                       data-testid="service-chip"
@@ -912,11 +950,7 @@ export default function MiraSearchPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── Guided Path Card ── */}
+                </ScrollStrip>
             {GUIDED_PATH_MAP[turn.intent] && !turn.streaming && (
               <div
                 onClick={() => setGuidedPathOpen(turn.intent)}
@@ -1015,7 +1049,7 @@ export default function MiraSearchPage() {
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
                   Mira imagines for {petName}
                 </p>
-                <div className="ms-chip-scroll" style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8 }}>
+                <ScrollStrip gap={12}>
                   {[0, 1, 2].map(i => (
                     <ImagineChip
                       key={i} idx={i}
@@ -1037,11 +1071,11 @@ export default function MiraSearchPage() {
                       }}
                     />
                   ))}
-                </div>
+                </ScrollStrip>
               </div>
             )}
 
-            {/* Services CTA — show inline service strip via Concierge instead of navigating away */}
+            {/* Services CTA */}
             {turn.servicesCta && (
               <div style={{
                 display: 'flex', alignItems: 'center', gap: 10,
