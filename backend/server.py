@@ -15105,15 +15105,21 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
     score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
     new_count = score_data["answered_count"]
     
-    # Update pet
+    # Update pet — also promote city to root field if answered, so Mira always has it
+    root_updates: dict = {
+        "doggy_soul_answers": soul_answers,
+        "overall_score": new_score,
+        "score_tier": score_tier,
+        "updated_at": get_utc_timestamp()
+    }
+    if question_id == "city" and answer:
+        root_updates["city"] = answer.capitalize() if answer.islower() else answer
+    if question_id == "housing" and answer:
+        root_updates["housing"] = answer
+
     await db.pets.update_one(
         {"id": pet_id},
-        {"$set": {
-            "doggy_soul_answers": soul_answers,
-            "overall_score": new_score,
-            "score_tier": score_tier,
-            "updated_at": get_utc_timestamp()
-        }}
+        {"$set": root_updates}
     )
     
     # ==================== UNIFIED FLOW: Log milestone events ====================

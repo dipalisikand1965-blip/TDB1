@@ -334,10 +334,12 @@ const CHAPTERS = [
         text:  "Which city does {name} live in?",
         mira:  "\"I use this for NearMe searches, local vets, groomers, and events.\"",
         type:  "choice",
+        required: true,
         options: [
           { label: "Mumbai",     value: "mumbai",    emoji: "\u{1F30A}" },
           { label: "Delhi",      value: "delhi",     emoji: "\u{1F3DB}\uFE0F" },
           { label: "Bangalore",  value: "bangalore", emoji: "\u{1F33F}" },
+          { label: "Goa",        value: "goa",       emoji: "\u{1F334}" },
           { label: "Other city", value: "other",     emoji: "\u{1F4CD}" },
         ]
       },
@@ -1256,17 +1258,24 @@ export default function PetSoulOnboarding() {
           </button>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <button
-              onClick={handleSkipChapter}
-              data-testid="soul-builder-skip-chapter-btn"
-              style={{
-                background: 'none', border: 'none',
-                color: C.dim, fontSize: 12, cursor: 'pointer',
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            >
-              Skip chapter {"\u2192"}
-            </button>
+            {!q.required && (
+              <button
+                onClick={handleSkipChapter}
+                data-testid="soul-builder-skip-chapter-btn"
+                style={{
+                  background: 'none', border: 'none',
+                  color: C.dim, fontSize: 12, cursor: 'pointer',
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                Skip chapter {"\u2192"}
+              </button>
+            )}
+            {q.required && (
+              <span style={{ fontSize: 11, color: C.dim, fontFamily: "'DM Sans', sans-serif" }}>
+                * Required for local recommendations
+              </span>
+            )}
             <button
               onClick={() => navigate('/pet-home')}
               data-testid="soul-builder-save-later-btn"
