@@ -813,7 +813,7 @@ async def get_restaurants(
             # Ensure restaurant has an ID
             if not r.get('id'):
                 # Generate a stable ID from the name
-                name_hash = hashlib.md5(name.encode()).hexdigest()[:8]
+                name_hash = hashlib.sha256(name.encode()).hexdigest()[:8]
                 r['id'] = f"rest-{name_hash}"
             
             # Ensure required fields have defaults

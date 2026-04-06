@@ -688,7 +688,7 @@ def generate_cache_key(pet_id: str, pillar: str, intent_context: Optional[Dict])
     intent_hash = ""
     if intent_context:
         intent_str = str(sorted(intent_context.items()))
-        intent_hash = hashlib.md5(intent_str.encode()).hexdigest()[:8]
+        intent_hash = hashlib.sha256(intent_str.encode()).hexdigest()[:8]
     
     return f"curated:{pet_id}:{pillar}:{intent_hash}"
 
