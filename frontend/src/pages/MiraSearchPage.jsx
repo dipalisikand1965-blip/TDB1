@@ -193,7 +193,7 @@ function resolveImagineLabel(query = '') {
   return 'the ideal experience';
 }
 
-function ImagineChip({ petName, query, idx, onConcierge }) {
+function ImagineChip({ petName, query, idx, onConcierge, onAmazonClick }) {
   const icon = IMAGINE_ICONS[idx % 3];
   const intentLabel = resolveImagineLabel(query);
   const labels = [
@@ -233,10 +233,10 @@ function ImagineChip({ petName, query, idx, onConcierge }) {
           Ask Concierge →
         </button>
         <a
+          onClick={e => { e.preventDefault(); onAmazonClick?.(); window.open(`https://www.amazon.in/s?k=${encodeURIComponent(query)}&tag=thedoggyco-21`, '_blank'); }}
           href={`https://www.amazon.in/s?k=${encodeURIComponent(query)}&tag=thedoggyco-21`}
-          target="_blank"
           rel="noopener noreferrer"
-          style={{ fontSize: 11, color: '#FF9900', textDecoration: 'none', fontWeight: 600, textAlign: 'center', display: 'block', padding: '2px 0' }}
+          style={{ fontSize: 11, color: '#FF9900', textDecoration: 'none', fontWeight: 600, textAlign: 'center', display: 'block', padding: '2px 0', cursor: 'pointer' }}
         >
           Search Amazon →
         </a>
@@ -1154,6 +1154,7 @@ export default function MiraSearchPage() {
                           toast.error('Could not send — please try again');
                         }
                       }}
+                      onAmazonClick={() => conciergefire({ type: 'request', note: `Amazon search: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } })}
                     />
                   ))}
                 </ScrollStrip>
