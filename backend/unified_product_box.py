@@ -787,29 +787,42 @@ async def get_all_products(
         # (to avoid cross-contamination of unrelated breed products into filtered results)
         if include_soul_made and not source and not category and not pillar and len(all_products) < limit:
             remaining = limit - len(all_products)
-            breed_query = {}
+            breed_query: dict = {}
             if search:
                 breed_query["$or"] = [
                     {"name": {"$regex": search, "$options": "i"}},
                     {"breed": {"$regex": search, "$options": "i"}},
                     {"breed_name": {"$regex": search, "$options": "i"}}
                 ]
-            
-            # Get soul_made products that are NOT in products_master
+            # Mirror the same visibility filter as products_master so archived breed products stay hidden
+            if status == 'all':
+                breed_query["visibility.status"] = {"$ne": "archived"}
+                breed_query["archived"] = {"$ne": True}
+            elif status:
+                breed_query["visibility.status"] = status
+            else:
+                breed_query["$and"] = breed_query.get("$and", []) + [
+                    {"$or": [{"archived": {"$ne": True}}, {"archived": {"$exists": False}}]},
+                    {"$or": [{"visibility.status": "active"}, {"visibility.status": {"$exists": False}}]}
+                ]
+
+            # Get soul_made products that are NOT in products_master — O(1) set dedup
+            seen_ids = {mp.get("id") for mp in all_products}
             soul_products = await db.breed_products.find(
                 breed_query, {"_id": 0}
             ).limit(remaining).to_list(remaining)
-            
+
             for p in soul_products:
                 p["source"] = "soul_made"
                 p["soul_tier"] = "soul_made"
                 # Preserve watercolor_image/cloudinary_url — only fall back to mockup_url if no better image
                 if not p.get("watercolor_image") and not p.get("cloudinary_url"):
                     p["image"] = p.get("mockup_url") or p.get("image", "")
-                # Only add if not already in products_master (dedup by id)
-                if not any(mp.get("id") == p.get("id") for mp in all_products):
+                pid = p.get("id")
+                if pid not in seen_ids:
+                    seen_ids.add(pid)
                     all_products.append(p)
-            
+
             breed_total = await db.breed_products.count_documents(breed_query)
             total += breed_total
     
@@ -1065,6 +1078,8 @@ async def delete_product(product_id: str):
             {"id": product_id},
             {"$set": {
                 "archived": True,
+                "is_active": False,
+                "visibility": {"status": "archived"},
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }}
         )
@@ -1089,35 +1104,105 @@ async def delete_product(product_id: str):
 
 
 @product_box_router.patch("/{product_id}/restore")
+@product_box_router.patch("/products/{product_id}/restore")
 async def restore_product(product_id: str):
     """Restore (unarchive) a product — sets visibility.status back to active"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
-    try:
-        oid = ObjectId(product_id)
-    except Exception:
-        oid = None
 
-    query = {"$or": [{"id": product_id}, {"_id": oid}]} if oid else {"id": product_id}
+    restore_fields = {"visibility": {"status": "active"}, "is_active": True, "archived": False}
 
-    result = await db.products_master.update_one(
-        query,
-        {"$set": {"visibility": {"status": "active"}, "is_active": True}}
-    )
-    if result.modified_count == 0:
-        # Try soul_made_products
-        result2 = await db.soul_made_products.update_one(
-            query,
-            {"$set": {"archived": False, "is_active": True}}
+    # Soul Made (breed-*) products live in breed_products collection
+    if product_id.startswith("breed-"):
+        result = await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": restore_fields}
         )
-        if result2.modified_count == 0:
-            raise HTTPException(status_code=404, detail="Product not found")
-    # Also propagate restore to breed_products (for pages that read directly from it)
-    await db.breed_products.update_one(
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Soul Made product not found")
+        return {"message": "Product restored", "product_id": product_id}
+
+    # Regular products — try products_master
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": {"visibility": {"status": "active"}, "is_active": True}}
     )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+
     return {"message": "Product restored", "product_id": product_id}
+
+
+@product_box_router.post("/breed-products/{product_id}/generate-image")
+async def generate_breed_product_image(product_id: str):
+    """Generate a watercolor AI image for a Soul Made / breed product and save to breed_products."""
+    import base64
+    import cloudinary
+    import cloudinary.uploader
+
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not configured")
+
+    product = await db.breed_products.find_one({"id": product_id}, {"_id": 0})
+    if not product:
+        raise HTTPException(status_code=404, detail="Soul Made product not found")
+
+    emergent_api_key = (
+        os.environ.get("EMERGENT_LLM_KEY")
+        or os.environ.get("EMERGENT_API_KEY")
+        or os.environ.get("EMERGENT_MODEL_API_KEY")
+    )
+    if not emergent_api_key:
+        raise HTTPException(status_code=500, detail="EMERGENT_API_KEY not configured")
+
+    from ai_image_service import get_product_image_prompt
+    prompt = product.get("ai_image_prompt") or product.get("ai_prompt") or get_product_image_prompt(product)
+
+    try:
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
+        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        if not images:
+            raise HTTPException(status_code=500, detail="No image returned from AI")
+
+        cloudinary.config(
+            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
+            api_key=os.environ.get("CLOUDINARY_API_KEY"),
+            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
+        )
+        img_b64 = base64.b64encode(images[0]).decode("utf-8")
+        upload_result = cloudinary.uploader.upload(
+            f"data:image/png;base64,{img_b64}",
+            folder="doggy/soul",
+            public_id=f"{product_id}-ai",
+            overwrite=True,
+            resource_type="image",
+        )
+        image_url = upload_result.get("secure_url")
+        if not image_url:
+            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
+
+        await db.breed_products.update_one(
+            {"id": product_id},
+            {"$set": {
+                "watercolor_image": image_url,
+                "cloudinary_url": image_url,
+                "image_url": image_url,
+                "image": image_url,
+                "ai_image_generated": True,
+                "locally_edited": True,
+                "image_updated_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }}
+        )
+        logger.info(f"[SoulBox] Image generated for breed product {product_id}: {image_url}")
+        return {"success": True, "image_url": image_url, "product_id": product_id}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[SoulBox] Image generation failed for {product_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Image generation failed: {str(e)}")
 
 
 @product_box_router.put("/soul-made/{product_id}")
@@ -1293,12 +1378,6 @@ async def assign_pillars_to_soul_made(product_id: str, pillars: List[str], admin
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-class BulkCategoryAssign(BaseModel):
-    product_ids: List[str]
-    category: str
-    sub_category: Optional[str] = None
 
 
 # ==================== SIZE/VARIANT PRICING ====================
@@ -2520,7 +2599,7 @@ async def import_products_csv(request: ImportProductsRequest):
                 if existing:
                     # id collision + update_existing=False → assign new id
                     product_doc["id"] = f"PROD-{secrets.token_hex(6).upper()}"
-                result = await db.products_master.insert_one(product_doc)
+                await db.products_master.insert_one(product_doc)
                 imported += 1
 
         except Exception as e:

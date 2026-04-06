@@ -1,0 +1,85 @@
+{
+  "summary": "Admin Box Audit — iteration 260. Tested Product Box archive/restore, Service Box archive/restore/edit, Soul Box generate-image routing, admin services filtering, and frontend UI. 28/28 backend tests pass. All core features work correctly. One pre-existing data corruption bug found causing React duplicate key warnings.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {
+        "endpoint": "GET /api/product-box/products?soul_made=true",
+        "issue": "products_master collection has TWO documents with id='bp-akita-designer-bandana-969f46' (one with old name 'Akita Designer Bandana', one with new name 'Akita · Designer Bandana · Birthday Edition'). Both are returned in the API response causing React duplicate key warning. Root cause: MASTER SYNC or seeding created duplicate entries. Code dedup only prevents breed_products-vs-products_master duplicates, NOT within-products_master duplicates.",
+        "priority": "MEDIUM"
+      },
+      {
+        "endpoint": "GET /api/product-box/products?status=archived",
+        "issue": "Supplemental breed_products query uses breed_query={} with NO visibility.status filter. This means archived breed_products can appear in active list and active breed_products can appear in archived list. Affects accuracy of supplemental results only.",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ProductBox / SoulBox",
+        "issue": "React console error: 'Encountered two children with the same key bp-akita-designer-bandana-969f46'. Caused by data corruption in products_master (two documents with same id). Fix: deduplicate products_master or add unique index on id field.",
+        "selector": "table tbody tr[key='bp-akita-designer-bandana-969f46']",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "backend": {
+      "TestProductBoxArchiveRestore": "7/7 PASS — archive via DELETE, verify not in active list, verify in archived, restore via PATCH, verify active after restore",
+      "TestServiceBoxArchiveRestore": "7/7 PASS — create test service, archive via DELETE /api/service-box/services/{id}, not in admin list, in archived endpoint, restore, back in admin list",
+      "TestServiceBoxEdit": "1/1 PASS — PUT /api/admin/services/{id} saves name+description, verified via GET",
+      "TestAdminServicesFiltering": "1/1 PASS — GET /api/admin/services returns zero archived services",
+      "TestAdminDeleteServiceSoftArchives": "3/3 PASS — DELETE /api/admin/services/{id} soft-archives, service still exists with approval_status=archived",
+      "TestSoulBoxBreedProductArchiveRestore": "4/4 PASS — breed product archive/restore via product-box endpoints, restored breed product is active",
+      "TestSoulBoxGenerateImageRouting": "3/3 PASS — /api/admin/generate-image requires prompt (400), breed-products generate-image endpoint exists, service-box generate-image endpoint exists",
+      "TestServiceBoxArchivedEndpoint": "2/2 PASS — GET /api/service-box/services/archived returns 200 with services, all have approval_status=archived"
+    },
+    "frontend": {
+      "ServiceBox_ShowArchivedToggle": "PASS — toggle button '📦 Show Archived' visible, changes to '← Back to Active'",
+      "ServiceBox_RestoreButtons": "PASS — restore buttons appear only in archived view, edit/delete buttons hidden",
+      "ServiceBox_RestoreFlow": "PASS — clicking restore shows toast 'TEST AdminDelete 449260 restored', service removed from archived list",
+      "SoulBox_ArchiveRestoreButtons": "PASS — Archive buttons (50) and Restore buttons (50) visible in archived view",
+      "SoulBox_StatusFilter": "PASS — 'Archived only' option in status dropdown",
+      "SoulBox_ProductBoxEditor": "PASS — editor opens with multi-tab interface, Save Product button visible",
+      "ProductBox_ArchiveButton": "PASS — delete/archive buttons visible on products"
+    }
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_box_audit_260.py",
+    "/app/test_reports/pytest/admin_box_audit_260.xml"
+  ],
+  "action_items": [
+    "FIX DATA: Remove duplicate documents from products_master collection — there are two documents with id='bp-akita-designer-bandana-969f46' (old: 'Akita Designer Bandana', new: 'Akita · Designer Bandana · Birthday Edition'). Prefer keeping the new-format one. Add MASTER SYNC step to deduplicate products_master by id before inserting.",
+    "FIX CODE (minor): In get_all_products (unified_product_box.py line 790), the breed_query={} doesn't apply visibility.status filter. When status=archived is requested, breed_products appear without status filter. Fix: copy the visibility.status condition from main query into breed_query.",
+    "FIX CODE (robustness): The dedup in get_all_products uses O(n) linear scan (any() loop). Replace with a set for O(1) lookups: seen_ids = {mp.get('id') for mp in all_products}; if pid not in seen_ids: seen_ids.add(pid); all_products.append(p)"
+  ],
+  "critical_code_review_comments": [
+    "DATA CORRUPTION: products_master has two docs with same id='bp-akita-designer-bandana-969f46'. Add unique index on 'id' field in both products_master and breed_products to prevent future duplicates.",
+    "BUG: breed_products supplement in get_all_products ignores visibility.status filter (breed_query={}), causing mixed active/archived results in supplemental products.",
+    "DEDUP: Using any() O(n) scan instead of set lookup — for large collections this is slow. Use seen_ids set."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_box_audit_260.py"
+  ],
+  "success_rate": {
+    "backend": "100% (28/28 tests pass)",
+    "frontend": "90% (all features work; 1 React duplicate key warning from data corruption)"
+  },
+  "seed_data_creation": "Test services created with IDs TEST-AR-* and TEST-AD-* (all cleaned up/archived after tests)",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All admin box audit features pass. Pre-existing data corruption: products_master has duplicate id='bp-akita-designer-bandana-969f46' causing React duplicate key warning. ServiceBox 'Show Archived' toggle + restore confirmed working. Product Box archive/restore confirmed working. Admin DELETE services confirmed soft-archives. Soul Box generate-image uses correct entity_type/entity_id. Breed product archive/restore via product-box endpoints works correctly. Test file: /app/backend/tests/test_admin_box_audit_260.py",
+  "rca_of_issues": {
+    "duplicate_key_react_error": {
+      "symptom": "React console error: 'Encountered two children with same key bp-akita-designer-bandana-969f46'",
+      "root_cause": "products_master MongoDB collection has TWO documents with id='bp-akita-designer-bandana-969f46' — one with old naming format 'Akita Designer Bandana' and one with new format 'Akita · Designer Bandana · Birthday Edition'. Both have soul_made=True and visibility.status=active. The API returns both, causing React to render two items with the same key.",
+      "reproduction": "GET /api/product-box/products?soul_made=true&limit=50 returns two items with id='bp-akita-designer-bandana-969f46'",
+      "mitigation": "1) MongoDB: db.products_master.deleteOne({id:'bp-akita-designer-bandana-969f46', name:'Akita Designer Bandana'}) to remove the old duplicate. 2) Code: Add unique index on id field. 3) MASTER SYNC: Add dedup step to remove products_master duplicates.",
+      "introduced_by": "Pre-existing data corruption — likely from two seed operations for same breed+product_type with different naming conventions generating the same hash-based ID"
+    }
+  }
+}

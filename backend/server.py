@@ -6997,15 +6997,15 @@ async def admin_get_services(
     category: Optional[str] = None
 ):
     """Get all services for admin management"""
-    query = {}
+    query = {"approval_status": {"$ne": "archived"}}  # Hide soft-archived services
     if pillar:
         query["pillar"] = pillar
     if category:
         query["category"] = category
-    
+
     services = await db.services_master.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
     total = await db.services_master.count_documents(query)
-    
+
     return {"services": services, "total": total}
 
 
@@ -7077,14 +7077,20 @@ async def admin_bulk_reset_service_prices(username: str = Depends(verify_admin))
 
 @admin_router.delete("/services/{service_id}")
 async def admin_delete_service(service_id: str, username: str = Depends(verify_admin)):
-    """Delete a service"""
-    result = await db.services_master.delete_one({"id": service_id})
-    
-    if result.deleted_count == 0:
+    """Soft-archive a service (safe delete — reversible via restore endpoint)"""
+    result = await db.services_master.update_one(
+        {"id": service_id},
+        {"$set": {
+            "approval_status": "archived",
+            "is_active": False,
+            "updated_at": get_utc_timestamp(),
+            "updated_by": username,
+        }}
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Service not found")
-    
-    logger.info(f"[Admin] Service deleted: {service_id} by {username}")
-    return {"message": "Service deleted successfully"}
+    logger.info(f"[Admin] Service soft-archived: {service_id} by {username}")
+    return {"message": "Service archived successfully"}
 
 
 @admin_router.post("/services/bulk-import")
