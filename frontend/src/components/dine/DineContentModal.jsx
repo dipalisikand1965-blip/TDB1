@@ -22,6 +22,7 @@ import ProductCard from '../ProductCard';
 import FlatArtPickerCard from '../common/FlatArtPickerCard';
 import SoulMadeModal from '../SoulMadeModal';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { applyMiraFilter, getAllergiesFromPet } from '../../hooks/useMiraFilter';
 
 const fmtTab = (t) => t === 'All' || t === 'all' ? t : t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
@@ -696,14 +697,17 @@ const DineContentModal = ({ isOpen, onClose, category, pet }) => {
       // ── Standard categories ────────────────────────────────────────
       if (config.apiCategory) {
         const breedFilter2 = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
-        const url = `${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=100${breedFilter2}`;
+        // Pass allergens to backend as first safety layer
+        const petAllergiesStr = getAllergiesFromPet(pet);
+        const allergenParam = petAllergiesStr.length > 0 ? `&allergens=${encodeURIComponent(petAllergiesStr.join(','))}` : '';
+        const url = `${apiUrl}/api/admin/pillar-products?pillar=dine&category=${encodeURIComponent(config.apiCategory)}&limit=100${breedFilter2}${allergenParam}`;
         const r = await fetch(url);
         if (r.ok) {
           const d = await r.json();
           const prods = d.products || [];
-          // Sort: allergy-safe for this pet first
-          const sorted = sortProductsForPet(prods, allergies);
-          setProducts(sorted);
+          // Apply full Mira filter: REMOVES allergen products + ranks loved items first
+          const filtered = applyMiraFilter(prods, pet);
+          setProducts(filtered);
           const uniqueTabs = [...new Set(prods.map(p => p.sub_category).filter(Boolean))];
           const breedSlug = (pet?.breed||'').trim().toLowerCase().replace(/\s+/g, '_');
           const filteredTabs = uniqueTabs.filter(t => !/-play$|-shop$|-dine$|-food$/.test(t) || !breedSlug || t.toLowerCase().startsWith(breedSlug));
