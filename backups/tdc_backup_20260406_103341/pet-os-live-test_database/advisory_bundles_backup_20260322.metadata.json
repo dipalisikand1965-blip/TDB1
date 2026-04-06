@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"871e9bbdbc664fe6a623d28a4fede30c","collectionName":"advisory_bundles_backup_20260322","type":"collection"}

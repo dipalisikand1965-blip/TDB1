@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"parent_id":{"$numberInt":"1"},"created_at":{"$numberInt":"-1"}},"name":"parent_id_1_created_at_-1"}],"uuid":"ae8780ffa0384ce3b6cc241c03044894","collectionName":"service_desk_tickets","type":"collection"}
