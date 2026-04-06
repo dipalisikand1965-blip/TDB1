@@ -65,6 +65,30 @@ const AdminGuideDashboard = () => {
   const [regenerating, setRegenerating] = useState(false);
   const [emailing, setEmailing] = useState(false);
   const [expandedSection, setExpandedSection] = useState('command-center');
+  const [restoring, setRestoring] = useState(false);
+  const [restoreMsg, setRestoreMsg] = useState(null);
+
+  const handleRestore = async () => {
+    if (!window.confirm('Load all backed-up data (9,353 products, 32 pets, all services & members) into the live database?\n\nSafe to run — will not delete existing data.')) return;
+    setRestoring(true);
+    setRestoreMsg(null);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/db/restore`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
+      });
+      const data = await res.json();
+      if (data.status?.startsWith('complete')) {
+        setRestoreMsg({ ok: true, text: `✅ Done! ${data.total_docs_processed?.toLocaleString()} docs restored in ${data.duration_seconds}s` });
+        toast({ title: '✅ Database Restored!', description: `${data.total_docs_processed?.toLocaleString()} docs loaded successfully.` });
+      } else {
+        setRestoreMsg({ ok: false, text: `Error: ${JSON.stringify(data.errors)}` });
+      }
+    } catch (e) {
+      setRestoreMsg({ ok: false, text: `Error: ${e.message}` });
+    }
+    setRestoring(false);
+  };
 
   // Regenerate documentation function
   const regenerateDocumentation = async () => {
@@ -477,7 +501,19 @@ const AdminGuideDashboard = () => {
             </p>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
+            <Button 
+              onClick={handleRestore}
+              disabled={restoring}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold"
+              data-testid="restore-db-btn"
+            >
+              {restoring ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Restoring... (~20s)</>
+              ) : (
+                <><Database className="w-4 h-4 mr-2" /> Restore Database</>
+              )}
+            </Button>
             <Button 
               onClick={downloadDatabase}
               disabled={downloading}
@@ -494,6 +530,12 @@ const AdminGuideDashboard = () => {
           </div>
         </div>
       </Card>
+
+      {restoreMsg && (
+        <Card className={`p-4 border-2 ${restoreMsg.ok ? 'bg-green-900/30 border-green-500/50' : 'bg-red-900/30 border-red-500/50'}`}>
+          <p className={`font-semibold ${restoreMsg.ok ? 'text-green-300' : 'text-red-300'}`}>{restoreMsg.text}</p>
+        </Card>
+      )}
 
       {/* Critical Warning Box */}
       <Card className="bg-red-900/30 border-red-500/50 p-4">
