@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"0da092b4cee74fcf856463e446c22234","collectionName":"concierge_intakes","type":"collection"}

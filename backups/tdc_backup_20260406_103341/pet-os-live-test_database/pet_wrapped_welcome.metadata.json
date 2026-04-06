@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"0d8415d95e8546a09ad64ab0e009d60f","collectionName":"pet_wrapped_welcome","type":"collection"}

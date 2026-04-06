@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"breed":{"$numberInt":"1"},"is_active":{"$numberInt":"1"},"is_mockup":{"$numberInt":"1"}},"name":"breed_1_is_active_1_is_mockup_1"}],"uuid":"b7f2fdf8a8174c05a2f9f1931e4bf98a","collectionName":"breed_products","type":"collection"}

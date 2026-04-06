@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"0f60ad8885ea4a81946b49855e319065","collectionName":"care_bundles","type":"collection"}

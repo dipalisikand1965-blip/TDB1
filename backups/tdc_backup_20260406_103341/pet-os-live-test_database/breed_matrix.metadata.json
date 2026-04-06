@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"breed_key":{"$numberInt":"1"}},"name":"breed_key_1"},{"v":{"$numberInt":"2"},"key":{"breed":{"$numberInt":"1"}},"name":"breed_1"}],"uuid":"a3c2846f6a9642c4b2f126dd1980867f","collectionName":"breed_matrix","type":"collection"}

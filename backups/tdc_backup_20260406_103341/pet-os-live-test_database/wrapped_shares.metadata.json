@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"4c216716e5a0488399cac11e5ffea7a5","collectionName":"wrapped_shares","type":"collection"}
