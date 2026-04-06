@@ -237,7 +237,10 @@ const ROPE_TOY_PATTERNS = [
 const AI_NAMED_FILE_RE = /tdc\/products_master\/.+\/(?:dine|go|care|celebrate|play|learn|paperwork|adopt|emergency|farewell|fit|shop|services|advisory)-/i;
 
 const isBadCloudinaryImage = (url) => {
-  if (!url || !url.includes('res.cloudinary.com')) return false;
+  if (!url) return false;
+  // Block emergentagent stock photos — these are old seeded placeholder images
+  if (url.includes('emergentagent.com') || url.includes('prod-images.emergentagent')) return true;
+  if (!url.includes('res.cloudinary.com')) return false;
   if (ROPE_TOY_PATTERNS.some(p => url.includes(p))) return true;
   if (AI_NAMED_FILE_RE.test(url)) return true;
   return false;
