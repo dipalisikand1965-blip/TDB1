@@ -689,63 +689,6 @@ export default function MiraSearchPage() {
         @media (max-width: 640px) { .ms-scroll-arrow { display:none !important; } }
       `}</style>
 
-      {/* ── Top bar ── */}
-      <div style={{
-        width: '100%', maxWidth: 720,
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '20px 0 24px',
-        borderBottom: `1px solid ${C.border}`,
-        marginBottom: 28,
-      }}>
-        {/* Mira wordmark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Sparkles size={16} color="#fff" />
-          </div>
-          <span style={{ fontSize: 17, fontWeight: 700, color: C.ivory, letterSpacing: '-0.02em' }}>Mira</span>
-        </div>
-
-        {/* Icons row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* My Requests */}
-          <button
-            onClick={() => navigate('/my-requests')}
-            data-testid="mira-search-my-requests"
-            title="My Requests"
-            style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: C.card, border: `1.5px solid ${C.border}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'border-color 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = C.purpleL}
-            onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
-          >
-            <Inbox size={16} color={C.purpleL} />
-          </button>
-          {/* Cart icon */}
-          <button
-            onClick={() => setCartOpen(true)}
-            data-testid="mira-search-cart"
-            style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: C.card, border: `1.5px solid ${C.border}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'border-color 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = C.amber}
-            onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
-          >
-            <ShoppingCart size={16} color={C.amber} />
-          </button>
-        </div>
-      </div>
-
       {/* ── Soul nudge ── */}
       {activePet && <div style={{ width: '100%', maxWidth: 720 }}>
         <SoulNudge pet={activePet} />
