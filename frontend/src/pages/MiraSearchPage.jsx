@@ -970,32 +970,37 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Services CTA */}
+            {/* Guided Path — chip-sized card, scrolls with product strip */}
             {GUIDED_PATH_MAP[turn.intent] && !turn.streaming && (
-              <div
-                onClick={() => setGuidedPathOpen(turn.intent)}
-                style={{
-                  width:'100%', maxWidth:720,
-                  background:'linear-gradient(135deg,#1C1928,#2D1B69)',
-                  border:'1px solid rgba(124,58,237,0.3)',
-                  borderRadius:16, padding:'20px 24px',
-                  marginBottom:20, cursor:'pointer',
-                  animation:'fadeUp 0.5s ease',
-                }}
-                onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(167,139,250,0.5)'}
-                onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(124,58,237,0.3)'}
-              >
-                <div style={{fontSize:11,color:'#A78BFA',fontWeight:700,
-                  textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:6}}>
-                  ✦ Guided Path
-                </div>
-                <div style={{fontSize:16,fontWeight:700,color:'#F5F0E8',marginBottom:4,
-                  fontFamily:'Georgia,serif'}}>
-                  {GUIDED_PATH_MAP[turn.intent].title.replace('[pet]', activePet?.name || 'your dog')}
-                </div>
-                <div style={{fontSize:13,color:'rgba(245,240,232,0.55)'}}>
-                  {GUIDED_PATH_MAP[turn.intent].subtitle} →
-                </div>
+              <div style={{ marginBottom: 12, animation: 'fadeUp 0.5s ease' }}>
+                <ScrollStrip gap={12}>
+                  <div
+                    onClick={() => setGuidedPathOpen(turn.intent)}
+                    data-testid="guided-path-chip"
+                    style={{
+                      display: 'inline-flex', flexDirection: 'column',
+                      minWidth: 160, maxWidth: 200, flexShrink: 0,
+                      background: '#1C1928',
+                      border: '1px solid rgba(124,58,237,0.3)',
+                      borderRadius: 14, padding: '12px 14px',
+                      cursor: 'pointer', transition: 'border-color 0.18s, transform 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(167,139,250,0.6)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'; e.currentTarget.style.transform = 'none'; }}
+                  >
+                    <div style={{ fontSize: 10, color: '#F5F0E8', fontWeight: 700,
+                      textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
+                      ✦ Guided Path
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#F5F0E8',
+                      lineHeight: 1.3, marginBottom: 4, fontFamily: 'Georgia,serif' }}>
+                      {GUIDED_PATH_MAP[turn.intent].title.replace('[pet]', activePet?.name || 'your dog')}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.8)', lineHeight: 1.3 }}>
+                      {GUIDED_PATH_MAP[turn.intent].subtitle} →
+                    </div>
+                  </div>
+                </ScrollStrip>
               </div>
             )}
 
