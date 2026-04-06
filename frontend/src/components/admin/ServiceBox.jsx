@@ -146,17 +146,24 @@ export default function ServiceBox() {
 
   const PER_PAGE = 20;
 
+  const [showArchived, setShowArchived] = useState(false);
+
   const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/admin/services?pillar=${activePillar}&limit=200`, { headers: getAdminHeaders() });
+      // When showing archived, fetch from the dedicated archive endpoint
+      const endpoint = showArchived
+        ? `${API_URL}/api/service-box/services/archived?pillar=${activePillar}&limit=200`
+        : `${API_URL}/api/admin/services?pillar=${activePillar}&limit=200`;
+      const res = await fetch(endpoint, { headers: getAdminHeaders() });
       const data = res.ok ? await res.json() : {};
       setServices(data.services || data.items || []);
     } catch { setServices([]); }
     setLoading(false);
-  }, [activePillar]);
+  }, [activePillar, showArchived]);
 
   useEffect(() => { fetchServices(); setPage(1); setSearch(''); setDebouncedSearch(''); }, [fetchServices]);
+  useEffect(() => { setPage(1); setSearch(''); setDebouncedSearch(''); setShowArchived(false); }, [activePillar]);
 
   // Debounce search — 350ms delay before filtering
   useEffect(() => {
@@ -381,22 +388,39 @@ export default function ServiceBox() {
     }
   };
 
-  // ─── Delete a service ─────────────────────────────────────────────────────
+  // ─── Delete a service (soft archive) ─────────────────────────────────────────
   const deleteService = async (svc) => {
     const svcId = svc.id || svc._id;
-    if (!window.confirm(`Delete "${svc.name}"?\n\nThis cannot be undone.`)) return;
+    if (!window.confirm(`Archive "${svc.name}"?\n\nThis service will be hidden but can be restored later.`)) return;
     try {
       const res = await fetch(`${API_URL}/api/service-box/services/${svcId}`, {
         method: 'DELETE', headers: getAdminHeaders(),
       });
       if (res.ok) {
         setServices(prev => prev.filter(s => (s.id || s._id) !== svcId));
-        setToast(`🗑️ "${svc.name}" deleted`);
+        setToast(`📦 "${svc.name}" archived`);
       } else {
         const err = await res.json().catch(() => ({}));
-        setToast('❌ Delete failed: ' + (err.detail || res.status));
+        setToast('❌ Archive failed: ' + (err.detail || res.status));
       }
-    } catch (e) { setToast('❌ Delete failed: ' + e.message); }
+    } catch (e) { setToast('❌ Archive failed: ' + e.message); }
+  };
+
+  // ─── Restore an archived service ─────────────────────────────────────────────
+  const restoreService = async (svc) => {
+    const svcId = svc.id || svc._id;
+    try {
+      const res = await fetch(`${API_URL}/api/service-box/services/${svcId}/restore`, {
+        method: 'PATCH', headers: getAdminHeaders(),
+      });
+      if (res.ok) {
+        setServices(prev => prev.filter(s => (s.id || s._id) !== svcId));
+        setToast(`✅ "${svc.name}" restored`);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setToast('❌ Restore failed: ' + (err.detail || res.status));
+      }
+    } catch (e) { setToast('❌ Restore failed: ' + e.message); }
   };
 
   const bulkResetPrices = async () => {
@@ -512,7 +536,13 @@ export default function ServiceBox() {
         <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
           placeholder="Search services…"
           style={{ padding:'8px 12px', borderRadius:8, border:`1px solid ${P.border}`, fontSize:13, minWidth:220 }} />
-        <span style={{ fontSize:12, color:P.muted }}>{filtered.length} services</span>
+        <span style={{ fontSize:12, color:P.muted }}>{filtered.length} services{showArchived ? ' (archived)' : ''}</span>
+        <button
+          data-testid="show-archived-services-btn"
+          onClick={() => setShowArchived(a => !a)}
+          style={{ padding:'7px 14px', borderRadius:8, border:`1.5px solid ${showArchived ? P.amber : P.border}`, background:showArchived ? '#fef3c7' : '#fff', color:showArchived ? '#92400e' : P.muted, cursor:'pointer', fontSize:12, fontWeight:700 }}>
+          {showArchived ? '← Back to Active' : '📦 Show Archived'}
+        </button>
         <button onClick={exportCSV} disabled={exportingCSV}
           style={{ padding:'7px 14px', borderRadius:8, border:`1px solid ${P.border}`, background: exportingCSV ? '#f5f5f5' : '#fff', cursor: exportingCSV ? 'wait' : 'pointer', fontSize:12, fontWeight:600, marginLeft:'auto', opacity: exportingCSV ? 0.7 : 1 }}>
           {exportingCSV ? '⏳ Exporting…' : '↓ Export CSV'}
@@ -584,19 +614,31 @@ export default function ServiceBox() {
                   </button>
                 </div>
                 <div style={{ display:'flex', gap:6 }}>
-                  <button
-                    data-testid={`edit-service-${s.id||i}`}
-                    onClick={() => openEditor(s)}
-                    style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
-                    ✏ Edit
-                  </button>
-                  <button
-                    data-testid={`delete-service-${s.id||i}`}
-                    onClick={() => deleteService(s)}
-                    title="Delete this service"
-                    style={{ padding:'5px 10px', borderRadius:6, border:'1px solid #fca5a5', background:'#fff5f5', color:'#b91c1c', cursor:'pointer', fontSize:11, fontWeight:600 }}>
-                    🗑
-                  </button>
+                  {showArchived ? (
+                    <button
+                      data-testid={`restore-service-${s.id||i}`}
+                      onClick={() => restoreService(s)}
+                      title="Restore this service"
+                      style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.green}`, background:'#f0fdf4', color:'#065f46', cursor:'pointer', fontSize:11, fontWeight:700 }}>
+                      ↩ Restore
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        data-testid={`edit-service-${s.id||i}`}
+                        onClick={() => openEditor(s)}
+                        style={{ padding:'5px 10px', borderRadius:6, border:`1px solid ${P.purple}`, background:P.purple, color:'#fff', cursor:'pointer', fontSize:11, fontWeight:600 }}>
+                        ✏ Edit
+                      </button>
+                      <button
+                        data-testid={`delete-service-${s.id||i}`}
+                        onClick={() => deleteService(s)}
+                        title="Archive this service"
+                        style={{ padding:'5px 10px', borderRadius:6, border:'1px solid #fca5a5', background:'#fff5f5', color:'#b91c1c', cursor:'pointer', fontSize:11, fontWeight:600 }}>
+                        🗑
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}
