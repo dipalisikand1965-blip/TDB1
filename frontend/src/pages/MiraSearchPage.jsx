@@ -427,7 +427,24 @@ export default function MiraSearchPage() {
   const LEARN_RE     = /\bclass\b|\bclasses\b|lesson|course|workshop|behaviour school|puppy school|learn/i;
 
   // ── Near-me detection ─────────────────────────────────────────────────────
-  const NEAR_ME_RE   = /near\s+me|nearby|near\s+by|close\s+to\s+me|find.*near|around\s+me|in\s+my\s+area|in\s+bangalore|in\s+bengaluru/i;
+  // Matches: "near me", "nearby", explicit cities, "where can I find", "in [any city]"
+  // Designed to catch any world city — not a hardcoded list
+  const NEAR_ME_RE = new RegExp(
+    [
+      'near\\s+me', 'nearby', 'near\\s+by',
+      'close\\s+to\\s+me', 'find.*near', 'around\\s+me',
+      'in\\s+my\\s+area', 'in\\s+my\\s+city',
+      'where\\s+can\\s+i\\s+find', 'where\\s+do\\s+i\\s+find',
+      'where.*find.*near', 'find.*in\\s+[a-z]',
+      // Any "in [Capitalised word]" pattern → catches all world cities
+      'in\\s+[A-Z][a-z]{2,}',
+      // Explicit common queries kept as anchors
+      'in\\s+goa', 'in\\s+mumbai', 'in\\s+delhi', 'in\\s+pune',
+      'in\\s+hyderabad', 'in\\s+chennai', 'in\\s+ooty',
+      'in\\s+bangalore', 'in\\s+bengaluru', 'in\\s+kolkata',
+    ].join('|'),
+    'i'
+  );
   const PLACE_TYPE_MAP = [
     [/grooming|groomer|groom|bath|spa|trim|nail/i, 'groomer'],
     [/\bvet\b|veterinar|checkup|vaccine|doctor|clinic/i, 'vet'],
