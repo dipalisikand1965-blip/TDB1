@@ -1452,6 +1452,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
         seenIds.add(pid);
         return true;
       });
+
+      // Apply Mira allergen filter — removes chicken/beef items for allergic pets
+      const { applyMiraFilter } = await import('../../hooks/useMiraFilter');
+      allProducts = applyMiraFilter(allProducts, pet);
+
       setProducts(allProducts);
 
       // ── Breed-specific top row for cakes categories ──────────────────

@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import ProductCard from '../ProductCard';
 import SoulMadeModal from '../SoulMadeModal';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { applyMiraFilter, getAllergiesFromPet } from '../../hooks/useMiraFilter';
 
 // ─── Green palette ────────────────────────────────────────────────────────────
 const G = {
