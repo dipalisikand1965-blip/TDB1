@@ -12,6 +12,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
 import { useConcierge } from '../../hooks/useConcierge';
@@ -330,14 +331,14 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
     setTimeout(() => setShowPop(false), 1500);
   };
 
-  return (
+  const modalContent = (
     <div
       data-testid="doggy-bakery-cake-modal"
       onClick={onClose}
       style={{
         position:'fixed', inset:0,
         background:'rgba(0,0,0,0.75)',
-        zIndex:2000,
+        zIndex: 2147483641,
         display:'flex', alignItems:'center', justifyContent:'center',
         animation:'cbc-fade 0.2s ease',
       }}
@@ -724,4 +725,6 @@ export default function DoggyBakeryCakeModal({ pet, onClose }) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
