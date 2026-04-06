@@ -1293,7 +1293,8 @@ export default function MiraSearchPage() {
         <GuidedCelebrationPaths pet={activePet} onClose={() => setGuidedPathOpen(null)} />
       )}
       {['travel_adventure','training_behavior','play_enrichment',
-        'farewell_memorial','emergency_urgent','paperwork_docs','adopt_rescue']
+        'farewell_memorial','emergency_urgent','paperwork_docs','adopt_rescue',
+        'vet_health','shop_accessories']
         .includes(guidedPathOpen) && (
         <ServiceConciergeModal
           service={{ pillar: GUIDED_PATH_MAP[guidedPathOpen]?.path.replace('/',''), name: GUIDED_PATH_MAP[guidedPathOpen]?.title }}
