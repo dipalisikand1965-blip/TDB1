@@ -95,6 +95,7 @@
   <a href="#admin">Admin</a>
   <a href="#scripts">Scripts</a>
   <a href="#integrations">Integrations</a>
+  <a href="#whatsapp">WhatsApp</a>
   <a href="#creds">Credentials</a>
   <a href="#todo">Next Tasks</a>
   <a href="#audit">Soul Audit</a>
@@ -107,6 +108,40 @@
 <section id="changelog">
   <h2>📋 Session Changelog</h2>
   <p>Every agent MUST append their session summary here before finishing.</p>
+
+  <div class="changelog-entry" style="border-left-color:#16a34a; background:#f0fdf4;">
+    <div class="date" style="color:#16a34a;">Session 11 — 2026-04-06 🟢 WhatsApp Pipeline Live</div>
+    <h4>Gupshup Inbound → Service Desk Auto-Ticket + Mira Auto-Ack</h4>
+    <ul>
+      <li><strong>FIXED: Gupshup inbound webhook now creates proper service_desk_tickets.</strong> Previously the webhook only created a generic <code>tickets</code> record with no <code>member</code> object, no <code>conversation</code> array, and no pet data — so the Admin Service Desk showed nothing. Now <code>process_gupshup_webhook</code> in <code>whatsapp_routes.py</code> does a full DB enrichment step after ticket creation.</li>
+      <li><strong>Enrichment step:</strong> After <code>handoff_to_spine()</code> creates the canonical ticket, we update the <code>service_desk_ticket</code> to add: <code>member {name, email, phone, whatsapp}</code>, <code>user_phone</code>, <code>pet_name</code>, <code>pet_profile {allergies, fav_food}</code>, <code>allergy_alert</code>, <code>mira_briefing</code>, and the first <code>conversation[]</code> message.</li>
+      <li><strong>Legacy ticket fallback:</strong> If an existing <code>db.tickets</code> record is found for the phone BUT no matching <code>service_desk_ticket</code> exists (legacy tickets pre-spine), a fresh <code>service_desk_ticket</code> is created so it surfaces in the admin inbox.</li>
+      <li><strong>Follow-up message threading:</strong> After the first message creates the ticket, follow-up messages from the same number correctly append to the <code>service_desk_ticket</code> conversation array. Also patches <code>db.tickets</code> with <code>member.phone</code> so phone-based lookup works for subsequent messages.</li>
+      <li><strong>FIXED: Gupshup HTTP 202 bug.</strong> The <code>/api/whatsapp/gupshup/send</code> endpoint was rejecting successful Gupshup responses because it only accepted HTTP 200. Gupshup returns 202 (Accepted). Fixed to accept <code>[200, 202]</code>.</li>
+      <li><strong>Mira Auto-Acknowledgement:</strong> New <code>send_mira_ack()</code> function sends a warm, personalised WhatsApp reply immediately when a message comes in. Uses pet name from DB. Example: <em>"Hi Aditya! I'm Mira, mahi's Concierge® 🐾 Got your message! Our Concierge team will review it..."</em></li>
+      <li><strong>Admin flow unchanged:</strong> The full human-in-the-loop flow remains — "Ask Mira" button drafts a reply, Concierge reviews and hits the WhatsApp button to send.</li>
+      <li><strong>Tested with:</strong> Real phone <code>9739908844</code> (Dipali Sikand / mahi). 2 messages threaded correctly to same ticket. Ack delivered via Gupshup with pet name ✅</li>
+    </ul>
+    <p style="margin-top:8px; padding:8px; background:#dcfce7; border-radius:6px; font-size:0.85rem;">
+      <strong>WhatsApp pipeline: User texts TDC number → ticket auto-created in Admin Service Desk with full member + pet + allergy context → Mira sends personalised ack → Admin sees ticket, uses "Ask Mira" to draft reply → sends via WhatsApp button.</strong>
+    </p>
+  </div>
+
+  <div class="changelog-entry" style="border-left-color:#2563eb; background:#eff6ff;">
+    <div class="date" style="color:#2563eb;">Session 10b — 2026-04-06 🔵 Amazon Affiliate Fallback + NearMe + TTS Fix</div>
+    <h4>Amazon Affiliate Fallback, Universal NearMe, Mira Intent Fixes, TTS Symbol Cleaning</h4>
+    <ul>
+      <li><strong>Amazon Affiliate Fallback:</strong> When Mira Search or MiraChatWidget has no products to show, it now renders a styled "Your Concierge recommends exploring here →" button. The URL is built intelligently: <code>buildAmazonQuery(text)</code> extracts the core noun, prepends "dog ", appends affiliate tag. Clicks silently log to the Concierge service desk via <code>conciergefire()</code>. Files: <code>MiraSearchPage.jsx</code>, <code>MiraChatWidget.jsx</code>.</li>
+      <li><strong>Universal NearMe Regex:</strong> Replaced hardcoded city-list approach with <code>/\bin\s+([A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,})*)/</code> which catches any capitalised city name globally. NearMe UI is now a horizontal <code>ScrollStrip</code> with city input chips.</li>
+      <li><strong>Mira intent fix:</strong> Removed "treat" and "gift" from <code>birthday_celebration</code> intent in <code>mira_routes.py</code> to prevent query hijacking when user searches for treats in non-birthday context.</li>
+      <li><strong>Guided Path overlay fix:</strong> Readable text, scrollable chip layout, wired missing intents to the fallback modal.</li>
+      <li><strong>TTS cleaning:</strong> <code>clean_text_for_speech()</code> strips "®" before ANY text-to-speech call (Web Speech API + ElevenLabs in <code>MiraChatWidget.jsx</code>). The "®" symbol is intentionally retained in UI text for branding — only stripped at TTS layer.</li>
+      <li><strong>useMiraFilter fav food expansion:</strong> Loving "salmon" now maps to loving "fish" via <code>ALLERGEN_MAP</code>. Favourite foods expand through allergen synonyms for richer matching.</li>
+      <li><strong>City mandatory in PetSoulOnboarding:</strong> Pet onboarding now enforces city input. Backfilled 21 pets with missing city. Soul answers sync to root <code>pet.city</code>.</li>
+      <li><strong>AI Image Gen 502 fix:</strong> Long-running image generation refactored to background task + polling pattern (<code>/api/products/{id}/image-status</code>). Frontend polls every 3s to avoid Kubernetes proxy 30s timeout.</li>
+      <li><strong>Admin SoulBox restore fixed:</strong> Restore endpoint corrected to <code>/api/admin/breed-products/{id}</code>.</li>
+    </ul>
+  </div>
 
   <div class="changelog-entry" style="border-left-color:#dc2626; background:#fff5f5;">
     <div class="date" style="color:#dc2626;">Session 10 — 2026-04-06 ⚠️ LOCKED ADMIN BEHAVIOURS</div>
@@ -489,10 +524,14 @@ The silhouette is precise and recognisable as a {BREED}."</pre>
     <tr><td>GET</td><td>/api/product-box/products</td><td>Fetch products_master list (Admin)</td><td>Filters out visibility.status == 'archived'</td></tr>
     <tr><td>PUT</td><td>/api/product-box/products/{id}</td><td>Update products_master product</td><td>Admin ProductBox editor</td></tr>
     <tr><td>PATCH</td><td>/api/products/{id}/toggle-active</td><td>Toggle is_active preserving visibility</td><td>Fixed in session 5/6</td></tr>
-    <tr><td>POST</td><td>/api/admin/generate-image</td><td>AI image generation for admin</td><td>Requires Basic Auth header</td></tr>
+    <tr><td>POST</td><td>/api/admin/generate-image</td><td>AI image generation for admin</td><td>Requires Basic Auth header. Uses background task + polling to avoid 502.</td></tr>
+    <tr><td>GET</td><td>/api/products/{id}/image-status</td><td>Poll AI image generation status</td><td>Frontend polls every 3s. Returns {status, image_url}</td></tr>
     <tr><td>GET</td><td>/api/mira/claude-picks/{pet_id}</td><td>Mira AI product recommendations</td><td>Params: pillar, limit, min_score, entity_type</td></tr>
     <tr><td>GET</td><td>/api/pets</td><td>Fetch user's pets</td><td>Requires Bearer token</td></tr>
     <tr><td>POST</td><td>/api/auth/login</td><td>Login</td><td>Returns token</td></tr>
+    <tr><td>POST</td><td>/api/whatsapp/webhook</td><td>Gupshup inbound webhook</td><td>Auto-creates service_desk_ticket with member+pet enrichment. Sends Mira ack.</td></tr>
+    <tr><td>POST</td><td>/api/whatsapp/gupshup/send</td><td>Send WhatsApp via Gupshup</td><td>Accepts HTTP 202 (Gupshup success code). Used by Admin WhatsApp button.</td></tr>
+    <tr><td>GET</td><td>/api/service_desk/tickets</td><td>Admin service desk tickets</td><td>Reads from service_desk_tickets collection. WhatsApp tickets appear here.</td></tr>
   </table>
 </section>
 
@@ -558,7 +597,7 @@ print(f'Total pending generation: {pending}')
     <tr><th>Service</th><th>Usage</th><th>Key source</th><th>Status</th></tr>
     <tr><td>OpenAI (GPT-4o, gpt-image-1)</td><td>Mira AI chat, AI product descriptions, mockup image generation</td><td>Emergent LLM Key (env)</td><td class="status-done">✅ Active</td></tr>
     <tr><td>Cloudinary</td><td>Image hosting for all generated mockups</td><td>CLOUDINARY_CLOUD_NAME=duoapcx1p (backend .env)</td><td class="status-done">✅ Active</td></tr>
-    <tr><td>Gupshup</td><td>WhatsApp messaging / flat art concierge flow</td><td>User API Key (backend .env)</td><td class="status-done">✅ Active</td></tr>
+    <tr><td>Gupshup</td><td>WhatsApp inbound webhook → service desk tickets + Mira auto-ack outbound. Admin WhatsApp send button. Source: +918971702582</td><td>GUPSHUP_API_KEY + GUPSHUP_APP_NAME + GUPSHUP_SOURCE_NUMBER (backend .env)</td><td class="status-done">✅ Live — Session 11</td></tr>
     <tr><td>Razorpay</td><td>Payment processing</td><td>User API Key (backend .env)</td><td class="status-done">✅ Active</td></tr>
     <tr><td>MongoDB Atlas (Production)</td><td>Production database</td><td>MONGO_URL (backend .env)</td><td class="status-blocked">❌ BLOCKED — Atlas IP whitelist</td></tr>
   </table>
@@ -583,10 +622,9 @@ print(f'Total pending generation: {pending}')
 
   <h3>P0 — Immediately actionable</h3>
   <table>
-    <tr><th>Task</th><th>Details</th></tr>
-    <tr><td>"Mira Explains Why" expandable row</td><td>On Dine/Care/Celebrate product cards — one tap reveals soul profile reasoning (allergies + favorites matched). User explicitly approved.</td></tr>
-    <tr><td>Investigate 1 missing Play product for 12 breeds</td><td>Compare breed_products Play entries vs products_master Play entries for: Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier.</td></tr>
-    <tr><td>Verify member-facing UI after fixes</td><td>Login as Mojo (Indie). Check Dine, Celebrate, Go, Care. Confirm products from both indie + indian_pariah tags show.</td></tr>
+    <tr><th>Task</th><th>Details</th><th>Status</th></tr>
+    <tr><td>"Mira Explains Why" expandable row</td><td>Already built in ProductCard.jsx (lines 601–662). The ✦ MIRA toggle reveals soul profile reasoning. Fires when product has <code>mira_hint</code> (set by useMiraFilter.js). Verify it shows for logged-in users with pets. User explicitly approved.</td><td>✅ Built — verify visibility</td></tr>
+    <tr><td>Investigate 1 missing Play product for 12 breeds</td><td>Compare breed_products Play entries vs products_master Play entries for: Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier.</td><td>Pending</td></tr>
   </table>
 
   <h3>P1 — Next session</h3>
@@ -602,14 +640,87 @@ print(f'Total pending generation: {pending}')
   <ul>
     <li>Backend Life Stage Filtering (filter puppy/senior products for adult dogs)</li>
     <li>Build the Love pillar</li>
-    <li>WhatsApp Daily Digest cron job + medication refill reminders</li>
+    <li>WhatsApp Daily Digest cron job + medication refill reminders (Gupshup templates needed)</li>
     <li>Production DB migration (Atlas IP whitelist must be fixed first)</li>
+    <li>Watch & Learn YouTube video sections for Care and Go pillars</li>
   </ul>
 
   <h3>Refactoring (non-urgent but important)</h3>
   <ul>
     <li><code>server.py</code> — 25,000+ lines. Split into domain-specific routers.</li>
     <li><code>Admin.jsx</code> — 7,000+ lines. Heavy componentization needed.</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<section id="whatsapp">
+  <h2>WhatsApp Pipeline Architecture</h2>
+  <p>The complete WhatsApp ↔ Service Desk integration. All pieces live and tested as of Session 11.</p>
+
+  <h3>Inbound Flow (User → TDC)</h3>
+  <pre style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:8px;font-size:0.85rem;">
+User texts TDC WhatsApp (+91 89717 02582)
+  ↓
+Gupshup fires POST /api/whatsapp/webhook
+  ↓
+process_gupshup_webhook() in whatsapp_routes.py
+  ↓
+  [A] Existing open ticket found by phone?
+      YES → Append message to db.tickets
+            Check for matching service_desk_ticket:
+              Found → $push conversation message
+              Not found → CREATE new service_desk_ticket (legacy ticket case)
+  [B] No existing ticket:
+      → Look up user by phone (db.users)
+      → Get their pets (db.pets)
+      → handoff_to_spine() → creates TCK-YYYY-NNNNNN in db.tickets + service_desk_tickets
+      → Enrich service_desk_ticket: member{}, pet_profile, allergy_alert, conversation[]
+      → Patch db.tickets with member.phone for future lookups
+  ↓
+Admin notification (realtime via WebSocket)
+  ↓
+Mira auto-ack sent back via send_mira_ack() → Gupshup API</pre>
+
+  <h3>Outbound Flow (TDC → User, human-in-the-loop)</h3>
+  <pre style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:8px;font-size:0.85rem;">
+Admin opens Admin Service Desk → sees WhatsApp ticket
+  ↓
+Reads conversation, pet profile, allergy alerts
+  ↓
+Clicks "Ask Mira" button → Mira drafts reply using pet context
+  ↓
+Admin reviews, edits if needed, types in reply box
+  ↓
+Clicks WhatsApp button (green dot) → POST /api/whatsapp/gupshup/send
+  ↓
+Message delivered to user's WhatsApp via Gupshup</pre>
+
+  <h3>Gupshup Config (.env)</h3>
+  <table>
+    <tr><th>Key</th><th>Value</th></tr>
+    <tr><td>GUPSHUP_API_KEY</td><td>sk_2609497c... (backend .env)</td></tr>
+    <tr><td>GUPSHUP_APP_NAME</td><td>The Doggy Company</td></tr>
+    <tr><td>GUPSHUP_SOURCE_NUMBER</td><td>918971702582</td></tr>
+  </table>
+
+  <h3>Key file: whatsapp_routes.py</h3>
+  <ul>
+    <li><code>process_gupshup_webhook()</code> — main inbound handler (lines ~163–555)</li>
+    <li><code>send_mira_ack()</code> — personalised ack with pet name (new in Session 11)</li>
+    <li><code>send_mira_reply()</code> — low-level Gupshup send. Accepts HTTP 202 as success.</li>
+    <li><code>get_mira_ai_response()</code> — GPT-4o-mini contextual response with user/pet/order context</li>
+    <li>Webhook URL: <code>POST /api/whatsapp/webhook</code></li>
+    <li>Status check: <code>GET /api/whatsapp/status</code></li>
+  </ul>
+
+  <h3>Amazon Affiliate Fallback</h3>
+  <p>When Mira has no products in the DB to show for a query:</p>
+  <ul>
+    <li>Button text: <strong>"Your Concierge recommends exploring here →"</strong></li>
+    <li>URL builder: <code>buildAmazonQuery(text)</code> — extracts core noun, prepends "dog ", appends affiliate tag <code>tag=thedoggyco-21</code></li>
+    <li>Click silently fires <code>conciergefire()</code> → logs intent to service_desk_tickets with <code>source: "amazon_fallback"</code></li>
+    <li>Files: <code>MiraSearchPage.jsx</code> (search results), <code>MiraChatWidget.jsx</code> (chat widget)</li>
+    <li>Example: User asks "rubber duck toy for mojo" → <code>https://www.amazon.in/s?k=dog+rubber+duck+toy&tag=thedoggyco-21</code></li>
   </ul>
 </section>
 
