@@ -546,10 +546,65 @@ async def process_gupshup_webhook(body: dict):
                 })
             except Exception as notif_err:
                 logger.warning(f"[GUPSHUP] Notification failed: {notif_err}")
+            
+            # ── Mira auto-acknowledgement ──────────────────────────────────────────
+            # Send a warm, personalised ack back to the WhatsApp user immediately
+            try:
+                await send_mira_ack(from_number, content, sender_name, db)
+            except Exception as ack_err:
+                logger.warning(f"[GUPSHUP] Mira ack failed (non-critical): {ack_err}")
                 
     except Exception as e:
         logger.error(f"[GUPSHUP] Processing error: {e}")
         raise
+
+
+async def send_mira_ack(from_number: str, user_message: str, sender_name: str, db) -> None:
+    """
+    Send Mira's warm auto-acknowledgement back to the WhatsApp user.
+    Personalised with pet name if the user is a registered member.
+    Non-blocking — failures are logged but do not affect ticket creation.
+    """
+    try:
+        # Look up the member + pet for personalisation
+        phone_10 = ''.join(filter(str.isdigit, str(from_number)))[-10:]
+        found_user = await db.users.find_one(
+            {"$or": [{"phone": {"$regex": phone_10}}, {"whatsapp": {"$regex": phone_10}}]},
+            {"_id": 0, "name": 1, "parent_name": 1, "email": 1}
+        )
+        member_name = (found_user.get("name") or found_user.get("parent_name") or sender_name) if found_user else sender_name
+        
+        pet_name = None
+        if found_user and found_user.get("email"):
+            first_pet = await db.pets.find_one(
+                {"owner_email": found_user["email"]},
+                {"_id": 0, "name": 1}
+            )
+            pet_name = first_pet.get("name") if first_pet else None
+        
+        # Build a friendly, personalised ack
+        first_name = member_name.split()[0] if member_name else "there"
+        
+        if pet_name:
+            ack = (
+                f"Hi {first_name}! I'm Mira, {pet_name}'s Concierge® 🐾\n\n"
+                f"Got your message! Our Concierge team will review it and get back to you shortly.\n\n"
+                f"Is there anything specific about {pet_name} I can help you with right now?"
+            )
+        else:
+            ack = (
+                f"Hi {first_name}! I'm Mira from The Doggy Company 🐾\n\n"
+                f"Got your message! Our Concierge team will review it and get back to you shortly.\n\n"
+                f"Can I help you with anything else in the meantime?"
+            )
+        
+        result = await send_mira_reply(from_number, ack)
+        if result.get("success"):
+            logger.info(f"[MIRA-ACK] ✅ Sent ack to {phone_10[:6]}*** | pet={pet_name}")
+        else:
+            logger.warning(f"[MIRA-ACK] Failed: {result.get('error')}")
+    except Exception as e:
+        logger.error(f"[MIRA-ACK] Error: {e}")
 
 
 async def process_incoming_message(message: dict, contacts: list):
@@ -934,7 +989,7 @@ async def send_gupshup_message(message: WhatsAppMessage):
             
             result = response.json()
             
-            if response.status_code != 200 or result.get("status") == "error":
+            if response.status_code not in [200, 202] or result.get("status") == "error":
                 logger.error(f"Gupshup API error: {result}")
                 raise HTTPException(
                     status_code=response.status_code, 
