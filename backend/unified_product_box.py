@@ -1089,6 +1089,7 @@ async def delete_product(product_id: str):
 
 
 @product_box_router.patch("/{product_id}/restore")
+@product_box_router.patch("/products/{product_id}/restore")
 async def restore_product(product_id: str):
     """Restore (unarchive) a product — sets visibility.status back to active"""
     if db is None:

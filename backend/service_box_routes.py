@@ -53,7 +53,7 @@ class ServiceCreate(BaseModel):
     """Create/Update service"""
     id: Optional[str] = None
     name: str
-    pillar: str
+    pillar: Optional[str] = None   # optional on update
     description: str = ""
     
     # Booking config
@@ -298,14 +298,15 @@ async def update_service(service_id: str, service: ServiceCreate):
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
-    # Find pillar info
-    pillar_info = next((p for p in ALL_PILLARS if p["id"] == service.pillar), None)
-    pillar_name = pillar_info["name"] if pillar_info else service.pillar.title()
-    pillar_icon = pillar_info["icon"] if pillar_info else "📦"
+    # Find pillar info — preserve existing pillar if not sent
+    pillar = service.pillar or existing.get("pillar", "")
+    pillar_info = next((p for p in ALL_PILLARS if p["id"] == pillar), None)
+    pillar_name = pillar_info["name"] if pillar_info else (pillar.title() if pillar else existing.get("pillar_name", ""))
+    pillar_icon = pillar_info["icon"] if pillar_info else existing.get("pillar_icon", "📦")
     
     update_doc = {
         "name": service.name,
-        "pillar": service.pillar,
+        "pillar": pillar,
         "pillar_name": pillar_name,
         "pillar_icon": pillar_icon,
         "description": service.description,
@@ -350,18 +351,43 @@ async def update_service(service_id: str, service: ServiceCreate):
 
 @router.delete("/services/{service_id}")
 async def delete_service(service_id: str):
-    """Hard delete a service from the database"""
+    """Soft-archive a service (sets approval_status=archived, is_active=False). Use /restore to undo."""
     db = get_db()
     
     existing = await db.services_master.find_one({"id": service_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
-    await db.services_master.delete_one({"id": service_id})
+    await db.services_master.update_one(
+        {"id": service_id},
+        {"$set": {
+            "approval_status": "archived",
+            "is_active": False,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
     
-    logger.info(f"[SERVICE BOX] Deleted service: {service_id}")
-    
-    return {"success": True, "message": "Service deleted"}
+    logger.info(f"[SERVICE BOX] Archived service: {service_id}")
+    return {"success": True, "message": "Service archived"}
+
+
+@router.patch("/services/{service_id}/restore")
+async def restore_service(service_id: str):
+    """Restore an archived service back to active."""
+    db = get_db()
+    existing = await db.services_master.find_one({"id": service_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Service not found")
+    await db.services_master.update_one(
+        {"id": service_id},
+        {"$set": {
+            "approval_status": "live",
+            "is_active": True,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    logger.info(f"[SERVICE BOX] Restored service: {service_id}")
+    return {"success": True, "message": "Service restored"}
 
 
 
