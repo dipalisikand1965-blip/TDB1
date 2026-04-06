@@ -1993,7 +1993,7 @@ const MiraChatWidget = ({
               paddingBottom: '8px'
             }}
           >
-              {(messages || []).map((msg) => {
+              {(messages || []).map((msg, msgIdx) => {
                 if (!msg || !msg.id) return null;
                 // Render pillar-switch markers as centered pills
                 if (msg.isPillarSwitch || msg.role === 'system_marker') {
@@ -2341,6 +2341,49 @@ const MiraChatWidget = ({
                               </button>
                             );
                           })}
+                        </div>
+                      )}
+
+                      {/* MIRA IMAGINES — shown when no products in DB, gives Amazon fallback */}
+                      {(!msg.products || msg.products.length === 0) && !msg.streaming && msg.role === 'assistant' && msg.content && (
+                        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
+                            ✨ Mira Imagines
+                          </p>
+                          {(() => {
+                            const prevUserMsg = messages.slice(0, msgIdx).reverse().find(m => m.role === 'user')?.content || selectedPet?.name || 'dog product';
+                            return (<>
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await fetch(`${API_URL}/api/concierge/request`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                                      body: JSON.stringify({ type: 'request', note: `Widget: ${prevUserMsg}`, metadata: { source: 'widget_imagines', pet: selectedPet?.name } }),
+                                    });
+                                  } catch (_) {}
+                                }}
+                                style={{ width: '100%', padding: '7px 12px', borderRadius: 9, border: '1px solid rgba(201,151,58,0.45)', background: 'transparent', color: 'rgba(201,151,58,0.9)', fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+                              >
+                                Ask Concierge to source this →
+                              </button>
+                              <a
+                                onClick={() => {
+                                  try {
+                                    fetch(`${API_URL}/api/concierge/request`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                                      body: JSON.stringify({ type: 'request', note: `Amazon click (widget): ${prevUserMsg}`, metadata: { source: 'amazon_click_widget', query: prevUserMsg } }),
+                                    });
+                                  } catch (_) {}
+                                  window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(prevUserMsg)}&tag=thedoggyco-21`, '_blank');
+                                }}
+                                style={{ fontSize: 12, color: '#FF9900', fontWeight: 600, textDecoration: 'none', cursor: 'pointer', display: 'block' }}
+                              >
+                                Search Amazon →
+                              </a>
+                            </>);
+                          })()}
                         </div>
                       )}
 
