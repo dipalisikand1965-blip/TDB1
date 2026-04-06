@@ -203,6 +203,18 @@ const PILLAR_PATHS = [
   '/mira', '/admin',
 ];
 
+// ── Amazon query cleaner — strips pet names, filler, leaves core product noun ──
+function buildAmazonQuery(rawQuery, petName = '') {
+  let q = rawQuery || '';
+  if (petName) q = q.replace(new RegExp(petName, 'gi'), '');
+  q = q
+    .replace(/\b(i want|i need|find me|get me|show me|looking for|can you find|please|help me find|what about|is there|do you have|do you sell|where can i get|where can i find|wants?|needs?|loves?|would like|my dog|my pet|my pup|my puppy|for my|for him|for her|for them|a good|the best|some|any)\b/gi, ' ')
+    .replace(/\b(a|an|the|for|of|with|in|on|at|to|and|or|but|my|your|his|her|their|our)\b/gi, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return q || rawQuery;
+}
+
 const MiraChatWidget = ({ 
   pillar: pillarProp = 'general',
   onProductClick = null,
@@ -976,41 +988,36 @@ const MiraChatWidget = ({
     setIsSpeaking(false);
     synthRef.current?.cancel();
 
-    // Try ElevenLabs first for premium voice
-    if (useElevenLabs) {
-      // 100ms gap: lets iOS audio context fully release the previous stream before starting next
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const success = await speakWithElevenLabs(text);
-      if (success) return;
-    }
-    
-    // Fallback to Web Speech API
-    if (!synthRef.current) return;
-    
-    // Cancel any ongoing speech
-    synthRef.current.cancel();
-    
-    // Clean text for speech
+    // ── Clean text for ALL speech paths (ElevenLabs + Web Speech) ─────────
     let cleanText = text
       .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋]/g, '')
       .replace(/\*\*/g, '')
       .replace(/[*#_~`]/g, '')
       .replace(/\[.*?\]/g, '')
+      .replace(/®/g, '')          // ← strip registered trademark symbol before any TTS
+      .replace(/™/g, '')
       .replace(/\n/g, ' ')
       .substring(0, 500);
-    
-    // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
-    
-    // Fix "concierge" pronunciation - "con-see-erzh" for better TTS
     cleanText = cleanText
-      .replace(/pet concierge®?/gi, 'pet con-see-erzh')
+      .replace(/pet concierge/gi, 'pet con-see-erzh')
       .replace(/soul mate/gi, 'soul-mate')
-      .replace(/your concierge®?/gi, 'your con-see-erzh')
-      .replace(/our concierge®?/gi, 'our con-see-erzh')
-      .replace(/the concierge®?/gi, 'the con-see-erzh')
-      .replace(/concierge®? team/gi, 'con-see-erzh team')
-      .replace(/\bconcierge®?\b/gi, 'con-see-erzh');
+      .replace(/your concierge/gi, 'your con-see-erzh')
+      .replace(/our concierge/gi, 'our con-see-erzh')
+      .replace(/the concierge/gi, 'the con-see-erzh')
+      .replace(/concierge team/gi, 'con-see-erzh team')
+      .replace(/\bconcierge\b/gi, 'con-see-erzh');
+
+    // Try ElevenLabs first for premium voice
+    if (useElevenLabs) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const success = await speakWithElevenLabs(cleanText);  // ← pass cleaned text
+      if (success) return;
+    }
+    
+    // Fallback to Web Speech API
+    if (!synthRef.current) return;
+    synthRef.current.cancel();
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.volume = 1.0;
@@ -1993,7 +2000,7 @@ const MiraChatWidget = ({
               paddingBottom: '8px'
             }}
           >
-              {(messages || []).map((msg) => {
+              {(messages || []).map((msg, msgIdx) => {
                 if (!msg || !msg.id) return null;
                 // Render pillar-switch markers as centered pills
                 if (msg.isPillarSwitch || msg.role === 'system_marker') {
@@ -2341,6 +2348,53 @@ const MiraChatWidget = ({
                               </button>
                             );
                           })}
+                        </div>
+                      )}
+
+                      {/* MIRA IMAGINES — always shown on assistant messages: Concierge CTA + Amazon fallback */}
+                      {!msg.streaming && msg.role === 'assistant' && msg.content && (
+                        <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {(!msg.products || msg.products.length === 0) && (
+                            <p style={{ fontSize: 10, fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
+                              ✨ Mira Imagines
+                            </p>
+                          )}
+                          {(() => {
+                            const prevUserMsg = messages.slice(0, msgIdx).reverse().find(m => m.role === 'user')?.content || selectedPet?.name || 'dog product';
+                            return (<>
+                              {(!msg.products || msg.products.length === 0) && (
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await fetch(`${API_URL}/api/concierge/request`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                                        body: JSON.stringify({ type: 'request', note: `Widget: ${prevUserMsg}`, metadata: { source: 'widget_imagines', pet: selectedPet?.name } }),
+                                      });
+                                    } catch (_) {}
+                                  }}
+                                  style={{ width: '100%', padding: '7px 12px', borderRadius: 9, border: '1px solid rgba(201,151,58,0.45)', background: 'transparent', color: 'rgba(201,151,58,0.9)', fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}
+                                >
+                                  Ask Concierge to source this →
+                                </button>
+                              )}
+                              <a
+                                onClick={() => {
+                                  try {
+                                    fetch(`${API_URL}/api/concierge/request`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                                      body: JSON.stringify({ type: 'request', note: `Amazon click (widget): ${prevUserMsg}`, metadata: { source: 'amazon_click_widget', query: prevUserMsg } }),
+                                    });
+                                  } catch (_) {}
+                                  window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(prevUserMsg, selectedPet?.name))}&tag=thedoggyco-21`, '_blank');
+                                }}
+                                style={{ fontSize: 13, color: '#FF9900', fontWeight: 700, textDecoration: 'none', cursor: 'pointer', display: 'block', padding: '8px 12px', border: '1.5px solid #FF990044', borderRadius: 10, textAlign: 'center', background: '#FF990008', letterSpacing: '0.01em' }}
+                              >
+                                Your Concierge recommends exploring here →
+                              </a>
+                            </>);
+                          })()}
                         </div>
                       )}
 
