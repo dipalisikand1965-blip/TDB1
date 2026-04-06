@@ -2389,9 +2389,9 @@ const MiraChatWidget = ({
                                   } catch (_) {}
                                   window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(prevUserMsg, selectedPet?.name))}&tag=thedoggyco-21`, '_blank');
                                 }}
-                                style={{ fontSize: 11, color: '#FF9900', fontWeight: 600, textDecoration: 'none', cursor: 'pointer', display: 'block', opacity: 0.85 }}
+                                style={{ fontSize: 13, color: '#FF9900', fontWeight: 700, textDecoration: 'none', cursor: 'pointer', display: 'block', padding: '8px 12px', border: '1.5px solid #FF990044', borderRadius: 10, textAlign: 'center', background: '#FF990008', letterSpacing: '0.01em' }}
                               >
-                                Can't find it? Search Amazon →
+                                Your Concierge recommends exploring here →
                               </a>
                             </>);
                           })()}
