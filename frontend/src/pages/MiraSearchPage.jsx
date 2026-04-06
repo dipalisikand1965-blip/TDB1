@@ -120,16 +120,39 @@ function ScrollStrip({ children, gap = 12 }) {
 
 // ── Pet selector chip ──────────────────────────────────────────────────────
 // ── Streaming text renderer ────────────────────────────────────────────────
+function renderMarkdown(text) {
+  const lines = text.split('\n');
+  return lines.map((line, li) => {
+    const segments = [];
+    let remaining = line;
+    let key = 0;
+    while (remaining.length > 0) {
+      const boldIdx = remaining.indexOf('**');
+      if (boldIdx === -1) { segments.push(remaining); break; }
+      if (boldIdx > 0) segments.push(remaining.slice(0, boldIdx));
+      const closeIdx = remaining.indexOf('**', boldIdx + 2);
+      if (closeIdx === -1) { segments.push(remaining.slice(boldIdx)); break; }
+      segments.push(<strong key={key++} style={{ color: C.ivory, fontWeight: 700 }}>{remaining.slice(boldIdx + 2, closeIdx)}</strong>);
+      remaining = remaining.slice(closeIdx + 2);
+    }
+    return (
+      <span key={li}>
+        {li > 0 && <br />}
+        {segments}
+      </span>
+    );
+  });
+}
+
 function StreamingText({ text, streaming }) {
   if (!text) return null;
   return (
     <div style={{
       fontFamily: 'DM Sans, sans-serif',
       fontSize: 15, lineHeight: 1.75,
-      color: C.text, whiteSpace: 'pre-wrap',
-      wordBreak: 'break-word',
+      color: C.text, wordBreak: 'break-word',
     }}>
-      {text}
+      {renderMarkdown(text)}
       {streaming && (
         <span style={{
           display: 'inline-block', width: 2, height: '1em',
