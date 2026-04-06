@@ -148,7 +148,58 @@ const extractSoulTraits = (pet) => {
   )];
 };
 
-// ── Category → API mapping ────────────────────────────────────────────────
+// Breeds WITHOUT a TDB face cake — Custom Birthday Cake goes first for these
+const BREEDS_WITHOUT_TDB_CAKE = new Set([
+  'bernese_mountain', 'boston_terrier', 'corgi', 'havanese',
+  'maltipoo', 'samoyed', 'vizsla', 'weimaraner', 'indian_spitz', 'labradoodle',
+]);
+
+// Breed aliases for TDB lookup (siberian_husky → husky, indian_pariah → indie, etc.)
+const TDB_BREED_ALIASES = {
+  'siberian_husky': 'husky',
+  'indian_pariah':  'indie',
+  'greyhound':      'greyhound', // Italian Greyhound covers greyhound
+};
+
+// Sort birthday cakes: TDB breed face cake (exact) → TDB (secondary) → Custom → rest
+function sortBirthdayCakesForBreed(products, pet) {
+  const breedSlug    = (pet?.breed || '').toLowerCase().trim().replace(/\s+/g, '_');
+  const lookupBreed  = TDB_BREED_ALIASES[breedSlug] || breedSlug;
+  const hasTdbCake   = !BREEDS_WITHOUT_TDB_CAKE.has(breedSlug);
+  const lookupNormal = lookupBreed.replace(/_/g, ' ');
+
+  return [...products].sort((a, b) => {
+    const isTdbAny = (p) => {
+      if (!(p.id || '').startsWith('shopify-')) return false;
+      if (p.category !== 'breed-cakes') return false;
+      const tags = (p.breed_tags || []).map(t => t.toLowerCase());
+      return (
+        tags.includes(lookupBreed) || tags.includes(lookupNormal) ||
+        (p.name || '').toLowerCase().includes(lookupNormal)
+      );
+    };
+    const isTdbExact = (p) => {
+      if (!isTdbAny(p)) return false;
+      const tags = (p.breed_tags || []).map(t => t.toLowerCase());
+      const firstName = tags[0] || '';
+      // Primary tag or name matches the breed exactly
+      return (
+        firstName === lookupBreed || firstName === lookupNormal ||
+        (p.name || '').toLowerCase() === lookupNormal
+      );
+    };
+    const isCustom = (p) => p.id === 'seed-celebrate-ffe651ae';
+
+    // rank 0 = exact TDB breed cake, 1 = secondary TDB, 2 = Custom (after TDB), 3 = rest
+    const rank = (p) => {
+      if (isTdbExact(p)) return 0;
+      if (isTdbAny(p))   return 1;
+      if (isCustom(p))   return hasTdbCake ? 2 : 0;
+      return 3;
+    };
+    return rank(a) - rank(b);
+  });
+}
 // `cakes` = actual TDB bakery cakes (111 products)
 // `celebration` = celebration kits/packages (NOT cakes — don't use for Birthday Cakes)
 const CATEGORY_API = {
@@ -1424,8 +1475,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
       // ── Normal categories ─────────────────────────────────────────────
       const apis = CATEGORY_API[category] || [];
       let allProducts = [];
-      // For multi-source categories, fetch all endpoints; for single source, break on first success
-      const fetchAll = ['party'].includes(category);
+      // birthday-cakes fetches ALL sources (cakes + breed-cakes must both load)
+      const fetchAll = ['party', 'birthday-cakes', 'miras-picks'].includes(category);
       for (const api of apis) {
         const r = await fetch(`${apiUrl}${api.url}`);
         if (r.ok) {
@@ -1456,6 +1507,11 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
       // Apply Mira allergen filter — removes chicken/beef items for allergic pets
       const { applyMiraFilter } = await import('../../hooks/useMiraFilter');
       allProducts = applyMiraFilter(allProducts, pet);
+
+      // For birthday-cakes: sort TDB breed face cake first, then Custom, then rest
+      if (['birthday-cakes', 'breed-cakes', 'miras-picks'].includes(category)) {
+        allProducts = sortBirthdayCakesForBreed(allProducts, pet);
+      }
 
       setProducts(allProducts);
 
@@ -1511,7 +1567,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
       ? base.filter(p => (p.tags || []).some(t => String(t).toLowerCase() === shapeFilter.toLowerCase()))
       : base;
     // For cake categories AND party accessories, sort pet's breed to the top
-    if (['birthday-cakes', 'breed-cakes', 'party', 'party_accessories'].includes(category) && pet?.breed) {
+    // (birthday-cakes uses sortBirthdayCakesForBreed in fetchData — don't re-sort here)
+    if (['party', 'party_accessories'].includes(category) && pet?.breed) {
       const petBreed = (pet.breed || '').toLowerCase().replace(/[_\s]+/g, ' ');
       return [...shaped].sort((a, b) => {
         const aMatch = ((a.name || '') + ' ' + (a.title || '') + ' ' + (a.breed_tags || []).join(' ')).toLowerCase().includes(petBreed) ? 0 : 1;
