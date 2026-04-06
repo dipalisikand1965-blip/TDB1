@@ -466,7 +466,15 @@ export function applyMiraFilter(products, pet) {
       const freeFrom = (product.allergy_free || '').toLowerCase();
 
       // ── Core signals ──────────────────────────────────────────────────────
-      const matchedLove = loves.find(l => productText.includes(l));
+      // Love match: direct OR via food-family synonym
+      // e.g. Mercury loves 'salmon' → a product named 'fish' should also match
+      // because ALLERGEN_MAP groups: fish → ['fish','salmon','tuna','cod','anchovy']
+      const matchedLove = loves.find(l => {
+        if (productText.includes(l)) return true;
+        // Expand via food-family (reuse ALLERGEN_MAP synonym groups)
+        const family = Object.values(ALLERGEN_MAP).find(syns => syns.includes(l));
+        return family ? family.some(syn => productText.includes(syn)) : false;
+      });
 
       const isHealthSafe = !!(healthCond && (
         productText.includes('treatment-safe') ||
