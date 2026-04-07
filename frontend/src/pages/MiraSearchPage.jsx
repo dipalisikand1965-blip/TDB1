@@ -462,12 +462,33 @@ export default function MiraSearchPage() {
     'i'
   );
   const PLACE_TYPE_MAP = [
-    [/grooming|groomer|groom|bath|spa|trim|nail/i, 'groomer'],
-    [/\bvet\b|veterinar|checkup|vaccine|doctor|clinic/i, 'vet'],
-    [/training|trainer|obedien|puppy class|agility/i, 'trainer'],
-    [/boarding|daycare|day.?care|kennel|pet hotel/i, 'daycare'],
-    [/park|walk|hike|outdoor|trail|dog park/i, 'park'],
+    // Care providers → /api/places/care-providers
+    [/grooming|groomer|groom|bath|spa|trim|nail/i,              'groomer'],
+    [/\bvet\b|veterinar|checkup|vaccine|doctor|clinic/i,        'vet'],
+    [/training|trainer|obedien|puppy class|agility/i,           'trainer'],
+    [/boarding|daycare|day.?care|kennel/i,                      'daycare'],
+    [/pet store|pet shop|pet supplies|petstore/i,               'petstore'],
+    [/shelter|rescue|adopt|adoption centre/i,                   'shelter'],
+    [/cremation|funeral|memorial|rainbow bridge|farewell/i,     'cremation'],
+    // Pet-friendly stays → /api/places/pet-friendly
+    [/hotel|resort|homestay|airbnb|stay|staycation/i,           'hotel'],
+    [/camping|campsite|camp/i,                                  'camping'],
+    // Play spots → /api/places/play-spots
+    [/park|dog park|walk|hike|trail|outdoor/i,                  'park'],
+    [/beach|waterfront|lake/i,                                  'beach'],
+    [/\bnature\b|forest|jungle|woods/i,                         'nature'],
+    // Pet-friendly dining → /api/places/pet-friendly
+    [/cafe|coffee|restaurant|eat|dine|food|bistro/i,            'cafe'],
   ];
+
+  // Map place type to the correct backend endpoint
+  const PLACE_ENDPOINT_MAP = {
+    groomer: 'care-providers', vet: 'care-providers', trainer: 'care-providers',
+    daycare: 'care-providers', petstore: 'care-providers', shelter: 'care-providers',
+    cremation: 'care-providers',
+    hotel: 'pet-friendly', camping: 'pet-friendly', cafe: 'pet-friendly',
+    park: 'play-spots', beach: 'play-spots', nature: 'play-spots',
+  };
 
   const inputRef = useRef(null);
   const followUpRef = useRef(null);
@@ -650,12 +671,13 @@ export default function MiraSearchPage() {
       // ── Near-me: fetch Google Places inline if query contains "near me" ───
       if (NEAR_ME_RE.test(q)) {
         const placeType = (PLACE_TYPE_MAP.find(([re]) => re.test(q)) || [])[1] || 'all';
+        const endpoint = PLACE_ENDPOINT_MAP[placeType] || 'care-providers';
         navigator.geolocation?.getCurrentPosition(
           async (pos) => {
             try {
               const { latitude: lat, longitude: lng } = pos.coords;
               const res = await fetch(
-                `${getApiUrl()}/api/places/care-providers?lat=${lat}&lng=${lng}&type=${placeType}&radius=5000`,
+                `${getApiUrl()}/api/places/${endpoint}?lat=${lat}&lng=${lng}&type=${placeType}&radius=5000`,
                 { headers: token ? { Authorization: `Bearer ${token}` } : {} }
               );
               const data = res.ok ? await res.json() : null;
@@ -973,7 +995,7 @@ export default function MiraSearchPage() {
                   patchTurn(turn.id, { needsCity: false, showCityInput: false });
                   try {
                     const res = await fetch(
-                      `${getApiUrl()}/api/places/care-providers?city=${encodeURIComponent(city)}&type=${turn.placeType || 'all'}`,
+                      `${getApiUrl()}/api/places/${PLACE_ENDPOINT_MAP[turn.placeType] || 'care-providers'}?city=${encodeURIComponent(city)}&type=${turn.placeType || 'all'}`,
                       { headers: token ? { Authorization: `Bearer ${token}` } : {} }
                     );
                     const d = res.ok ? await res.json() : null;
