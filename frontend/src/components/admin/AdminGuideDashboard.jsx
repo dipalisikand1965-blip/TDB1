@@ -77,7 +77,10 @@ const AdminGuideDashboard = () => {
         method: 'POST',
         headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
       });
-      const data = await res.json();
+      // Use text() first to avoid "body stream already read" errors on slow responses
+      const text = await res.text();
+      let data = {};
+      try { data = JSON.parse(text); } catch { data = { status: 'error', errors: [text || 'Empty response'] }; }
       if (data.status?.startsWith('complete')) {
         // Build per-collection breakdown
         const cols = data.collections || {};
