@@ -166,20 +166,22 @@ function StreamingText({ text, streaming }) {
 }
 
 
-// ── Amazon query cleaner — strips pet names, filler, leaves core product noun ──
-// "Mojo wants a bath tub" → "bath tub"
-// "find me salmon treats for my dog" → "salmon treats"
+// ── Amazon query cleaner — strips ALL TDC pet names + filler ──
 function buildAmazonQuery(rawQuery, petName = '') {
   let q = rawQuery || '';
-  // Strip pet name (case-insensitive)
-  if (petName) q = q.replace(new RegExp(petName, 'gi'), '');
+  // Strip ALL known TDC pet names (hardcoded + active pet)
+  const petNames = ['mojo','mahi','meister','mercury','bruno','buddy','coco','mystique','chang','mynx','miracle','mars','moon','mia','magica','maya','max'];
+  if (petName) petNames.push(petName.toLowerCase());
+  petNames.forEach(name => {
+    q = q.replace(new RegExp(`\\b${name}\\b`, 'gi'), '');
+  });
   // Strip conversational filler
   q = q
     .replace(/\b(i want|i need|find me|get me|show me|looking for|can you find|please|help me find|what about|is there|do you have|do you sell|where can i get|where can i find|wants?|needs?|loves?|would like|my dog|my pet|my pup|my puppy|for my|for him|for her|for them|a good|the best|some|any)\b/gi, ' ')
     .replace(/\b(a|an|the|for|of|with|in|on|at|to|and|or|but|my|your|his|her|their|our)\b/gi, ' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
-  return q || rawQuery; // fallback to original if stripping left nothing
+  return q || rawQuery;
 }
 
 // ── ImagineChip ── "Mira Imagines" chip ──────────────────────────────────────
