@@ -1253,21 +1253,21 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                     order_summary = [f"Order #{o.get('order_id', 'N/A')[:8]} - ₹{o.get('total', 0)}" for o in orders]
                     context_parts.append(f"Recent orders: {', '.join(order_summary)}")
                 
-                # Get recent conversation/tickets
-                recent_tickets = await db.tickets.find({
+                # Get recent conversation/tickets from correct collection
+                recent_tickets = await db.service_desk_tickets.find({
                     "$or": [
                         {"member.email": user_email},
                         {"member.phone": {"$regex": phone_clean}}
                     ]
-                }).sort("created_at", -1).limit(2).to_list(2)
+                }).sort("created_at", -1).limit(3).to_list(3)
                 
                 if recent_tickets:
                     ticket_summary = []
                     for t in recent_tickets:
-                        subject = t.get("subject", t.get("description", ""))[:50]
+                        subject = t.get("subject", t.get("description", t.get("pillar", "")))[:50]
                         status = t.get("status", "open")
-                        ticket_summary.append(f"{subject}... ({status})")
-                    context_parts.append(f"Recent requests: {'; '.join(ticket_summary)}")
+                        ticket_summary.append(f"{subject} ({status})")
+                    context_parts.append(f"Recent service requests: {'; '.join(ticket_summary)}")
                     
         except Exception as ctx_err:
             logger.warning(f"[MIRA-AI] Context fetch error: {ctx_err}")
@@ -1294,6 +1294,12 @@ Your personality:
 - PERSONALIZE responses using the user context provided
 - If you know their pet's name, use it!
 - Reference their membership tier benefits when relevant
+
+CRITICAL RULES:
+- This user has DOGS as pets. All product/service recommendations are FOR THEIR DOGS.
+- If a user mentions an animal (rabbit, cat, squirrel, duck etc.), assume it is a TOY in that shape for their dog — NOT a live pet they own. E.g. "baby rabbit toy" = rabbit-shaped chew toy for their dog.
+- NEVER assume the user has a different pet species unless they explicitly say "I have a rabbit" or "I got a new cat".
+- Always recommend dog-specific products and services.
 
 You can help with:
 - 14 Life Pillars: Celebrate, Dine, Stay, Travel, Care, Enjoy, Play, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt
