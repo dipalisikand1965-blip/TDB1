@@ -24,6 +24,8 @@ import DoggyBakeryCakeModal from '../components/celebrate/DoggyBakeryCakeModal';
 import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
 import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import GuidedCelebrationPaths from '../components/celebrate/GuidedCelebrationPaths';
+import Navbar from '../components/Navbar';
+import { usePillarContext } from '../context/PillarContext';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -117,51 +119,40 @@ function ScrollStrip({ children, gap = 12 }) {
 
 
 // ── Pet selector chip ──────────────────────────────────────────────────────
-function PetChip({ pet, active, onClick }) {
-  const score = Math.round(pet?.overall_score || 0);
-  const img = pet?.photo_url || pet?.profile_image;
-  return (
-    <button onClick={onClick} style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '6px 12px 6px 6px', borderRadius: 999,
-      border: `1.5px solid ${active ? C.amber : C.border}`,
-      background: active ? 'rgba(201,151,58,0.1)' : C.card,
-      cursor: 'pointer', transition: 'all 0.18s',
-    }}>
-      <div style={{
-        width: 28, height: 28, borderRadius: '50%',
-        overflow: 'hidden', flexShrink: 0,
-        background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {img
-          ? <img src={img} alt={pet.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          : <span style={{ fontSize: 12 }}>🐾</span>}
-      </div>
-      <span style={{ fontSize: 13, fontWeight: 600, color: active ? C.amber : C.text, fontFamily: 'DM Sans, sans-serif' }}>
-        {pet?.name}
+// ── Streaming text renderer ────────────────────────────────────────────────
+function renderMarkdown(text) {
+  const lines = text.split('\n');
+  return lines.map((line, li) => {
+    const segments = [];
+    let remaining = line;
+    let key = 0;
+    while (remaining.length > 0) {
+      const boldIdx = remaining.indexOf('**');
+      if (boldIdx === -1) { segments.push(remaining); break; }
+      if (boldIdx > 0) segments.push(remaining.slice(0, boldIdx));
+      const closeIdx = remaining.indexOf('**', boldIdx + 2);
+      if (closeIdx === -1) { segments.push(remaining.slice(boldIdx)); break; }
+      segments.push(<strong key={key++} style={{ color: C.ivory, fontWeight: 700 }}>{remaining.slice(boldIdx + 2, closeIdx)}</strong>);
+      remaining = remaining.slice(closeIdx + 2);
+    }
+    return (
+      <span key={li}>
+        {li > 0 && <br />}
+        {segments}
       </span>
-      <span style={{
-        fontSize: 11, fontWeight: 700,
-        color: soulColor(score), fontFamily: 'DM Sans, sans-serif',
-      }}>
-        {score}%
-      </span>
-    </button>
-  );
+    );
+  });
 }
 
-// ── Streaming text renderer ────────────────────────────────────────────────
 function StreamingText({ text, streaming }) {
   if (!text) return null;
   return (
     <div style={{
       fontFamily: 'DM Sans, sans-serif',
       fontSize: 15, lineHeight: 1.75,
-      color: C.text, whiteSpace: 'pre-wrap',
-      wordBreak: 'break-word',
+      color: C.text, wordBreak: 'break-word',
     }}>
-      {text}
+      {renderMarkdown(text)}
       {streaming && (
         <span style={{
           display: 'inline-block', width: 2, height: '1em',
@@ -175,20 +166,22 @@ function StreamingText({ text, streaming }) {
 }
 
 
-// ── Amazon query cleaner — strips pet names, filler, leaves core product noun ──
-// "Mojo wants a bath tub" → "bath tub"
-// "find me salmon treats for my dog" → "salmon treats"
+// ── Amazon query cleaner — strips ALL TDC pet names + filler ──
 function buildAmazonQuery(rawQuery, petName = '') {
   let q = rawQuery || '';
-  // Strip pet name (case-insensitive)
-  if (petName) q = q.replace(new RegExp(petName, 'gi'), '');
+  // Strip ALL known TDC pet names (hardcoded + active pet)
+  const petNames = ['mojo','mahi','meister','mercury','bruno','buddy','coco','mystique','chang','mynx','miracle','mars','moon','mia','magica','maya','max'];
+  if (petName) petNames.push(petName.toLowerCase());
+  petNames.forEach(name => {
+    q = q.replace(new RegExp(`\\b${name}\\b`, 'gi'), '');
+  });
   // Strip conversational filler
   q = q
     .replace(/\b(i want|i need|find me|get me|show me|looking for|can you find|please|help me find|what about|is there|do you have|do you sell|where can i get|where can i find|wants?|needs?|loves?|would like|my dog|my pet|my pup|my puppy|for my|for him|for her|for them|a good|the best|some|any)\b/gi, ' ')
     .replace(/\b(a|an|the|for|of|with|in|on|at|to|and|or|but|my|your|his|her|their|our)\b/gi, ' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
-  return q || rawQuery; // fallback to original if stripping left nothing
+  return q || rawQuery;
 }
 
 // ── ImagineChip ── "Mira Imagines" chip ──────────────────────────────────────
@@ -368,8 +361,7 @@ export default function MiraSearchPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const [pets, setPets] = useState([]);
-  const [activePet, setActivePet] = useState(null);
+  const { currentPet: activePet, pets } = usePillarContext();
   const [query, setQuery] = useState('');
   const [followUp, setFollowUp] = useState('');
   // turns = [{ id, query, response, products, services, streaming }]
@@ -488,21 +480,6 @@ export default function MiraSearchPage() {
       navigate('/login?redirect=/mira-search');
     }
   }, [user, token, navigate]);
-
-  // ── Load pets ─────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!token) return;
-    fetch(`${getApiUrl()}/api/pets`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(r => r.ok ? r.json() : [])
-      .then(data => {
-        const list = Array.isArray(data) ? data : (data.pets || []);
-        setPets(list);
-        setActivePet(list[0] || null);
-      })
-      .catch(() => {});
-  }, [token]);
 
   // ── Focus input on mount ──────────────────────────────────────────────────
   useEffect(() => {
@@ -718,13 +695,14 @@ export default function MiraSearchPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={{
-      minHeight: '100dvh', background: C.night,
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center',
-      fontFamily: 'DM Sans, sans-serif',
-      padding: '0 16px 120px',
-    }}>
+    <div style={{ minHeight: 'calc(100dvh - 140px)', background: C.night, fontFamily: 'DM Sans, sans-serif' }}>
+      <Navbar />
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center',
+        padding: '0 16px 120px',
+        minHeight: 'calc(100dvh - 140px)',
+      }}>
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
@@ -736,71 +714,6 @@ export default function MiraSearchPage() {
         .ms-scroll-wrap:hover .ms-scroll-arrow { opacity:1; pointer-events:all; }
         @media (max-width: 640px) { .ms-scroll-arrow { display:none !important; } }
       `}</style>
-
-      {/* ── Top bar ── */}
-      <div style={{
-        width: '100%', maxWidth: 720,
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '20px 0 24px',
-        borderBottom: `1px solid ${C.border}`,
-        marginBottom: 28,
-      }}>
-        {/* Mira wordmark */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%',
-            background: 'linear-gradient(135deg,#7C3AED,#EC4899)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Sparkles size={16} color="#fff" />
-          </div>
-          <span style={{ fontSize: 17, fontWeight: 700, color: C.ivory, letterSpacing: '-0.02em' }}>Mira</span>
-        </div>
-
-        {/* Pet selector + cart icon */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          {pets.slice(0, 4).map(pet => (
-            <PetChip
-              key={pet.id || pet._id}
-              pet={pet}
-              active={activePet?.id === pet.id || activePet?._id === pet._id}
-              onClick={() => setActivePet(pet)}
-            />
-          ))}
-          {/* My Requests */}
-          <button
-            onClick={() => navigate('/my-requests')}
-            data-testid="mira-search-my-requests"
-            title="My Requests"
-            style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: C.card, border: `1.5px solid ${C.border}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'border-color 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = C.purpleL}
-            onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
-          >
-            <Inbox size={16} color={C.purpleL} />
-          </button>
-          {/* Cart icon */}
-          <button
-            onClick={() => setCartOpen(true)}
-            data-testid="mira-search-cart"
-            style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: C.card, border: `1.5px solid ${C.border}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'border-color 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = C.amber}
-            onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
-          >
-            <ShoppingCart size={16} color={C.amber} />
-          </button>
-        </div>
-      </div>
 
       {/* ── Soul nudge ── */}
       {activePet && <div style={{ width: '100%', maxWidth: 720 }}>
@@ -1145,7 +1058,7 @@ export default function MiraSearchPage() {
             )}
 
             {/* Step 3 — Mira Imagines strip: same layout as real products ── */}
-            {turn.showImagines && !turn.streaming && activePet && (
+            {!turn.streaming && turn.response && activePet && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
                   Mira imagines for {petName}
@@ -1174,6 +1087,30 @@ export default function MiraSearchPage() {
                     />
                   ))}
                 </ScrollStrip>
+              </div>
+            )}
+
+            {/* Always show one Mira Imagines card — "want more?" */}
+            {!turn.streaming && turn.response && activePet && (
+              <div style={{ marginTop: 8 }}>
+                <ImagineChip
+                  petName={activePet?.name}
+                  query={turn.query}
+                  idx={99}
+                  onConcierge={() => {
+                    conciergefire({
+                      type: 'request',
+                      note: `Mira imagines more for ${activePet?.name}: ${turn.query}`,
+                      silent: true,
+                      metadata: { source: 'mira_search_imagines', query: turn.query }
+                    });
+                    toast.success(`Sent to Concierge! 📥`);
+                  }}
+                  onAmazonClick={() => {
+                    conciergefire({ type: 'request', note: `Amazon: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } });
+                    window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(turn.query, activePet?.name))}&tag=thedoggyco-21`, '_blank');
+                  }}
+                />
               </div>
             )}
 
@@ -1384,6 +1321,7 @@ export default function MiraSearchPage() {
         toastOptions={{ style: { marginBottom: 80 } }}
         richColors
       />
+      </div>
     </div>
   );
 }
