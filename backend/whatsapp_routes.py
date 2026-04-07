@@ -1200,13 +1200,16 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     Falls back to pattern matching if AI fails.
     """
     import os
-    from database import get_db
+    from motor.motor_asyncio import AsyncIOMotorClient
     
     # Build user context
     context_parts = []
-    db = get_db()
+    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+    db_name = os.environ.get("DB_NAME", "test_database")
+    _client = AsyncIOMotorClient(mongo_url)
+    db = _client[db_name]
     
-    if db and user_phone:
+    if db is not None and user_phone:
         try:
             # Clean phone for lookup
             phone_clean = ''.join(filter(str.isdigit, str(user_phone)))
