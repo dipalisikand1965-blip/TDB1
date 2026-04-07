@@ -55,7 +55,24 @@
 
 ---
 
-## 🔴 P0 — Must complete before deployment (2026-03-26)
+## 🔴 P0 — IMMEDIATE (Must do next)
+
+### 1. WhatsApp Mira Intelligence Upgrade
+**Plan:** `/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md`  
+- Wire semantic search (9,355 products) into WhatsApp Mira response
+- Load full pet soul profile (allergies, breed traits, favorites)
+- GPT replies with real product names, prices, allergen awareness
+- **Trigger:** After current redeploy verified working
+- **Risk:** Zero — isolated to `get_mira_ai_response()` in `whatsapp_routes.py`
+
+### 2. 2nd Redeploy (already code-ready — waiting for deploy)
+- ProductCard `media.primary_image` image fix (Anxiety Relief Vest + others)
+- WhatsApp prompt fixes (dog context + correct tickets collection)
+- LearnNearMe suggestion handler fixes
+
+---
+
+## 🟠 P1 — Complete this week (Mobile Parity)
 
 ### 1. Services Import (Waiting for user confirmation)
 - 46 services in old `services` collection (OLD pillar names) — NOT in services_master
