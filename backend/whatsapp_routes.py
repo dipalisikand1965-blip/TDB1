@@ -989,7 +989,7 @@ async def send_gupshup_message(message: WhatsAppMessage):
             
             result = response.json()
             
-            if response.status_code not in [200, 202] or result.get("status") == "error":
+            if response.status_code not in [200, 202] or result.get("status") not in ["success", "submitted"]:
                 logger.error(f"Gupshup API error: {result}")
                 raise HTTPException(
                     status_code=response.status_code, 
