@@ -247,15 +247,18 @@ const isBadCloudinaryImage = (url) => {
 };
 
 // ─── ONE shared image resolver — card thumbnail AND all modals use this ───────
-// Priority: watercolor_image → cloudinary_url → mockup_url → primary_image → image_url → cloudinary_image_url (safe original) → image (cloudinary/shopify only)
+// Priority: watercolor_image → cloudinary_url → mockup_url → media.primary_image → primary_image → image_url → cloudinary_image_url → images[0] → image
 const getProductImage = (p) => {
   const candidates = [
     p.watercolor_image,
     p.cloudinary_url,
     p.mockup_url,
+    p.media?.primary_image,                          // ← stored by Admin editor
+    p.media?.images?.[0],                            // ← media images array
     p.primary_image,
     p.image_url,
     p.cloudinary_image_url,  // Shopify-synced original — safe fallback when AI overwrites above
+    p.images?.[0],                                   // ← top-level images array fallback
     (p.image && (p.image.includes('cloudinary') || p.image.includes('shopify.com'))) ? p.image : null,
   ];
   for (const url of candidates) {
