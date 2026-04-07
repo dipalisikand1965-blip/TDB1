@@ -547,12 +547,12 @@ async def process_gupshup_webhook(body: dict):
             except Exception as notif_err:
                 logger.warning(f"[GUPSHUP] Notification failed: {notif_err}")
             
-            # ── Mira auto-acknowledgement ──────────────────────────────────────────
-            # Send a warm, personalised ack back to the WhatsApp user immediately
+            # ── Mira full AI response ──────────────────────────────────────────────
+            # Send real Mira intelligence back to the WhatsApp user immediately
             try:
-                await send_mira_ack(from_number, content, sender_name, db)
+                await send_auto_mira_reply(from_number, content, sender_name)
             except Exception as ack_err:
-                logger.warning(f"[GUPSHUP] Mira ack failed (non-critical): {ack_err}")
+                logger.warning(f"[GUPSHUP] Mira reply failed (non-critical): {ack_err}")
                 
     except Exception as e:
         logger.error(f"[GUPSHUP] Processing error: {e}")
@@ -989,7 +989,7 @@ async def send_gupshup_message(message: WhatsAppMessage):
             
             result = response.json()
             
-            if response.status_code not in [200, 202] or result.get("status") == "error":
+            if response.status_code not in [200, 202] or result.get("status") not in ["success", "submitted"]:
                 logger.error(f"Gupshup API error: {result}")
                 raise HTTPException(
                     status_code=response.status_code, 
