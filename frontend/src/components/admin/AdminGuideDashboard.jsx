@@ -79,13 +79,27 @@ const AdminGuideDashboard = () => {
       });
       const data = await res.json();
       if (data.status?.startsWith('complete')) {
-        setRestoreMsg({ ok: true, text: `✅ Done! ${data.total_docs_processed?.toLocaleString()} docs restored in ${data.duration_seconds}s` });
-        toast({ title: '✅ Database Restored!', description: `${data.total_docs_processed?.toLocaleString()} docs loaded successfully.` });
+        // Build per-collection breakdown
+        const cols = data.collections || {};
+        const lines = Object.entries(cols)
+          .filter(([, v]) => v?.total > 0)
+          .sort((a, b) => (b[1]?.total || 0) - (a[1]?.total || 0))
+          .map(([name, v]) => `• ${name}: ${v.total?.toLocaleString()} docs`)
+          .join('\n');
+        const summary = `${lines}\n\nTotal: ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s`;
+        setRestoreMsg({ ok: true, text: `✅ Restored! ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s` });
+        toast({
+          title: '✅ Database Restored Successfully!',
+          description: summary,
+          duration: 10000,
+        });
       } else {
         setRestoreMsg({ ok: false, text: `Error: ${JSON.stringify(data.errors)}` });
+        toast({ title: '❌ Restore failed', description: JSON.stringify(data.errors), variant: 'destructive' });
       }
     } catch (e) {
       setRestoreMsg({ ok: false, text: `Error: ${e.message}` });
+      toast({ title: '❌ Restore error', description: e.message, variant: 'destructive' });
     }
     setRestoring(false);
   };
