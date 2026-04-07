@@ -685,25 +685,32 @@ export default function MiraImaginesBreed({
         )}
       </div>
 
-      {/* Imagine cards */}
+      {/* Imagine cards — horizontal scroll, all cards visible in one row */}
       <div style={{
-        display: "grid",
-        gridTemplateColumns: singleColumn ? "1fr" : "repeat(auto-fill,minmax(min(240px,100%),1fr))",
+        display: singleColumn ? "grid" : "flex",
+        gridTemplateColumns: singleColumn ? "1fr" : undefined,
+        flexDirection: singleColumn ? undefined : "row",
         gap: 16,
+        overflowX: singleColumn ? undefined : "auto",
+        paddingBottom: singleColumn ? undefined : 10,
         marginBottom: 20,
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+        WebkitOverflowScrolling: "touch",
       }}>
         {cards.slice(0, limit || cards.length).map((card, i) => (
-          <ImagineCard
-            key={i}
-            card={card}
-            petName={petName}
-            index={i}
-            onConcierge={handleConcierge}
-            colour={colour}
-            pet={pet}
-            pillar={pillar}
-            token={token}
-          />
+          <div key={i} style={{ flexShrink: 0, width: singleColumn ? undefined : 260 }}>
+            <ImagineCard
+              card={card}
+              petName={petName}
+              index={i}
+              onConcierge={handleConcierge}
+              colour={colour}
+              pet={pet}
+              pillar={pillar}
+              token={token}
+            />
+          </div>
         ))}
       </div>
 
