@@ -51,6 +51,7 @@
 import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
+import { tdc } from '../../utils/tdc_intent';
 
 // ─── Colour system — indigo (mirrors LearnSoulPage) ──────────
 const G = {
@@ -389,7 +390,7 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
                             borderRadius:10, boxShadow:"0 8px 24px rgba(0,0,0,0.10)",
                             marginTop:4, overflow:"hidden" }}>
                 {suggestions.map(s=>(
-                  <div key={s} onClick={()=>{ tdc.nearme({ query: "venue", pillar:"learn", pet }); }}
+                  <div key={s} onClick={()=>{ setQuery(s); setSuggestions([]); doFetch(null, s, activeType); }}
                     style={{ padding:"10px 14px", fontSize:13, color:G.darkText,
                              cursor:"pointer", borderBottom:`1px solid ${G.pale}` }}
                     onMouseEnter={e=>e.currentTarget.style.background=G.pale}
@@ -424,7 +425,7 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
       {/* Type filter pills */}
       <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:16 }}>
         {availableTypes.map(type=>(
-          <button key={type.id} onClick={()=>{ tdc.nearme({ query: "venue", pillar:"learn", pet }); }}
+          <button key={type.id} onClick={()=>handleTypeChange(type.id)}
             style={{ padding:"5px 12px", borderRadius:20, fontSize:11, fontWeight:500,
                      border:`1px solid ${activeType===type.id?G.violet:"rgba(124,58,237,0.25)"}`,
                      background:activeType===type.id?G.violet:G.pale,
