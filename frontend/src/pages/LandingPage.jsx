@@ -234,6 +234,7 @@ export default function LandingPage() {
           .tdc-isnot-grid { grid-template-columns:1fr; gap:12px; }
           .tdc-isnot-grid > div { border-radius:16px !important; }
           .tdc-nav-text > button:not(:last-child) { display:none; }
+          .tdc-desktop-signin { display:none !important; }
           .tdc-hamburger { display:flex; }
           .tdc-mobile-signin { display:inline-flex !important; }
           .tdc-hero-btns { flex-direction:column; align-items:center; }
@@ -292,7 +293,7 @@ export default function LandingPage() {
             Membership
           </button>
           {!isAuthenticated && (
-            <a href="/login" style={{
+            <a href="/login" className="tdc-desktop-signin" style={{
               color: C.amber, fontSize: 14, fontWeight: 500,
               fontFamily: "DM Sans, sans-serif",
               textDecoration: "none",
