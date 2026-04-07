@@ -1058,7 +1058,7 @@ export default function MiraSearchPage() {
             )}
 
             {/* Step 3 — Mira Imagines strip: same layout as real products ── */}
-            {turn.showImagines && !turn.streaming && activePet && (
+            {!turn.streaming && turn.response && activePet && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
                   Mira imagines for {petName}
