@@ -1090,6 +1090,30 @@ export default function MiraSearchPage() {
               </div>
             )}
 
+            {/* Always show one Mira Imagines card — "want more?" */}
+            {!turn.streaming && turn.response && activePet && (
+              <div style={{ marginTop: 8 }}>
+                <ImagineChip
+                  petName={activePet?.name}
+                  query={turn.query}
+                  idx={99}
+                  onConcierge={() => {
+                    conciergefire({
+                      type: 'request',
+                      note: `Mira imagines more for ${activePet?.name}: ${turn.query}`,
+                      silent: true,
+                      metadata: { source: 'mira_search_imagines', query: turn.query }
+                    });
+                    toast.success(`Sent to Concierge! 📥`);
+                  }}
+                  onAmazonClick={() => {
+                    conciergefire({ type: 'request', note: `Amazon: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } });
+                    window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(turn.query, activePet?.name))}&tag=thedoggyco-21`, '_blank');
+                  }}
+                />
+              </div>
+            )}
+
             {/* Services CTA */}
             {turn.servicesCta && (
               <div style={{
