@@ -80,13 +80,13 @@ const GuidedCelebrationPaths = ({ pet }) => {
         <h2 style={{
           fontSize: 'clamp(1.3rem, 5vw, 2rem)',
           fontWeight: 800,
-          color: '#F5F0E8',
+          color: '#1a1728',
           marginBottom: 6,
           lineHeight: 1.2
         }}>
           Guided celebration paths
         </h2>
-        <p style={{ fontSize: 14, color: 'rgba(245,240,232,0.55)', marginTop: 6, lineHeight: 1.5 }}>
+        <p style={{ fontSize: 14, color: 'rgba(26,23,40,0.6)', marginTop: 6, lineHeight: 1.5 }}>
           Mira walks you through every step. Each path ends with a plan you can keep.
         </p>
       </div>
