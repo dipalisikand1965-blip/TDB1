@@ -14,7 +14,7 @@ import SoulMadeModal from "../SoulMadeModal";
 import { tdc } from "../../utils/tdc_intent";
 import { bookViaConcierge } from "../../utils/MiraCardActions";
 import { filterBreedProducts } from "../../hooks/useMiraFilter";
-import { ProductDetailModal } from "../ProductCard";
+import { ProductDetailModal, getProductImage } from "../ProductCard";
 
 const PILLAR_COLORS = {
   dine:      { deep:"#1A2F1A", orange:"#C9973A", pale:"#FFF8EE" },
@@ -101,12 +101,17 @@ export default function PersonalisedBreedSection({
         const raw = data?.products || [];
         // Step 1 — strict breed filter: exclude products named for a different breed
         const breedFiltered = filterBreedProducts(raw, breed);
-        // Step 2 — prefer products with watercolor / breed images, skip blank-image products
+        // Step 2 — prefer products with a valid image (using the same smart resolver as the modal)
+        // Also accepts soul- prefix files (e.g. soul-shih_tzu-breed-custom_portraits-c3d30cd3.webp)
         const withImages = breedFiltered.filter(p => {
+          const resolvedUrl = getProductImage(p);
+          if (resolvedUrl) return true;
+          // Fallback check: any raw url that looks like a breed/watercolor/soul product image
           const url = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.image_url || p.primary_image || p.image || "";
           if (!url) return false;
           const filename = url.split("/").pop().split("?")[0];
-          return filename.startsWith("breed-") || url.includes("/breed_products/") ||
+          return filename.startsWith("breed-") || filename.startsWith("soul-") ||
+                 url.includes("/breed_products/") || url.includes("/mockups/") ||
                  filename.includes("watercolor") || (p.watercolor_image && p.watercolor_image.startsWith("http"));
         });
         const pool = withImages.length ? withImages : breedFiltered;
@@ -222,7 +227,10 @@ export default function PersonalisedBreedSection({
       {/* Product grid — 4 at a time */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:10 }}>
         {products.slice(0, visibleCount).map((p, i) => {
-          const imgUrl = p.watercolor_image || p.cloudinary_url || p.mockup_url || p.primary_image || p.image_url || p.image || p.images?.[0];
+          // Use the same smart image resolver as the modal — blocks bad Cloudinary URLs,
+          // emergentagent placeholders, and AI-misnamed files. Fixes the "wrong breed portrait"
+          // bug where cloudinary_url pointed to an Indie dog but getProductImage() would block it.
+          const imgUrl = getProductImage(p) || p.watercolor_image || p.mockup_url || p.image_url || p.images?.[0];
           return (
             <div key={p.id || i}
               onClick={() => {
