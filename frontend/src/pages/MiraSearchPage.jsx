@@ -1079,7 +1079,7 @@ export default function MiraSearchPage() {
               </div>
             )}
 
-            {/* Step 3 — Mira Imagines strip: same layout as real products ── */}
+            {/* Step 3 — Mira Imagines strip: all 4 chips in ONE horizontal scroll ── */}
             {!turn.streaming && turn.response && activePet && (
               <div style={{ marginBottom: 12, animation: 'fadeUp 0.4s ease' }}>
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>
@@ -1108,31 +1108,30 @@ export default function MiraSearchPage() {
                       onAmazonClick={() => conciergefire({ type: 'request', note: `Amazon search: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } })}
                     />
                   ))}
+                  {/* 4th chip inside the same scroll — no more wrapping below */}
+                  <ImagineChip
+                    idx={99}
+                    petName={petName}
+                    query={turn.query}
+                    onConcierge={async () => {
+                      try {
+                        await conciergefire({
+                          type: 'request',
+                          note: `Mira imagines more for ${petName}: ${turn.query}`,
+                          silent: true,
+                          metadata: { source: 'mira_search_imagines', query: turn.query }
+                        });
+                        toast.success(`Sent to Concierge! 📥`);
+                      } catch {
+                        toast.error('Could not send — please try again');
+                      }
+                    }}
+                    onAmazonClick={() => {
+                      conciergefire({ type: 'request', note: `Amazon: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } });
+                      window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(turn.query, petName))}&tag=thedoggyco-21`, '_blank');
+                    }}
+                  />
                 </ScrollStrip>
-              </div>
-            )}
-
-            {/* Always show one Mira Imagines card — "want more?" */}
-            {!turn.streaming && turn.response && activePet && (
-              <div style={{ marginTop: 8 }}>
-                <ImagineChip
-                  petName={activePet?.name}
-                  query={turn.query}
-                  idx={99}
-                  onConcierge={() => {
-                    conciergefire({
-                      type: 'request',
-                      note: `Mira imagines more for ${activePet?.name}: ${turn.query}`,
-                      silent: true,
-                      metadata: { source: 'mira_search_imagines', query: turn.query }
-                    });
-                    toast.success(`Sent to Concierge! 📥`);
-                  }}
-                  onAmazonClick={() => {
-                    conciergefire({ type: 'request', note: `Amazon: ${turn.query}`, silent: true, metadata: { source: 'amazon_click', query: turn.query } });
-                    window.open(`https://www.amazon.in/s?k=dog+${encodeURIComponent(buildAmazonQuery(turn.query, activePet?.name))}&tag=thedoggyco-21`, '_blank');
-                  }}
-                />
               </div>
             )}
 
@@ -1337,10 +1336,18 @@ export default function MiraSearchPage() {
         />
       )}
 
-      {/* Toaster — bottom-center, offset above WhatsApp bar */}
+      {/* Toaster — bottom-center, min width so text never wraps into a column */}
       <Toaster
         position="bottom-center"
-        toastOptions={{ style: { marginBottom: 80 } }}
+        toastOptions={{
+          style: {
+            marginBottom: 80,
+            minWidth: '260px',
+            maxWidth: '90vw',
+            width: 'auto',
+            fontSize: 13,
+          }
+        }}
         richColors
       />
       </div>
