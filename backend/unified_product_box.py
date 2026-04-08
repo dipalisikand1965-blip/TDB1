@@ -2837,3 +2837,66 @@ async def get_comprehensive_stats():
         }
     }
 
+
+# ── Duplicate Cleanup ────────────────────────────────────────────────────────
+
+@product_box_router.post("/admin/archive-breed-duplicates")
+async def archive_breed_duplicates(dry_run: bool = False):
+    """
+    Finds all products with ID prefix 'breed-' that have a 'soul-breed-' counterpart
+    with the same base name. Archives the old 'breed-' version (keeps 'soul-breed-').
+
+    This fixes the 'Shih Tzu Birthday Card showing a cake image' problem —
+    the old breed- products have stale images; the soul-breed- products have the
+    correct AI-generated watercolor illustrations.
+
+    Pass ?dry_run=true to preview without making changes.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialised")
+
+    # Load all active soul-breed- products and build a lookup by their base key
+    soul_cursor = db.products_master.find(
+        {"id": {"$regex": "^soul-breed-"}, "visibility.status": {"$ne": "archived"}},
+        {"id": 1, "_id": 0}
+    )
+    soul_ids = set()
+    async for doc in soul_cursor:
+        base = doc["id"].replace("soul-breed-", "breed-", 1)
+        soul_ids.add(base)
+
+    # Find active breed- products that have a soul- counterpart → these are duplicates
+    to_archive = []
+    breed_cursor = db.products_master.find(
+        {"id": {"$regex": "^breed-"}, "visibility.status": {"$ne": "archived"}},
+        {"id": 1, "name": 1, "pillar": 1, "_id": 0}
+    )
+    async for doc in breed_cursor:
+        if doc["id"] in soul_ids:
+            to_archive.append({"id": doc["id"], "name": doc.get("name", ""), "pillar": doc.get("pillar", "")})
+
+    if dry_run:
+        return {
+            "dry_run": True,
+            "would_archive": len(to_archive),
+            "preview": to_archive[:20],
+            "message": f"Would archive {len(to_archive)} duplicate breed- products. Call without ?dry_run=true to apply."
+        }
+
+    if not to_archive:
+        return {"archived": 0, "message": "No duplicates found — nothing to do."}
+
+    # Bulk archive all at once
+    ids_to_archive = [d["id"] for d in to_archive]
+    result = await db.products_master.update_many(
+        {"id": {"$in": ids_to_archive}},
+        {"$set": {"visibility.status": "archived", "is_active": False, "archived_reason": "duplicate_soul_breed_exists"}}
+    )
+
+    return {
+        "archived": result.modified_count,
+        "total_found": len(to_archive),
+        "message": f"Successfully archived {result.modified_count} duplicate breed- products. Their soul-breed- counterparts remain active.",
+        "sample_archived": [d["id"] for d in to_archive[:10]]
+    }
+
