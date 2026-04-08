@@ -25,6 +25,7 @@ import { useAuth } from "../context/AuthContext";
 import { usePillarContext } from "../context/PillarContext";
 import PillarPageLayout from "../components/PillarPageLayout";
 import ConciergeToast from "../components/common/ConciergeToast";
+import AmazonExplorerBox from "../components/shop/AmazonExplorerBox";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
@@ -865,6 +866,11 @@ const ShopSoulPage = () => {
             </h2>
           </div>
           <ShopBrowseSection pet={petData}/>
+        </section>
+
+        {/* Amazon Explorer — self-serve search, separate from Concierge */}
+        <section style={{ marginBottom: 40 }}>
+          <AmazonExplorerBox pet={petData} isDesktop={true} />
         </section>
 
         {/* May 15th Mystique banner */}

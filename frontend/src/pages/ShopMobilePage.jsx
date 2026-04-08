@@ -5,6 +5,7 @@
  */
 import PillarConciergeCards from '../components/common/PillarConciergeCards';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+import AmazonExplorerBox from '../components/shop/AmazonExplorerBox';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -704,6 +705,11 @@ export default function ShopMobilePage() {
             style={{ width: '100%', minHeight: 48, borderRadius: 14, border: 'none', background: `linear-gradient(135deg,${S.goldL},${S.goldXL})`, color: S.dark, fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
             🛍️ Ask Concierge® →
           </button>
+        </div>
+
+        {/* Amazon Explorer — separate self-serve search box */}
+        <div style={{ margin: '0 16px 32px' }}>
+          <AmazonExplorerBox pet={currentPet} isDesktop={false} />
         </div>
       </div>
     
