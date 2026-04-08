@@ -69,7 +69,15 @@ const AdminGuideDashboard = () => {
   const [restoreMsg, setRestoreMsg] = useState(null);
 
   const handleRestore = async () => {
-    if (!window.confirm('Load all backed-up data (9,353 products, 32 pets, all services & members) into the live database?\n\nSafe to run — will not delete existing data.')) return;
+    if (!window.confirm(
+      'RESTORE DATABASE from latest snapshot?\n\n' +
+      '✅ 9,355 products (1,073 duplicates/wrong-image products now archived)\n' +
+      '✅ breed- prefix duplicates archived (keep soul-breed- versions)\n' +
+      '✅ bp- AI batch wrong-image products archived\n' +
+      '✅ All pets, services & members preserved\n\n' +
+      'Safe to run — will not delete data, uses upsert by product ID.\n' +
+      'Snapshot updated: Apr 8 2026'
+    )) return;
     setRestoring(true);
     setRestoreMsg(null);
     try {
