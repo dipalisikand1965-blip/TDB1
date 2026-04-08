@@ -486,10 +486,12 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, pet = 
       <div className="relative overflow-hidden aspect-[4/5] sm:aspect-square">
           {/* Check for pre-generated mockup ONLY for Soul Made products, never for regular Shopify products */}
           {(() => {
-            // IMPORTANT: Only apply mockups to soul_made products
-            // Regular Shopify products should ALWAYS use their original product images
+            // IMPORTANT: Only apply mockups to soul_made products that have NO real Cloudinary image.
+            // If the product already has a real image (cloudinary_url, watercolor_image, etc.),
+            // use that directly — don't override with the static mockup stock photo.
             const isSoulMade = product.soul_tier === 'soul_made';
-            const mockup = (isSoulMade && effectiveSelectedPet?.breed) ? getProductMockup(product, effectiveSelectedPet.breed) : null;
+            const hasRealImage = !!(product.cloudinary_url || product.watercolor_image || product.media?.primary_image);
+            const mockup = (isSoulMade && !hasRealImage && effectiveSelectedPet?.breed) ? getProductMockup(product, effectiveSelectedPet.breed) : null;
             const displayImage = overrideImageUrl || mockup?.mockupUrl || productImage;
             
             return (
