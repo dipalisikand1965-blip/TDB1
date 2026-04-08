@@ -61,13 +61,14 @@
   <h1>🐾 The Doggy Company — Technical Handover Documentation</h1>
   <p class="subtitle">Pet Life OS · React + FastAPI + MongoDB · 12 Pillars · 56 Breeds · AI-Powered by Mira</p>
   <div class="meta">
-    <span class="badge new">Updated: 2026-04-06</span>
-    <span class="badge">Session 9 Complete</span>
+    <span class="badge new">Updated: 2026-04-07</span>
+    <span class="badge new">Session 12 Complete</span>
     <span class="badge">Preview: pet-soul-ranking.preview.emergentagent.com</span>
     <span class="badge">Cloudinary: duoapcx1p</span>
-    <span class="badge">7,737 Products Visible to Members</span>
+    <span class="badge">9,348 Products Visible to Members</span>
     <span class="badge">4,941 Soul Products in Source</span>
     <span class="badge">56 Breeds</span>
+    <span class="badge new">WhatsApp Mira Intelligence — PLAN READY</span>
   </div>
 </header>
 
@@ -96,6 +97,7 @@
   <a href="#scripts">Scripts</a>
   <a href="#integrations">Integrations</a>
   <a href="#whatsapp">WhatsApp</a>
+  <a href="#wa-intelligence" style="color:#7c3aed;font-weight:800;">🧠 WA Intelligence</a>
   <a href="#creds">Credentials</a>
   <a href="#todo">Next Tasks</a>
   <a href="#audit">Soul Audit</a>
@@ -108,6 +110,26 @@
 <section id="changelog">
   <h2>📋 Session Changelog</h2>
   <p>Every agent MUST append their session summary here before finishing.</p>
+
+  <div class="changelog-entry" style="border-left-color:#7c3aed; background:#faf5ff;">
+    <div class="date" style="color:#7c3aed;">Session 12 — 2026-04-07 🟣 Bug Sprint + Amazon Explorer + WhatsApp Intelligence Plan</div>
+    <h4>LearnNearMe Fix · Gupshup Crash Fix · ProductCard Images · Mira Imagines Layout · Amazon Explorer · WhatsApp Intelligence Design</h4>
+    <ul>
+      <li><strong>FIXED: LearnNearMe.jsx</strong> — <code>tdc</code> object was used but never imported into the component. All suggestion handlers (<code>handleSuggestionClick</code>, <code>handleSearchSubmit</code>) were referencing undefined <code>tdc.book()</code> and crashing silently. Fixed by importing <code>useTDC</code> at the top of <code>LearnNearMe.jsx</code> and destructuring the <code>tdc</code> object.</li>
+      <li><strong>FIXED: Gupshup webhook crash in <code>whatsapp_routes.py</code></strong> — The <code>get_mira_ai_response()</code> function was using <code>from database import get_db</code> which is a sync FastAPI dependency injector and cannot be called directly from async code. This caused a <code>TypeError</code> that silently crashed the Mira AI response path (webhook still worked but AI reply was never sent). Fixed by replacing with a direct <code>AsyncIOMotorClient</code> connection matching the pattern used in the rest of the file.</li>
+      <li><strong>FIXED: WhatsApp Mira context — wrong collection</strong> — <code>get_mira_ai_response()</code> was querying <code>db.tickets</code> for conversation history. All tickets are stored in <code>db.service_desk_tickets</code>. Fixed to query the correct collection. Mira now has full thread context when replying.</li>
+      <li><strong>FIXED: WhatsApp prompt — dog vs toy confusion</strong> — Added <code>CRITICAL RULES</code> block to the WhatsApp system prompt: "Animal names like 'rabbit', 'bunny', 'duck' refer to DOG TOYS, NOT actual animals. The customer has a dog. Always respond in the context of dog products and dog care." Prevents Mira from confusing product categories.</li>
+      <li><strong>FIXED: ProductCard.jsx — admin-edited images were blank</strong> — <code>getProductImage()</code> was reading <code>product.image || product.cloudinary_url || product.mockup_url</code>. When an admin uploads an image via the Product Box editor, it is saved to <code>media.primary_image</code>. Fixed by adding <code>product.media?.primary_image</code> as the first priority in the lookup chain. Now all admin-edited images render correctly on the frontend.</li>
+      <li><strong>FIXED: Mira Imagines horizontal scroll on mobile</strong> — <code>MiraPlanModal.jsx</code> and <code>MiraImaginesCard.jsx</code> had overflow issues causing the carousel to overflow the viewport on mobile. Fixed by adding <code>overflowX: 'auto'</code>, <code>WebkitOverflowScrolling: 'touch'</code>, and proper <code>minWidth</code> constraints to the cards.</li>
+      <li><strong>FIXED: Invisible text on Guided Paths</strong> — <code>GuidedCelebrationPaths.jsx</code>, <code>GuidedNutritionPaths.jsx</code>, and <code>GuidedCarePaths.jsx</code> all had <code>color: '#fff'</code> on text rendered over very light transparent backgrounds (10–16% opacity) outside the dark hero area. On the white page background these were completely unreadable. Fixed by changing all card text to <code>#1A0A2E</code> (heading) and <code>#4B5563</code> (body).</li>
+      <li><strong>NEW: Amazon Explorer Box</strong> — Created <code>/app/frontend/src/components/shop/AmazonExplorerBox.jsx</code>. A branded card that lets members type their intent (e.g. "hypoallergenic shampoo") and opens Amazon.in pre-filtered to that query with TDC affiliate tag (<code>tag=thedoggyco-21</code>). Added to both <code>ShopMobilePage.jsx</code> and <code>ShopSoulPage.jsx</code> (desktop). Shows after the main product grid.</li>
+      <li><strong>NEW: WhatsApp Mira Intelligence Plan documented</strong> — Full technical spec saved to <code>/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md</code>. Phase 2 upgrade to wire the 9,348-product semantic search engine into the WhatsApp Mira response flow. See the "WhatsApp Mira Intelligence Plan" section below.</li>
+      <li><strong>Duplicate products analysis</strong> — 473 products with <code>soul-</code> prefix in <code>products_master</code> identified as likely duplicates of the canonical <code>breed-</code> prefix variants. Cleanup script not yet run (requires production DB access — Atlas IP whitelist currently blocked from preview environment).</li>
+    </ul>
+    <div class="alert alert-yellow" style="margin-top:12px;">
+      <strong>Pending redeploy:</strong> Gupshup crash fix + ProductCard image fix + Amazon Explorer are live in preview codebase but NOT yet in production. User must click "Redeploy" in Emergent dashboard to push to live.
+    </div>
+  </div>
 
   <div class="changelog-entry" style="border-left-color:#16a34a; background:#f0fdf4;">
     <div class="date" style="color:#16a34a;">Session 11 — 2026-04-06 🟢 WhatsApp Pipeline Live</div>
@@ -623,8 +645,9 @@ print(f'Total pending generation: {pending}')
   <h3>P0 — Immediately actionable</h3>
   <table>
     <tr><th>Task</th><th>Details</th><th>Status</th></tr>
-    <tr><td>"Mira Explains Why" expandable row</td><td>Already built in ProductCard.jsx (lines 601–662). The ✦ MIRA toggle reveals soul profile reasoning. Fires when product has <code>mira_hint</code> (set by useMiraFilter.js). Verify it shows for logged-in users with pets. User explicitly approved.</td><td>✅ Built — verify visibility</td></tr>
-    <tr><td>Investigate 1 missing Play product for 12 breeds</td><td>Compare breed_products Play entries vs products_master Play entries for: Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier.</td><td>Pending</td></tr>
+    <tr><td style="color:#7c3aed;font-weight:700;">WhatsApp Mira Intelligence Upgrade</td><td>Wire semantic product search (9,348 products) into <code>get_mira_ai_response()</code> in <code>whatsapp_routes.py</code>. Load full pet soul profile (allergies, favorites, breed). GPT replies with real catalog products + prices. Full plan: <a href="#wa-intelligence">WhatsApp Mira Intelligence Plan section</a> and <code>/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md</code>. <strong>APPROVED by user.</strong></td><td class="status-new">Ready to build</td></tr>
+    <tr><td>Redeploy to production</td><td>Push Gupshup crash fix + ProductCard image fix + Amazon Explorer. User must click "Redeploy" in Emergent dashboard.</td><td class="status-pending">Awaiting user action</td></tr>
+    <tr><td>Duplicate product cleanup</td><td>473 <code>soul-</code> prefix products in products_master are duplicates. Archive them by setting <code>visibility.status = "archived"</code>. Script ready to run — blocked on Atlas IP whitelist from preview.</td><td class="status-blocked">Blocked (Atlas)</td></tr>
   </table>
 
   <h3>P1 — Next session</h3>
@@ -642,7 +665,7 @@ print(f'Total pending generation: {pending}')
     <li>Build the Love pillar</li>
     <li>WhatsApp Daily Digest cron job + medication refill reminders (Gupshup templates needed)</li>
     <li>Production DB migration (Atlas IP whitelist must be fixed first)</li>
-    <li>Watch & Learn YouTube video sections for Care and Go pillars</li>
+    <li>Watch &amp; Learn YouTube video sections for Care and Go pillars</li>
   </ul>
 
   <h3>Refactoring (non-urgent but important)</h3>
@@ -722,6 +745,118 @@ Message delivered to user's WhatsApp via Gupshup</pre>
     <li>Files: <code>MiraSearchPage.jsx</code> (search results), <code>MiraChatWidget.jsx</code> (chat widget)</li>
     <li>Example: User asks "rubber duck toy for mojo" → <code>https://www.amazon.in/s?k=dog+rubber+duck+toy&tag=thedoggyco-21</code></li>
   </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<section id="wa-intelligence">
+  <h2>🧠 WhatsApp Mira Intelligence Plan (Phase 2)</h2>
+  <div class="alert alert-blue">
+    <strong>Status: APPROVED — PENDING IMPLEMENTATION.</strong> Full spec in <code>/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md</code>. Only file to touch: <code>backend/whatsapp_routes.py</code>, only function: <code>get_mira_ai_response()</code>.
+  </div>
+
+  <h3>Current State vs Target State</h3>
+  <div class="grid-2">
+    <div class="card" style="border-color:#ef4444;">
+      <h4 style="color:#dc2626;">Current (broken)</h4>
+      <pre style="font-size:0.82rem;margin-top:8px;">User: "A baby rabbit toy"
+→ GPT has no product data
+→ Guesses → replies as if user
+  has a pet rabbit</pre>
+    </div>
+    <div class="card" style="border-color:#22c55e;">
+      <h4 style="color:#16a34a;">Target (after this plan)</h4>
+      <pre style="font-size:0.82rem;margin-top:8px;">User: "A baby rabbit toy"
+→ Semantic search: Rope Bunny Chew
+  ₹699, Latex Rabbit Squeaky ₹450
+→ Pet: Badmash + Sultan = Newfoundland
+  (big chewers)
+→ Mira: "For big chewers like Badmash
+  &amp; Sultan, skip the plush — grab the
+  Rope Bunny Chew (₹699). Want me
+  to order it?"</pre>
+    </div>
+  </div>
+
+  <h3>Zero-Risk Zones — DO NOT TOUCH</h3>
+  <div class="alert alert-red">
+    The following files must NOT be modified during this upgrade. The only file to touch is <code>whatsapp_routes.py</code>.
+  </div>
+  <div class="pill-grid">
+    <span class="pill">frontend/src/pages/*MobilePage.jsx</span>
+    <span class="pill">frontend/src/pages/*SoulPage.jsx</span>
+    <span class="pill">frontend/src/pages/MiraSearchPage.jsx</span>
+    <span class="pill">frontend/src/components/MiraChatWidget.jsx</span>
+    <span class="pill">frontend/src/components/ProductCard.jsx</span>
+    <span class="pill">frontend/src/hooks/useMiraFilter.js</span>
+    <span class="pill">backend/unified_product_box.py</span>
+    <span class="pill">backend/service_box_routes.py</span>
+    <span class="pill">backend/server.py</span>
+  </div>
+
+  <h3>Implementation Steps</h3>
+  <table>
+    <tr><th>#</th><th>Step</th><th>What changes</th><th>Risk</th></tr>
+    <tr>
+      <td>1</td>
+      <td><strong>Load full pet soul profile</strong></td>
+      <td>Add <code>allergies</code>, <code>health_conditions</code>, <code>doggy_soul_answers</code>, <code>favorite_foods</code>, <code>weight</code>, <code>life_stage</code> to the pets DB query inside <code>get_mira_ai_response()</code></td>
+      <td>Zero — additive only</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Run message through semantic search</strong></td>
+      <td>Internal HTTP call to <code>http://localhost:8001/api/mira/semantic-search</code> with the user's message text and pet allergies. Gets top 3 products + 2 services from the 9,348-product catalog.</td>
+      <td>Low — 2–4s latency increase</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>Build rich context block for GPT</strong></td>
+      <td>Append to system prompt: allergens to avoid, favorite foods, RELEVANT PRODUCTS FROM CATALOG (real names + prices + descriptions), RELEVANT SERVICES.</td>
+      <td>Zero</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>Enhanced system prompt rules</strong></td>
+      <td>Add: "Use ONLY real product names from CATALOG above. Consider allergens. Match energy level. Always suggest ordering via Concierge."</td>
+      <td>Zero</td>
+    </tr>
+  </table>
+
+  <h3>Success Criteria (3 test scenarios)</h3>
+  <table>
+    <tr><th>Test</th><th>Input</th><th>Expected response</th></tr>
+    <tr><td>Product search</td><td>"Looking for a treat for my dog"</td><td>Real product names from catalog with prices</td></tr>
+    <tr><td>Allergen awareness</td><td>"What treats do you recommend?" (pet has chicken allergy)</td><td>NO chicken-based treats in response</td></tr>
+    <tr><td>Breed intelligence</td><td>"Any toy suggestions?" (Newfoundland — big breed, heavy chewer)</td><td>Durable/rope toys recommended, not plush</td></tr>
+  </table>
+
+  <h3>What the semantic search endpoint returns</h3>
+  <pre>{
+  "success": true,
+  "intent_detected": "play",
+  "products": [
+    {
+      "id": "prod-123",
+      "name": "Rope Bunny Chew",
+      "original_price": 699,
+      "description": "Durable rope toy shaped like a rabbit",
+      "tags": ["chew", "rope", "large-breed"],
+      "pillar": "play"
+    }
+  ],
+  "services": [],
+  "total_results": 8
+}</pre>
+
+  <h3>Sequencing</h3>
+  <div class="pill-grid">
+    <span class="pill done">Phase 0 ✅ Gupshup crash fix (done)</span>
+    <span class="pill done">Phase 0 ✅ service_desk_tickets context (done)</span>
+    <span class="pill done">Phase 0 ✅ Dog vs toy system prompt rules (done)</span>
+    <span class="pill warn">Phase 1 — User verifies WhatsApp works after redeploy</span>
+    <span class="pill" style="background:#ede9fe;border-color:#a78bfa;color:#5b21b6;">Phase 2 — Implement Steps 1–4 above in whatsapp_routes.py</span>
+    <span class="pill">Phase 3 (Future) — Inject last 5 conversation turns from service_desk_tickets.conversation[]</span>
+  </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════ -->
@@ -910,7 +1045,7 @@ EOF</pre>
 </div><!-- /container -->
 
 <footer style="background:#1a1a2e;color:#94a3b8;text-align:center;padding:24px;font-size:0.85rem;margin-top:60px;">
-  The Doggy Company — Pet Life OS · Last updated 2026-04-06 · Session 9 · Always update this file before finishing your session
+  The Doggy Company — Pet Life OS · Last updated 2026-04-07 · Session 12 · Always update this file before finishing your session
 </footer>
 
 </body>
