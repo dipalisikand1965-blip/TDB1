@@ -745,6 +745,33 @@ Message delivered to user's WhatsApp via Gupshup</pre>
     <li>Files: <code>MiraSearchPage.jsx</code> (search results), <code>MiraChatWidget.jsx</code> (chat widget)</li>
     <li>Example: User asks "rubber duck toy for mojo" → <code>https://www.amazon.in/s?k=dog+rubber+duck+toy&tag=thedoggyco-21</code></li>
   </ul>
+
+  <h3>Bulk Duplicate Cleanup — One-Click API</h3>
+  <div class="alert alert-green">
+    1,050 duplicate <code>breed-</code> prefix products identified and archived in preview DB (Session 12). For production, call the endpoint below once after redeploying.
+  </div>
+  <table>
+    <tr><th>Pillar</th><th>Duplicates archived</th></tr>
+    <tr><td>Celebrate</td><td>361</td></tr>
+    <tr><td>Care</td><td>227</td></tr>
+    <tr><td>Go</td><td>198</td></tr>
+    <tr><td>Learn</td><td>66</td></tr>
+    <tr><td>Play</td><td>66</td></tr>
+    <tr><td>Emergency</td><td>66</td></tr>
+    <tr><td>Farewell</td><td>66</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>1,050</strong></td></tr>
+  </table>
+  <h4>To run on production (after redeploy):</h4>
+  <pre># Step 1: Preview — check what will be archived
+curl -X POST https://thedoggycompany.com/api/product-box/admin/archive-breed-duplicates?dry_run=true
+
+# Step 2: Apply the archive (one call, all 1,050 done)
+curl -X POST https://thedoggycompany.com/api/product-box/admin/archive-breed-duplicates
+
+# Expected response:
+# { "archived": 1050, "message": "Successfully archived 1050 duplicate breed- products..." }</pre>
+  <p>Rule: <strong>keep</strong> <code>soul-breed-{breed}-{type}</code> (correct AI watercolor image) | <strong>archive</strong> <code>breed-{breed}-{type}</code> (old, may have stale cake/wrong images).</p>
+  <p>Full list saved to: <code>/app/duplicate_products_to_archive.json</code> and <code>/app/duplicate_products_to_archive.txt</code></p>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════ -->

@@ -1,0 +1,4218 @@
+DUPLICATE PRODUCTS TO ARCHIVE — 1050 total
+Rule: keep soul-breed-* | archive breed-* (old, may have wrong images)
+================================================================================
+
+[CARE] — 227 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-akita-crate_mat
+  KEEP:    soul-breed-akita-crate_mat
+  Name:    Akita Crate Mat
+
+  ARCHIVE: breed-akita-cushion_cover
+  KEEP:    soul-breed-akita-cushion_cover
+  Name:    Akita Cushion Cover
+
+  ARCHIVE: breed-american_bully-pet_towel
+  KEEP:    soul-breed-american_bully-pet_towel
+  Name:    American Bully Bath Towel
+
+  ARCHIVE: breed-american_bully-pet_robe
+  KEEP:    soul-breed-american_bully-pet_robe
+  Name:    American Bully Drying Robe
+
+  ARCHIVE: breed-american_bully-grooming_apron
+  KEEP:    soul-breed-american_bully-grooming_apron
+  Name:    American Bully Grooming Apron
+
+  ARCHIVE: breed-american_bully-collar_tag
+  KEEP:    soul-breed-american_bully-collar_tag
+  Name:    American Bully ID Tag
+
+  ARCHIVE: breed-australian_shepherd-crate_mat
+  KEEP:    soul-breed-australian_shepherd-crate_mat
+  Name:    Australian Shepherd Crate Mat
+
+  ARCHIVE: breed-australian_shepherd-cushion_cover
+  KEEP:    soul-breed-australian_shepherd-cushion_cover
+  Name:    Australian Shepherd Cushion Cover
+
+  ARCHIVE: breed-australian_shepherd-room_sign
+  KEEP:    soul-breed-australian_shepherd-room_sign
+  Name:    Australian Shepherd Room Sign
+
+  ARCHIVE: breed-beagle-pet_towel
+  KEEP:    soul-breed-beagle-pet_towel
+  Name:    Beagle Bath Towel
+
+  ARCHIVE: breed-beagle-crate_mat
+  KEEP:    soul-breed-beagle-crate_mat
+  Name:    Beagle Crate Mat
+
+  ARCHIVE: breed-beagle-cushion_cover
+  KEEP:    soul-breed-beagle-cushion_cover
+  Name:    Beagle Cushion Cover
+
+  ARCHIVE: breed-beagle-pet_robe
+  KEEP:    soul-breed-beagle-pet_robe
+  Name:    Beagle Drying Robe
+
+  ARCHIVE: breed-beagle-grooming_apron
+  KEEP:    soul-breed-beagle-grooming_apron
+  Name:    Beagle Grooming Apron
+
+  ARCHIVE: breed-beagle-collar_tag
+  KEEP:    soul-breed-beagle-collar_tag
+  Name:    Beagle ID Tag
+
+  ARCHIVE: breed-beagle-room_sign
+  KEEP:    soul-breed-beagle-room_sign
+  Name:    Beagle Room Sign
+
+  ARCHIVE: breed-bernese_mountain-crate_mat
+  KEEP:    soul-breed-bernese_mountain-crate_mat
+  Name:    Bernese Mountain Dog Crate Mat
+
+  ARCHIVE: breed-bernese_mountain-cushion_cover
+  KEEP:    soul-breed-bernese_mountain-cushion_cover
+  Name:    Bernese Mountain Dog Cushion Cover
+
+  ARCHIVE: breed-border_collie-pet_towel
+  KEEP:    soul-breed-border_collie-pet_towel
+  Name:    Border Collie Bath Towel
+
+  ARCHIVE: breed-border_collie-crate_mat
+  KEEP:    soul-breed-border_collie-crate_mat
+  Name:    Border Collie Crate Mat
+
+  ARCHIVE: breed-border_collie-cushion_cover
+  KEEP:    soul-breed-border_collie-cushion_cover
+  Name:    Border Collie Cushion Cover
+
+  ARCHIVE: breed-border_collie-pet_robe
+  KEEP:    soul-breed-border_collie-pet_robe
+  Name:    Border Collie Drying Robe
+
+  ARCHIVE: breed-border_collie-grooming_apron
+  KEEP:    soul-breed-border_collie-grooming_apron
+  Name:    Border Collie Grooming Apron
+
+  ARCHIVE: breed-border_collie-collar_tag
+  KEEP:    soul-breed-border_collie-collar_tag
+  Name:    Border Collie ID Tag
+
+  ARCHIVE: breed-border_collie-room_sign
+  KEEP:    soul-breed-border_collie-room_sign
+  Name:    Border Collie Room Sign
+
+  ARCHIVE: breed-boston_terrier-crate_mat
+  KEEP:    soul-breed-boston_terrier-crate_mat
+  Name:    Boston Terrier Crate Mat
+
+  ARCHIVE: breed-boston_terrier-cushion_cover
+  KEEP:    soul-breed-boston_terrier-cushion_cover
+  Name:    Boston Terrier Cushion Cover
+
+  ARCHIVE: breed-boston_terrier-room_sign
+  KEEP:    soul-breed-boston_terrier-room_sign
+  Name:    Boston Terrier Room Sign
+
+  ARCHIVE: breed-boxer-pet_towel
+  KEEP:    soul-breed-boxer-pet_towel
+  Name:    Boxer Bath Towel
+
+  ARCHIVE: breed-boxer-crate_mat
+  KEEP:    soul-breed-boxer-crate_mat
+  Name:    Boxer Crate Mat
+
+  ARCHIVE: breed-boxer-cushion_cover
+  KEEP:    soul-breed-boxer-cushion_cover
+  Name:    Boxer Cushion Cover
+
+  ARCHIVE: breed-boxer-pet_robe
+  KEEP:    soul-breed-boxer-pet_robe
+  Name:    Boxer Drying Robe
+
+  ARCHIVE: breed-boxer-grooming_apron
+  KEEP:    soul-breed-boxer-grooming_apron
+  Name:    Boxer Grooming Apron
+
+  ARCHIVE: breed-boxer-collar_tag
+  KEEP:    soul-breed-boxer-collar_tag
+  Name:    Boxer ID Tag
+
+  ARCHIVE: breed-boxer-room_sign
+  KEEP:    soul-breed-boxer-room_sign
+  Name:    Boxer Room Sign
+
+  ARCHIVE: breed-cavalier-pet_towel
+  KEEP:    soul-breed-cavalier-pet_towel
+  Name:    Cavalier Bath Towel
+
+  ARCHIVE: breed-cavalier-pet_robe
+  KEEP:    soul-breed-cavalier-pet_robe
+  Name:    Cavalier Drying Robe
+
+  ARCHIVE: breed-cavalier-grooming_apron
+  KEEP:    soul-breed-cavalier-grooming_apron
+  Name:    Cavalier Grooming Apron
+
+  ARCHIVE: breed-cavalier-collar_tag
+  KEEP:    soul-breed-cavalier-collar_tag
+  Name:    Cavalier ID Tag
+
+  ARCHIVE: breed-cavalier-crate_mat
+  KEEP:    soul-breed-cavalier-crate_mat
+  Name:    Cavalier King Charles Crate Mat
+
+  ARCHIVE: breed-cavalier-cushion_cover
+  KEEP:    soul-breed-cavalier-cushion_cover
+  Name:    Cavalier King Charles Cushion Cover
+
+  ARCHIVE: breed-cavalier-room_sign
+  KEEP:    soul-breed-cavalier-room_sign
+  Name:    Cavalier King Charles Room Sign
+
+  ARCHIVE: breed-chihuahua-pet_towel
+  KEEP:    soul-breed-chihuahua-pet_towel
+  Name:    Chihuahua Bath Towel
+
+  ARCHIVE: breed-chihuahua-crate_mat
+  KEEP:    soul-breed-chihuahua-crate_mat
+  Name:    Chihuahua Crate Mat
+
+  ARCHIVE: breed-chihuahua-cushion_cover
+  KEEP:    soul-breed-chihuahua-cushion_cover
+  Name:    Chihuahua Cushion Cover
+
+  ARCHIVE: breed-chihuahua-pet_robe
+  KEEP:    soul-breed-chihuahua-pet_robe
+  Name:    Chihuahua Drying Robe
+
+  ARCHIVE: breed-chihuahua-grooming_apron
+  KEEP:    soul-breed-chihuahua-grooming_apron
+  Name:    Chihuahua Grooming Apron
+
+  ARCHIVE: breed-chihuahua-collar_tag
+  KEEP:    soul-breed-chihuahua-collar_tag
+  Name:    Chihuahua ID Tag
+
+  ARCHIVE: breed-chihuahua-room_sign
+  KEEP:    soul-breed-chihuahua-room_sign
+  Name:    Chihuahua Room Sign
+
+  ARCHIVE: breed-chow_chow-pet_towel
+  KEEP:    soul-breed-chow_chow-pet_towel
+  Name:    Chow Chow Bath Towel
+
+  ARCHIVE: breed-chow_chow-pet_robe
+  KEEP:    soul-breed-chow_chow-pet_robe
+  Name:    Chow Chow Drying Robe
+
+  ARCHIVE: breed-chow_chow-grooming_apron
+  KEEP:    soul-breed-chow_chow-grooming_apron
+  Name:    Chow Chow Grooming Apron
+
+  ARCHIVE: breed-chow_chow-collar_tag
+  KEEP:    soul-breed-chow_chow-collar_tag
+  Name:    Chow Chow ID Tag
+
+  ARCHIVE: breed-cocker_spaniel-pet_towel
+  KEEP:    soul-breed-cocker_spaniel-pet_towel
+  Name:    Cocker Spaniel Bath Towel
+
+  ARCHIVE: breed-cocker_spaniel-crate_mat
+  KEEP:    soul-breed-cocker_spaniel-crate_mat
+  Name:    Cocker Spaniel Crate Mat
+
+  ARCHIVE: breed-cocker_spaniel-cushion_cover
+  KEEP:    soul-breed-cocker_spaniel-cushion_cover
+  Name:    Cocker Spaniel Cushion Cover
+
+  ARCHIVE: breed-cocker_spaniel-pet_robe
+  KEEP:    soul-breed-cocker_spaniel-pet_robe
+  Name:    Cocker Spaniel Drying Robe
+
+  ARCHIVE: breed-cocker_spaniel-grooming_apron
+  KEEP:    soul-breed-cocker_spaniel-grooming_apron
+  Name:    Cocker Spaniel Grooming Apron
+
+  ARCHIVE: breed-cocker_spaniel-collar_tag
+  KEEP:    soul-breed-cocker_spaniel-collar_tag
+  Name:    Cocker Spaniel ID Tag
+
+  ARCHIVE: breed-cocker_spaniel-room_sign
+  KEEP:    soul-breed-cocker_spaniel-room_sign
+  Name:    Cocker Spaniel Room Sign
+
+  ARCHIVE: breed-corgi-pet_towel
+  KEEP:    soul-breed-corgi-pet_towel
+  Name:    Corgi Bath Towel
+
+  ARCHIVE: breed-corgi-pet_robe
+  KEEP:    soul-breed-corgi-pet_robe
+  Name:    Corgi Drying Robe
+
+  ARCHIVE: breed-corgi-grooming_apron
+  KEEP:    soul-breed-corgi-grooming_apron
+  Name:    Corgi Grooming Apron
+
+  ARCHIVE: breed-dachshund-pet_towel
+  KEEP:    soul-breed-dachshund-pet_towel
+  Name:    Dachshund Bath Towel
+
+  ARCHIVE: breed-dachshund-crate_mat
+  KEEP:    soul-breed-dachshund-crate_mat
+  Name:    Dachshund Crate Mat
+
+  ARCHIVE: breed-dachshund-cushion_cover
+  KEEP:    soul-breed-dachshund-cushion_cover
+  Name:    Dachshund Cushion Cover
+
+  ARCHIVE: breed-dachshund-pet_robe
+  KEEP:    soul-breed-dachshund-pet_robe
+  Name:    Dachshund Drying Robe
+
+  ARCHIVE: breed-dachshund-grooming_apron
+  KEEP:    soul-breed-dachshund-grooming_apron
+  Name:    Dachshund Grooming Apron
+
+  ARCHIVE: breed-dachshund-collar_tag
+  KEEP:    soul-breed-dachshund-collar_tag
+  Name:    Dachshund ID Tag
+
+  ARCHIVE: breed-dachshund-room_sign
+  KEEP:    soul-breed-dachshund-room_sign
+  Name:    Dachshund Room Sign
+
+  ARCHIVE: breed-dalmatian-pet_towel
+  KEEP:    soul-breed-dalmatian-pet_towel
+  Name:    Dalmatian Bath Towel
+
+  ARCHIVE: breed-dalmatian-pet_robe
+  KEEP:    soul-breed-dalmatian-pet_robe
+  Name:    Dalmatian Drying Robe
+
+  ARCHIVE: breed-dalmatian-grooming_apron
+  KEEP:    soul-breed-dalmatian-grooming_apron
+  Name:    Dalmatian Grooming Apron
+
+  ARCHIVE: breed-dalmatian-collar_tag
+  KEEP:    soul-breed-dalmatian-collar_tag
+  Name:    Dalmatian ID Tag
+
+  ARCHIVE: breed-doberman-pet_towel
+  KEEP:    soul-breed-doberman-pet_towel
+  Name:    Doberman Bath Towel
+
+  ARCHIVE: breed-doberman-crate_mat
+  KEEP:    soul-breed-doberman-crate_mat
+  Name:    Doberman Crate Mat
+
+  ARCHIVE: breed-doberman-cushion_cover
+  KEEP:    soul-breed-doberman-cushion_cover
+  Name:    Doberman Cushion Cover
+
+  ARCHIVE: breed-doberman-pet_robe
+  KEEP:    soul-breed-doberman-pet_robe
+  Name:    Doberman Drying Robe
+
+  ARCHIVE: breed-doberman-grooming_apron
+  KEEP:    soul-breed-doberman-grooming_apron
+  Name:    Doberman Grooming Apron
+
+  ARCHIVE: breed-doberman-collar_tag
+  KEEP:    soul-breed-doberman-collar_tag
+  Name:    Doberman ID Tag
+
+  ARCHIVE: breed-doberman-room_sign
+  KEEP:    soul-breed-doberman-room_sign
+  Name:    Doberman Room Sign
+
+  ARCHIVE: breed-bulldog-pet_towel
+  KEEP:    soul-breed-bulldog-pet_towel
+  Name:    English Bulldog Bath Towel
+
+  ARCHIVE: breed-bulldog-crate_mat
+  KEEP:    soul-breed-bulldog-crate_mat
+  Name:    English Bulldog Crate Mat
+
+  ARCHIVE: breed-bulldog-cushion_cover
+  KEEP:    soul-breed-bulldog-cushion_cover
+  Name:    English Bulldog Cushion Cover
+
+  ARCHIVE: breed-bulldog-pet_robe
+  KEEP:    soul-breed-bulldog-pet_robe
+  Name:    English Bulldog Drying Robe
+
+  ARCHIVE: breed-bulldog-grooming_apron
+  KEEP:    soul-breed-bulldog-grooming_apron
+  Name:    English Bulldog Grooming Apron
+
+  ARCHIVE: breed-bulldog-collar_tag
+  KEEP:    soul-breed-bulldog-collar_tag
+  Name:    English Bulldog ID Tag
+
+  ARCHIVE: breed-bulldog-room_sign
+  KEEP:    soul-breed-bulldog-room_sign
+  Name:    English Bulldog Room Sign
+
+  ARCHIVE: breed-french_bulldog-pet_towel
+  KEEP:    soul-breed-french_bulldog-pet_towel
+  Name:    French Bulldog Bath Towel
+
+  ARCHIVE: breed-french_bulldog-pet_robe
+  KEEP:    soul-breed-french_bulldog-pet_robe
+  Name:    French Bulldog Drying Robe
+
+  ARCHIVE: breed-french_bulldog-grooming_apron
+  KEEP:    soul-breed-french_bulldog-grooming_apron
+  Name:    French Bulldog Grooming Apron
+
+  ARCHIVE: breed-french_bulldog-collar_tag
+  KEEP:    soul-breed-french_bulldog-collar_tag
+  Name:    French Bulldog ID Tag
+
+  ARCHIVE: breed-german_shepherd-pet_towel
+  KEEP:    soul-breed-german_shepherd-pet_towel
+  Name:    German Shepherd Bath Towel
+
+  ARCHIVE: breed-german_shepherd-crate_mat
+  KEEP:    soul-breed-german_shepherd-crate_mat
+  Name:    German Shepherd Crate Mat
+
+  ARCHIVE: breed-german_shepherd-cushion_cover
+  KEEP:    soul-breed-german_shepherd-cushion_cover
+  Name:    German Shepherd Cushion Cover
+
+  ARCHIVE: breed-german_shepherd-pet_robe
+  KEEP:    soul-breed-german_shepherd-pet_robe
+  Name:    German Shepherd Drying Robe
+
+  ARCHIVE: breed-german_shepherd-grooming_apron
+  KEEP:    soul-breed-german_shepherd-grooming_apron
+  Name:    German Shepherd Grooming Apron
+
+  ARCHIVE: breed-german_shepherd-collar_tag
+  KEEP:    soul-breed-german_shepherd-collar_tag
+  Name:    German Shepherd ID Tag
+
+  ARCHIVE: breed-german_shepherd-room_sign
+  KEEP:    soul-breed-german_shepherd-room_sign
+  Name:    German Shepherd Room Sign
+
+  ARCHIVE: breed-golden_retriever-pet_towel
+  KEEP:    soul-breed-golden_retriever-pet_towel
+  Name:    Golden Retriever Bath Towel
+
+  ARCHIVE: breed-golden_retriever-crate_mat
+  KEEP:    soul-breed-golden_retriever-crate_mat
+  Name:    Golden Retriever Crate Mat
+
+  ARCHIVE: breed-golden_retriever-cushion_cover
+  KEEP:    soul-breed-golden_retriever-cushion_cover
+  Name:    Golden Retriever Cushion Cover
+
+  ARCHIVE: breed-golden_retriever-pet_robe
+  KEEP:    soul-breed-golden_retriever-pet_robe
+  Name:    Golden Retriever Drying Robe
+
+  ARCHIVE: breed-golden_retriever-grooming_apron
+  KEEP:    soul-breed-golden_retriever-grooming_apron
+  Name:    Golden Retriever Grooming Apron
+
+  ARCHIVE: breed-golden_retriever-collar_tag
+  KEEP:    soul-breed-golden_retriever-collar_tag
+  Name:    Golden Retriever ID Tag
+
+  ARCHIVE: breed-golden_retriever-room_sign
+  KEEP:    soul-breed-golden_retriever-room_sign
+  Name:    Golden Retriever Room Sign
+
+  ARCHIVE: breed-great_dane-pet_towel
+  KEEP:    soul-breed-great_dane-pet_towel
+  Name:    Great Dane Bath Towel
+
+  ARCHIVE: breed-great_dane-crate_mat
+  KEEP:    soul-breed-great_dane-crate_mat
+  Name:    Great Dane Crate Mat
+
+  ARCHIVE: breed-great_dane-cushion_cover
+  KEEP:    soul-breed-great_dane-cushion_cover
+  Name:    Great Dane Cushion Cover
+
+  ARCHIVE: breed-great_dane-pet_robe
+  KEEP:    soul-breed-great_dane-pet_robe
+  Name:    Great Dane Drying Robe
+
+  ARCHIVE: breed-great_dane-grooming_apron
+  KEEP:    soul-breed-great_dane-grooming_apron
+  Name:    Great Dane Grooming Apron
+
+  ARCHIVE: breed-great_dane-collar_tag
+  KEEP:    soul-breed-great_dane-collar_tag
+  Name:    Great Dane ID Tag
+
+  ARCHIVE: breed-great_dane-room_sign
+  KEEP:    soul-breed-great_dane-room_sign
+  Name:    Great Dane Room Sign
+
+  ARCHIVE: breed-havanese-crate_mat
+  KEEP:    soul-breed-havanese-crate_mat
+  Name:    Havanese Crate Mat
+
+  ARCHIVE: breed-havanese-cushion_cover
+  KEEP:    soul-breed-havanese-cushion_cover
+  Name:    Havanese Cushion Cover
+
+  ARCHIVE: breed-husky-pet_towel
+  KEEP:    soul-breed-husky-pet_towel
+  Name:    Husky Bath Towel
+
+  ARCHIVE: breed-husky-pet_robe
+  KEEP:    soul-breed-husky-pet_robe
+  Name:    Husky Drying Robe
+
+  ARCHIVE: breed-husky-grooming_apron
+  KEEP:    soul-breed-husky-grooming_apron
+  Name:    Husky Grooming Apron
+
+  ARCHIVE: breed-husky-collar_tag
+  KEEP:    soul-breed-husky-collar_tag
+  Name:    Husky ID Tag
+
+  ARCHIVE: breed-indie-crate_mat
+  KEEP:    soul-breed-indie-crate_mat
+  Name:    Indian Pariah Dog Crate Mat
+
+  ARCHIVE: breed-indie-cushion_cover
+  KEEP:    soul-breed-indie-cushion_cover
+  Name:    Indian Pariah Dog Cushion Cover
+
+  ARCHIVE: breed-indie-pet_towel
+  KEEP:    soul-breed-indie-pet_towel
+  Name:    Indie Bath Towel
+
+  ARCHIVE: breed-indie-pet_robe
+  KEEP:    soul-breed-indie-pet_robe
+  Name:    Indie Drying Robe
+
+  ARCHIVE: breed-indie-grooming_apron
+  KEEP:    soul-breed-indie-grooming_apron
+  Name:    Indie Grooming Apron
+
+  ARCHIVE: breed-indie-collar_tag
+  KEEP:    soul-breed-indie-collar_tag
+  Name:    Indie ID Tag
+
+  ARCHIVE: breed-irish_setter-pet_towel
+  KEEP:    soul-breed-irish_setter-pet_towel
+  Name:    Irish Setter Bath Towel
+
+  ARCHIVE: breed-irish_setter-pet_robe
+  KEEP:    soul-breed-irish_setter-pet_robe
+  Name:    Irish Setter Drying Robe
+
+  ARCHIVE: breed-irish_setter-grooming_apron
+  KEEP:    soul-breed-irish_setter-grooming_apron
+  Name:    Irish Setter Grooming Apron
+
+  ARCHIVE: breed-irish_setter-collar_tag
+  KEEP:    soul-breed-irish_setter-collar_tag
+  Name:    Irish Setter ID Tag
+
+  ARCHIVE: breed-italian_greyhound-pet_towel
+  KEEP:    soul-breed-italian_greyhound-pet_towel
+  Name:    Italian Greyhound Bath Towel
+
+  ARCHIVE: breed-italian_greyhound-pet_robe
+  KEEP:    soul-breed-italian_greyhound-pet_robe
+  Name:    Italian Greyhound Drying Robe
+
+  ARCHIVE: breed-italian_greyhound-grooming_apron
+  KEEP:    soul-breed-italian_greyhound-grooming_apron
+  Name:    Italian Greyhound Grooming Apron
+
+  ARCHIVE: breed-italian_greyhound-collar_tag
+  KEEP:    soul-breed-italian_greyhound-collar_tag
+  Name:    Italian Greyhound ID Tag
+
+  ARCHIVE: breed-jack_russell-pet_towel
+  KEEP:    soul-breed-jack_russell-pet_towel
+  Name:    Jack Russell Bath Towel
+
+  ARCHIVE: breed-jack_russell-pet_robe
+  KEEP:    soul-breed-jack_russell-pet_robe
+  Name:    Jack Russell Drying Robe
+
+  ARCHIVE: breed-jack_russell-grooming_apron
+  KEEP:    soul-breed-jack_russell-grooming_apron
+  Name:    Jack Russell Grooming Apron
+
+  ARCHIVE: breed-jack_russell-collar_tag
+  KEEP:    soul-breed-jack_russell-collar_tag
+  Name:    Jack Russell ID Tag
+
+  ARCHIVE: breed-labrador-pet_towel
+  KEEP:    soul-breed-labrador-pet_towel
+  Name:    Labrador Bath Towel
+
+  ARCHIVE: breed-labrador-pet_robe
+  KEEP:    soul-breed-labrador-pet_robe
+  Name:    Labrador Drying Robe
+
+  ARCHIVE: breed-labrador-grooming_apron
+  KEEP:    soul-breed-labrador-grooming_apron
+  Name:    Labrador Grooming Apron
+
+  ARCHIVE: breed-labrador-collar_tag
+  KEEP:    soul-breed-labrador-collar_tag
+  Name:    Labrador ID Tag
+
+  ARCHIVE: breed-labrador-crate_mat
+  KEEP:    soul-breed-labrador-crate_mat
+  Name:    Labrador Retriever Crate Mat
+
+  ARCHIVE: breed-labrador-cushion_cover
+  KEEP:    soul-breed-labrador-cushion_cover
+  Name:    Labrador Retriever Cushion Cover
+
+  ARCHIVE: breed-labrador-room_sign
+  KEEP:    soul-breed-labrador-room_sign
+  Name:    Labrador Retriever Room Sign
+
+  ARCHIVE: breed-lhasa_apso-pet_towel
+  KEEP:    soul-breed-lhasa_apso-pet_towel
+  Name:    Lhasa Apso Bath Towel
+
+  ARCHIVE: breed-lhasa_apso-pet_robe
+  KEEP:    soul-breed-lhasa_apso-pet_robe
+  Name:    Lhasa Apso Drying Robe
+
+  ARCHIVE: breed-lhasa_apso-grooming_apron
+  KEEP:    soul-breed-lhasa_apso-grooming_apron
+  Name:    Lhasa Apso Grooming Apron
+
+  ARCHIVE: breed-lhasa_apso-collar_tag
+  KEEP:    soul-breed-lhasa_apso-collar_tag
+  Name:    Lhasa Apso ID Tag
+
+  ARCHIVE: breed-maltese-pet_towel
+  KEEP:    soul-breed-maltese-pet_towel
+  Name:    Maltese Bath Towel
+
+  ARCHIVE: breed-maltese-crate_mat
+  KEEP:    soul-breed-maltese-crate_mat
+  Name:    Maltese Crate Mat
+
+  ARCHIVE: breed-maltese-cushion_cover
+  KEEP:    soul-breed-maltese-cushion_cover
+  Name:    Maltese Cushion Cover
+
+  ARCHIVE: breed-maltese-pet_robe
+  KEEP:    soul-breed-maltese-pet_robe
+  Name:    Maltese Drying Robe
+
+  ARCHIVE: breed-maltese-grooming_apron
+  KEEP:    soul-breed-maltese-grooming_apron
+  Name:    Maltese Grooming Apron
+
+  ARCHIVE: breed-maltese-collar_tag
+  KEEP:    soul-breed-maltese-collar_tag
+  Name:    Maltese ID Tag
+
+  ARCHIVE: breed-maltese-room_sign
+  KEEP:    soul-breed-maltese-room_sign
+  Name:    Maltese Room Sign
+
+  ARCHIVE: breed-pomeranian-pet_towel
+  KEEP:    soul-breed-pomeranian-pet_towel
+  Name:    Pomeranian Bath Towel
+
+  ARCHIVE: breed-pomeranian-crate_mat
+  KEEP:    soul-breed-pomeranian-crate_mat
+  Name:    Pomeranian Crate Mat
+
+  ARCHIVE: breed-pomeranian-cushion_cover
+  KEEP:    soul-breed-pomeranian-cushion_cover
+  Name:    Pomeranian Cushion Cover
+
+  ARCHIVE: breed-pomeranian-pet_robe
+  KEEP:    soul-breed-pomeranian-pet_robe
+  Name:    Pomeranian Drying Robe
+
+  ARCHIVE: breed-pomeranian-grooming_apron
+  KEEP:    soul-breed-pomeranian-grooming_apron
+  Name:    Pomeranian Grooming Apron
+
+  ARCHIVE: breed-pomeranian-collar_tag
+  KEEP:    soul-breed-pomeranian-collar_tag
+  Name:    Pomeranian ID Tag
+
+  ARCHIVE: breed-pomeranian-room_sign
+  KEEP:    soul-breed-pomeranian-room_sign
+  Name:    Pomeranian Room Sign
+
+  ARCHIVE: breed-poodle-pet_towel
+  KEEP:    soul-breed-poodle-pet_towel
+  Name:    Poodle Bath Towel
+
+  ARCHIVE: breed-poodle-crate_mat
+  KEEP:    soul-breed-poodle-crate_mat
+  Name:    Poodle Crate Mat
+
+  ARCHIVE: breed-poodle-cushion_cover
+  KEEP:    soul-breed-poodle-cushion_cover
+  Name:    Poodle Cushion Cover
+
+  ARCHIVE: breed-poodle-pet_robe
+  KEEP:    soul-breed-poodle-pet_robe
+  Name:    Poodle Drying Robe
+
+  ARCHIVE: breed-poodle-grooming_apron
+  KEEP:    soul-breed-poodle-grooming_apron
+  Name:    Poodle Grooming Apron
+
+  ARCHIVE: breed-poodle-collar_tag
+  KEEP:    soul-breed-poodle-collar_tag
+  Name:    Poodle ID Tag
+
+  ARCHIVE: breed-poodle-room_sign
+  KEEP:    soul-breed-poodle-room_sign
+  Name:    Poodle Room Sign
+
+  ARCHIVE: breed-pug-pet_towel
+  KEEP:    soul-breed-pug-pet_towel
+  Name:    Pug Bath Towel
+
+  ARCHIVE: breed-pug-crate_mat
+  KEEP:    soul-breed-pug-crate_mat
+  Name:    Pug Crate Mat
+
+  ARCHIVE: breed-pug-cushion_cover
+  KEEP:    soul-breed-pug-cushion_cover
+  Name:    Pug Cushion Cover
+
+  ARCHIVE: breed-pug-pet_robe
+  KEEP:    soul-breed-pug-pet_robe
+  Name:    Pug Drying Robe
+
+  ARCHIVE: breed-pug-grooming_apron
+  KEEP:    soul-breed-pug-grooming_apron
+  Name:    Pug Grooming Apron
+
+  ARCHIVE: breed-pug-collar_tag
+  KEEP:    soul-breed-pug-collar_tag
+  Name:    Pug ID Tag
+
+  ARCHIVE: breed-pug-room_sign
+  KEEP:    soul-breed-pug-room_sign
+  Name:    Pug Room Sign
+
+  ARCHIVE: breed-rottweiler-pet_towel
+  KEEP:    soul-breed-rottweiler-pet_towel
+  Name:    Rottweiler Bath Towel
+
+  ARCHIVE: breed-rottweiler-crate_mat
+  KEEP:    soul-breed-rottweiler-crate_mat
+  Name:    Rottweiler Crate Mat
+
+  ARCHIVE: breed-rottweiler-cushion_cover
+  KEEP:    soul-breed-rottweiler-cushion_cover
+  Name:    Rottweiler Cushion Cover
+
+  ARCHIVE: breed-rottweiler-pet_robe
+  KEEP:    soul-breed-rottweiler-pet_robe
+  Name:    Rottweiler Drying Robe
+
+  ARCHIVE: breed-rottweiler-grooming_apron
+  KEEP:    soul-breed-rottweiler-grooming_apron
+  Name:    Rottweiler Grooming Apron
+
+  ARCHIVE: breed-rottweiler-collar_tag
+  KEEP:    soul-breed-rottweiler-collar_tag
+  Name:    Rottweiler ID Tag
+
+  ARCHIVE: breed-rottweiler-room_sign
+  KEEP:    soul-breed-rottweiler-room_sign
+  Name:    Rottweiler Room Sign
+
+  ARCHIVE: breed-saint_bernard-pet_towel
+  KEEP:    soul-breed-saint_bernard-pet_towel
+  Name:    Saint Bernard Bath Towel
+
+  ARCHIVE: breed-saint_bernard-pet_robe
+  KEEP:    soul-breed-saint_bernard-pet_robe
+  Name:    Saint Bernard Drying Robe
+
+  ARCHIVE: breed-saint_bernard-grooming_apron
+  KEEP:    soul-breed-saint_bernard-grooming_apron
+  Name:    Saint Bernard Grooming Apron
+
+  ARCHIVE: breed-samoyed-crate_mat
+  KEEP:    soul-breed-samoyed-crate_mat
+  Name:    Samoyed Crate Mat
+
+  ARCHIVE: breed-samoyed-cushion_cover
+  KEEP:    soul-breed-samoyed-cushion_cover
+  Name:    Samoyed Cushion Cover
+
+  ARCHIVE: breed-schnoodle-pet_towel
+  KEEP:    soul-breed-schnoodle-pet_towel
+  Name:    Schnoodle Bath Towel
+
+  ARCHIVE: breed-schnoodle-pet_robe
+  KEEP:    soul-breed-schnoodle-pet_robe
+  Name:    Schnoodle Drying Robe
+
+  ARCHIVE: breed-schnoodle-grooming_apron
+  KEEP:    soul-breed-schnoodle-grooming_apron
+  Name:    Schnoodle Grooming Apron
+
+  ARCHIVE: breed-schnoodle-collar_tag
+  KEEP:    soul-breed-schnoodle-collar_tag
+  Name:    Schnoodle ID Tag
+
+  ARCHIVE: breed-scottish_terrier-pet_towel
+  KEEP:    soul-breed-scottish_terrier-pet_towel
+  Name:    Scottish Terrier Bath Towel
+
+  ARCHIVE: breed-scottish_terrier-crate_mat
+  KEEP:    soul-breed-scottish_terrier-crate_mat
+  Name:    Scottish Terrier Crate Mat
+
+  ARCHIVE: breed-scottish_terrier-cushion_cover
+  KEEP:    soul-breed-scottish_terrier-cushion_cover
+  Name:    Scottish Terrier Cushion Cover
+
+  ARCHIVE: breed-scottish_terrier-pet_robe
+  KEEP:    soul-breed-scottish_terrier-pet_robe
+  Name:    Scottish Terrier Drying Robe
+
+  ARCHIVE: breed-scottish_terrier-grooming_apron
+  KEEP:    soul-breed-scottish_terrier-grooming_apron
+  Name:    Scottish Terrier Grooming Apron
+
+  ARCHIVE: breed-scottish_terrier-collar_tag
+  KEEP:    soul-breed-scottish_terrier-collar_tag
+  Name:    Scottish Terrier ID Tag
+
+  ARCHIVE: breed-shetland_sheepdog-crate_mat
+  KEEP:    soul-breed-shetland_sheepdog-crate_mat
+  Name:    Shetland Sheepdog Crate Mat
+
+  ARCHIVE: breed-shetland_sheepdog-cushion_cover
+  KEEP:    soul-breed-shetland_sheepdog-cushion_cover
+  Name:    Shetland Sheepdog Cushion Cover
+
+  ARCHIVE: breed-shih_tzu-pet_towel
+  KEEP:    soul-breed-shih_tzu-pet_towel
+  Name:    Shih Tzu Bath Towel
+
+  ARCHIVE: breed-shih_tzu-crate_mat
+  KEEP:    soul-breed-shih_tzu-crate_mat
+  Name:    Shih Tzu Crate Mat
+
+  ARCHIVE: breed-shih_tzu-cushion_cover
+  KEEP:    soul-breed-shih_tzu-cushion_cover
+  Name:    Shih Tzu Cushion Cover
+
+  ARCHIVE: breed-shih_tzu-pet_robe
+  KEEP:    soul-breed-shih_tzu-pet_robe
+  Name:    Shih Tzu Drying Robe
+
+  ARCHIVE: breed-shih_tzu-grooming_apron
+  KEEP:    soul-breed-shih_tzu-grooming_apron
+  Name:    Shih Tzu Grooming Apron
+
+  ARCHIVE: breed-shih_tzu-collar_tag
+  KEEP:    soul-breed-shih_tzu-collar_tag
+  Name:    Shih Tzu ID Tag
+
+  ARCHIVE: breed-shih_tzu-room_sign
+  KEEP:    soul-breed-shih_tzu-room_sign
+  Name:    Shih Tzu Room Sign
+
+  ARCHIVE: breed-siberian_husky-crate_mat
+  KEEP:    soul-breed-siberian_husky-crate_mat
+  Name:    Siberian Husky Crate Mat
+
+  ARCHIVE: breed-siberian_husky-cushion_cover
+  KEEP:    soul-breed-siberian_husky-cushion_cover
+  Name:    Siberian Husky Cushion Cover
+
+  ARCHIVE: breed-siberian_husky-room_sign
+  KEEP:    soul-breed-siberian_husky-room_sign
+  Name:    Siberian Husky Room Sign
+
+  ARCHIVE: breed-st_bernard-pet_towel
+  KEEP:    soul-breed-st_bernard-pet_towel
+  Name:    St Bernard Bath Towel
+
+  ARCHIVE: breed-st_bernard-pet_robe
+  KEEP:    soul-breed-st_bernard-pet_robe
+  Name:    St Bernard Drying Robe
+
+  ARCHIVE: breed-st_bernard-grooming_apron
+  KEEP:    soul-breed-st_bernard-grooming_apron
+  Name:    St Bernard Grooming Apron
+
+  ARCHIVE: breed-st_bernard-collar_tag
+  KEEP:    soul-breed-st_bernard-collar_tag
+  Name:    St Bernard ID Tag
+
+  ARCHIVE: breed-st_bernard-crate_mat
+  KEEP:    soul-breed-st_bernard-crate_mat
+  Name:    St. Bernard Crate Mat
+
+  ARCHIVE: breed-st_bernard-cushion_cover
+  KEEP:    soul-breed-st_bernard-cushion_cover
+  Name:    St. Bernard Cushion Cover
+
+  ARCHIVE: breed-vizsla-crate_mat
+  KEEP:    soul-breed-vizsla-crate_mat
+  Name:    Vizsla Crate Mat
+
+  ARCHIVE: breed-vizsla-cushion_cover
+  KEEP:    soul-breed-vizsla-cushion_cover
+  Name:    Vizsla Cushion Cover
+
+  ARCHIVE: breed-weimaraner-crate_mat
+  KEEP:    soul-breed-weimaraner-crate_mat
+  Name:    Weimaraner Crate Mat
+
+  ARCHIVE: breed-weimaraner-cushion_cover
+  KEEP:    soul-breed-weimaraner-cushion_cover
+  Name:    Weimaraner Cushion Cover
+
+  ARCHIVE: breed-yorkshire-pet_towel
+  KEEP:    soul-breed-yorkshire-pet_towel
+  Name:    Yorkshire Bath Towel
+
+  ARCHIVE: breed-yorkshire-pet_robe
+  KEEP:    soul-breed-yorkshire-pet_robe
+  Name:    Yorkshire Drying Robe
+
+  ARCHIVE: breed-yorkshire-grooming_apron
+  KEEP:    soul-breed-yorkshire-grooming_apron
+  Name:    Yorkshire Grooming Apron
+
+  ARCHIVE: breed-yorkshire-collar_tag
+  KEEP:    soul-breed-yorkshire-collar_tag
+  Name:    Yorkshire ID Tag
+
+  ARCHIVE: breed-yorkshire-crate_mat
+  KEEP:    soul-breed-yorkshire-crate_mat
+  Name:    Yorkshire Terrier Crate Mat
+
+  ARCHIVE: breed-yorkshire-cushion_cover
+  KEEP:    soul-breed-yorkshire-cushion_cover
+  Name:    Yorkshire Terrier Cushion Cover
+
+  ARCHIVE: breed-yorkshire-room_sign
+  KEEP:    soul-breed-yorkshire-room_sign
+  Name:    Yorkshire Terrier Room Sign
+
+[CELEBRATE] — 361 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-akita-cake_topper
+  KEEP:    soul-breed-akita-cake_topper
+  Name:    Akita Birthday Cake Topper
+
+  ARCHIVE: breed-akita-birthday_card
+  KEEP:    soul-breed-akita-birthday_card
+  Name:    Akita Birthday Card
+
+  ARCHIVE: breed-akita-party_banner
+  KEEP:    soul-breed-akita-party_banner
+  Name:    Akita Party Banner
+
+  ARCHIVE: breed-akita-return_gift_pack
+  KEEP:    soul-breed-akita-return_gift_pack
+  Name:    Akita Party Favor Pack
+
+  ARCHIVE: breed-akita-pupcake_set
+  KEEP:    soul-breed-akita-pupcake_set
+  Name:    Akita Pupcake Decoration Set
+
+  ARCHIVE: breed-american_bully-bandana
+  KEEP:    soul-breed-american_bully-bandana
+  Name:    American Bully Bandana
+
+  ARCHIVE: breed-american_bully-keychain
+  KEEP:    soul-breed-american_bully-keychain
+  Name:    American Bully Keychain
+
+  ARCHIVE: breed-american_bully-mug
+  KEEP:    soul-breed-american_bully-mug
+  Name:    American Bully Lover Mug
+
+  ARCHIVE: breed-american_bully-party_hat
+  KEEP:    soul-breed-american_bully-party_hat
+  Name:    American Bully Party Hat
+
+  ARCHIVE: breed-american_bully-frame
+  KEEP:    soul-breed-american_bully-frame
+  Name:    American Bully Portrait Frame
+
+  ARCHIVE: breed-american_bully-tote_bag
+  KEEP:    soul-breed-american_bully-tote_bag
+  Name:    American Bully Tote Bag
+
+  ARCHIVE: breed-australian_shepherd-cake_topper
+  KEEP:    soul-breed-australian_shepherd-cake_topper
+  Name:    Australian Shepherd Birthday Cake Topper
+
+  ARCHIVE: breed-australian_shepherd-birthday_card
+  KEEP:    soul-breed-australian_shepherd-birthday_card
+  Name:    Australian Shepherd Birthday Card
+
+  ARCHIVE: breed-australian_shepherd-party_banner
+  KEEP:    soul-breed-australian_shepherd-party_banner
+  Name:    Australian Shepherd Party Banner
+
+  ARCHIVE: breed-australian_shepherd-return_gift_pack
+  KEEP:    soul-breed-australian_shepherd-return_gift_pack
+  Name:    Australian Shepherd Party Favor Pack
+
+  ARCHIVE: breed-australian_shepherd-pupcake_set
+  KEEP:    soul-breed-australian_shepherd-pupcake_set
+  Name:    Australian Shepherd Pupcake Decoration Set
+
+  ARCHIVE: breed-beagle-bandana
+  KEEP:    soul-breed-beagle-bandana
+  Name:    Beagle Bandana
+
+  ARCHIVE: breed-beagle-cake_topper
+  KEEP:    soul-breed-beagle-cake_topper
+  Name:    Beagle Birthday Cake Topper
+
+  ARCHIVE: breed-beagle-birthday_card
+  KEEP:    soul-breed-beagle-birthday_card
+  Name:    Beagle Birthday Card
+
+  ARCHIVE: breed-beagle-keychain
+  KEEP:    soul-breed-beagle-keychain
+  Name:    Beagle Keychain
+
+  ARCHIVE: breed-beagle-mug
+  KEEP:    soul-breed-beagle-mug
+  Name:    Beagle Lover Mug
+
+  ARCHIVE: breed-beagle-party_banner
+  KEEP:    soul-breed-beagle-party_banner
+  Name:    Beagle Party Banner
+
+  ARCHIVE: breed-beagle-return_gift_pack
+  KEEP:    soul-breed-beagle-return_gift_pack
+  Name:    Beagle Party Favor Pack
+
+  ARCHIVE: breed-beagle-party_hat
+  KEEP:    soul-breed-beagle-party_hat
+  Name:    Beagle Party Hat
+
+  ARCHIVE: breed-beagle-frame
+  KEEP:    soul-breed-beagle-frame
+  Name:    Beagle Portrait Frame
+
+  ARCHIVE: breed-beagle-pupcake_set
+  KEEP:    soul-breed-beagle-pupcake_set
+  Name:    Beagle Pupcake Decoration Set
+
+  ARCHIVE: breed-beagle-tote_bag
+  KEEP:    soul-breed-beagle-tote_bag
+  Name:    Beagle Tote Bag
+
+  ARCHIVE: breed-bernese_mountain-cake_topper
+  KEEP:    soul-breed-bernese_mountain-cake_topper
+  Name:    Bernese Mountain Dog Birthday Cake Topper
+
+  ARCHIVE: breed-bernese_mountain-birthday_card
+  KEEP:    soul-breed-bernese_mountain-birthday_card
+  Name:    Bernese Mountain Dog Birthday Card
+
+  ARCHIVE: breed-bernese_mountain-party_banner
+  KEEP:    soul-breed-bernese_mountain-party_banner
+  Name:    Bernese Mountain Dog Party Banner
+
+  ARCHIVE: breed-bernese_mountain-return_gift_pack
+  KEEP:    soul-breed-bernese_mountain-return_gift_pack
+  Name:    Bernese Mountain Dog Party Favor Pack
+
+  ARCHIVE: breed-bernese_mountain-pupcake_set
+  KEEP:    soul-breed-bernese_mountain-pupcake_set
+  Name:    Bernese Mountain Dog Pupcake Decoration Set
+
+  ARCHIVE: breed-border_collie-bandana
+  KEEP:    soul-breed-border_collie-bandana
+  Name:    Border Collie Bandana
+
+  ARCHIVE: breed-border_collie-cake_topper
+  KEEP:    soul-breed-border_collie-cake_topper
+  Name:    Border Collie Birthday Cake Topper
+
+  ARCHIVE: breed-border_collie-birthday_card
+  KEEP:    soul-breed-border_collie-birthday_card
+  Name:    Border Collie Birthday Card
+
+  ARCHIVE: breed-border_collie-keychain
+  KEEP:    soul-breed-border_collie-keychain
+  Name:    Border Collie Keychain
+
+  ARCHIVE: breed-border_collie-mug
+  KEEP:    soul-breed-border_collie-mug
+  Name:    Border Collie Lover Mug
+
+  ARCHIVE: breed-border_collie-party_banner
+  KEEP:    soul-breed-border_collie-party_banner
+  Name:    Border Collie Party Banner
+
+  ARCHIVE: breed-border_collie-return_gift_pack
+  KEEP:    soul-breed-border_collie-return_gift_pack
+  Name:    Border Collie Party Favor Pack
+
+  ARCHIVE: breed-border_collie-party_hat
+  KEEP:    soul-breed-border_collie-party_hat
+  Name:    Border Collie Party Hat
+
+  ARCHIVE: breed-border_collie-frame
+  KEEP:    soul-breed-border_collie-frame
+  Name:    Border Collie Portrait Frame
+
+  ARCHIVE: breed-border_collie-pupcake_set
+  KEEP:    soul-breed-border_collie-pupcake_set
+  Name:    Border Collie Pupcake Decoration Set
+
+  ARCHIVE: breed-border_collie-tote_bag
+  KEEP:    soul-breed-border_collie-tote_bag
+  Name:    Border Collie Tote Bag
+
+  ARCHIVE: breed-boston_terrier-cake_topper
+  KEEP:    soul-breed-boston_terrier-cake_topper
+  Name:    Boston Terrier Birthday Cake Topper
+
+  ARCHIVE: breed-boston_terrier-birthday_card
+  KEEP:    soul-breed-boston_terrier-birthday_card
+  Name:    Boston Terrier Birthday Card
+
+  ARCHIVE: breed-boston_terrier-party_banner
+  KEEP:    soul-breed-boston_terrier-party_banner
+  Name:    Boston Terrier Party Banner
+
+  ARCHIVE: breed-boston_terrier-return_gift_pack
+  KEEP:    soul-breed-boston_terrier-return_gift_pack
+  Name:    Boston Terrier Party Favor Pack
+
+  ARCHIVE: breed-boston_terrier-pupcake_set
+  KEEP:    soul-breed-boston_terrier-pupcake_set
+  Name:    Boston Terrier Pupcake Decoration Set
+
+  ARCHIVE: breed-boxer-bandana
+  KEEP:    soul-breed-boxer-bandana
+  Name:    Boxer Bandana
+
+  ARCHIVE: breed-boxer-cake_topper
+  KEEP:    soul-breed-boxer-cake_topper
+  Name:    Boxer Birthday Cake Topper
+
+  ARCHIVE: breed-boxer-birthday_card
+  KEEP:    soul-breed-boxer-birthday_card
+  Name:    Boxer Birthday Card
+
+  ARCHIVE: breed-boxer-keychain
+  KEEP:    soul-breed-boxer-keychain
+  Name:    Boxer Keychain
+
+  ARCHIVE: breed-boxer-mug
+  KEEP:    soul-breed-boxer-mug
+  Name:    Boxer Lover Mug
+
+  ARCHIVE: breed-boxer-party_banner
+  KEEP:    soul-breed-boxer-party_banner
+  Name:    Boxer Party Banner
+
+  ARCHIVE: breed-boxer-return_gift_pack
+  KEEP:    soul-breed-boxer-return_gift_pack
+  Name:    Boxer Party Favor Pack
+
+  ARCHIVE: breed-boxer-party_hat
+  KEEP:    soul-breed-boxer-party_hat
+  Name:    Boxer Party Hat
+
+  ARCHIVE: breed-boxer-frame
+  KEEP:    soul-breed-boxer-frame
+  Name:    Boxer Portrait Frame
+
+  ARCHIVE: breed-boxer-pupcake_set
+  KEEP:    soul-breed-boxer-pupcake_set
+  Name:    Boxer Pupcake Decoration Set
+
+  ARCHIVE: breed-boxer-tote_bag
+  KEEP:    soul-breed-boxer-tote_bag
+  Name:    Boxer Tote Bag
+
+  ARCHIVE: breed-cavalier-bandana
+  KEEP:    soul-breed-cavalier-bandana
+  Name:    Cavalier Bandana
+
+  ARCHIVE: breed-cavalier-keychain
+  KEEP:    soul-breed-cavalier-keychain
+  Name:    Cavalier Keychain
+
+  ARCHIVE: breed-cavalier-cake_topper
+  KEEP:    soul-breed-cavalier-cake_topper
+  Name:    Cavalier King Charles Birthday Cake Topper
+
+  ARCHIVE: breed-cavalier-birthday_card
+  KEEP:    soul-breed-cavalier-birthday_card
+  Name:    Cavalier King Charles Birthday Card
+
+  ARCHIVE: breed-cavalier-party_banner
+  KEEP:    soul-breed-cavalier-party_banner
+  Name:    Cavalier King Charles Party Banner
+
+  ARCHIVE: breed-cavalier-return_gift_pack
+  KEEP:    soul-breed-cavalier-return_gift_pack
+  Name:    Cavalier King Charles Party Favor Pack
+
+  ARCHIVE: breed-cavalier-pupcake_set
+  KEEP:    soul-breed-cavalier-pupcake_set
+  Name:    Cavalier King Charles Pupcake Decoration Set
+
+  ARCHIVE: breed-cavalier-mug
+  KEEP:    soul-breed-cavalier-mug
+  Name:    Cavalier Lover Mug
+
+  ARCHIVE: breed-cavalier-party_hat
+  KEEP:    soul-breed-cavalier-party_hat
+  Name:    Cavalier Party Hat
+
+  ARCHIVE: breed-cavalier-frame
+  KEEP:    soul-breed-cavalier-frame
+  Name:    Cavalier Portrait Frame
+
+  ARCHIVE: breed-cavalier-tote_bag
+  KEEP:    soul-breed-cavalier-tote_bag
+  Name:    Cavalier Tote Bag
+
+  ARCHIVE: breed-chihuahua-bandana
+  KEEP:    soul-breed-chihuahua-bandana
+  Name:    Chihuahua Bandana
+
+  ARCHIVE: breed-chihuahua-cake_topper
+  KEEP:    soul-breed-chihuahua-cake_topper
+  Name:    Chihuahua Birthday Cake Topper
+
+  ARCHIVE: breed-chihuahua-birthday_card
+  KEEP:    soul-breed-chihuahua-birthday_card
+  Name:    Chihuahua Birthday Card
+
+  ARCHIVE: breed-chihuahua-keychain
+  KEEP:    soul-breed-chihuahua-keychain
+  Name:    Chihuahua Keychain
+
+  ARCHIVE: breed-chihuahua-mug
+  KEEP:    soul-breed-chihuahua-mug
+  Name:    Chihuahua Lover Mug
+
+  ARCHIVE: breed-chihuahua-party_banner
+  KEEP:    soul-breed-chihuahua-party_banner
+  Name:    Chihuahua Party Banner
+
+  ARCHIVE: breed-chihuahua-return_gift_pack
+  KEEP:    soul-breed-chihuahua-return_gift_pack
+  Name:    Chihuahua Party Favor Pack
+
+  ARCHIVE: breed-chihuahua-party_hat
+  KEEP:    soul-breed-chihuahua-party_hat
+  Name:    Chihuahua Party Hat
+
+  ARCHIVE: breed-chihuahua-frame
+  KEEP:    soul-breed-chihuahua-frame
+  Name:    Chihuahua Portrait Frame
+
+  ARCHIVE: breed-chihuahua-pupcake_set
+  KEEP:    soul-breed-chihuahua-pupcake_set
+  Name:    Chihuahua Pupcake Decoration Set
+
+  ARCHIVE: breed-chihuahua-tote_bag
+  KEEP:    soul-breed-chihuahua-tote_bag
+  Name:    Chihuahua Tote Bag
+
+  ARCHIVE: breed-chow_chow-bandana
+  KEEP:    soul-breed-chow_chow-bandana
+  Name:    Chow Chow Bandana
+
+  ARCHIVE: breed-chow_chow-keychain
+  KEEP:    soul-breed-chow_chow-keychain
+  Name:    Chow Chow Keychain
+
+  ARCHIVE: breed-chow_chow-mug
+  KEEP:    soul-breed-chow_chow-mug
+  Name:    Chow Chow Lover Mug
+
+  ARCHIVE: breed-chow_chow-party_hat
+  KEEP:    soul-breed-chow_chow-party_hat
+  Name:    Chow Chow Party Hat
+
+  ARCHIVE: breed-chow_chow-frame
+  KEEP:    soul-breed-chow_chow-frame
+  Name:    Chow Chow Portrait Frame
+
+  ARCHIVE: breed-chow_chow-tote_bag
+  KEEP:    soul-breed-chow_chow-tote_bag
+  Name:    Chow Chow Tote Bag
+
+  ARCHIVE: breed-cocker_spaniel-bandana
+  KEEP:    soul-breed-cocker_spaniel-bandana
+  Name:    Cocker Spaniel Bandana
+
+  ARCHIVE: breed-cocker_spaniel-cake_topper
+  KEEP:    soul-breed-cocker_spaniel-cake_topper
+  Name:    Cocker Spaniel Birthday Cake Topper
+
+  ARCHIVE: breed-cocker_spaniel-birthday_card
+  KEEP:    soul-breed-cocker_spaniel-birthday_card
+  Name:    Cocker Spaniel Birthday Card
+
+  ARCHIVE: breed-cocker_spaniel-keychain
+  KEEP:    soul-breed-cocker_spaniel-keychain
+  Name:    Cocker Spaniel Keychain
+
+  ARCHIVE: breed-cocker_spaniel-mug
+  KEEP:    soul-breed-cocker_spaniel-mug
+  Name:    Cocker Spaniel Lover Mug
+
+  ARCHIVE: breed-cocker_spaniel-party_banner
+  KEEP:    soul-breed-cocker_spaniel-party_banner
+  Name:    Cocker Spaniel Party Banner
+
+  ARCHIVE: breed-cocker_spaniel-return_gift_pack
+  KEEP:    soul-breed-cocker_spaniel-return_gift_pack
+  Name:    Cocker Spaniel Party Favor Pack
+
+  ARCHIVE: breed-cocker_spaniel-party_hat
+  KEEP:    soul-breed-cocker_spaniel-party_hat
+  Name:    Cocker Spaniel Party Hat
+
+  ARCHIVE: breed-cocker_spaniel-frame
+  KEEP:    soul-breed-cocker_spaniel-frame
+  Name:    Cocker Spaniel Portrait Frame
+
+  ARCHIVE: breed-cocker_spaniel-pupcake_set
+  KEEP:    soul-breed-cocker_spaniel-pupcake_set
+  Name:    Cocker Spaniel Pupcake Decoration Set
+
+  ARCHIVE: breed-cocker_spaniel-tote_bag
+  KEEP:    soul-breed-cocker_spaniel-tote_bag
+  Name:    Cocker Spaniel Tote Bag
+
+  ARCHIVE: breed-dachshund-bandana
+  KEEP:    soul-breed-dachshund-bandana
+  Name:    Dachshund Bandana
+
+  ARCHIVE: breed-dachshund-cake_topper
+  KEEP:    soul-breed-dachshund-cake_topper
+  Name:    Dachshund Birthday Cake Topper
+
+  ARCHIVE: breed-dachshund-birthday_card
+  KEEP:    soul-breed-dachshund-birthday_card
+  Name:    Dachshund Birthday Card
+
+  ARCHIVE: breed-dachshund-keychain
+  KEEP:    soul-breed-dachshund-keychain
+  Name:    Dachshund Keychain
+
+  ARCHIVE: breed-dachshund-mug
+  KEEP:    soul-breed-dachshund-mug
+  Name:    Dachshund Lover Mug
+
+  ARCHIVE: breed-dachshund-party_banner
+  KEEP:    soul-breed-dachshund-party_banner
+  Name:    Dachshund Party Banner
+
+  ARCHIVE: breed-dachshund-return_gift_pack
+  KEEP:    soul-breed-dachshund-return_gift_pack
+  Name:    Dachshund Party Favor Pack
+
+  ARCHIVE: breed-dachshund-party_hat
+  KEEP:    soul-breed-dachshund-party_hat
+  Name:    Dachshund Party Hat
+
+  ARCHIVE: breed-dachshund-frame
+  KEEP:    soul-breed-dachshund-frame
+  Name:    Dachshund Portrait Frame
+
+  ARCHIVE: breed-dachshund-pupcake_set
+  KEEP:    soul-breed-dachshund-pupcake_set
+  Name:    Dachshund Pupcake Decoration Set
+
+  ARCHIVE: breed-dachshund-tote_bag
+  KEEP:    soul-breed-dachshund-tote_bag
+  Name:    Dachshund Tote Bag
+
+  ARCHIVE: breed-dalmatian-bandana
+  KEEP:    soul-breed-dalmatian-bandana
+  Name:    Dalmatian Bandana
+
+  ARCHIVE: breed-dalmatian-keychain
+  KEEP:    soul-breed-dalmatian-keychain
+  Name:    Dalmatian Keychain
+
+  ARCHIVE: breed-dalmatian-mug
+  KEEP:    soul-breed-dalmatian-mug
+  Name:    Dalmatian Lover Mug
+
+  ARCHIVE: breed-dalmatian-party_hat
+  KEEP:    soul-breed-dalmatian-party_hat
+  Name:    Dalmatian Party Hat
+
+  ARCHIVE: breed-dalmatian-frame
+  KEEP:    soul-breed-dalmatian-frame
+  Name:    Dalmatian Portrait Frame
+
+  ARCHIVE: breed-dalmatian-tote_bag
+  KEEP:    soul-breed-dalmatian-tote_bag
+  Name:    Dalmatian Tote Bag
+
+  ARCHIVE: breed-doberman-bandana
+  KEEP:    soul-breed-doberman-bandana
+  Name:    Doberman Bandana
+
+  ARCHIVE: breed-doberman-cake_topper
+  KEEP:    soul-breed-doberman-cake_topper
+  Name:    Doberman Birthday Cake Topper
+
+  ARCHIVE: breed-doberman-birthday_card
+  KEEP:    soul-breed-doberman-birthday_card
+  Name:    Doberman Birthday Card
+
+  ARCHIVE: breed-doberman-keychain
+  KEEP:    soul-breed-doberman-keychain
+  Name:    Doberman Keychain
+
+  ARCHIVE: breed-doberman-mug
+  KEEP:    soul-breed-doberman-mug
+  Name:    Doberman Lover Mug
+
+  ARCHIVE: breed-doberman-party_banner
+  KEEP:    soul-breed-doberman-party_banner
+  Name:    Doberman Party Banner
+
+  ARCHIVE: breed-doberman-return_gift_pack
+  KEEP:    soul-breed-doberman-return_gift_pack
+  Name:    Doberman Party Favor Pack
+
+  ARCHIVE: breed-doberman-party_hat
+  KEEP:    soul-breed-doberman-party_hat
+  Name:    Doberman Party Hat
+
+  ARCHIVE: breed-doberman-frame
+  KEEP:    soul-breed-doberman-frame
+  Name:    Doberman Portrait Frame
+
+  ARCHIVE: breed-doberman-pupcake_set
+  KEEP:    soul-breed-doberman-pupcake_set
+  Name:    Doberman Pupcake Decoration Set
+
+  ARCHIVE: breed-doberman-tote_bag
+  KEEP:    soul-breed-doberman-tote_bag
+  Name:    Doberman Tote Bag
+
+  ARCHIVE: breed-bulldog-bandana
+  KEEP:    soul-breed-bulldog-bandana
+  Name:    English Bulldog Bandana
+
+  ARCHIVE: breed-bulldog-cake_topper
+  KEEP:    soul-breed-bulldog-cake_topper
+  Name:    English Bulldog Birthday Cake Topper
+
+  ARCHIVE: breed-bulldog-birthday_card
+  KEEP:    soul-breed-bulldog-birthday_card
+  Name:    English Bulldog Birthday Card
+
+  ARCHIVE: breed-bulldog-keychain
+  KEEP:    soul-breed-bulldog-keychain
+  Name:    English Bulldog Keychain
+
+  ARCHIVE: breed-bulldog-mug
+  KEEP:    soul-breed-bulldog-mug
+  Name:    English Bulldog Lover Mug
+
+  ARCHIVE: breed-bulldog-party_banner
+  KEEP:    soul-breed-bulldog-party_banner
+  Name:    English Bulldog Party Banner
+
+  ARCHIVE: breed-bulldog-return_gift_pack
+  KEEP:    soul-breed-bulldog-return_gift_pack
+  Name:    English Bulldog Party Favor Pack
+
+  ARCHIVE: breed-bulldog-party_hat
+  KEEP:    soul-breed-bulldog-party_hat
+  Name:    English Bulldog Party Hat
+
+  ARCHIVE: breed-bulldog-frame
+  KEEP:    soul-breed-bulldog-frame
+  Name:    English Bulldog Portrait Frame
+
+  ARCHIVE: breed-bulldog-pupcake_set
+  KEEP:    soul-breed-bulldog-pupcake_set
+  Name:    English Bulldog Pupcake Decoration Set
+
+  ARCHIVE: breed-bulldog-tote_bag
+  KEEP:    soul-breed-bulldog-tote_bag
+  Name:    English Bulldog Tote Bag
+
+  ARCHIVE: breed-french_bulldog-bandana
+  KEEP:    soul-breed-french_bulldog-bandana
+  Name:    French Bulldog Bandana
+
+  ARCHIVE: breed-french_bulldog-keychain
+  KEEP:    soul-breed-french_bulldog-keychain
+  Name:    French Bulldog Keychain
+
+  ARCHIVE: breed-french_bulldog-mug
+  KEEP:    soul-breed-french_bulldog-mug
+  Name:    French Bulldog Lover Mug
+
+  ARCHIVE: breed-french_bulldog-party_hat
+  KEEP:    soul-breed-french_bulldog-party_hat
+  Name:    French Bulldog Party Hat
+
+  ARCHIVE: breed-french_bulldog-frame
+  KEEP:    soul-breed-french_bulldog-frame
+  Name:    French Bulldog Portrait Frame
+
+  ARCHIVE: breed-french_bulldog-tote_bag
+  KEEP:    soul-breed-french_bulldog-tote_bag
+  Name:    French Bulldog Tote Bag
+
+  ARCHIVE: breed-german_shepherd-bandana
+  KEEP:    soul-breed-german_shepherd-bandana
+  Name:    German Shepherd Bandana
+
+  ARCHIVE: breed-german_shepherd-cake_topper
+  KEEP:    soul-breed-german_shepherd-cake_topper
+  Name:    German Shepherd Birthday Cake Topper
+
+  ARCHIVE: breed-german_shepherd-birthday_card
+  KEEP:    soul-breed-german_shepherd-birthday_card
+  Name:    German Shepherd Birthday Card
+
+  ARCHIVE: breed-german_shepherd-keychain
+  KEEP:    soul-breed-german_shepherd-keychain
+  Name:    German Shepherd Keychain
+
+  ARCHIVE: breed-german_shepherd-mug
+  KEEP:    soul-breed-german_shepherd-mug
+  Name:    German Shepherd Lover Mug
+
+  ARCHIVE: breed-german_shepherd-party_banner
+  KEEP:    soul-breed-german_shepherd-party_banner
+  Name:    German Shepherd Party Banner
+
+  ARCHIVE: breed-german_shepherd-return_gift_pack
+  KEEP:    soul-breed-german_shepherd-return_gift_pack
+  Name:    German Shepherd Party Favor Pack
+
+  ARCHIVE: breed-german_shepherd-party_hat
+  KEEP:    soul-breed-german_shepherd-party_hat
+  Name:    German Shepherd Party Hat
+
+  ARCHIVE: breed-german_shepherd-frame
+  KEEP:    soul-breed-german_shepherd-frame
+  Name:    German Shepherd Portrait Frame
+
+  ARCHIVE: breed-german_shepherd-pupcake_set
+  KEEP:    soul-breed-german_shepherd-pupcake_set
+  Name:    German Shepherd Pupcake Decoration Set
+
+  ARCHIVE: breed-german_shepherd-tote_bag
+  KEEP:    soul-breed-german_shepherd-tote_bag
+  Name:    German Shepherd Tote Bag
+
+  ARCHIVE: breed-golden_retriever-bandana
+  KEEP:    soul-breed-golden_retriever-bandana
+  Name:    Golden Retriever Bandana
+
+  ARCHIVE: breed-golden_retriever-cake_topper
+  KEEP:    soul-breed-golden_retriever-cake_topper
+  Name:    Golden Retriever Birthday Cake Topper
+
+  ARCHIVE: breed-golden_retriever-birthday_card
+  KEEP:    soul-breed-golden_retriever-birthday_card
+  Name:    Golden Retriever Birthday Card
+
+  ARCHIVE: breed-golden_retriever-keychain
+  KEEP:    soul-breed-golden_retriever-keychain
+  Name:    Golden Retriever Keychain
+
+  ARCHIVE: breed-golden_retriever-mug
+  KEEP:    soul-breed-golden_retriever-mug
+  Name:    Golden Retriever Lover Mug
+
+  ARCHIVE: breed-golden_retriever-party_banner
+  KEEP:    soul-breed-golden_retriever-party_banner
+  Name:    Golden Retriever Party Banner
+
+  ARCHIVE: breed-golden_retriever-return_gift_pack
+  KEEP:    soul-breed-golden_retriever-return_gift_pack
+  Name:    Golden Retriever Party Favor Pack
+
+  ARCHIVE: breed-golden_retriever-party_hat
+  KEEP:    soul-breed-golden_retriever-party_hat
+  Name:    Golden Retriever Party Hat
+
+  ARCHIVE: breed-golden_retriever-frame
+  KEEP:    soul-breed-golden_retriever-frame
+  Name:    Golden Retriever Portrait Frame
+
+  ARCHIVE: breed-golden_retriever-pupcake_set
+  KEEP:    soul-breed-golden_retriever-pupcake_set
+  Name:    Golden Retriever Pupcake Decoration Set
+
+  ARCHIVE: breed-golden_retriever-tote_bag
+  KEEP:    soul-breed-golden_retriever-tote_bag
+  Name:    Golden Retriever Tote Bag
+
+  ARCHIVE: breed-great_dane-bandana
+  KEEP:    soul-breed-great_dane-bandana
+  Name:    Great Dane Bandana
+
+  ARCHIVE: breed-great_dane-cake_topper
+  KEEP:    soul-breed-great_dane-cake_topper
+  Name:    Great Dane Birthday Cake Topper
+
+  ARCHIVE: breed-great_dane-birthday_card
+  KEEP:    soul-breed-great_dane-birthday_card
+  Name:    Great Dane Birthday Card
+
+  ARCHIVE: breed-great_dane-keychain
+  KEEP:    soul-breed-great_dane-keychain
+  Name:    Great Dane Keychain
+
+  ARCHIVE: breed-great_dane-mug
+  KEEP:    soul-breed-great_dane-mug
+  Name:    Great Dane Lover Mug
+
+  ARCHIVE: breed-great_dane-party_banner
+  KEEP:    soul-breed-great_dane-party_banner
+  Name:    Great Dane Party Banner
+
+  ARCHIVE: breed-great_dane-return_gift_pack
+  KEEP:    soul-breed-great_dane-return_gift_pack
+  Name:    Great Dane Party Favor Pack
+
+  ARCHIVE: breed-great_dane-party_hat
+  KEEP:    soul-breed-great_dane-party_hat
+  Name:    Great Dane Party Hat
+
+  ARCHIVE: breed-great_dane-frame
+  KEEP:    soul-breed-great_dane-frame
+  Name:    Great Dane Portrait Frame
+
+  ARCHIVE: breed-great_dane-pupcake_set
+  KEEP:    soul-breed-great_dane-pupcake_set
+  Name:    Great Dane Pupcake Decoration Set
+
+  ARCHIVE: breed-great_dane-tote_bag
+  KEEP:    soul-breed-great_dane-tote_bag
+  Name:    Great Dane Tote Bag
+
+  ARCHIVE: breed-havanese-cake_topper
+  KEEP:    soul-breed-havanese-cake_topper
+  Name:    Havanese Birthday Cake Topper
+
+  ARCHIVE: breed-havanese-birthday_card
+  KEEP:    soul-breed-havanese-birthday_card
+  Name:    Havanese Birthday Card
+
+  ARCHIVE: breed-havanese-party_banner
+  KEEP:    soul-breed-havanese-party_banner
+  Name:    Havanese Party Banner
+
+  ARCHIVE: breed-havanese-return_gift_pack
+  KEEP:    soul-breed-havanese-return_gift_pack
+  Name:    Havanese Party Favor Pack
+
+  ARCHIVE: breed-havanese-pupcake_set
+  KEEP:    soul-breed-havanese-pupcake_set
+  Name:    Havanese Pupcake Decoration Set
+
+  ARCHIVE: breed-husky-bandana
+  KEEP:    soul-breed-husky-bandana
+  Name:    Husky Bandana
+
+  ARCHIVE: breed-husky-keychain
+  KEEP:    soul-breed-husky-keychain
+  Name:    Husky Keychain
+
+  ARCHIVE: breed-husky-mug
+  KEEP:    soul-breed-husky-mug
+  Name:    Husky Lover Mug
+
+  ARCHIVE: breed-husky-party_hat
+  KEEP:    soul-breed-husky-party_hat
+  Name:    Husky Party Hat
+
+  ARCHIVE: breed-husky-frame
+  KEEP:    soul-breed-husky-frame
+  Name:    Husky Portrait Frame
+
+  ARCHIVE: breed-husky-tote_bag
+  KEEP:    soul-breed-husky-tote_bag
+  Name:    Husky Tote Bag
+
+  ARCHIVE: breed-indie-cake_topper
+  KEEP:    soul-breed-indie-cake_topper
+  Name:    Indian Pariah Dog Birthday Cake Topper
+
+  ARCHIVE: breed-indie-birthday_card
+  KEEP:    soul-breed-indie-birthday_card
+  Name:    Indian Pariah Dog Birthday Card
+
+  ARCHIVE: breed-indie-party_banner
+  KEEP:    soul-breed-indie-party_banner
+  Name:    Indian Pariah Dog Party Banner
+
+  ARCHIVE: breed-indie-return_gift_pack
+  KEEP:    soul-breed-indie-return_gift_pack
+  Name:    Indian Pariah Dog Party Favor Pack
+
+  ARCHIVE: breed-indie-bandana
+  KEEP:    soul-breed-indie-bandana
+  Name:    Indie Bandana
+
+  ARCHIVE: breed-indie-keychain
+  KEEP:    soul-breed-indie-keychain
+  Name:    Indie Keychain
+
+  ARCHIVE: breed-indie-mug
+  KEEP:    soul-breed-indie-mug
+  Name:    Indie Lover Mug
+
+  ARCHIVE: breed-indie-party_hat
+  KEEP:    soul-breed-indie-party_hat
+  Name:    Indie Party Hat
+
+  ARCHIVE: breed-indie-frame
+  KEEP:    soul-breed-indie-frame
+  Name:    Indie Portrait Frame
+
+  ARCHIVE: breed-indie-tote_bag
+  KEEP:    soul-breed-indie-tote_bag
+  Name:    Indie Tote Bag
+
+  ARCHIVE: breed-irish_setter-bandana
+  KEEP:    soul-breed-irish_setter-bandana
+  Name:    Irish Setter Bandana
+
+  ARCHIVE: breed-irish_setter-keychain
+  KEEP:    soul-breed-irish_setter-keychain
+  Name:    Irish Setter Keychain
+
+  ARCHIVE: breed-irish_setter-mug
+  KEEP:    soul-breed-irish_setter-mug
+  Name:    Irish Setter Lover Mug
+
+  ARCHIVE: breed-irish_setter-party_hat
+  KEEP:    soul-breed-irish_setter-party_hat
+  Name:    Irish Setter Party Hat
+
+  ARCHIVE: breed-irish_setter-frame
+  KEEP:    soul-breed-irish_setter-frame
+  Name:    Irish Setter Portrait Frame
+
+  ARCHIVE: breed-irish_setter-tote_bag
+  KEEP:    soul-breed-irish_setter-tote_bag
+  Name:    Irish Setter Tote Bag
+
+  ARCHIVE: breed-italian_greyhound-bandana
+  KEEP:    soul-breed-italian_greyhound-bandana
+  Name:    Italian Greyhound Bandana
+
+  ARCHIVE: breed-italian_greyhound-keychain
+  KEEP:    soul-breed-italian_greyhound-keychain
+  Name:    Italian Greyhound Keychain
+
+  ARCHIVE: breed-italian_greyhound-mug
+  KEEP:    soul-breed-italian_greyhound-mug
+  Name:    Italian Greyhound Lover Mug
+
+  ARCHIVE: breed-italian_greyhound-party_hat
+  KEEP:    soul-breed-italian_greyhound-party_hat
+  Name:    Italian Greyhound Party Hat
+
+  ARCHIVE: breed-italian_greyhound-frame
+  KEEP:    soul-breed-italian_greyhound-frame
+  Name:    Italian Greyhound Portrait Frame
+
+  ARCHIVE: breed-italian_greyhound-tote_bag
+  KEEP:    soul-breed-italian_greyhound-tote_bag
+  Name:    Italian Greyhound Tote Bag
+
+  ARCHIVE: breed-jack_russell-bandana
+  KEEP:    soul-breed-jack_russell-bandana
+  Name:    Jack Russell Bandana
+
+  ARCHIVE: breed-jack_russell-keychain
+  KEEP:    soul-breed-jack_russell-keychain
+  Name:    Jack Russell Keychain
+
+  ARCHIVE: breed-jack_russell-mug
+  KEEP:    soul-breed-jack_russell-mug
+  Name:    Jack Russell Lover Mug
+
+  ARCHIVE: breed-jack_russell-party_hat
+  KEEP:    soul-breed-jack_russell-party_hat
+  Name:    Jack Russell Party Hat
+
+  ARCHIVE: breed-jack_russell-frame
+  KEEP:    soul-breed-jack_russell-frame
+  Name:    Jack Russell Portrait Frame
+
+  ARCHIVE: breed-jack_russell-tote_bag
+  KEEP:    soul-breed-jack_russell-tote_bag
+  Name:    Jack Russell Tote Bag
+
+  ARCHIVE: breed-labrador-keychain
+  KEEP:    soul-breed-labrador-keychain
+  Name:    Labrador Keychain
+
+  ARCHIVE: breed-labrador-mug
+  KEEP:    soul-breed-labrador-mug
+  Name:    Labrador Lover Mug
+
+  ARCHIVE: breed-labrador-party_hat
+  KEEP:    soul-breed-labrador-party_hat
+  Name:    Labrador Party Hat
+
+  ARCHIVE: breed-labrador-frame
+  KEEP:    soul-breed-labrador-frame
+  Name:    Labrador Portrait Frame
+
+  ARCHIVE: breed-labrador-cake_topper
+  KEEP:    soul-breed-labrador-cake_topper
+  Name:    Labrador Retriever Birthday Cake Topper
+
+  ARCHIVE: breed-labrador-birthday_card
+  KEEP:    soul-breed-labrador-birthday_card
+  Name:    Labrador Retriever Birthday Card
+
+  ARCHIVE: breed-labrador-party_banner
+  KEEP:    soul-breed-labrador-party_banner
+  Name:    Labrador Retriever Party Banner
+
+  ARCHIVE: breed-labrador-return_gift_pack
+  KEEP:    soul-breed-labrador-return_gift_pack
+  Name:    Labrador Retriever Party Favor Pack
+
+  ARCHIVE: breed-labrador-pupcake_set
+  KEEP:    soul-breed-labrador-pupcake_set
+  Name:    Labrador Retriever Pupcake Decoration Set
+
+  ARCHIVE: breed-labrador-tote_bag
+  KEEP:    soul-breed-labrador-tote_bag
+  Name:    Labrador Tote Bag
+
+  ARCHIVE: breed-lhasa_apso-bandana
+  KEEP:    soul-breed-lhasa_apso-bandana
+  Name:    Lhasa Apso Bandana
+
+  ARCHIVE: breed-lhasa_apso-keychain
+  KEEP:    soul-breed-lhasa_apso-keychain
+  Name:    Lhasa Apso Keychain
+
+  ARCHIVE: breed-lhasa_apso-mug
+  KEEP:    soul-breed-lhasa_apso-mug
+  Name:    Lhasa Apso Lover Mug
+
+  ARCHIVE: breed-lhasa_apso-party_hat
+  KEEP:    soul-breed-lhasa_apso-party_hat
+  Name:    Lhasa Apso Party Hat
+
+  ARCHIVE: breed-lhasa_apso-frame
+  KEEP:    soul-breed-lhasa_apso-frame
+  Name:    Lhasa Apso Portrait Frame
+
+  ARCHIVE: breed-lhasa_apso-tote_bag
+  KEEP:    soul-breed-lhasa_apso-tote_bag
+  Name:    Lhasa Apso Tote Bag
+
+  ARCHIVE: breed-maltese-bandana
+  KEEP:    soul-breed-maltese-bandana
+  Name:    Maltese Bandana
+
+  ARCHIVE: breed-maltese-cake_topper
+  KEEP:    soul-breed-maltese-cake_topper
+  Name:    Maltese Birthday Cake Topper
+
+  ARCHIVE: breed-maltese-birthday_card
+  KEEP:    soul-breed-maltese-birthday_card
+  Name:    Maltese Birthday Card
+
+  ARCHIVE: breed-maltese-keychain
+  KEEP:    soul-breed-maltese-keychain
+  Name:    Maltese Keychain
+
+  ARCHIVE: breed-maltese-mug
+  KEEP:    soul-breed-maltese-mug
+  Name:    Maltese Lover Mug
+
+  ARCHIVE: breed-maltese-party_banner
+  KEEP:    soul-breed-maltese-party_banner
+  Name:    Maltese Party Banner
+
+  ARCHIVE: breed-maltese-return_gift_pack
+  KEEP:    soul-breed-maltese-return_gift_pack
+  Name:    Maltese Party Favor Pack
+
+  ARCHIVE: breed-maltese-party_hat
+  KEEP:    soul-breed-maltese-party_hat
+  Name:    Maltese Party Hat
+
+  ARCHIVE: breed-maltese-frame
+  KEEP:    soul-breed-maltese-frame
+  Name:    Maltese Portrait Frame
+
+  ARCHIVE: breed-maltese-pupcake_set
+  KEEP:    soul-breed-maltese-pupcake_set
+  Name:    Maltese Pupcake Decoration Set
+
+  ARCHIVE: breed-maltese-tote_bag
+  KEEP:    soul-breed-maltese-tote_bag
+  Name:    Maltese Tote Bag
+
+  ARCHIVE: breed-pomeranian-bandana
+  KEEP:    soul-breed-pomeranian-bandana
+  Name:    Pomeranian Bandana
+
+  ARCHIVE: breed-pomeranian-cake_topper
+  KEEP:    soul-breed-pomeranian-cake_topper
+  Name:    Pomeranian Birthday Cake Topper
+
+  ARCHIVE: breed-pomeranian-birthday_card
+  KEEP:    soul-breed-pomeranian-birthday_card
+  Name:    Pomeranian Birthday Card
+
+  ARCHIVE: breed-pomeranian-keychain
+  KEEP:    soul-breed-pomeranian-keychain
+  Name:    Pomeranian Keychain
+
+  ARCHIVE: breed-pomeranian-mug
+  KEEP:    soul-breed-pomeranian-mug
+  Name:    Pomeranian Lover Mug
+
+  ARCHIVE: breed-pomeranian-party_banner
+  KEEP:    soul-breed-pomeranian-party_banner
+  Name:    Pomeranian Party Banner
+
+  ARCHIVE: breed-pomeranian-return_gift_pack
+  KEEP:    soul-breed-pomeranian-return_gift_pack
+  Name:    Pomeranian Party Favor Pack
+
+  ARCHIVE: breed-pomeranian-party_hat
+  KEEP:    soul-breed-pomeranian-party_hat
+  Name:    Pomeranian Party Hat
+
+  ARCHIVE: breed-pomeranian-frame
+  KEEP:    soul-breed-pomeranian-frame
+  Name:    Pomeranian Portrait Frame
+
+  ARCHIVE: breed-pomeranian-pupcake_set
+  KEEP:    soul-breed-pomeranian-pupcake_set
+  Name:    Pomeranian Pupcake Decoration Set
+
+  ARCHIVE: breed-pomeranian-tote_bag
+  KEEP:    soul-breed-pomeranian-tote_bag
+  Name:    Pomeranian Tote Bag
+
+  ARCHIVE: breed-poodle-bandana
+  KEEP:    soul-breed-poodle-bandana
+  Name:    Poodle Bandana
+
+  ARCHIVE: breed-poodle-cake_topper
+  KEEP:    soul-breed-poodle-cake_topper
+  Name:    Poodle Birthday Cake Topper
+
+  ARCHIVE: breed-poodle-birthday_card
+  KEEP:    soul-breed-poodle-birthday_card
+  Name:    Poodle Birthday Card
+
+  ARCHIVE: breed-poodle-keychain
+  KEEP:    soul-breed-poodle-keychain
+  Name:    Poodle Keychain
+
+  ARCHIVE: breed-poodle-mug
+  KEEP:    soul-breed-poodle-mug
+  Name:    Poodle Lover Mug
+
+  ARCHIVE: breed-poodle-party_banner
+  KEEP:    soul-breed-poodle-party_banner
+  Name:    Poodle Party Banner
+
+  ARCHIVE: breed-poodle-return_gift_pack
+  KEEP:    soul-breed-poodle-return_gift_pack
+  Name:    Poodle Party Favor Pack
+
+  ARCHIVE: breed-poodle-party_hat
+  KEEP:    soul-breed-poodle-party_hat
+  Name:    Poodle Party Hat
+
+  ARCHIVE: breed-poodle-frame
+  KEEP:    soul-breed-poodle-frame
+  Name:    Poodle Portrait Frame
+
+  ARCHIVE: breed-poodle-pupcake_set
+  KEEP:    soul-breed-poodle-pupcake_set
+  Name:    Poodle Pupcake Decoration Set
+
+  ARCHIVE: breed-poodle-tote_bag
+  KEEP:    soul-breed-poodle-tote_bag
+  Name:    Poodle Tote Bag
+
+  ARCHIVE: breed-pug-bandana
+  KEEP:    soul-breed-pug-bandana
+  Name:    Pug Bandana
+
+  ARCHIVE: breed-pug-cake_topper
+  KEEP:    soul-breed-pug-cake_topper
+  Name:    Pug Birthday Cake Topper
+
+  ARCHIVE: breed-pug-birthday_card
+  KEEP:    soul-breed-pug-birthday_card
+  Name:    Pug Birthday Card
+
+  ARCHIVE: breed-pug-keychain
+  KEEP:    soul-breed-pug-keychain
+  Name:    Pug Keychain
+
+  ARCHIVE: breed-pug-mug
+  KEEP:    soul-breed-pug-mug
+  Name:    Pug Lover Mug
+
+  ARCHIVE: breed-pug-party_banner
+  KEEP:    soul-breed-pug-party_banner
+  Name:    Pug Party Banner
+
+  ARCHIVE: breed-pug-return_gift_pack
+  KEEP:    soul-breed-pug-return_gift_pack
+  Name:    Pug Party Favor Pack
+
+  ARCHIVE: breed-pug-party_hat
+  KEEP:    soul-breed-pug-party_hat
+  Name:    Pug Party Hat
+
+  ARCHIVE: breed-pug-frame
+  KEEP:    soul-breed-pug-frame
+  Name:    Pug Portrait Frame
+
+  ARCHIVE: breed-pug-pupcake_set
+  KEEP:    soul-breed-pug-pupcake_set
+  Name:    Pug Pupcake Decoration Set
+
+  ARCHIVE: breed-pug-tote_bag
+  KEEP:    soul-breed-pug-tote_bag
+  Name:    Pug Tote Bag
+
+  ARCHIVE: breed-rottweiler-bandana
+  KEEP:    soul-breed-rottweiler-bandana
+  Name:    Rottweiler Bandana
+
+  ARCHIVE: breed-rottweiler-cake_topper
+  KEEP:    soul-breed-rottweiler-cake_topper
+  Name:    Rottweiler Birthday Cake Topper
+
+  ARCHIVE: breed-rottweiler-birthday_card
+  KEEP:    soul-breed-rottweiler-birthday_card
+  Name:    Rottweiler Birthday Card
+
+  ARCHIVE: breed-rottweiler-keychain
+  KEEP:    soul-breed-rottweiler-keychain
+  Name:    Rottweiler Keychain
+
+  ARCHIVE: breed-rottweiler-mug
+  KEEP:    soul-breed-rottweiler-mug
+  Name:    Rottweiler Lover Mug
+
+  ARCHIVE: breed-rottweiler-party_banner
+  KEEP:    soul-breed-rottweiler-party_banner
+  Name:    Rottweiler Party Banner
+
+  ARCHIVE: breed-rottweiler-return_gift_pack
+  KEEP:    soul-breed-rottweiler-return_gift_pack
+  Name:    Rottweiler Party Favor Pack
+
+  ARCHIVE: breed-rottweiler-party_hat
+  KEEP:    soul-breed-rottweiler-party_hat
+  Name:    Rottweiler Party Hat
+
+  ARCHIVE: breed-rottweiler-frame
+  KEEP:    soul-breed-rottweiler-frame
+  Name:    Rottweiler Portrait Frame
+
+  ARCHIVE: breed-rottweiler-pupcake_set
+  KEEP:    soul-breed-rottweiler-pupcake_set
+  Name:    Rottweiler Pupcake Decoration Set
+
+  ARCHIVE: breed-rottweiler-tote_bag
+  KEEP:    soul-breed-rottweiler-tote_bag
+  Name:    Rottweiler Tote Bag
+
+  ARCHIVE: breed-samoyed-cake_topper
+  KEEP:    soul-breed-samoyed-cake_topper
+  Name:    Samoyed Birthday Cake Topper
+
+  ARCHIVE: breed-samoyed-birthday_card
+  KEEP:    soul-breed-samoyed-birthday_card
+  Name:    Samoyed Birthday Card
+
+  ARCHIVE: breed-samoyed-party_banner
+  KEEP:    soul-breed-samoyed-party_banner
+  Name:    Samoyed Party Banner
+
+  ARCHIVE: breed-samoyed-return_gift_pack
+  KEEP:    soul-breed-samoyed-return_gift_pack
+  Name:    Samoyed Party Favor Pack
+
+  ARCHIVE: breed-samoyed-pupcake_set
+  KEEP:    soul-breed-samoyed-pupcake_set
+  Name:    Samoyed Pupcake Decoration Set
+
+  ARCHIVE: breed-schnoodle-bandana
+  KEEP:    soul-breed-schnoodle-bandana
+  Name:    Schnoodle Bandana
+
+  ARCHIVE: breed-schnoodle-keychain
+  KEEP:    soul-breed-schnoodle-keychain
+  Name:    Schnoodle Keychain
+
+  ARCHIVE: breed-schnoodle-mug
+  KEEP:    soul-breed-schnoodle-mug
+  Name:    Schnoodle Lover Mug
+
+  ARCHIVE: breed-schnoodle-party_hat
+  KEEP:    soul-breed-schnoodle-party_hat
+  Name:    Schnoodle Party Hat
+
+  ARCHIVE: breed-schnoodle-frame
+  KEEP:    soul-breed-schnoodle-frame
+  Name:    Schnoodle Portrait Frame
+
+  ARCHIVE: breed-schnoodle-tote_bag
+  KEEP:    soul-breed-schnoodle-tote_bag
+  Name:    Schnoodle Tote Bag
+
+  ARCHIVE: breed-scottish_terrier-bandana
+  KEEP:    soul-breed-scottish_terrier-bandana
+  Name:    Scottish Terrier Bandana
+
+  ARCHIVE: breed-scottish_terrier-cake_topper
+  KEEP:    soul-breed-scottish_terrier-cake_topper
+  Name:    Scottish Terrier Birthday Cake Topper
+
+  ARCHIVE: breed-scottish_terrier-birthday_card
+  KEEP:    soul-breed-scottish_terrier-birthday_card
+  Name:    Scottish Terrier Birthday Card
+
+  ARCHIVE: breed-scottish_terrier-keychain
+  KEEP:    soul-breed-scottish_terrier-keychain
+  Name:    Scottish Terrier Keychain
+
+  ARCHIVE: breed-scottish_terrier-mug
+  KEEP:    soul-breed-scottish_terrier-mug
+  Name:    Scottish Terrier Lover Mug
+
+  ARCHIVE: breed-scottish_terrier-party_banner
+  KEEP:    soul-breed-scottish_terrier-party_banner
+  Name:    Scottish Terrier Party Banner
+
+  ARCHIVE: breed-scottish_terrier-return_gift_pack
+  KEEP:    soul-breed-scottish_terrier-return_gift_pack
+  Name:    Scottish Terrier Party Favor Pack
+
+  ARCHIVE: breed-scottish_terrier-party_hat
+  KEEP:    soul-breed-scottish_terrier-party_hat
+  Name:    Scottish Terrier Party Hat
+
+  ARCHIVE: breed-scottish_terrier-frame
+  KEEP:    soul-breed-scottish_terrier-frame
+  Name:    Scottish Terrier Portrait Frame
+
+  ARCHIVE: breed-scottish_terrier-pupcake_set
+  KEEP:    soul-breed-scottish_terrier-pupcake_set
+  Name:    Scottish Terrier Pupcake Decoration Set
+
+  ARCHIVE: breed-scottish_terrier-tote_bag
+  KEEP:    soul-breed-scottish_terrier-tote_bag
+  Name:    Scottish Terrier Tote Bag
+
+  ARCHIVE: breed-shetland_sheepdog-cake_topper
+  KEEP:    soul-breed-shetland_sheepdog-cake_topper
+  Name:    Shetland Sheepdog Birthday Cake Topper
+
+  ARCHIVE: breed-shetland_sheepdog-birthday_card
+  KEEP:    soul-breed-shetland_sheepdog-birthday_card
+  Name:    Shetland Sheepdog Birthday Card
+
+  ARCHIVE: breed-shetland_sheepdog-party_banner
+  KEEP:    soul-breed-shetland_sheepdog-party_banner
+  Name:    Shetland Sheepdog Party Banner
+
+  ARCHIVE: breed-shetland_sheepdog-return_gift_pack
+  KEEP:    soul-breed-shetland_sheepdog-return_gift_pack
+  Name:    Shetland Sheepdog Party Favor Pack
+
+  ARCHIVE: breed-shetland_sheepdog-pupcake_set
+  KEEP:    soul-breed-shetland_sheepdog-pupcake_set
+  Name:    Shetland Sheepdog Pupcake Decoration Set
+
+  ARCHIVE: breed-shih_tzu-bandana
+  KEEP:    soul-breed-shih_tzu-bandana
+  Name:    Shih Tzu Bandana
+
+  ARCHIVE: breed-shih_tzu-cake_topper
+  KEEP:    soul-breed-shih_tzu-cake_topper
+  Name:    Shih Tzu Birthday Cake Topper
+
+  ARCHIVE: breed-shih_tzu-birthday_card
+  KEEP:    soul-breed-shih_tzu-birthday_card
+  Name:    Shih Tzu Birthday Card
+
+  ARCHIVE: breed-shih_tzu-keychain
+  KEEP:    soul-breed-shih_tzu-keychain
+  Name:    Shih Tzu Keychain
+
+  ARCHIVE: breed-shih_tzu-mug
+  KEEP:    soul-breed-shih_tzu-mug
+  Name:    Shih Tzu Lover Mug
+
+  ARCHIVE: breed-shih_tzu-party_banner
+  KEEP:    soul-breed-shih_tzu-party_banner
+  Name:    Shih Tzu Party Banner
+
+  ARCHIVE: breed-shih_tzu-return_gift_pack
+  KEEP:    soul-breed-shih_tzu-return_gift_pack
+  Name:    Shih Tzu Party Favor Pack
+
+  ARCHIVE: breed-shih_tzu-party_hat
+  KEEP:    soul-breed-shih_tzu-party_hat
+  Name:    Shih Tzu Party Hat
+
+  ARCHIVE: breed-shih_tzu-frame
+  KEEP:    soul-breed-shih_tzu-frame
+  Name:    Shih Tzu Portrait Frame
+
+  ARCHIVE: breed-shih_tzu-pupcake_set
+  KEEP:    soul-breed-shih_tzu-pupcake_set
+  Name:    Shih Tzu Pupcake Decoration Set
+
+  ARCHIVE: breed-shih_tzu-tote_bag
+  KEEP:    soul-breed-shih_tzu-tote_bag
+  Name:    Shih Tzu Tote Bag
+
+  ARCHIVE: breed-siberian_husky-cake_topper
+  KEEP:    soul-breed-siberian_husky-cake_topper
+  Name:    Siberian Husky Birthday Cake Topper
+
+  ARCHIVE: breed-siberian_husky-birthday_card
+  KEEP:    soul-breed-siberian_husky-birthday_card
+  Name:    Siberian Husky Birthday Card
+
+  ARCHIVE: breed-siberian_husky-party_banner
+  KEEP:    soul-breed-siberian_husky-party_banner
+  Name:    Siberian Husky Party Banner
+
+  ARCHIVE: breed-siberian_husky-return_gift_pack
+  KEEP:    soul-breed-siberian_husky-return_gift_pack
+  Name:    Siberian Husky Party Favor Pack
+
+  ARCHIVE: breed-siberian_husky-pupcake_set
+  KEEP:    soul-breed-siberian_husky-pupcake_set
+  Name:    Siberian Husky Pupcake Decoration Set
+
+  ARCHIVE: breed-st_bernard-bandana
+  KEEP:    soul-breed-st_bernard-bandana
+  Name:    St Bernard Bandana
+
+  ARCHIVE: breed-st_bernard-keychain
+  KEEP:    soul-breed-st_bernard-keychain
+  Name:    St Bernard Keychain
+
+  ARCHIVE: breed-st_bernard-mug
+  KEEP:    soul-breed-st_bernard-mug
+  Name:    St Bernard Lover Mug
+
+  ARCHIVE: breed-st_bernard-party_hat
+  KEEP:    soul-breed-st_bernard-party_hat
+  Name:    St Bernard Party Hat
+
+  ARCHIVE: breed-st_bernard-frame
+  KEEP:    soul-breed-st_bernard-frame
+  Name:    St Bernard Portrait Frame
+
+  ARCHIVE: breed-st_bernard-tote_bag
+  KEEP:    soul-breed-st_bernard-tote_bag
+  Name:    St Bernard Tote Bag
+
+  ARCHIVE: breed-st_bernard-cake_topper
+  KEEP:    soul-breed-st_bernard-cake_topper
+  Name:    St. Bernard Birthday Cake Topper
+
+  ARCHIVE: breed-st_bernard-birthday_card
+  KEEP:    soul-breed-st_bernard-birthday_card
+  Name:    St. Bernard Birthday Card
+
+  ARCHIVE: breed-st_bernard-party_banner
+  KEEP:    soul-breed-st_bernard-party_banner
+  Name:    St. Bernard Party Banner
+
+  ARCHIVE: breed-st_bernard-return_gift_pack
+  KEEP:    soul-breed-st_bernard-return_gift_pack
+  Name:    St. Bernard Party Favor Pack
+
+  ARCHIVE: breed-st_bernard-pupcake_set
+  KEEP:    soul-breed-st_bernard-pupcake_set
+  Name:    St. Bernard Pupcake Decoration Set
+
+  ARCHIVE: breed-vizsla-cake_topper
+  KEEP:    soul-breed-vizsla-cake_topper
+  Name:    Vizsla Birthday Cake Topper
+
+  ARCHIVE: breed-vizsla-birthday_card
+  KEEP:    soul-breed-vizsla-birthday_card
+  Name:    Vizsla Birthday Card
+
+  ARCHIVE: breed-vizsla-party_banner
+  KEEP:    soul-breed-vizsla-party_banner
+  Name:    Vizsla Party Banner
+
+  ARCHIVE: breed-vizsla-return_gift_pack
+  KEEP:    soul-breed-vizsla-return_gift_pack
+  Name:    Vizsla Party Favor Pack
+
+  ARCHIVE: breed-vizsla-pupcake_set
+  KEEP:    soul-breed-vizsla-pupcake_set
+  Name:    Vizsla Pupcake Decoration Set
+
+  ARCHIVE: breed-weimaraner-cake_topper
+  KEEP:    soul-breed-weimaraner-cake_topper
+  Name:    Weimaraner Birthday Cake Topper
+
+  ARCHIVE: breed-weimaraner-birthday_card
+  KEEP:    soul-breed-weimaraner-birthday_card
+  Name:    Weimaraner Birthday Card
+
+  ARCHIVE: breed-weimaraner-party_banner
+  KEEP:    soul-breed-weimaraner-party_banner
+  Name:    Weimaraner Party Banner
+
+  ARCHIVE: breed-weimaraner-return_gift_pack
+  KEEP:    soul-breed-weimaraner-return_gift_pack
+  Name:    Weimaraner Party Favor Pack
+
+  ARCHIVE: breed-weimaraner-pupcake_set
+  KEEP:    soul-breed-weimaraner-pupcake_set
+  Name:    Weimaraner Pupcake Decoration Set
+
+  ARCHIVE: breed-yorkshire-bandana
+  KEEP:    soul-breed-yorkshire-bandana
+  Name:    Yorkshire Bandana
+
+  ARCHIVE: breed-yorkshire-keychain
+  KEEP:    soul-breed-yorkshire-keychain
+  Name:    Yorkshire Keychain
+
+  ARCHIVE: breed-yorkshire-mug
+  KEEP:    soul-breed-yorkshire-mug
+  Name:    Yorkshire Lover Mug
+
+  ARCHIVE: breed-yorkshire-party_hat
+  KEEP:    soul-breed-yorkshire-party_hat
+  Name:    Yorkshire Party Hat
+
+  ARCHIVE: breed-yorkshire-frame
+  KEEP:    soul-breed-yorkshire-frame
+  Name:    Yorkshire Portrait Frame
+
+  ARCHIVE: breed-yorkshire-cake_topper
+  KEEP:    soul-breed-yorkshire-cake_topper
+  Name:    Yorkshire Terrier Birthday Cake Topper
+
+  ARCHIVE: breed-yorkshire-birthday_card
+  KEEP:    soul-breed-yorkshire-birthday_card
+  Name:    Yorkshire Terrier Birthday Card
+
+  ARCHIVE: breed-yorkshire-party_banner
+  KEEP:    soul-breed-yorkshire-party_banner
+  Name:    Yorkshire Terrier Party Banner
+
+  ARCHIVE: breed-yorkshire-return_gift_pack
+  KEEP:    soul-breed-yorkshire-return_gift_pack
+  Name:    Yorkshire Terrier Party Favor Pack
+
+  ARCHIVE: breed-yorkshire-pupcake_set
+  KEEP:    soul-breed-yorkshire-pupcake_set
+  Name:    Yorkshire Terrier Pupcake Decoration Set
+
+  ARCHIVE: breed-yorkshire-tote_bag
+  KEEP:    soul-breed-yorkshire-tote_bag
+  Name:    Yorkshire Tote Bag
+
+[EMERGENCY] — 66 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-american_bully-emergency_card
+  KEEP:    soul-breed-american_bully-emergency_card
+  Name:    American Bully Emergency Info Card
+
+  ARCHIVE: breed-american_bully-medical_alert_tag
+  KEEP:    soul-breed-american_bully-medical_alert_tag
+  Name:    American Bully Medical Alert Tag
+
+  ARCHIVE: breed-beagle-emergency_card
+  KEEP:    soul-breed-beagle-emergency_card
+  Name:    Beagle Emergency Info Card
+
+  ARCHIVE: breed-beagle-medical_alert_tag
+  KEEP:    soul-breed-beagle-medical_alert_tag
+  Name:    Beagle Medical Alert Tag
+
+  ARCHIVE: breed-border_collie-emergency_card
+  KEEP:    soul-breed-border_collie-emergency_card
+  Name:    Border Collie Emergency Info Card
+
+  ARCHIVE: breed-border_collie-medical_alert_tag
+  KEEP:    soul-breed-border_collie-medical_alert_tag
+  Name:    Border Collie Medical Alert Tag
+
+  ARCHIVE: breed-boxer-emergency_card
+  KEEP:    soul-breed-boxer-emergency_card
+  Name:    Boxer Emergency Info Card
+
+  ARCHIVE: breed-boxer-medical_alert_tag
+  KEEP:    soul-breed-boxer-medical_alert_tag
+  Name:    Boxer Medical Alert Tag
+
+  ARCHIVE: breed-cavalier-emergency_card
+  KEEP:    soul-breed-cavalier-emergency_card
+  Name:    Cavalier Emergency Info Card
+
+  ARCHIVE: breed-cavalier-medical_alert_tag
+  KEEP:    soul-breed-cavalier-medical_alert_tag
+  Name:    Cavalier Medical Alert Tag
+
+  ARCHIVE: breed-chihuahua-emergency_card
+  KEEP:    soul-breed-chihuahua-emergency_card
+  Name:    Chihuahua Emergency Info Card
+
+  ARCHIVE: breed-chihuahua-medical_alert_tag
+  KEEP:    soul-breed-chihuahua-medical_alert_tag
+  Name:    Chihuahua Medical Alert Tag
+
+  ARCHIVE: breed-chow_chow-emergency_card
+  KEEP:    soul-breed-chow_chow-emergency_card
+  Name:    Chow Chow Emergency Info Card
+
+  ARCHIVE: breed-chow_chow-medical_alert_tag
+  KEEP:    soul-breed-chow_chow-medical_alert_tag
+  Name:    Chow Chow Medical Alert Tag
+
+  ARCHIVE: breed-cocker_spaniel-emergency_card
+  KEEP:    soul-breed-cocker_spaniel-emergency_card
+  Name:    Cocker Spaniel Emergency Info Card
+
+  ARCHIVE: breed-cocker_spaniel-medical_alert_tag
+  KEEP:    soul-breed-cocker_spaniel-medical_alert_tag
+  Name:    Cocker Spaniel Medical Alert Tag
+
+  ARCHIVE: breed-dachshund-emergency_card
+  KEEP:    soul-breed-dachshund-emergency_card
+  Name:    Dachshund Emergency Info Card
+
+  ARCHIVE: breed-dachshund-medical_alert_tag
+  KEEP:    soul-breed-dachshund-medical_alert_tag
+  Name:    Dachshund Medical Alert Tag
+
+  ARCHIVE: breed-dalmatian-emergency_card
+  KEEP:    soul-breed-dalmatian-emergency_card
+  Name:    Dalmatian Emergency Info Card
+
+  ARCHIVE: breed-dalmatian-medical_alert_tag
+  KEEP:    soul-breed-dalmatian-medical_alert_tag
+  Name:    Dalmatian Medical Alert Tag
+
+  ARCHIVE: breed-doberman-emergency_card
+  KEEP:    soul-breed-doberman-emergency_card
+  Name:    Doberman Emergency Info Card
+
+  ARCHIVE: breed-doberman-medical_alert_tag
+  KEEP:    soul-breed-doberman-medical_alert_tag
+  Name:    Doberman Medical Alert Tag
+
+  ARCHIVE: breed-bulldog-emergency_card
+  KEEP:    soul-breed-bulldog-emergency_card
+  Name:    English Bulldog Emergency Info Card
+
+  ARCHIVE: breed-bulldog-medical_alert_tag
+  KEEP:    soul-breed-bulldog-medical_alert_tag
+  Name:    English Bulldog Medical Alert Tag
+
+  ARCHIVE: breed-french_bulldog-emergency_card
+  KEEP:    soul-breed-french_bulldog-emergency_card
+  Name:    French Bulldog Emergency Info Card
+
+  ARCHIVE: breed-french_bulldog-medical_alert_tag
+  KEEP:    soul-breed-french_bulldog-medical_alert_tag
+  Name:    French Bulldog Medical Alert Tag
+
+  ARCHIVE: breed-german_shepherd-emergency_card
+  KEEP:    soul-breed-german_shepherd-emergency_card
+  Name:    German Shepherd Emergency Info Card
+
+  ARCHIVE: breed-german_shepherd-medical_alert_tag
+  KEEP:    soul-breed-german_shepherd-medical_alert_tag
+  Name:    German Shepherd Medical Alert Tag
+
+  ARCHIVE: breed-golden_retriever-emergency_card
+  KEEP:    soul-breed-golden_retriever-emergency_card
+  Name:    Golden Retriever Emergency Info Card
+
+  ARCHIVE: breed-golden_retriever-medical_alert_tag
+  KEEP:    soul-breed-golden_retriever-medical_alert_tag
+  Name:    Golden Retriever Medical Alert Tag
+
+  ARCHIVE: breed-great_dane-emergency_card
+  KEEP:    soul-breed-great_dane-emergency_card
+  Name:    Great Dane Emergency Info Card
+
+  ARCHIVE: breed-great_dane-medical_alert_tag
+  KEEP:    soul-breed-great_dane-medical_alert_tag
+  Name:    Great Dane Medical Alert Tag
+
+  ARCHIVE: breed-husky-emergency_card
+  KEEP:    soul-breed-husky-emergency_card
+  Name:    Husky Emergency Info Card
+
+  ARCHIVE: breed-husky-medical_alert_tag
+  KEEP:    soul-breed-husky-medical_alert_tag
+  Name:    Husky Medical Alert Tag
+
+  ARCHIVE: breed-indie-emergency_card
+  KEEP:    soul-breed-indie-emergency_card
+  Name:    Indie Emergency Info Card
+
+  ARCHIVE: breed-indie-medical_alert_tag
+  KEEP:    soul-breed-indie-medical_alert_tag
+  Name:    Indie Medical Alert Tag
+
+  ARCHIVE: breed-irish_setter-emergency_card
+  KEEP:    soul-breed-irish_setter-emergency_card
+  Name:    Irish Setter Emergency Info Card
+
+  ARCHIVE: breed-irish_setter-medical_alert_tag
+  KEEP:    soul-breed-irish_setter-medical_alert_tag
+  Name:    Irish Setter Medical Alert Tag
+
+  ARCHIVE: breed-italian_greyhound-emergency_card
+  KEEP:    soul-breed-italian_greyhound-emergency_card
+  Name:    Italian Greyhound Emergency Info Card
+
+  ARCHIVE: breed-italian_greyhound-medical_alert_tag
+  KEEP:    soul-breed-italian_greyhound-medical_alert_tag
+  Name:    Italian Greyhound Medical Alert Tag
+
+  ARCHIVE: breed-jack_russell-emergency_card
+  KEEP:    soul-breed-jack_russell-emergency_card
+  Name:    Jack Russell Emergency Info Card
+
+  ARCHIVE: breed-jack_russell-medical_alert_tag
+  KEEP:    soul-breed-jack_russell-medical_alert_tag
+  Name:    Jack Russell Medical Alert Tag
+
+  ARCHIVE: breed-labrador-emergency_card
+  KEEP:    soul-breed-labrador-emergency_card
+  Name:    Labrador Emergency Info Card
+
+  ARCHIVE: breed-labrador-medical_alert_tag
+  KEEP:    soul-breed-labrador-medical_alert_tag
+  Name:    Labrador Medical Alert Tag
+
+  ARCHIVE: breed-lhasa_apso-emergency_card
+  KEEP:    soul-breed-lhasa_apso-emergency_card
+  Name:    Lhasa Apso Emergency Info Card
+
+  ARCHIVE: breed-lhasa_apso-medical_alert_tag
+  KEEP:    soul-breed-lhasa_apso-medical_alert_tag
+  Name:    Lhasa Apso Medical Alert Tag
+
+  ARCHIVE: breed-maltese-emergency_card
+  KEEP:    soul-breed-maltese-emergency_card
+  Name:    Maltese Emergency Info Card
+
+  ARCHIVE: breed-maltese-medical_alert_tag
+  KEEP:    soul-breed-maltese-medical_alert_tag
+  Name:    Maltese Medical Alert Tag
+
+  ARCHIVE: breed-pomeranian-emergency_card
+  KEEP:    soul-breed-pomeranian-emergency_card
+  Name:    Pomeranian Emergency Info Card
+
+  ARCHIVE: breed-pomeranian-medical_alert_tag
+  KEEP:    soul-breed-pomeranian-medical_alert_tag
+  Name:    Pomeranian Medical Alert Tag
+
+  ARCHIVE: breed-poodle-emergency_card
+  KEEP:    soul-breed-poodle-emergency_card
+  Name:    Poodle Emergency Info Card
+
+  ARCHIVE: breed-poodle-medical_alert_tag
+  KEEP:    soul-breed-poodle-medical_alert_tag
+  Name:    Poodle Medical Alert Tag
+
+  ARCHIVE: breed-pug-emergency_card
+  KEEP:    soul-breed-pug-emergency_card
+  Name:    Pug Emergency Info Card
+
+  ARCHIVE: breed-pug-medical_alert_tag
+  KEEP:    soul-breed-pug-medical_alert_tag
+  Name:    Pug Medical Alert Tag
+
+  ARCHIVE: breed-rottweiler-emergency_card
+  KEEP:    soul-breed-rottweiler-emergency_card
+  Name:    Rottweiler Emergency Info Card
+
+  ARCHIVE: breed-rottweiler-medical_alert_tag
+  KEEP:    soul-breed-rottweiler-medical_alert_tag
+  Name:    Rottweiler Medical Alert Tag
+
+  ARCHIVE: breed-schnoodle-emergency_card
+  KEEP:    soul-breed-schnoodle-emergency_card
+  Name:    Schnoodle Emergency Info Card
+
+  ARCHIVE: breed-schnoodle-medical_alert_tag
+  KEEP:    soul-breed-schnoodle-medical_alert_tag
+  Name:    Schnoodle Medical Alert Tag
+
+  ARCHIVE: breed-scottish_terrier-emergency_card
+  KEEP:    soul-breed-scottish_terrier-emergency_card
+  Name:    Scottish Terrier Emergency Info Card
+
+  ARCHIVE: breed-scottish_terrier-medical_alert_tag
+  KEEP:    soul-breed-scottish_terrier-medical_alert_tag
+  Name:    Scottish Terrier Medical Alert Tag
+
+  ARCHIVE: breed-shih_tzu-emergency_card
+  KEEP:    soul-breed-shih_tzu-emergency_card
+  Name:    Shih Tzu Emergency Info Card
+
+  ARCHIVE: breed-shih_tzu-medical_alert_tag
+  KEEP:    soul-breed-shih_tzu-medical_alert_tag
+  Name:    Shih Tzu Medical Alert Tag
+
+  ARCHIVE: breed-st_bernard-emergency_card
+  KEEP:    soul-breed-st_bernard-emergency_card
+  Name:    St Bernard Emergency Info Card
+
+  ARCHIVE: breed-st_bernard-medical_alert_tag
+  KEEP:    soul-breed-st_bernard-medical_alert_tag
+  Name:    St Bernard Medical Alert Tag
+
+  ARCHIVE: breed-yorkshire-emergency_card
+  KEEP:    soul-breed-yorkshire-emergency_card
+  Name:    Yorkshire Emergency Info Card
+
+  ARCHIVE: breed-yorkshire-medical_alert_tag
+  KEEP:    soul-breed-yorkshire-medical_alert_tag
+  Name:    Yorkshire Medical Alert Tag
+
+[FAREWELL] — 66 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-american_bully-memorial_ornament
+  KEEP:    soul-breed-american_bully-memorial_ornament
+  Name:    American Bully Memorial Ornament
+
+  ARCHIVE: breed-american_bully-paw_print_frame
+  KEEP:    soul-breed-american_bully-paw_print_frame
+  Name:    American Bully Paw Print Memorial Frame
+
+  ARCHIVE: breed-beagle-memorial_ornament
+  KEEP:    soul-breed-beagle-memorial_ornament
+  Name:    Beagle Memorial Ornament
+
+  ARCHIVE: breed-beagle-paw_print_frame
+  KEEP:    soul-breed-beagle-paw_print_frame
+  Name:    Beagle Paw Print Memorial Frame
+
+  ARCHIVE: breed-border_collie-memorial_ornament
+  KEEP:    soul-breed-border_collie-memorial_ornament
+  Name:    Border Collie Memorial Ornament
+
+  ARCHIVE: breed-border_collie-paw_print_frame
+  KEEP:    soul-breed-border_collie-paw_print_frame
+  Name:    Border Collie Paw Print Memorial Frame
+
+  ARCHIVE: breed-boxer-memorial_ornament
+  KEEP:    soul-breed-boxer-memorial_ornament
+  Name:    Boxer Memorial Ornament
+
+  ARCHIVE: breed-boxer-paw_print_frame
+  KEEP:    soul-breed-boxer-paw_print_frame
+  Name:    Boxer Paw Print Memorial Frame
+
+  ARCHIVE: breed-cavalier-memorial_ornament
+  KEEP:    soul-breed-cavalier-memorial_ornament
+  Name:    Cavalier Memorial Ornament
+
+  ARCHIVE: breed-cavalier-paw_print_frame
+  KEEP:    soul-breed-cavalier-paw_print_frame
+  Name:    Cavalier Paw Print Memorial Frame
+
+  ARCHIVE: breed-chihuahua-memorial_ornament
+  KEEP:    soul-breed-chihuahua-memorial_ornament
+  Name:    Chihuahua Memorial Ornament
+
+  ARCHIVE: breed-chihuahua-paw_print_frame
+  KEEP:    soul-breed-chihuahua-paw_print_frame
+  Name:    Chihuahua Paw Print Memorial Frame
+
+  ARCHIVE: breed-chow_chow-memorial_ornament
+  KEEP:    soul-breed-chow_chow-memorial_ornament
+  Name:    Chow Chow Memorial Ornament
+
+  ARCHIVE: breed-chow_chow-paw_print_frame
+  KEEP:    soul-breed-chow_chow-paw_print_frame
+  Name:    Chow Chow Paw Print Memorial Frame
+
+  ARCHIVE: breed-cocker_spaniel-memorial_ornament
+  KEEP:    soul-breed-cocker_spaniel-memorial_ornament
+  Name:    Cocker Spaniel Memorial Ornament
+
+  ARCHIVE: breed-cocker_spaniel-paw_print_frame
+  KEEP:    soul-breed-cocker_spaniel-paw_print_frame
+  Name:    Cocker Spaniel Paw Print Memorial Frame
+
+  ARCHIVE: breed-dachshund-memorial_ornament
+  KEEP:    soul-breed-dachshund-memorial_ornament
+  Name:    Dachshund Memorial Ornament
+
+  ARCHIVE: breed-dachshund-paw_print_frame
+  KEEP:    soul-breed-dachshund-paw_print_frame
+  Name:    Dachshund Paw Print Memorial Frame
+
+  ARCHIVE: breed-dalmatian-memorial_ornament
+  KEEP:    soul-breed-dalmatian-memorial_ornament
+  Name:    Dalmatian Memorial Ornament
+
+  ARCHIVE: breed-dalmatian-paw_print_frame
+  KEEP:    soul-breed-dalmatian-paw_print_frame
+  Name:    Dalmatian Paw Print Memorial Frame
+
+  ARCHIVE: breed-doberman-memorial_ornament
+  KEEP:    soul-breed-doberman-memorial_ornament
+  Name:    Doberman Memorial Ornament
+
+  ARCHIVE: breed-doberman-paw_print_frame
+  KEEP:    soul-breed-doberman-paw_print_frame
+  Name:    Doberman Paw Print Memorial Frame
+
+  ARCHIVE: breed-bulldog-memorial_ornament
+  KEEP:    soul-breed-bulldog-memorial_ornament
+  Name:    English Bulldog Memorial Ornament
+
+  ARCHIVE: breed-bulldog-paw_print_frame
+  KEEP:    soul-breed-bulldog-paw_print_frame
+  Name:    English Bulldog Paw Print Memorial Frame
+
+  ARCHIVE: breed-french_bulldog-memorial_ornament
+  KEEP:    soul-breed-french_bulldog-memorial_ornament
+  Name:    French Bulldog Memorial Ornament
+
+  ARCHIVE: breed-french_bulldog-paw_print_frame
+  KEEP:    soul-breed-french_bulldog-paw_print_frame
+  Name:    French Bulldog Paw Print Memorial Frame
+
+  ARCHIVE: breed-german_shepherd-memorial_ornament
+  KEEP:    soul-breed-german_shepherd-memorial_ornament
+  Name:    German Shepherd Memorial Ornament
+
+  ARCHIVE: breed-german_shepherd-paw_print_frame
+  KEEP:    soul-breed-german_shepherd-paw_print_frame
+  Name:    German Shepherd Paw Print Memorial Frame
+
+  ARCHIVE: breed-golden_retriever-memorial_ornament
+  KEEP:    soul-breed-golden_retriever-memorial_ornament
+  Name:    Golden Retriever Memorial Ornament
+
+  ARCHIVE: breed-golden_retriever-paw_print_frame
+  KEEP:    soul-breed-golden_retriever-paw_print_frame
+  Name:    Golden Retriever Paw Print Memorial Frame
+
+  ARCHIVE: breed-great_dane-memorial_ornament
+  KEEP:    soul-breed-great_dane-memorial_ornament
+  Name:    Great Dane Memorial Ornament
+
+  ARCHIVE: breed-great_dane-paw_print_frame
+  KEEP:    soul-breed-great_dane-paw_print_frame
+  Name:    Great Dane Paw Print Memorial Frame
+
+  ARCHIVE: breed-husky-memorial_ornament
+  KEEP:    soul-breed-husky-memorial_ornament
+  Name:    Husky Memorial Ornament
+
+  ARCHIVE: breed-husky-paw_print_frame
+  KEEP:    soul-breed-husky-paw_print_frame
+  Name:    Husky Paw Print Memorial Frame
+
+  ARCHIVE: breed-indie-memorial_ornament
+  KEEP:    soul-breed-indie-memorial_ornament
+  Name:    Indie Memorial Ornament
+
+  ARCHIVE: breed-indie-paw_print_frame
+  KEEP:    soul-breed-indie-paw_print_frame
+  Name:    Indie Paw Print Memorial Frame
+
+  ARCHIVE: breed-irish_setter-memorial_ornament
+  KEEP:    soul-breed-irish_setter-memorial_ornament
+  Name:    Irish Setter Memorial Ornament
+
+  ARCHIVE: breed-irish_setter-paw_print_frame
+  KEEP:    soul-breed-irish_setter-paw_print_frame
+  Name:    Irish Setter Paw Print Memorial Frame
+
+  ARCHIVE: breed-italian_greyhound-memorial_ornament
+  KEEP:    soul-breed-italian_greyhound-memorial_ornament
+  Name:    Italian Greyhound Memorial Ornament
+
+  ARCHIVE: breed-italian_greyhound-paw_print_frame
+  KEEP:    soul-breed-italian_greyhound-paw_print_frame
+  Name:    Italian Greyhound Paw Print Memorial Frame
+
+  ARCHIVE: breed-jack_russell-memorial_ornament
+  KEEP:    soul-breed-jack_russell-memorial_ornament
+  Name:    Jack Russell Memorial Ornament
+
+  ARCHIVE: breed-jack_russell-paw_print_frame
+  KEEP:    soul-breed-jack_russell-paw_print_frame
+  Name:    Jack Russell Paw Print Memorial Frame
+
+  ARCHIVE: breed-labrador-memorial_ornament
+  KEEP:    soul-breed-labrador-memorial_ornament
+  Name:    Labrador Memorial Ornament
+
+  ARCHIVE: breed-labrador-paw_print_frame
+  KEEP:    soul-breed-labrador-paw_print_frame
+  Name:    Labrador Paw Print Memorial Frame
+
+  ARCHIVE: breed-lhasa_apso-memorial_ornament
+  KEEP:    soul-breed-lhasa_apso-memorial_ornament
+  Name:    Lhasa Apso Memorial Ornament
+
+  ARCHIVE: breed-lhasa_apso-paw_print_frame
+  KEEP:    soul-breed-lhasa_apso-paw_print_frame
+  Name:    Lhasa Apso Paw Print Memorial Frame
+
+  ARCHIVE: breed-maltese-memorial_ornament
+  KEEP:    soul-breed-maltese-memorial_ornament
+  Name:    Maltese Memorial Ornament
+
+  ARCHIVE: breed-maltese-paw_print_frame
+  KEEP:    soul-breed-maltese-paw_print_frame
+  Name:    Maltese Paw Print Memorial Frame
+
+  ARCHIVE: breed-pomeranian-memorial_ornament
+  KEEP:    soul-breed-pomeranian-memorial_ornament
+  Name:    Pomeranian Memorial Ornament
+
+  ARCHIVE: breed-pomeranian-paw_print_frame
+  KEEP:    soul-breed-pomeranian-paw_print_frame
+  Name:    Pomeranian Paw Print Memorial Frame
+
+  ARCHIVE: breed-poodle-memorial_ornament
+  KEEP:    soul-breed-poodle-memorial_ornament
+  Name:    Poodle Memorial Ornament
+
+  ARCHIVE: breed-poodle-paw_print_frame
+  KEEP:    soul-breed-poodle-paw_print_frame
+  Name:    Poodle Paw Print Memorial Frame
+
+  ARCHIVE: breed-pug-memorial_ornament
+  KEEP:    soul-breed-pug-memorial_ornament
+  Name:    Pug Memorial Ornament
+
+  ARCHIVE: breed-pug-paw_print_frame
+  KEEP:    soul-breed-pug-paw_print_frame
+  Name:    Pug Paw Print Memorial Frame
+
+  ARCHIVE: breed-rottweiler-memorial_ornament
+  KEEP:    soul-breed-rottweiler-memorial_ornament
+  Name:    Rottweiler Memorial Ornament
+
+  ARCHIVE: breed-rottweiler-paw_print_frame
+  KEEP:    soul-breed-rottweiler-paw_print_frame
+  Name:    Rottweiler Paw Print Memorial Frame
+
+  ARCHIVE: breed-schnoodle-memorial_ornament
+  KEEP:    soul-breed-schnoodle-memorial_ornament
+  Name:    Schnoodle Memorial Ornament
+
+  ARCHIVE: breed-schnoodle-paw_print_frame
+  KEEP:    soul-breed-schnoodle-paw_print_frame
+  Name:    Schnoodle Paw Print Memorial Frame
+
+  ARCHIVE: breed-scottish_terrier-memorial_ornament
+  KEEP:    soul-breed-scottish_terrier-memorial_ornament
+  Name:    Scottish Terrier Memorial Ornament
+
+  ARCHIVE: breed-scottish_terrier-paw_print_frame
+  KEEP:    soul-breed-scottish_terrier-paw_print_frame
+  Name:    Scottish Terrier Paw Print Memorial Frame
+
+  ARCHIVE: breed-shih_tzu-memorial_ornament
+  KEEP:    soul-breed-shih_tzu-memorial_ornament
+  Name:    Shih Tzu Memorial Ornament
+
+  ARCHIVE: breed-shih_tzu-paw_print_frame
+  KEEP:    soul-breed-shih_tzu-paw_print_frame
+  Name:    Shih Tzu Paw Print Memorial Frame
+
+  ARCHIVE: breed-st_bernard-memorial_ornament
+  KEEP:    soul-breed-st_bernard-memorial_ornament
+  Name:    St Bernard Memorial Ornament
+
+  ARCHIVE: breed-st_bernard-paw_print_frame
+  KEEP:    soul-breed-st_bernard-paw_print_frame
+  Name:    St Bernard Paw Print Memorial Frame
+
+  ARCHIVE: breed-yorkshire-memorial_ornament
+  KEEP:    soul-breed-yorkshire-memorial_ornament
+  Name:    Yorkshire Memorial Ornament
+
+  ARCHIVE: breed-yorkshire-paw_print_frame
+  KEEP:    soul-breed-yorkshire-paw_print_frame
+  Name:    Yorkshire Paw Print Memorial Frame
+
+[GO] — 198 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-american_bully-carrier_tag
+  KEEP:    soul-breed-american_bully-carrier_tag
+  Name:    American Bully Carrier Tag
+
+  ARCHIVE: breed-american_bully-blanket
+  KEEP:    soul-breed-american_bully-blanket
+  Name:    American Bully Cozy Blanket
+
+  ARCHIVE: breed-american_bully-luggage_tag
+  KEEP:    soul-breed-american_bully-luggage_tag
+  Name:    American Bully Luggage Tag
+
+  ARCHIVE: breed-american_bully-passport_holder
+  KEEP:    soul-breed-american_bully-passport_holder
+  Name:    American Bully Pet Passport Holder
+
+  ARCHIVE: breed-american_bully-travel_bowl
+  KEEP:    soul-breed-american_bully-travel_bowl
+  Name:    American Bully Travel Bowl
+
+  ARCHIVE: breed-american_bully-welcome_mat
+  KEEP:    soul-breed-american_bully-welcome_mat
+  Name:    American Bully Welcome Mat
+
+  ARCHIVE: breed-beagle-carrier_tag
+  KEEP:    soul-breed-beagle-carrier_tag
+  Name:    Beagle Carrier Tag
+
+  ARCHIVE: breed-beagle-blanket
+  KEEP:    soul-breed-beagle-blanket
+  Name:    Beagle Cozy Blanket
+
+  ARCHIVE: breed-beagle-luggage_tag
+  KEEP:    soul-breed-beagle-luggage_tag
+  Name:    Beagle Luggage Tag
+
+  ARCHIVE: breed-beagle-passport_holder
+  KEEP:    soul-breed-beagle-passport_holder
+  Name:    Beagle Pet Passport Holder
+
+  ARCHIVE: breed-beagle-travel_bowl
+  KEEP:    soul-breed-beagle-travel_bowl
+  Name:    Beagle Travel Bowl
+
+  ARCHIVE: breed-beagle-welcome_mat
+  KEEP:    soul-breed-beagle-welcome_mat
+  Name:    Beagle Welcome Mat
+
+  ARCHIVE: breed-border_collie-carrier_tag
+  KEEP:    soul-breed-border_collie-carrier_tag
+  Name:    Border Collie Carrier Tag
+
+  ARCHIVE: breed-border_collie-blanket
+  KEEP:    soul-breed-border_collie-blanket
+  Name:    Border Collie Cozy Blanket
+
+  ARCHIVE: breed-border_collie-luggage_tag
+  KEEP:    soul-breed-border_collie-luggage_tag
+  Name:    Border Collie Luggage Tag
+
+  ARCHIVE: breed-border_collie-passport_holder
+  KEEP:    soul-breed-border_collie-passport_holder
+  Name:    Border Collie Pet Passport Holder
+
+  ARCHIVE: breed-border_collie-travel_bowl
+  KEEP:    soul-breed-border_collie-travel_bowl
+  Name:    Border Collie Travel Bowl
+
+  ARCHIVE: breed-border_collie-welcome_mat
+  KEEP:    soul-breed-border_collie-welcome_mat
+  Name:    Border Collie Welcome Mat
+
+  ARCHIVE: breed-boxer-carrier_tag
+  KEEP:    soul-breed-boxer-carrier_tag
+  Name:    Boxer Carrier Tag
+
+  ARCHIVE: breed-boxer-blanket
+  KEEP:    soul-breed-boxer-blanket
+  Name:    Boxer Cozy Blanket
+
+  ARCHIVE: breed-boxer-luggage_tag
+  KEEP:    soul-breed-boxer-luggage_tag
+  Name:    Boxer Luggage Tag
+
+  ARCHIVE: breed-boxer-passport_holder
+  KEEP:    soul-breed-boxer-passport_holder
+  Name:    Boxer Pet Passport Holder
+
+  ARCHIVE: breed-boxer-travel_bowl
+  KEEP:    soul-breed-boxer-travel_bowl
+  Name:    Boxer Travel Bowl
+
+  ARCHIVE: breed-boxer-welcome_mat
+  KEEP:    soul-breed-boxer-welcome_mat
+  Name:    Boxer Welcome Mat
+
+  ARCHIVE: breed-cavalier-carrier_tag
+  KEEP:    soul-breed-cavalier-carrier_tag
+  Name:    Cavalier Carrier Tag
+
+  ARCHIVE: breed-cavalier-blanket
+  KEEP:    soul-breed-cavalier-blanket
+  Name:    Cavalier Cozy Blanket
+
+  ARCHIVE: breed-cavalier-luggage_tag
+  KEEP:    soul-breed-cavalier-luggage_tag
+  Name:    Cavalier Luggage Tag
+
+  ARCHIVE: breed-cavalier-passport_holder
+  KEEP:    soul-breed-cavalier-passport_holder
+  Name:    Cavalier Pet Passport Holder
+
+  ARCHIVE: breed-cavalier-travel_bowl
+  KEEP:    soul-breed-cavalier-travel_bowl
+  Name:    Cavalier Travel Bowl
+
+  ARCHIVE: breed-cavalier-welcome_mat
+  KEEP:    soul-breed-cavalier-welcome_mat
+  Name:    Cavalier Welcome Mat
+
+  ARCHIVE: breed-chihuahua-carrier_tag
+  KEEP:    soul-breed-chihuahua-carrier_tag
+  Name:    Chihuahua Carrier Tag
+
+  ARCHIVE: breed-chihuahua-blanket
+  KEEP:    soul-breed-chihuahua-blanket
+  Name:    Chihuahua Cozy Blanket
+
+  ARCHIVE: breed-chihuahua-luggage_tag
+  KEEP:    soul-breed-chihuahua-luggage_tag
+  Name:    Chihuahua Luggage Tag
+
+  ARCHIVE: breed-chihuahua-passport_holder
+  KEEP:    soul-breed-chihuahua-passport_holder
+  Name:    Chihuahua Pet Passport Holder
+
+  ARCHIVE: breed-chihuahua-travel_bowl
+  KEEP:    soul-breed-chihuahua-travel_bowl
+  Name:    Chihuahua Travel Bowl
+
+  ARCHIVE: breed-chihuahua-welcome_mat
+  KEEP:    soul-breed-chihuahua-welcome_mat
+  Name:    Chihuahua Welcome Mat
+
+  ARCHIVE: breed-chow_chow-carrier_tag
+  KEEP:    soul-breed-chow_chow-carrier_tag
+  Name:    Chow Chow Carrier Tag
+
+  ARCHIVE: breed-chow_chow-blanket
+  KEEP:    soul-breed-chow_chow-blanket
+  Name:    Chow Chow Cozy Blanket
+
+  ARCHIVE: breed-chow_chow-luggage_tag
+  KEEP:    soul-breed-chow_chow-luggage_tag
+  Name:    Chow Chow Luggage Tag
+
+  ARCHIVE: breed-chow_chow-passport_holder
+  KEEP:    soul-breed-chow_chow-passport_holder
+  Name:    Chow Chow Pet Passport Holder
+
+  ARCHIVE: breed-chow_chow-travel_bowl
+  KEEP:    soul-breed-chow_chow-travel_bowl
+  Name:    Chow Chow Travel Bowl
+
+  ARCHIVE: breed-chow_chow-welcome_mat
+  KEEP:    soul-breed-chow_chow-welcome_mat
+  Name:    Chow Chow Welcome Mat
+
+  ARCHIVE: breed-cocker_spaniel-carrier_tag
+  KEEP:    soul-breed-cocker_spaniel-carrier_tag
+  Name:    Cocker Spaniel Carrier Tag
+
+  ARCHIVE: breed-cocker_spaniel-blanket
+  KEEP:    soul-breed-cocker_spaniel-blanket
+  Name:    Cocker Spaniel Cozy Blanket
+
+  ARCHIVE: breed-cocker_spaniel-luggage_tag
+  KEEP:    soul-breed-cocker_spaniel-luggage_tag
+  Name:    Cocker Spaniel Luggage Tag
+
+  ARCHIVE: breed-cocker_spaniel-passport_holder
+  KEEP:    soul-breed-cocker_spaniel-passport_holder
+  Name:    Cocker Spaniel Pet Passport Holder
+
+  ARCHIVE: breed-cocker_spaniel-travel_bowl
+  KEEP:    soul-breed-cocker_spaniel-travel_bowl
+  Name:    Cocker Spaniel Travel Bowl
+
+  ARCHIVE: breed-cocker_spaniel-welcome_mat
+  KEEP:    soul-breed-cocker_spaniel-welcome_mat
+  Name:    Cocker Spaniel Welcome Mat
+
+  ARCHIVE: breed-dachshund-carrier_tag
+  KEEP:    soul-breed-dachshund-carrier_tag
+  Name:    Dachshund Carrier Tag
+
+  ARCHIVE: breed-dachshund-blanket
+  KEEP:    soul-breed-dachshund-blanket
+  Name:    Dachshund Cozy Blanket
+
+  ARCHIVE: breed-dachshund-luggage_tag
+  KEEP:    soul-breed-dachshund-luggage_tag
+  Name:    Dachshund Luggage Tag
+
+  ARCHIVE: breed-dachshund-passport_holder
+  KEEP:    soul-breed-dachshund-passport_holder
+  Name:    Dachshund Pet Passport Holder
+
+  ARCHIVE: breed-dachshund-travel_bowl
+  KEEP:    soul-breed-dachshund-travel_bowl
+  Name:    Dachshund Travel Bowl
+
+  ARCHIVE: breed-dachshund-welcome_mat
+  KEEP:    soul-breed-dachshund-welcome_mat
+  Name:    Dachshund Welcome Mat
+
+  ARCHIVE: breed-dalmatian-carrier_tag
+  KEEP:    soul-breed-dalmatian-carrier_tag
+  Name:    Dalmatian Carrier Tag
+
+  ARCHIVE: breed-dalmatian-blanket
+  KEEP:    soul-breed-dalmatian-blanket
+  Name:    Dalmatian Cozy Blanket
+
+  ARCHIVE: breed-dalmatian-luggage_tag
+  KEEP:    soul-breed-dalmatian-luggage_tag
+  Name:    Dalmatian Luggage Tag
+
+  ARCHIVE: breed-dalmatian-passport_holder
+  KEEP:    soul-breed-dalmatian-passport_holder
+  Name:    Dalmatian Pet Passport Holder
+
+  ARCHIVE: breed-dalmatian-travel_bowl
+  KEEP:    soul-breed-dalmatian-travel_bowl
+  Name:    Dalmatian Travel Bowl
+
+  ARCHIVE: breed-dalmatian-welcome_mat
+  KEEP:    soul-breed-dalmatian-welcome_mat
+  Name:    Dalmatian Welcome Mat
+
+  ARCHIVE: breed-doberman-carrier_tag
+  KEEP:    soul-breed-doberman-carrier_tag
+  Name:    Doberman Carrier Tag
+
+  ARCHIVE: breed-doberman-blanket
+  KEEP:    soul-breed-doberman-blanket
+  Name:    Doberman Cozy Blanket
+
+  ARCHIVE: breed-doberman-luggage_tag
+  KEEP:    soul-breed-doberman-luggage_tag
+  Name:    Doberman Luggage Tag
+
+  ARCHIVE: breed-doberman-passport_holder
+  KEEP:    soul-breed-doberman-passport_holder
+  Name:    Doberman Pet Passport Holder
+
+  ARCHIVE: breed-doberman-travel_bowl
+  KEEP:    soul-breed-doberman-travel_bowl
+  Name:    Doberman Travel Bowl
+
+  ARCHIVE: breed-doberman-welcome_mat
+  KEEP:    soul-breed-doberman-welcome_mat
+  Name:    Doberman Welcome Mat
+
+  ARCHIVE: breed-bulldog-carrier_tag
+  KEEP:    soul-breed-bulldog-carrier_tag
+  Name:    English Bulldog Carrier Tag
+
+  ARCHIVE: breed-bulldog-blanket
+  KEEP:    soul-breed-bulldog-blanket
+  Name:    English Bulldog Cozy Blanket
+
+  ARCHIVE: breed-bulldog-luggage_tag
+  KEEP:    soul-breed-bulldog-luggage_tag
+  Name:    English Bulldog Luggage Tag
+
+  ARCHIVE: breed-bulldog-passport_holder
+  KEEP:    soul-breed-bulldog-passport_holder
+  Name:    English Bulldog Pet Passport Holder
+
+  ARCHIVE: breed-bulldog-travel_bowl
+  KEEP:    soul-breed-bulldog-travel_bowl
+  Name:    English Bulldog Travel Bowl
+
+  ARCHIVE: breed-bulldog-welcome_mat
+  KEEP:    soul-breed-bulldog-welcome_mat
+  Name:    English Bulldog Welcome Mat
+
+  ARCHIVE: breed-french_bulldog-carrier_tag
+  KEEP:    soul-breed-french_bulldog-carrier_tag
+  Name:    French Bulldog Carrier Tag
+
+  ARCHIVE: breed-french_bulldog-blanket
+  KEEP:    soul-breed-french_bulldog-blanket
+  Name:    French Bulldog Cozy Blanket
+
+  ARCHIVE: breed-french_bulldog-luggage_tag
+  KEEP:    soul-breed-french_bulldog-luggage_tag
+  Name:    French Bulldog Luggage Tag
+
+  ARCHIVE: breed-french_bulldog-passport_holder
+  KEEP:    soul-breed-french_bulldog-passport_holder
+  Name:    French Bulldog Pet Passport Holder
+
+  ARCHIVE: breed-french_bulldog-travel_bowl
+  KEEP:    soul-breed-french_bulldog-travel_bowl
+  Name:    French Bulldog Travel Bowl
+
+  ARCHIVE: breed-french_bulldog-welcome_mat
+  KEEP:    soul-breed-french_bulldog-welcome_mat
+  Name:    French Bulldog Welcome Mat
+
+  ARCHIVE: breed-german_shepherd-carrier_tag
+  KEEP:    soul-breed-german_shepherd-carrier_tag
+  Name:    German Shepherd Carrier Tag
+
+  ARCHIVE: breed-german_shepherd-blanket
+  KEEP:    soul-breed-german_shepherd-blanket
+  Name:    German Shepherd Cozy Blanket
+
+  ARCHIVE: breed-german_shepherd-luggage_tag
+  KEEP:    soul-breed-german_shepherd-luggage_tag
+  Name:    German Shepherd Luggage Tag
+
+  ARCHIVE: breed-german_shepherd-passport_holder
+  KEEP:    soul-breed-german_shepherd-passport_holder
+  Name:    German Shepherd Pet Passport Holder
+
+  ARCHIVE: breed-german_shepherd-travel_bowl
+  KEEP:    soul-breed-german_shepherd-travel_bowl
+  Name:    German Shepherd Travel Bowl
+
+  ARCHIVE: breed-german_shepherd-welcome_mat
+  KEEP:    soul-breed-german_shepherd-welcome_mat
+  Name:    German Shepherd Welcome Mat
+
+  ARCHIVE: breed-golden_retriever-carrier_tag
+  KEEP:    soul-breed-golden_retriever-carrier_tag
+  Name:    Golden Retriever Carrier Tag
+
+  ARCHIVE: breed-golden_retriever-blanket
+  KEEP:    soul-breed-golden_retriever-blanket
+  Name:    Golden Retriever Cozy Blanket
+
+  ARCHIVE: breed-golden_retriever-luggage_tag
+  KEEP:    soul-breed-golden_retriever-luggage_tag
+  Name:    Golden Retriever Luggage Tag
+
+  ARCHIVE: breed-golden_retriever-passport_holder
+  KEEP:    soul-breed-golden_retriever-passport_holder
+  Name:    Golden Retriever Pet Passport Holder
+
+  ARCHIVE: breed-golden_retriever-travel_bowl
+  KEEP:    soul-breed-golden_retriever-travel_bowl
+  Name:    Golden Retriever Travel Bowl
+
+  ARCHIVE: breed-golden_retriever-welcome_mat
+  KEEP:    soul-breed-golden_retriever-welcome_mat
+  Name:    Golden Retriever Welcome Mat
+
+  ARCHIVE: breed-great_dane-carrier_tag
+  KEEP:    soul-breed-great_dane-carrier_tag
+  Name:    Great Dane Carrier Tag
+
+  ARCHIVE: breed-great_dane-blanket
+  KEEP:    soul-breed-great_dane-blanket
+  Name:    Great Dane Cozy Blanket
+
+  ARCHIVE: breed-great_dane-luggage_tag
+  KEEP:    soul-breed-great_dane-luggage_tag
+  Name:    Great Dane Luggage Tag
+
+  ARCHIVE: breed-great_dane-passport_holder
+  KEEP:    soul-breed-great_dane-passport_holder
+  Name:    Great Dane Pet Passport Holder
+
+  ARCHIVE: breed-great_dane-travel_bowl
+  KEEP:    soul-breed-great_dane-travel_bowl
+  Name:    Great Dane Travel Bowl
+
+  ARCHIVE: breed-great_dane-welcome_mat
+  KEEP:    soul-breed-great_dane-welcome_mat
+  Name:    Great Dane Welcome Mat
+
+  ARCHIVE: breed-husky-carrier_tag
+  KEEP:    soul-breed-husky-carrier_tag
+  Name:    Husky Carrier Tag
+
+  ARCHIVE: breed-husky-blanket
+  KEEP:    soul-breed-husky-blanket
+  Name:    Husky Cozy Blanket
+
+  ARCHIVE: breed-husky-luggage_tag
+  KEEP:    soul-breed-husky-luggage_tag
+  Name:    Husky Luggage Tag
+
+  ARCHIVE: breed-husky-passport_holder
+  KEEP:    soul-breed-husky-passport_holder
+  Name:    Husky Pet Passport Holder
+
+  ARCHIVE: breed-husky-travel_bowl
+  KEEP:    soul-breed-husky-travel_bowl
+  Name:    Husky Travel Bowl
+
+  ARCHIVE: breed-husky-welcome_mat
+  KEEP:    soul-breed-husky-welcome_mat
+  Name:    Husky Welcome Mat
+
+  ARCHIVE: breed-indie-carrier_tag
+  KEEP:    soul-breed-indie-carrier_tag
+  Name:    Indie Carrier Tag
+
+  ARCHIVE: breed-indie-blanket
+  KEEP:    soul-breed-indie-blanket
+  Name:    Indie Cozy Blanket
+
+  ARCHIVE: breed-indie-luggage_tag
+  KEEP:    soul-breed-indie-luggage_tag
+  Name:    Indie Luggage Tag
+
+  ARCHIVE: breed-indie-passport_holder
+  KEEP:    soul-breed-indie-passport_holder
+  Name:    Indie Pet Passport Holder
+
+  ARCHIVE: breed-indie-travel_bowl
+  KEEP:    soul-breed-indie-travel_bowl
+  Name:    Indie Travel Bowl
+
+  ARCHIVE: breed-indie-welcome_mat
+  KEEP:    soul-breed-indie-welcome_mat
+  Name:    Indie Welcome Mat
+
+  ARCHIVE: breed-irish_setter-carrier_tag
+  KEEP:    soul-breed-irish_setter-carrier_tag
+  Name:    Irish Setter Carrier Tag
+
+  ARCHIVE: breed-irish_setter-blanket
+  KEEP:    soul-breed-irish_setter-blanket
+  Name:    Irish Setter Cozy Blanket
+
+  ARCHIVE: breed-irish_setter-luggage_tag
+  KEEP:    soul-breed-irish_setter-luggage_tag
+  Name:    Irish Setter Luggage Tag
+
+  ARCHIVE: breed-irish_setter-passport_holder
+  KEEP:    soul-breed-irish_setter-passport_holder
+  Name:    Irish Setter Pet Passport Holder
+
+  ARCHIVE: breed-irish_setter-travel_bowl
+  KEEP:    soul-breed-irish_setter-travel_bowl
+  Name:    Irish Setter Travel Bowl
+
+  ARCHIVE: breed-irish_setter-welcome_mat
+  KEEP:    soul-breed-irish_setter-welcome_mat
+  Name:    Irish Setter Welcome Mat
+
+  ARCHIVE: breed-italian_greyhound-carrier_tag
+  KEEP:    soul-breed-italian_greyhound-carrier_tag
+  Name:    Italian Greyhound Carrier Tag
+
+  ARCHIVE: breed-italian_greyhound-blanket
+  KEEP:    soul-breed-italian_greyhound-blanket
+  Name:    Italian Greyhound Cozy Blanket
+
+  ARCHIVE: breed-italian_greyhound-luggage_tag
+  KEEP:    soul-breed-italian_greyhound-luggage_tag
+  Name:    Italian Greyhound Luggage Tag
+
+  ARCHIVE: breed-italian_greyhound-passport_holder
+  KEEP:    soul-breed-italian_greyhound-passport_holder
+  Name:    Italian Greyhound Pet Passport Holder
+
+  ARCHIVE: breed-italian_greyhound-travel_bowl
+  KEEP:    soul-breed-italian_greyhound-travel_bowl
+  Name:    Italian Greyhound Travel Bowl
+
+  ARCHIVE: breed-italian_greyhound-welcome_mat
+  KEEP:    soul-breed-italian_greyhound-welcome_mat
+  Name:    Italian Greyhound Welcome Mat
+
+  ARCHIVE: breed-jack_russell-carrier_tag
+  KEEP:    soul-breed-jack_russell-carrier_tag
+  Name:    Jack Russell Carrier Tag
+
+  ARCHIVE: breed-jack_russell-blanket
+  KEEP:    soul-breed-jack_russell-blanket
+  Name:    Jack Russell Cozy Blanket
+
+  ARCHIVE: breed-jack_russell-luggage_tag
+  KEEP:    soul-breed-jack_russell-luggage_tag
+  Name:    Jack Russell Luggage Tag
+
+  ARCHIVE: breed-jack_russell-passport_holder
+  KEEP:    soul-breed-jack_russell-passport_holder
+  Name:    Jack Russell Pet Passport Holder
+
+  ARCHIVE: breed-jack_russell-travel_bowl
+  KEEP:    soul-breed-jack_russell-travel_bowl
+  Name:    Jack Russell Travel Bowl
+
+  ARCHIVE: breed-jack_russell-welcome_mat
+  KEEP:    soul-breed-jack_russell-welcome_mat
+  Name:    Jack Russell Welcome Mat
+
+  ARCHIVE: breed-labrador-carrier_tag
+  KEEP:    soul-breed-labrador-carrier_tag
+  Name:    Labrador Carrier Tag
+
+  ARCHIVE: breed-labrador-blanket
+  KEEP:    soul-breed-labrador-blanket
+  Name:    Labrador Cozy Blanket
+
+  ARCHIVE: breed-labrador-luggage_tag
+  KEEP:    soul-breed-labrador-luggage_tag
+  Name:    Labrador Luggage Tag
+
+  ARCHIVE: breed-labrador-passport_holder
+  KEEP:    soul-breed-labrador-passport_holder
+  Name:    Labrador Pet Passport Holder
+
+  ARCHIVE: breed-labrador-travel_bowl
+  KEEP:    soul-breed-labrador-travel_bowl
+  Name:    Labrador Travel Bowl
+
+  ARCHIVE: breed-labrador-welcome_mat
+  KEEP:    soul-breed-labrador-welcome_mat
+  Name:    Labrador Welcome Mat
+
+  ARCHIVE: breed-lhasa_apso-carrier_tag
+  KEEP:    soul-breed-lhasa_apso-carrier_tag
+  Name:    Lhasa Apso Carrier Tag
+
+  ARCHIVE: breed-lhasa_apso-blanket
+  KEEP:    soul-breed-lhasa_apso-blanket
+  Name:    Lhasa Apso Cozy Blanket
+
+  ARCHIVE: breed-lhasa_apso-luggage_tag
+  KEEP:    soul-breed-lhasa_apso-luggage_tag
+  Name:    Lhasa Apso Luggage Tag
+
+  ARCHIVE: breed-lhasa_apso-passport_holder
+  KEEP:    soul-breed-lhasa_apso-passport_holder
+  Name:    Lhasa Apso Pet Passport Holder
+
+  ARCHIVE: breed-lhasa_apso-travel_bowl
+  KEEP:    soul-breed-lhasa_apso-travel_bowl
+  Name:    Lhasa Apso Travel Bowl
+
+  ARCHIVE: breed-lhasa_apso-welcome_mat
+  KEEP:    soul-breed-lhasa_apso-welcome_mat
+  Name:    Lhasa Apso Welcome Mat
+
+  ARCHIVE: breed-maltese-carrier_tag
+  KEEP:    soul-breed-maltese-carrier_tag
+  Name:    Maltese Carrier Tag
+
+  ARCHIVE: breed-maltese-blanket
+  KEEP:    soul-breed-maltese-blanket
+  Name:    Maltese Cozy Blanket
+
+  ARCHIVE: breed-maltese-luggage_tag
+  KEEP:    soul-breed-maltese-luggage_tag
+  Name:    Maltese Luggage Tag
+
+  ARCHIVE: breed-maltese-passport_holder
+  KEEP:    soul-breed-maltese-passport_holder
+  Name:    Maltese Pet Passport Holder
+
+  ARCHIVE: breed-maltese-travel_bowl
+  KEEP:    soul-breed-maltese-travel_bowl
+  Name:    Maltese Travel Bowl
+
+  ARCHIVE: breed-maltese-welcome_mat
+  KEEP:    soul-breed-maltese-welcome_mat
+  Name:    Maltese Welcome Mat
+
+  ARCHIVE: breed-pomeranian-carrier_tag
+  KEEP:    soul-breed-pomeranian-carrier_tag
+  Name:    Pomeranian Carrier Tag
+
+  ARCHIVE: breed-pomeranian-blanket
+  KEEP:    soul-breed-pomeranian-blanket
+  Name:    Pomeranian Cozy Blanket
+
+  ARCHIVE: breed-pomeranian-luggage_tag
+  KEEP:    soul-breed-pomeranian-luggage_tag
+  Name:    Pomeranian Luggage Tag
+
+  ARCHIVE: breed-pomeranian-passport_holder
+  KEEP:    soul-breed-pomeranian-passport_holder
+  Name:    Pomeranian Pet Passport Holder
+
+  ARCHIVE: breed-pomeranian-travel_bowl
+  KEEP:    soul-breed-pomeranian-travel_bowl
+  Name:    Pomeranian Travel Bowl
+
+  ARCHIVE: breed-pomeranian-welcome_mat
+  KEEP:    soul-breed-pomeranian-welcome_mat
+  Name:    Pomeranian Welcome Mat
+
+  ARCHIVE: breed-poodle-carrier_tag
+  KEEP:    soul-breed-poodle-carrier_tag
+  Name:    Poodle Carrier Tag
+
+  ARCHIVE: breed-poodle-blanket
+  KEEP:    soul-breed-poodle-blanket
+  Name:    Poodle Cozy Blanket
+
+  ARCHIVE: breed-poodle-luggage_tag
+  KEEP:    soul-breed-poodle-luggage_tag
+  Name:    Poodle Luggage Tag
+
+  ARCHIVE: breed-poodle-passport_holder
+  KEEP:    soul-breed-poodle-passport_holder
+  Name:    Poodle Pet Passport Holder
+
+  ARCHIVE: breed-poodle-travel_bowl
+  KEEP:    soul-breed-poodle-travel_bowl
+  Name:    Poodle Travel Bowl
+
+  ARCHIVE: breed-poodle-welcome_mat
+  KEEP:    soul-breed-poodle-welcome_mat
+  Name:    Poodle Welcome Mat
+
+  ARCHIVE: breed-pug-carrier_tag
+  KEEP:    soul-breed-pug-carrier_tag
+  Name:    Pug Carrier Tag
+
+  ARCHIVE: breed-pug-blanket
+  KEEP:    soul-breed-pug-blanket
+  Name:    Pug Cozy Blanket
+
+  ARCHIVE: breed-pug-luggage_tag
+  KEEP:    soul-breed-pug-luggage_tag
+  Name:    Pug Luggage Tag
+
+  ARCHIVE: breed-pug-passport_holder
+  KEEP:    soul-breed-pug-passport_holder
+  Name:    Pug Pet Passport Holder
+
+  ARCHIVE: breed-pug-travel_bowl
+  KEEP:    soul-breed-pug-travel_bowl
+  Name:    Pug Travel Bowl
+
+  ARCHIVE: breed-pug-welcome_mat
+  KEEP:    soul-breed-pug-welcome_mat
+  Name:    Pug Welcome Mat
+
+  ARCHIVE: breed-rottweiler-carrier_tag
+  KEEP:    soul-breed-rottweiler-carrier_tag
+  Name:    Rottweiler Carrier Tag
+
+  ARCHIVE: breed-rottweiler-blanket
+  KEEP:    soul-breed-rottweiler-blanket
+  Name:    Rottweiler Cozy Blanket
+
+  ARCHIVE: breed-rottweiler-luggage_tag
+  KEEP:    soul-breed-rottweiler-luggage_tag
+  Name:    Rottweiler Luggage Tag
+
+  ARCHIVE: breed-rottweiler-passport_holder
+  KEEP:    soul-breed-rottweiler-passport_holder
+  Name:    Rottweiler Pet Passport Holder
+
+  ARCHIVE: breed-rottweiler-travel_bowl
+  KEEP:    soul-breed-rottweiler-travel_bowl
+  Name:    Rottweiler Travel Bowl
+
+  ARCHIVE: breed-rottweiler-welcome_mat
+  KEEP:    soul-breed-rottweiler-welcome_mat
+  Name:    Rottweiler Welcome Mat
+
+  ARCHIVE: breed-schnoodle-carrier_tag
+  KEEP:    soul-breed-schnoodle-carrier_tag
+  Name:    Schnoodle Carrier Tag
+
+  ARCHIVE: breed-schnoodle-blanket
+  KEEP:    soul-breed-schnoodle-blanket
+  Name:    Schnoodle Cozy Blanket
+
+  ARCHIVE: breed-schnoodle-luggage_tag
+  KEEP:    soul-breed-schnoodle-luggage_tag
+  Name:    Schnoodle Luggage Tag
+
+  ARCHIVE: breed-schnoodle-passport_holder
+  KEEP:    soul-breed-schnoodle-passport_holder
+  Name:    Schnoodle Pet Passport Holder
+
+  ARCHIVE: breed-schnoodle-travel_bowl
+  KEEP:    soul-breed-schnoodle-travel_bowl
+  Name:    Schnoodle Travel Bowl
+
+  ARCHIVE: breed-schnoodle-welcome_mat
+  KEEP:    soul-breed-schnoodle-welcome_mat
+  Name:    Schnoodle Welcome Mat
+
+  ARCHIVE: breed-scottish_terrier-carrier_tag
+  KEEP:    soul-breed-scottish_terrier-carrier_tag
+  Name:    Scottish Terrier Carrier Tag
+
+  ARCHIVE: breed-scottish_terrier-blanket
+  KEEP:    soul-breed-scottish_terrier-blanket
+  Name:    Scottish Terrier Cozy Blanket
+
+  ARCHIVE: breed-scottish_terrier-luggage_tag
+  KEEP:    soul-breed-scottish_terrier-luggage_tag
+  Name:    Scottish Terrier Luggage Tag
+
+  ARCHIVE: breed-scottish_terrier-passport_holder
+  KEEP:    soul-breed-scottish_terrier-passport_holder
+  Name:    Scottish Terrier Pet Passport Holder
+
+  ARCHIVE: breed-scottish_terrier-travel_bowl
+  KEEP:    soul-breed-scottish_terrier-travel_bowl
+  Name:    Scottish Terrier Travel Bowl
+
+  ARCHIVE: breed-scottish_terrier-welcome_mat
+  KEEP:    soul-breed-scottish_terrier-welcome_mat
+  Name:    Scottish Terrier Welcome Mat
+
+  ARCHIVE: breed-shih_tzu-carrier_tag
+  KEEP:    soul-breed-shih_tzu-carrier_tag
+  Name:    Shih Tzu Carrier Tag
+
+  ARCHIVE: breed-shih_tzu-blanket
+  KEEP:    soul-breed-shih_tzu-blanket
+  Name:    Shih Tzu Cozy Blanket
+
+  ARCHIVE: breed-shih_tzu-luggage_tag
+  KEEP:    soul-breed-shih_tzu-luggage_tag
+  Name:    Shih Tzu Luggage Tag
+
+  ARCHIVE: breed-shih_tzu-passport_holder
+  KEEP:    soul-breed-shih_tzu-passport_holder
+  Name:    Shih Tzu Pet Passport Holder
+
+  ARCHIVE: breed-shih_tzu-travel_bowl
+  KEEP:    soul-breed-shih_tzu-travel_bowl
+  Name:    Shih Tzu Travel Bowl
+
+  ARCHIVE: breed-shih_tzu-welcome_mat
+  KEEP:    soul-breed-shih_tzu-welcome_mat
+  Name:    Shih Tzu Welcome Mat
+
+  ARCHIVE: breed-st_bernard-carrier_tag
+  KEEP:    soul-breed-st_bernard-carrier_tag
+  Name:    St Bernard Carrier Tag
+
+  ARCHIVE: breed-st_bernard-blanket
+  KEEP:    soul-breed-st_bernard-blanket
+  Name:    St Bernard Cozy Blanket
+
+  ARCHIVE: breed-st_bernard-luggage_tag
+  KEEP:    soul-breed-st_bernard-luggage_tag
+  Name:    St Bernard Luggage Tag
+
+  ARCHIVE: breed-st_bernard-passport_holder
+  KEEP:    soul-breed-st_bernard-passport_holder
+  Name:    St Bernard Pet Passport Holder
+
+  ARCHIVE: breed-st_bernard-travel_bowl
+  KEEP:    soul-breed-st_bernard-travel_bowl
+  Name:    St Bernard Travel Bowl
+
+  ARCHIVE: breed-st_bernard-welcome_mat
+  KEEP:    soul-breed-st_bernard-welcome_mat
+  Name:    St Bernard Welcome Mat
+
+  ARCHIVE: breed-yorkshire-carrier_tag
+  KEEP:    soul-breed-yorkshire-carrier_tag
+  Name:    Yorkshire Carrier Tag
+
+  ARCHIVE: breed-yorkshire-blanket
+  KEEP:    soul-breed-yorkshire-blanket
+  Name:    Yorkshire Cozy Blanket
+
+  ARCHIVE: breed-yorkshire-luggage_tag
+  KEEP:    soul-breed-yorkshire-luggage_tag
+  Name:    Yorkshire Luggage Tag
+
+  ARCHIVE: breed-yorkshire-passport_holder
+  KEEP:    soul-breed-yorkshire-passport_holder
+  Name:    Yorkshire Pet Passport Holder
+
+  ARCHIVE: breed-yorkshire-travel_bowl
+  KEEP:    soul-breed-yorkshire-travel_bowl
+  Name:    Yorkshire Travel Bowl
+
+  ARCHIVE: breed-yorkshire-welcome_mat
+  KEEP:    soul-breed-yorkshire-welcome_mat
+  Name:    Yorkshire Welcome Mat
+
+[LEARN] — 66 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-american_bully-training_log
+  KEEP:    soul-breed-american_bully-training_log
+  Name:    American Bully Training Journal
+
+  ARCHIVE: breed-american_bully-treat_pouch
+  KEEP:    soul-breed-american_bully-treat_pouch
+  Name:    American Bully Training Treat Pouch
+
+  ARCHIVE: breed-beagle-training_log
+  KEEP:    soul-breed-beagle-training_log
+  Name:    Beagle Training Journal
+
+  ARCHIVE: breed-beagle-treat_pouch
+  KEEP:    soul-breed-beagle-treat_pouch
+  Name:    Beagle Training Treat Pouch
+
+  ARCHIVE: breed-border_collie-training_log
+  KEEP:    soul-breed-border_collie-training_log
+  Name:    Border Collie Training Journal
+
+  ARCHIVE: breed-border_collie-treat_pouch
+  KEEP:    soul-breed-border_collie-treat_pouch
+  Name:    Border Collie Training Treat Pouch
+
+  ARCHIVE: breed-boxer-training_log
+  KEEP:    soul-breed-boxer-training_log
+  Name:    Boxer Training Journal
+
+  ARCHIVE: breed-boxer-treat_pouch
+  KEEP:    soul-breed-boxer-treat_pouch
+  Name:    Boxer Training Treat Pouch
+
+  ARCHIVE: breed-cavalier-training_log
+  KEEP:    soul-breed-cavalier-training_log
+  Name:    Cavalier Training Journal
+
+  ARCHIVE: breed-cavalier-treat_pouch
+  KEEP:    soul-breed-cavalier-treat_pouch
+  Name:    Cavalier Training Treat Pouch
+
+  ARCHIVE: breed-chihuahua-training_log
+  KEEP:    soul-breed-chihuahua-training_log
+  Name:    Chihuahua Training Journal
+
+  ARCHIVE: breed-chihuahua-treat_pouch
+  KEEP:    soul-breed-chihuahua-treat_pouch
+  Name:    Chihuahua Training Treat Pouch
+
+  ARCHIVE: breed-chow_chow-training_log
+  KEEP:    soul-breed-chow_chow-training_log
+  Name:    Chow Chow Training Journal
+
+  ARCHIVE: breed-chow_chow-treat_pouch
+  KEEP:    soul-breed-chow_chow-treat_pouch
+  Name:    Chow Chow Training Treat Pouch
+
+  ARCHIVE: breed-cocker_spaniel-training_log
+  KEEP:    soul-breed-cocker_spaniel-training_log
+  Name:    Cocker Spaniel Training Journal
+
+  ARCHIVE: breed-cocker_spaniel-treat_pouch
+  KEEP:    soul-breed-cocker_spaniel-treat_pouch
+  Name:    Cocker Spaniel Training Treat Pouch
+
+  ARCHIVE: breed-dachshund-training_log
+  KEEP:    soul-breed-dachshund-training_log
+  Name:    Dachshund Training Journal
+
+  ARCHIVE: breed-dachshund-treat_pouch
+  KEEP:    soul-breed-dachshund-treat_pouch
+  Name:    Dachshund Training Treat Pouch
+
+  ARCHIVE: breed-dalmatian-training_log
+  KEEP:    soul-breed-dalmatian-training_log
+  Name:    Dalmatian Training Journal
+
+  ARCHIVE: breed-dalmatian-treat_pouch
+  KEEP:    soul-breed-dalmatian-treat_pouch
+  Name:    Dalmatian Training Treat Pouch
+
+  ARCHIVE: breed-doberman-training_log
+  KEEP:    soul-breed-doberman-training_log
+  Name:    Doberman Training Journal
+
+  ARCHIVE: breed-doberman-treat_pouch
+  KEEP:    soul-breed-doberman-treat_pouch
+  Name:    Doberman Training Treat Pouch
+
+  ARCHIVE: breed-bulldog-training_log
+  KEEP:    soul-breed-bulldog-training_log
+  Name:    English Bulldog Training Journal
+
+  ARCHIVE: breed-bulldog-treat_pouch
+  KEEP:    soul-breed-bulldog-treat_pouch
+  Name:    English Bulldog Training Treat Pouch
+
+  ARCHIVE: breed-french_bulldog-training_log
+  KEEP:    soul-breed-french_bulldog-training_log
+  Name:    French Bulldog Training Journal
+
+  ARCHIVE: breed-french_bulldog-treat_pouch
+  KEEP:    soul-breed-french_bulldog-treat_pouch
+  Name:    French Bulldog Training Treat Pouch
+
+  ARCHIVE: breed-german_shepherd-training_log
+  KEEP:    soul-breed-german_shepherd-training_log
+  Name:    German Shepherd Training Journal
+
+  ARCHIVE: breed-german_shepherd-treat_pouch
+  KEEP:    soul-breed-german_shepherd-treat_pouch
+  Name:    German Shepherd Training Treat Pouch
+
+  ARCHIVE: breed-golden_retriever-training_log
+  KEEP:    soul-breed-golden_retriever-training_log
+  Name:    Golden Retriever Training Journal
+
+  ARCHIVE: breed-golden_retriever-treat_pouch
+  KEEP:    soul-breed-golden_retriever-treat_pouch
+  Name:    Golden Retriever Training Treat Pouch
+
+  ARCHIVE: breed-great_dane-training_log
+  KEEP:    soul-breed-great_dane-training_log
+  Name:    Great Dane Training Journal
+
+  ARCHIVE: breed-great_dane-treat_pouch
+  KEEP:    soul-breed-great_dane-treat_pouch
+  Name:    Great Dane Training Treat Pouch
+
+  ARCHIVE: breed-husky-training_log
+  KEEP:    soul-breed-husky-training_log
+  Name:    Husky Training Journal
+
+  ARCHIVE: breed-husky-treat_pouch
+  KEEP:    soul-breed-husky-treat_pouch
+  Name:    Husky Training Treat Pouch
+
+  ARCHIVE: breed-indie-training_log
+  KEEP:    soul-breed-indie-training_log
+  Name:    Indie Training Journal
+
+  ARCHIVE: breed-indie-treat_pouch
+  KEEP:    soul-breed-indie-treat_pouch
+  Name:    Indie Training Treat Pouch
+
+  ARCHIVE: breed-irish_setter-training_log
+  KEEP:    soul-breed-irish_setter-training_log
+  Name:    Irish Setter Training Journal
+
+  ARCHIVE: breed-irish_setter-treat_pouch
+  KEEP:    soul-breed-irish_setter-treat_pouch
+  Name:    Irish Setter Training Treat Pouch
+
+  ARCHIVE: breed-italian_greyhound-training_log
+  KEEP:    soul-breed-italian_greyhound-training_log
+  Name:    Italian Greyhound Training Journal
+
+  ARCHIVE: breed-italian_greyhound-treat_pouch
+  KEEP:    soul-breed-italian_greyhound-treat_pouch
+  Name:    Italian Greyhound Training Treat Pouch
+
+  ARCHIVE: breed-jack_russell-training_log
+  KEEP:    soul-breed-jack_russell-training_log
+  Name:    Jack Russell Training Journal
+
+  ARCHIVE: breed-jack_russell-treat_pouch
+  KEEP:    soul-breed-jack_russell-treat_pouch
+  Name:    Jack Russell Training Treat Pouch
+
+  ARCHIVE: breed-labrador-training_log
+  KEEP:    soul-breed-labrador-training_log
+  Name:    Labrador Training Journal
+
+  ARCHIVE: breed-labrador-treat_pouch
+  KEEP:    soul-breed-labrador-treat_pouch
+  Name:    Labrador Training Treat Pouch
+
+  ARCHIVE: breed-lhasa_apso-training_log
+  KEEP:    soul-breed-lhasa_apso-training_log
+  Name:    Lhasa Apso Training Journal
+
+  ARCHIVE: breed-lhasa_apso-treat_pouch
+  KEEP:    soul-breed-lhasa_apso-treat_pouch
+  Name:    Lhasa Apso Training Treat Pouch
+
+  ARCHIVE: breed-maltese-training_log
+  KEEP:    soul-breed-maltese-training_log
+  Name:    Maltese Training Journal
+
+  ARCHIVE: breed-maltese-treat_pouch
+  KEEP:    soul-breed-maltese-treat_pouch
+  Name:    Maltese Training Treat Pouch
+
+  ARCHIVE: breed-pomeranian-training_log
+  KEEP:    soul-breed-pomeranian-training_log
+  Name:    Pomeranian Training Journal
+
+  ARCHIVE: breed-pomeranian-treat_pouch
+  KEEP:    soul-breed-pomeranian-treat_pouch
+  Name:    Pomeranian Training Treat Pouch
+
+  ARCHIVE: breed-poodle-training_log
+  KEEP:    soul-breed-poodle-training_log
+  Name:    Poodle Training Journal
+
+  ARCHIVE: breed-poodle-treat_pouch
+  KEEP:    soul-breed-poodle-treat_pouch
+  Name:    Poodle Training Treat Pouch
+
+  ARCHIVE: breed-pug-training_log
+  KEEP:    soul-breed-pug-training_log
+  Name:    Pug Training Journal
+
+  ARCHIVE: breed-pug-treat_pouch
+  KEEP:    soul-breed-pug-treat_pouch
+  Name:    Pug Training Treat Pouch
+
+  ARCHIVE: breed-rottweiler-training_log
+  KEEP:    soul-breed-rottweiler-training_log
+  Name:    Rottweiler Training Journal
+
+  ARCHIVE: breed-rottweiler-treat_pouch
+  KEEP:    soul-breed-rottweiler-treat_pouch
+  Name:    Rottweiler Training Treat Pouch
+
+  ARCHIVE: breed-schnoodle-training_log
+  KEEP:    soul-breed-schnoodle-training_log
+  Name:    Schnoodle Training Journal
+
+  ARCHIVE: breed-schnoodle-treat_pouch
+  KEEP:    soul-breed-schnoodle-treat_pouch
+  Name:    Schnoodle Training Treat Pouch
+
+  ARCHIVE: breed-scottish_terrier-training_log
+  KEEP:    soul-breed-scottish_terrier-training_log
+  Name:    Scottish Terrier Training Journal
+
+  ARCHIVE: breed-scottish_terrier-treat_pouch
+  KEEP:    soul-breed-scottish_terrier-treat_pouch
+  Name:    Scottish Terrier Training Treat Pouch
+
+  ARCHIVE: breed-shih_tzu-training_log
+  KEEP:    soul-breed-shih_tzu-training_log
+  Name:    Shih Tzu Training Journal
+
+  ARCHIVE: breed-shih_tzu-treat_pouch
+  KEEP:    soul-breed-shih_tzu-treat_pouch
+  Name:    Shih Tzu Training Treat Pouch
+
+  ARCHIVE: breed-st_bernard-training_log
+  KEEP:    soul-breed-st_bernard-training_log
+  Name:    St Bernard Training Journal
+
+  ARCHIVE: breed-st_bernard-treat_pouch
+  KEEP:    soul-breed-st_bernard-treat_pouch
+  Name:    St Bernard Training Treat Pouch
+
+  ARCHIVE: breed-yorkshire-training_log
+  KEEP:    soul-breed-yorkshire-training_log
+  Name:    Yorkshire Training Journal
+
+  ARCHIVE: breed-yorkshire-treat_pouch
+  KEEP:    soul-breed-yorkshire-treat_pouch
+  Name:    Yorkshire Training Treat Pouch
+
+[PLAY] — 66 duplicates
+------------------------------------------------------------
+  ARCHIVE: breed-american_bully-play_bandana
+  KEEP:    soul-breed-american_bully-play_bandana
+  Name:    American Bully Play Date Bandana
+
+  ARCHIVE: breed-american_bully-playdate_card
+  KEEP:    soul-breed-american_bully-playdate_card
+  Name:    American Bully Play Date Card
+
+  ARCHIVE: breed-beagle-play_bandana
+  KEEP:    soul-breed-beagle-play_bandana
+  Name:    Beagle Play Date Bandana
+
+  ARCHIVE: breed-beagle-playdate_card
+  KEEP:    soul-breed-beagle-playdate_card
+  Name:    Beagle Play Date Card
+
+  ARCHIVE: breed-border_collie-play_bandana
+  KEEP:    soul-breed-border_collie-play_bandana
+  Name:    Border Collie Play Date Bandana
+
+  ARCHIVE: breed-border_collie-playdate_card
+  KEEP:    soul-breed-border_collie-playdate_card
+  Name:    Border Collie Play Date Card
+
+  ARCHIVE: breed-boxer-play_bandana
+  KEEP:    soul-breed-boxer-play_bandana
+  Name:    Boxer Play Date Bandana
+
+  ARCHIVE: breed-boxer-playdate_card
+  KEEP:    soul-breed-boxer-playdate_card
+  Name:    Boxer Play Date Card
+
+  ARCHIVE: breed-cavalier-play_bandana
+  KEEP:    soul-breed-cavalier-play_bandana
+  Name:    Cavalier Play Date Bandana
+
+  ARCHIVE: breed-cavalier-playdate_card
+  KEEP:    soul-breed-cavalier-playdate_card
+  Name:    Cavalier Play Date Card
+
+  ARCHIVE: breed-chihuahua-play_bandana
+  KEEP:    soul-breed-chihuahua-play_bandana
+  Name:    Chihuahua Play Date Bandana
+
+  ARCHIVE: breed-chihuahua-playdate_card
+  KEEP:    soul-breed-chihuahua-playdate_card
+  Name:    Chihuahua Play Date Card
+
+  ARCHIVE: breed-chow_chow-play_bandana
+  KEEP:    soul-breed-chow_chow-play_bandana
+  Name:    Chow Chow Play Date Bandana
+
+  ARCHIVE: breed-chow_chow-playdate_card
+  KEEP:    soul-breed-chow_chow-playdate_card
+  Name:    Chow Chow Play Date Card
+
+  ARCHIVE: breed-cocker_spaniel-play_bandana
+  KEEP:    soul-breed-cocker_spaniel-play_bandana
+  Name:    Cocker Spaniel Play Date Bandana
+
+  ARCHIVE: breed-cocker_spaniel-playdate_card
+  KEEP:    soul-breed-cocker_spaniel-playdate_card
+  Name:    Cocker Spaniel Play Date Card
+
+  ARCHIVE: breed-dachshund-play_bandana
+  KEEP:    soul-breed-dachshund-play_bandana
+  Name:    Dachshund Play Date Bandana
+
+  ARCHIVE: breed-dachshund-playdate_card
+  KEEP:    soul-breed-dachshund-playdate_card
+  Name:    Dachshund Play Date Card
+
+  ARCHIVE: breed-dalmatian-play_bandana
+  KEEP:    soul-breed-dalmatian-play_bandana
+  Name:    Dalmatian Play Date Bandana
+
+  ARCHIVE: breed-dalmatian-playdate_card
+  KEEP:    soul-breed-dalmatian-playdate_card
+  Name:    Dalmatian Play Date Card
+
+  ARCHIVE: breed-doberman-play_bandana
+  KEEP:    soul-breed-doberman-play_bandana
+  Name:    Doberman Play Date Bandana
+
+  ARCHIVE: breed-doberman-playdate_card
+  KEEP:    soul-breed-doberman-playdate_card
+  Name:    Doberman Play Date Card
+
+  ARCHIVE: breed-bulldog-play_bandana
+  KEEP:    soul-breed-bulldog-play_bandana
+  Name:    English Bulldog Play Date Bandana
+
+  ARCHIVE: breed-bulldog-playdate_card
+  KEEP:    soul-breed-bulldog-playdate_card
+  Name:    English Bulldog Play Date Card
+
+  ARCHIVE: breed-french_bulldog-play_bandana
+  KEEP:    soul-breed-french_bulldog-play_bandana
+  Name:    French Bulldog Play Date Bandana
+
+  ARCHIVE: breed-french_bulldog-playdate_card
+  KEEP:    soul-breed-french_bulldog-playdate_card
+  Name:    French Bulldog Play Date Card
+
+  ARCHIVE: breed-german_shepherd-play_bandana
+  KEEP:    soul-breed-german_shepherd-play_bandana
+  Name:    German Shepherd Play Date Bandana
+
+  ARCHIVE: breed-german_shepherd-playdate_card
+  KEEP:    soul-breed-german_shepherd-playdate_card
+  Name:    German Shepherd Play Date Card
+
+  ARCHIVE: breed-golden_retriever-play_bandana
+  KEEP:    soul-breed-golden_retriever-play_bandana
+  Name:    Golden Retriever Play Date Bandana
+
+  ARCHIVE: breed-golden_retriever-playdate_card
+  KEEP:    soul-breed-golden_retriever-playdate_card
+  Name:    Golden Retriever Play Date Card
+
+  ARCHIVE: breed-great_dane-play_bandana
+  KEEP:    soul-breed-great_dane-play_bandana
+  Name:    Great Dane Play Date Bandana
+
+  ARCHIVE: breed-great_dane-playdate_card
+  KEEP:    soul-breed-great_dane-playdate_card
+  Name:    Great Dane Play Date Card
+
+  ARCHIVE: breed-husky-play_bandana
+  KEEP:    soul-breed-husky-play_bandana
+  Name:    Husky Play Date Bandana
+
+  ARCHIVE: breed-husky-playdate_card
+  KEEP:    soul-breed-husky-playdate_card
+  Name:    Husky Play Date Card
+
+  ARCHIVE: breed-indie-play_bandana
+  KEEP:    soul-breed-indie-play_bandana
+  Name:    Indie Play Date Bandana
+
+  ARCHIVE: breed-indie-playdate_card
+  KEEP:    soul-breed-indie-playdate_card
+  Name:    Indie Play Date Card
+
+  ARCHIVE: breed-irish_setter-play_bandana
+  KEEP:    soul-breed-irish_setter-play_bandana
+  Name:    Irish Setter Play Date Bandana
+
+  ARCHIVE: breed-irish_setter-playdate_card
+  KEEP:    soul-breed-irish_setter-playdate_card
+  Name:    Irish Setter Play Date Card
+
+  ARCHIVE: breed-italian_greyhound-play_bandana
+  KEEP:    soul-breed-italian_greyhound-play_bandana
+  Name:    Italian Greyhound Play Date Bandana
+
+  ARCHIVE: breed-italian_greyhound-playdate_card
+  KEEP:    soul-breed-italian_greyhound-playdate_card
+  Name:    Italian Greyhound Play Date Card
+
+  ARCHIVE: breed-jack_russell-play_bandana
+  KEEP:    soul-breed-jack_russell-play_bandana
+  Name:    Jack Russell Play Date Bandana
+
+  ARCHIVE: breed-jack_russell-playdate_card
+  KEEP:    soul-breed-jack_russell-playdate_card
+  Name:    Jack Russell Play Date Card
+
+  ARCHIVE: breed-labrador-play_bandana
+  KEEP:    soul-breed-labrador-play_bandana
+  Name:    Labrador Play Date Bandana
+
+  ARCHIVE: breed-labrador-playdate_card
+  KEEP:    soul-breed-labrador-playdate_card
+  Name:    Labrador Play Date Card
+
+  ARCHIVE: breed-lhasa_apso-play_bandana
+  KEEP:    soul-breed-lhasa_apso-play_bandana
+  Name:    Lhasa Apso Play Date Bandana
+
+  ARCHIVE: breed-lhasa_apso-playdate_card
+  KEEP:    soul-breed-lhasa_apso-playdate_card
+  Name:    Lhasa Apso Play Date Card
+
+  ARCHIVE: breed-maltese-play_bandana
+  KEEP:    soul-breed-maltese-play_bandana
+  Name:    Maltese Play Date Bandana
+
+  ARCHIVE: breed-maltese-playdate_card
+  KEEP:    soul-breed-maltese-playdate_card
+  Name:    Maltese Play Date Card
+
+  ARCHIVE: breed-pomeranian-play_bandana
+  KEEP:    soul-breed-pomeranian-play_bandana
+  Name:    Pomeranian Play Date Bandana
+
+  ARCHIVE: breed-pomeranian-playdate_card
+  KEEP:    soul-breed-pomeranian-playdate_card
+  Name:    Pomeranian Play Date Card
+
+  ARCHIVE: breed-poodle-play_bandana
+  KEEP:    soul-breed-poodle-play_bandana
+  Name:    Poodle Play Date Bandana
+
+  ARCHIVE: breed-poodle-playdate_card
+  KEEP:    soul-breed-poodle-playdate_card
+  Name:    Poodle Play Date Card
+
+  ARCHIVE: breed-pug-play_bandana
+  KEEP:    soul-breed-pug-play_bandana
+  Name:    Pug Play Date Bandana
+
+  ARCHIVE: breed-pug-playdate_card
+  KEEP:    soul-breed-pug-playdate_card
+  Name:    Pug Play Date Card
+
+  ARCHIVE: breed-rottweiler-play_bandana
+  KEEP:    soul-breed-rottweiler-play_bandana
+  Name:    Rottweiler Play Date Bandana
+
+  ARCHIVE: breed-rottweiler-playdate_card
+  KEEP:    soul-breed-rottweiler-playdate_card
+  Name:    Rottweiler Play Date Card
+
+  ARCHIVE: breed-schnoodle-play_bandana
+  KEEP:    soul-breed-schnoodle-play_bandana
+  Name:    Schnoodle Play Date Bandana
+
+  ARCHIVE: breed-schnoodle-playdate_card
+  KEEP:    soul-breed-schnoodle-playdate_card
+  Name:    Schnoodle Play Date Card
+
+  ARCHIVE: breed-scottish_terrier-play_bandana
+  KEEP:    soul-breed-scottish_terrier-play_bandana
+  Name:    Scottish Terrier Play Date Bandana
+
+  ARCHIVE: breed-scottish_terrier-playdate_card
+  KEEP:    soul-breed-scottish_terrier-playdate_card
+  Name:    Scottish Terrier Play Date Card
+
+  ARCHIVE: breed-shih_tzu-play_bandana
+  KEEP:    soul-breed-shih_tzu-play_bandana
+  Name:    Shih Tzu Play Date Bandana
+
+  ARCHIVE: breed-shih_tzu-playdate_card
+  KEEP:    soul-breed-shih_tzu-playdate_card
+  Name:    Shih Tzu Play Date Card
+
+  ARCHIVE: breed-st_bernard-play_bandana
+  KEEP:    soul-breed-st_bernard-play_bandana
+  Name:    St Bernard Play Date Bandana
+
+  ARCHIVE: breed-st_bernard-playdate_card
+  KEEP:    soul-breed-st_bernard-playdate_card
+  Name:    St Bernard Play Date Card
+
+  ARCHIVE: breed-yorkshire-play_bandana
+  KEEP:    soul-breed-yorkshire-play_bandana
+  Name:    Yorkshire Play Date Bandana
+
+  ARCHIVE: breed-yorkshire-playdate_card
+  KEEP:    soul-breed-yorkshire-playdate_card
+  Name:    Yorkshire Play Date Card
+
