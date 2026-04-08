@@ -2251,5 +2251,5 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   , document.body);
 };
 
-export { ProductDetailModal, ConciergeOnlyProductDetailModal };
+export { ProductDetailModal, ConciergeOnlyProductDetailModal, getProductImage };
 export default ProductCard;
