@@ -354,7 +354,7 @@ const UnifiedPetPage = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ [questionId]: value })
       });
@@ -1720,7 +1720,6 @@ const UnifiedPetPage = () => {
                   onChange={async (e) => {
                     const files = e.target.files;
                     if (files && files.length > 0) {
-                      const token = localStorage.getItem('token');
                       if (!token) {
                         toast({ title: 'Please login', description: 'You need to be logged in to upload photos', variant: 'destructive' });
                         return;
@@ -1864,7 +1863,6 @@ const UnifiedPetPage = () => {
                     <Button
                       onClick={async (e) => {
                         e.stopPropagation();
-                        const token = localStorage.getItem('token');
                         try {
                           await fetch(`${API_URL}/api/pets/${petId}/gallery/${selectedGalleryPhoto.id}/set-main`, {
                             method: 'POST',
@@ -1887,7 +1885,6 @@ const UnifiedPetPage = () => {
                       className="shadow-lg"
                       onClick={async (e) => {
                         e.stopPropagation();
-                        const token = localStorage.getItem('token');
                         try {
                           await fetch(`${API_URL}/api/pets/${petId}/gallery/${selectedGalleryPhoto.id}`, {
                             method: 'DELETE',
