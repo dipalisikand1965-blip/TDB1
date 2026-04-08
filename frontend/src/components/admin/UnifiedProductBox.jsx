@@ -1048,9 +1048,9 @@ const UnifiedProductBox = () => {
         >
           <Archive className="w-3.5 h-3.5" />
           Archived
-          {viewMode === 'archived' && total > 0 && (
+          {viewMode === 'archived' && totalProducts > 0 && (
             <span className="bg-white text-amber-600 text-xs font-bold px-1.5 py-0.5 rounded-full">
-              {total}
+              {totalProducts}
             </span>
           )}
         </button>
