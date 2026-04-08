@@ -25250,6 +25250,17 @@ app.include_router(concierge_intent_router, prefix="/api")
 from db_restore_routes import restore_router
 app.include_router(restore_router)  # DB restore at /api/admin/db/*
 
+# ── CSV Download ─────────────────────────────────────────────────────────────
+from fastapi.responses import FileResponse as _FileResponse
+import os as _os
+
+@app.get("/api/admin/download/imageless-products-csv")
+async def download_imageless_csv():
+    path = "/app/imageless_products.csv"
+    if not _os.path.exists(path):
+        raise HTTPException(status_code=404, detail="CSV not found — run the audit script first")
+    return _FileResponse(path, media_type="text/csv", filename="imageless_products.csv")
+
 # ─── ADMIN SERVICES CRUD ──────────────────────────────────────────────────────
 @api_router.get("/admin/services")
 async def get_admin_services(
