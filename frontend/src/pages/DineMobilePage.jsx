@@ -172,7 +172,7 @@ export default function DineMobilePage() {
       id: product.raw.id || product.id,
       name: product.raw.name || product.name,
       price: Number(product.raw.price || product.raw.pricing?.selling_price || 0),
-      image: product.raw.cloudinary_url || product.raw.image_url || product.imageUrl,
+      image: product.raw.watercolor_image || product.raw.media?.primary_image || product.raw.cloudinary_url || product.raw.image_url || product.imageUrl,
       category: product.raw.category || 'dine',
       pillar: 'dine',
     }, null, null, 1);

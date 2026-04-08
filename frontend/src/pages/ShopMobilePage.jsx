@@ -168,7 +168,7 @@ function BreedCollectionSection({ pet, token }) {
       const data = await res.json();
       const newItems = (data?.products || []).map(p => ({
         ...p, id: p.id || p._id || p.slug, name: p.name || p.product_type || 'Soul Made Item',
-        image_url: p.cloudinary_url || p.mockup_url || p.image_url || '', price: p.price || 0, pillar: 'shop',
+        image_url: p.watercolor_image || p.media?.primary_image || p.cloudinary_url || p.mockup_url || p.image_url || '', price: p.price || 0, pillar: 'shop',
       })).filter(p => { const fname = (p.image_url || '').split('/').pop(); return fname.startsWith('breed-'); });
       setProducts(prev => {
         if (!append) return newItems;

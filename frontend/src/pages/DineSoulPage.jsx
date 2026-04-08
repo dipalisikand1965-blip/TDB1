@@ -256,7 +256,7 @@ export const normCard = (p, petName) => ({
   name: p.name,
   desc: p.sub_category?.replace(/_/g, ' ') || `For ${petName}`,
   price: `₹${Math.round(p.price || p.pricing?.selling_price || 499)}`,
-  imageUrl: p.cloudinary_url || p.image_url || p.mockup_url || p.image,
+  imageUrl: p.watercolor_image || p.media?.primary_image || p.cloudinary_url || p.image_url || p.mockup_url || p.image,
   tag: p.breed && p.breed !== 'all' ? `For ${p.breed}` : null,
   mira_hint: p.mira_hint,
   miraPick: p.miraPick || false,
