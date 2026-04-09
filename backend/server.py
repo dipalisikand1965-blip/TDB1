@@ -800,48 +800,19 @@ _single_bundle_image_jobs: dict = {}
 
 async def _run_single_product_image(product_id: str, product: dict):
     """Background task: generate AI image for a single product and save to DB."""
-    import os, base64, cloudinary, cloudinary.uploader
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-    from ai_image_service import get_product_image_prompt
+    import os, cloudinary, cloudinary.uploader
+    from ai_image_service import get_product_image_prompt, generate_ai_image
 
     try:
-        emergent_api_key = (
-            os.environ.get("EMERGENT_LLM_KEY")
-            or os.environ.get("EMERGENT_API_KEY")
-            or os.environ.get("EMERGENT_MODEL_API_KEY")
-        )
-        if not emergent_api_key:
-            _single_image_jobs[product_id] = {"status": "error", "error": "API key not configured", "product_id": product_id}
-            return
-
-        cloudinary.config(
-            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-            api_key=os.environ.get("CLOUDINARY_API_KEY"),
-            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-        )
-
         # Use the smart contextual prompt builder
         prompt = product.get("ai_image_prompt") or get_product_image_prompt(product)
         logger.info(f"Generating single image for '{product.get('name')}' | prompt: {prompt[:80]}")
 
-        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        # generate_ai_image uses Gemini Nano Banana via Emergent LLM Key
+        image_url = await generate_ai_image(prompt)
 
-        if not images:
-            _single_image_jobs[product_id] = {"status": "error", "error": "No image returned", "product_id": product_id}
-            return
-
-        img_b64 = base64.b64encode(images[0]).decode("utf-8")
-        upload_result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{img_b64}",
-            folder="products/ai-generated",
-            public_id=f"product-{product_id}-img",
-            overwrite=True,
-            resource_type="image",
-        )
-        image_url = upload_result.get("secure_url")
         if not image_url:
-            _single_image_jobs[product_id] = {"status": "error", "error": "Cloudinary upload failed", "product_id": product_id}
+            _single_image_jobs[product_id] = {"status": "error", "error": "No image returned", "product_id": product_id}
             return
 
         await db.products_master.update_one(
@@ -22243,33 +22214,11 @@ async def generate_bundle_image_sync(
     username: str = Depends(verify_admin_auth),
 ):
     """Generate AI image for a celebrate bundle — synchronous, returns URL immediately."""
-    import os
-    import base64
-    import cloudinary
-    import cloudinary.uploader
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-
     bundle = await db.celebrate_bundles.find_one(
         {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0}
     )
     if not bundle:
         raise HTTPException(status_code=404, detail="Bundle not found")
-
-    emergent_api_key = (
-        os.environ.get("EMERGENT_LLM_KEY")
-        or os.environ.get("EMERGENT_API_KEY")
-        or os.environ.get("EMERGENT_MODEL_API_KEY")
-    )
-    if not emergent_api_key:
-        raise HTTPException(status_code=500, detail="Image generation API key not configured")
-
-    if not os.environ.get("CLOUDINARY_CLOUD_NAME"):
-        raise HTTPException(status_code=500, detail="Cloudinary not configured")
-    cloudinary.config(
-        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-        api_key=os.environ.get("CLOUDINARY_API_KEY"),
-        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    )
 
     bundle_name = bundle.get("name", "Birthday Bundle")
     items = bundle.get("items", "")
@@ -22282,22 +22231,10 @@ async def generate_bundle_image_sync(
     )
 
     try:
-        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
-        if not images:
-            raise HTTPException(status_code=500, detail="Image generation returned no results")
-
-        img_b64 = base64.b64encode(images[0]).decode("utf-8")
-        upload_result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{img_b64}",
-            folder="bundles/ai-generated",
-            public_id=f"bundle-{bundle_id}",
-            overwrite=True,
-            resource_type="image",
-        )
-        image_url = upload_result.get("secure_url")
+        from ai_image_service import generate_ai_image
+        image_url = await generate_ai_image(prompt)
         if not image_url:
-            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
+            raise HTTPException(status_code=500, detail="Image generation returned no results")
 
         await db.celebrate_bundles.update_one(
             {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
@@ -22316,33 +22253,11 @@ async def generate_generic_bundle_image(
     username: str = Depends(verify_admin_auth),
 ):
     """Generate AI watercolor image for any bundle in the bundles collection."""
-    import os
-    import base64
-    import cloudinary
-    import cloudinary.uploader
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-
     bundle = await db.bundles.find_one(
         {"$or": [{"id": bundle_id}, {"_id": bundle_id}]}, {"_id": 0}
     )
     if not bundle:
         raise HTTPException(status_code=404, detail="Bundle not found")
-
-    emergent_api_key = (
-        os.environ.get("EMERGENT_LLM_KEY")
-        or os.environ.get("EMERGENT_API_KEY")
-        or os.environ.get("EMERGENT_MODEL_API_KEY")
-    )
-    if not emergent_api_key:
-        raise HTTPException(status_code=500, detail="Image generation API key not configured")
-
-    if not os.environ.get("CLOUDINARY_CLOUD_NAME"):
-        raise HTTPException(status_code=500, detail="Cloudinary not configured")
-    cloudinary.config(
-        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-        api_key=os.environ.get("CLOUDINARY_API_KEY"),
-        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    )
 
     bundle_name = bundle.get("name", "Play Bundle")
     pillar = bundle.get("pillar", "play")
@@ -22361,22 +22276,10 @@ async def generate_generic_bundle_image(
     )
 
     try:
-        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
-        if not images:
-            raise HTTPException(status_code=500, detail="Image generation returned no results")
-
-        img_b64 = base64.b64encode(images[0]).decode("utf-8")
-        upload_result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{img_b64}",
-            folder="bundles/ai-generated",
-            public_id=f"bundle-{bundle_id}-watercolor",
-            overwrite=True,
-            resource_type="image",
-        )
-        image_url = upload_result.get("secure_url")
+        from ai_image_service import generate_ai_image
+        image_url = await generate_ai_image(prompt)
         if not image_url:
-            raise HTTPException(status_code=500, detail="Cloudinary upload failed")
+            raise HTTPException(status_code=500, detail="Image generation returned no results")
 
         await db.bundles.update_one(
             {"$or": [{"id": bundle_id}, {"_id": bundle_id}]},
@@ -25449,25 +25352,9 @@ async def debug_bundles(current_user: dict = Depends(verify_admin)):
 
 async def _run_single_service_image(service_id: str, service: dict):
     """Background task: generate AI image for a service and save to DB."""
-    import os, base64, cloudinary, cloudinary.uploader
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+    from ai_image_service import generate_ai_image
 
     try:
-        emergent_api_key = (
-            os.environ.get("EMERGENT_LLM_KEY")
-            or os.environ.get("EMERGENT_API_KEY")
-            or os.environ.get("EMERGENT_MODEL_API_KEY")
-        )
-        if not emergent_api_key:
-            _single_service_image_jobs[service_id] = {"status": "error", "error": "API key not configured", "service_id": service_id}
-            return
-
-        cloudinary.config(
-            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-            api_key=os.environ.get("CLOUDINARY_API_KEY"),
-            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-        )
-
         service_name = service.get("name", "Dog Service")
         pillar = service.get("pillar", "care")
         category = service.get("category", "")
@@ -25479,24 +25366,10 @@ async def _run_single_service_image(service_id: str, service: dict):
             "suitable for a luxury pet concierge service card."
         )
 
-        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        image_url = await generate_ai_image(prompt)
 
-        if not images:
-            _single_service_image_jobs[service_id] = {"status": "error", "error": "No image returned", "service_id": service_id}
-            return
-
-        img_b64 = base64.b64encode(images[0]).decode("utf-8")
-        upload_result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{img_b64}",
-            folder=f"doggy/services/{pillar}",
-            public_id=f"service-{service_id}-ai",
-            overwrite=True,
-            resource_type="image",
-        )
-        image_url = upload_result.get("secure_url")
         if not image_url:
-            _single_service_image_jobs[service_id] = {"status": "error", "error": "Cloudinary upload failed", "service_id": service_id}
+            _single_service_image_jobs[service_id] = {"status": "error", "error": "No image returned", "service_id": service_id}
             return
 
         await db.services_master.update_one(
@@ -25557,25 +25430,9 @@ async def get_service_image_status(
 
 async def _run_single_bundle_image(bundle_id: str, bundle: dict):
     """Background task: generate AI image for a bundle and save to DB."""
-    import os, base64, cloudinary, cloudinary.uploader
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+    from ai_image_service import generate_ai_image
 
     try:
-        emergent_api_key = (
-            os.environ.get("EMERGENT_LLM_KEY")
-            or os.environ.get("EMERGENT_API_KEY")
-            or os.environ.get("EMERGENT_MODEL_API_KEY")
-        )
-        if not emergent_api_key:
-            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "API key not configured", "bundle_id": bundle_id}
-            return
-
-        cloudinary.config(
-            cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-            api_key=os.environ.get("CLOUDINARY_API_KEY"),
-            api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-        )
-
         bundle_name = bundle.get("name", "Dog Bundle")
         pillar = bundle.get("pillar", "care")
         items = bundle.get("items", "")
@@ -25586,24 +25443,10 @@ async def _run_single_bundle_image(bundle_id: str, bundle: dict):
             "premium editorial composition, elegant and emotive, white background."
         )
 
-        image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-        images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        image_url = await generate_ai_image(prompt)
 
-        if not images:
-            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "No image returned", "bundle_id": bundle_id}
-            return
-
-        img_b64 = base64.b64encode(images[0]).decode("utf-8")
-        upload_result = cloudinary.uploader.upload(
-            f"data:image/png;base64,{img_b64}",
-            folder="doggy/bundles/ai-generated",
-            public_id=f"bundle-{bundle_id}-ai",
-            overwrite=True,
-            resource_type="image",
-        )
-        image_url = upload_result.get("secure_url")
         if not image_url:
-            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "Cloudinary upload failed", "bundle_id": bundle_id}
+            _single_bundle_image_jobs[bundle_id] = {"status": "error", "error": "No image returned", "bundle_id": bundle_id}
             return
 
         await db.bundles.update_one(
@@ -25665,29 +25508,12 @@ _batch_image_job: dict = {"status": "idle", "processed": 0, "total": 0, "errors"
 
 async def _run_batch_image_generation(target: str):
     """Background task: generate AI images for all services/products missing Cloudinary URLs."""
-    import os, base64, cloudinary, cloudinary.uploader, asyncio
-    from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-    from ai_image_service import get_product_image_prompt, get_service_image_prompt
+    import asyncio
+    from ai_image_service import get_product_image_prompt, get_service_image_prompt, generate_ai_image
 
     global _batch_image_job
     _batch_image_job["status"] = "running"
     _batch_image_job["started_at"] = datetime.now(timezone.utc).isoformat()
-
-    emergent_api_key = (
-        os.environ.get("EMERGENT_LLM_KEY") or
-        os.environ.get("EMERGENT_API_KEY") or
-        os.environ.get("EMERGENT_MODEL_API_KEY")
-    )
-    if not emergent_api_key:
-        _batch_image_job["status"] = "error"
-        _batch_image_job["error"] = "API key not configured"
-        return
-
-    cloudinary.config(
-        cloud_name=os.environ.get("CLOUDINARY_CLOUD_NAME"),
-        api_key=os.environ.get("CLOUDINARY_API_KEY"),
-        api_secret=os.environ.get("CLOUDINARY_API_SECRET"),
-    )
 
     no_cloudinary = {"$not": {"$regex": "cloudinary\\.com"}}
 
@@ -25724,8 +25550,6 @@ async def _run_batch_image_generation(target: str):
     _batch_image_job["log"] = []
     logger.info(f"[BATCH IMG] Starting batch for {len(items)} items (target={target})")
 
-    image_gen = OpenAIImageGeneration(api_key=emergent_api_key)
-
     for kind, item in items:
         item_id = item.get("id", "unknown")
         item_name = item.get("name", "unknown")
@@ -25736,22 +25560,9 @@ async def _run_batch_image_generation(target: str):
             )
             logger.info(f"[BATCH IMG] Generating {kind} '{item_name}' | prompt: {prompt[:80]}")
 
-            images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
-            if not images:
-                raise ValueError("No image returned")
-
-            img_b64 = base64.b64encode(images[0]).decode("utf-8")
-            folder = f"doggy/ai_generated/{kind}s"
-            upload_result = cloudinary.uploader.upload(
-                f"data:image/png;base64,{img_b64}",
-                folder=folder,
-                public_id=f"{kind}-{item_id}-batch",
-                overwrite=True,
-                resource_type="image",
-            )
-            image_url = upload_result.get("secure_url")
+            image_url = await generate_ai_image(prompt)
             if not image_url:
-                raise ValueError("Cloudinary upload failed")
+                raise ValueError("No image returned from Gemini")
 
             if kind == "service":
                 await db.services_master.update_one(
@@ -25772,7 +25583,7 @@ async def _run_batch_image_generation(target: str):
             _batch_image_job["log"].append({"id": item_id, "name": item_name, "kind": kind, "status": "done", "url": image_url})
             logger.info(f"[BATCH IMG] ✅ {kind} '{item_name}' done ({_batch_image_job['processed']}/{_batch_image_job['total']})")
 
-            # Throttle — 1 image every 4 seconds to stay within rate limits
+            # Throttle — 1 image every 4 seconds
             await asyncio.sleep(4)
 
         except Exception as e:
