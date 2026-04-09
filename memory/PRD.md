@@ -730,3 +730,20 @@ All 3 desktop pages verified with live screenshot: correct chips, correct pillar
 4. ✅ 237 stock photo URLs removed (206 from server.py seed data, 31 from frontend JSX)
 5. ✅ `PillarPage.jsx`, `ProductListing.jsx`, `MealsPage.jsx`, `Streaties.jsx`, `ProductListingNew.jsx` — All img tags replaced with TDC branded CSS gradients
 6. ⚠️ `MealsPage.jsx` HERO_IMAGES + CARD_IMAGES still use `static.prod-images.emergentagent.com` URLs — these appear to be genuine TDC product images on the staging CDN; flagged for migration to Cloudinary
+
+---
+
+## Mira Intelligence Roadmap (Approved by Dipali — 2026-04-09)
+**Order is locked. Implement one at a time. Do not skip or reorder.**
+
+| Priority | Enhancement | Key data source | Status |
+|---|---|---|---|
+| P0 | **Health Condition Filtering** | `pet.health_conditions` array | **Next to build** |
+| P1 | Multi-Pet Household Safety | all pets' allergen profiles | Planned |
+| P1 | Seasonal + City Intelligence | `user.city` + date + breed | Planned |
+| P2 | Life Stage Transition Alerts | `pet.date_of_birth` + breed thresholds | Planned |
+| P2 | Purchase Pattern Learning | `orders` collection | Planned |
+
+**Never add:** star ratings, generic AI chat, more pillars before deepening existing ones.
+
+Full specs for each in `/app/complete-documentation.html` → section `#mira-intelligence-roadmap`
