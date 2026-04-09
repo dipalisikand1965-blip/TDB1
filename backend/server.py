@@ -6446,6 +6446,51 @@ async def get_chatbase_chats(username: str = Depends(verify_admin), limit: int =
     return {"requests": requests}
 
 
+@admin_router.post("/backfill-visitor-tickets")
+async def backfill_visitor_tickets(username: str = Depends(verify_admin)):
+    """
+    One-time backfill: find all 'Website Visitor' tickets that have a pet_name,
+    look up the real owner from the pets collection, and update member.name + customer_name.
+    Safe to run multiple times — only updates tickets that still say 'Website Visitor'.
+    """
+    fixed = 0
+    skipped = 0
+    cursor = db.service_desk_tickets.find(
+        {"member.name": "Website Visitor", "pet_name": {"$exists": True, "$ne": ""}},
+        {"_id": 1, "ticket_id": 1, "pet_name": 1, "member": 1}
+    )
+    async for ticket in cursor:
+        pet_name = ticket.get("pet_name", "")
+        # Find the pet
+        pet = await db.pets.find_one(
+            {"name": {"$regex": f"^{pet_name}$", "$options": "i"}},
+            {"_id": 0, "owner_email": 1, "name": 1}
+        )
+        if not pet or not pet.get("owner_email"):
+            skipped += 1
+            continue
+        # Find the owner
+        owner = await db.users.find_one(
+            {"email": pet["owner_email"]},
+            {"_id": 0, "name": 1, "email": 1, "phone": 1}
+        )
+        if not owner or not owner.get("name"):
+            skipped += 1
+            continue
+        # Update the ticket
+        await db.service_desk_tickets.update_one(
+            {"_id": ticket["_id"]},
+            {"$set": {
+                "member.name": owner["name"],
+                "member.email": owner.get("email", ""),
+                "customer_name": owner["name"],
+            }}
+        )
+        fixed += 1
+        logger.info(f"[BACKFILL] Ticket {ticket.get('ticket_id')} → {owner['name']} ({pet_name})")
+    return {"status": "done", "fixed": fixed, "skipped": skipped}
+
+
 @admin_router.put("/custom-requests/{request_id}")
 async def update_custom_request(request_id: str, updates: dict, username: str = Depends(verify_admin)):
     """Update custom cake request status"""
