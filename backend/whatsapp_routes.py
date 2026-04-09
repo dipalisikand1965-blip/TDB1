@@ -1348,7 +1348,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                     {"owner_email": user_email},
                     {"_id": 0, "name": 1, "breed": 1, "date_of_birth": 1,
                      "allergies": 1, "health_conditions": 1, "doggy_soul_answers": 1,
-                     "favorite_foods": 1, "weight": 1, "life_stage": 1, "city": 1}
+                     "favorite_foods": 1, "weight": 1, "life_stage": 1, "city": 1,
+                     "archetype": 1}
                 ).to_list(5)
 
                 if pets:
@@ -1360,6 +1361,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         )
 
                     pet_lines = []
+                    active_pet_archetype = None   # ← archetype of the dog being discussed
                     for idx, p in enumerate(pets):
                         name   = p.get("name", "Unknown")
                         breed  = p.get("breed", "Unknown breed")
@@ -1394,6 +1396,17 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         if favs:
                             fav_list = favs if isinstance(favs, list) else [f.strip() for f in favs.split(",")]
                             all_favorites += fav_list
+
+                        # ── Archetype — capture from active pet only ─────────────────
+                        is_active_pet = (idx == 0) or (
+                            ticket_pet_name and name.lower() == ticket_pet_name.lower()
+                        )
+                        if is_active_pet and not active_pet_archetype:
+                            arch_raw = p.get("archetype") or soul.get("primary_archetype") or ""
+                            if isinstance(arch_raw, dict):
+                                active_pet_archetype = arch_raw.get("primary_archetype", "")
+                            else:
+                                active_pet_archetype = str(arch_raw) if arch_raw else ""
 
                         # Build pet summary line
                         line = f"{name} ({breed}"
@@ -1609,7 +1622,30 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             f"Never mention, reference, or address any other dog. Not even once."
         )
 
-    system_prompt = f"""You are Mira® — the intelligent heart of The Doggy Company, India's first Pet Life OS.{active_pet_lock}
+    # ── Archetype tone block — same dict as widget/mira_routes.py ───────────
+    ARCHETYPE_TONES = {
+        'social_butterfly':     ("🦋 SOCIAL BUTTERFLY", "Be cheerful, celebratory and high-energy. Frame everything as a shared adventure with their social, people-loving dog."),
+        'wild_explorer':        ("🌿 WILD EXPLORER",    "Be bold, adventurous and outdoorsy. Talk about trails, discoveries, freedom. Products are gear for the next adventure."),
+        'velcro_baby':          ("🫂 VELCRO BABY",      "Be warm, cosy and attachment-led. Emphasise togetherness, comfort, bonding. Avoid anything that sounds like separation."),
+        'snack_led_negotiator': ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through reward and flavour."),
+        'snack_negotiator':     ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through reward and flavour."),
+        'brave_worrier':        ("💛 BRAVE WORRIER",    "Be reassuring, calm and anxiety-aware. Lead with safety and comfort. Avoid overwhelming choices. Use gentle, slow language."),
+        'quiet_watcher':        ("🌙 QUIET WATCHER",    "Be thoughtful, gentle and unhurried. Avoid hype. Speak softly. Frame products as calm, considered choices."),
+        'gentle_aristocrat':    ("👑 GENTLE ARISTOCRAT","Be refined, elegant and discerning. Use premium language. Frame everything as curated, exclusive, worthy of royalty."),
+        'royal':                ("👑 ROYAL",            "Be refined, elegant and discerning. Use premium language. Frame everything as curated, exclusive, worthy of royalty."),
+        'athlete':              ("⚡ ATHLETE",          "Be energetic, performance-led and sporty. Talk about stamina, agility, peak performance. Products are training essentials."),
+    }
+    archetype_tone_block = ""
+    if active_pet_archetype and active_pet_archetype in ARCHETYPE_TONES:
+        label, instruction = ARCHETYPE_TONES[active_pet_archetype]
+        archetype_tone_block = (
+            f"\n\n🎭 MIRA TONE FOR THIS DOG — {label}:\n"
+            f"{instruction}\n"
+            f"Adapt your entire response to match this dog's soul. Speak TO the parent OF this specific dog."
+        )
+        logger.info(f"[MIRA-AI] Archetype tone injected: {label}")
+
+    system_prompt = f"""You are Mira® — the intelligent heart of The Doggy Company, India's first Pet Life OS.{active_pet_lock}{archetype_tone_block}
 
 ═══════════════════════════════════════════════════════
 🐾 GOLDEN DOCTRINE: PET FIRST, ALWAYS 🐾
