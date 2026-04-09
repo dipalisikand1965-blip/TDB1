@@ -1192,143 +1192,286 @@ Just tell me what you need! Or visit: https://thedoggycompany.com
 What would you like help with today? 🐕"""
 
 
+def _build_amazon_query(raw_query: str, pet_names: list = None) -> str:
+    """Mirror of MiraSearchPage.jsx buildAmazonQuery — strips pet names + filler for clean Amazon search."""
+    import re
+    q = raw_query or ""
+    # Strip known pet names
+    known_names = ['mojo','mahi','meister','mercury','bruno','buddy','coco','mystique',
+                   'chang','mynx','miracle','mars','moon','mia','magica','maya','max','loco','badmash','sultan']
+    if pet_names:
+        known_names += [n.lower() for n in pet_names if n]
+    for name in known_names:
+        q = re.sub(r'\b' + re.escape(name) + r'\b', ' ', q, flags=re.IGNORECASE)
+    # Strip conversational filler
+    q = re.sub(r'\b(i want|i need|find me|get me|show me|looking for|can you find|please|'
+               r'help me find|what about|is there|do you have|do you sell|where can i get|'
+               r'where can i find|wants?|needs?|loves?|would like|my dog|my pet|my pup|'
+               r'my puppy|for my|for him|for her|for them|a good|the best|some|any|'
+               r'book|groomer|grooming|near me|nearby|suggest|recommend)\b', ' ', q, flags=re.IGNORECASE)
+    q = re.sub(r'\b(a|an|the|for|of|with|in|on|at|to|and|or|but|my|your|his|her|their|our)\b', ' ', q, flags=re.IGNORECASE)
+    q = re.sub(r'\s{2,}', ' ', q).strip()
+    return q or raw_query
+
+
+def _detect_near_me(text: str) -> bool:
+    """Detect if user wants nearby services / locations."""
+    import re
+    patterns = [r'\bnear\s+me\b', r'\bnearby\b', r'\bnear\s+by\b', r'\bclose\s+to\s+me\b',
+                r'\bin\s+(mumbai|delhi|bangalore|bengaluru|pune|chennai|hyderabad|kolkata|'
+                r'gurgaon|noida|jaipur|ahmedabad|surat|lucknow|chandigarh|indore)\b',
+                r'\baround\s+me\b', r'\bfind.*near\b', r'\blocal\b', r'\bmy\s+city\b',
+                r'\bmy\s+area\b', r'\bwhere.*find\b']
+    text_lower = text.lower()
+    return any(re.search(p, text_lower) for p in patterns)
+
+
 async def get_mira_ai_response(message_text: str, user_name: str = "friend", user_phone: str = None) -> str:
     """
-    Generate Mira's intelligent AI response for WhatsApp messages.
-    Uses OpenAI via Emergent LLM Key for natural conversation.
-    Includes user context: pets, orders, membership, conversation history.
-    Falls back to pattern matching if AI fails.
-    """
-    import os
-    from motor.motor_asyncio import AsyncIOMotorClient
+    Mira WhatsApp Intelligence — same brain as Mira Search.
     
-    # Build user context
-    context_parts = []
-    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-    db_name = os.environ.get("DB_NAME", "test_database")
+    Pipeline:
+      1. Load full pet soul profile (allergies, breed, energy, favorites)
+      2. Run semantic search → real products + prices from TDC catalog
+      3. Apply allergen filtering in system prompt
+      4. Amazon affiliate fallback if 0 catalog results
+      5. NearMe → Google Maps link
+      6. Always: Concierge CTA
+      7. Ticket + admin notification handled by webhook (handoff_to_spine)
+    """
+    import os, re
+    from motor.motor_asyncio import AsyncIOMotorClient
+
+    AFFILIATE_TAG  = os.environ.get("AMAZON_AFFILIATE_TAG", "thedoggyco-21")
+    EMERGENT_KEY   = os.environ.get("EMERGENT_LLM_KEY", "")
+    mongo_url      = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+    db_name        = os.environ.get("DB_NAME", "test_database")
+
     _client = AsyncIOMotorClient(mongo_url)
     db = _client[db_name]
-    
+
+    # ── 1. Load full soul profile ─────────────────────────────────────────────
+    context_parts  = []
+    all_pet_names  = []
+    all_allergies  = []
+    all_favorites  = []
+    pet_city       = None
+    user_email     = None
+
     if db is not None and user_phone:
         try:
-            # Clean phone for lookup
             phone_clean = ''.join(filter(str.isdigit, str(user_phone)))
             if len(phone_clean) == 12 and phone_clean.startswith('91'):
-                phone_clean = phone_clean[2:]  # Remove country code for search
-            
-            # Find user by phone
+                phone_clean = phone_clean[2:]
+
             user = await db.users.find_one({
                 "$or": [
                     {"phone": {"$regex": phone_clean}},
                     {"whatsapp": {"$regex": phone_clean}},
-                    {"phone": user_phone},
-                    {"whatsapp": user_phone}
+                    {"phone": user_phone}, {"whatsapp": user_phone}
                 ]
-            })
-            
+            }, {"_id": 0, "email": 1, "name": 1, "parent_name": 1, "membership": 1, "city": 1})
+
             if user:
                 user_email = user.get("email")
-                user_name = user.get("name") or user.get("parent_name") or user_name
-                
-                # Get membership status
+                user_name  = user.get("name") or user.get("parent_name") or user_name
+                pet_city   = user.get("city")
+
                 membership = user.get("membership", {})
                 if membership.get("tier"):
-                    context_parts.append(f"Member tier: {membership.get('tier')} (expires: {membership.get('expires_at', 'N/A')[:10]})")
-                
-                # Get user's pets
-                pets = await db.pets.find({"owner_email": user_email}).to_list(10)
+                    context_parts.append(f"Member tier: {membership['tier']}")
+
+                # Full soul profile for each pet
+                pets = await db.pets.find(
+                    {"owner_email": user_email},
+                    {"_id": 0, "name": 1, "breed": 1, "date_of_birth": 1,
+                     "allergies": 1, "health_conditions": 1, "doggy_soul_answers": 1,
+                     "favorite_foods": 1, "weight": 1, "life_stage": 1, "city": 1}
+                ).to_list(5)
+
                 if pets:
-                    pet_names = [p.get("name") for p in pets if p.get("name")]
-                    pet_info = []
-                    for p in pets[:3]:  # Max 3 pets for context
-                        info = f"{p.get('name')} ({p.get('breed', 'Unknown breed')})"
-                        if p.get("date_of_birth"):
-                            info += f", DOB: {p.get('date_of_birth')[:10]}"
-                        pet_info.append(info)
-                    context_parts.append(f"Their pets: {'; '.join(pet_info)}")
-                
-                # Get recent orders (last 3)
-                orders = await db.orders.find({"email": user_email}).sort("created_at", -1).limit(3).to_list(3)
-                if orders:
-                    order_summary = [f"Order #{o.get('order_id', 'N/A')[:8]} - ₹{o.get('total', 0)}" for o in orders]
-                    context_parts.append(f"Recent orders: {', '.join(order_summary)}")
-                
-                # Get recent conversation/tickets from correct collection
-                recent_tickets = await db.service_desk_tickets.find({
-                    "$or": [
-                        {"member.email": user_email},
-                        {"member.phone": {"$regex": phone_clean}}
-                    ]
-                }).sort("created_at", -1).limit(3).to_list(3)
-                
+                    pet_lines = []
+                    for p in pets:
+                        name   = p.get("name", "Unknown")
+                        breed  = p.get("breed", "Unknown breed")
+                        stage  = p.get("life_stage", "")
+                        weight = p.get("weight")
+                        all_pet_names.append(name)
+                        if p.get("city") and not pet_city:
+                            pet_city = p["city"]
+
+                        # Allergies
+                        raw_allergies = p.get("allergies") or []
+                        if isinstance(raw_allergies, str):
+                            raw_allergies = [a.strip() for a in raw_allergies.split(",") if a.strip()]
+                        soul = p.get("doggy_soul_answers", {})
+                        soul_allergies = soul.get("food_allergies", "")
+                        if soul_allergies and soul_allergies.lower() not in ("none", "no", ""):
+                            raw_allergies += [a.strip() for a in soul_allergies.split(",")]
+                        pet_allergies = list({a.lower() for a in raw_allergies if a.lower() not in ("none","")})
+                        if pet_allergies:
+                            all_allergies += pet_allergies
+
+                        # Favorites
+                        favs = p.get("favorite_foods") or soul.get("treat_preference", "")
+                        if favs:
+                            fav_list = favs if isinstance(favs, list) else [f.strip() for f in favs.split(",")]
+                            all_favorites += fav_list
+
+                        # Build pet summary line
+                        line = f"{name} ({breed}"
+                        if stage: line += f", {stage}"
+                        if weight: line += f", {weight}kg"
+                        line += ")"
+                        if pet_allergies:
+                            line += f" — ALLERGIC TO: {', '.join(pet_allergies)}"
+                        # Energy / personality from soul answers
+                        energy = soul.get("energy_level", "")
+                        if energy: line += f" | Energy: {energy}"
+                        pet_lines.append(line)
+
+                    context_parts.append(f"Dogs: {' | '.join(pet_lines)}")
+                    if all_allergies:
+                        context_parts.append(f"ALLERGEN BLOCK — NEVER recommend: {', '.join(set(all_allergies))}")
+                    if all_favorites:
+                        context_parts.append(f"Favorite treats: {', '.join(set(all_favorites))}")
+
+                # Recent tickets (last 2)
+                recent_tickets = await db.service_desk_tickets.find(
+                    {"$or": [{"member.email": user_email}, {"member.phone": {"$regex": phone_clean}}]},
+                    {"_id": 0, "subject": 1, "description": 1, "status": 1, "pillar": 1}
+                ).sort("created_at", -1).limit(2).to_list(2)
+
                 if recent_tickets:
-                    ticket_summary = []
-                    for t in recent_tickets:
-                        subject = t.get("subject", t.get("description", t.get("pillar", "")))[:50]
-                        status = t.get("status", "open")
-                        ticket_summary.append(f"{subject} ({status})")
-                    context_parts.append(f"Recent service requests: {'; '.join(ticket_summary)}")
-                    
+                    t_lines = [f"{t.get('subject', t.get('pillar',''))[:40]} ({t.get('status','open')})" for t in recent_tickets]
+                    context_parts.append(f"Recent requests: {'; '.join(t_lines)}")
+
         except Exception as ctx_err:
             logger.warning(f"[MIRA-AI] Context fetch error: {ctx_err}")
-    
-    # Try AI response with context
+
+    # ── 2. Detect near-me intent ──────────────────────────────────────────────
+    is_near_me = _detect_near_me(message_text)
+
+    # ── 3. Semantic search → real TDC products ────────────────────────────────
+    catalog_block  = ""
+    amazon_url     = ""
+    near_me_block  = ""
+    found_products = []
+    found_services = []
+
     try:
-        from emergentintegrations.llm.openai import LlmChat, UserMessage
-        
-        context_block = ""
-        if context_parts:
-            context_block = f"""
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            resp = await client.post(
+                "http://localhost:8001/api/mira/semantic-search",
+                json={"query": message_text, "limit": 4,
+                      "pet_allergies": all_allergies if all_allergies else None}
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                found_products = data.get("products", [])[:4]
+                found_services = data.get("services", [])[:2]
+    except Exception as search_err:
+        logger.warning(f"[MIRA-AI] Semantic search failed: {search_err}")
 
-USER CONTEXT (use this to personalize your response):
-{chr(10).join('- ' + c for c in context_parts)}
-"""
-        
-        system_prompt = f"""You are Mira, the friendly AI pet concierge at The Doggy Company - India's first Pet Life Operating System.
+    # Build catalog block from real products
+    if found_products:
+        prod_lines = []
+        for p in found_products:
+            price = p.get("original_price") or p.get("price", 0)
+            pillar = p.get("pillar", "")
+            name   = p.get("name", "")
+            link   = f"thedoggycompany.com/{pillar}" if pillar else "thedoggycompany.com"
+            prod_lines.append(f"- {name} — ₹{int(price) if price else 'POA'} → {link}")
+        catalog_block = "FROM OUR CATALOG:\n" + "\n".join(prod_lines)
 
-Your personality:
-- Warm, caring, and enthusiastic about pets
-- Use emojis naturally (🐾 🐕 💜)
-- Keep responses concise (under 200 words) - this is WhatsApp!
-- Be helpful and proactive in suggesting services
-- PERSONALIZE responses using the user context provided
-- If you know their pet's name, use it!
-- Reference their membership tier benefits when relevant
+    if found_services:
+        svc_lines = [f"- {s.get('name','')} ({s.get('pillar','')})" for s in found_services]
+        if catalog_block:
+            catalog_block += "\n\nSERVICES:\n" + "\n".join(svc_lines)
+        else:
+            catalog_block = "SERVICES:\n" + "\n".join(svc_lines)
+
+    # Amazon fallback — always build it (shown if 0 TDC results OR appended)
+    clean_q    = _build_amazon_query(message_text, all_pet_names)
+    amazon_url = f"https://www.amazon.in/s?k=dog+{clean_q.replace(' ', '+')}&tag={AFFILIATE_TAG}"
+
+    # NearMe block
+    if is_near_me:
+        city_q     = pet_city or "near me"
+        groom_q    = message_text.lower()
+        if "groom" in groom_q:      maps_q = f"dog groomer in {city_q}"
+        elif "vet" in groom_q:      maps_q = f"dog vet clinic in {city_q}"
+        elif "train" in groom_q:    maps_q = f"dog training in {city_q}"
+        elif "board" in groom_q or "stay" in groom_q: maps_q = f"dog boarding in {city_q}"
+        elif "walker" in groom_q or "walk" in groom_q: maps_q = f"dog walker in {city_q}"
+        else:                       maps_q = f"dog service in {city_q}"
+        maps_url   = f"https://maps.google.com/search?q={maps_q.replace(' ', '+')}"
+        near_me_block = f"\n\n📍 Find nearby:\n{maps_url}"
+
+    # ── 4. Build system prompt with full intelligence ─────────────────────────
+    context_block = ""
+    if context_parts:
+        context_block = "\n\nMEMBER PROFILE:\n" + "\n".join(f"• {c}" for c in context_parts)
+
+    allergen_rule = ""
+    if all_allergies:
+        allergen_rule = f"\n\n🚨 ALLERGEN ALERT: NEVER recommend products containing {', '.join(set(all_allergies))}. This is non-negotiable."
+
+    catalog_instruction = ""
+    if catalog_block:
+        catalog_instruction = f"\n\n{catalog_block}\n\nIMPORTANT: When recommending products, use ONLY the real names and prices above. Do NOT invent product names."
+    else:
+        catalog_instruction = f"\n\nNo exact TDC matches found. Guide them to explore:\n🛒 {amazon_url}\nOr ask Concierge to source it."
+
+    near_me_instruction = f"\n\nNEARME DETECTED: Include this Google Maps link in your response:{near_me_block}" if is_near_me else ""
+
+    system_prompt = f"""You are Mira, the AI pet concierge at The Doggy Company — India's first Pet Life OS.
+
+PERSONALITY:
+- Warm, caring, enthusiastic 🐾
+- WhatsApp style — concise, under 150 words, use emojis naturally
+- Always use the dog's name when you know it
+- Never robotic — feel like a knowledgeable friend
 
 CRITICAL RULES:
-- This user has DOGS as pets. All product/service recommendations are FOR THEIR DOGS.
-- If a user mentions an animal (rabbit, cat, squirrel, duck etc.), assume it is a TOY in that shape for their dog — NOT a live pet they own. E.g. "baby rabbit toy" = rabbit-shaped chew toy for their dog.
-- NEVER assume the user has a different pet species unless they explicitly say "I have a rabbit" or "I got a new cat".
-- Always recommend dog-specific products and services.
+- User has DOGS. If they mention rabbit/cat/squirrel — it's a TOY SHAPE, not their pet.
+- NEVER assume a different species unless they explicitly say so.
+- All recommendations are dog products/services.
+- Use ONLY real product names from the catalog below (never invent names or prices).{allergen_rule}{catalog_instruction}{near_me_instruction}{context_block}
 
-You can help with:
-- 14 Life Pillars: Celebrate, Dine, Stay, Travel, Care, Enjoy, Play, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt
-- Products from The Doggy Bakery (treats, meals, toys)
-- Services: Grooming, Vet, Training, Boarding, Walking
-- Membership: Pet Pass (Free, Essential ₹2,499/yr, Premium ₹9,999/yr)
+RESPONSE FORMAT for WhatsApp:
+1. Personalised greeting using dog's name
+2. Real product/service recommendations (with ₹ price + link)
+3. If no TDC match: Amazon fallback link ({amazon_url})
+4. Always end with: "Need help? Your Concierge is here → thedoggycompany.com/my-requests 🐾"
 
-Website: thedoggycompany.com
-WhatsApp: +91 8971702582
-{context_block}
-Always end with a helpful question or suggestion. Be conversational, not robotic."""
+Website: thedoggycompany.com | Concierge WhatsApp: +91 8971702582"""
 
+    # ── 5. Call GPT ───────────────────────────────────────────────────────────
+    try:
+        from emergentintegrations.llm.openai import LlmChat, UserMessage
         import uuid as uuid_mod
+
         chat = LlmChat(
-            api_key=os.environ.get("EMERGENT_LLM_KEY"),
-            session_id=f"whatsapp-{user_phone or uuid_mod.uuid4().hex[:8]}",
+            api_key=EMERGENT_KEY,
+            session_id=f"wa-{user_phone or uuid_mod.uuid4().hex[:8]}",
             system_message=system_prompt
         ).with_model("openai", "gpt-4o-mini")
-        
-        response = await chat.send_message(UserMessage(text=f"User {user_name} says: {message_text}"))
-        
+
+        response = await chat.send_message(UserMessage(text=f"{user_name} says: {message_text}"))
+
         if response:
-            logger.info(f"[MIRA-AI] Generated contextual AI response for {user_phone[:6] if user_phone else 'unknown'}*** with {len(context_parts)} context items")
+            n_products = len(found_products)
+            n_services = len(found_services)
+            logger.info(f"[MIRA-AI] ✅ Response for {(user_phone or '')[:6]}*** | "
+                       f"products={n_products} services={n_services} "
+                       f"allergies={len(all_allergies)} nearme={is_near_me}")
             return response
-            
+
     except Exception as ai_err:
-        logger.warning(f"[MIRA-AI] AI response failed, using patterns: {ai_err}")
-    
-    # Fall back to pattern matching
+        logger.warning(f"[MIRA-AI] AI failed, falling back to patterns: {ai_err}")
+
+    # ── 6. Fallback to pattern matching ──────────────────────────────────────
     return await get_mira_whatsapp_response(message_text, user_name)
 
 
