@@ -413,8 +413,18 @@ async def process_gupshup_webhook(body: dict):
                         {"owner_email": member_email},
                         {"_id": 0, "id": 1, "name": 1, "breed": 1, "allergies": 1, "fav_food": 1, "city": 1}
                     ).to_list(5)
-                    first_pet = found_pets[0] if found_pets else None
-                    logger.info(f"[GUPSHUP] Matched member {member_email} with {len(found_pets)} pet(s)")
+                    # Detect pet name from message before defaulting to first pet
+                    message_lower = content.lower() if content else ""
+                    first_pet = None
+                    for pet in found_pets:
+                        pet_name_lower = (pet.get("name") or "").lower()
+                        if pet_name_lower and pet_name_lower in message_lower:
+                            first_pet = pet
+                            logger.info(f"[GUPSHUP] Pet name '{pet.get('name')}' detected in message — using as active pet")
+                            break
+                    if not first_pet and found_pets:
+                        first_pet = found_pets[0]
+                    logger.info(f"[GUPSHUP] Matched member {member_email} with {len(found_pets)} pet(s) | active_pet={first_pet.get('name') if first_pet else None}")
                 else:
                     logger.info(f"[GUPSHUP] No registered member found for {phone_10} — creating anonymous ticket")
                 
@@ -1286,22 +1296,6 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 ticket_pet_name = open_ticket.get("pet_name")
                 if ticket_pet_name:
                     logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
-
-            # ── 1b. If no open ticket, detect pet name FROM the message itself ──
-            # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
-            if not ticket_pet_name and user_email:
-                # Only check THIS user's pets (not all pets in DB)
-                user_pet_names = await db.pets.find(
-                    {"owner_email": user_email},
-                    {"_id": 0, "name": 1}
-                ).to_list(10)
-                msg_lower = message_text.lower()
-                for candidate in user_pet_names:
-                    cname = candidate.get("name", "")
-                    if cname and cname.lower() in msg_lower:
-                        ticket_pet_name = cname
-                        logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
-                        break  # first match wins
 
             # ── 1b. If no open ticket, detect pet name FROM the message itself ──
             # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
