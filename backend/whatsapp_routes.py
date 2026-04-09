@@ -1296,7 +1296,6 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 ticket_pet_name = open_ticket.get("pet_name")
                 if ticket_pet_name:
                     logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
-
             # ── 1b. If no open ticket, detect pet name FROM the message itself ──
             # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
             if not ticket_pet_name and user_email:
@@ -1343,14 +1342,29 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             logger.info(f"[MIRA-AI] Pet name '{cname}' found in message → using as active pet")
                             break  # first match wins
 
-                # Full soul profile for each pet
+                # ── Multi-account linking ────────────────────────────────────────
+                # A user may have registered with two emails (e.g. work + personal).
+                # Find all accounts with the same name and collect pets from ALL of them.
+                all_owner_emails = [user_email]
+                if member_name:
+                    linked = await db.users.find(
+                        {"name": member_name, "email": {"$ne": user_email}},
+                        {"_id": 0, "email": 1}
+                    ).to_list(5)
+                    for lu in linked:
+                        if lu.get("email"):
+                            all_owner_emails.append(lu["email"])
+                    if len(all_owner_emails) > 1:
+                        logger.info(f"[MIRA-AI] Multi-account user '{member_name}' → emails: {all_owner_emails}")
+
+                # Full soul profile for each pet — across ALL linked accounts
                 pets = await db.pets.find(
-                    {"owner_email": user_email},
+                    {"owner_email": {"$in": all_owner_emails}},
                     {"_id": 0, "name": 1, "breed": 1, "date_of_birth": 1,
                      "allergies": 1, "health_conditions": 1, "doggy_soul_answers": 1,
                      "favorite_foods": 1, "weight": 1, "life_stage": 1, "city": 1,
                      "archetype": 1}
-                ).to_list(5)
+                ).to_list(20)
 
                 if pets:
                     # ── 1b. Pin the conversation pet to the front ─────────────────
@@ -1457,6 +1471,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
     # ── 2. Detect near-me intent ──────────────────────────────────────────────
     is_near_me = _detect_near_me(message_text)
+
+    # ── 2a. Stale ticket guard — if ticket pet no longer exists, ignore it ────
+    if ticket_pet_name and all_pet_names:
+        if ticket_pet_name.lower() not in [n.lower() for n in all_pet_names]:
+            logger.info(f"[MIRA-AI] Stale ticket pet '{ticket_pet_name}' not in user's pets {all_pet_names} — ignoring lock")
+            ticket_pet_name = None
 
     # ── 2b. Multi-pet disambiguation — ask which dog before doing anything ────
     # Only triggers when: user has 2+ pets AND no pet name in message AND no open ticket
