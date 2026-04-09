@@ -225,10 +225,53 @@ async def restore_database(
 
     logger.info(f"[DB-RESTORE] Complete in {duration_s:.1f}s — {total_docs} total docs processed")
 
+    # ── Auto-backfill: fix any "Website Visitor" tickets ─────────────────────
+    # After every restore, scan service_desk_tickets that still have
+    # member.name = "Website Visitor" but have a pet_name, look up the real
+    # owner from the pets collection, and patch the ticket.
+    tickets_fixed = 0
+    try:
+        tickets_coll = db["service_desk_tickets"]
+        pets_coll    = db["pets"]
+        users_coll   = db["users"]
+        cursor = tickets_coll.find(
+            {"member.name": "Website Visitor", "pet_name": {"$exists": True, "$ne": ""}},
+            {"_id": 1, "ticket_id": 1, "pet_name": 1}
+        )
+        async for ticket in cursor:
+            pet_name = ticket.get("pet_name", "")
+            pet = await pets_coll.find_one(
+                {"name": {"$regex": f"^{pet_name}$", "$options": "i"}},
+                {"_id": 0, "owner_email": 1}
+            )
+            if not pet or not pet.get("owner_email"):
+                continue
+            owner = await users_coll.find_one(
+                {"email": pet["owner_email"]},
+                {"_id": 0, "name": 1, "email": 1}
+            )
+            if not owner or not owner.get("name"):
+                continue
+            await tickets_coll.update_one(
+                {"_id": ticket["_id"]},
+                {"$set": {
+                    "member.name": owner["name"],
+                    "member.email": owner.get("email", ""),
+                    "customer_name": owner["name"],
+                }}
+            )
+            tickets_fixed += 1
+        logger.info(f"[DB-RESTORE] Visitor-ticket backfill: {tickets_fixed} tickets patched")
+    except Exception as bf_err:
+        logger.warning(f"[DB-RESTORE] Visitor-ticket backfill failed (non-fatal): {bf_err}")
+
+    client.close()
+
     return {
         "status": "complete" if not errors else "complete_with_errors",
         "duration_seconds": round(duration_s, 1),
         "total_docs_processed": total_docs,
+        "visitor_tickets_patched": tickets_fixed,
         "collections": results,
         "errors": errors,
         "started_at": started_at.isoformat(),
