@@ -3772,7 +3772,23 @@ async def chat_with_mira_legacy(request: ChatRequest):
                                 pet_soul_context += f"- Temperament: {temperament}\n"
                             health_conditions = doggy_soul.get('health_conditions')
                             if health_conditions:
-                                pet_soul_context += f"- Health considerations: {health_conditions}\n"
+                                from condition_map import get_conditions_for_pet, build_condition_rule
+                                pet_conditions = get_conditions_for_pet(pet_data)
+                                if pet_conditions:
+                                    from condition_map import CONDITION_BLOCK_MAP
+                                    condition_notes = []
+                                    for cond in pet_conditions:
+                                        info = CONDITION_BLOCK_MAP.get(cond, {})
+                                        if info:
+                                            note = info.get("mira_note", cond)
+                                            blocks = info.get("block_keywords", [])[:4]
+                                            condition_notes.append(
+                                                f"{cond.title()}: {note}"
+                                                + (f" | BLOCK: {', '.join(blocks)}" if blocks else "")
+                                            )
+                                    pet_soul_context += f"- ⚕️ HEALTH CONDITIONS: {'; '.join(condition_notes)} — adjust every recommendation accordingly\n"
+                                else:
+                                    pet_soul_context += f"- Health considerations: {health_conditions}\n"
                             separation_anxiety = doggy_soul.get('separation_anxiety')
                             if separation_anxiety:
                                 pet_soul_context += f"- Separation anxiety: {separation_anxiety}\n"
