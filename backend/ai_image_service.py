@@ -41,8 +41,11 @@ generation_status = {
     "results": []
 }
 
-# Emergent LLM Key for image generation
+# Emergent LLM Key for image generation — falls back to direct OPENAI_API_KEY if set
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "")
+OPENAI_API_KEY   = os.getenv("OPENAI_API_KEY", "")
+# Use whichever key is available — own OpenAI key takes priority if set
+ACTIVE_IMAGE_KEY = OPENAI_API_KEY if OPENAI_API_KEY else EMERGENT_LLM_KEY
 
 def is_cloudinary_configured():
     return all([
@@ -292,12 +295,12 @@ async def generate_ai_image(prompt: str) -> Optional[str]:
         from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
         import base64
         
-        if not EMERGENT_LLM_KEY:
-            logger.error("EMERGENT_LLM_KEY not configured")
+        if not ACTIVE_IMAGE_KEY:
+            logger.error("No image generation key configured — set EMERGENT_LLM_KEY or OPENAI_API_KEY in .env")
             return None
         
         # Generate image using OpenAI gpt-image-1
-        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        image_gen = OpenAIImageGeneration(api_key=ACTIVE_IMAGE_KEY)
         images = await image_gen.generate_images(
             prompt=prompt,
             number_of_images=1,
