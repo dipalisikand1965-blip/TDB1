@@ -1264,6 +1264,28 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             if len(phone_clean) == 12 and phone_clean.startswith('91'):
                 phone_clean = phone_clean[2:]
 
+            # ── 1a. Check open ticket first → which pet is this conversation about? ──
+            # This is the fix for multi-pet confusion: Mira picks the pet from the
+            # ONGOING ticket, not a random first pet from the DB.
+            ticket_pet_name = None
+            # Always use last 10 digits for ticket lookup (tickets store phone_10 without leading 0)
+            phone_10 = phone_clean[-10:]
+            open_ticket = await db.service_desk_tickets.find_one(
+                {
+                    "$or": [
+                        {"user_phone": {"$regex": phone_10}},
+                        {"member.phone": {"$regex": phone_10}},
+                        {"member.whatsapp": {"$regex": phone_10}},
+                    ],
+                    "status": {"$nin": ["closed", "resolved"]},
+                },
+                sort=[("updated_at", -1)],
+            )
+            if open_ticket:
+                ticket_pet_name = open_ticket.get("pet_name")
+                if ticket_pet_name:
+                    logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
+
             user = await db.users.find_one({
                 "$or": [
                     {"phone": {"$regex": phone_clean}},
@@ -1290,8 +1312,15 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 ).to_list(5)
 
                 if pets:
+                    # ── 1b. Pin the conversation pet to the front ─────────────────
+                    # If ticket told us which pet this conversation is about, sort it first.
+                    if ticket_pet_name:
+                        pets.sort(
+                            key=lambda p: 0 if p.get("name", "").lower() == ticket_pet_name.lower() else 1
+                        )
+
                     pet_lines = []
-                    for p in pets:
+                    for idx, p in enumerate(pets):
                         name   = p.get("name", "Unknown")
                         breed  = p.get("breed", "Unknown breed")
                         stage  = p.get("life_stage", "")
@@ -1331,23 +1360,39 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         # Energy / personality from soul answers
                         energy = soul.get("energy_level", "")
                         if energy: line += f" | Energy: {energy}"
+                        # Mark the active conversation pet
+                        if idx == 0 and ticket_pet_name and name.lower() == ticket_pet_name.lower():
+                            line += " ← ACTIVE (this conversation is about this dog)"
                         pet_lines.append(line)
 
-                    context_parts.append(f"Dogs: {' | '.join(pet_lines)}")
+                    # ── 1c. Only expose the active pet to GPT when conversation is ongoing ───
+                    # If we know which pet this conversation is about, hide all other pets
+                    # so GPT cannot mention them (fixes Sultan/Badmash confusion).
+                    if ticket_pet_name:
+                        active_lines = [l for l in pet_lines if ticket_pet_name.lower() in l.lower()]
+                        context_parts.append(f"Dog in this conversation: {active_lines[0] if active_lines else pet_lines[0]}")
+                        context_parts.append(
+                            f"RULE: This conversation is ONLY about {ticket_pet_name}. "
+                            f"Never name or reference any other dog."
+                        )
+                    else:
+                        context_parts.append(f"Dogs: {' | '.join(pet_lines)}")
+
                     if all_allergies:
                         context_parts.append(f"ALLERGEN BLOCK — NEVER recommend: {', '.join(set(all_allergies))}")
                     if all_favorites:
                         context_parts.append(f"Favorite treats: {', '.join(set(all_favorites))}")
 
-                # Recent tickets (last 2)
-                recent_tickets = await db.service_desk_tickets.find(
-                    {"$or": [{"member.email": user_email}, {"member.phone": {"$regex": phone_clean}}]},
-                    {"_id": 0, "subject": 1, "description": 1, "status": 1, "pillar": 1}
-                ).sort("created_at", -1).limit(2).to_list(2)
+                # Recent tickets — only include when NO active pet lock (avoid leaking other pet names)
+                if not ticket_pet_name:
+                    recent_tickets = await db.service_desk_tickets.find(
+                        {"$or": [{"member.email": user_email}, {"member.phone": {"$regex": phone_clean}}]},
+                        {"_id": 0, "subject": 1, "description": 1, "status": 1, "pillar": 1}
+                    ).sort("created_at", -1).limit(2).to_list(2)
 
-                if recent_tickets:
-                    t_lines = [f"{t.get('subject', t.get('pillar',''))[:40]} ({t.get('status','open')})" for t in recent_tickets]
-                    context_parts.append(f"Recent requests: {'; '.join(t_lines)}")
+                    if recent_tickets:
+                        t_lines = [f"{t.get('subject', t.get('pillar',''))[:40]} ({t.get('status','open')})" for t in recent_tickets]
+                        context_parts.append(f"Recent requests: {'; '.join(t_lines)}")
 
         except Exception as ctx_err:
             logger.warning(f"[MIRA-AI] Context fetch error: {ctx_err}")
@@ -1428,7 +1473,16 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
     near_me_instruction = f"\n\nNEARME DETECTED: Include this Google Maps link in your response:{near_me_block}" if is_near_me else ""
 
-    system_prompt = f"""You are Mira, the AI concierge at The Doggy Company — India's first Pet Life OS.
+    # ── Active-pet lock injected at top of system prompt ─────────────────────
+    active_pet_lock = ""
+    if ticket_pet_name:
+        active_pet_lock = (
+            f"\n\n🔒 ACTIVE PET LOCK: This conversation is ONLY about {ticket_pet_name}. "
+            f"You must ONLY use the name '{ticket_pet_name}' in your response. "
+            f"Never mention, reference, or address any other dog. Not even once."
+        )
+
+    system_prompt = f"""You are Mira, the AI concierge at The Doggy Company — India's first Pet Life OS.{active_pet_lock}
 
 TONE:
 - Intelligent, knowledgeable friend — not a greeting card
@@ -1446,7 +1500,9 @@ PRODUCT RULES:
 - Format: "Product Name — ₹X → link"
 
 SPECIES RULE:
-- User has DOGS. Rabbit/cat/squirrel in their message = toy shape, not their pet.{allergen_rule}{catalog_instruction}{near_me_instruction}{context_block}
+- User has DOGS. Rabbit/cat/squirrel/fish in their message = a toy shape or product type, NOT their pet.
+- If they say "baby rabbit toy" → they want a rabbit-SHAPED dog toy. Recommend dog toys.
+- NEVER suggest going elsewhere for rabbits. Just find the dog toy equivalent.{allergen_rule}{catalog_instruction}{near_me_instruction}{context_block}
 
 RESPONSE STRUCTURE — follow this format exactly:
 
@@ -1457,7 +1513,7 @@ For [Dog's name] today:
   [link e.g. thedoggycompany.com/dine]
   ✦ Why: [max 10 words — use dog's actual name + real allergy/breed/favourite reason]
 
-(repeat for each product, max 3)
+(add up to 3 products for the SAME dog — one "For [name] today:" block only, never two)
 
 [If NearMe detected: include Google Maps link]
 
@@ -1482,7 +1538,8 @@ Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
         chat = LlmChat(
             api_key=EMERGENT_KEY,
-            session_id=f"wa-{user_phone or uuid_mod.uuid4().hex[:8]}",
+            # Scope session to the specific pet when known — prevents cross-pet contamination
+            session_id=f"wa-{user_phone or uuid_mod.uuid4().hex[:8]}-{ticket_pet_name.lower() if ticket_pet_name else 'all'}",
             system_message=system_prompt
         ).with_model("openai", "gpt-4o-mini")
 
