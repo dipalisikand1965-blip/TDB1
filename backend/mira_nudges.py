@@ -287,8 +287,19 @@ async def generate_nudges_for_pet(pet_id: str, background_tasks: BackgroundTasks
     pet = await db.pets.find_one({"id": pet_id})
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
-    
-    user = await db.users.find_one({"id": pet.get("user_id")}) if pet.get("user_id") else None
+
+    # Look up owner — prefer owner_email (always set), fall back to user_id
+    user = None
+    if pet.get("owner_email"):
+        user = await db.users.find_one(
+            {"email": pet["owner_email"]},
+            {"_id": 0, "name": 1, "email": 1, "phone": 1, "whatsapp": 1}
+        )
+    if not user and pet.get("user_id"):
+        user = await db.users.find_one(
+            {"id": pet["user_id"]},
+            {"_id": 0, "name": 1, "email": 1, "phone": 1, "whatsapp": 1}
+        )
     
     # Get nudge types
     config = await db.app_settings.find_one({"key": "nudge_types"}, {"_id": 0})
