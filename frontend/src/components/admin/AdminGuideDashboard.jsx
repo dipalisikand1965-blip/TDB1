@@ -99,10 +99,12 @@ const AdminGuideDashboard = () => {
           .sort((a, b) => (b[1]?.total || 0) - (a[1]?.total || 0))
           .map(([name, v]) => `• ${name}: ${v.total?.toLocaleString()} docs`)
           .join('\n');
-        const summary = `${lines}\n\nTotal: ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s`;
-        setRestoreMsg({ ok: true, text: `✅ Restored! ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s` });
+        const patched = data.visitor_tickets_patched ?? 0;
+        const patchLine = patched > 0 ? `\n✦ ${patched} "Website Visitor" ticket${patched > 1 ? 's' : ''} auto-patched with real names` : '';
+        const summary = `${lines}${patchLine}\n\nTotal: ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s`;
+        setRestoreMsg({ ok: true, text: `✅ Database restored + visitor tickets patched` });
         toast({
-          title: '✅ Database Restored Successfully!',
+          title: '✅ Database Restored + Tickets Patched!',
           description: summary,
           duration: 10000,
         });
