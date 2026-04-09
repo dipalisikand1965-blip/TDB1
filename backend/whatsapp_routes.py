@@ -1342,14 +1342,29 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             logger.info(f"[MIRA-AI] Pet name '{cname}' found in message → using as active pet")
                             break  # first match wins
 
-                # Full soul profile for each pet
+                # ── Multi-account linking ────────────────────────────────────────
+                # A user may have registered with two emails (e.g. work + personal).
+                # Find all accounts with the same name and collect pets from ALL of them.
+                all_owner_emails = [user_email]
+                if member_name:
+                    linked = await db.users.find(
+                        {"name": member_name, "email": {"$ne": user_email}},
+                        {"_id": 0, "email": 1}
+                    ).to_list(5)
+                    for lu in linked:
+                        if lu.get("email"):
+                            all_owner_emails.append(lu["email"])
+                    if len(all_owner_emails) > 1:
+                        logger.info(f"[MIRA-AI] Multi-account user '{member_name}' → emails: {all_owner_emails}")
+
+                # Full soul profile for each pet — across ALL linked accounts
                 pets = await db.pets.find(
-                    {"owner_email": user_email},
+                    {"owner_email": {"$in": all_owner_emails}},
                     {"_id": 0, "name": 1, "breed": 1, "date_of_birth": 1,
                      "allergies": 1, "health_conditions": 1, "doggy_soul_answers": 1,
                      "favorite_foods": 1, "weight": 1, "life_stage": 1, "city": 1,
                      "archetype": 1}
-                ).to_list(5)
+                ).to_list(20)
 
                 if pets:
                     # ── 1b. Pin the conversation pet to the front ─────────────────
