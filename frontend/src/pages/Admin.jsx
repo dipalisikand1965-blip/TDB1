@@ -1740,14 +1740,19 @@ const Admin = () => {
   };
 
   // Fetch Pet Profiles
-  const fetchPetProfiles = async () => {
+  const [petSearch, setPetSearch] = useState('');
+  const [petTotal, setPetTotal] = useState(0);
+  const fetchPetProfiles = async (search = '') => {
     try {
-      const response = await fetch(`${API_URL}/api/admin/pets`, {
+      const params = new URLSearchParams({ limit: 200 });
+      if (search) params.set('search', search);
+      const response = await fetch(`${API_URL}/api/admin/pets?${params}`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
         const data = await response.json();
         setPetProfiles(data.pets || []);
+        setPetTotal(data.total || data.pets?.length || 0);
         setPetStats(data.stats || {});
       }
     } catch (error) {
@@ -5028,10 +5033,31 @@ const Admin = () => {
         {activeTab === 'pets' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">🐾 Pet Profiles ({petProfiles.length})</h3>
-              <Button variant="outline" onClick={fetchPetProfiles}>
+              <h3 className="text-xl font-bold text-gray-900">🐾 Pet Profiles ({petProfiles.length}{petTotal > petProfiles.length ? ` of ${petTotal}` : ''})</h3>
+              <Button variant="outline" onClick={() => fetchPetProfiles(petSearch)}>
                 <RefreshCw className="w-4 h-4 mr-2" />Refresh
               </Button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Search by pet name, owner name or email..."
+                value={petSearch}
+                onChange={e => setPetSearch(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && fetchPetProfiles(petSearch)}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+                data-testid="pet-profiles-search"
+              />
+              <Button onClick={() => fetchPetProfiles(petSearch)} className="bg-purple-600 text-white hover:bg-purple-700">
+                Search
+              </Button>
+              {petSearch && (
+                <Button variant="outline" onClick={() => { setPetSearch(''); fetchPetProfiles(''); }}>
+                  Clear
+                </Button>
+              )}
             </div>
             
             {/* Stats Cards */}
