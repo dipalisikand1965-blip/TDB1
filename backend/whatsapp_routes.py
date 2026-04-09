@@ -413,8 +413,18 @@ async def process_gupshup_webhook(body: dict):
                         {"owner_email": member_email},
                         {"_id": 0, "id": 1, "name": 1, "breed": 1, "allergies": 1, "fav_food": 1, "city": 1}
                     ).to_list(5)
-                    first_pet = found_pets[0] if found_pets else None
-                    logger.info(f"[GUPSHUP] Matched member {member_email} with {len(found_pets)} pet(s)")
+                    # Detect pet name from message before defaulting to first pet
+                    message_lower = content.lower() if content else ""
+                    first_pet = None
+                    for pet in found_pets:
+                        pet_name_lower = (pet.get("name") or "").lower()
+                        if pet_name_lower and pet_name_lower in message_lower:
+                            first_pet = pet
+                            logger.info(f"[GUPSHUP] Pet name '{pet.get('name')}' detected in message — using as active pet")
+                            break
+                    if not first_pet and found_pets:
+                        first_pet = found_pets[0]
+                    logger.info(f"[GUPSHUP] Matched member {member_email} with {len(found_pets)} pet(s) | active_pet={first_pet.get('name') if first_pet else None}")
                 else:
                     logger.info(f"[GUPSHUP] No registered member found for {phone_10} — creating anonymous ticket")
                 
@@ -1303,22 +1313,6 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
                         break  # first match wins
 
-            # ── 1b. If no open ticket, detect pet name FROM the message itself ──
-            # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
-            if not ticket_pet_name and user_email:
-                # Only check THIS user's pets (not all pets in DB)
-                user_pet_names = await db.pets.find(
-                    {"owner_email": user_email},
-                    {"_id": 0, "name": 1}
-                ).to_list(10)
-                msg_lower = message_text.lower()
-                for candidate in user_pet_names:
-                    cname = candidate.get("name", "")
-                    if cname and cname.lower() in msg_lower:
-                        ticket_pet_name = cname
-                        logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
-                        break  # first match wins
-
             user = await db.users.find_one({                "$or": [
                     {"phone": {"$regex": phone_clean}},
                     {"whatsapp": {"$regex": phone_clean}},
@@ -1472,6 +1466,28 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     except Exception as search_err:
         logger.warning(f"[MIRA-AI] Semantic search failed: {search_err}")
 
+    # ── 3b. Broad fallback search when exact query returns 0 products ──────────
+    # e.g. "birthday outfit" → 0 results → try "accessories outfit" → finds bandanas
+    closest_products = []
+    if not found_products:
+        try:
+            stop_words = {'what', 'for', 'the', 'can', 'have', 'need', 'want',
+                          'looking', 'find', 'get', 'give', 'some', 'any', 'him', 'her', 'my'}
+            words = [w for w in message_text.split() if len(w) > 3 and w.lower() not in stop_words]
+            broad_q = "accessories dog " + " ".join(words[:2]) if words else "dog accessories"
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                broad_resp = await client.post(
+                    "http://localhost:8001/api/mira/semantic-search",
+                    json={"query": broad_q, "limit": 2,
+                          "pet_allergies": all_allergies if all_allergies else None}
+                )
+                if broad_resp.status_code == 200:
+                    closest_products = broad_resp.json().get("products", [])[:2]
+                    if closest_products:
+                        logger.info(f"[MIRA-AI] Broad fallback: '{broad_q}' → {len(closest_products)} closest product(s)")
+        except Exception:
+            pass
+
     # Build catalog block from real products
     if found_products:
         prod_lines = []
@@ -1522,7 +1538,33 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     if catalog_block:
         catalog_instruction = f"\n\n{catalog_block}\n\nIMPORTANT: When recommending products, use ONLY the real names and prices above. Do NOT invent product names."
     else:
-        catalog_instruction = f"\n\nNo exact TDC matches found. Guide them to explore:\n🛒 {amazon_url}\nOr ask Concierge to source it."
+        # ── Mira Imagines protocol — 0 exact results ─────────────────────────
+        active_pet_desc = ticket_pet_name or (all_pet_names[0] if all_pet_names else "this dog")
+        closest_block = ""
+        if closest_products:
+            closest_lines = []
+            for p in closest_products:
+                price  = p.get("original_price") or p.get("price", 0)
+                pillar = p.get("pillar", "shop")
+                closest_lines.append(
+                    f"- {p.get('name', '')} — ₹{int(price) if price else 'POA'} → thedoggycompany.com/{pillar}"
+                )
+            closest_block = (
+                "\n\nCLOSEST REAL PRODUCTS (related, not exact — present as 'Meanwhile — these are perfect:'):\n"
+                + "\n".join(closest_lines)
+            )
+        catalog_instruction = (
+            f"\n\nNo exact TDC catalog match found for this query."
+            f"\n\nMIRA IMAGINES PROTOCOL — follow this EXACTLY:"
+            f"\n1. Acknowledge honestly: say you don't have [the specific item] in the catalog yet — warm, not apologetic."
+            f"\n2. Write ONE '✦ Mira Imagines:' line — describe the ideal product specifically for {active_pet_desc}."
+            f"   Make it visual and breed/personality specific. Example: 'A birthday bandana + party hat combo for an energetic Indie like Mojo'"
+            f"\n3. If closest real products are listed below, present them naturally as 'Meanwhile — these are perfect:'"
+            f"{closest_block}"
+            f"\n4. Include Amazon fallback: 🛒 {amazon_url}"
+            f"\n5. End with Concierge CTA: 'Your Concierge can source it → thedoggycompany.com/my-requests 🐾'"
+            f"\n\nDO NOT invent product names, prices, or links. Only use the real closest products listed above if any."
+        )
 
     near_me_instruction = f"\n\nNEARME DETECTED: Include this Google Maps link in your response:{near_me_block}" if is_near_me else ""
 
@@ -1576,6 +1618,24 @@ Hey [Parent name]! 🐾
 [One warm follow-up question relevant to the dog and the request]
 
 Need help? Your Concierge is here →
+thedoggycompany.com/my-requests 🐾
+
+IF NO CATALOG MATCH — use Mira Imagines format instead:
+
+Hey [Parent name]! 🐾
+
+I don't have [specific item] in our catalog yet —
+but Mira imagines the perfect [thing] for [pet]! 🎨
+
+✦ Mira Imagines: [visual, specific — breed + energy + occasion e.g. "A birthday bandana + party hat combo for an energetic Indie like Mojo"]
+
+[If closest real products exist:]
+Meanwhile — these are perfect:
+- [Real Product Name] — thedoggycompany.com/[pillar]
+
+🛒 Explore more options: [Amazon URL]
+
+Your Concierge can source it →
 thedoggycompany.com/my-requests 🐾
 
 RULES FOR ✦ Why line:
