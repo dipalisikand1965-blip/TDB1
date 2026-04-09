@@ -4,11 +4,14 @@ DB Restore Route — TDC Migration Tool
 Reads the pre-exported .json.gz files from /migration_data/ and
 bulk-upserts them into the target MongoDB.
 
-Endpoint:  POST /api/admin/db/restore
-Auth:      Admin Basic Auth (same as other admin endpoints)
-Use-case:  After fresh deployment, hit this once to populate the DB.
+Endpoint:  POST /api/admin/db/restore      — starts restore in background, returns immediately
+Endpoint:  GET  /api/admin/db/restore-progress — poll this for live status
+Endpoint:  GET  /api/admin/db/restore-status   — file availability check
+
+This avoids the 60s Kubernetes proxy timeout on large restores (16,666 docs ~2 min).
 """
 
+import asyncio
 import gzip
 import json
 import os
@@ -16,7 +19,7 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
 
@@ -31,24 +34,37 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 
 MIGRATION_DIR = Path(__file__).parent / "migration_data"
 
-# Collections to restore and the field to upsert on (our own id, not Mongo _id)
 COLLECTIONS_CONFIG = [
-    # (file_stem, collection_name, upsert_key)
-    ("users",              "users",              "email"),
-    ("pets",               "pets",               "id"),
-    ("products_master",    "products_master",    "id"),
-    ("breed_products",     "breed_products",     "id"),
-    ("services_master",    "services_master",    "id"),
-    ("service_catalog",    "service_catalog",    "id"),
-    ("bundles",            "bundles",            "id"),
-    ("product_bundles",    "product_bundles",    "id"),
-    ("product_soul_tiers", "product_soul_tiers", "id"),
-    ("guided_paths",       "guided_paths",       "id"),
-    ("learn_guides",       "learn_guides",       "id"),
-    ("care_bundles",       "care_bundles",       "id"),
+    ("users",               "users",               "email"),
+    ("pets",                "pets",                "id"),
+    ("products_master",     "products_master",     "id"),
+    ("breed_products",      "breed_products",      "id"),
+    ("services_master",     "services_master",     "id"),
+    ("service_catalog",     "service_catalog",     "id"),
+    ("bundles",             "bundles",             "id"),
+    ("product_bundles",     "product_bundles",     "id"),
+    ("product_soul_tiers",  "product_soul_tiers",  "id"),
+    ("guided_paths",        "guided_paths",        "id"),
+    ("learn_guides",        "learn_guides",        "id"),
+    ("care_bundles",        "care_bundles",        "id"),
     ("service_desk_tickets","service_desk_tickets","ticket_id"),
-    ("mira_conversations", "mira_conversations", "id"),
+    ("mira_conversations",  "mira_conversations",  "id"),
 ]
+
+# ── In-memory restore progress state ─────────────────────────────────────────
+_restore_state: dict = {
+    "status": "idle",          # idle | running | complete | error
+    "started_at": None,
+    "finished_at": None,
+    "current_collection": None,
+    "collections_done": 0,
+    "collections_total": len(COLLECTIONS_CONFIG),
+    "total_docs": 0,
+    "visitor_tickets_patched": 0,
+    "collections": {},
+    "errors": [],
+    "duration_seconds": None,
+}
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
@@ -60,13 +76,11 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 def _clean_doc(doc: dict) -> dict:
-    """Remove MongoDB-specific _id so a fresh DB generates its own."""
     doc.pop("_id", None)
     return doc
 
 
-def _load_jsonl_gz(path: Path) -> list[dict]:
-    """Read a gzipped JSONL file exported by mongoexport."""
+def _load_jsonl_gz(path: Path) -> list:
     docs = []
     with gzip.open(path, "rt", encoding="utf-8") as f:
         for line in f:
@@ -74,86 +88,59 @@ def _load_jsonl_gz(path: Path) -> list[dict]:
             if not line:
                 continue
             try:
-                doc = json.loads(line)
-                docs.append(_clean_doc(doc))
+                docs.append(_clean_doc(json.loads(line)))
             except json.JSONDecodeError:
                 pass
     return docs
 
 
-@restore_router.get("/restore-status")
-async def restore_status():
+async def _do_restore(drop_existing: bool = False):
     """
-    Quick check: which migration files are present and how many docs each has.
-    No auth needed — just tells you what's available.
-    """
-    status = {}
-    for file_stem, collection, _ in COLLECTIONS_CONFIG:
-        gz_path = MIGRATION_DIR / f"{file_stem}.json.gz"
-        json_path = MIGRATION_DIR / f"{file_stem}.json"
-
-        if gz_path.exists():
-            # Count lines quickly
-            with gzip.open(gz_path, "rt") as f:
-                count = sum(1 for line in f if line.strip())
-            status[collection] = {"file": f"{file_stem}.json.gz", "docs": count, "ready": True}
-        elif json_path.exists():
-            with open(json_path) as f:
-                count = sum(1 for line in f if line.strip())
-            status[collection] = {"file": f"{file_stem}.json", "docs": count, "ready": True}
-        else:
-            status[collection] = {"file": None, "docs": 0, "ready": False}
-
-    return {
-        "migration_dir": str(MIGRATION_DIR),
-        "collections": status,
-        "total_ready": sum(1 for v in status.values() if v["ready"]),
-    }
-
-
-@restore_router.post("/restore")
-async def restore_database(
-    drop_existing: bool = False,
-    admin: str = Depends(verify_admin),
-):
-    """
-    Restore all collections from the migration_data/*.json.gz files.
-
-    - drop_existing=false (default): UPSERT — safe to re-run, skips existing docs
-    - drop_existing=true: DROPS each collection first — full clean restore
-
-    Returns a summary of what was inserted/updated per collection.
+    Background restore task — runs independently of the HTTP request.
+    Updates _restore_state so the frontend can poll progress.
     """
     from motor.motor_asyncio import AsyncIOMotorClient
 
+    global _restore_state
+
+    _restore_state.update({
+        "status": "running",
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "finished_at": None,
+        "current_collection": None,
+        "collections_done": 0,
+        "collections_total": len(COLLECTIONS_CONFIG),
+        "total_docs": 0,
+        "visitor_tickets_patched": 0,
+        "collections": {},
+        "errors": [],
+        "duration_seconds": None,
+    })
+
     mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-    db_name = os.environ.get("DB_NAME", "pet-os-live-test_database")
-    client = AsyncIOMotorClient(mongo_url)
-    db = client[db_name]
+    db_name   = os.environ.get("DB_NAME", "pet-os-live-test_database")
+    client    = AsyncIOMotorClient(mongo_url)
+    db        = client[db_name]
+    started   = datetime.now(timezone.utc)
 
-    started_at = datetime.now(timezone.utc)
-    results = {}
-    errors = []
-
-    logger.info(f"[DB-RESTORE] Starting restore | drop_existing={drop_existing} | admin={admin}")
+    logger.info(f"[DB-RESTORE] Background restore started | drop={drop_existing}")
 
     for file_stem, collection_name, upsert_key in COLLECTIONS_CONFIG:
-        gz_path = MIGRATION_DIR / f"{file_stem}.json.gz"
+        _restore_state["current_collection"] = collection_name
+
+        gz_path   = MIGRATION_DIR / f"{file_stem}.json.gz"
         json_path = MIGRATION_DIR / f"{file_stem}.json"
 
-        # Find the file
         if gz_path.exists():
-            path = gz_path
-            use_gz = True
+            path, use_gz = gz_path, True
         elif json_path.exists():
-            path = json_path
-            use_gz = False
+            path, use_gz = json_path, False
         else:
-            results[collection_name] = {"status": "skipped", "reason": "no file found"}
+            _restore_state["collections"][collection_name] = {"status": "skipped", "reason": "no file"}
+            _restore_state["collections_done"] += 1
             continue
 
         try:
-            # Load docs
             if use_gz:
                 docs = _load_jsonl_gz(path)
             else:
@@ -168,24 +155,20 @@ async def restore_database(
                                 pass
 
             if not docs:
-                results[collection_name] = {"status": "skipped", "reason": "empty file"}
+                _restore_state["collections"][collection_name] = {"status": "skipped", "reason": "empty file"}
+                _restore_state["collections_done"] += 1
                 continue
 
             collection = db[collection_name]
 
             if drop_existing:
                 await collection.drop()
-                logger.info(f"[DB-RESTORE] Dropped collection: {collection_name}")
 
-            # Bulk upsert by upsert_key
-            inserted = 0
-            updated = 0
-            skipped = 0
+            inserted = updated = skipped = 0
 
             for doc in docs:
                 key_val = doc.get(upsert_key)
                 if key_val is None:
-                    # No key to upsert on — just insert
                     try:
                         await collection.insert_one(doc)
                         inserted += 1
@@ -195,64 +178,48 @@ async def restore_database(
 
                 existing = await collection.find_one({upsert_key: key_val}, {"_id": 1})
                 if existing:
-                    await collection.update_one(
-                        {upsert_key: key_val},
-                        {"$set": doc}
-                    )
+                    await collection.update_one({upsert_key: key_val}, {"$set": doc})
                     updated += 1
                 else:
                     await collection.insert_one(doc)
                     inserted += 1
 
-            results[collection_name] = {
-                "status": "ok",
-                "total": len(docs),
-                "inserted": inserted,
-                "updated": updated,
-                "skipped": skipped,
+            _restore_state["collections"][collection_name] = {
+                "status": "ok", "total": len(docs),
+                "inserted": inserted, "updated": updated, "skipped": skipped,
             }
-            logger.info(f"[DB-RESTORE] {collection_name}: {inserted} inserted, {updated} updated")
+            _restore_state["total_docs"] += len(docs)
+            logger.info(f"[DB-RESTORE] {collection_name}: {inserted} ins, {updated} upd")
 
         except Exception as e:
-            logger.error(f"[DB-RESTORE] Error restoring {collection_name}: {e}")
-            errors.append({"collection": collection_name, "error": str(e)})
-            results[collection_name] = {"status": "error", "error": str(e)}
+            logger.error(f"[DB-RESTORE] Error on {collection_name}: {e}")
+            _restore_state["errors"].append({"collection": collection_name, "error": str(e)})
+            _restore_state["collections"][collection_name] = {"status": "error", "error": str(e)}
 
-    finished_at = datetime.now(timezone.utc)
-    duration_s = (finished_at - started_at).total_seconds()
+        _restore_state["collections_done"] += 1
 
-    total_docs = sum(r.get("total", 0) for r in results.values() if isinstance(r, dict))
-
-    logger.info(f"[DB-RESTORE] Complete in {duration_s:.1f}s — {total_docs} total docs processed")
-
-    # ── Auto-backfill: fix any "Website Visitor" tickets ─────────────────────
-    # After every restore, scan service_desk_tickets that still have
-    # member.name = "Website Visitor" but have a pet_name, look up the real
-    # owner from the pets collection, and patch the ticket.
+    # ── Auto-backfill Website Visitor tickets ─────────────────────────────────
+    _restore_state["current_collection"] = "patching visitor tickets..."
     tickets_fixed = 0
     try:
-        tickets_coll = db["service_desk_tickets"]
-        pets_coll    = db["pets"]
-        users_coll   = db["users"]
-        cursor = tickets_coll.find(
+        cursor = db["service_desk_tickets"].find(
             {"member.name": "Website Visitor", "pet_name": {"$exists": True, "$ne": ""}},
             {"_id": 1, "ticket_id": 1, "pet_name": 1}
         )
         async for ticket in cursor:
-            pet_name = ticket.get("pet_name", "")
-            pet = await pets_coll.find_one(
-                {"name": {"$regex": f"^{pet_name}$", "$options": "i"}},
+            pet = await db["pets"].find_one(
+                {"name": {"$regex": f"^{ticket.get('pet_name','')}$", "$options": "i"}},
                 {"_id": 0, "owner_email": 1}
             )
             if not pet or not pet.get("owner_email"):
                 continue
-            owner = await users_coll.find_one(
+            owner = await db["users"].find_one(
                 {"email": pet["owner_email"]},
                 {"_id": 0, "name": 1, "email": 1}
             )
             if not owner or not owner.get("name"):
                 continue
-            await tickets_coll.update_one(
+            await db["service_desk_tickets"].update_one(
                 {"_id": ticket["_id"]},
                 {"$set": {
                     "member.name": owner["name"],
@@ -261,19 +228,77 @@ async def restore_database(
                 }}
             )
             tickets_fixed += 1
-        logger.info(f"[DB-RESTORE] Visitor-ticket backfill: {tickets_fixed} tickets patched")
+        _restore_state["visitor_tickets_patched"] = tickets_fixed
+        logger.info(f"[DB-RESTORE] Visitor-ticket backfill: {tickets_fixed} patched")
     except Exception as bf_err:
-        logger.warning(f"[DB-RESTORE] Visitor-ticket backfill failed (non-fatal): {bf_err}")
+        logger.warning(f"[DB-RESTORE] Backfill failed (non-fatal): {bf_err}")
 
     client.close()
 
+    finished = datetime.now(timezone.utc)
+    duration = round((finished - started).total_seconds(), 1)
+
+    _restore_state.update({
+        "status": "complete" if not _restore_state["errors"] else "complete_with_errors",
+        "finished_at": finished.isoformat(),
+        "current_collection": None,
+        "duration_seconds": duration,
+    })
+    logger.info(f"[DB-RESTORE] Done in {duration}s — {_restore_state['total_docs']} docs, {tickets_fixed} tickets patched")
+
+
+# ── Endpoints ─────────────────────────────────────────────────────────────────
+
+@restore_router.get("/restore-status")
+async def restore_status():
+    """File availability check — no auth needed."""
+    status = {}
+    for file_stem, collection, _ in COLLECTIONS_CONFIG:
+        gz_path   = MIGRATION_DIR / f"{file_stem}.json.gz"
+        json_path = MIGRATION_DIR / f"{file_stem}.json"
+        if gz_path.exists():
+            with gzip.open(gz_path, "rt") as f:
+                count = sum(1 for line in f if line.strip())
+            status[collection] = {"file": f"{file_stem}.json.gz", "docs": count, "ready": True}
+        elif json_path.exists():
+            with open(json_path) as f:
+                count = sum(1 for line in f if line.strip())
+            status[collection] = {"file": f"{file_stem}.json", "docs": count, "ready": True}
+        else:
+            status[collection] = {"file": None, "docs": 0, "ready": False}
+
+    return {"migration_dir": str(MIGRATION_DIR), "collections": status,
+            "total_ready": sum(1 for v in status.values() if v["ready"])}
+
+
+@restore_router.get("/restore-progress")
+async def restore_progress():
+    """Poll this endpoint for live restore status. No auth needed."""
+    return _restore_state
+
+
+@restore_router.post("/restore")
+async def restore_database(
+    background_tasks: BackgroundTasks,
+    drop_existing: bool = False,
+    admin: str = Depends(verify_admin),
+):
+    """
+    Start the restore in the background and return immediately.
+    Poll GET /restore-progress for live status.
+    This avoids the 60s Kubernetes proxy timeout on large restores.
+    """
+    if _restore_state.get("status") == "running":
+        return {
+            "status": "already_running",
+            "message": "Restore already in progress — poll /restore-progress for status.",
+            "progress": _restore_state,
+        }
+
+    background_tasks.add_task(_do_restore, drop_existing)
+
     return {
-        "status": "complete" if not errors else "complete_with_errors",
-        "duration_seconds": round(duration_s, 1),
-        "total_docs_processed": total_docs,
-        "visitor_tickets_patched": tickets_fixed,
-        "collections": results,
-        "errors": errors,
-        "started_at": started_at.isoformat(),
-        "finished_at": finished_at.isoformat(),
+        "status": "started",
+        "message": "Restore running in background. Poll /api/admin/db/restore-progress every 2s.",
+        "collections_total": len(COLLECTIONS_CONFIG),
     }
