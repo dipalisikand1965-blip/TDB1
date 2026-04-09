@@ -1265,8 +1265,6 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 phone_clean = phone_clean[2:]
 
             # ── 1a. Check open ticket first → which pet is this conversation about? ──
-            # This is the fix for multi-pet confusion: Mira picks the pet from the
-            # ONGOING ticket, not a random first pet from the DB.
             ticket_pet_name = None
             # Always use last 10 digits for ticket lookup (tickets store phone_10 without leading 0)
             phone_10 = phone_clean[-10:]
@@ -1285,6 +1283,20 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 ticket_pet_name = open_ticket.get("pet_name")
                 if ticket_pet_name:
                     logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
+
+            # ── 1b. If no open ticket, detect pet name FROM the message itself ──
+            # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
+            if not ticket_pet_name:
+                all_user_pets = await db.pets.find(
+                    {},  # temp — will be filtered by owner below
+                    {"_id": 0, "name": 1, "owner_email": 1}
+                ).to_list(50)
+                msg_lower = message_text.lower()
+                for candidate in all_user_pets:
+                    cname = candidate.get("name", "")
+                    if cname and cname.lower() in msg_lower:
+                        ticket_pet_name = cname
+                        logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
 
             user = await db.users.find_one({
                 "$or": [
@@ -1485,10 +1497,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     system_prompt = f"""You are Mira, the AI concierge at The Doggy Company — India's first Pet Life OS.{active_pet_lock}
 
 TONE:
-- Intelligent, knowledgeable friend — not a greeting card
-- Direct and useful. Skip the fluff.
-- Use the dog's name naturally, not performatively
-- Max 150 words total. Every word must earn its place.
+- Warm and knowledgeable — like a friend who genuinely knows this dog
+- Reference the pet's actual personality, breed, favourite treats naturally
+- WhatsApp-friendly: conversational, no markdown headers, no bullet walls
+- Short — 4-6 sentences max, then one follow-up question
+- End every response with one warm, specific follow-up question
+  (e.g. "Training treats or just-because snacks? 🐾" / "Is this for a special occasion? 🌸")
 
 BANNED WORDS — never use these:
 paw-sitively, pawsome, fur-ever, furry friends, tummy, pup-tastic, pawfect, furbaby, pooch, woof, arf, belly rubs, tail wagging, cuddles
@@ -1508,14 +1522,17 @@ RESPONSE STRUCTURE — follow this format exactly:
 
 Hey [Parent name]! 🐾
 
-For [Dog's name] today:
+[2-3 warm sentences — use dog's name, reference their personality/breed/favourites naturally]
+
 - [Product Name] — ₹[price]
   [link e.g. thedoggycompany.com/dine]
-  ✦ Why: [max 10 words — use dog's actual name + real allergy/breed/favourite reason]
+  ✦ Why: [max 10 words — dog's actual name + real allergy/breed/favourite reason]
 
-(add up to 3 products for the SAME dog — one "For [name] today:" block only, never two)
+(add up to 3 products for the SAME dog — one block only, never two dogs)
 
 [If NearMe detected: include Google Maps link]
+
+[One warm follow-up question relevant to the dog and the request]
 
 Need help? Your Concierge is here →
 thedoggycompany.com/my-requests 🐾
@@ -1523,11 +1540,10 @@ thedoggycompany.com/my-requests 🐾
 RULES FOR ✦ Why line:
 - Must use the dog's actual name (e.g. "Mojo", "Badmash")
 - Must reference a real reason: favourite ingredient, blocked allergen, breed trait, life stage
-- Max 10 words. No filler. Examples:
+- Max 10 words. Examples:
   ✦ Why: Salmon (Mojo's favourite), no chicken or beef
   ✦ Why: Perfect for high-energy Indie dogs
   ✦ Why: Gentle on Badmash's Newfoundland joints
-  ✦ Why: No beef — safe for Mojo
 
 Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
