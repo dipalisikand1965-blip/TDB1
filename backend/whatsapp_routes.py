@@ -1306,9 +1306,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             raw_allergies = [a.strip() for a in raw_allergies.split(",") if a.strip()]
                         soul = p.get("doggy_soul_answers", {})
                         soul_allergies = soul.get("food_allergies", "")
-                        if soul_allergies and soul_allergies.lower() not in ("none", "no", ""):
-                            raw_allergies += [a.strip() for a in soul_allergies.split(",")]
-                        pet_allergies = list({a.lower() for a in raw_allergies if a.lower() not in ("none","")})
+                        # soul_allergies may be a list OR a string
+                        if isinstance(soul_allergies, list):
+                            raw_allergies += [a.strip() for a in soul_allergies if a.strip()]
+                        elif soul_allergies and str(soul_allergies).lower() not in ("none", "no", ""):
+                            raw_allergies += [a.strip() for a in str(soul_allergies).split(",") if a.strip()]
+                        pet_allergies = list({a.lower() for a in raw_allergies if str(a).lower() not in ("none", "")})
                         if pet_allergies:
                             all_allergies += pet_allergies
 
@@ -1479,10 +1482,14 @@ async def get_mira_whatsapp_response(message_text: str, user_name: str = "friend
     """
     Generate Mira's intelligent response for WhatsApp messages.
     Uses word-boundary pattern matching for common queries.
+    Includes NearMe Google Maps link when location intent detected.
     """
     import re
     message_lower = message_text.lower().strip()
-    
+
+    # NearMe detection — inject Maps link into response
+    is_near_me = _detect_near_me(message_text)
+
     # Check each pattern category (order matters - check more specific patterns first)
     pattern_order = ["membership", "order", "grooming", "vet", "birthday", "stay", "help", "thanks", "bye", "greeting"]
     
@@ -1497,16 +1504,37 @@ async def get_mira_whatsapp_response(message_text: str, user_name: str = "friend
                     response = data["response"]
                     if user_name and user_name != "WhatsApp User":
                         response = response.replace("Hey there!", f"Hey {user_name}!")
+                    if is_near_me:
+                        # Map category to service type
+                        svc_map = {
+                            "grooming": "dog+groomer", "vet": "dog+vet+clinic",
+                            "stay": "dog+boarding", "order": "dog+store"
+                        }
+                        svc_q = svc_map.get(category, "dog+service")
+                        maps_url = f"https://maps.google.com/search?q={svc_q}+near+me"
+                        response += f"\n\n📍 Find nearby:\n{maps_url}"
                     return response
             else:
                 if pattern in message_lower:
                     response = data["response"]
                     if user_name and user_name != "WhatsApp User":
                         response = response.replace("Hey there!", f"Hey {user_name}!")
+                    if is_near_me:
+                        svc_map = {
+                            "grooming": "dog+groomer", "vet": "dog+vet+clinic",
+                            "stay": "dog+boarding", "order": "dog+store"
+                        }
+                        svc_q = svc_map.get(category, "dog+service")
+                        maps_url = f"https://maps.google.com/search?q={svc_q}+near+me"
+                        response += f"\n\n📍 Find nearby:\n{maps_url}"
                     return response
-    
-    # Default response
-    return MIRA_DEFAULT_RESPONSE
+
+    # Default response — add NearMe if detected
+    response = MIRA_DEFAULT_RESPONSE
+    if is_near_me:
+        maps_url = "https://maps.google.com/search?q=dog+service+near+me"
+        response += f"\n\n📍 Find services nearby:\n{maps_url}"
+    return response
 
 
 @router.post("/mira-reply")
