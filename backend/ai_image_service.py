@@ -44,7 +44,7 @@ generation_status = {
 # Emergent LLM Key for image generation — falls back to direct OPENAI_API_KEY if set
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "")
 OPENAI_API_KEY   = os.getenv("OPENAI_API_KEY", "")
-# Use whichever key is available — own OpenAI key takes priority if set
+# Keys are kept separate — Gemini uses EMERGENT_LLM_KEY, OpenAI fallback uses OPENAI_API_KEY
 ACTIVE_IMAGE_KEY = OPENAI_API_KEY if OPENAI_API_KEY else EMERGENT_LLM_KEY
 
 def is_cloudinary_configured():
@@ -295,53 +295,51 @@ async def generate_ai_image(prompt: str) -> Optional[str]:
     Uploads result to Cloudinary and returns the secure URL."""
     import base64, uuid
 
-    if not ACTIVE_IMAGE_KEY:
+    if not EMERGENT_LLM_KEY and not OPENAI_API_KEY:
         logger.error("No image generation key configured — set EMERGENT_LLM_KEY or OPENAI_API_KEY in .env")
         return None
 
     image_data_url: Optional[str] = None
 
-    # ── Primary: Gemini Nano Banana (works with Emergent LLM Key) ──────────────
-    try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-        session_id = f"img-gen-{uuid.uuid4().hex[:12]}"
-        chat = LlmChat(
-            api_key=ACTIVE_IMAGE_KEY,
-            session_id=session_id,
-            system_message="You are a professional product photographer. Generate high-quality product images exactly as described."
-        )
-        chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
-        msg = UserMessage(text=prompt)
-        _text, images = await chat.send_message_multimodal_response(msg)
+    # ── Primary: Gemini Nano Banana (uses Emergent LLM Key) ────────────────────
+    if EMERGENT_LLM_KEY:
+        try:
+            from emergentintegrations.llm.chat import LlmChat, UserMessage
+            session_id = f"img-gen-{uuid.uuid4().hex[:12]}"
+            chat = LlmChat(
+                api_key=EMERGENT_LLM_KEY,
+                session_id=session_id,
+                system_message="You are a professional product photographer. Generate high-quality product images exactly as described."
+            )
+            chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
+            msg = UserMessage(text=prompt)
+            _text, images = await chat.send_message_multimodal_response(msg)
 
-        if images and len(images) > 0:
-            img = images[0]
-            image_bytes = base64.b64decode(img["data"])
-            image_base64 = img["data"]  # already base64
-            mime = img.get("mime_type", "image/png")
-            image_data_url = f"data:{mime};base64,{image_base64}"
-            logger.info(f"Gemini image generated OK ({len(image_bytes):,} bytes)")
-        else:
-            logger.warning("Gemini returned no images — will not attempt fallback")
-            return None
+            if images and len(images) > 0:
+                img = images[0]
+                image_bytes = base64.b64decode(img["data"])
+                image_base64 = img["data"]
+                mime = img.get("mime_type", "image/png")
+                image_data_url = f"data:{mime};base64,{image_base64}"
+                logger.info(f"Gemini image generated OK ({len(image_bytes):,} bytes)")
+            else:
+                logger.warning("Gemini returned no images — trying OpenAI fallback")
+        except Exception as gemini_err:
+            logger.error(f"Gemini image generation failed: {str(gemini_err)[:200]}")
 
-    except Exception as gemini_err:
-        logger.error(f"Gemini image generation failed: {str(gemini_err)[:200]}")
-
-        # ── Fallback: OpenAI gpt-image-1 (only if user supplied their own key) ──
-        if OPENAI_API_KEY:
-            try:
-                from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-                image_gen = OpenAIImageGeneration(api_key=OPENAI_API_KEY)
-                raw_images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
-                if raw_images:
-                    b64 = base64.b64encode(raw_images[0]).decode("utf-8")
-                    image_data_url = f"data:image/png;base64,{b64}"
-                    logger.info("OpenAI gpt-image-1 fallback succeeded")
-            except Exception as oai_err:
-                logger.error(f"OpenAI fallback also failed: {str(oai_err)[:200]}")
-                return None
-        else:
+    # ── Fallback: gpt-image-1 with user's own OpenAI key ───────────────────────
+    if not image_data_url and OPENAI_API_KEY:
+        try:
+            from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+            logger.info("Trying gpt-image-1 fallback with OPENAI_API_KEY...")
+            image_gen = OpenAIImageGeneration(api_key=OPENAI_API_KEY)
+            raw_images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+            if raw_images:
+                b64 = base64.b64encode(raw_images[0]).decode("utf-8")
+                image_data_url = f"data:image/png;base64,{b64}"
+                logger.info("gpt-image-1 fallback succeeded ✅")
+        except Exception as oai_err:
+            logger.error(f"gpt-image-1 fallback also failed: {str(oai_err)[:200]}")
             return None
 
     if not image_data_url:
