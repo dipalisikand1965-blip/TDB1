@@ -1998,11 +1998,9 @@ async def update_ticket(ticket_id: str, update: TicketUpdate, username: str = De
     if "status" in update_doc:
         if update_doc["status"] == "resolved":
             update_doc["resolved_at"] = now
+            # Auto-generate a resolution note if none provided — admin drop-down changes should not require a note
             if not update_doc.get("resolution_note") and not ticket.get("resolution_note"):
-                raise HTTPException(
-                    status_code=400, 
-                    detail="Resolution note is required when marking as resolved"
-                )
+                update_doc["resolution_note"] = "Marked as resolved by admin"
             was_resolved = True
         
         if update_doc["status"] == "closed":
