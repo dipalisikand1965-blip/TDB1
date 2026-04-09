@@ -508,8 +508,8 @@
 - **Root cause**: `_log_send()` in `services/whatsapp_service.py` (line ~101) referenced
   `TEMPLATES_APPROVED` as a bare name. The correct function is `_templates_approved()`
   (callable). Send logs were not being persisted to DB.
-- **Status**: ⚠️ Identified in iteration_261. Fix needed in
-  `backend/services/whatsapp_service.py` — not yet committed.
+- **Status**: ✅ ALREADY FIXED — confirmed Apr 10. Line 101 correctly uses `_templates_approved()`.
+  No change needed.
 
 ### Bug 9 — Duplicate Allergen Badges on Pet Cards
 - **Root cause**: `getAllergiesFromPet()` returned both `"chicken"` and `"Chicken"` from
@@ -727,13 +727,9 @@ STEP 7: Test on production — key things to verify:
 
 ## KNOWN OPEN ISSUES {#known-open-issues}
 
-### Issue 1 — NameError in WhatsApp Send Log (MEDIUM)
-- **Location**: `backend/services/whatsapp_service.py`, line ~101
-- **Error**: `NameError: name 'TEMPLATES_APPROVED' is not defined`
-- **Impact**: WhatsApp messages SEND correctly but send logs are NOT persisted to MongoDB.
-  Admin cannot see delivery history for these sends.
-- **Fix needed**: Change `TEMPLATES_APPROVED` → `_templates_approved()` (callable)
-- **Status**: Identified in iteration_261. NOT YET FIXED.
+### Issue 1 — ~~NameError in WhatsApp Send Log~~ ✅ CONFIRMED FIXED
+- Pre-fixed in a previous session. `_templates_approved()` is correctly called on line 101.
+  No open issue.
 
 ### Issue 2 — Duplicate Allergen Badges (LOW)
 - **Location**: `frontend/src/utils/petHelpers.js` (or `getAllergiesFromPet`)
