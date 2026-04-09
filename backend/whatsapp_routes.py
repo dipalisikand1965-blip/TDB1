@@ -1296,7 +1296,6 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 ticket_pet_name = open_ticket.get("pet_name")
                 if ticket_pet_name:
                     logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
-
             # ── 1b. If no open ticket, detect pet name FROM the message itself ──
             # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
             if not ticket_pet_name and user_email:
@@ -1457,6 +1456,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
     # ── 2. Detect near-me intent ──────────────────────────────────────────────
     is_near_me = _detect_near_me(message_text)
+
+    # ── 2a. Stale ticket guard — if ticket pet no longer exists, ignore it ────
+    if ticket_pet_name and all_pet_names:
+        if ticket_pet_name.lower() not in [n.lower() for n in all_pet_names]:
+            logger.info(f"[MIRA-AI] Stale ticket pet '{ticket_pet_name}' not in user's pets {all_pet_names} — ignoring lock")
+            ticket_pet_name = None
 
     # ── 2b. Multi-pet disambiguation — ask which dog before doing anything ────
     # Only triggers when: user has 2+ pets AND no pet name in message AND no open ticket
