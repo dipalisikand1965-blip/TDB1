@@ -1401,11 +1401,22 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         endpoint = `${getApiUrl()}/api/stay/admin/bookings/${targetTicket.ticket_id}`;
       }
       
-      await fetch(endpoint, {
+      const response = await fetch(endpoint, {
         method: 'PATCH',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        const msg = err.detail || err.message || `Error ${response.status}`;
+        console.error('Status update failed:', msg);
+        // Show error if toast available
+        if (typeof window !== 'undefined' && window.__tdc_toast) {
+          window.__tdc_toast(`Could not update status: ${msg}`, 'error');
+        }
+        return;
+      }
       
       // Update local state if this is the selected ticket
       if (selectedTicket?.ticket_id === targetTicket.ticket_id) {
@@ -1413,7 +1424,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       }
       await fetchAllTickets();
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Status update error:', err);
     }
   };
 

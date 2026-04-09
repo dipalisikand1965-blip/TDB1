@@ -1,6 +1,26 @@
 # CHANGELOG
 
-## 2026-04-09 (Sessions 65-66 — WhatsApp Intelligence + Health Conditions + Soul Archetype Inference)
+## 2026-04-10 (Session 67 — Bug Fixes: Status Dropdown + WA Log Check)
+
+### Bugs Fixed
+1. **Service Desk Status Dropdown Not Saving** — `ticket_routes.py` + `DoggyServiceDesk.jsx`
+   - Root cause: Backend required `resolution_note` for "Resolved" status (raised HTTP 400).
+     Frontend sent `{"status": "resolved"}` without a note → 400 silently caught → no visual change.
+   - Fix 1 (Backend `ticket_routes.py` line ~2001): Instead of raising 400, auto-generate
+     `resolution_note = "Marked as resolved by admin"` when none provided.
+   - Fix 2 (Frontend `DoggyServiceDesk.jsx` `handleStatusChange` ~line 1404): Added `response.ok`
+     check + error logging. Silent fails are now caught properly.
+   - Tested: `PATCH /api/tickets/TDB-2026-0117 {"status":"resolved"}` → 200 OK ✅
+   - Status: ALL status values (Open, In Progress, Awaiting Response, Resolved, Closed) now save.
+
+2. **Bug 8 Check** — `backend/services/whatsapp_service.py`
+   - Confirmed: `_templates_approved()` already correctly used on line 101. Bug was pre-fixed.
+   - No change needed.
+
+### Migration Files Re-exported
+- `service_desk_tickets.json.gz` (Apr 9, 17:01) — 124 tickets (re-exported after test run)
+
+
 
 ### Features Built
 1. **Health Condition Filtering** — `useMiraFilter.js` + `condition_map.py`
