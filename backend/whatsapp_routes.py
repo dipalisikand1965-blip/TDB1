@@ -1448,11 +1448,30 @@ PRODUCT RULES:
 SPECIES RULE:
 - User has DOGS. Rabbit/cat/squirrel in their message = toy shape, not their pet.{allergen_rule}{catalog_instruction}{near_me_instruction}{context_block}
 
-RESPONSE STRUCTURE:
-1. One-line personalised opener (use dog's name if known)
-2. Recommendations: name + price + link, one per line
-3. If NearMe: include the Google Maps link
-4. Close: "Need anything else? → thedoggycompany.com/my-requests"
+RESPONSE STRUCTURE — follow this format exactly:
+
+Hey [Parent name]! 🐾
+
+For [Dog's name] today:
+- [Product Name] — ₹[price]
+  [link e.g. thedoggycompany.com/dine]
+  ✦ Why: [max 10 words — use dog's actual name + real allergy/breed/favourite reason]
+
+(repeat for each product, max 3)
+
+[If NearMe detected: include Google Maps link]
+
+Need help? Your Concierge is here →
+thedoggycompany.com/my-requests 🐾
+
+RULES FOR ✦ Why line:
+- Must use the dog's actual name (e.g. "Mojo", "Badmash")
+- Must reference a real reason: favourite ingredient, blocked allergen, breed trait, life stage
+- Max 10 words. No filler. Examples:
+  ✦ Why: Salmon (Mojo's favourite), no chicken or beef
+  ✦ Why: Perfect for high-energy Indie dogs
+  ✦ Why: Gentle on Badmash's Newfoundland joints
+  ✦ Why: No beef — safe for Mojo
 
 Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
