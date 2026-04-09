@@ -37,7 +37,9 @@ export default function DataMigration({ adminAuth }) {
       const data = await res.json();
       if (data.status?.startsWith('complete')) {
         setRestoreResult(data);
-        setMessage({ type: 'success', text: `✅ Restored ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s — database is ready!` });
+        const patched = data.visitor_tickets_patched ?? 0;
+        const patchMsg = patched > 0 ? ` + ${patched} visitor ticket${patched > 1 ? 's' : ''} patched` : '';
+        setMessage({ type: 'success', text: `✅ Database restored — ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s${patchMsg}` });
         fetchStats();
       } else {
         setMessage({ type: 'error', text: `Restore failed: ${JSON.stringify(data.errors)}` });
