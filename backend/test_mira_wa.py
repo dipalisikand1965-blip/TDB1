@@ -135,7 +135,7 @@ async def main():
     pets, phone_map = await check_db_data()
 
     # Resolve phones
-    mojo_phone  = phone_map.get("mojo",    "9739908844")
+    mojo_phone    = phone_map.get("mojo",    "9739908844")
     badmash_phone = phone_map.get("badmash", "9739908844")
 
     print(f"Using Mojo phone: {mojo_phone}")
@@ -149,7 +149,7 @@ async def main():
         1,
         message="Baby rabbit toy",
         user_name="Test User",
-        user_phone="9999999999",  # Anonymous — no soul profile
+        user_phone="9999999999",
         expect_blocked=[],
         expect_nearme=False
     )
@@ -176,6 +176,63 @@ async def main():
         expect_nearme=True
     )
     results.append(("Groomer for Badmash (NearMe)", ok))
+
+    # ── TEST 4: Pet confusion — follow-up "Yes please" ───────────────────────
+    # Simulate: Badmash conversation is ongoing (open ticket exists).
+    # Second message arrives. Mira must say Badmash — NOT Sultan or another pet.
+    print("=" * 60)
+    print("TEST 4: Pet confusion fix — follow-up message")
+    print("  Simulating open ticket for Badmash, then user says 'Yes please. Tomorrow 3pm'")
+    print("=" * 60)
+
+    from dotenv import load_dotenv
+    load_dotenv("/app/backend/.env")
+    from motor.motor_asyncio import AsyncIOMotorClient
+    import os, uuid
+
+    client = AsyncIOMotorClient(os.environ.get("MONGO_URL"))
+    db = client[os.environ.get("DB_NAME")]
+
+    # Insert a fake open ticket for Badmash (simulates ongoing conversation)
+    fake_ticket_id = f"TEST-{uuid.uuid4().hex[:6].upper()}"
+    phone_digits = ''.join(filter(str.isdigit, str(badmash_phone)))
+    phone_10 = phone_digits[-10:]
+    await db.service_desk_tickets.insert_one({
+        "ticket_id": fake_ticket_id,
+        "status": "open",
+        "pet_name": "Badmash",
+        "user_phone": phone_10,
+        "member": {"phone": phone_10},
+        "updated_at": __import__('datetime').datetime.utcnow().isoformat(),
+        "created_at": __import__('datetime').datetime.utcnow().isoformat(),
+        "_test_marker": True  # so we can clean it up
+    })
+    print(f"  Inserted fake open ticket {fake_ticket_id} for Badmash (phone {phone_10})")
+
+    ok, response = await run_test(
+        4,
+        message="Yes please. Tomorrow 3pm",
+        user_name="Dipali",
+        user_phone=badmash_phone,
+        expect_blocked=[],
+        expect_nearme=False
+    )
+
+    # Verify Badmash is mentioned, Sultan is NOT
+    if "Badmash" in response and "Sultan" not in response:
+        print("  ✅ PASS: Response mentions Badmash, not Sultan")
+    elif "Sultan" in response:
+        print("  ❌ FAIL: Response mentions Sultan — pet confusion bug still present!")
+        ok = False
+    else:
+        print("  ⚠️  WARN: Neither Badmash nor Sultan in response — acceptable for follow-up")
+
+    # Cleanup test ticket
+    await db.service_desk_tickets.delete_one({"ticket_id": fake_ticket_id})
+    client.close()
+    print(f"  Cleaned up test ticket {fake_ticket_id}")
+
+    results.append(("Pet confusion fix (follow-up)", ok))
 
     # ── Summary ───────────────────────────────────────────────────────────────
     print("\n" + "=" * 60)
