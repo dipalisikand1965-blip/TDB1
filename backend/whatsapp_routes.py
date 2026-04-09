@@ -19,6 +19,8 @@ from datetime import datetime, timezone
 import uuid
 import json
 
+from condition_map import get_conditions_for_pet, build_condition_rule
+
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/whatsapp", tags=["whatsapp"])
 
@@ -1254,6 +1256,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     context_parts  = []
     all_pet_names  = []
     all_allergies  = []
+    all_conditions = []   # ← health conditions across all pets
     all_favorites  = []
     pet_city       = None
     user_email     = None
@@ -1286,20 +1289,37 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
             # ── 1b. If no open ticket, detect pet name FROM the message itself ──
             # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
-            if not ticket_pet_name:
-                all_user_pets = await db.pets.find(
-                    {},  # temp — will be filtered by owner below
-                    {"_id": 0, "name": 1, "owner_email": 1}
-                ).to_list(50)
+            if not ticket_pet_name and user_email:
+                # Only check THIS user's pets (not all pets in DB)
+                user_pet_names = await db.pets.find(
+                    {"owner_email": user_email},
+                    {"_id": 0, "name": 1}
+                ).to_list(10)
                 msg_lower = message_text.lower()
-                for candidate in all_user_pets:
+                for candidate in user_pet_names:
                     cname = candidate.get("name", "")
                     if cname and cname.lower() in msg_lower:
                         ticket_pet_name = cname
                         logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
+                        break  # first match wins
 
-            user = await db.users.find_one({
-                "$or": [
+            # ── 1b. If no open ticket, detect pet name FROM the message itself ──
+            # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
+            if not ticket_pet_name and user_email:
+                # Only check THIS user's pets (not all pets in DB)
+                user_pet_names = await db.pets.find(
+                    {"owner_email": user_email},
+                    {"_id": 0, "name": 1}
+                ).to_list(10)
+                msg_lower = message_text.lower()
+                for candidate in user_pet_names:
+                    cname = candidate.get("name", "")
+                    if cname and cname.lower() in msg_lower:
+                        ticket_pet_name = cname
+                        logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
+                        break  # first match wins
+
+            user = await db.users.find_one({                "$or": [
                     {"phone": {"$regex": phone_clean}},
                     {"whatsapp": {"$regex": phone_clean}},
                     {"phone": user_phone}, {"whatsapp": user_phone}
@@ -1314,6 +1334,20 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 membership = user.get("membership", {})
                 if membership.get("tier"):
                     context_parts.append(f"Member tier: {membership['tier']}")
+
+                # ── 1b. Detect pet name from message (scoped to THIS user's pets) ──
+                if not ticket_pet_name:
+                    user_pet_names = await db.pets.find(
+                        {"owner_email": user_email},
+                        {"_id": 0, "name": 1}
+                    ).to_list(10)
+                    msg_lower = message_text.lower()
+                    for candidate in user_pet_names:
+                        cname = candidate.get("name", "")
+                        if cname and cname.lower() in msg_lower:
+                            ticket_pet_name = cname
+                            logger.info(f"[MIRA-AI] Pet name '{cname}' found in message → using as active pet")
+                            break  # first match wins
 
                 # Full soul profile for each pet
                 pets = await db.pets.find(
@@ -1355,6 +1389,11 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         pet_allergies = list({a.lower() for a in raw_allergies if str(a).lower() not in ("none", "")})
                         if pet_allergies:
                             all_allergies += pet_allergies
+
+                        # Health conditions
+                        pet_conditions = get_conditions_for_pet(p)
+                        if pet_conditions:
+                            all_conditions += pet_conditions
 
                         # Favorites
                         favs = p.get("favorite_foods") or soul.get("treat_preference", "")
@@ -1477,6 +1516,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     if all_allergies:
         allergen_rule = f"\n\n🚨 ALLERGEN ALERT: NEVER recommend products containing {', '.join(set(all_allergies))}. This is non-negotiable."
 
+    condition_rule = build_condition_rule(list(set(all_conditions)))
+
     catalog_instruction = ""
     if catalog_block:
         catalog_instruction = f"\n\n{catalog_block}\n\nIMPORTANT: When recommending products, use ONLY the real names and prices above. Do NOT invent product names."
@@ -1516,7 +1557,7 @@ PRODUCT RULES:
 SPECIES RULE:
 - User has DOGS. Rabbit/cat/squirrel/fish in their message = a toy shape or product type, NOT their pet.
 - If they say "baby rabbit toy" → they want a rabbit-SHAPED dog toy. Recommend dog toys.
-- NEVER suggest going elsewhere for rabbits. Just find the dog toy equivalent.{allergen_rule}{catalog_instruction}{near_me_instruction}{context_block}
+- NEVER suggest going elsewhere for rabbits. Just find the dog toy equivalent.{allergen_rule}{condition_rule}{catalog_instruction}{near_me_instruction}{context_block}
 
 RESPONSE STRUCTURE — follow this format exactly:
 
