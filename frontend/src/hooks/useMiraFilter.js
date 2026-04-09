@@ -120,7 +120,7 @@ function extractConditions(pet) {
 }
 
 /** Check if a product should be blocked for a health condition */
-function productViolatesCondition(product, conditions) {
+export function productViolatesCondition(product, conditions) {
   if (!conditions.length) return false;
   const searchText = [
     product.name, product.description, product.tags?.join(' '),
