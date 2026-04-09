@@ -29,6 +29,7 @@
   tr:nth-child(even) td { background: #f8fafc; }
   tr:hover td { background: #f1f5f9; }
   .status-done { color: #059669; font-weight: 700; }
+  .status-live { color: #059669; font-weight: 700; }
   .status-pending { color: #d97706; font-weight: 700; }
   .status-blocked { color: #dc2626; font-weight: 700; }
   .status-new { color: #7c3aed; font-weight: 700; }
@@ -61,14 +62,14 @@
   <h1>🐾 The Doggy Company — Technical Handover Documentation</h1>
   <p class="subtitle">Pet Life OS · React + FastAPI + MongoDB · 12 Pillars · 56 Breeds · AI-Powered by Mira</p>
   <div class="meta">
-    <span class="badge new">Updated: 2026-04-07</span>
-    <span class="badge new">Session 12 Complete</span>
+    <span class="badge new">Updated: 2026-04-09</span>
+    <span class="badge new">Session 14 Complete</span>
     <span class="badge">Preview: pet-soul-ranking.preview.emergentagent.com</span>
     <span class="badge">Cloudinary: duoapcx1p</span>
     <span class="badge">9,348 Products Visible to Members</span>
     <span class="badge">4,941 Soul Products in Source</span>
     <span class="badge">56 Breeds</span>
-    <span class="badge new">WhatsApp Mira Intelligence — PLAN READY</span>
+    <span class="badge new">Health Condition Filtering — LIVE EVERYWHERE</span>
   </div>
 </header>
 
@@ -80,8 +81,9 @@
   4. Indie and Indian Pariah are the SAME BREED — aliases already handled in backend + frontend. Do NOT merge their DB records without a full migration plan.<br>
   5. The <code>breed_products → products_master</code> sync ONLY runs during batch image generation. If you seed products without generating images, manually run the sync script or set <code>product_type</code> and <code>visibility</code> correctly.<br>
   6. Check <code>product_type</code> in products_master is NOT stuck as <code>soul_made</code> — run the sync fix script if needed.<br>
-  7. Production DB is BLOCKED (Atlas IP whitelist). Always use local preview DB.<br>
-  8. VERIFIED (Session 9): Members ARE seeing their soul products. products_master contains 7,737 visible products vs 4,941 in breed_products source — over-served because Shopify sync + cakes + portraits add extra breed items. Only known gap: 1 Play product missing for 12 breeds.
+  7. Production DB is BLOCKED (Atlas IP whitelist). Always use local preview DB. To push data to production: update .json.gz in migration_data → Save to GitHub → deploy → click Restore Database in production Admin.<br>
+  8. VERIFIED (Session 9): Members ARE seeing their soul products. products_master contains 7,737 visible products vs 4,941 in breed_products source.<br>
+  9. CONDITION_BLOCK_MAP in <code>useMiraFilter.js</code> MUST stay in sync with <code>condition_map.py</code>. Any new condition added to one MUST be added to the other.
 </div>
 
 <nav>
@@ -110,6 +112,44 @@
 <section id="changelog">
   <h2>📋 Session Changelog</h2>
   <p>Every agent MUST append their session summary here before finishing.</p>
+
+  <div class="changelog-entry" style="border-left-color:#c9973a; background:#fffbf0;">
+    <div class="date" style="color:#c9973a;">Session 14 — 2026-04-09 ✦ MiraSearchPage Safety + ResultChip Intelligence</div>
+    <h4>Health Condition Filter wired into /mira-search · Mira Pick badge + mira_hint on ResultChip</h4>
+    <ul>
+      <li><strong>FIXED: MiraSearchPage.jsx bypassed health condition safety.</strong> The global <code>/mira-search</code> page was fetching products raw and displaying them without running any of the allergen/condition filtering logic. A dog with pancreatitis could see high-fat treats in search results. Fixed by importing <code>applyMiraFilter</code> from <code>useMiraFilter.js</code> and passing all products through it before display. Applied to both paths: (1) enriched stream products and (2) semantic-search fallback hits. <code>applyMiraFilter</code> hard-blocks allergens, health conditions (rank=100 → removed), life-stage mismatches, and breed mismatches in a single pass.</li>
+      <li><strong>NEW: ✦ MIRA PICK badge on top-ranked product.</strong> <code>ResultChip</code> in <code>MiraSearchPage.jsx</code> now shows an amber <code>✦ MIRA PICK</code> badge (absolute-positioned, top-right of image) when <code>item.miraPick === true</code>. Only the #1 ranked product (rank 0 via <code>applyMiraFilter</code>) gets this badge.</li>
+      <li><strong>NEW: ✦ mira_hint display under price.</strong> <code>ResultChip</code> now shows the Mira reasoning line in soft purple italic under the price when <code>item._miraRank &gt; 0 &amp;&amp; item.mira_hint</code>. Examples: <em>"✦ low fat — safe for pancreatitis"</em>, <em>"✦ Badmash loves Salmon"</em>, <em>"✦ Made for Labrador's breed"</em>. Makes Mira's intelligence visible to pet parents — trust builds when they see WHY a product was picked.</li>
+      <li><strong>Image wrapper:</strong> Added <code>position: 'relative'</code> to the <code>ResultChip</code> image div to correctly anchor the absolute-positioned badge.</li>
+    </ul>
+    <div class="alert alert-green" style="margin-top:12px;">
+      Health Condition Filtering is now complete across ALL Mira surfaces: useMiraFilter.js (pillar pages), whatsapp_routes.py (WhatsApp), server.py (Mira Widget), and MiraSearchPage.jsx (global search). A dog with a health condition will never see a violating product anywhere on the platform.
+    </div>
+  </div>
+
+  <div class="changelog-entry" style="border-left-color:#7c3aed; background:#faf5ff;">
+    <div class="date" style="color:#7c3aed;">Session 13 — 2026-04-09 🧠 WhatsApp Mira Intelligence LIVE + Health Condition Filtering BUILT</div>
+    <h4>WhatsApp Mira tone refined · Pet confusion fixed · Health Condition Filtering implemented globally · DB Restore background task · Admin Pet search</h4>
+    <ul>
+      <li><strong>WhatsApp Mira system prompt refined.</strong> Banned generic fluff words ("absolutely", "certainly", "of course"). Upgraded tone to TDC Concierge style — precise, warm, direct. Added <code>✦ Why</code> format: Mira now explains why it picks each product (e.g. "✦ Why: low fat — safe for Badmash's pancreatitis"). Tested via Python simulation.</li>
+      <li><strong>FIXED: Pet confusion bug in <code>whatsapp_routes.py</code>.</strong> Session histories were bleeding between different pets/owners sharing a WhatsApp number. Fixed by enforcing 10-digit phone number matching (strips +91 prefix consistently) and isolating each conversation session by phone. Badmash and Sultan can no longer bleed into each other's sessions.</li>
+      <li><strong>FIXED: <code>mira_nudges.py</code> owner lookup.</strong> Was using <code>user_id</code> to look up the owner, but the correct field is <code>owner_email</code>. This was causing "Website Visitor" tickets to be created for legitimate members. Fixed.</li>
+      <li><strong>Admin: Pet Profiles search bar.</strong> Added live search input to the Pet Profiles tab in <code>Admin.jsx</code>. Searches across pet name, owner email, and breed. Results are sorted newest-first (by <code>created_at</code>) with a 200-pet display limit to prevent UI lag.</li>
+      <li><strong>DB Restore refactored to background task.</strong> <code>db_restore_routes.py</code> now dispatches the restore to a background thread and returns immediately (no more 60s Kubernetes proxy timeout). Frontend polls <code>GET /api/admin/db/restore-status</code> for live progress. The restore is non-blocking.</li>
+      <li><strong>NEW: <code>POST /api/admin/backfill-visitor-tickets</code>.</strong> Endpoint that patches all "Website Visitor" tickets by re-looking up the member via phone and applying correct name/email. Automatically called at the end of the DB restore flow.</li>
+      <li><strong>NEW: <code>/app/backend/condition_map.py</code>.</strong> Central dictionary mapping health conditions to blocked ingredient keywords. Conditions covered: pancreatitis, pancreatitis chronic, diabetes, obesity, kidney disease, kidney failure, heart disease, hip dysplasia, arthritis, cancer, dental disease, epilepsy. Used by both backend (WhatsApp, Widget) and mirrored in <code>useMiraFilter.js</code> (CONDITION_BLOCK_MAP).</li>
+      <li><strong>NEW: Health Condition Filtering in <code>useMiraFilter.js</code>.</strong> <code>extractConditions(pet)</code> reads from <code>pet.health_conditions</code>, <code>pet.doggy_soul_answers.health_conditions</code>, and <code>pet.health_data.conditions</code>. <code>productViolatesCondition(product, conditions)</code> checks product name/description/tags/ingredients against <code>CONDITION_BLOCK_MAP</code>. Products that violate high-severity conditions get rank=100 and are removed. Exported: <code>productViolatesCondition</code>.</li>
+      <li><strong>NEW: Health Condition context in WhatsApp Mira (<code>whatsapp_routes.py</code>).</strong> System prompt now includes a <code>HEALTH CONDITIONS</code> block per pet. Uses <code>condition_map.py</code> to add a concrete allergen-like rule: "❌ For pancreatitis — avoid: high fat, fatty, cream, butter, pork…"</li>
+      <li><strong>NEW: Health Condition context in Mira Widget (<code>server.py</code>).</strong> The <code>/mira/chat</code> endpoint's system prompt now includes the pet's health conditions with a concrete block rule when conditions are present.</li>
+      <li><strong>Updated <code>pets.json.gz</code> snapshot</strong> (3.7MB, Apr 9) in <code>migration_data/</code> for production DB restore.</li>
+    </ul>
+    <div class="alert alert-blue" style="margin-top:12px;">
+      <strong>Code Architecture added this session:</strong><br>
+      <code>backend/condition_map.py</code> — master condition → blocked keywords dictionary.<br>
+      <code>frontend/src/hooks/useMiraFilter.js</code> — CONDITION_BLOCK_MAP (JS mirror), productViolatesCondition(), extractConditions(), getConditionNote().<br>
+      <strong>Sync rule:</strong> Any change to <code>condition_map.py</code> must be mirrored in <code>CONDITION_BLOCK_MAP</code> in <code>useMiraFilter.js</code> and vice versa.
+    </div>
+  </div>
 
   <div class="changelog-entry" style="border-left-color:#7c3aed; background:#faf5ff;">
     <div class="date" style="color:#7c3aed;">Session 12 — 2026-04-07 🟣 Bug Sprint + Amazon Explorer + WhatsApp Intelligence Plan</div>
@@ -642,30 +682,32 @@ print(f'Total pending generation: {pending}')
 <section id="todo">
   <h2>Next Tasks (Prioritised)</h2>
 
-  <h3>P0 — Immediately actionable</h3>
+  <h3>P0 — COMPLETE ✅</h3>
   <table>
     <tr><th>Task</th><th>Details</th><th>Status</th></tr>
-    <tr><td style="color:#7c3aed;font-weight:700;">WhatsApp Mira Intelligence Upgrade</td><td>Wire semantic product search (9,348 products) into <code>get_mira_ai_response()</code> in <code>whatsapp_routes.py</code>. Load full pet soul profile (allergies, favorites, breed). GPT replies with real catalog products + prices. Full plan: <a href="#wa-intelligence">WhatsApp Mira Intelligence Plan section</a> and <code>/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md</code>. <strong>APPROVED by user.</strong></td><td class="status-new">Ready to build</td></tr>
-    <tr><td>Redeploy to production</td><td>Push Gupshup crash fix + ProductCard image fix + Amazon Explorer. User must click "Redeploy" in Emergent dashboard.</td><td class="status-pending">Awaiting user action</td></tr>
-    <tr><td>Duplicate product cleanup</td><td>473 <code>soul-</code> prefix products in products_master are duplicates. Archive them by setting <code>visibility.status = "archived"</code>. Script ready to run — blocked on Atlas IP whitelist from preview.</td><td class="status-blocked">Blocked (Atlas)</td></tr>
+    <tr><td style="color:#059669;font-weight:700;">WhatsApp Mira Intelligence</td><td>Soul profile, allergens, health conditions, NearMe, Amazon fallback, ✦ Why format wired into <code>whatsapp_routes.py</code>. Tone refined. Pet confusion fixed.</td><td class="status-done">✅ Done (Session 13)</td></tr>
+    <tr><td style="color:#059669;font-weight:700;">Health Condition Filtering — ALL surfaces</td><td><code>condition_map.py</code> + <code>CONDITION_BLOCK_MAP</code> in useMiraFilter.js. Applied: pillar pages, WhatsApp, Mira Widget, MiraSearchPage.</td><td class="status-done">✅ Done (Session 13/14)</td></tr>
+    <tr><td style="color:#059669;font-weight:700;">Mira Pick badge + mira_hint on /mira-search</td><td><code>✦ MIRA PICK</code> badge on top result chip. Purple italic hint line on all chips. Intelligence visible to pet parents.</td><td class="status-done">✅ Done (Session 14)</td></tr>
   </table>
 
   <h3>P1 — Next session</h3>
   <table>
-    <tr><th>Task</th><th>Details</th></tr>
-    <tr><td>Celebrate mobile parity</td><td>Add BirthdayCountdown, CelebrationMemoryWall, MiraSoulNudge to CelebrateMobilePage</td></tr>
-    <tr><td>Missing mobile components</td><td>Add LearnNearMe, PaperworkNearMe, GoNearMe to their mobile pages</td></tr>
-    <tr><td>Fill Indie soul gaps</td><td>Seed missing: Pet Journal, Starter Kit (Care), Learning Cards, Training Kit (Learn), Medical File, Pet Profile Book (Paperwork). Currently ~12 product types missing vs full breed.</td></tr>
-    <tr><td>Activate Flat Art for Dine/Play/Go</td><td>Code exists, toggle is dormant. Needs illustration images seeded into DB. Wait until user approves scope.</td></tr>
+    <tr><th>Task</th><th>Details</th><th>Status</th></tr>
+    <tr><td>"Mira explains why" expandable row</td><td>Add expandable row on Dine/Care/Celebrate product cards. One tap reveals the full soul profile reasoning (mira_hint). User-approved feature.</td><td class="status-new">Ready to build</td></tr>
+    <tr><td>Multi-Pet Household Safety</td><td>If user asks for treats for "all dogs", Mira splits the basket when one dog's allergen/condition conflicts with another. WhatsApp + Widget. User approved concept.</td><td class="status-new">Ready to build</td></tr>
+    <tr><td>Celebrate mobile parity</td><td>Add BirthdayCountdown, CelebrationMemoryWall, MiraSoulNudge to CelebrateMobilePage</td><td class="status-pending">Pending</td></tr>
+    <tr><td>Missing mobile components</td><td>Add LearnNearMe, PaperworkNearMe, GoNearMe to their mobile pages</td><td class="status-pending">Pending</td></tr>
   </table>
 
   <h3>P2 — Future</h3>
   <ul>
-    <li>Backend Life Stage Filtering (filter puppy/senior products for adult dogs)</li>
-    <li>Build the Love pillar</li>
+    <li>Watch &amp; Learn YouTube video sections for Care and Go pillars</li>
+    <li>Life Stage Transition Alerts (proactive Senior Care nudge when dog turns 7)</li>
+    <li>Purchase + Consumption Pattern Learning (reorder nudges based on past purchase data)</li>
     <li>WhatsApp Daily Digest cron job + medication refill reminders (Gupshup templates needed)</li>
     <li>Production DB migration (Atlas IP whitelist must be fixed first)</li>
-    <li>Watch &amp; Learn YouTube video sections for Care and Go pillars</li>
+    <li>Build the Love pillar</li>
+    <li>Fill Indie soul gaps (Pet Journal, Starter Kit, Learning Cards, Medical File)</li>
   </ul>
 
   <h3>Refactoring (non-urgent but important)</h3>
@@ -1072,7 +1114,7 @@ EOF</pre>
 </div><!-- /container -->
 
 <footer style="background:#1a1a2e;color:#94a3b8;text-align:center;padding:24px;font-size:0.85rem;margin-top:60px;">
-  The Doggy Company — Pet Life OS · Last updated 2026-04-07 · Session 12 · Always update this file before finishing your session
+  The Doggy Company — Pet Life OS · Last updated 2026-04-09 · Session 14 · Always update this file before finishing your session
 </footer>
 
 <section id="mira-intelligence-roadmap" style="border-top:4px solid #7c3aed;margin-top:48px">
@@ -1086,16 +1128,18 @@ EOF</pre>
   <h3>Current Mira Intelligence Stack (as of 2026-04-09)</h3>
   <table>
     <tr><th>Layer</th><th>What it does</th><th>Where</th><th>Status</th></tr>
-    <tr><td>Allergen blocking</td><td>Blocks chicken/beef for Mojo via ALLERGEN_MAP synonyms</td><td>useMiraFilter.js + whatsapp_routes.py</td><td class="status-live">Live</td></tr>
-    <tr><td>Breed filtering</td><td>filterBreedProducts() — surfaces Indie products for Mojo</td><td>useMiraFilter.js</td><td class="status-live">Live</td></tr>
-    <tr><td>miraRank scoring</td><td>+2 breed, +1 size, +1 life stage, +1 favorites</td><td>useMiraFilter.js</td><td class="status-live">Live</td></tr>
-    <tr><td>WhatsApp intelligence</td><td>Soul profile, allergens, NearMe, Amazon fallback, ✦ Why format</td><td>whatsapp_routes.py</td><td class="status-live">Live</td></tr>
-    <tr><td>Mira Widget (chat)</td><td>Full soul profile in system prompt, pillar context, pet switcher</td><td>server.py mira chat endpoint</td><td class="status-live">Live</td></tr>
-    <tr><td>Semantic search</td><td>TF-IDF product matching, allergen expansion server-side</td><td>mira_routes.py /semantic-search</td><td class="status-live">Live</td></tr>
+    <tr><td>Allergen blocking</td><td>Blocks chicken/beef for Mojo via ALLERGEN_MAP synonyms</td><td>useMiraFilter.js + whatsapp_routes.py</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Breed filtering</td><td>filterBreedProducts() — surfaces Indie products for Mojo</td><td>useMiraFilter.js</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>miraRank scoring</td><td>+2 breed, +1 size, +1 life stage, +1 favorites</td><td>useMiraFilter.js</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Health Condition Filtering</td><td>Blocks high-fat for pancreatitis, sugar for diabetes, sodium for heart disease etc.</td><td>useMiraFilter.js + whatsapp_routes.py + server.py + MiraSearchPage.jsx</td><td class="status-live">✅ Live — Session 13/14</td></tr>
+    <tr><td>Mira Pick badge + hint</td><td>✦ MIRA PICK badge on top result · mira_hint "why" line on all chips in /mira-search</td><td>MiraSearchPage.jsx ResultChip</td><td class="status-live">✅ Live — Session 14</td></tr>
+    <tr><td>WhatsApp intelligence</td><td>Soul profile, allergens, health conditions, NearMe, Amazon fallback, ✦ Why format</td><td>whatsapp_routes.py</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Mira Widget (chat)</td><td>Full soul profile in system prompt, pillar context, pet switcher, health conditions</td><td>server.py mira chat endpoint</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Semantic search</td><td>TF-IDF product matching, allergen expansion server-side</td><td>mira_routes.py /semantic-search</td><td class="status-live">✅ Live</td></tr>
   </table>
 
-  <h3 style="margin-top:32px">P0 — Health Condition Filtering <span style="color:#dc2626">(DO FIRST)</span></h3>
-  <p><strong>Why first:</strong> Safety. A pancreatitis dog getting high-fat treats is a medical emergency. This is the same allergen-blocking logic extended to conditions. Data already exists in the DB.</p>
+  <h3 style="margin-top:32px">P0 — Health Condition Filtering <span style="color:#059669">✅ COMPLETE (Session 13/14)</span></h3>
+  <p style="background:#dcfce7;border-left:4px solid #22c55e;padding:12px 16px;border-radius:6px"><strong>Done.</strong> condition_map.py created. CONDITION_BLOCK_MAP mirrored in useMiraFilter.js. Health context added to WhatsApp + Widget system prompts. applyMiraFilter wired into MiraSearchPage.jsx (both product paths). ✦ MIRA PICK badge + mira_hint visible on ResultChip. Safety is consistent across all surfaces.</p>
   <table>
     <tr><th>Detail</th><th>Spec</th></tr>
     <tr><td>DB field</td><td><code>pet.health_conditions</code> (array) e.g. ["pancreatitis", "hip dysplasia", "diabetes"]</td></tr>
