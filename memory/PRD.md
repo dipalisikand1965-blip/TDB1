@@ -738,11 +738,19 @@ All 3 desktop pages verified with live screenshot: correct chips, correct pillar
 
 | Priority | Enhancement | Key data source | Status |
 |---|---|---|---|
-| P0 | **Health Condition Filtering** | `pet.health_conditions` array | **Next to build** |
+| P0 | **Health Condition Filtering** | `pet.health_conditions` array | ✅ DONE |
+| P0 | **Soul Archetype Inference** | `pet.doggy_soul_answers` | ✅ DONE (2026-04-10) |
 | P1 | Multi-Pet Household Safety | all pets' allergen profiles | Planned |
 | P1 | Seasonal + City Intelligence | `user.city` + date + breed | Planned |
 | P2 | Life Stage Transition Alerts | `pet.date_of_birth` + breed thresholds | Planned |
 | P2 | Purchase Pattern Learning | `orders` collection | Planned |
+
+**Archetype system (as of 2026-04-10):**
+- Script: `/app/backend/scripts/infer_archetype.py`
+- Keys: snake_case (wild_explorer, velcro_baby, foodie, etc.)
+- 33/33 pets inferred. pets.json.gz re-exported.
+- ARCHETYPE_TONES updated in: whatsapp_routes.py, mira_routes.py (x2)
+- Re-run script anytime new pets join: `cd /app/backend && python3 scripts/infer_archetype.py`
 
 **Never add:** star ratings, generic AI chat, more pillars before deepening existing ones.
 

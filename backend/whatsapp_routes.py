@@ -1416,7 +1416,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             ticket_pet_name and name.lower() == ticket_pet_name.lower()
                         )
                         if is_active_pet and not active_pet_archetype:
-                            arch_raw = p.get("archetype") or soul.get("primary_archetype") or ""
+                            # primary_archetype at top level (written by infer_archetype.py), fall back to archetype/soul_answers
+                            arch_raw = p.get("primary_archetype") or p.get("archetype") or soul.get("primary_archetype") or ""
                             if isinstance(arch_raw, dict):
                                 active_pet_archetype = arch_raw.get("primary_archetype", "")
                             else:
@@ -1647,6 +1648,14 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
         'social_butterfly':     ("🦋 SOCIAL BUTTERFLY", "Be cheerful, celebratory and high-energy. Frame everything as a shared adventure with their social, people-loving dog."),
         'wild_explorer':        ("🌿 WILD EXPLORER",    "Be bold, adventurous and outdoorsy. Talk about trails, discoveries, freedom. Products are gear for the next adventure."),
         'velcro_baby':          ("🫂 VELCRO BABY",      "Be warm, cosy and attachment-led. Emphasise togetherness, comfort, bonding. Avoid anything that sounds like separation."),
+        'drama_queen':          ("🎭 DRAMA QUEEN",      "Be empathetic and extra reassuring. Validate every sensitivity. Speak gently, offer comfort, never overwhelm."),
+        'lone_wolf':            ("🌑 LONE WOLF",        "Be calm, minimal and non-pushy. Give space. Fewer options, not more. Frame independence and self-reliance as a strength."),
+        'foodie':               ("🍖 FOODIE",           "Be flavour-forward and sensory. Every recommendation has taste, texture, smell. Food is the love language here."),
+        'gentle_soul':          ("🌸 GENTLE SOUL",      "Be soft, unhurried and warm. Never overwhelming. Frame products as gentle, trusted choices. Speak like a kind, patient friend."),
+        'guardian':             ("🛡️ GUARDIAN",         "Be loyal, grounded and trust-building. Speak with quiet authority. Frame products as reliable, time-tested, worthy of their devotion."),
+        'playful_spirit':       ("🎉 PLAYFUL SPIRIT",   "Be fun, light and joyful. This dog lives for play. Frame everything as the next great adventure. Keep energy infectious."),
+        'curious_mind':         ("🔍 CURIOUS MIND",     "Be interesting, intelligent and stimulating. Offer variety and enrichment. Frame products as discoveries and mental challenges."),
+        # Legacy keys — kept for backward compatibility
         'snack_led_negotiator': ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through reward and flavour."),
         'snack_negotiator':     ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through reward and flavour."),
         'brave_worrier':        ("💛 BRAVE WORRIER",    "Be reassuring, calm and anxiety-aware. Lead with safety and comfort. Avoid overwhelming choices. Use gentle, slow language."),
