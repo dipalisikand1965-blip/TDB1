@@ -26,6 +26,7 @@ import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import GuidedCelebrationPaths from '../components/celebrate/GuidedCelebrationPaths';
 import Navbar from '../components/Navbar';
 import { usePillarContext } from '../context/PillarContext';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -276,12 +277,22 @@ function ResultChip({ item, type, pet, onBook, onCart, onCardClick }) {
       onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
       {/* Image */}
-      <div style={{ width: '100%', height: 100, background: '#1a1724', overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ width: '100%', height: 100, background: '#1a1724', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
         {img
           ? <img src={img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display = 'none'; }} />
           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>
               {isService ? '🐾' : '🛒'}
             </div>}
+        {item.miraPick && (
+          <div style={{
+            position: 'absolute', top: 6, right: 6,
+            background: '#C9973A',
+            borderRadius: 4, padding: '2px 6px',
+            fontSize: 9, fontWeight: 700, color: '#0D0B12',
+          }}>
+            ✦ MIRA PICK
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -292,6 +303,17 @@ function ResultChip({ item, type, pet, onBook, onCart, onCardClick }) {
         <div style={{ fontSize: 11, color: C.amber, fontWeight: 700, fontFamily: 'DM Sans, sans-serif' }}>
           {isService ? 'Price on Request' : fmt(price)}
         </div>
+        {item._miraRank > 0 && item.mira_hint && (
+          <p style={{
+            fontSize: 10,
+            color: '#A78BFA',
+            margin: '4px 0 0',
+            fontStyle: 'italic',
+            lineHeight: 1.3,
+          }}>
+            ✦ {item.mira_hint}
+          </p>
+        )}
       </div>
 
       {/* CTA — stopPropagation so card click (modal) doesn't also fire */}
@@ -612,7 +634,11 @@ export default function MiraSearchPage() {
       }
 
       // ── Step 1: use enriched products from stream if available ────────────
-      const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
+      // applyMiraFilter hard-blocks allergens, health conditions, life-stage, breed mismatches
+      const prods = applyMiraFilter(
+        enrichedProducts.filter(p => p.product_type !== 'service'),
+        activePet
+      ).slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
       // ── Step 2: fallback to semantic-search (query-aware + breed-boosted + allergen-safe) ──
@@ -630,7 +656,7 @@ export default function MiraSearchPage() {
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
-            const hits = d?.products || [];
+            const hits = applyMiraFilter(d?.products || [], activePet);
             const intent = d?.primary_intent || null;
             if (hits.length > 0) {
               updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q, intent });

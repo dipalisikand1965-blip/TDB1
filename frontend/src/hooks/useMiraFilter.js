@@ -36,6 +36,124 @@ const ALLERGEN_MAP = {
   shellfish: ['shrimp', 'prawn', 'crab', 'lobster', 'shellfish'],
 };
 
+// ── Health Condition Block Map (JS mirror of backend/condition_map.py) ────────
+// SYNC any changes here with condition_map.py
+const CONDITION_BLOCK_MAP = {
+  pancreatitis: {
+    blockKeywords: ['high fat','fatty','rich','cream','butter','pork','duck','beef tallow','lard','ghee','cheese','coconut oil','full cream'],
+    safeKeywords:  ['low fat','lean','fat-free','light','baked','dehydrated'],
+    miraNote: 'low fat — safe for pancreatitis', severity: 'high',
+  },
+  'pancreatitis chronic': {
+    blockKeywords: ['high fat','fatty','rich','cream','butter','pork','duck'],
+    safeKeywords:  ['low fat','lean'],
+    miraNote: 'low fat — safe for chronic pancreatitis', severity: 'high',
+  },
+  diabetes: {
+    blockKeywords: ['sugar','honey','glucose','corn syrup','molasses','maple syrup','sweet','sugary','candy','caramel','fructose','dextrose','jaggery'],
+    safeKeywords:  ['sugar-free','no added sugar','unsweetened'],
+    miraNote: 'no added sugar — safe for diabetes', severity: 'high',
+  },
+  obesity: {
+    blockKeywords: ['high calorie','calorie-dense','indulgent','rich','full fat','cream','butter'],
+    safeKeywords:  ['low calorie','diet','weight management','light','lean'],
+    miraNote: 'low calorie — weight management', severity: 'medium',
+  },
+  'kidney disease': {
+    blockKeywords: ['high protein','protein rich','bone meal','high sodium','salt','sodium'],
+    safeKeywords:  ['low protein','kidney support','renal','low phosphorus','low sodium'],
+    miraNote: 'low protein & phosphorus — kidney-safe', severity: 'high',
+  },
+  'kidney failure': {
+    blockKeywords: ['high protein','high phosphorus','high sodium'],
+    safeKeywords:  ['renal','kidney','low protein'],
+    miraNote: 'renal-safe — low protein & phosphorus', severity: 'high',
+  },
+  'heart disease': {
+    blockKeywords: ['high sodium','salt','sodium','cured','smoked','bacon','sausage'],
+    safeKeywords:  ['low sodium','heart support','omega-3','sodium-free'],
+    miraNote: 'low sodium — heart-safe', severity: 'high',
+  },
+  'hip dysplasia': {
+    blockKeywords: [],
+    safeKeywords:  ['glucosamine','chondroitin','omega-3','joint support'],
+    boostKeywords: ['joint','mobility','anti-inflammatory'],
+    miraNote: 'joint-supportive — safe for hip dysplasia', severity: 'low',
+  },
+  arthritis: {
+    blockKeywords: [],
+    safeKeywords:  ['glucosamine','joint support','omega-3'],
+    boostKeywords: ['joint','mobility','senior'],
+    miraNote: 'joint & mobility support', severity: 'low',
+  },
+  cancer: {
+    blockKeywords: ['sugar','glucose','corn syrup','high carb'],
+    safeKeywords:  ['high protein','low carb','omega-3','antioxidant'],
+    miraNote: 'low sugar, high protein — cancer diet support', severity: 'high',
+  },
+  'dental disease': {
+    blockKeywords: ['sticky','chewy','gummy','soft treat'],
+    safeKeywords:  ['dental','teeth','tartar control','enzymatic'],
+    boostKeywords: ['dental chew','teeth cleaning'],
+    miraNote: 'dental-safe — tartar control', severity: 'low',
+  },
+  epilepsy: {
+    blockKeywords: ['artificial colour','artificial flavor','msg','preservative'],
+    safeKeywords:  ['natural','no artificial','whole ingredient'],
+    miraNote: 'natural ingredients — no artificial additives', severity: 'medium',
+  },
+};
+
+const CLEAN_NONE_COND = /^(no|none|none known|not known|nil|n\/a|na|unknown|nothing|-)$/i;
+
+/** Extract and normalise health conditions from all pet DB fields */
+function extractConditions(pet) {
+  const raw = [];
+  const add = v => {
+    if (Array.isArray(v)) v.forEach(x => raw.push(String(x).trim().toLowerCase()));
+    else if (v) String(v).split(',').forEach(c => raw.push(c.trim().toLowerCase()));
+  };
+  add(pet?.health_conditions);
+  add(pet?.doggy_soul_answers?.health_conditions);
+  add(pet?.health_data?.conditions);
+  return [...new Set(raw)].filter(c => c && !CLEAN_NONE_COND.test(c));
+}
+
+/** Check if a product should be blocked for a health condition */
+export function productViolatesCondition(product, conditions) {
+  if (!conditions.length) return false;
+  const searchText = [
+    product.name, product.description, product.tags?.join(' '),
+    product.ingredients, product.product_type, product.category,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  for (const cond of conditions) {
+    const info = CONDITION_BLOCK_MAP[cond];
+    if (!info || info.severity !== 'high') continue;
+    for (const kw of (info.blockKeywords || [])) {
+      if (searchText.includes(kw.toLowerCase())) return true;
+    }
+  }
+  return false;
+}
+
+/** Get a mira_note for health conditions (for ✦ Why line) */
+function getConditionNote(product, conditions) {
+  if (!conditions.length) return '';
+  const searchText = [
+    product.name, product.description, product.tags?.join(' '),
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  for (const cond of conditions) {
+    const info = CONDITION_BLOCK_MAP[cond];
+    if (!info) continue;
+    const safeMatch = (info.safeKeywords || []).some(kw => searchText.includes(kw.toLowerCase()));
+    const boostMatch = (info.boostKeywords || []).some(kw => searchText.includes(kw.toLowerCase()));
+    if (safeMatch || boostMatch) return info.miraNote || '';
+  }
+  return '';
+}
+
 // ── Nutrition goal conflict map ───────────────────────────────────────────────
 const GOAL_CONFLICTS = {
   'weight loss':   ['high-calorie', 'high-fat', 'energy-dense', 'high calorie'],
@@ -494,14 +612,23 @@ export function applyMiraFilter(products, pet) {
       const dietaryMatches = dietaryFlagMatch(product, petDietary);
       const sensMatches    = sensitivityMatch(product, healthCond);
 
+      // ── Health Condition Filtering (P0 intelligence) ──────────────────────
+      const petConditions  = extractConditions(pet);
+      const condBlocked    = productViolatesCondition(product, petConditions);
+      const conditionNote  = !condBlocked ? getConditionNote(product, petConditions) : '';
+
       // ── Compute rank ──────────────────────────────────────────────────────
       let rank = 10; // neutral/universal default
 
-      if (matchedLove && breedScore === 'match') rank = 0;
+      // Health condition hard block — same severity as allergen block
+      if (condBlocked) rank = 100; // will be filtered out below
+
+      else if (matchedLove && breedScore === 'match') rank = 0;
       else if (matchedLove)               rank = 1;
       else if (breedScore === 'match')    rank = 2;
       else if (isHealthSafe)              rank = 3;
       else if (isAllergySafe)             rank = 4;
+      else if (conditionNote)             rank = 3; // condition-safe boost
       else if (sizeScore === 'match')     rank = 5;
       else if (lifeScore === 'match')     rank = 6;
       else if (dietaryMatches)            rank = 7;
@@ -517,7 +644,9 @@ export function applyMiraFilter(products, pet) {
       // ── Build mira_hint ───────────────────────────────────────────────────
       let mira_hint = product.mira_hint || null;
       if (!mira_hint) {
-        if (matchedLove && breedScore === 'match') {
+        if (conditionNote) {
+          mira_hint = conditionNote; // health condition safe note takes priority
+        } else if (matchedLove && breedScore === 'match') {
           mira_hint = `${petName} loves ${matchedLove.charAt(0).toUpperCase() + matchedLove.slice(1)} — made for their breed`;
         } else if (matchedLove) {
           mira_hint = `${petName} loves ${matchedLove.charAt(0).toUpperCase() + matchedLove.slice(1)}`;
@@ -561,6 +690,8 @@ export function applyMiraFilter(products, pet) {
         _canSuggest:  canSuggest,
       };
     })
+    // Filter out health-condition-blocked products entirely (rank 100)
+    .filter(p => p._miraRank < 100)
     // Step 3 — sort: best matches first, goal-conflicts last
     .sort((a, b) => {
       if (a._dimmed && !b._dimmed) return 1;
