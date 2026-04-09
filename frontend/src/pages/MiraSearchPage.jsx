@@ -26,6 +26,7 @@ import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import GuidedCelebrationPaths from '../components/celebrate/GuidedCelebrationPaths';
 import Navbar from '../components/Navbar';
 import { usePillarContext } from '../context/PillarContext';
+import { applyMiraFilter } from '../hooks/useMiraFilter';
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 import {
@@ -612,7 +613,11 @@ export default function MiraSearchPage() {
       }
 
       // ── Step 1: use enriched products from stream if available ────────────
-      const prods = enrichedProducts.filter(p => p.product_type !== 'service').slice(0, 6);
+      // applyMiraFilter hard-blocks allergens, health conditions, life-stage, breed mismatches
+      const prods = applyMiraFilter(
+        enrichedProducts.filter(p => p.product_type !== 'service'),
+        activePet
+      ).slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
       // ── Step 2: fallback to semantic-search (query-aware + breed-boosted + allergen-safe) ──
@@ -630,7 +635,7 @@ export default function MiraSearchPage() {
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {
-            const hits = d?.products || [];
+            const hits = applyMiraFilter(d?.products || [], activePet);
             const intent = d?.primary_intent || null;
             if (hits.length > 0) {
               updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q, intent });
