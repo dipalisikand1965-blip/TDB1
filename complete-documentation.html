@@ -1075,5 +1075,83 @@ EOF</pre>
   The Doggy Company — Pet Life OS · Last updated 2026-04-07 · Session 12 · Always update this file before finishing your session
 </footer>
 
+<section id="mira-intelligence-roadmap" style="border-top:4px solid #7c3aed;margin-top:48px">
+  <h2>🧠 Mira Intelligence Roadmap — Approved by Dipali (2026-04-09)</h2>
+  <p style="background:#faf5ff;border-left:4px solid #7c3aed;padding:12px 16px;border-radius:6px">
+    <strong>⚠️ AGENT INSTRUCTION:</strong> These intelligence enhancements were designed collaboratively and approved by the product owner.
+    Do NOT implement any of these without explicit instruction in the current session. Do NOT modify the priority order.
+    Implement one at a time. Each must be fully tested before the next begins.
+  </p>
+
+  <h3>Current Mira Intelligence Stack (as of 2026-04-09)</h3>
+  <table>
+    <tr><th>Layer</th><th>What it does</th><th>Where</th><th>Status</th></tr>
+    <tr><td>Allergen blocking</td><td>Blocks chicken/beef for Mojo via ALLERGEN_MAP synonyms</td><td>useMiraFilter.js + whatsapp_routes.py</td><td class="status-live">Live</td></tr>
+    <tr><td>Breed filtering</td><td>filterBreedProducts() — surfaces Indie products for Mojo</td><td>useMiraFilter.js</td><td class="status-live">Live</td></tr>
+    <tr><td>miraRank scoring</td><td>+2 breed, +1 size, +1 life stage, +1 favorites</td><td>useMiraFilter.js</td><td class="status-live">Live</td></tr>
+    <tr><td>WhatsApp intelligence</td><td>Soul profile, allergens, NearMe, Amazon fallback, ✦ Why format</td><td>whatsapp_routes.py</td><td class="status-live">Live</td></tr>
+    <tr><td>Mira Widget (chat)</td><td>Full soul profile in system prompt, pillar context, pet switcher</td><td>server.py mira chat endpoint</td><td class="status-live">Live</td></tr>
+    <tr><td>Semantic search</td><td>TF-IDF product matching, allergen expansion server-side</td><td>mira_routes.py /semantic-search</td><td class="status-live">Live</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">P0 — Health Condition Filtering <span style="color:#dc2626">(DO FIRST)</span></h3>
+  <p><strong>Why first:</strong> Safety. A pancreatitis dog getting high-fat treats is a medical emergency. This is the same allergen-blocking logic extended to conditions. Data already exists in the DB.</p>
+  <table>
+    <tr><th>Detail</th><th>Spec</th></tr>
+    <tr><td>DB field</td><td><code>pet.health_conditions</code> (array) e.g. ["pancreatitis", "hip dysplasia", "diabetes"]</td></tr>
+    <tr><td>What to block</td><td>High-fat treats → pancreatitis | Sugary biscuits → diabetes | High-impact toys → hip dysplasia | High-sodium → heart disease</td></tr>
+    <tr><td>Condition map</td><td>Build a <code>CONDITION_BLOCK_MAP</code> similar to ALLERGEN_MAP. Keys = condition names, values = ingredients/product-tags to block</td></tr>
+    <tr><td>Where to add</td><td>1. <code>useMiraFilter.js</code> — add health condition check alongside allergen check<br>2. <code>whatsapp_routes.py</code> — add to allergen_rule in system prompt<br>3. <code>mira_routes.py /semantic-search</code> — add to server-side filter<br>4. Mira widget system prompt in <code>server.py</code></td></tr>
+    <tr><td>✦ Why line</td><td>"Low fat (safe for Badmash's pancreatitis)" — health condition referenced explicitly</td></tr>
+    <tr><td>Test scenario</td><td>Pet with pancreatitis asks for treats → high-fat products blocked. Pet with diabetes → sugary biscuits blocked.</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">P1 — Multi-Pet Household Safety</h3>
+  <p><strong>Why:</strong> Dipali has 4 dogs. Mojo is allergic to chicken. Mystique loves chicken. If Dipali buys "treats for all four," Mira must split into safe baskets and flag cross-contamination risk. Unique to TDC — no competitor does this.</p>
+  <table>
+    <tr><th>Detail</th><th>Spec</th></tr>
+    <tr><td>Trigger</td><td>Message mentions multiple pet names OR "all my dogs" / "everyone"</td></tr>
+    <tr><td>Logic</td><td>Load all pets' allergen profiles → find conflicts → split recommendation into safe groups per dog</td></tr>
+    <tr><td>Warning format</td><td>"⚠️ Mojo can't share Mystique's treats — chicken allergy. I'll keep their baskets separate."</td></tr>
+    <tr><td>Where to add</td><td><code>whatsapp_routes.py get_mira_ai_response()</code> — detect multi-pet intent, pass conflict map to GPT</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">P1 — Seasonal + City Intelligence</h3>
+  <p><strong>Why:</strong> Mira knows city and date. A Newfoundland in Mumbai in April (38°C) has heat emergency risk. Zero new data needed — date + breed + city does the work.</p>
+  <table>
+    <tr><th>Detail</th><th>Spec</th></tr>
+    <tr><td>Data available</td><td><code>pet.breed</code>, <code>user.city</code>, <code>datetime.now()</code></td></tr>
+    <tr><td>Season map</td><td>Mumbai April-June = summer heat | June-Sept = monsoon (paw infections, ear care) | Dec-Feb = winter (joint pain for seniors)</td></tr>
+    <tr><td>Breed map</td><td>Newfoundland + summer = cooling mats, short walks, hydration treats | Indie + monsoon = paw wipes priority</td></tr>
+    <tr><td>Where to add</td><td>Build <code>_get_seasonal_context(city, breed, date)</code> → inject into system prompt as a context block</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">P2 — Life Stage Transition Alerts</h3>
+  <p><strong>Why:</strong> Life stage is a static label today. Mira doesn't proactively say "Mojo turns 7 next month — Indie dogs at 7 need joint support." All calculable from <code>pet.date_of_birth</code>.</p>
+  <table>
+    <tr><th>Detail</th><th>Spec</th></tr>
+    <tr><td>Trigger</td><td>Dog within 30 days of a life-stage boundary (puppy→junior, junior→adult, adult→senior)</td></tr>
+    <tr><td>Breed-specific ages</td><td>Indie: senior at 8yrs | Newfoundland: senior at 6yrs | Labrador: senior at 8yrs</td></tr>
+    <tr><td>Message</td><td>"Mojo turns 7 next month. For Indies at 7, joint supplements become important. Want me to build a Senior Care plan?"</td></tr>
+    <tr><td>Where to add</td><td><code>mira_nudges.py</code> — new nudge type <code>life_stage_transition</code> triggered 30 days before boundary</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">P2 — Purchase + Consumption Pattern Learning</h3>
+  <p><strong>Why:</strong> Mira recommends from catalogue cold. She doesn't know Mojo already has salmon biscuits at home. The food_reorder nudge exists but isn't connected to actual purchase data.</p>
+  <table>
+    <tr><th>Detail</th><th>Spec</th></tr>
+    <tr><td>Data needed</td><td>Order history from <code>orders</code> collection + average product consumption rate per category</td></tr>
+    <tr><td>Logic</td><td>Last purchase date + avg consumption days → predict "running low" date → proactive reorder message</td></tr>
+    <tr><td>Message</td><td>"Mojo's salmon biscuits are probably running low — you ordered 18 days ago and they last ~25 days. Reorder? 🐾"</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">Never Add (explicitly excluded)</h3>
+  <ul>
+    <li><strong>Star ratings / reviews</strong> — Mira is personal, not social. What works for another Labrador is irrelevant for Mojo.</li>
+    <li><strong>Generic AI chat</strong> — every Mira response must be anchored to a specific pet's actual data.</li>
+    <li><strong>More pillars before deepening existing ones</strong> — make each of the 12 genuinely intelligent per-pet first.</li>
+  </ul>
+</section>
+
 </body>
 </html>
