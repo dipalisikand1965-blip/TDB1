@@ -83,40 +83,56 @@ const AdminGuideDashboard = () => {
     setRestoring(true);
     setRestoreMsg(null);
     try {
+      // Kick off background restore — returns immediately
       const res = await fetch(`${API_URL}/api/admin/db/restore`, {
         method: 'POST',
         headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
       });
-      // Use text() first to avoid "body stream already read" errors on slow responses
-      const text = await res.text();
-      let data = {};
-      try { data = JSON.parse(text); } catch { data = { status: 'error', errors: [text || 'Empty response'] }; }
-      if (data.status?.startsWith('complete')) {
-        // Build per-collection breakdown
-        const cols = data.collections || {};
-        const lines = Object.entries(cols)
-          .filter(([, v]) => v?.total > 0)
-          .sort((a, b) => (b[1]?.total || 0) - (a[1]?.total || 0))
-          .map(([name, v]) => `• ${name}: ${v.total?.toLocaleString()} docs`)
-          .join('\n');
-        const patched = data.visitor_tickets_patched ?? 0;
-        const patchLine = patched > 0 ? `\n✦ ${patched} "Website Visitor" ticket${patched > 1 ? 's' : ''} auto-patched with real names` : '';
-        const summary = `${lines}${patchLine}\n\nTotal: ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s`;
-        setRestoreMsg({ ok: true, text: `✅ Database restored + visitor tickets patched` });
-        toast({
-          title: '✅ Database Restored + Tickets Patched!',
-          description: summary,
-          duration: 10000,
-        });
-      } else {
-        setRestoreMsg({ ok: false, text: `Error: ${JSON.stringify(data.errors)}` });
-        toast({ title: '❌ Restore failed', description: JSON.stringify(data.errors), variant: 'destructive' });
+      const kick = await res.json();
+      if (kick.status !== 'started' && kick.status !== 'already_running') {
+        setRestoreMsg({ ok: false, text: `Could not start: ${JSON.stringify(kick)}` });
+        setRestoring(false);
+        return;
       }
+
+      // Poll /restore-progress every 2 seconds
+      const poll = setInterval(async () => {
+        try {
+          const pr = await fetch(`${API_URL}/api/admin/db/restore-progress`);
+          const state = await pr.json();
+          const done  = state.collections_done ?? 0;
+          const total = state.collections_total ?? 14;
+          const col   = state.current_collection ? ` — ${state.current_collection}` : '';
+          setRestoreMsg({ ok: null, text: `Restoring ${done}/${total} collections${col}` });
+
+          if (state.status === 'complete' || state.status === 'complete_with_errors') {
+            clearInterval(poll);
+            setRestoring(false);
+            const cols = state.collections || {};
+            const lines = Object.entries(cols)
+              .filter(([, v]) => v?.total > 0)
+              .sort((a, b) => (b[1]?.total || 0) - (a[1]?.total || 0))
+              .map(([name, v]) => `• ${name}: ${v.total?.toLocaleString()} docs`)
+              .join('\n');
+            const patched  = state.visitor_tickets_patched ?? 0;
+            const patchLine = patched > 0 ? `\n✦ ${patched} "Website Visitor" ticket${patched > 1 ? 's' : ''} auto-patched` : '';
+            const summary  = `${lines}${patchLine}\n\nTotal: ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s`;
+            setRestoreMsg({ ok: true, text: `✅ Database restored + visitor tickets patched` });
+            toast({ title: '✅ Database Restored + Tickets Patched!', description: summary, duration: 10000 });
+          } else if (state.status === 'error') {
+            clearInterval(poll);
+            setRestoring(false);
+            setRestoreMsg({ ok: false, text: `Error: ${JSON.stringify(state.errors)}` });
+            toast({ title: '❌ Restore failed', description: JSON.stringify(state.errors), variant: 'destructive' });
+          }
+        } catch { /* network hiccup — keep polling */ }
+      }, 2000);
+
     } catch (e) {
       setRestoreMsg({ ok: false, text: `Error: ${e.message}` });
       toast({ title: '❌ Restore error', description: e.message, variant: 'destructive' });
+      setRestoring(false);
     }
-    setRestoring(false);
   };
 
   // Regenerate documentation function
