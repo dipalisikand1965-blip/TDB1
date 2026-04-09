@@ -6486,7 +6486,7 @@ async def manually_send_notification(session_id: str, username: str = Depends(ve
 @admin_router.get("/pets")
 async def admin_get_all_pets(
     username: str = Depends(verify_admin),
-    limit: int = 100,
+    limit: int = 200,
     skip: int = 0,
     search: Optional[str] = None
 ):
@@ -6499,16 +6499,16 @@ async def admin_get_all_pets(
             {"owner_email": {"$regex": search, "$options": "i"}}
         ]
     
-    pets = await db.pets.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    pets = await db.pets.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
     total = await db.pets.count_documents(query)
-    
+
     # Add persona info to each pet
     for pet in pets:
-        soul = pet.get("soul") or {} or {}
+        soul = pet.get("soul") or {}
         persona = soul.get("persona", "shadow")
         if persona in DOG_PERSONAS:
             pet["persona_info"] = DOG_PERSONAS[persona]
-    
+
     return {"pets": pets, "total": total}
 
 
