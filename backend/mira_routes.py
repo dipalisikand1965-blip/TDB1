@@ -18923,6 +18923,7 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
     soul_answers = body.get("soul_answers", {})
     history      = body.get("history", [])
     current_pillar = body.get("current_pillar") or body.get("pillar") or "general"
+    req_archetype  = body.get("archetype") or ""   # sent by MiraSearchPage
 
     if not message:
         raise HTTPException(status_code=400, detail="Message required")
@@ -19028,6 +19029,42 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
                 )
         except Exception as e:
             logger.warning(f"[Mira Stream] Pet lookup failed for {pet_id}: {e}")
+
+    # ── Archetype tone injection (same dict as widget /chat) ─────────────────
+    # Archetype comes either from DB pet record (line above) or from frontend body
+    _ARCHETYPE_TONES_STREAM = {
+        'social_butterfly':     ("🦋 SOCIAL BUTTERFLY", "Be cheerful, celebratory and high-energy. Frame everything as a shared adventure with their social, people-loving dog."),
+        'wild_explorer':        ("🌿 WILD EXPLORER",    "Be bold, adventurous and outdoorsy. Talk about trails, discoveries, freedom. Products are gear for the next adventure."),
+        'velcro_baby':          ("🫂 VELCRO BABY",      "Be warm, cosy and attachment-led. Emphasise togetherness, comfort, bonding. Avoid anything that sounds like separation."),
+        'snack_led_negotiator': ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through reward and flavour."),
+        'snack_negotiator':     ("🍖 SNACK NEGOTIATOR", "Be foodie, tempting and treat-led. Use sensory language — smell, taste, texture. Frame everything through reward and flavour."),
+        'brave_worrier':        ("💛 BRAVE WORRIER",    "Be reassuring, calm and anxiety-aware. Lead with safety and comfort. Avoid overwhelming choices. Use gentle, slow language."),
+        'quiet_watcher':        ("🌙 QUIET WATCHER",    "Be thoughtful, gentle and unhurried. Avoid hype. Speak softly. Frame products as calm, considered choices."),
+        'gentle_aristocrat':    ("👑 GENTLE ARISTOCRAT","Be refined, elegant and discerning. Use premium language. Frame everything as curated, exclusive, worthy of royalty."),
+        'royal':                ("👑 ROYAL",            "Be refined, elegant and discerning. Use premium language. Frame everything as curated, exclusive, worthy of royalty."),
+        'athlete':              ("⚡ ATHLETE",          "Be energetic, performance-led and sporty. Talk about stamina, agility, peak performance. Products are training essentials."),
+    }
+    # Try DB archetype first (most accurate), fall back to frontend-sent value
+    _stream_archetype = ""
+    if pet_id:
+        try:
+            _arch_pet = await get_db().pets.find_one({"id": pet_id}, {"_id": 0, "archetype": 1, "doggy_soul_answers": 1})
+            if _arch_pet:
+                _ar = _arch_pet.get("archetype") or (_arch_pet.get("doggy_soul_answers") or {}).get("primary_archetype", "")
+                _stream_archetype = _ar.get("primary_archetype", "") if isinstance(_ar, dict) else str(_ar or "")
+        except Exception:
+            pass
+    if not _stream_archetype:
+        _stream_archetype = req_archetype  # frontend fallback
+
+    if _stream_archetype and _stream_archetype in _ARCHETYPE_TONES_STREAM:
+        _lbl, _inst = _ARCHETYPE_TONES_STREAM[_stream_archetype]
+        pet_context += (
+            f"\n\n🎭 MIRA TONE FOR THIS DOG — {_lbl}:\n"
+            f"{_inst}\n"
+            f"Adapt every response to this dog's soul. Speak TO the parent OF this specific dog."
+        )
+        logger.info(f"[Mira Stream] Archetype tone injected: {_lbl}")
 
     # Add pillar focus AFTER pet context (so it's the last instruction)
     if pillar_focus:
