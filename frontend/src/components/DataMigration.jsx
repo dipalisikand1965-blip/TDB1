@@ -30,24 +30,50 @@ export default function DataMigration({ adminAuth }) {
     setRestoreResult(null);
     setMessage(null);
     try {
+      // Fire-and-forget — backend returns immediately, restore runs in background
       const res = await fetch(`${getApiUrl()}/api/admin/db/restore`, {
         method: 'POST',
         headers: { 'Authorization': `Basic ${adminAuth}` }
       });
-      const data = await res.json();
-      if (data.status?.startsWith('complete')) {
-        setRestoreResult(data);
-        const patched = data.visitor_tickets_patched ?? 0;
-        const patchMsg = patched > 0 ? ` + ${patched} visitor ticket${patched > 1 ? 's' : ''} patched` : '';
-        setMessage({ type: 'success', text: `✅ Database restored — ${data.total_docs_processed?.toLocaleString()} docs in ${data.duration_seconds}s${patchMsg}` });
-        fetchStats();
-      } else {
-        setMessage({ type: 'error', text: `Restore failed: ${JSON.stringify(data.errors)}` });
+      const kick = await res.json();
+      if (kick.status !== 'started' && kick.status !== 'already_running') {
+        setMessage({ type: 'error', text: `Could not start restore: ${JSON.stringify(kick)}` });
+        setRestoring(false);
+        return;
       }
+
+      // Poll /restore-progress every 2 seconds until done
+      const poll = setInterval(async () => {
+        try {
+          const pr = await fetch(`${getApiUrl()}/api/admin/db/restore-progress`);
+          const state = await pr.json();
+          const done = state.collections_done ?? 0;
+          const total = state.collections_total ?? 14;
+          const col = state.current_collection ? ` — ${state.current_collection}` : '';
+          setMessage({ type: 'info', text: `Restoring... ${done}/${total} collections${col}` });
+
+          if (state.status === 'complete' || state.status === 'complete_with_errors') {
+            clearInterval(poll);
+            setRestoring(false);
+            setRestoreResult(state);
+            const patched = state.visitor_tickets_patched ?? 0;
+            const patchMsg = patched > 0 ? ` + ${patched} visitor ticket${patched > 1 ? 's' : ''} patched` : '';
+            setMessage({ type: 'success', text: `✅ Database restored — ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s${patchMsg}` });
+            fetchStats();
+          } else if (state.status === 'error') {
+            clearInterval(poll);
+            setRestoring(false);
+            setMessage({ type: 'error', text: `Restore failed: ${JSON.stringify(state.errors)}` });
+          }
+        } catch (pollErr) {
+          // Network hiccup — keep polling
+        }
+      }, 2000);
+
     } catch (e) {
       setMessage({ type: 'error', text: `Error: ${e.message}` });
+      setRestoring(false);
     }
-    setRestoring(false);
   };
 
   useEffect(() => { checkRestoreStatus(); }, []);
