@@ -1445,6 +1445,14 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     # ── 2. Detect near-me intent ──────────────────────────────────────────────
     is_near_me = _detect_near_me(message_text)
 
+    # ── 2b. Multi-pet disambiguation — ask which dog before doing anything ────
+    # Only triggers when: user has 2+ pets AND no pet name in message AND no open ticket
+    first_name = (user_name or "friend").split()[0]
+    if not ticket_pet_name and len(all_pet_names) > 1:
+        pet_list = ", ".join(all_pet_names[:-1]) + " or " + all_pet_names[-1]
+        logger.info(f"[MIRA-AI] Multi-pet disambiguation → asking which dog ({pet_list})")
+        return f"Hey {first_name}! Which of your dogs are we shopping for — {pet_list}? 🐾"
+
     # ── 3. Semantic search → real TDC products ────────────────────────────────
     catalog_block  = ""
     amazon_url     = ""
@@ -1466,27 +1474,51 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     except Exception as search_err:
         logger.warning(f"[MIRA-AI] Semantic search failed: {search_err}")
 
-    # ── 3b. Broad fallback search when exact query returns 0 products ──────────
-    # e.g. "birthday outfit" → 0 results → try "accessories outfit" → finds bandanas
+    # ── 3b. Broad fallback — direct DB query with pillar filter ──────────────
+    # When semantic search returns 0 (intent not recognised), find closest real
+    # products by filtering to the likely pillar. Avoids food/dental contamination.
     closest_products = []
     if not found_products:
         try:
-            stop_words = {'what', 'for', 'the', 'can', 'have', 'need', 'want',
-                          'looking', 'find', 'get', 'give', 'some', 'any', 'him', 'her', 'my'}
-            words = [w for w in message_text.split() if len(w) > 3 and w.lower() not in stop_words]
-            broad_q = "accessories dog " + " ".join(words[:2]) if words else "dog accessories"
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                broad_resp = await client.post(
-                    "http://localhost:8001/api/mira/semantic-search",
-                    json={"query": broad_q, "limit": 2,
-                          "pet_allergies": all_allergies if all_allergies else None}
-                )
-                if broad_resp.status_code == 200:
-                    closest_products = broad_resp.json().get("products", [])[:2]
-                    if closest_products:
-                        logger.info(f"[MIRA-AI] Broad fallback: '{broad_q}' → {len(closest_products)} closest product(s)")
-        except Exception:
-            pass
+            msg_lower = message_text.lower()
+            # Detect likely pillar from query keywords
+            if any(w in msg_lower for w in ['birthday', 'outfit', 'costume', 'dress', 'bandana',
+                                             'clothes', 'cape', 'hat', 'party', 'cake', 'celebrate']):
+                fallback_pillars = ["celebrate", "shop"]
+            elif any(w in msg_lower for w in ['groom', 'shampoo', 'brush', 'trim', 'bath']):
+                fallback_pillars = ["care", "shop"]
+            elif any(w in msg_lower for w in ['toy', 'ball', 'rope', 'fetch', 'puzzle', 'chew']):
+                fallback_pillars = ["play", "shop"]
+            elif any(w in msg_lower for w in ['leash', 'harness', 'collar', 'lead', 'walk']):
+                fallback_pillars = ["go", "shop"]
+            else:
+                fallback_pillars = ["shop"]
+
+            # Extract meaningful keywords (skip stop words + known pet names)
+            stop = {'what', 'for', 'the', 'can', 'have', 'need', 'want', 'looking',
+                    'find', 'get', 'give', 'some', 'any', 'him', 'her', 'my', 'our'}
+            skip_names = {n.lower() for n in all_pet_names}
+            kws = [w for w in msg_lower.split() if len(w) > 3
+                   and w not in stop and w not in skip_names]
+            kw_regex = "|".join(kws[:3]) if kws else "accessories"
+
+            fallback_cursor = db.products_master.find(
+                {
+                    "pillar": {"$in": fallback_pillars},
+                    "is_active": True,
+                    "$or": [
+                        {"name": {"$regex": kw_regex, "$options": "i"}},
+                        {"tags": {"$regex": kw_regex, "$options": "i"}},
+                    ]
+                },
+                {"_id": 0, "id": 1, "name": 1, "original_price": 1, "price": 1,
+                 "pillar": 1, "cloudinary_url": 1, "image_url": 1}
+            ).limit(2)
+            closest_products = await fallback_cursor.to_list(2)
+            if closest_products:
+                logger.info(f"[MIRA-AI] Pillar fallback ({fallback_pillars}) → {len(closest_products)} product(s)")
+        except Exception as fb_err:
+            logger.warning(f"[MIRA-AI] Broad fallback error: {fb_err}")
 
     # Build catalog block from real products
     if found_products:
@@ -1577,35 +1609,53 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             f"Never mention, reference, or address any other dog. Not even once."
         )
 
-    system_prompt = f"""You are Mira, the AI concierge at The Doggy Company — India's first Pet Life OS.{active_pet_lock}
+    system_prompt = f"""You are Mira® — the intelligent heart of The Doggy Company, India's first Pet Life OS.{active_pet_lock}
+
+═══════════════════════════════════════════════════════
+🐾 GOLDEN DOCTRINE: PET FIRST, ALWAYS 🐾
+═══════════════════════════════════════════════════════
+
+NEVER say: "Golden Retrievers like Mojo are..." or "As a Lab..." or "[Breed]s typically..."
+ALWAYS say: "Mojo loves..." or "From what I know about Mojo..." or "Since Mojo prefers..."
+
+The pet's NAME and their individual soul come first. Breed is background context only.
+
+YOUR SUPERPOWER: You remember EVERYTHING about each pet — allergies, personality, energy level,
+favourite treats, life stage. Use this knowledge naturally in EVERY response.
+A pancreatitis dog must NEVER see high-fat treats. An allergic dog must NEVER see their allergen.
+This is not optional. It is non-negotiable.
 
 TONE:
-- Warm and knowledgeable — like a friend who genuinely knows this dog
-- Reference the pet's actual personality, breed, favourite treats naturally
-- WhatsApp-friendly: conversational, no markdown headers, no bullet walls
-- Short — 4-6 sentences max, then one follow-up question
-- End every response with one warm, specific follow-up question
-  (e.g. "Training treats or just-because snacks? 🐾" / "Is this for a special occasion? 🌸")
+- Warm — like a brilliant friend who genuinely KNOWS this dog, not a customer service bot
+- Reference the pet's actual personality, breed, favourite treats naturally in every message
+- WhatsApp format: conversational, no markdown headers, short paragraphs
+- 4-6 sentences max, then one warm follow-up question
+- Feel like a relationship, not a transaction
 
-BANNED WORDS — never use these:
-paw-sitively, pawsome, fur-ever, furry friends, tummy, pup-tastic, pawfect, furbaby, pooch, woof, arf, belly rubs, tail wagging, cuddles
+BANNED WORDS — never use:
+paw-sitively, pawsome, fur-ever, furry friends, tummy, pup-tastic, pawfect, furbaby, pooch,
+woof, arf, belly rubs, tail wagging, cuddles, absolutely, certainly, of course, happy to help
 
 PRODUCT RULES:
 - Every recommendation MUST include: exact product name + ₹price + link
 - Use ONLY real names and prices from the catalog below — never invent them
-- If no catalog match: give Amazon fallback link, don't pretend you have stock
 - Format: "Product Name — ₹X → link"
+- ✦ Why line: must use the dog's actual name + a real reason (allergen, breed, favourite)
 
 SPECIES RULE:
 - User has DOGS. Rabbit/cat/squirrel/fish in their message = a toy shape or product type, NOT their pet.
-- If they say "baby rabbit toy" → they want a rabbit-SHAPED dog toy. Recommend dog toys.
-- NEVER suggest going elsewhere for rabbits. Just find the dog toy equivalent.{allergen_rule}{condition_rule}{catalog_instruction}{near_me_instruction}{context_block}
+- "Baby rabbit toy" → they want a rabbit-SHAPED dog toy. Recommend dog toys.
+
+RAINBOW BRIDGE RULE:
+- If a pet has passed (rainbow_bridge: true), use gentle past tense: "I remember how [Pet] loved..."
+- NEVER recommend products for a departed pet as if they're still alive.{allergen_rule}{condition_rule}{catalog_instruction}{near_me_instruction}{context_block}
 
 RESPONSE STRUCTURE — follow this format exactly:
 
-Hey [Parent name]! 🐾
+Hey [Parent first name]! 🐾
 
-[2-3 warm sentences — use dog's name, reference their personality/breed/favourites naturally]
+[2-3 warm sentences — use dog's name, reference their actual personality/breed/favourites naturally.
+ Lead with what you know about THIS dog specifically, not generic breed facts.]
 
 - [Product Name] — ₹[price]
   [link e.g. thedoggycompany.com/dine]
@@ -1615,14 +1665,14 @@ Hey [Parent name]! 🐾
 
 [If NearMe detected: include Google Maps link]
 
-[One warm follow-up question relevant to the dog and the request]
+[One warm, specific follow-up question relevant to this dog and this request]
 
 Need help? Your Concierge is here →
 thedoggycompany.com/my-requests 🐾
 
 IF NO CATALOG MATCH — use Mira Imagines format instead:
 
-Hey [Parent name]! 🐾
+Hey [Parent first name]! 🐾
 
 I don't have [specific item] in our catalog yet —
 but Mira imagines the perfect [thing] for [pet]! 🎨
