@@ -102,6 +102,7 @@
   <a href="#wa-intelligence" style="color:#7c3aed;font-weight:800;">🧠 WA Intelligence</a>
   <a href="#creds">Credentials</a>
   <a href="#todo">Next Tasks</a>
+  <a href="#mira-phase2" style="color:#7c3aed;font-weight:800;">🧠 Phase 2 Roadmap</a>
   <a href="#audit">Soul Audit</a>
   <a href="#visibility">Visibility Matrix</a>
 </nav>
@@ -1114,7 +1115,7 @@ EOF</pre>
 </div><!-- /container -->
 
 <footer style="background:#1a1a2e;color:#94a3b8;text-align:center;padding:24px;font-size:0.85rem;margin-top:60px;">
-  The Doggy Company — Pet Life OS · Last updated 2026-04-09 · Session 14 · Always update this file before finishing your session
+  The Doggy Company — Pet Life OS · Last updated 2026-04-09 · Session 14 · Phase 2 Proactive Layer documented · Always update this file before finishing your session
 </footer>
 
 <section id="mira-intelligence-roadmap" style="border-top:4px solid #7c3aed;margin-top:48px">
@@ -1133,9 +1134,14 @@ EOF</pre>
     <tr><td>miraRank scoring</td><td>+2 breed, +1 size, +1 life stage, +1 favorites</td><td>useMiraFilter.js</td><td class="status-live">✅ Live</td></tr>
     <tr><td>Health Condition Filtering</td><td>Blocks high-fat for pancreatitis, sugar for diabetes, sodium for heart disease etc.</td><td>useMiraFilter.js + whatsapp_routes.py + server.py + MiraSearchPage.jsx</td><td class="status-live">✅ Live — Session 13/14</td></tr>
     <tr><td>Mira Pick badge + hint</td><td>✦ MIRA PICK badge on top result · mira_hint "why" line on all chips in /mira-search</td><td>MiraSearchPage.jsx ResultChip</td><td class="status-live">✅ Live — Session 14</td></tr>
-    <tr><td>WhatsApp intelligence</td><td>Soul profile, allergens, health conditions, NearMe, Amazon fallback, ✦ Why format</td><td>whatsapp_routes.py</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>Mira Widget (chat)</td><td>Full soul profile in system prompt, pillar context, pet switcher, health conditions</td><td>server.py mira chat endpoint</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>WhatsApp intelligence</td><td>Soul profile, allergens, health conditions, NearMe, Amazon fallback, ✦ Why format, archetype tone</td><td>whatsapp_routes.py</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Mira Widget (chat)</td><td>Full soul profile in system prompt, pillar context, pet switcher, health conditions, archetype tone</td><td>server.py + mira_routes.py /chat endpoint</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Mira Search (/os/stream)</td><td>Streaming chat + semantic product chips + archetype tone injection from DB or frontend body</td><td>mira_routes.py /os/stream</td><td class="status-live">✅ Live — Session 14</td></tr>
+    <tr><td>Archetype Tone Injection</td><td>10 archetypes (Social Butterfly, Wild Explorer, Velcro Baby…) adjust Mira's voice on all 3 surfaces</td><td>mira_routes.py ARCHETYPE_TONES + whatsapp_routes.py ARCHETYPE_TONES</td><td class="status-live">✅ Live — Session 14</td></tr>
     <tr><td>Semantic search</td><td>TF-IDF product matching, allergen expansion server-side</td><td>mira_routes.py /semantic-search</td><td class="status-live">✅ Live</td></tr>
+    <tr><td>Multi-pet disambiguation</td><td>When 2+ pets and no name in message → asks "Which dog?" before searching</td><td>whatsapp_routes.py get_mira_ai_response()</td><td class="status-live">✅ Live — Session 14</td></tr>
+    <tr><td>Pillar-filtered fallback</td><td>0-result search → direct MongoDB query filtered to likely pillar (celebrate/shop, not food)</td><td>whatsapp_routes.py get_mira_ai_response()</td><td class="status-live">✅ Live — Session 14</td></tr>
+    <tr><td>Mira Imagines protocol</td><td>0 catalog results → GPT writes ✦ Mira Imagines: line + closest real products + Amazon + Concierge CTA</td><td>whatsapp_routes.py catalog_instruction</td><td class="status-live">✅ Live — Session 14</td></tr>
   </table>
 
   <h3 style="margin-top:32px">P0 — Health Condition Filtering <span style="color:#059669">✅ COMPLETE (Session 13/14)</span></h3>
@@ -1195,6 +1201,431 @@ EOF</pre>
     <li><strong>Generic AI chat</strong> — every Mira response must be anchored to a specific pet's actual data.</li>
     <li><strong>More pillars before deepening existing ones</strong> — make each of the 12 genuinely intelligent per-pet first.</li>
   </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     MIRA INTELLIGENCE PHASE 2 — THE PROACTIVE LAYER
+     Designed: 2026-04-09 | Do one at a time | Do not skip steps
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section id="mira-phase2">
+  <h2>🧠 Mira Intelligence Phase 2 — The Proactive Layer</h2>
+
+  <div class="alert alert-blue" style="margin-bottom:24px">
+    <strong>⚠️ AGENT INSTRUCTION — READ BEFORE TOUCHING ANYTHING:</strong><br><br>
+    These 5 features were designed as a cohesive vision on 2026-04-09 by the product owner (Dipali) and the AI agent. They must be built <strong>one at a time, in order</strong>. Do NOT implement multiple simultaneously. Do NOT skip to a later one because it seems easier.<br><br>
+    <strong>Order:</strong> Feature 1 → test → Feature 2 → test → Feature 3 → test → Feature 4 → test → Feature 5.<br><br>
+    Each feature builds on the previous. Feature 2 (Life Event Intelligence) depends on Feature 1's memory layer. Feature 4 (Multi-Pet Basket) uses Feature 1's stored context.<br><br>
+    <strong>The principle behind all of this:</strong> Mira currently waits to be asked. After Phase 2, Mira notices, remembers, and acts. Every feature here moves Mira from reactive to proactive. That is the product direction. Do not deviate from it.
+  </div>
+
+  <p style="font-size:15px;line-height:1.8;color:#374151">
+    Phase 1 Mira is brilliant at responding. She knows Mojo's allergies, breed, archetype, health conditions. She blocks the right products. She imagines what doesn't exist. She speaks in Mojo's soul language.<br><br>
+    Phase 2 Mira <em>remembers</em>. She notices Mojo is turning 7 next month. She flags that Badmash's salmon treats are probably running low. She sees Mystique's rash photo and says the right thing. She notices Bruno hasn't been mentioned in 3 weeks and gently checks in.<br><br>
+    The difference between Phase 1 and Phase 2 is the difference between a smart tool and a relationship. That is what we are building.
+  </p>
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:32px 0">
+
+  <!-- ─── FEATURE 1 ─── -->
+  <h3 id="f1-mira-remembers" style="color:#7c3aed;font-size:1.4rem">
+    Feature 1 — Mira Remembers (Cross-Session Memory)
+    <span style="font-size:0.85rem;background:#faf5ff;color:#7c3aed;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD FIRST</span>
+  </h3>
+
+  <p><strong>The vision:</strong> Right now every conversation starts from zero. Mira has the soul profile, but not the history. She doesn't know Mojo got a new food last month, that Badmash tried a new grooming service and loved it, or that Dipali mentioned Bruno has been limping. This feature adds a persistent memory layer so Mira opens every conversation with context, not just profile data.</p>
+
+  <p><strong>Example of what becomes possible:</strong></p>
+  <div style="background:#1e1b4b;color:#c4b5fd;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
+    Dipali: Hi Mira<br>
+    Mira: Hey Dipali! Last time we spoke you were looking at salmon treats for Mojo — did he enjoy them? Also, Badmash's grooming was 8 weeks ago. Want me to book again? 🐾
+  </div>
+
+  <h4>Implementation Blueprint</h4>
+  <table>
+    <tr><th>Step</th><th>Detail</th></tr>
+    <tr>
+      <td><strong>1. New MongoDB collection</strong></td>
+      <td>
+        <code>mira_memory</code> — one document per user phone/email:<br>
+        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">{
+  "owner_email": "dipali@...",
+  "phone_10": "9876543210",
+  "memories": [
+    {
+      "date": "2026-04-09",
+      "pet_name": "Mojo",
+      "topic": "salmon treats",
+      "detail": "User asked for salmon treats. Mira recommended TDC Salmon Biscuits. Conversion unknown.",
+      "type": "product_inquiry",   // product_inquiry | service_booking | health_concern | general
+      "session_id": "whatsapp-9876543210-20260409"
+    }
+  ],
+  "last_grooming": {"Mojo": "2026-02-12", "Badmash": "2026-02-18"},
+  "last_vet": {"Mojo": "2026-01-05"},
+  "updated_at": "2026-04-09T14:00:00Z"
+}</pre>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. Write memory after each conversation</strong></td>
+      <td>
+        In <code>whatsapp_routes.py</code>, at the end of <code>get_mira_ai_response()</code>, call a new helper:<br>
+        <code>await _save_mira_memory(db, user_email, phone_10, message_text, mira_response, ticket_pet_name)</code><br><br>
+        This helper extracts key topics from the message (product name, service type, health concern) via a quick GPT extraction or simple regex, and appends to <code>mira_memory.memories</code>.<br>
+        Keep only last <strong>20 memories per user</strong> (trim oldest). Storage stays lean.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Read memory at conversation start</strong></td>
+      <td>
+        In <code>get_mira_ai_response()</code>, after loading the soul profile (step 1), fetch <code>mira_memory</code> for this user.<br>
+        Build a <code>memory_block</code> string:<br>
+        <code>"MIRA MEMORY (last 5 interactions): [date] Mojo — asked about salmon treats | [date] Badmash — booked grooming | ..."</code><br>
+        Inject into system prompt BEFORE the catalog block but AFTER the soul profile block.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4. Widget + MiraSearch</strong></td>
+      <td>
+        Same pattern. In <code>mira_routes.py /os/stream</code>, fetch <code>mira_memory</code> by <code>pet_id</code> owner email and inject.<br>
+        Write memory after each stream completes (after <code>full_response</code> is assembled).<br>
+        DO NOT write memory for anonymous (no pet_id) sessions.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5. Grooming/vet tracking</strong></td>
+      <td>
+        Whenever a service booking is detected in the message (keywords: "groom", "vet", "bath", "trim", "vaccination"), update <code>mira_memory.last_grooming[pet_name]</code> or <code>last_vet[pet_name]</code> with today's date.<br>
+        This feeds Feature 2 (Life Event Intelligence).
+      </td>
+    </tr>
+    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code>, <code>mira_routes.py</code>. New collection <code>mira_memory</code> (auto-created on first write).</td></tr>
+    <tr><td><strong>Files NOT to touch</strong></td><td><code>useMiraFilter.js</code>, <code>MiraSearchPage.jsx</code>, all *SoulPage.jsx files, <code>condition_map.py</code>.</td></tr>
+    <tr><td><strong>Test scenario</strong></td><td>Send "treat for Mojo" on WhatsApp. Then send "Hi" the next day. Mira should reference the previous treat conversation in her opening.</td></tr>
+    <tr><td><strong>Rollback plan</strong></td><td>If <code>mira_memory</code> lookup fails, catch the exception silently and proceed with empty memory_block. Never let a memory error break a conversation.</td></tr>
+  </table>
+
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
+
+  <!-- ─── FEATURE 2 ─── -->
+  <h3 id="f2-life-events" style="color:#059669;font-size:1.4rem">
+    Feature 2 — Life Event Intelligence (Proactive Nudges)
+    <span style="font-size:0.85rem;background:#dcfce7;color:#059669;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD AFTER FEATURE 1</span>
+  </h3>
+
+  <p><strong>The vision:</strong> Mira watches the calendar. She knows Mojo's birthday, life-stage boundaries, and last grooming date (from Feature 1's memory). She proactively nudges Dipali before anything important — not when it's too late, not too often. Twice a week maximum. One nudge at a time.</p>
+
+  <div style="background:#f0fdf4;color:#14532d;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
+    [Unprompted WhatsApp from Mira]<br>
+    Hey Dipali! Mojo turns 7 next month 🎂<br>
+    For Indie dogs at 7, joints start needing support.<br>
+    Want me to put together a Senior Care plan for him?<br>
+    thedoggycompany.com/care 🐾
+  </div>
+
+  <h4>Implementation Blueprint</h4>
+  <table>
+    <tr><th>Step</th><th>Detail</th></tr>
+    <tr>
+      <td><strong>1. Event detection function</strong></td>
+      <td>
+        Create <code>_get_life_events(pets, mira_memory)</code> in <code>whatsapp_routes.py</code>. Returns a list of active events:<br>
+        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">events = [
+  {"type": "birthday_approaching", "pet": "Mojo", "days_until": 12, "years": 7},
+  {"type": "life_stage_transition", "pet": "Mojo", "from": "adult", "to": "senior", "days_until": 28},
+  {"type": "grooming_overdue", "pet": "Badmash", "weeks_since": 9},
+  {"type": "vet_overdue", "pet": "Mojo", "months_since": 4},
+]</pre>
+        Event logic:<br>
+        — Birthday approaching: <code>pet.date_of_birth</code> → next birthday within 14 days<br>
+        — Life stage transition: calculate age in days → within 30 days of breed-specific senior threshold<br>
+        — Grooming overdue: <code>mira_memory.last_grooming[pet]</code> → more than 8 weeks ago<br>
+        — Vet overdue: <code>mira_memory.last_vet[pet]</code> → more than 6 months ago
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. Breed-specific life stage thresholds</strong></td>
+      <td>
+        Add <code>BREED_SENIOR_AGE</code> dict to <code>whatsapp_routes.py</code>:<br>
+        <code>{"newfoundland": 6, "great_dane": 6, "saint_bernard": 6, "golden_retriever": 8, "labrador": 8, "indie": 8, "beagle": 9, "chihuahua": 10, "default": 8}</code><br>
+        Use <code>pet.breed.lower()</code> to look up. Fall back to "default" if breed not in dict.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Nudge scheduling — anti-spam gate</strong></td>
+      <td>
+        In <code>mira_memory</code>, add field <code>"last_nudge_sent": "2026-04-07"</code>.<br>
+        Before sending any proactive nudge: check if last_nudge_sent was less than 3 days ago. If yes, skip.<br>
+        Maximum 2 nudges per week per user. This is non-negotiable — over-nudging destroys trust.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4. Nudge delivery</strong></td>
+      <td>
+        Proactive nudges are sent via Gupshup outbound message (same as existing outbound in <code>whatsapp_routes.py</code>).<br>
+        Hook into the existing <code>mira_nudges.py</code> cron job. Add a new nudge type: <code>life_event_nudge</code>.<br>
+        The nudge message is GPT-generated using the same Mira system prompt + the event context. NOT a static template.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5. Inject events into reactive conversations too</strong></td>
+      <td>
+        If an event is active AND user messages Mira, prepend the event to the system prompt context:<br>
+        <code>"ACTIVE LIFE EVENT: Mojo turns 7 in 12 days. Mention this naturally if relevant. Don't force it."</code><br>
+        Mira weaves it in naturally — not as a hard interrupt, just as awareness.
+      </td>
+    </tr>
+    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code>, <code>mira_nudges.py</code>. Reads from <code>mira_memory</code> (Feature 1 required).</td></tr>
+    <tr><td><strong>Test scenario</strong></td><td>Set a test pet's DOB to 10 days from now. Verify nudge is sent once. Change date forward 1 day, verify nudge is NOT sent again (anti-spam gate).</td></tr>
+    <tr><td><strong>Dependency</strong></td><td>⚠️ Feature 1 (mira_memory) MUST be live before building this. last_grooming and last_vet data feeds the overdue checks.</td></tr>
+  </table>
+
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
+
+  <!-- ─── FEATURE 3 ─── -->
+  <h3 id="f3-vision" style="color:#c9973a;font-size:1.4rem">
+    Feature 3 — WhatsApp Vision (Photo Understanding)
+    <span style="font-size:0.85rem;background:#fffbf0;color:#c9973a;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD AFTER FEATURE 2</span>
+  </h3>
+
+  <p><strong>The vision:</strong> A parent sends a photo of their dog's rash, a product label they found at a store, or food packaging. Mira reads it and responds with genuine care context. A dog's health safety can be in a single photo moment — allergic reaction, toxic ingredient on a label. Mira should see it.</p>
+
+  <div style="background:#fffbf0;color:#78350f;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
+    [Parent sends photo of chicken jerky packaging]<br>
+    Mira: I can see this is a chicken jerky product.<br>
+    ⚠️ Mojo is allergic to chicken — please don't feed him this.<br>
+    Want me to find salmon jerky alternatives? 🐾
+  </div>
+
+  <h4>Implementation Blueprint</h4>
+  <table>
+    <tr><th>Step</th><th>Detail</th></tr>
+    <tr>
+      <td><strong>1. Gupshup image webhook</strong></td>
+      <td>
+        Gupshup sends image messages with <code>type: "image"</code> and <code>payload.url</code> (the media URL).<br>
+        In <code>whatsapp_routes.py</code> webhook handler, detect <code>msg_type == "image"</code> (currently only handles "text").<br>
+        Extract <code>image_url = payload.get("url")</code>.<br>
+        Pass to <code>get_mira_ai_response(message_text="[image]", image_url=image_url, ...)</code>.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. GPT-4o Vision call</strong></td>
+      <td>
+        In <code>get_mira_ai_response()</code>, detect <code>image_url is not None</code>.<br>
+        Use <strong>OpenAI GPT-4o</strong> with vision (NOT litellm for this — use direct openai call with EMERGENT_LLM_KEY as the api_key, base_url="https://llm.emergentmind.io/v1"):<br>
+        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">messages = [
+  {"role": "system", "content": mira_system_prompt},
+  {"role": "user", "content": [
+    {"type": "text",      "text": "The parent sent this image. Analyse it in context of their dog's soul profile."},
+    {"type": "image_url", "image_url": {"url": image_url}}
+  ]}
+]</pre>
+        The same Mira system prompt applies — allergens, health conditions, soul profile. Mira analyses the image THROUGH the pet's safety lens.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Photo type routing</strong></td>
+      <td>
+        Ask GPT to classify the image first (cheap call, 50 tokens):<br>
+        "Is this: (a) a product label, (b) a dog's body/health concern, (c) a dog doing something fun, or (d) other?"<br>
+        — Product label → allergen cross-check against pet profile<br>
+        — Health concern (rash, limp, eye) → care context + vet CTA (NEVER diagnose)<br>
+        — Fun photo → warm engagement ("Mojo looks incredible! 😍")<br>
+        — Other → general response
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4. Health concern HARD RULE</strong></td>
+      <td>
+        <strong style="color:#dc2626">CRITICAL:</strong> If image contains a health concern, Mira MUST:<br>
+        1. NOT diagnose. Not even suggest a diagnosis.<br>
+        2. Always recommend vet consultation for anything health-related.<br>
+        3. Can offer comfort: "This looks like it's bothering Mojo. Let me get your Concierge to connect you with a vet."<br>
+        Add this as an UNBREAKABLE rule in the vision system prompt:<br>
+        "NEVER diagnose medical conditions from images. Always recommend: 'Please consult your vet.' You may express concern and escalate."
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5. Allergen label cross-check</strong></td>
+      <td>
+        If image is a product label, GPT extracts ingredients list as text.<br>
+        Cross-check extracted ingredients against <code>all_allergies</code> and <code>all_conditions</code> from pet profile.<br>
+        Output: "✅ This looks safe for Mojo" OR "⚠️ Contains chicken — Mojo's allergen. Don't feed this."<br>
+        This is immediate, high-value safety intelligence.
+      </td>
+    </tr>
+    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code> webhook handler + <code>get_mira_ai_response()</code>. Add <code>image_url</code> parameter.</td></tr>
+    <tr><td><strong>Files NOT to touch</strong></td><td>Frontend files, mira_routes.py, useMiraFilter.js.</td></tr>
+    <tr><td><strong>API key</strong></td><td>Use EMERGENT_LLM_KEY (already in env). GPT-4o vision works with it via the Emergent proxy.</td></tr>
+    <tr><td><strong>Test scenario</strong></td><td>Send a photo of a chicken-based dog treat packaging to the WhatsApp number (Mojo's account). Verify Mira flags the allergen. Send a random dog photo. Verify warm engagement response.</td></tr>
+    <tr><td><strong>Liability note</strong></td><td>The "never diagnose" rule is non-negotiable from a legal standpoint. Always include vet CTA for health images. Log all health-concern image responses for review.</td></tr>
+  </table>
+
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
+
+  <!-- ─── FEATURE 4 ─── -->
+  <h3 id="f4-multipet-basket" style="color:#dc2626;font-size:1.4rem">
+    Feature 4 — Multi-Pet Basket Splitting
+    <span style="font-size:0.85rem;background:#fef2f2;color:#dc2626;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD AFTER FEATURE 3</span>
+  </h3>
+
+  <p><strong>The vision:</strong> When Dipali asks for "treats for all my dogs," Mira understands that each dog has a different safety profile. She splits the basket — one recommendation per dog, each safe for THAT dog, with a clear conflict flag when one dog's allergen is another dog's favourite ingredient.</p>
+
+  <div style="background:#fef2f2;color:#7f1d1d;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
+    Dipali: treat for all my dogs<br><br>
+    Mira: Got it! Each pup gets their own safe pick:<br><br>
+    🐕 Mojo (Indie, chicken allergy)<br>
+    → TDC Salmon Biscuits — ₹299 thedoggycompany.com/dine<br>
+    ✦ Salmon (his favourite), zero chicken<br><br>
+    🐕 Mystique (Golden)<br>
+    → TDC Chicken Jerky — ₹349 thedoggycompany.com/dine<br>
+    ✦ High-protein for her energy level<br><br>
+    ⚠️ Note: Mojo can't share Mystique's chicken jerky. Keep their treats separate! 🐾
+  </div>
+
+  <h4>Implementation Blueprint</h4>
+  <table>
+    <tr><th>Step</th><th>Detail</th></tr>
+    <tr>
+      <td><strong>1. Multi-pet intent detection</strong></td>
+      <td>
+        In <code>get_mira_ai_response()</code>, add detection before the semantic search step:<br>
+        <code>is_multi_pet = any(trigger in message_text.lower() for trigger in ["all my dogs", "all of them", "everyone", "all four", "all three", "both dogs", "all dogs"])</code><br>
+        Also: detect if 2+ pet names appear in the same message (e.g. "Mojo and Mystique").<br>
+        If <code>is_multi_pet</code> is True AND user has 2+ pets → switch to multi-pet mode.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. Per-pet semantic search</strong></td>
+      <td>
+        Run semantic search ONCE per dog (loop over pets):<br>
+        <code>for pet in pets: found = await semantic_search(query, allergies=pet.allergies)</code><br>
+        Store results as <code>per_pet_products = {"Mojo": [safe_products], "Mystique": [safe_products]}</code><br>
+        Limit: 1 top product per dog (clean WhatsApp format). 3+ recommendations per dog gets unreadable.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Cross-contamination detection</strong></td>
+      <td>
+        After per-pet search, check for conflicts:<br>
+        <code>for petA in pets: for petB in pets: if petA != petB: check if petA's allergens appear in petB's recommended product</code><br>
+        If conflict found → add WARNING to system prompt:<br>
+        <code>"⚠️ CONFLICT: Mojo is allergic to chicken. Mystique's recommended product (Chicken Jerky) contains chicken. Flag this in your response — tell Dipali to keep their treats separate."</code>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4. System prompt for multi-pet mode</strong></td>
+      <td>
+        Replace standard catalog_block with a per-pet structured block:<br>
+        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">MULTI-PET MODE: Show one safe product per dog. Format:
+🐕 [Pet Name] ([breed], [allergy summary])
+→ [Product Name] — ₹[price] [link]
+✦ Why: [reason specific to THIS dog]
+
+[Repeat for each dog]
+
+[If conflict detected:]
+⚠️ [Pet A] cannot share [Pet B]'s [product] — [allergen] allergy. Keep separate.</pre>
+      </td>
+    </tr>
+    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py get_mira_ai_response()</code> only.</td></tr>
+    <tr><td><strong>Test scenario</strong></td><td>Use Dipali's account (4 dogs, Mojo allergic to chicken). Send "treats for all my dogs." Verify: 4 separate blocks, Mojo's block has no chicken product, conflict warning appears if any other dog gets chicken.</td></tr>
+    <tr><td><strong>Note</strong></td><td>Multi-pet mode only for WhatsApp for now. Widget and MiraSearch show one pet at a time (pet switcher handles multi-pet there).</td></tr>
+  </table>
+
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
+
+  <!-- ─── FEATURE 5 ─── -->
+  <h3 id="f5-soul-loop" style="color:#0891b2;font-size:1.4rem">
+    Feature 5 — Soul Completion Loop
+    <span style="font-size:0.85rem;background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD LAST</span>
+  </h3>
+
+  <p><strong>The vision:</strong> Incomplete profiles = blind Mira. When a dog has no archetype, no breed, or no health conditions recorded, Mira is working without her most powerful tools. This feature adds a gentle, conversational profile-building loop — Mira asks 3 quick questions and unlocks the full intelligence for that dog.</p>
+
+  <div style="background:#ecfeff;color:#164e63;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
+    [Mira detects Coco has no breed or archetype]<br><br>
+    Mira: I don't know Coco well enough yet to find her perfect picks.<br>
+    Three quick questions — takes 30 seconds:<br><br>
+    1️⃣ What breed is she?<br>
+    (Reply with the breed name)<br><br>
+    [After reply]<br>
+    2️⃣ Is she more of a: (a) cuddle bug, (b) adventure seeker, (c) foodie, (d) anxious sweetie?<br><br>
+    [After reply]<br>
+    3️⃣ Any allergies or health conditions I should know?<br><br>
+    [After reply]<br>
+    Perfect! I know Coco now. Let me find her something wonderful. 🐾
+  </div>
+
+  <h4>Implementation Blueprint</h4>
+  <table>
+    <tr><th>Step</th><th>Detail</th></tr>
+    <tr>
+      <td><strong>1. Profile completeness check</strong></td>
+      <td>
+        Add <code>_is_profile_incomplete(pet)</code> to <code>whatsapp_routes.py</code>:<br>
+        Returns True if ANY of these are missing: <code>pet.breed</code>, <code>pet.archetype</code> (or soul_answers.primary_archetype), <code>pet.date_of_birth</code>.<br>
+        Only trigger the loop for the ACTIVE pet (ticket_pet_name or first pet). Not all pets at once.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>2. Soul loop session state</strong></td>
+      <td>
+        Store loop progress in <code>mira_memory</code> (Feature 1 required):<br>
+        <code>"soul_loop": {"Coco": {"step": 1, "started_at": "2026-04-09T14:00:00Z", "answers": {}}}</code><br>
+        Steps: 1=breed, 2=archetype_hint, 3=health. After step 3 → write to DB + clear loop state.<br>
+        Abandon loop after 24 hours of no response (set step back to 0).
+      </td>
+    </tr>
+    <tr>
+      <td><strong>3. Loop trigger logic</strong></td>
+      <td>
+        Only trigger when: <code>_is_profile_incomplete(active_pet)</code> AND <code>not soul_loop_active</code> AND user is NOT mid-transaction (no "buy", "book", "order" in message — don't interrupt a purchase).<br>
+        First occurrence only — if loop was already attempted and abandoned in the last 7 days, don't re-trigger.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>4. Archetype question format</strong></td>
+      <td>
+        Step 2 maps answers to archetypes:<br>
+        "cuddle bug" → <code>velcro_baby</code> | "adventure seeker" → <code>wild_explorer</code> | "foodie" → <code>snack_negotiator</code> | "anxious sweetie" → <code>brave_worrier</code> | "social butterfly" → <code>social_butterfly</code> | "born leader" → <code>gentle_aristocrat</code><br>
+        Write result to <code>pet.doggy_soul_answers.primary_archetype</code> in MongoDB.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>5. Profile write-back</strong></td>
+      <td>
+        After step 3 completes, update the pet document in MongoDB:<br>
+        <code>db.pets.update_one({"name": pet_name, "owner_email": user_email}, {"$set": {"breed": breed, "doggy_soul_answers.primary_archetype": archetype, "health_conditions": conditions}})</code><br>
+        Log: "Soul loop complete for Coco — breed: Golden Retriever, archetype: velcro_baby".<br>
+        From this point, Mira has full intelligence for this dog — archetype tone, health blocking, breed filtering all unlock.
+      </td>
+    </tr>
+    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code>. Reads/writes <code>mira_memory</code> (Feature 1 required). Writes to <code>pets</code> collection.</td></tr>
+    <tr><td><strong>Test scenario</strong></td><td>Create a test pet with no breed/archetype. Message Mira on WhatsApp. Verify loop triggers. Complete 3 steps. Verify pet document in MongoDB is updated with breed + archetype. Verify next message uses archetype tone.</td></tr>
+    <tr><td><strong>Dependency</strong></td><td>⚠️ Feature 1 (mira_memory) MUST be live before building this. Loop state is stored in mira_memory.</td></tr>
+  </table>
+
+  <hr style="border:none;border-top:2px solid #e5e7eb;margin:32px 0">
+
+  <h3>Phase 2 Summary — Build Order</h3>
+  <table>
+    <tr><th>#</th><th>Feature</th><th>Depends on</th><th>Complexity</th><th>Impact</th><th>Status</th></tr>
+    <tr><td>1</td><td>Mira Remembers (cross-session memory)</td><td>Nothing</td><td>Medium</td><td>🔴 Highest — enables all other features</td><td class="status-pending">Not started</td></tr>
+    <tr><td>2</td><td>Life Event Intelligence (proactive nudges)</td><td>Feature 1</td><td>Medium</td><td>🟠 High — turns Mira from reactive to proactive</td><td class="status-pending">Not started</td></tr>
+    <tr><td>3</td><td>WhatsApp Vision (photo understanding)</td><td>None (independent)</td><td>Low-Medium</td><td>🟠 High — safety + delight in one photo</td><td class="status-pending">Not started</td></tr>
+    <tr><td>4</td><td>Multi-Pet Basket Splitting</td><td>Feature 1 for best results</td><td>Medium</td><td>🟡 Medium — unique to TDC, no competitor does this</td><td class="status-pending">Not started</td></tr>
+    <tr><td>5</td><td>Soul Completion Loop</td><td>Feature 1</td><td>Medium</td><td>🟡 Medium — growth loop, every completion unlocks full Mira</td><td class="status-pending">Not started</td></tr>
+  </table>
+
+  <div class="alert" style="background:#fef9c3;border-left:4px solid #d97706;padding:16px;border-radius:6px;margin-top:24px">
+    <strong>⚠️ FINAL AGENT NOTE:</strong><br>
+    Build Feature 1 first. Full stop. It is the memory foundation everything else sits on.<br>
+    Do not be tempted to build Feature 3 (Vision) first because it seems exciting and self-contained.<br>
+    Do not build Feature 4 (Multi-Pet Basket) without Feature 1 — the conflict detection is better with stored context.<br>
+    The order exists for a reason. Respect it.
+  </div>
 </section>
 
 </body>
