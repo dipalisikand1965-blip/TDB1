@@ -88,11 +88,25 @@ async def run_test(scenario_num: int, message: str, user_name: str, user_phone: 
         passed = True
         if expect_blocked:
             for allergen in expect_blocked:
-                if allergen.lower() in response.lower():
-                    print(f"  ❌ FAIL: Found blocked allergen '{allergen}' in response!")
+                import re as _re
+                # Allow "no chicken", "without beef" etc. in ✦ Why lines — that's CORRECT
+                # Only fail if allergen appears as a recommendation (e.g. "chicken treats", "beef flavour")
+                bad_patterns = [
+                    rf'\b{allergen}\s+(treats?|flavou?r|based|protein|chew|food|snack|biscuit)',
+                    rf'(try|recommend|get|buy|order)\b.{{0,40}}\b{allergen}\b',
+                    rf'^[-*]\s+[^✦].*\b{allergen}\b',  # product line (not ✦ Why line) contains allergen
+                ]
+                found_bad = any(_re.search(p, response, _re.IGNORECASE | _re.MULTILINE) for p in bad_patterns)
+                # Also check: allergen appears WITHOUT "no"/"without"/"free" before it
+                safe_context = bool(_re.search(rf'\b(no|without|free\s+from|avoid|block|allerg)\b.{{0,30}}\b{allergen}\b', response, _re.IGNORECASE))
+                raw_present  = allergen.lower() in response.lower()
+                if found_bad or (raw_present and not safe_context):
+                    print(f"  ❌ FAIL: Found blocked allergen '{allergen}' recommended in response!")
                     passed = False
+                elif raw_present and safe_context:
+                    print(f"  ✅ PASS: '{allergen}' mentioned correctly as blocked (in ✦ Why line)")
                 else:
-                    print(f"  ✅ PASS: '{allergen}' correctly absent from response")
+                    print(f"  ✅ PASS: '{allergen}' correctly absent from recommendations")
 
         if expect_nearme:
             if "maps.google.com" in response or "maps.google" in response or "near" in response.lower():
