@@ -290,19 +290,33 @@ def get_service_image_prompt(service: dict) -> str:
 
 
 async def generate_ai_image(prompt: str) -> Optional[str]:
-    """Generate a product image using Gemini Nano Banana (gemini-3.1-flash-image-preview) via Emergent LLM Key.
-    Falls back to OpenAI gpt-image-1 if OPENAI_API_KEY is set directly.
+    """Generate a product image using gpt-image-1 via Emergent LLM Key (primary).
+    Falls back to Gemini Nano Banana if gpt-image-1 fails.
     Uploads result to Cloudinary and returns the secure URL."""
     import base64, uuid
 
-    if not EMERGENT_LLM_KEY and not OPENAI_API_KEY:
-        logger.error("No image generation key configured — set EMERGENT_LLM_KEY or OPENAI_API_KEY in .env")
+    if not EMERGENT_LLM_KEY:
+        logger.error("EMERGENT_LLM_KEY not configured")
         return None
 
     image_data_url: Optional[str] = None
 
-    # ── Primary: Gemini Nano Banana (uses Emergent LLM Key) ────────────────────
-    if EMERGENT_LLM_KEY:
+    # ── Primary: gpt-image-1 via Emergent LLM Key ──────────────────────────────
+    try:
+        from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
+        image_gen = OpenAIImageGeneration(api_key=EMERGENT_LLM_KEY)
+        raw_images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
+        if raw_images:
+            b64 = base64.b64encode(raw_images[0]).decode("utf-8")
+            image_data_url = f"data:image/png;base64,{b64}"
+            logger.info("gpt-image-1 via Emergent succeeded ✅")
+        else:
+            logger.warning("gpt-image-1 returned no images — trying Gemini fallback")
+    except Exception as oai_err:
+        logger.error(f"gpt-image-1 failed: {str(oai_err)[:200]} — trying Gemini fallback")
+
+    # ── Fallback: Gemini Nano Banana via Emergent LLM Key ──────────────────────
+    if not image_data_url:
         try:
             from emergentintegrations.llm.chat import LlmChat, UserMessage
             session_id = f"img-gen-{uuid.uuid4().hex[:12]}"
@@ -314,32 +328,16 @@ async def generate_ai_image(prompt: str) -> Optional[str]:
             chat.with_model("gemini", "gemini-3.1-flash-image-preview").with_params(modalities=["image", "text"])
             msg = UserMessage(text=prompt)
             _text, images = await chat.send_message_multimodal_response(msg)
-
             if images and len(images) > 0:
                 img = images[0]
                 image_bytes = base64.b64decode(img["data"])
-                image_base64 = img["data"]
-                mime = img.get("mime_type", "image/png")
-                image_data_url = f"data:{mime};base64,{image_base64}"
-                logger.info(f"Gemini image generated OK ({len(image_bytes):,} bytes)")
+                image_data_url = f"data:{img.get('mime_type','image/png')};base64,{img['data']}"
+                logger.info(f"Gemini fallback succeeded ({len(image_bytes):,} bytes) ✅")
             else:
-                logger.warning("Gemini returned no images — trying OpenAI fallback")
+                logger.error("Gemini fallback also returned no images")
+                return None
         except Exception as gemini_err:
-            logger.error(f"Gemini image generation failed: {str(gemini_err)[:200]}")
-
-    # ── Fallback: gpt-image-1 with user's own OpenAI key ───────────────────────
-    if not image_data_url and OPENAI_API_KEY:
-        try:
-            from emergentintegrations.llm.openai.image_generation import OpenAIImageGeneration
-            logger.info("Trying gpt-image-1 fallback with OPENAI_API_KEY...")
-            image_gen = OpenAIImageGeneration(api_key=OPENAI_API_KEY)
-            raw_images = await image_gen.generate_images(prompt=prompt, number_of_images=1, model="gpt-image-1")
-            if raw_images:
-                b64 = base64.b64encode(raw_images[0]).decode("utf-8")
-                image_data_url = f"data:image/png;base64,{b64}"
-                logger.info("gpt-image-1 fallback succeeded ✅")
-        except Exception as oai_err:
-            logger.error(f"gpt-image-1 fallback also failed: {str(oai_err)[:200]}")
+            logger.error(f"Gemini fallback also failed: {str(gemini_err)[:200]}")
             return None
 
     if not image_data_url:
