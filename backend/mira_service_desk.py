@@ -32,6 +32,38 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+# ── Intent types that are purely internal tracking / browse events ───────────
+# These create admin service desk entries + admin notification bell ONLY.
+# Members do NOT receive emails or bell notifications for these events.
+# Real concierge requests (service_booking, concierge_request, etc.) are NOT in this set.
+SILENT_MEMBER_INTENT_TYPES = frozenset({
+    "browse_intent",         # pillar visits, tab changes, cart browsing
+    "search_intent",         # search queries
+    "nearme_search",         # near-me map searches (not actual bookings)
+    "product_interest",      # product card views
+    "product_browse",        # product listing views
+    "mira_chat_intent",      # Mira AI chat sessions started from tracking hook
+    "onboarding_progress",   # onboarding step completions
+    "page_view",             # generic page views
+    "pillar_visit",          # pillar page visits
+    "GENERAL_QUERY",         # Mira widget default (no specific intent)
+    "internal",              # internal system events
+    "internal_tracking",     # internal tracking events
+    "test_wa_check",         # integration test events
+    "platform_integrity_test", # platform tests
+})
+
+def _is_silent_intent(intent_primary: str) -> bool:
+    """Return True if this intent is internal/browse and should NOT notify the member."""
+    if not intent_primary:
+        return False
+    if intent_primary in SILENT_MEMBER_INTENT_TYPES:
+        return True
+    # Mira AI auto-generated concern tickets (e.g. "mira_health_concern")
+    if intent_primary.startswith("mira_") and intent_primary.endswith("_concern"):
+        return True
+    return False
+
 # Routers
 mira_router = APIRouter(prefix="/api/mira", tags=["mira-service-desk"])
 service_desk_router = APIRouter(prefix="/api/service_desk", tags=["service-desk"])
@@ -776,32 +808,37 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "read": False, "created_at": now.isoformat(),
     })
 
-    # ── Member notification ────────────────────────────────────────
-    await db.member_notifications.insert_one({
-        "type": "ticket_created", "ticket_id": ticket_id,
-        "parent_id": request.parent_id, "subject": subject,
-        "message": f"Your request for {service_name} has been received. Concierge will be in touch shortly.",
-        "pillar": request.pillar, "read": False, "created_at": now.isoformat(),
-    })
+    # ── Member notification (bell) — skip for browse / internal tracking events ──
+    if not _is_silent_intent(request.intent_primary):
+        await db.member_notifications.insert_one({
+            "type": "ticket_created", "ticket_id": ticket_id,
+            "parent_id": request.parent_id, "subject": subject,
+            "message": f"Your request for {service_name} has been received. Concierge will be in touch shortly.",
+            "pillar": request.pillar, "read": False, "created_at": now.isoformat(),
+        })
 
     logger.info(f"[SERVICE_DESK] Created enriched ticket: {ticket_id} — '{subject}' | briefing={'yes' if mira_briefing else 'no'}")
     
     # Send WhatsApp + Email confirmation to parent on new ticket
-    try:
-        import asyncio
-        from services.whatsapp_service import send_concierge_request
-        from services.email_service import send_concierge_request_email
-        ticket_for_notif = {"ticket_id": ticket_id, "subject": subject, "pillar": request.pillar, "id": ticket_id}
-        pet_for_notif = {"name": pet_name} if pet_name else None
-        asyncio.ensure_future(
-            send_concierge_request(member_obj, pet_for_notif, ticket_for_notif)
-        )
-        if member_obj.get("email"):
+    # Skip entirely for browse / internal tracking events — admin bell only
+    if not _is_silent_intent(request.intent_primary):
+        try:
+            import asyncio
+            from services.whatsapp_service import send_concierge_request
+            from services.email_service import send_concierge_request_email
+            ticket_for_notif = {"ticket_id": ticket_id, "subject": subject, "pillar": request.pillar, "id": ticket_id}
+            pet_for_notif = {"name": pet_name} if pet_name else None
             asyncio.ensure_future(
-                send_concierge_request_email(member_obj, pet_for_notif, ticket_for_notif)
+                send_concierge_request(member_obj, pet_for_notif, ticket_for_notif)
             )
-    except Exception as e:
-        logger.warning(f"[SERVICE_DESK] Notification send failed for {ticket_id}: {e}")
+            if member_obj.get("email"):
+                asyncio.ensure_future(
+                    send_concierge_request_email(member_obj, pet_for_notif, ticket_for_notif)
+                )
+        except Exception as e:
+            logger.warning(f"[SERVICE_DESK] Notification send failed for {ticket_id}: {e}")
+    else:
+        logger.info(f"[SERVICE_DESK] Skipping member notification for silent intent '{request.intent_primary}' — ticket {ticket_id}")
     
     return AttachOrCreateTicketResponse(
         ticket_id=ticket_id,

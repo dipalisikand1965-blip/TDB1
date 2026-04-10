@@ -55,6 +55,10 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ### P0 (Critical)
 - [x] Mira Soul Unification — DONE ✅
+- [x] Stop member emails/bell for browse intent, mira chat, internal tracking — DONE ✅
+  - `SILENT_MEMBER_INTENT_TYPES` frozenset in `mira_service_desk.py`
+  - `_is_silent_intent()` helper (also catches `mira_*_concern` pattern)
+  - Member bell notification + `send_concierge_request_email` both gated
 
 ### P1 (High — Next Sprint)
 - [ ] Fix Razorpay checkout `/api/orders/create-order` body error
