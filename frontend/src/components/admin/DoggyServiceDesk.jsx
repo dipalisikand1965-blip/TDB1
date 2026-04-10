@@ -1428,6 +1428,22 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  const handleCategoryChange = async (newCategory) => {
+    if (!selectedTicket || !newCategory) return;
+    try {
+      const response = await fetch(`${getApiUrl()}/api/tickets/${selectedTicket.ticket_id}`, {
+        method: 'PATCH',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: newCategory, pillar: newCategory })
+      });
+      if (!response.ok) { console.error('Category update failed:', response.status); return; }
+      setSelectedTicket(prev => ({ ...prev, category: newCategory, pillar: newCategory }));
+      await fetchAllTickets();
+    } catch (err) {
+      console.error('Category update error:', err);
+    }
+  };
+
   // ==================== BULK ACTIONS ====================
   
   // Toggle ticket selection
@@ -4520,7 +4536,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                       {/* Pillar Selector */}
                       <select
                         value={selectedTicket.category || ''}
-                        onChange={(e) => handleStatusChange(selectedTicket.status)} // Will update via edit
+                        onChange={(e) => handleCategoryChange(e.target.value)}
                         className="text-sm rounded px-3 py-2 bg-white border"
                         title="Change Pillar"
                       >
