@@ -20271,7 +20271,12 @@ async def verify_payment(request: VerifyPaymentRequest):
         # Determine Pet Pass plan type based on duration
         pet_pass_plan = "trial" if duration_days <= 31 else "foundation"
         
-        user = await db.users.find_one({"email": request.user_email})
+        # Resolve user email — prefer from request, fall back to what was stored at order creation
+        resolved_email = request.user_email or order.get("user_email")
+        if not resolved_email:
+            raise HTTPException(status_code=400, detail="User email not found in request or order")
+        
+        user = await db.users.find_one({"email": resolved_email})
         
         if user:
             current_expires = user.get("membership_expires")
@@ -20284,7 +20289,7 @@ async def verify_payment(request: VerifyPaymentRequest):
                     pass
             
             await db.users.update_one(
-                {"email": request.user_email},
+                {"email": resolved_email},
                 {"$set": {
                     "membership_tier": order.get("tier", "loyal_companion"),
                     "membership_expires": expires_at.isoformat(),
@@ -20309,7 +20314,7 @@ async def verify_payment(request: VerifyPaymentRequest):
         else:
             new_user = {
                 "id": f"user-{uuid.uuid4().hex[:12]}",
-                "email": request.user_email,
+                "email": resolved_email,
                 "name": order.get("user_name", ""),
                 "phone": order.get("user_phone", ""),
                 "membership_tier": order.get("tier", "pawsome"),
@@ -20323,7 +20328,7 @@ async def verify_payment(request: VerifyPaymentRequest):
         
         await db.payment_history.insert_one({
             "id": f"pay-{uuid.uuid4().hex[:12]}",
-            "user_email": request.user_email,
+            "user_email": resolved_email,
             "razorpay_order_id": request.razorpay_order_id,
             "razorpay_payment_id": request.razorpay_payment_id,
             "plan_id": order.get("plan_id"),
@@ -20353,7 +20358,7 @@ async def verify_payment(request: VerifyPaymentRequest):
             "reference_type": "membership",
             "reference_id": order.get("plan_id"),
             "member_id": user.get("id") if user else None,
-            "member_email": request.user_email,
+            "member_email": resolved_email,
             "member_name": order.get("user_name", user.get("name", "") if user else ""),
             "reconciled": False,
             "created_at": get_utc_timestamp(),
@@ -20366,13 +20371,13 @@ async def verify_payment(request: VerifyPaymentRequest):
         await create_admin_notification(
             notification_type="payment",
             title="💰 Payment Received - Pet Pass Activated",
-            message=f"{request.user_email} completed payment. Pet Pass is now active until {expires_at.strftime('%d %b %Y')}!",
+            message=f"{resolved_email} completed payment. Pet Pass is now active until {expires_at.strftime('%d %b %Y')}!",
             category="payments",
             related_id=request.razorpay_payment_id,
             link_to="/admin?tab=members",
             priority="normal",
             metadata={
-                "email": request.user_email,
+                "email": resolved_email,
                 "amount": order.get("amount"),
                 "plan": order.get("plan_name"),
                 "expires": expires_at.isoformat()
@@ -20381,7 +20386,7 @@ async def verify_payment(request: VerifyPaymentRequest):
         
         # Update related Service Desk ticket (if exists)
         existing_ticket = await db.service_desk_tickets.find_one(
-            {"member_email": request.user_email, "type": "new_member", "status": {"$in": ["new", "open", "pending"]}}
+            {"member_email": resolved_email, "type": "new_member", "status": {"$in": ["new", "open", "pending"]}}
         )
         if existing_ticket:
             await db.service_desk_tickets.update_one(
@@ -20407,7 +20412,7 @@ async def verify_payment(request: VerifyPaymentRequest):
         try:
             from services.whatsapp_service import send_order_confirmed
             from services.email_service import send_order_confirmed_email
-            user_for_notif = user or {"email": request.user_email, "name": order.get("user_name", ""), "phone": order.get("user_phone", "")}
+            user_for_notif = user or {"email": resolved_email, "name": order.get("user_name", ""), "phone": order.get("user_phone", "")}
             order_for_notif = {
                 "orderId": request.razorpay_order_id,
                 "id": request.razorpay_payment_id,
