@@ -1,6 +1,19 @@
 # TDC Changelog
 
-## April 10, 2026 — Silent Browse/Internal Intent Email Fix
+## April 10, 2026 — Razorpay Verify Bug Fix (Membership Activation)
+
+### models.py
+- Added `user_email: Optional[str] = None` to `VerifyPaymentRequest` — was missing, causing `AttributeError` → membership never activated after payment
+
+### server.py (verify_payment handler)
+- Added `resolved_email = request.user_email or order.get("user_email")` fallback
+- Replaced all `request.user_email` usages with `resolved_email`
+
+### checkout_routes.py (verify-payment handler)
+- Replaced manual HMAC-SHA256 with `razorpay_client.utility.verify_payment_signature()` (SDK-native)
+- Removed unused `hmac` and `hashlib` imports
+
+
 
 ### mira_service_desk.py — Member Email & Notification Gating
 - Added `SILENT_MEMBER_INTENT_TYPES` frozenset (13 intent types: browse_intent, search_intent, nearme_search, product_interest, mira_chat_intent, onboarding_progress, product_browse, page_view, pillar_visit, GENERAL_QUERY, internal, internal_tracking, test events)
