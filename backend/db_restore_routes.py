@@ -21,6 +21,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from pymongo import UpdateOne
 import secrets
 
 logger = logging.getLogger(__name__)
@@ -33,6 +34,15 @@ ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "aditya")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 
 MIGRATION_DIR = Path(__file__).parent / "migration_data"
+
+# AI-computed / regeneratable collections — always drop+bulk-insert (much faster than upsert)
+BULK_INSERT_COLLECTIONS = {
+    "mira_product_scores",
+    "mira_signals",
+    "mira_inferences",
+    "breed_soul_products",
+    "product_soul_tiers",
+}
 
 COLLECTIONS_CONFIG = [
     # ── Core user & pet data ──────────────────────────────────────────────────
@@ -336,23 +346,45 @@ async def _do_restore(drop_existing: bool = False):
 
             inserted = updated = skipped = 0
 
-            for doc in docs:
-                key_val = doc.get(upsert_key)
-                if key_val is None:
+            if collection_name in BULK_INSERT_COLLECTIONS:
+                # ── Fast path: drop + bulk insert_many (AI-computed, safe to regenerate) ──
+                await collection.drop()
+                CHUNK = 500
+                for i in range(0, len(docs), CHUNK):
+                    chunk = docs[i:i + CHUNK]
                     try:
-                        await collection.insert_one(doc)
-                        inserted += 1
-                    except Exception:
-                        skipped += 1
-                    continue
-
-                existing = await collection.find_one({upsert_key: key_val}, {"_id": 1})
-                if existing:
-                    await collection.update_one({upsert_key: key_val}, {"$set": doc})
-                    updated += 1
-                else:
-                    await collection.insert_one(doc)
-                    inserted += 1
+                        res = await collection.insert_many(chunk, ordered=False)
+                        inserted += len(res.inserted_ids)
+                    except Exception as bulk_err:
+                        logger.warning(f"[DB-RESTORE] bulk insert chunk error on {collection_name}: {bulk_err}")
+                        skipped += len(chunk)
+            else:
+                # ── Standard path: bulk_write UpdateOne upserts (single network call per 500 docs) ──
+                CHUNK = 500
+                for i in range(0, len(docs), CHUNK):
+                    chunk = docs[i:i + CHUNK]
+                    ops = []
+                    no_key = []
+                    for doc in chunk:
+                        key_val = doc.get(upsert_key)
+                        if key_val is None:
+                            no_key.append(doc)
+                        else:
+                            ops.append(UpdateOne({upsert_key: key_val}, {"$set": doc}, upsert=True))
+                    if ops:
+                        try:
+                            res = await collection.bulk_write(ops, ordered=False)
+                            inserted += res.upserted_count
+                            updated  += res.matched_count
+                        except Exception as bw_err:
+                            logger.warning(f"[DB-RESTORE] bulk_write error on {collection_name}: {bw_err}")
+                            skipped += len(ops)
+                    for doc in no_key:
+                        try:
+                            await collection.insert_one(doc)
+                            inserted += 1
+                        except Exception:
+                            skipped += 1
 
             _restore_state["collections"][collection_name] = {
                 "status": "ok", "total": len(docs),
