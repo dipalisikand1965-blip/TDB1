@@ -54,7 +54,7 @@ COLLECTIONS_CONFIG = [
     ("enhanced_collections",     "enhanced_collections",     "id"),
     ("occasion_box_templates",   "occasion_box_templates",   "id"),
     ("product_pricing",          "product_pricing",          "id"),
-    ("unified_products",         "unified_products",         "id"),
+    ("products",                 "products",                 "id"),
     # ── Pillar bundles ────────────────────────────────────────────────────────
     ("guided_paths",             "guided_paths",             "id"),
     ("learn_guides",             "learn_guides",             "id"),
@@ -78,6 +78,8 @@ COLLECTIONS_CONFIG = [
     ("mira_sessions",            "mira_sessions",            "id"),
     ("mira_inferences",          "mira_inferences",          "id"),
     ("mira_uploads",             "mira_uploads",             "id"),
+    ("mira_product_scores",      "mira_product_scores",      "entity_id"),
+    ("mira_signals",             "mira_signals",             "id"),
     ("conversation_memories",    "conversation_memories",    "id"),
     ("nudge_schedules",          "nudge_schedules",          "id"),
     # ── WhatsApp ──────────────────────────────────────────────────────────────
@@ -110,6 +112,12 @@ COLLECTIONS_CONFIG = [
     ("cake_orders",              "cake_orders",              "id"),
     ("custom_orders",            "custom_orders",            "id"),
     ("payment_orders",           "payment_orders",           "id"),
+    # ── Notifications & Logs ──────────────────────────────────────────────────
+    ("admin_notifications",      "admin_notifications",      "id"),
+    ("member_notifications",     "member_notifications",     "id"),
+    ("email_logs",               "email_logs",               "idempotency_key"),
+    ("events_log",               "events_log",               "message_id"),
+    ("communication_log",        "communication_log",        "id"),
     # ── Content & CMS ─────────────────────────────────────────────────────────
     ("blog_posts",               "blog_posts",               "id"),
     ("faqs",                     "faqs",                     "id"),
@@ -184,8 +192,17 @@ COLLECTIONS_CONFIG = [
     ("user_streaks",             "user_streaks",             "id"),
     ("pawrent_journey_progress", "pawrent_journey_progress", "id"),
     ("user_learn_intents",       "user_learn_intents",       "id"),
-    ("communication_log",        "communication_log",        "id"),
     ("health_reminders",         "health_reminders",         "id"),
+    # ── Support & Activity ────────────────────────────────────────────────────
+    ("services",                 "services",                 "id"),
+    ("dismissed_alerts",         "dismissed_alerts",         "alert_id"),
+    ("soul_score_history",       "soul_score_history",       "pet_id"),
+    ("ticket_viewers",           "ticket_viewers",           "ticket_id"),
+    ("learn_products",           "learn_products",           "id"),
+    ("concierge_messages",       "concierge_messages",       "id"),
+    ("concierge_threads",        "concierge_threads",        "id"),
+    ("custom_cake_designs",      "custom_cake_designs",      "id"),
+    ("member_password_resets",   "member_password_resets",   "email"),
 ]
 
 # ── In-memory restore progress state ─────────────────────────────────────────
