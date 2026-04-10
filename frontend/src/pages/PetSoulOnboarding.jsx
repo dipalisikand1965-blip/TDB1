@@ -918,6 +918,22 @@ export default function PetSoulOnboarding() {
     }
   };
 
+  // ── Back to previous question — restores saved answer ─────────────────
+  const handleBack = () => {
+    if (qIdx === 0) return;
+    const prevQ = ALL_QUESTIONS[qIdx - 1];
+    const prevAnswer = answers[prevQ.key];
+    if (prevQ.type === 'text') {
+      setTextAnswer(prevAnswer || '');
+      setSelected(null);
+    } else {
+      const prevOpt = prevQ.options?.find(o => o.value === prevAnswer) || null;
+      setSelected(prevOpt);
+      setTextAnswer('');
+    }
+    setQIdx(prev => prev - 1);
+  };
+
   // ── Soul score ring path ───────────────────────────────────────────────
   const ringPct = Math.round((score / TOTAL_PTS) * 100);
   const RING_C = 314; // 2 * PI * 50
@@ -1258,24 +1274,41 @@ export default function PetSoulOnboarding() {
           </button>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            {!q.required && (
-              <button
-                onClick={handleSkipChapter}
-                data-testid="soul-builder-skip-chapter-btn"
-                style={{
-                  background: 'none', border: 'none',
-                  color: C.dim, fontSize: 12, cursor: 'pointer',
-                  fontFamily: "'DM Sans', sans-serif",
-                }}
-              >
-                Skip chapter {"\u2192"}
-              </button>
-            )}
-            {q.required && (
-              <span style={{ fontSize: 11, color: C.dim, fontFamily: "'DM Sans', sans-serif" }}>
-                * Required for local recommendations
-              </span>
-            )}
+            {/* Left group: Back + Skip chapter */}
+            <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+              {qIdx > 0 && (
+                <button
+                  onClick={handleBack}
+                  data-testid="soul-builder-back-btn"
+                  style={{
+                    background: 'none', border: 'none',
+                    color: C.muted, fontSize: 12, cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif",
+                    display: 'flex', alignItems: 'center', gap: 4,
+                  }}
+                >
+                  {"\u2190"} Back
+                </button>
+              )}
+              {!q.required && (
+                <button
+                  onClick={handleSkipChapter}
+                  data-testid="soul-builder-skip-chapter-btn"
+                  style={{
+                    background: 'none', border: 'none',
+                    color: C.dim, fontSize: 12, cursor: 'pointer',
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  Skip chapter {"\u2192"}
+                </button>
+              )}
+              {q.required && qIdx === 0 && (
+                <span style={{ fontSize: 11, color: C.dim, fontFamily: "'DM Sans', sans-serif" }}>
+                  * Required for local recommendations
+                </span>
+              )}
+            </div>
             <button
               onClick={() => navigate('/pet-home')}
               data-testid="soul-builder-save-later-btn"
