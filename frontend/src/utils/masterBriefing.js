@@ -23,11 +23,11 @@ export function getAllergiesFromPet(pet) {
       v.forEach(x => {
         const name = (typeof x === 'object' ? (x?.name || x?.value) : x);
         if (name && typeof name === 'string' && name.trim() && !ALLERGY_JUNK.test(name.trim())) {
-          s.add(name.trim());
+          s.add(name.trim().toLowerCase());
         }
       });
     } else if (v && typeof v === 'string' && v.trim() && !ALLERGY_JUNK.test(v.trim())) {
-      s.add(v.trim());
+      s.add(v.trim().toLowerCase());
     }
   };
 

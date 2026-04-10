@@ -1972,3 +1972,8 @@ frontend/node_modules/.cache/default-development/72.pack
 # Environment files
 *.env
 *.env.*
+frontend/node_modules/.cache/default-development/89.pack
+-e 
+# Environment files
+*.env
+*.env.*
