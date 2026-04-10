@@ -1,9 +1,22 @@
 # TDC Deployment Rules — MANDATORY FOR ALL AGENTS
-## Last Updated: April 9, 2026
+## Last Updated: April 10, 2026
 
 ## THE GOLDEN RULE
 Any data change in preview must be exported to migration files 
 BEFORE deploying. Otherwise Restore Database loads OLD data.
+
+## Migration Coverage (as of April 10, 2026)
+**132 collections | ~20,500 docs | restored on every "Restore Database"**
+
+Previously only 14 collections were restored. Now ALL state data is covered:
+- Core: users, pets (with primary_archetype), products_master, services_master, breed_products
+- WhatsApp: whatsapp_logs, whatsapp_digest_log, live_conversation_threads  
+- Mira: mira_conversations, mira_memories, mira_tickets, mira_sessions, nudge_schedules
+- Tickets: service_desk_tickets, tickets, mira_tickets, unified_inbox, channel_intakes
+- Orders: orders, birthday_box_orders, membership_orders, cake_orders
+- Content: blog_posts, faqs, learn_*, team_members, testimonials, stay_*, restaurants
+- Config: app_settings, settings, escalation_rules, ticket_templates, pricing_tiers
+- +90 more (see COLLECTIONS_CONFIG in db_restore_routes.py)
 
 ## What triggers a re-export?
 
@@ -17,7 +30,11 @@ BEFORE deploying. Otherwise Restore Database loads OLD data.
 | New member registered | users.json.gz |
 | Guided paths changed | guided_paths.json.gz |
 | Ticket status changed | service_desk_tickets.json.gz |
-| New WhatsApp tickets created | service_desk_tickets.json.gz |
+| New WhatsApp tickets created | service_desk_tickets.json.gz, whatsapp_logs.json.gz |
+| WhatsApp conversation history | live_conversation_threads.json.gz |
+| Mira memory updated | mira_memories.json.gz |
+| Orders placed | orders.json.gz |
+| Any DB data change | Run full export script below |
 
 ## How to re-export a single collection:
 ```python
