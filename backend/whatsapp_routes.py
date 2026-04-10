@@ -45,7 +45,37 @@ def get_whatsapp_config():
     }
 
 
-def get_gupshup_config():
+from difflib import SequenceMatcher
+
+def _fuzzy_pet_match(text: str, pet_names: list) -> str | None:
+    """
+    Returns the best matching pet name from the list, or None.
+    Handles typos: "Bdmash" → "Badmash", "sultan" → "Sultan".
+    Uses difflib similarity (>0.6 threshold).
+    """
+    if not text or not pet_names:
+        return None
+    text_clean = text.lower().strip()
+    # Strip noise words so "my dog badmash" → "badmash"
+    for noise in ("my", "dog", "pet", "him", "her", "the", "a", "is", "it"):
+        text_clean = text_clean.replace(f" {noise} ", " ").strip()
+        if text_clean.startswith(noise + " "):
+            text_clean = text_clean[len(noise):].strip()
+
+    best_pet, best_ratio = None, 0.6  # minimum threshold
+    for pet in pet_names:
+        pet_lower = pet.lower()
+        # Exact / substring match first
+        if pet_lower == text_clean or pet_lower in text_clean or text_clean in pet_lower:
+            return pet
+        # Fuzzy via difflib
+        ratio = SequenceMatcher(None, text_clean, pet_lower).ratio()
+        if ratio > best_ratio:
+            best_ratio = ratio
+            best_pet = pet
+    return best_pet
+
+
     """Get Gupshup configuration from environment"""
     return {
         "api_key": os.environ.get("GUPSHUP_API_KEY"),
@@ -1486,6 +1516,32 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     # ── 2b. Multi-pet disambiguation — ask which dog before doing anything ────
     # Only triggers when: user has 2+ pets AND no pet name in message AND no open ticket
     first_name = (user_name or "friend").split()[0]
+
+    # ── 2b-i. Check if we already ASKED "which dog?" on the previous message ──
+    # If yes: treat the current message as the pet selection reply (fuzzy match).
+    if open_ticket and open_ticket.get("wa_awaiting_pet_selection") and len(all_pet_names) > 1:
+        matched = _fuzzy_pet_match(message_text, all_pet_names)
+        if matched:
+            ticket_pet_name = matched
+            # Restore the original question and clear the flag
+            original_msg = open_ticket.get("wa_original_message") or message_text
+            logger.info(f"[MIRA-AI] Pet selection resolved: '{message_text}' → '{matched}' | continuing with: '{original_msg[:60]}'")
+            try:
+                await db.service_desk_tickets.update_one(
+                    {"_id": open_ticket["_id"]},
+                    {"$set": {"pet_name": matched,
+                              "wa_awaiting_pet_selection": False,
+                              "wa_original_message": None}}
+                )
+            except Exception:
+                pass
+            message_text = original_msg  # answer the ORIGINAL question about the matched pet
+        else:
+            # Can't match — ask again with a gentle hint
+            pet_list = " or ".join(all_pet_names[:4])
+            return f"Sorry, I didn't catch that! Did you mean {pet_list}? Just type the name 🐾"
+
+    # ── 2b-ii. First time asking — ask which dog and save state ───────────────
     if not ticket_pet_name and len(all_pet_names) > 1:
         # Show max 4 pet names to keep WhatsApp message short
         shown = all_pet_names[:4]
@@ -1494,6 +1550,16 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
         else:
             pet_list = ", ".join(shown[:-1]) + " or " + shown[-1]
         logger.info(f"[MIRA-AI] Multi-pet disambiguation → asking which dog ({pet_list})")
+        # Save state so next reply is treated as pet selection
+        if open_ticket:
+            try:
+                await db.service_desk_tickets.update_one(
+                    {"_id": open_ticket["_id"]},
+                    {"$set": {"wa_awaiting_pet_selection": True,
+                              "wa_original_message": message_text}}
+                )
+            except Exception:
+                pass
         return f"Hey {first_name}! Which of your dogs are we chatting about — {pet_list}? 🐾"
 
     # ── 3. Semantic search → real TDC products ────────────────────────────────
