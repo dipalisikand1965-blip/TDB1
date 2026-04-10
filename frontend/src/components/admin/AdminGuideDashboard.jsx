@@ -7,7 +7,7 @@
  * - Quick reference for all features
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -70,6 +70,38 @@ const AdminGuideDashboard = () => {
   const [restoreMsg, setRestoreMsg] = useState(null);
   const [reExporting, setReExporting] = useState(false);
   const [reExportMsg, setReExportMsg] = useState(null);
+  const [lastExportedAt, setLastExportedAt] = useState(null);   // ISO string or null
+  const [exportedDocs, setExportedDocs] = useState(null);
+
+  // ── Fetch last-export timestamp on mount + every 60s ───────────────────────
+  useEffect(() => {
+    const fetchLastExport = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/admin/db/re-export-last`);
+        const data = await res.json();
+        if (data.exported_at) {
+          setLastExportedAt(data.exported_at);
+          if (data.total_docs) setExportedDocs(data.total_docs);
+        }
+      } catch { /* silent — timestamp is informational */ }
+    };
+    fetchLastExport();
+    const interval = setInterval(fetchLastExport, 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Helper: "4 mins ago", "2 hours ago", "just now"
+  const relativeTime = (isoString) => {
+    if (!isoString) return null;
+    const diffMs  = Date.now() - new Date(isoString).getTime();
+    const diffMin = Math.floor(diffMs / 60_000);
+    if (diffMin < 1)  return 'just now';
+    if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? 's' : ''} ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr  < 24) return `${diffHr} hr${diffHr > 1 ? 's' : ''} ago`;
+    const diffDay = Math.floor(diffHr / 24);
+    return `${diffDay} day${diffDay > 1 ? 's' : ''} ago`;
+  };
 
   const handleRestore = async () => {
     if (!window.confirm(
@@ -181,6 +213,7 @@ const AdminGuideDashboard = () => {
               ? `⚠️ Export done with ${errCount} error(s) — ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s`
               : `✅ ${state.total_docs?.toLocaleString()} docs exported across ${total} collections in ${state.duration_seconds}s`;
             setReExportMsg({ ok: errCount === 0, text: msg });
+            if (state.finished_at) { setLastExportedAt(state.finished_at); setExportedDocs(state.total_docs); }
             toast({ title: errCount === 0 ? '✅ Re-export Complete!' : '⚠️ Re-export Complete with Errors', description: msg, duration: 8000 });
           } else if (state.status === 'error') {
             clearInterval(poll);
@@ -609,44 +642,62 @@ const AdminGuideDashboard = () => {
             </p>
           </div>
           
-          <div className="flex gap-3 flex-wrap">
-            <Button 
-              onClick={handleRestore}
-              disabled={restoring}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold"
-              data-testid="restore-db-btn"
-            >
-              {restoring ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Restoring... (~20s)</>
-              ) : (
-                <><Database className="w-4 h-4 mr-2" /> Restore Database</>
-              )}
-            </Button>
-            <Button 
-              onClick={handleReExport}
-              disabled={reExporting}
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 font-bold"
-              data-testid="re-export-migration-btn"
-            >
-              {reExporting ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Exporting... (~30s)</>
-              ) : (
-                <><UploadCloud className="w-4 h-4 mr-2" /> Re-export Migration Data</>
-              )}
-            </Button>
-            <Button 
-              onClick={downloadDatabase}
-              disabled={downloading}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
-              data-testid="download-database-btn"
-            >
-              {downloading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
-              )}
-              {downloading ? 'Exporting...' : 'Download Database Backup'}
-            </Button>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-3 flex-wrap">
+              <Button 
+                onClick={handleRestore}
+                disabled={restoring}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 font-bold"
+                data-testid="restore-db-btn"
+              >
+                {restoring ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Restoring... (~20s)</>
+                ) : (
+                  <><Database className="w-4 h-4 mr-2" /> Restore Database</>
+                )}
+              </Button>
+
+              <div className="flex flex-col gap-1">
+                <Button 
+                  onClick={handleReExport}
+                  disabled={reExporting}
+                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 font-bold"
+                  data-testid="re-export-migration-btn"
+                >
+                  {reExporting ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Exporting... (~30s)</>
+                  ) : (
+                    <><UploadCloud className="w-4 h-4 mr-2" /> Re-export Migration Data</>
+                  )}
+                </Button>
+                {/* "Last exported" timestamp — always visible */}
+                <p className="text-xs text-center" data-testid="last-exported-timestamp">
+                  {reExporting
+                    ? <span className="text-amber-400 animate-pulse">Exporting now...</span>
+                    : lastExportedAt
+                      ? <span className="text-amber-300/80">
+                          Last exported: {relativeTime(lastExportedAt)}
+                          {exportedDocs ? ` · ${exportedDocs.toLocaleString()} docs` : ''}
+                        </span>
+                      : <span className="text-slate-500">Never exported — run before GitHub push</span>
+                  }
+                </p>
+              </div>
+
+              <Button 
+                onClick={downloadDatabase}
+                disabled={downloading}
+                className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+                data-testid="download-database-btn"
+              >
+                {downloading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                {downloading ? 'Exporting...' : 'Download Database Backup'}
+              </Button>
+            </div>
           </div>
         </div>
       </Card>

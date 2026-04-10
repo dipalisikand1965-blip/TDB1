@@ -581,6 +581,22 @@ async def _do_export():
         f"{len(COLLECTIONS_CONFIG)} collections"
     )
 
+    # ── Persist manifest so timestamp survives server restarts ─────────────────
+    manifest = {
+        "exported_at":        finished.isoformat(),
+        "collections_total":  len(COLLECTIONS_CONFIG),
+        "total_docs":         _export_state["total_docs"],
+        "duration_seconds":   duration,
+        "errors":             len(_export_state["errors"]),
+    }
+    manifest_path = MIGRATION_DIR / "_export_manifest.json"
+    try:
+        with open(manifest_path, "w") as mf:
+            json.dump(manifest, mf)
+        logger.info(f"[DB-EXPORT] Manifest written → {manifest_path}")
+    except Exception as mf_err:
+        logger.warning(f"[DB-EXPORT] Could not write manifest: {mf_err}")
+
 
 @restore_router.post("/re-export")
 async def re_export_migration(
@@ -611,3 +627,48 @@ async def re_export_migration(
 async def re_export_progress():
     """Poll this endpoint for live re-export status. No auth needed."""
     return _export_state
+
+
+@restore_router.get("/re-export-last")
+async def re_export_last():
+    """
+    Returns when the migration data was last exported.
+    Checks in-memory state first, then falls back to the persisted manifest file
+    so the timestamp survives server restarts.
+    No auth needed — read-only.
+    """
+    # In-memory state (set during current server lifetime)
+    if _export_state.get("finished_at"):
+        return {
+            "exported_at":       _export_state["finished_at"],
+            "total_docs":        _export_state["total_docs"],
+            "collections_total": _export_state["collections_total"],
+            "duration_seconds":  _export_state.get("duration_seconds"),
+            "source":            "memory",
+        }
+
+    # Persisted manifest (survives server restarts)
+    manifest_path = MIGRATION_DIR / "_export_manifest.json"
+    if manifest_path.exists():
+        try:
+            with open(manifest_path) as mf:
+                manifest = json.load(mf)
+            return {**manifest, "source": "manifest"}
+        except Exception:
+            pass
+
+    # Nothing recorded yet — fall back to newest .json.gz mtime
+    gz_files = list(MIGRATION_DIR.glob("*.json.gz"))
+    if gz_files:
+        newest = max(gz_files, key=lambda p: p.stat().st_mtime)
+        from datetime import datetime as _dt
+        mtime = _dt.fromtimestamp(newest.stat().st_mtime, tz=timezone.utc).isoformat()
+        return {
+            "exported_at":       mtime,
+            "total_docs":        None,
+            "collections_total": len(gz_files),
+            "duration_seconds":  None,
+            "source":            "file_mtime",
+        }
+
+    return {"exported_at": None, "source": "none"}
