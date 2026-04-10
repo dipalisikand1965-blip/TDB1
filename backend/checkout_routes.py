@@ -9,8 +9,6 @@ Handles:
 
 import os
 import logging
-import hmac
-import hashlib
 import uuid
 from email_templates import get_email_template, detail_box, detail_row
 import io
@@ -477,16 +475,18 @@ async def verify_payment(request: VerifyPaymentRequest):
     if not razorpay_client:
         raise HTTPException(status_code=400, detail="Razorpay not configured")
     
+    if not RAZORPAY_KEY_SECRET:
+        raise HTTPException(status_code=500, detail="Razorpay secret not configured")
+    
     try:
-        # Verify signature
-        message = f"{request.razorpay_order_id}|{request.razorpay_payment_id}"
-        expected_signature = hmac.new(
-            RAZORPAY_KEY_SECRET.encode(),
-            message.encode(),
-            hashlib.sha256
-        ).hexdigest()
-        
-        if expected_signature != request.razorpay_signature:
+        # Verify signature using razorpay SDK (preferred — uses the same HMAC-SHA256 internally)
+        try:
+            razorpay_client.utility.verify_payment_signature({
+                'razorpay_order_id': request.razorpay_order_id,
+                'razorpay_payment_id': request.razorpay_payment_id,
+                'razorpay_signature': request.razorpay_signature
+            })
+        except Exception:
             raise HTTPException(status_code=400, detail="Invalid payment signature")
         
         # Get payment details from Razorpay

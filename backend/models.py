@@ -404,6 +404,7 @@ class VerifyPaymentRequest(BaseModel):
     razorpay_payment_id: str
     razorpay_order_id: str
     razorpay_signature: str
+    user_email: Optional[str] = None   # Required for membership activation (sent by MembershipPayment.jsx)
 
 
 # ==================== ADMIN MEMBER MANAGEMENT MODELS ====================
