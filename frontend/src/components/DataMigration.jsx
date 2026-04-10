@@ -56,9 +56,11 @@ export default function DataMigration({ adminAuth }) {
             clearInterval(poll);
             setRestoring(false);
             setRestoreResult(state);
-            const patched = state.visitor_tickets_patched ?? 0;
-            const patchMsg = patched > 0 ? ` + ${patched} visitor ticket${patched > 1 ? 's' : ''} patched` : '';
-            setMessage({ type: 'success', text: `✅ Database restored — ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s${patchMsg}` });
+            const patched  = state.visitor_tickets_patched ?? 0;
+            const inferred = state.pets_archetypes_inferred ?? 0;
+            const patchMsg = patched  > 0 ? ` + ${patched} tickets patched`   : '';
+            const archMsg  = inferred > 0 ? ` + ${inferred} archetypes live`  : '';
+            setMessage({ type: 'success', text: `✅ Database restored — ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s${patchMsg}${archMsg}` });
             fetchStats();
           } else if (state.status === 'error') {
             clearInterval(poll);

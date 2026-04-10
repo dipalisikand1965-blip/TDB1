@@ -54,6 +54,7 @@ COLLECTIONS_CONFIG = [
     ("enhanced_collections",     "enhanced_collections",     "id"),
     ("occasion_box_templates",   "occasion_box_templates",   "id"),
     ("product_pricing",          "product_pricing",          "id"),
+    ("unified_products",         "unified_products",         "id"),
     # ── Pillar bundles ────────────────────────────────────────────────────────
     ("guided_paths",             "guided_paths",             "id"),
     ("learn_guides",             "learn_guides",             "id"),
@@ -248,6 +249,7 @@ async def _do_restore(drop_existing: bool = False):
         "collections_total": len(COLLECTIONS_CONFIG),
         "total_docs": 0,
         "visitor_tickets_patched": 0,
+        "pets_archetypes_inferred": 0,
         "collections": {},
         "errors": [],
         "duration_seconds": None,
@@ -369,6 +371,35 @@ async def _do_restore(drop_existing: bool = False):
     except Exception as bf_err:
         logger.warning(f"[DB-RESTORE] Backfill failed (non-fatal): {bf_err}")
 
+    # ── Auto-run soul archetype inference for all pets ────────────────────────
+    pets_inferred = 0
+    _restore_state["current_collection"] = "inferring pet archetypes..."
+    try:
+        from archetype_routes import _infer_archetype
+        from datetime import date as _date
+        today_str = _date.today().isoformat()
+        pets_cursor = await db.pets.find(
+            {"doggy_soul_answers": {"$exists": True}},
+            {"_id": 1, "name": 1, "doggy_soul_answers": 1}
+        ).to_list(None)
+        for pet in pets_cursor:
+            soul = pet.get("doggy_soul_answers") or {}
+            archetype, reason = _infer_archetype(soul)
+            await db.pets.update_one(
+                {"_id": pet["_id"]},
+                {"$set": {
+                    "primary_archetype":    archetype,
+                    "archetype_reason":     reason,
+                    "archetype_inferred_at": today_str,
+                }}
+            )
+            pets_inferred += 1
+        _restore_state["pets_archetypes_inferred"] = pets_inferred
+        logger.info(f"[DB-RESTORE] Archetype inference: {pets_inferred} pets updated")
+    except Exception as arch_err:
+        logger.warning(f"[DB-RESTORE] Archetype inference failed (non-fatal): {arch_err}")
+        _restore_state["pets_archetypes_inferred"] = 0
+
     client.close()
 
     finished = datetime.now(timezone.utc)
@@ -380,7 +411,11 @@ async def _do_restore(drop_existing: bool = False):
         "current_collection": None,
         "duration_seconds": duration,
     })
-    logger.info(f"[DB-RESTORE] Done in {duration}s — {_restore_state['total_docs']} docs, {tickets_fixed} tickets patched")
+    logger.info(
+        f"[DB-RESTORE] Done in {duration}s — {_restore_state['total_docs']} docs, "
+        f"{tickets_fixed} tickets patched, "
+        f"{_restore_state.get('pets_archetypes_inferred', 0)} pet archetypes inferred"
+    )
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
