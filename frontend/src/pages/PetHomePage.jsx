@@ -157,6 +157,10 @@ const PetSelector = ({ pets, selectedPet, onPetChange }) => {
               <PawPrint className="w-4 h-4 flex-shrink-0" style={{ pointerEvents: 'none' }} />
             )}
             <span className="text-sm font-medium truncate max-w-[80px]" style={{ pointerEvents: 'none' }}>{pet.name}</span>
+            {pet.primary_archetype && (() => {
+              const ARCHETYPE_EMOJI = { wild_explorer:'🌿', social_butterfly:'🦋', velcro_baby:'💜', foodie:'🍖', drama_queen:'🎭', lone_wolf:'🌑', gentle_soul:'🌸', guardian:'🛡️', playful_spirit:'🎉', curious_mind:'🔍' };
+              return <span className="text-xs flex-shrink-0" style={{ pointerEvents: 'none' }} title={pet.primary_archetype.replace(/_/g,' ')}>{ARCHETYPE_EMOJI[pet.primary_archetype] || ''}</span>;
+            })()}
             <span className={`text-xs px-1.5 py-0.5 rounded-full flex-shrink-0 ${
               petScore >= 50 
                 ? 'bg-emerald-500/30 text-emerald-300' 
@@ -679,6 +683,23 @@ const PetHomePage = () => {
                   {pet?.gender === 'boy' && <span className="text-blue-400 shrink-0">♂️</span>}
                   {pet?.gender === 'girl' && <span className="text-pink-400 shrink-0">♀️</span>}
                 </div>
+                {/* Archetype badge */}
+                {pet?.primary_archetype && (() => {
+                  const ARCHETYPE_EMOJI = {
+                    wild_explorer:    '🌿', social_butterfly: '🦋', velcro_baby:  '💜',
+                    foodie:           '🍖', drama_queen:      '🎭', lone_wolf:    '🌑',
+                    gentle_soul:      '🌸', guardian:         '🛡️', playful_spirit: '🎉',
+                    curious_mind:     '🔍',
+                  };
+                  const emoji = ARCHETYPE_EMOJI[pet.primary_archetype] || '✦';
+                  const label = pet.primary_archetype.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                  return (
+                    <p className="text-xs font-medium mb-2" style={{ color: '#a78bfa', letterSpacing: '0.04em' }}
+                       data-testid={`pet-archetype-badge-${pet.primary_archetype}`}>
+                      {emoji} {label}
+                    </p>
+                  );
+                })()}
                 <p className="text-slate-400 text-sm mb-3 truncate">{pet?.breed || 'Good Boy/Girl'}</p>
                 
                 {/* Traits — single line with scroll on mobile */}
