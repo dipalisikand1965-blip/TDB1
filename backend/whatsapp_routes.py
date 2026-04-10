@@ -84,6 +84,15 @@ def _fuzzy_pet_match(text: str, pet_names: list) -> str | None:
     }
 
 
+def get_gupshup_config():
+    """Get Gupshup configuration from environment"""
+    return {
+        "api_key": os.environ.get("GUPSHUP_API_KEY"),
+        "app_name": os.environ.get("GUPSHUP_APP_NAME", "DoggyCompany"),
+        "source_number": os.environ.get("GUPSHUP_SOURCE_NUMBER") or os.environ.get("WHATSAPP_NUMBER")
+    }
+
+
 def is_whatsapp_configured():
     """Check if WhatsApp is properly configured (Meta or Gupshup)"""
     meta_config = get_whatsapp_config()
@@ -1518,21 +1527,54 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     first_name = (user_name or "friend").split()[0]
 
     # ── 2b-i. Check if we already ASKED "which dog?" on the previous message ──
-    # If yes: treat the current message as the pet selection reply (fuzzy match).
-    if open_ticket and open_ticket.get("wa_awaiting_pet_selection") and len(all_pet_names) > 1:
+    # Uses wa_pet_state (phone-keyed) so state is saved even when no ticket exists yet.
+    wa_state = None
+    if db is not None and phone_10:
+        try:
+            wa_state = await db.wa_pet_state.find_one({"phone": phone_10})
+            # Clear stale state older than 30 minutes
+            if wa_state:
+                state_ts = wa_state.get("updated_at")
+                if state_ts:
+                    try:
+                        state_dt = datetime.fromisoformat(state_ts) if isinstance(state_ts, str) else state_ts
+                        if state_dt.tzinfo is None:
+                            state_dt = state_dt.replace(tzinfo=timezone.utc)
+                        age_min = (datetime.now(timezone.utc) - state_dt).total_seconds() / 60
+                        if age_min > 30:
+                            await db.wa_pet_state.delete_one({"phone": phone_10})
+                            wa_state = None
+                    except Exception:
+                        pass
+        except Exception as e:
+            logger.warning(f"[MIRA-AI] wa_pet_state fetch error: {e}")
+
+    awaiting_selection = (
+        (wa_state and wa_state.get("awaiting_pet_selection")) or
+        (open_ticket and open_ticket.get("wa_awaiting_pet_selection"))
+    )
+
+    if awaiting_selection and len(all_pet_names) > 1:
         matched = _fuzzy_pet_match(message_text, all_pet_names)
         if matched:
             ticket_pet_name = matched
-            # Restore the original question and clear the flag
-            original_msg = open_ticket.get("wa_original_message") or message_text
-            logger.info(f"[MIRA-AI] Pet selection resolved: '{message_text}' → '{matched}' | continuing with: '{original_msg[:60]}'")
+            original_msg = (
+                (wa_state.get("original_message") if wa_state else None) or
+                (open_ticket.get("wa_original_message") if open_ticket else None) or
+                message_text
+            )
+            logger.info(f"[MIRA-AI] Pet selection resolved: '{message_text}' → '{matched}' | original: '{original_msg[:60]}'")
+            # Clear state from both sources
             try:
-                await db.service_desk_tickets.update_one(
-                    {"_id": open_ticket["_id"]},
-                    {"$set": {"pet_name": matched,
-                              "wa_awaiting_pet_selection": False,
-                              "wa_original_message": None}}
-                )
+                if db is not None and phone_10:
+                    await db.wa_pet_state.delete_one({"phone": phone_10})
+                if open_ticket:
+                    await db.service_desk_tickets.update_one(
+                        {"_id": open_ticket["_id"]},
+                        {"$set": {"pet_name": matched,
+                                  "wa_awaiting_pet_selection": False,
+                                  "wa_original_message": None}}
+                    )
             except Exception:
                 pass
             message_text = original_msg  # answer the ORIGINAL question about the matched pet
@@ -1541,25 +1583,37 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             pet_list = " or ".join(all_pet_names[:4])
             return f"Sorry, I didn't catch that! Did you mean {pet_list}? Just type the name 🐾"
 
-    # ── 2b-ii. First time asking — ask which dog and save state ───────────────
+    # ── 2b-ii. First time asking — save state to wa_pet_state (always) and ask ──
     if not ticket_pet_name and len(all_pet_names) > 1:
-        # Show max 4 pet names to keep WhatsApp message short
         shown = all_pet_names[:4]
         if len(all_pet_names) > 4:
             pet_list = ", ".join(shown[:-1]) + f", {shown[-1]} (or {len(all_pet_names) - 4} more)"
         else:
             pet_list = ", ".join(shown[:-1]) + " or " + shown[-1]
         logger.info(f"[MIRA-AI] Multi-pet disambiguation → asking which dog ({pet_list})")
-        # Save state so next reply is treated as pet selection
-        if open_ticket:
-            try:
+        # Save state to phone-keyed collection (works even before any ticket is created)
+        try:
+            now_iso = datetime.now(timezone.utc).isoformat()
+            if db is not None and phone_10:
+                await db.wa_pet_state.update_one(
+                    {"phone": phone_10},
+                    {"$set": {
+                        "phone": phone_10,
+                        "awaiting_pet_selection": True,
+                        "original_message": message_text,
+                        "updated_at": now_iso,
+                    }},
+                    upsert=True,
+                )
+            # Also mark open ticket if one exists (backward-compat)
+            if open_ticket:
                 await db.service_desk_tickets.update_one(
                     {"_id": open_ticket["_id"]},
                     {"$set": {"wa_awaiting_pet_selection": True,
                               "wa_original_message": message_text}}
                 )
-            except Exception:
-                pass
+        except Exception as e:
+            logger.warning(f"[MIRA-AI] Failed to save pet disambiguation state: {e}")
         return f"Hey {first_name}! Which of your dogs are we chatting about — {pet_list}? 🐾"
 
     # ── 3. Semantic search → real TDC products ────────────────────────────────
