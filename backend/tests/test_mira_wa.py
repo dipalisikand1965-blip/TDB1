@@ -192,11 +192,10 @@ async def run_tests():
         print(f"  All open: {[(t.get('pet_name'), t.get('created_at')) for t in all_open]}")
         failed += 1
 
-    # ── Cleanup ───────────────────────────────────────────────────
+    # ── Cleanup — DELETE test tickets so they don't pollute the service desk ──
     await db.wa_pet_state.delete_many({"phone": PHONE})
-    await db.service_desk_tickets.update_many(
-        {"ticket_id": {"$in": [sultan_tid, new_tid]}},
-        {"$set": {"status": "resolved"}}
+    await db.service_desk_tickets.delete_many(
+        {"ticket_id": {"$in": [sultan_tid, new_tid]}}
     )
 
     print("\n" + "="*60)
