@@ -106,14 +106,15 @@ const AdminGuideDashboard = () => {
   const handleRestore = async () => {
     if (!window.confirm(
       'RESTORE DATABASE from latest snapshot?\n\n' +
-      '✅ 9,355 products in snapshot\n' +
-      '   → 6,550 active (visible to members)\n' +
-      '   → 2,805 archived (cleanup sprint: 1,050 breed- duplicates + 23 bp- wrong-image + 224 imageless + others)\n' +
+      '✅ 9,358 products (9,358 products_master)\n' +
       '✅ 4,941 breed soul products\n' +
       '✅ 1,040 services preserved\n' +
-      '✅ All pets, members & tickets preserved (16,666 total docs)\n\n' +
+      '✅ All pets, members, tickets, orders preserved\n' +
+      '✅ Mira AI scores, signals & memories included\n' +
+      '✅ WhatsApp logs & notifications included\n' +
+      '✅ 150 collections · 89,878 total docs\n\n' +
       'Safe to run — uses upsert (no data loss).\n' +
-      'Snapshot updated: Apr 8 2026 03:58'
+      'Snapshot updated: Apr 10 2026'
     )) return;
     setRestoring(true);
     setRestoreMsg(null);
