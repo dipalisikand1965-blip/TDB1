@@ -1,6 +1,30 @@
 # TDC Deployment Rules — MANDATORY FOR ALL AGENTS
 ## Last Updated: April 10, 2026
 
+---
+
+# ⚠️ READ THIS FIRST — EVERY AGENT EVERY SESSION
+
+## The "Restore Database" Button Does EVERYTHING:
+1. Restores ALL 133 collections (20,500+ docs)
+2. Auto-fixes "Website Visitor" tickets → real owner names
+3. Runs soul archetype inference → all pets get `primary_archetype`
+4. Toast confirms: "✅ Database restored · X tickets patched · Y archetypes live"
+
+## YOU NEVER NEED TO:
+- Run `infer_archetype.py` manually ❌
+- Run curl commands after restore ❌
+- Export `unified_products` separately ❌ (it's in migration now)
+- Fix visitor tickets manually ❌
+
+## The Button Does It All. Always Press It After Every Redeploy.
+
+## The Only Manual Step:
+Re-export migration files when DATA changes in preview.
+See table below for what triggers a re-export.
+
+---
+
 ## THE GOLDEN RULE
 Any data change in preview must be exported to migration files 
 BEFORE deploying. Otherwise Restore Database loads OLD data.

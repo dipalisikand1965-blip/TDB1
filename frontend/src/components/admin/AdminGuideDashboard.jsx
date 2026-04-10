@@ -115,10 +115,14 @@ const AdminGuideDashboard = () => {
               .map(([name, v]) => `• ${name}: ${v.total?.toLocaleString()} docs`)
               .join('\n');
             const patched  = state.visitor_tickets_patched ?? 0;
-            const patchLine = patched > 0 ? `\n✦ ${patched} "Website Visitor" ticket${patched > 1 ? 's' : ''} auto-patched` : '';
-            const summary  = `${lines}${patchLine}\n\nTotal: ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s`;
-            setRestoreMsg({ ok: true, text: `✅ Database restored + visitor tickets patched` });
-            toast({ title: '✅ Database Restored + Tickets Patched!', description: summary, duration: 10000 });
+            const inferred = state.pets_archetypes_inferred ?? 0;
+            const patchLine  = patched  > 0 ? `\n✦ ${patched} "Website Visitor" ticket${patched > 1 ? 's' : ''} auto-patched` : '';
+            const archLine   = inferred > 0 ? `\n✦ ${inferred} pet archetypes inferred` : '';
+            const summary  = `${lines}${patchLine}${archLine}\n\nTotal: ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s`;
+            const patchMsg = patched  > 0 ? ` · ${patched} tickets patched`  : '';
+            const archMsg  = inferred > 0 ? ` · ${inferred} archetypes live` : '';
+            setRestoreMsg({ ok: true, text: `✅ Database restored${patchMsg}${archMsg}` });
+            toast({ title: '✅ Database Restored!', description: summary, duration: 10000 });
           } else if (state.status === 'error') {
             clearInterval(poll);
             setRestoring(false);
