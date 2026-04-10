@@ -1628,5 +1628,185 @@ EOF</pre>
   </div>
 </section>
 
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MIRA SOUL UNIFICATION — Added April 2026                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<section style="max-width:900px;margin:60px auto;padding:0 24px">
+  <h2 style="color:#0891b2;font-size:2rem;border-bottom:2px solid #0891b2;padding-bottom:8px">
+    Mira Soul Unification
+  </h2>
+  <p style="color:#475569;font-size:1.05rem;margin-top:12px">
+    <strong>One Brain. One Voice. WhatsApp + Widget.</strong><br>
+    Status: <span style="color:#16a34a;font-weight:700">IMPLEMENTING</span> — April 2026
+  </p>
+
+  <h3 style="color:#1e293b;margin-top:32px">The Problem</h3>
+  <p>Mira has two personalities. The widget sounds like a soul guardian. WhatsApp sounds like a customer service bot. Same data, same dog, completely different experience.</p>
+
+  <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:0.95rem">
+    <tr style="background:#0891b2;color:white">
+      <th style="padding:10px 14px;text-align:left">Capability</th>
+      <th style="padding:10px 14px;text-align:center">Widget</th>
+      <th style="padding:10px 14px;text-align:center">WhatsApp (before)</th>
+      <th style="padding:10px 14px;text-align:center">WhatsApp (after)</th>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px">Competitor rule (Rover/Supertails blocked)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px">Chatbot phrases blocked ("Happy to help!")</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px">Context-adaptive voice (treats vs grief vs booking)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px">Governing principles (Remember→Ask→Confirm→Act)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px">Farewell & grief escalation protocol</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px">Context retention ("hold the intent")</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px">Service flows (ask before products)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px">Archetype tone (Wild Explorer, Velcro Baby etc.)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr style="background:#f8fafc">
+      <td style="padding:10px 14px">Allergen block (non-negotiable)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px">GPT-4o (not mini)</td>
+      <td style="text-align:center;color:#16a34a">✅</td>
+      <td style="text-align:center;color:#dc2626">❌</td>
+      <td style="text-align:center;color:#16a34a">✅ (fixed)</td>
+    </tr>
+  </table>
+
+  <h3 style="color:#1e293b;margin-top:36px">Architecture — One Source of Truth</h3>
+  <div style="background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:8px;font-family:monospace;margin-top:12px;font-size:0.9rem">
+    <div style="color:#94a3b8"># NEW — channel-agnostic soul</div>
+    <div style="color:#38bdf8">mira_soul.py</div>
+    <div style="color:#e2e8f0;margin-left:20px">└── MIRA_CORE_SOUL = """..."""</div>
+    <br>
+    <div style="color:#94a3b8"># Imports MIRA_CORE_SOUL — LOCKED, do not touch</div>
+    <div style="color:#f97316">mira_routes.py</div>
+    <div style="color:#e2e8f0;margin-left:20px">└── MIRA_OS_SYSTEM_PROMPT (widget brain)</div>
+    <br>
+    <div style="color:#94a3b8"># Imports MIRA_CORE_SOUL + WhatsApp format rules</div>
+    <div style="color:#4ade80">whatsapp_routes.py</div>
+    <div style="color:#e2e8f0;margin-left:20px">└── get_mira_ai_response() system_prompt</div>
+    <br>
+    <div style="color:#94a3b8"># LOCKED — no changes ever</div>
+    <div style="color:#f43f5e">MiraChatWidget.jsx ← DO NOT TOUCH</div>
+    <div style="color:#f43f5e">server.py ← DO NOT TOUCH</div>
+  </div>
+
+  <h3 style="color:#1e293b;margin-top:36px">What Goes in MIRA_CORE_SOUL</h3>
+  <ol style="color:#475569;line-height:2">
+    <li>🚫 Competitor Rule — Rover, Supertails, HUFT, Chewy blocked forever</li>
+    <li>🌟 Soulful Voice — Soul guardian language, chatbot phrases blocked</li>
+    <li>🎭 Context-Adaptive Voice — treats/health/booking/grief all different tones</li>
+    <li>🐾 Golden Doctrine — Pet name first, breed second (always)</li>
+    <li>⚠️ Absolute Rules — Products after alignment, never on first message</li>
+    <li>📐 Governing Principles 1–7 — Remember→Ask→Confirm→Act</li>
+    <li>⚡ Context Retention — Hold the intent, zero exceptions</li>
+    <li>🌷 Farewell & Grief Escalation — Full protocol, Concierge handoff</li>
+    <li>🔧 Service Flows — Grooming/boarding/trainer: ask before showing products</li>
+  </ol>
+
+  <h3 style="color:#1e293b;margin-top:32px">WhatsApp-Only Format Rules (stay in whatsapp_routes.py)</h3>
+  <ul style="color:#475569;line-height:2">
+    <li>4–6 sentences max (WhatsApp ≠ web app)</li>
+    <li>No markdown — no <code>**bold**</code>, no <code>### headers</code></li>
+    <li>Product format: <code>"Name — ₹X → link"</code></li>
+    <li>Allergen alert block (dynamic, from pet profile)</li>
+    <li>Condition rule block (dynamic, from pet profile)</li>
+    <li>Archetype tones dict + injection</li>
+    <li>Active pet lock (Mojo-only mode)</li>
+    <li>Catalog block / Mira Imagines protocol</li>
+    <li>Response structure template</li>
+    <li>Member profile context block</li>
+  </ul>
+
+  <h3 style="color:#1e293b;margin-top:32px">Before / After</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:16px">
+      <div style="font-weight:700;color:#dc2626;margin-bottom:8px">Before (chatbot voice)</div>
+      <div style="color:#374151;font-size:0.9rem;line-height:1.7">
+        "Sure! Here are some great treats for Mojo. Since he has allergies to chicken and beef, I recommend salmon treats. Happy to help!"
+      </div>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px">
+      <div style="font-weight:700;color:#16a34a;margin-bottom:8px">After (Mira's soul)</div>
+      <div style="color:#374151;font-size:0.9rem;line-height:1.7">
+        "Mojo's been on my mind — a Wild Explorer always needs proper trail fuel. Since salmon is his favourite and chicken + beef are out:<br><br>
+        - Salmon Training Bites — ₹299 → thedoggycompany.com/dine<br>
+        &nbsp;&nbsp;✦ Why: Salmon (Mojo's favourite), zero allergens<br><br>
+        What are you two planning next? 🐾"
+      </div>
+    </div>
+  </div>
+
+  <h3 style="color:#1e293b;margin-top:32px">Files Changed</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
+    <tr style="background:#f1f5f9">
+      <td style="padding:10px 14px;font-weight:700">NEW</td>
+      <td style="padding:10px 14px"><code>/app/backend/mira_soul.py</code></td>
+      <td style="padding:10px 14px;color:#16a34a">MIRA_CORE_SOUL constant</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px;font-weight:700">EDIT</td>
+      <td style="padding:10px 14px"><code>/app/backend/whatsapp_routes.py</code></td>
+      <td style="padding:10px 14px;color:#0891b2">system_prompt in get_mira_ai_response() only</td>
+    </tr>
+    <tr style="background:#f1f5f9">
+      <td style="padding:10px 14px;font-weight:700;color:#dc2626">LOCKED</td>
+      <td style="padding:10px 14px"><code>mira_routes.py</code></td>
+      <td style="padding:10px 14px;color:#dc2626">Widget brain — DO NOT TOUCH</td>
+    </tr>
+    <tr>
+      <td style="padding:10px 14px;font-weight:700;color:#dc2626">LOCKED</td>
+      <td style="padding:10px 14px"><code>MiraChatWidget.jsx</code></td>
+      <td style="padding:10px 14px;color:#dc2626">Widget UI — DO NOT TOUCH</td>
+    </tr>
+    <tr style="background:#f1f5f9">
+      <td style="padding:10px 14px;font-weight:700;color:#dc2626">LOCKED</td>
+      <td style="padding:10px 14px"><code>server.py</code></td>
+      <td style="padding:10px 14px;color:#dc2626">DO NOT TOUCH</td>
+    </tr>
+  </table>
+</section>
+
 </body>
 </html>
