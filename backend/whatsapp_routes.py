@@ -77,6 +77,55 @@ def _fuzzy_pet_match(text: str, pet_names: list) -> str | None:
     return best_pet
 
 
+# ── Keyword → Pillar map for WhatsApp message pillar detection ─────────────
+_WA_PILLAR_KEYWORDS: list[tuple[str, list[str]]] = [
+    ("celebrate", ["cake", "birthday", "bday", "b-day", "celebration", "celebrate", "party",
+                   "anniversary", "gift", "doggo cake", "pupcake", "pup cake", "pawty"]),
+    ("dine",      ["treat", "food", "meal", "kibble", "snack", "biscuit", "chew", "dental",
+                   "nutrition", "diet", "feeding", "hungry", "eat", "eating", "hungry",
+                   "fresh meal", "home cook", "raw food", "vegetarian", "vegan food"]),
+    ("care",      ["groom", "grooming", "bath", "bathe", "bathing", "spa", "trim", "nail",
+                   "brush", "haircut", "shampoo", "clean", "wellness", "massage",
+                   "dental clean", "ear clean", "pedicure"]),
+    ("emergency", ["emergency", "urgent", "pain", "injury", "hurt", "bleed", "blood",
+                   "poison", "toxic", "vomit", "accident", "sick", "dying", "critical",
+                   "collapsed", "unconscious", "seizure", "fit"]),
+    ("vet",       ["vet", "doctor", "vaccination", "vaccine", "deworming", "deworm",
+                   "health check", "checkup", "check up", "consultation", "medicine",
+                   "prescription", "clinic", "hospital", "spay", "neuter", "surgery"]),
+    ("play",      ["daycare", "day care", "play", "playdate", "play date", "park",
+                   "exercise", "run", "walk", "toy", "ball", "frisbee", "agility",
+                   "dog park", "playtime", "socialise", "socialize"]),
+    ("go",        ["stay", "board", "boarding", "hotel", "resort", "hostel", "lodge",
+                   "travel", "trip", "vacation", "holiday", "road trip", "flight",
+                   "airport", "transit", "pet sitter", "sitter", "overnight"]),
+    ("learn",     ["training", "train", "trainer", "obedience", "behavior", "behaviour",
+                   "class", "lesson", "puppy class", "socialisation", "socialization",
+                   "command", "sit", "stay", "leash"]),
+    ("services",  ["service", "appointment", "book", "booking", "schedule", "slot",
+                   "concierge", "request", "inquiry", "enquiry"]),
+    ("shop",      ["shop", "buy", "order", "purchase", "product", "item", "cart",
+                   "delivery", "shipping", "price", "cost", "discount", "offer"]),
+    ("paperwork", ["passport", "certificate", "noc", "document", "paperwork",
+                   "registration", "license", "licence", "permit", "import", "export",
+                   "microchip", "id card"]),
+]
+
+def _detect_pillar_from_wa_message(text: str) -> str | None:
+    """
+    Detect the most likely pillar from a WhatsApp message's keywords.
+    Returns the pillar string (e.g. "celebrate") or None if ambiguous/undetected.
+    Uses the first match in priority order (celebrate > dine > care > emergency…).
+    """
+    if not text:
+        return None
+    lower = text.lower()
+    for pillar, keywords in _WA_PILLAR_KEYWORDS:
+        if any(kw in lower for kw in keywords):
+            return pillar
+    return None
+
+
     """Get Gupshup configuration from environment"""
     return {
         "api_key": os.environ.get("GUPSHUP_API_KEY"),
@@ -324,6 +373,9 @@ async def process_gupshup_webhook(body: dict):
                 _wa_state = await db.wa_pet_state.find_one({"phone": _phone_10_wa})
                 _resolved_pet = None
 
+                # Detect pillar from message content upfront (used in both branches below)
+                _detected_pillar = _detect_pillar_from_wa_message(content)
+
                 if _wa_state and _wa_state.get("awaiting_pet_selection"):
                     # Fuzzy-match the incoming message against this user's pets
                     _wa_user = await db.users.find_one(
@@ -360,17 +412,31 @@ async def process_gupshup_webhook(body: dict):
                     if not sd_ticket:
                         logger.info(f"[GUPSHUP] Fix A: No existing ticket for '{_resolved_pet}' — will create fresh one")
                 else:
-                    # Standard lookup — most recently updated open ticket for this phone
-                    sd_ticket = await db.service_desk_tickets.find_one(
-                        {
-                            "$or": [
-                                {"member.phone": {"$regex": from_number[-10:]}},
-                                {"user_phone": {"$regex": from_number[-10:]}},
-                            ],
-                            "status": {"$nin": ["closed", "resolved"]},
-                        },
-                        sort=[("updated_at", -1)],
-                    )
+                    # ── Pillar-aware dedup lookup ──────────────────────────────────────────
+                    # Detect pillar from message content. If detected, only match tickets
+                    # for the SAME pillar. If undetected, create a NEW ticket (safer than
+                    # merging into a wrong-topic thread).
+                    _detected_pillar = _detect_pillar_from_wa_message(content)
+                    if _detected_pillar:
+                        sd_ticket = await db.service_desk_tickets.find_one(
+                            {
+                                "$or": [
+                                    {"member.phone": {"$regex": from_number[-10:]}},
+                                    {"user_phone": {"$regex": from_number[-10:]}},
+                                ],
+                                "pillar": _detected_pillar,
+                                "status": {"$nin": ["closed", "resolved"]},
+                            },
+                            sort=[("updated_at", -1)],
+                        )
+                        logger.info(
+                            f"[GUPSHUP] Pillar-aware dedup: detected='{_detected_pillar}' "
+                            f"→ {'attached to ' + sd_ticket.get('ticket_id','?') if sd_ticket else 'no match — will create new ticket'}"
+                        )
+                    else:
+                        # No pillar detected — force new ticket so we never merge into wrong thread
+                        sd_ticket = None
+                        logger.info("[GUPSHUP] No pillar detected from WA message — creating fresh ticket")
                 wa_msg = {
                     "id": str(uuid.uuid4()),
                     "sender": "member",
@@ -434,14 +500,14 @@ async def process_gupshup_webhook(body: dict):
                         "id": legacy_tid,
                         "ticket_id": legacy_tid,
                         "type": "whatsapp_inquiry",
-                        "category": "support",
-                        "subject": f"WhatsApp Inquiry: {content[:80]}",
+                        "category": _detected_pillar or "support",
+                        "subject": f"WhatsApp {'(' + _detected_pillar.title() + ') ' if _detected_pillar else ''}Inquiry: {content[:80]}",
                         "description": content,
                         "status": "open",
                         "priority": "normal",
                         "channel": "whatsapp",
                         "source": "whatsapp",
-                        "pillar": "support",
+                        "pillar": _detected_pillar or "support",
                         "member": {
                             "name": enrich_name,
                             "email": enrich_email,
