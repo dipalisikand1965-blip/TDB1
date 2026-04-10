@@ -1263,13 +1263,16 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     db = _client[db_name]
 
     # ── 1. Load full soul profile ─────────────────────────────────────────────
-    context_parts  = []
-    all_pet_names  = []
-    all_allergies  = []
-    all_conditions = []   # ← health conditions across all pets
-    all_favorites  = []
-    pet_city       = None
-    user_email     = None
+    context_parts        = []
+    all_pet_names        = []
+    all_allergies        = []
+    all_conditions       = []   # ← health conditions across all pets
+    all_favorites        = []
+    pet_city             = None
+    user_email           = None
+    active_pet_archetype = None   # ← set later if pet profile found
+    ticket_pet_name      = None   # ← set if open ticket with pet lock
+    member_name          = None   # ← set if registered member found
 
     if db is not None and user_phone:
         try:
@@ -1483,9 +1486,14 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     # Only triggers when: user has 2+ pets AND no pet name in message AND no open ticket
     first_name = (user_name or "friend").split()[0]
     if not ticket_pet_name and len(all_pet_names) > 1:
-        pet_list = ", ".join(all_pet_names[:-1]) + " or " + all_pet_names[-1]
+        # Show max 4 pet names to keep WhatsApp message short
+        shown = all_pet_names[:4]
+        if len(all_pet_names) > 4:
+            pet_list = ", ".join(shown[:-1]) + f", {shown[-1]} (or {len(all_pet_names) - 4} more)"
+        else:
+            pet_list = ", ".join(shown[:-1]) + " or " + shown[-1]
         logger.info(f"[MIRA-AI] Multi-pet disambiguation → asking which dog ({pet_list})")
-        return f"Hey {first_name}! Which of your dogs are we shopping for — {pet_list}? 🐾"
+        return f"Hey {first_name}! Which of your dogs are we chatting about — {pet_list}? 🐾"
 
     # ── 3. Semantic search → real TDC products ────────────────────────────────
     catalog_block  = ""
