@@ -1370,12 +1370,16 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             ).to_list(10)
 
             def _phone_score(u):
-                """Score users: prefer longer (prefixed) stored phones over bare 10-digit numbers."""
+                """Score users for phone match quality.
+                Priority: exact 10-digit match (100) > prefixed match by length > no match (0).
+                Exact 10-digit match wins because the WhatsApp number IS the bare 10-digit number.
+                """
                 for fld in ("phone", "whatsapp"):
                     stored = "".join(filter(str.isdigit, str(u.get(fld) or "")))
-                    if stored.endswith(phone_10):
-                        # Longer stored number = more specifically formatted = real user
-                        return len(stored)
+                    if stored == phone_10:          # e.g. "9739908844" — exact match, highest
+                        return 100
+                    if stored.endswith(phone_10) and len(stored) > len(phone_10):
+                        return len(stored)          # e.g. "09739908844" → score 11
                 return 0
 
             if _user_candidates:
