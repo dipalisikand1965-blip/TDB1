@@ -10,7 +10,7 @@
 # ⚠️ RESTORE DATABASE = ONE BUTTON DOES EVERYTHING
 
 ## After every redeploy, go to Admin → Guide & Backup → "Restore Database":
-1. Restores ALL 150 collections (88,244 docs)
+1. Restores ALL 150 collections (89,878 docs)
 2. Auto-fixes "Website Visitor" tickets → real owner names  
 3. Runs soul archetype inference → all pets get `primary_archetype` (badge appears!)
 4. Toast: "✅ Database restored · X tickets patched · Y archetypes live"
