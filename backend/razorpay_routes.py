@@ -8,6 +8,7 @@ import razorpay
 import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Request
+from email_templates import get_email_template, detail_box, detail_row
 from pydantic import BaseModel
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -344,13 +345,49 @@ async def handle_webhook(request: Request):
                         "order_type":order_type,"read":False,"created_at":now,
                     })
 
-                    # Member notification
+                    # Member notification (in-app)
                     if parent_id:
                         await db.member_notifications.insert_one({
                             "type":"payment_confirmed","parent_id":parent_id,"subject":subject,
                             "message":f"Your payment of ₹{amount:,.0f} was confirmed. {item_name} is on its way!",
                             "read":False,"created_at":now,
                         })
+
+                    # Member email — branded payment confirmation
+                    member_email = order.get("email") or (parent_id if "@" in str(parent_id) else None)
+                    if member_email:
+                        try:
+                            import resend
+                            resend_key = os.environ.get("RESEND_API_KEY")
+                            if resend_key:
+                                resend.api_key = resend_key
+                                pet_line = f" for <strong>{pet_name}</strong>" if pet_name else ""
+                                resend.Emails.send({
+                                    "from": os.environ.get("SENDER_EMAIL", "mira@thedoggycompany.com"),
+                                    "to": member_email,
+                                    "subject": subject,
+                                    "html": get_email_template(
+                                        title="Payment Confirmed",
+                                        tagline="✦ Your order is on its way",
+                                        body_html=(
+                                            f"<p>Hi there!</p>"
+                                            f"<p>Your payment of <strong>₹{amount:,.0f}</strong>{pet_line} was received successfully.</p>"
+                                            + detail_box("Payment Details",
+                                                detail_row("Item", item_name) +
+                                                detail_row("Amount Paid", f"₹{amount:,.0f} {currency}") +
+                                                detail_row("Order ID", order_id) +
+                                                detail_row("Payment ID", payment_id) +
+                                                (detail_row("Pet", pet_name) if pet_name else "")
+                                            ) +
+                                            "<p style='font-size:13px;color:#666;'>For any questions about your order, reply to this email or call +91 9663185747.</p>"
+                                        ),
+                                        cta_text="View my orders →",
+                                        cta_url="https://thedoggycompany.com/my-requests",
+                                    )
+                                })
+                                logger.info(f"[RAZORPAY] Payment confirmation email sent to {member_email}")
+                        except Exception as mail_err:
+                            logger.error(f"[RAZORPAY] Email send failed: {mail_err}")
 
                     logger.info(f"[RAZORPAY] Payment ticket created: {ticket_id} — ₹{amount}")
             except Exception as ticket_err:
