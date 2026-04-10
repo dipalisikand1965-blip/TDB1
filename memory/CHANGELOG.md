@@ -1,6 +1,17 @@
 # CHANGELOG
 
-## 2026-04-10 (Session 67 — Bug Fixes: Status Dropdown + WA Log Check)
+## 2026-04-10 (Session 67 — Bug Fixes: Status Dropdown + Archetype Badge on PetHomePage)
+
+### Features Built
+1. **Archetype Badge on PetHomePage** — `frontend/src/pages/PetHomePage.jsx`
+   - Main hero card (line ~686): shows `🌿 Wild Explorer` in violet (#a78bfa) between pet name and breed
+   - Pet selector tabs (line ~159): shows just the emoji (`🌿`) with tooltip on hover
+   - Only renders when `pet.primary_archetype` is set (all 33 pets now have this after inference)
+   - Label auto-converted from snake_case: `wild_explorer` → `Wild Explorer`
+   - `data-testid="pet-archetype-badge-{archetype}"` added
+   - All 10 emojis mapped: 🌿🦋💜🍖🎭🌑🌸🛡️🎉🔍
+
+
 
 ### Bugs Fixed
 1. **Service Desk Status Dropdown Not Saving** — `ticket_routes.py` + `DoggyServiceDesk.jsx`
