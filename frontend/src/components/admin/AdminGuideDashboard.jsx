@@ -112,7 +112,7 @@ const AdminGuideDashboard = () => {
       '✅ All pets, members, tickets, orders preserved\n' +
       '✅ Mira AI scores, signals & memories included\n' +
       '✅ WhatsApp logs & notifications included\n' +
-      '✅ 150 collections · 89,878 total docs\n\n' +
+      '✅ 150 collections · ~99,000+ total docs\n\n' +
       'Safe to run — uses upsert (no data loss).\n' +
       'Snapshot updated: Apr 10 2026'
     )) return;
@@ -124,9 +124,10 @@ const AdminGuideDashboard = () => {
         method: 'POST',
         headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
       });
-      const kick = await res.json();
-      if (kick.status !== 'started' && kick.status !== 'already_running') {
-        setRestoreMsg({ ok: false, text: `Could not start: ${JSON.stringify(kick)}` });
+      // Only check status code — never read the body (avoids "body stream already read"
+      // error when production proxy/CDN has already consumed the response body).
+      if (!res.ok) {
+        setRestoreMsg({ ok: false, text: `Could not start: HTTP ${res.status}` });
         setRestoring(false);
         return;
       }
@@ -189,9 +190,9 @@ const AdminGuideDashboard = () => {
         method: 'POST',
         headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
       });
-      const kick = await res.json();
-      if (kick.status !== 'started' && kick.status !== 'already_running') {
-        setReExportMsg({ ok: false, text: `Could not start: ${JSON.stringify(kick)}` });
+      // Only check status code — don't read body (avoids "body stream already read" in production)
+      if (!res.ok) {
+        setReExportMsg({ ok: false, text: `Could not start: HTTP ${res.status}` });
         setReExporting(false);
         return;
       }
