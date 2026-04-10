@@ -1,6 +1,96 @@
 # CHANGELOG
 
-## 2026-04-05 (Session 52 — Write-Through Sync + Task 2 Backfill)
+## 2026-04-10 (Session 67 — Bug Fixes: Status Dropdown + Archetype Badge on PetHomePage)
+
+### Features Built
+1. **Archetype Badge on PetHomePage** — `frontend/src/pages/PetHomePage.jsx`
+   - Main hero card (line ~686): shows `🌿 Wild Explorer` in violet (#a78bfa) between pet name and breed
+   - Pet selector tabs (line ~159): shows just the emoji (`🌿`) with tooltip on hover
+   - Only renders when `pet.primary_archetype` is set (all 33 pets now have this after inference)
+   - Label auto-converted from snake_case: `wild_explorer` → `Wild Explorer`
+   - `data-testid="pet-archetype-badge-{archetype}"` added
+   - All 10 emojis mapped: 🌿🦋💜🍖🎭🌑🌸🛡️🎉🔍
+
+
+
+### Bugs Fixed
+1. **Service Desk Status Dropdown Not Saving** — `ticket_routes.py` + `DoggyServiceDesk.jsx`
+   - Root cause: Backend required `resolution_note` for "Resolved" status (raised HTTP 400).
+     Frontend sent `{"status": "resolved"}` without a note → 400 silently caught → no visual change.
+   - Fix 1 (Backend `ticket_routes.py` line ~2001): Instead of raising 400, auto-generate
+     `resolution_note = "Marked as resolved by admin"` when none provided.
+   - Fix 2 (Frontend `DoggyServiceDesk.jsx` `handleStatusChange` ~line 1404): Added `response.ok`
+     check + error logging. Silent fails are now caught properly.
+   - Tested: `PATCH /api/tickets/TDB-2026-0117 {"status":"resolved"}` → 200 OK ✅
+   - Status: ALL status values (Open, In Progress, Awaiting Response, Resolved, Closed) now save.
+
+2. **Bug 8 Check** — `backend/services/whatsapp_service.py`
+   - Confirmed: `_templates_approved()` already correctly used on line 101. Bug was pre-fixed.
+   - No change needed.
+
+### Migration Files Re-exported
+- `service_desk_tickets.json.gz` (Apr 9, 17:01) — 124 tickets (re-exported after test run)
+
+
+
+### Features Built
+1. **Health Condition Filtering** — `useMiraFilter.js` + `condition_map.py`
+   - 20 conditions mapped to ingredient block keywords (pancreatitis, diabetes, obesity, kidney disease, etc.)
+   - Client-side: `productViolatesCondition()` hard-blocks products; safe products boosted to rank 3
+   - Applied to: all `*MobilePage.jsx`, `MiraSearchPage.jsx`, `SearchPage`
+2. **WhatsApp Multi-Pet Disambiguation** — `whatsapp_routes.py`
+   - "Which dog — Luna or Buddy?" when user has 2+ pets and says "my dog"
+3. **WhatsApp Stale Ticket Validation** — clears ghost "booking for [deleted dog]" state
+4. **WhatsApp Pillar-Filtered Fallback** — pillar detected from message keywords; filtered MongoDB query
+5. **WhatsApp Mira Imagines Protocol** — zero-result graceful handling with creative framing
+6. **WhatsApp + Mira OS Archetype Tone Injection** — reads `pet.primary_archetype`, injects tone block
+7. **WhatsApp Multi-Account Linking** — pools pets from all accounts with same user name
+8. **Soul Archetype Inference** — `scripts/infer_archetype.py`
+   - 10-archetype scoring engine; 33/33 pets inferred and written to DB
+   - Distribution: playful_spirit×13, wild_explorer×10, social_butterfly×4, foodie×3, velcro_baby×2, lone_wolf×1
+9. **ARCHETYPE_TONES expanded** — 7 new archetypes across 3 locations in codebase
+10. **Mira Nudge Engine** — `mira_nudges.py` with 8 endpoints (vaccination, grooming, birthday reminders)
+11. **DB Restore** — background non-blocking with per-collection progress + visitor ticket auto-patching
+12. **`DEPLOYMENT_RULES.md`** — single source of truth for deploy sequence
+
+### Bugs Fixed
+- `NotImplementedError` in `ai_image_service.py` / `server.py` — `if db:` → `if db is not None:`
+- `toggle-active` leaving products in archived state — fix: also restore `visibility.status`
+- Admin product list showing archived breed products — fix: mirrored visibility filter on breed_query
+- Archetype tone never firing — fix: snake_case key mismatch + all 3 ARCHETYPE_TONES updated
+- WhatsApp webhook silent after merge — fixed import error on startup
+
+### Migration Files Re-exported
+- `pets.json.gz` (Apr 9, 16:45) — CRITICAL: contains `primary_archetype` for all 33 pets
+- `users.json.gz` (Apr 9, 16:24)
+- `service_desk_tickets.json.gz` (Apr 9, 16:24) — "mahi" ticket resolved
+- `guided_paths.json.gz` (Apr 9, 16:28)
+
+### Tests
+- iteration_260: 28/28 PASS — Admin Box audit
+- iteration_261: 26/26 PASS (2 warnings: TEMPLATES_APPROVED NameError, duplicate allergen badge)
+
+---
+
+## 2026-04-08 (Session 63-64 — Admin Fixes + Mira Explains Why + Health Condition Layer)
+
+### Features Built
+1. **"Mira Explains Why"** — `ProductCard.jsx` expandable row (user-approved enhancement)
+2. **AmazonExplorerBox** — Shop pillar affiliate search box
+3. **MiraSearchPage** — 7 service modal triggers (vet, grooming, boarding, training, go, celebrate, learn)
+4. **GuidedCarePaths / GuidedNutritionPaths / GuidedCelebrationPaths** — health condition context read
+5. **Admin DB Restore UI** — `AdminGuideDashboard.jsx` + `DataMigration.jsx`
+
+### Bugs Fixed
+- AI Image Generator 401 popup — fix: `adminAuth` header passed through component chain
+- Duplicate products in Admin list — fix: O(1) Set dedup in `UnifiedProductBox.jsx`
+
+### Migration Files Re-exported
+- `products_master.json.gz` (Apr 8, 16:25) — 9,358 products
+- `services_master.json.gz` (Apr 8, 15:46) — 1,040 services
+
+---
+
 
 ### Architecture: Single Source of Truth (products_master)
 
