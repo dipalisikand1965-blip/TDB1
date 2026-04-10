@@ -221,6 +221,20 @@ _restore_state: dict = {
     "duration_seconds": None,
 }
 
+# ── In-memory re-export progress state ───────────────────────────────────────
+_export_state: dict = {
+    "status": "idle",          # idle | running | complete | error
+    "started_at": None,
+    "finished_at": None,
+    "current_collection": None,
+    "collections_done": 0,
+    "collections_total": len(COLLECTIONS_CONFIG),
+    "total_docs": 0,
+    "collections": {},
+    "errors": [],
+    "duration_seconds": None,
+}
+
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     ok_user = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
@@ -491,3 +505,109 @@ async def restore_database(
         "message": "Restore running in background. Poll /api/admin/db/restore-progress every 2s.",
         "collections_total": len(COLLECTIONS_CONFIG),
     }
+
+
+# ── Re-export: read MongoDB → write .json.gz files ────────────────────────────
+
+async def _do_export():
+    """
+    Background task: reads all COLLECTIONS_CONFIG collections from MongoDB
+    and writes them as NDJSON .json.gz files in migration_data/.
+    Updates _export_state so the frontend can poll progress.
+    """
+    from motor.motor_asyncio import AsyncIOMotorClient
+
+    global _export_state
+
+    _export_state.update({
+        "status": "running",
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "finished_at": None,
+        "current_collection": None,
+        "collections_done": 0,
+        "collections_total": len(COLLECTIONS_CONFIG),
+        "total_docs": 0,
+        "collections": {},
+        "errors": [],
+        "duration_seconds": None,
+    })
+
+    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+    db_name   = os.environ.get("DB_NAME", "pet-os-live-test_database")
+    client    = AsyncIOMotorClient(mongo_url)
+    db        = client[db_name]
+    started   = datetime.now(timezone.utc)
+
+    logger.info(f"[DB-EXPORT] Background re-export started — {len(COLLECTIONS_CONFIG)} collections")
+
+    for file_stem, collection_name, _ in COLLECTIONS_CONFIG:
+        _export_state["current_collection"] = collection_name
+        gz_path = MIGRATION_DIR / f"{file_stem}.json.gz"
+
+        try:
+            cursor = db[collection_name].find({}, {"_id": 0})
+            docs   = await cursor.to_list(length=None)
+
+            with gzip.open(gz_path, "wt", encoding="utf-8") as f:
+                for doc in docs:
+                    f.write(json.dumps(doc, default=str) + "\n")
+
+            _export_state["collections"][collection_name] = {
+                "status": "ok", "docs": len(docs), "file": f"{file_stem}.json.gz"
+            }
+            _export_state["total_docs"] += len(docs)
+            logger.info(f"[DB-EXPORT] {collection_name}: {len(docs)} docs → {gz_path.name}")
+
+        except Exception as e:
+            logger.error(f"[DB-EXPORT] Error on {collection_name}: {e}")
+            _export_state["errors"].append({"collection": collection_name, "error": str(e)})
+            _export_state["collections"][collection_name] = {"status": "error", "error": str(e)}
+
+        _export_state["collections_done"] += 1
+
+    client.close()
+
+    finished = datetime.now(timezone.utc)
+    duration = round((finished - started).total_seconds(), 1)
+
+    _export_state.update({
+        "status": "complete" if not _export_state["errors"] else "complete_with_errors",
+        "finished_at": finished.isoformat(),
+        "current_collection": None,
+        "duration_seconds": duration,
+    })
+    logger.info(
+        f"[DB-EXPORT] Done in {duration}s — {_export_state['total_docs']} docs across "
+        f"{len(COLLECTIONS_CONFIG)} collections"
+    )
+
+
+@restore_router.post("/re-export")
+async def re_export_migration(
+    background_tasks: BackgroundTasks,
+    admin: str = Depends(verify_admin),
+):
+    """
+    Re-export all 150 collections from the live MongoDB to migration_data/*.json.gz.
+    Runs in the background — poll GET /re-export-progress for live status.
+    """
+    if _export_state.get("status") == "running":
+        return {
+            "status": "already_running",
+            "message": "Re-export already in progress — poll /re-export-progress for status.",
+            "progress": _export_state,
+        }
+
+    background_tasks.add_task(_do_export)
+
+    return {
+        "status": "started",
+        "message": "Re-export running in background. Poll /api/admin/db/re-export-progress every 2s.",
+        "collections_total": len(COLLECTIONS_CONFIG),
+    }
+
+
+@restore_router.get("/re-export-progress")
+async def re_export_progress():
+    """Poll this endpoint for live re-export status. No auth needed."""
+    return _export_state

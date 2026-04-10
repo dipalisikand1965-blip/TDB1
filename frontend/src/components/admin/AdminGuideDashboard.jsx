@@ -57,7 +57,8 @@ import {
   CheckCircle,
   Loader2,
   AlertTriangle,
-  Info
+  Info,
+  UploadCloud
 } from 'lucide-react';
 
 const AdminGuideDashboard = () => {
@@ -67,6 +68,8 @@ const AdminGuideDashboard = () => {
   const [expandedSection, setExpandedSection] = useState('command-center');
   const [restoring, setRestoring] = useState(false);
   const [restoreMsg, setRestoreMsg] = useState(null);
+  const [reExporting, setReExporting] = useState(false);
+  const [reExportMsg, setReExportMsg] = useState(null);
 
   const handleRestore = async () => {
     if (!window.confirm(
@@ -136,6 +139,62 @@ const AdminGuideDashboard = () => {
       setRestoreMsg({ ok: false, text: `Error: ${e.message}` });
       toast({ title: '❌ Restore error', description: e.message, variant: 'destructive' });
       setRestoring(false);
+    }
+  };
+
+  const handleReExport = async () => {
+    if (!window.confirm(
+      'RE-EXPORT ALL 150 COLLECTIONS from live MongoDB to migration_data/*.json.gz?\n\n' +
+      'This overwrites the existing .json.gz snapshot files with CURRENT preview database state.\n' +
+      'Safe to run at any time — no database changes.\n\n' +
+      'Run this before every "Save to GitHub" to capture the latest data.'
+    )) return;
+    setReExporting(true);
+    setReExportMsg(null);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/db/re-export`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + btoa('aditya:lola4304') }
+      });
+      const kick = await res.json();
+      if (kick.status !== 'started' && kick.status !== 'already_running') {
+        setReExportMsg({ ok: false, text: `Could not start: ${JSON.stringify(kick)}` });
+        setReExporting(false);
+        return;
+      }
+
+      // Poll /re-export-progress every 2 seconds
+      const poll = setInterval(async () => {
+        try {
+          const pr = await fetch(`${API_URL}/api/admin/db/re-export-progress`);
+          const state = await pr.json();
+          const done  = state.collections_done ?? 0;
+          const total = state.collections_total ?? 150;
+          const col   = state.current_collection ? ` — ${state.current_collection}` : '';
+          setReExportMsg({ ok: null, text: `Exporting ${done}/${total} collections${col}` });
+
+          if (state.status === 'complete' || state.status === 'complete_with_errors') {
+            clearInterval(poll);
+            setReExporting(false);
+            const errCount = (state.errors || []).length;
+            const msg = errCount > 0
+              ? `⚠️ Export done with ${errCount} error(s) — ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s`
+              : `✅ ${state.total_docs?.toLocaleString()} docs exported across ${total} collections in ${state.duration_seconds}s`;
+            setReExportMsg({ ok: errCount === 0, text: msg });
+            toast({ title: errCount === 0 ? '✅ Re-export Complete!' : '⚠️ Re-export Complete with Errors', description: msg, duration: 8000 });
+          } else if (state.status === 'error') {
+            clearInterval(poll);
+            setReExporting(false);
+            setReExportMsg({ ok: false, text: `Error: ${JSON.stringify(state.errors)}` });
+            toast({ title: '❌ Re-export failed', description: JSON.stringify(state.errors), variant: 'destructive' });
+          }
+        } catch { /* network hiccup — keep polling */ }
+      }, 2000);
+
+    } catch (e) {
+      setReExportMsg({ ok: false, text: `Error: ${e.message}` });
+      toast({ title: '❌ Re-export error', description: e.message, variant: 'destructive' });
+      setReExporting(false);
     }
   };
 
@@ -564,6 +623,18 @@ const AdminGuideDashboard = () => {
               )}
             </Button>
             <Button 
+              onClick={handleReExport}
+              disabled={reExporting}
+              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 font-bold"
+              data-testid="re-export-migration-btn"
+            >
+              {reExporting ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Exporting... (~30s)</>
+              ) : (
+                <><UploadCloud className="w-4 h-4 mr-2" /> Re-export Migration Data</>
+              )}
+            </Button>
+            <Button 
               onClick={downloadDatabase}
               disabled={downloading}
               className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
@@ -581,8 +652,16 @@ const AdminGuideDashboard = () => {
       </Card>
 
       {restoreMsg && (
-        <Card className={`p-4 border-2 ${restoreMsg.ok ? 'bg-green-900/30 border-green-500/50' : 'bg-red-900/30 border-red-500/50'}`}>
-          <p className={`font-semibold ${restoreMsg.ok ? 'text-green-300' : 'text-red-300'}`}>{restoreMsg.text}</p>
+        <Card className={`p-4 border-2 ${restoreMsg.ok === true ? 'bg-green-900/30 border-green-500/50' : restoreMsg.ok === false ? 'bg-red-900/30 border-red-500/50' : 'bg-slate-800/50 border-slate-600/50'}`}>
+          <p className={`font-semibold ${restoreMsg.ok === true ? 'text-green-300' : restoreMsg.ok === false ? 'text-red-300' : 'text-slate-300'}`}>{restoreMsg.text}</p>
+        </Card>
+      )}
+
+      {reExportMsg && (
+        <Card className={`p-4 border-2 ${reExportMsg.ok === true ? 'bg-amber-900/30 border-amber-500/50' : reExportMsg.ok === false ? 'bg-red-900/30 border-red-500/50' : 'bg-slate-800/50 border-slate-600/50'}`}>
+          <p className={`font-semibold ${reExportMsg.ok === true ? 'text-amber-300' : reExportMsg.ok === false ? 'text-red-300' : 'text-slate-300'}`}>
+            <UploadCloud className="w-4 h-4 inline mr-2" />{reExportMsg.text}
+          </p>
         </Card>
       )}
 

@@ -6,7 +6,7 @@
 # ⚠️ READ THIS FIRST — EVERY AGENT EVERY SESSION
 
 ## The "Restore Database" Button Does EVERYTHING:
-1. Restores ALL 150 collections (88,244+ docs)
+1. Restores ALL 150 collections (89,878 docs)
 2. Auto-fixes "Website Visitor" tickets → real owner names
 3. Runs soul archetype inference → all pets get `primary_archetype`
 4. Toast confirms: "✅ Database restored · X tickets patched · Y archetypes live"
@@ -30,7 +30,7 @@ Any data change in preview must be exported to migration files
 BEFORE deploying. Otherwise Restore Database loads OLD data.
 
 ## Migration Coverage (as of April 11, 2026 — Post-Audit)
-**150 collections | 88,244 docs | restored on every "Restore Database"**
+**150 collections | 89,878 docs | restored on every "Restore Database"**
 
 Full coverage after April 11 gap audit. ALL state data is covered:
 - Core: users (21), pets (33), products_master (9,358), services_master (1,040), breed_products (4,941)
