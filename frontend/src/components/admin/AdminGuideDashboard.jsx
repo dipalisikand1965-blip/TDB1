@@ -133,6 +133,7 @@ const AdminGuideDashboard = () => {
       }
 
       // Poll /restore-progress every 2 seconds
+      let idleStrikes = 0;
       const poll = setInterval(async () => {
         try {
           const pr = await fetch(`${API_URL}/api/admin/db/restore-progress`);
@@ -165,6 +166,14 @@ const AdminGuideDashboard = () => {
             setRestoring(false);
             setRestoreMsg({ ok: false, text: `Error: ${JSON.stringify(state.errors)}` });
             toast({ title: '❌ Restore failed', description: JSON.stringify(state.errors), variant: 'destructive' });
+          } else if (state.status === 'idle' && done === 0) {
+            // Backend reset (hot reload) or task never started — stop after 5 idle polls (~10s)
+            idleStrikes += 1;
+            if (idleStrikes >= 5) {
+              clearInterval(poll);
+              setRestoring(false);
+              setRestoreMsg({ ok: false, text: 'Restore did not start — please try again' });
+            }
           }
         } catch { /* network hiccup — keep polling */ }
       }, 2000);
