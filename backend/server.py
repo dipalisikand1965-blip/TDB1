@@ -270,6 +270,9 @@ from app.api.milestone_illustrations_routes import router as milestone_illustrat
 # Soul Archetype Routes (Personality archetype derivation)
 from app.api.archetype_routes import router as archetype_router, set_archetype_db
 
+# Admin Archetype Inference Route (one-click inference on live DB)
+from archetype_routes import router as admin_archetype_inference_router
+
 # Soul Products Routes (Product tier management)
 from app.api.soul_products_routes import router as soul_products_router, set_soul_products_db
 
@@ -22713,6 +22716,7 @@ set_intelligence_db(db)  # Initialize Intelligence with database
 
 # Initialize Soul Archetype Engine
 app.include_router(archetype_router)  # Soul Archetype at /api/soul-archetype/*
+app.include_router(admin_archetype_inference_router, prefix="/api")  # POST /api/admin/pets/infer-archetypes
 set_archetype_db(db)  # Initialize Archetype with database
 
 # Initialize Soul Products Manager
