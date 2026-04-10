@@ -1355,12 +1355,32 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
                         break  # first match wins
 
-            user = await db.users.find_one({                "$or": [
-                    {"phone": {"$regex": phone_clean}},
-                    {"whatsapp": {"$regex": phone_clean}},
-                    {"phone": user_phone}, {"whatsapp": user_phone}
-                ]
-            }, {"_id": 0, "email": 1, "name": 1, "parent_name": 1, "membership": 1, "city": 1})
+            # ── Smart user lookup: normalize phone variants to avoid test-account collision ──
+            # phone_10 = last 10 digits (e.g. "9739908844").
+            # Stored phones may include leading 0 ("09739908844") or country code ("919739908844").
+            # Fetch all regex candidates, then score: prefer users whose stored phone
+            # is LONGER than 10 digits (has a prefix → real formatted number, not a bare 10-digit test entry).
+            _user_candidates = await db.users.find(
+                {"$or": [
+                    {"phone": {"$regex": phone_10 + "$"}},    # end-anchored: 9739908844 or 09739908844
+                    {"whatsapp": {"$regex": phone_10 + "$"}},
+                    {"phone": user_phone}, {"whatsapp": user_phone},
+                ]},
+                {"_id": 1, "email": 1, "name": 1, "parent_name": 1, "membership": 1, "city": 1, "phone": 1, "whatsapp": 1}
+            ).to_list(10)
+
+            def _phone_score(u):
+                """Score users: prefer longer (prefixed) stored phones over bare 10-digit numbers."""
+                for fld in ("phone", "whatsapp"):
+                    stored = "".join(filter(str.isdigit, str(u.get(fld) or "")))
+                    if stored.endswith(phone_10):
+                        # Longer stored number = more specifically formatted = real user
+                        return len(stored)
+                return 0
+
+            if _user_candidates:
+                _user_candidates.sort(key=_phone_score, reverse=True)
+            user = _user_candidates[0] if _user_candidates else None
 
             if user:
                 user_email = user.get("email")
