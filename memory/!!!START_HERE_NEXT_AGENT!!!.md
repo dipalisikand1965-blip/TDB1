@@ -2,8 +2,26 @@
 
 ## NEXT AGENT: DO NOT SKIP THIS FILE!
 
-**Date:** March 13, 2026 (Updated)
+**Date:** April 10, 2026 (Updated)
 **User:** Aditya (The Doggy Company)
+
+---
+
+# ⚠️ RESTORE DATABASE = ONE BUTTON DOES EVERYTHING
+
+## After every redeploy, go to Admin → Guide & Backup → "Restore Database":
+1. Restores ALL 133 collections (20,500+ docs)
+2. Auto-fixes "Website Visitor" tickets → real owner names  
+3. Runs soul archetype inference → all pets get `primary_archetype` (badge appears!)
+4. Toast: "✅ Database restored · X tickets patched · Y archetypes live"
+
+## YOU NEVER NEED TO:
+- Run `infer_archetype.py` manually ❌
+- Run curl commands after restore ❌
+- Fix visitor tickets manually ❌
+
+## The Only Manual Step:
+Re-export migration files when DATA changes in preview → see `DEPLOYMENT_RULES.md`
 
 ---
 
