@@ -1351,6 +1351,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         body: JSON.stringify({ 
           content: replyText || (attachments.length > 0 ? `[${attachments.length} attachment(s)]` : ''), 
           is_internal: isInternal,
+          channel: replyChannel,
           attachments: attachmentData
         })
       });
