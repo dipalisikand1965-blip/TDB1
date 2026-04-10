@@ -36,7 +36,8 @@ const C = {
   amberB:  "rgba(201,151,58,0.2)",
 };
 
-// ── 51 Questions across 8 chapters ────────────────────────────────────────
+// ── The 3 required keys — cannot be skipped ───────────────────────────────
+const REQUIRED_KEYS = new Set(['age_stage', 'food_allergies', 'health_conditions']);
 const CHAPTERS = [
   {
     id:    "identity",
@@ -48,6 +49,7 @@ const CHAPTERS = [
       {
         key:   "age_stage",
         pts:   10,
+        required: true,
         text:  "How old is {name}?",
         mira:  "\"Age shapes everything \u2014 energy, diet, what Mira recommends.\"",
         type:  "choice",
@@ -453,6 +455,7 @@ const CHAPTERS = [
       {
         key:   "food_allergies",
         pts:   15,
+        required: true,
         text:  "Does {name} have any food allergies?",
         mira:  "\"This is non-negotiable. I will NEVER suggest anything with {name}'s allergens. Ever.\"",
         type:  "choice",
@@ -639,6 +642,7 @@ const CHAPTERS = [
       {
         key:   "health_conditions",
         pts:   15,
+        required: true,
         text:  "Does {name} have any ongoing health conditions?",
         mira:  "\"This is the most important health question. I'll make sure every recommendation respects {name}'s condition.\"",
         type:  "choice",
@@ -793,6 +797,7 @@ export default function PetSoulOnboarding() {
   const [currentPet,   setCurrentPet]   = useState(null);
   const [petsLoaded,   setPetsLoaded]   = useState(false);
   const [textAnswer,   setTextAnswer]   = useState('');
+  const [isResuming,   setIsResuming]   = useState(false); // Fix 1: resume banner
 
   const startChapterRef = useRef(null);
 
@@ -826,6 +831,29 @@ export default function PetSoulOnboarding() {
       return () => clearTimeout(timer);
     }
   }, [pets, petsLoaded, token, navigate]);
+
+  // ── Fix 1: Pre-populate answers/score from existing pet data, resume from last answered ─
+  useEffect(() => {
+    if (!currentPet) return;
+    const existing = currentPet.doggy_soul_answers || {};
+    const keys = Object.keys(existing).filter(k => existing[k]);
+    if (keys.length === 0) return;
+
+    // Restore answers and recompute score
+    setAnswers(existing);
+    const existingScore = ALL_QUESTIONS.reduce(
+      (sum, aq) => (existing[aq.key] ? sum + aq.pts : sum), 0
+    );
+    setScore(existingScore);
+
+    // Resume point: first unanswered question in order
+    const resumeIdx = ALL_QUESTIONS.findIndex(aq => !existing[aq.key]);
+    const targetIdx = resumeIdx === -1 ? ALL_QUESTIONS.length - 1 : resumeIdx;
+    if (targetIdx > 0) {
+      setQIdx(targetIdx);
+      setIsResuming(true);
+    }
+  }, [currentPet]); // eslint-disable-line
 
   const petName = currentPet?.name || 'your dog';
   const petPhoto = currentPet?.photo_url || currentPet?.photo || null;
@@ -1048,8 +1076,18 @@ export default function PetSoulOnboarding() {
             marginBottom: 16,
           }}
         >
-          Let's begin
+          {isResuming ? 'Continue where you left off' : "Let's begin"}
         </button>
+
+        {isResuming && (
+          <div style={{
+            background: 'rgba(155,89,182,0.15)', border: '1px solid rgba(155,89,182,0.3)',
+            borderRadius: 12, padding: '10px 20px', marginBottom: 12,
+            color: C.purple, fontSize: 13, fontWeight: 500,
+          }}>
+            Welcome back — picking up from Q{qIdx + 1} of {ALL_QUESTIONS.length}
+          </div>
+        )}
 
         <button
           onClick={() => navigate('/pet-home')}
@@ -1303,23 +1341,36 @@ export default function PetSoulOnboarding() {
                   Skip chapter {"\u2192"}
                 </button>
               )}
-              {q.required && qIdx === 0 && (
-                <span style={{ fontSize: 11, color: C.dim, fontFamily: "'DM Sans', sans-serif" }}>
-                  * Required for local recommendations
+              {q.required && (
+                <span style={{ fontSize: 11, color: '#e67e22', fontFamily: "'DM Sans', sans-serif", fontWeight: 600 }}>
+                  ★ Required
                 </span>
               )}
             </div>
-            <button
-              onClick={() => navigate('/pet-home')}
-              data-testid="soul-builder-save-later-btn"
-              style={{
-                background: 'none', border: 'none',
-                color: C.dim, fontSize: 12, cursor: 'pointer',
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            >
-              Save & finish later
-            </button>
+            {/* Save & finish later — blocked on required questions */}
+            {REQUIRED_KEYS.has(q.key) ? (
+              <span
+                style={{
+                  fontSize: 12, color: C.dim, fontFamily: "'DM Sans', sans-serif",
+                  opacity: 0.5, userSelect: 'none',
+                }}
+                title="Please answer this required question first"
+              >
+                ★ Required — answer to continue
+              </span>
+            ) : (
+              <button
+                onClick={() => navigate('/pet-home')}
+                data-testid="soul-builder-save-later-btn"
+                style={{
+                  background: 'none', border: 'none',
+                  color: C.dim, fontSize: 12, cursor: 'pointer',
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+              >
+                Save & finish later
+              </button>
+            )}
           </div>
         </div>
       </div>
