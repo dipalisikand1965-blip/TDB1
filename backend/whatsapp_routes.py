@@ -1472,11 +1472,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         if pet_conditions:
                             all_conditions += pet_conditions
 
-                        # Favorites
+                        # Favorites — captured per-pet so we can scope to active dog later
                         favs = p.get("favorite_foods") or soul.get("treat_preference", "")
+                        pet_fav_list = []
                         if favs:
-                            fav_list = favs if isinstance(favs, list) else [f.strip() for f in favs.split(",")]
-                            all_favorites += fav_list
+                            pet_fav_list = favs if isinstance(favs, list) else [f.strip() for f in favs.split(",") if f.strip()]
+                            all_favorites += pet_fav_list
 
                         # ── Archetype — capture from active pet only ─────────────────
                         is_active_pet = (idx == 0) or (
@@ -1497,6 +1498,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                         line += ")"
                         if pet_allergies:
                             line += f" — ALLERGIC TO: {', '.join(pet_allergies)}"
+                        if pet_fav_list:
+                            line += f" | Favourites: {', '.join(pet_fav_list)}"
                         # Energy / personality from soul answers
                         energy = soul.get("energy_level", "")
                         if energy: line += f" | Energy: {energy}"
@@ -1510,18 +1513,27 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                     # so GPT cannot mention them (fixes Sultan/Badmash confusion).
                     if ticket_pet_name:
                         active_lines = [l for l in pet_lines if ticket_pet_name.lower() in l.lower()]
-                        context_parts.append(f"Dog in this conversation: {active_lines[0] if active_lines else pet_lines[0]}")
+                        active_line  = active_lines[0] if active_lines else pet_lines[0]
+                        context_parts.append(f"Dog in this conversation: {active_line}")
                         context_parts.append(
                             f"RULE: This conversation is ONLY about {ticket_pet_name}. "
                             f"Never name or reference any other dog."
                         )
+                        # Scope favorites to the ACTIVE pet only (prevent cross-dog contamination)
+                        active_pet_favs = [
+                            f for f in all_favorites
+                            if any(f.lower() in l.lower() for l in active_lines)
+                        ]
+                        # Fallback: extract favorites directly from active_line
+                        if not active_pet_favs and "Favourites:" in active_line:
+                            fav_section = active_line.split("Favourites:")[-1].split("|")[0].strip()
+                            active_pet_favs = [f.strip() for f in fav_section.split(",") if f.strip()]
+                        if active_pet_favs:
+                            context_parts.append(f"{ticket_pet_name}'s favourites: {', '.join(active_pet_favs)}")
                     else:
                         context_parts.append(f"Dogs: {' | '.join(pet_lines)}")
-
-                    if all_allergies:
-                        context_parts.append(f"ALLERGEN BLOCK — NEVER recommend: {', '.join(set(all_allergies))}")
-                    if all_favorites:
-                        context_parts.append(f"Favorite treats: {', '.join(set(all_favorites))}")
+                        if all_favorites:
+                            context_parts.append(f"Favorite treats across all dogs: {', '.join(set(all_favorites))}")
 
                 # Recent tickets — only include when NO active pet lock (avoid leaking other pet names)
                 if not ticket_pet_name:
@@ -1926,7 +1938,7 @@ Website: thedoggycompany.com | Concierge: +91 8971702582"""
             # Scope session to the specific pet when known — prevents cross-pet contamination
             session_id=f"wa-{user_phone or uuid_mod.uuid4().hex[:8]}-{ticket_pet_name.lower() if ticket_pet_name else 'all'}",
             system_message=system_prompt
-        ).with_model("openai", "gpt-4o-mini")
+        ).with_model("openai", "gpt-4o")
 
         response = await chat.send_message(UserMessage(text=f"{user_name} says: {message_text}"))
 
