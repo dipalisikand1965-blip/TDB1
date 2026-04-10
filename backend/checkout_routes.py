@@ -12,6 +12,7 @@ import logging
 import hmac
 import hashlib
 import uuid
+from email_templates import get_email_template, detail_box, detail_row
 import io
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict, Any
@@ -151,105 +152,39 @@ async def send_order_confirmation_email(order: dict) -> bool:
         pricing = order.get("pricing", {})
         items = order.get("items", [])
         
-        # Build items HTML
-        items_html = ""
+        # Build order rows for detail box
+        items_rows = ""
         for item in items:
             item_total = item.get("price", 0) * item.get("quantity", 1)
-            items_html += f'''
-            <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
-                    <strong>{item.get("name", "Item")}</strong>
-                    <br><span style="color: #6b7280; font-size: 12px;">{item.get("size", "")} {item.get("flavor", "")}</span>
-                </td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">{item.get("quantity", 1)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">₹{item_total:.2f}</td>
-            </tr>
-            '''
-        
-        # GST details
-        gst_details = pricing.get("gst_details", {})
-        gst_html = ""
-        if gst_details.get("is_same_state"):
-            gst_html = f'''
-            <tr><td colspan="2" style="padding: 8px; color: #6b7280;">CGST (9%)</td><td style="text-align: right; padding: 8px;">₹{gst_details.get("cgst_amount", 0):.2f}</td></tr>
-            <tr><td colspan="2" style="padding: 8px; color: #6b7280;">SGST (9%)</td><td style="text-align: right; padding: 8px;">₹{gst_details.get("sgst_amount", 0):.2f}</td></tr>
-            '''
-        else:
-            gst_html = f'''
-            <tr><td colspan="2" style="padding: 8px; color: #6b7280;">IGST (18%)</td><td style="text-align: right; padding: 8px;">₹{gst_details.get("igst_amount", 0):.2f}</td></tr>
-            '''
-        
-        html_content = f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: #333; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                .header {{ background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%); color: white; padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }}
-                .content {{ background: #fff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; }}
-                .order-box {{ background: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0; }}
-                .total-row {{ font-size: 18px; font-weight: bold; color: #7c3aed; }}
-                .footer {{ background: #f9fafb; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; font-size: 12px; color: #6b7280; }}
-                .btn {{ display: inline-block; background: #7c3aed; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1 style="margin: 0;">🐕 The Doggy Company</h1>
-                    <p style="margin: 10px 0 0 0; opacity: 0.9;">Order Confirmation</p>
-                </div>
-                <div class="content">
-                    <h2 style="color: #22c55e; text-align: center;">✓ Payment Successful!</h2>
-                    
-                    <p>Hi {customer_name},</p>
-                    <p>Thank you for your order! We're preparing your treats with love 🐾</p>
-                    
-                    <div class="order-box">
-                        <p style="margin: 0 0 10px 0;"><strong>Order ID:</strong> {order_id}</p>
-                        <p style="margin: 0;"><strong>Payment Status:</strong> <span style="color: #22c55e;">Paid ✓</span></p>
-                    </div>
-                    
-                    <h3>Order Details</h3>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: #f3f4f6;">
-                                <th style="padding: 12px; text-align: left;">Item</th>
-                                <th style="padding: 12px; text-align: center;">Qty</th>
-                                <th style="padding: 12px; text-align: right;">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items_html}
-                        </tbody>
-                    </table>
-                    
-                    <table style="width: 100%; margin-top: 20px;">
-                        <tr><td colspan="2" style="padding: 8px;">Subtotal</td><td style="text-align: right; padding: 8px;">₹{pricing.get("subtotal", 0):.2f}</td></tr>
-                        {gst_html}
-                        <tr><td colspan="2" style="padding: 8px;">Shipping</td><td style="text-align: right; padding: 8px;">{("FREE" if pricing.get("shipping_fee", 0) == 0 else f"₹{pricing.get('shipping_fee', 0):.2f}")}</td></tr>
-                        <tr class="total-row"><td colspan="2" style="padding: 12px; border-top: 2px solid #7c3aed;">Total Paid</td><td style="text-align: right; padding: 12px; border-top: 2px solid #7c3aed;">₹{pricing.get("grand_total", 0):.2f}</td></tr>
-                    </table>
-                    
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="https://thedoggycompany.com/api/checkout/order/{order_id}/invoice/pdf" class="btn">
-                            📄 Download Invoice (PDF)
-                        </a>
-                    </div>
-                    
-                    <p style="color: #6b7280; font-size: 14px;">
-                        You'll receive shipping updates on WhatsApp. For any questions, reply to this email or call us at +91 9663185747.
-                    </p>
-                </div>
-                <div class="footer">
-                    <p>The Doggy Company | India's #1 Pet Life Operating System</p>
-                    <p>📞 +91 9663185747 | 📧 woof@thedoggycompany.com</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        '''
+            items_rows += detail_row(
+                f"{item.get('name', 'Item')} × {item.get('quantity', 1)}",
+                f"₹{item_total:.2f}"
+            )
+
+        pricing_rows = (
+            detail_row("Subtotal", f"₹{pricing.get('subtotal', 0):.2f}") +
+            detail_row("Shipping", "FREE" if pricing.get("shipping_fee", 0) == 0 else f"₹{pricing.get('shipping_fee', 0):.2f}") +
+            detail_row("GST", f"₹{pricing.get('gst_amount', pricing.get('total_gst', 0)):.2f}") +
+            detail_row("Total Paid", f"₹{pricing.get('grand_total', 0):.2f}")
+        )
+
+        html_content = get_email_template(
+            title="Order Confirmed",
+            tagline="✦ We're preparing your order with love",
+            body_html=(
+                f"<p>Hi {customer_name},</p>"
+                f"<p>Your payment was successful! We're preparing your treats right now.</p>"
+                + detail_box("Order Summary",
+                    detail_row("Order ID", order_id) +
+                    items_rows + pricing_rows
+                ) +
+                f"<p style='font-size:13px;color:#666;'>"
+                f"You'll receive shipping updates on WhatsApp. "
+                f"For any questions, reply to this email or call +91 9663185747.</p>"
+            ),
+            cta_text="Download Invoice →",
+            cta_url=f"https://thedoggycompany.com/api/checkout/order/{order_id}/invoice/pdf",
+        )
         
         params = {
             "from": f"THEDOGGYCOMPANY <{SENDER_EMAIL}>",

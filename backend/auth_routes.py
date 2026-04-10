@@ -7,6 +7,7 @@ import os
 import logging
 import uuid
 import hashlib
+from email_templates import get_email_template, detail_box, detail_row
 import jwt
 from datetime import datetime, timezone, timedelta
 from typing import Optional
@@ -620,48 +621,21 @@ async def member_forgot_password(request: ForgotPasswordRequest):
             
             user_name = user.get("name", "Pet Parent")
             
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background: #f9fafb; }}
-                    .container {{ max-width: 600px; margin: 0 auto; background: white; }}
-                    .header {{ background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); color: white; padding: 30px; text-align: center; }}
-                    .content {{ padding: 30px; }}
-                    .cta-button {{ display: inline-block; background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%); color: white !important; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }}
-                    .footer {{ background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1 style="margin: 0;">🔐 Password Reset</h1>
-                    </div>
-                    <div class="content">
-                        <h2>Hi {user_name},</h2>
-                        
-                        <p>We received a request to reset your password for your Pet Pass account.</p>
-                        
-                        <p>Click the button below to set a new password:</p>
-                        
-                        <a href="{reset_link}" class="cta-button">Reset Password</a>
-                        
-                        <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-                            This link will expire in 24 hours. If you didn't request this, you can safely ignore this email.
-                        </p>
-                        
-                        <p style="color: #6b7280; font-size: 12px;">
-                            Or copy this link: <br/>{reset_link}
-                        </p>
-                    </div>
-                    <div class="footer">
-                        <p>🐾 The Doggy Company</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
+            html_content = get_email_template(
+                title="Password Reset",
+                tagline="✦ Secure link inside — valid for 24 hours",
+                body_html=(
+                    f"<p>Hi {user_name},</p>"
+                    f"<p>We received a request to reset your password for your <strong>Pet Pass</strong> account.</p>"
+                    f"<p>Click the button below to set a new password. This link expires in <strong>24 hours</strong>.</p>"
+                    f"<p style='font-size:13px;color:#666;margin-top:24px;'>"
+                    f"If you didn't request this, you can safely ignore this email — your password will not change.</p>"
+                    f"<p style='font-size:12px;color:#999;word-break:break-all;margin-top:12px;'>"
+                    f"Or copy this link:<br>{reset_link}</p>"
+                ),
+                cta_text="Reset my password →",
+                cta_url=reset_link,
+            )
             
             resend.Emails.send({
                 "from": os.environ.get("SENDER_EMAIL", "onboarding@resend.dev"),

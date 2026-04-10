@@ -15,6 +15,7 @@ from typing import Optional, List, Dict, Any
 from enum import Enum
 import asyncio
 import logging
+from email_templates import get_email_template, detail_box, detail_row
 import os
 
 # Email configuration
@@ -666,54 +667,42 @@ class CommunicationEngine:
             return {"success": False, "error": str(e)}
     
     def _build_email_html(self, subject: str, body: str, pet_name: str = None, parent_name: str = None) -> str:
-        """Build a styled HTML email using The Doggy Company brand"""
-        # Convert plain text body to HTML (preserve line breaks)
+        """Build a branded HTML email using the unified The Doggy Company template."""
         html_body = body.replace("\n", "<br>")
-        
-        return f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background: #f5f5f5; }}
-                .container {{ max-width: 600px; margin: 0 auto; background: #ffffff; }}
-                .header {{ background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 30px; text-align: center; }}
-                .header h1 {{ margin: 0; font-size: 24px; }}
-                .header p {{ margin: 10px 0 0 0; opacity: 0.9; font-size: 14px; }}
-                .content {{ padding: 30px; background: #fff; }}
-                .content p {{ margin: 0 0 15px 0; }}
-                .cta-button {{ display: inline-block; background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 15px 0; }}
-                .footer {{ background: #f9fafb; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb; }}
-                .footer a {{ color: #9333ea; }}
-                .pet-badge {{ display: inline-block; background: #fdf4ff; color: #9333ea; padding: 4px 12px; border-radius: 15px; font-size: 12px; margin-bottom: 15px; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🐾 The Doggy Company</h1>
-                    <p>Your Pet's Life Operating System</p>
-                </div>
-                <div class="content">
-                    {"<span class='pet-badge'>💛 About " + pet_name + "</span><br>" if pet_name else ""}
-                    <div style="margin-top: 10px;">
-                        {html_body}
-                    </div>
-                </div>
-                <div class="footer">
-                    <p>The Doggy Company | Pet Life OS®</p>
-                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.com</p>
-                    <p style="font-size: 11px; color: #9ca3af; margin-top: 10px;">
-                        You're receiving this because you're part of The Doggy Company family. 
-                        <a href="https://thedoggycompany.com/settings">Manage preferences</a>
-                    </p>
-                </div>
-            </div>
-        </body>
-        </html>
-        '''
+
+        # Pick a friendly tagline based on subject keyword
+        subject_lower = subject.lower()
+        if "birthday" in subject_lower or "celebrate" in subject_lower:
+            tagline = "✦ Time to celebrate your dog's special day"
+        elif "gotcha" in subject_lower or "anniversary" in subject_lower:
+            tagline = "✦ Celebrating every chapter of your dog's story"
+        elif "grooming" in subject_lower:
+            tagline = "✦ A gentle reminder from your Concierge®"
+        elif "vaccination" in subject_lower or "vaccine" in subject_lower:
+            tagline = "✦ Keeping your dog healthy and protected"
+        elif "reminder" in subject_lower:
+            tagline = "✦ A note from your Pet Concierge®"
+        else:
+            tagline = "✦ Your Pet Life Operating System"
+
+        pet_badge = (
+            f"<div style='display:inline-block;background:#F5F5DC;color:#1a1a3e;"
+            f"padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;"
+            f"border:1px solid #DAA520;margin-bottom:16px;'>About {pet_name}</div><br>"
+            if pet_name else ""
+        )
+
+        return get_email_template(
+            title=subject,
+            tagline=tagline,
+            body_html=(
+                f"<p>Hi {parent_name or 'Pet Parent'},</p>"
+                + pet_badge
+                + f"<div style='line-height:1.8;'>{html_body}</div>"
+            ),
+            cta_text="Open Pet Concierge® →",
+            cta_url="https://thedoggycompany.com/my-requests",
+        )
     
     def generate_whatsapp_link(self, message: str, phone: str = None) -> str:
         """

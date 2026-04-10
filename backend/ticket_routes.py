@@ -16,6 +16,7 @@ import asyncio
 import jwt
 import logging
 from dotenv import load_dotenv
+from email_templates import get_email_template, detail_box, detail_row
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -83,16 +84,22 @@ async def send_ticket_notification(ticket: dict, notification_type: str = "creat
                     "from": SENDER_EMAIL,
                     "to": member_email,
                     "subject": f"Ticket {ticket['ticket_id']} - We've received your request",
-                    "html": f"""
-                        <h2>Thank you for contacting The Doggy Company!</h2>
-                        <p>We've received your request and our concierge team will get back to you soon.</p>
-                        <p><strong>Ticket ID:</strong> {ticket['ticket_id']}</p>
-                        <p><strong>Category:</strong> {ticket.get('category', 'General')}</p>
-                        <p><strong>Your Request:</strong></p>
-                        <p style="background:#f5f5f5;padding:15px;border-radius:8px;">{ticket.get('description', '')}</p>
-                        <p>We'll keep you updated on the progress.</p>
-                        <p>Best regards,<br>The Doggy Company Concierge Team</p>
-                    """
+                    "html": get_email_template(
+                        title="Your request has been received",
+                        tagline="✦ Our Concierge® team is on it",
+                        body_html=(
+                            f"<p>Hi {member.get('name', 'Pet Parent')},</p>"
+                            f"<p>We've received your request and our Concierge® team will be in touch within 24 hours with a personalised plan.</p>"
+                            + detail_box("Request Details",
+                                detail_row("Ticket ID", ticket["ticket_id"]) +
+                                detail_row("Category", ticket.get("category", "General").title()) +
+                                detail_row("Your Request", ticket.get("description", "")[:200])
+                            ) +
+                            "<p>Simply reply to this email to add more details — your ticket reference will be tracked automatically.</p>"
+                        ),
+                        cta_text="View your request →",
+                        cta_url="https://thedoggycompany.com/my-requests",
+                    )
                 })
             
             # Notify concierge team
@@ -122,14 +129,21 @@ async def send_ticket_notification(ticket: dict, notification_type: str = "creat
                     "from": SENDER_EMAIL,
                     "to": member_email,
                     "subject": f"Ticket {ticket['ticket_id']} - Resolved ✓",
-                    "html": f"""
-                        <h2>Your request has been resolved!</h2>
-                        <p><strong>Ticket ID:</strong> {ticket['ticket_id']}</p>
-                        <p><strong>Resolution:</strong></p>
-                        <p style="background:#d4edda;padding:15px;border-radius:8px;">{ticket.get('resolution_note', 'Your request has been completed.')}</p>
-                        <p>Thank you for choosing The Doggy Company!</p>
-                        <p>Best regards,<br>The Doggy Company Concierge Team</p>
-                    """
+                    "html": get_email_template(
+                        title="Your request has been resolved",
+                        tagline="✦ All done — with love from your Concierge®",
+                        body_html=(
+                            f"<p>Hi {member.get('name', 'Pet Parent')},</p>"
+                            f"<p>Great news! Your Concierge® request has been completed.</p>"
+                            + detail_box("Resolution Summary",
+                                detail_row("Ticket ID", ticket["ticket_id"]) +
+                                detail_row("Resolution", ticket.get("resolution_note", "Your request has been completed."))
+                            ) +
+                            "<p>Thank you for choosing The Doggy Company. We're always here when you need us.</p>"
+                        ),
+                        cta_text="View your request →",
+                        cta_url="https://thedoggycompany.com/my-requests",
+                    )
                 })
         
         return True
@@ -2186,30 +2200,23 @@ async def add_reply(ticket_id: str, reply: TicketReply):
                         "to": member_email,
                         "reply_to": SENDER_EMAIL,
                         "subject": f"Re: {ticket.get('subject', 'Your Request')} - The Doggy Company",
-                        "html": f"""
-                            <div style="font-family: 'Segoe UI', -apple-system, sans-serif; max-width: 640px; margin: 0 auto; background: #f8f4f0;">
-                                <div style="background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%); padding: 24px 32px; border-radius: 16px 16px 0 0;">
-                                    <h2 style="color: white; margin: 0; font-weight: 600;">🐾 The Doggy Company</h2>
-                                    <p style="color: rgba(255,255,255,0.9); margin: 4px 0 0 0; font-size: 14px;">Pet Concierge Team</p>
-                                </div>
-                                <div style="padding: 32px; background: white;">
-                                    <p style="color: #333; margin: 0 0 16px 0;">Hi {member_name}! 👋</p>
-                                    <div style="background: #faf8f6; padding: 20px; border-radius: 12px; margin: 16px 0; border-left: 4px solid #9333ea;">
-                                        {email_content}
-                                    </div>
-                                    <p style="color: #666; font-size: 14px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee;">
-                                        Ticket Reference: <strong>{ticket_id[-8:]}</strong><br>
-                                        Regarding: {pet_name}
-                                    </p>
-                                </div>
-                                <div style="padding: 20px 32px; background: #f5f5f5; border-radius: 0 0 16px 16px; text-align: center;">
-                                    <p style="color: #888; font-size: 12px; margin: 0;">
-                                        With love, from The Doggy Company 💜<br>
-                                        <a href="https://thedoggycompany.com" style="color: #9333ea;">thedoggycompany.com</a>
-                                    </p>
-                                </div>
-                            </div>
-                        """
+                        "html": get_email_template(
+                            title="Pet Concierge®",
+                            tagline="✦ Your Concierge® has responded",
+                            body_html=(
+                                f"<p>Hi {member_name}!</p>"
+                                f"<div style='background:#F5F5DC;padding:20px;border-radius:8px;"
+                                f"border-left:4px solid #DAA520;margin:16px 0;font-size:15px;"
+                                f"line-height:1.7;color:#333;'>{email_content}</div>"
+                                + detail_box("Thread Details",
+                                    detail_row("Ticket Reference", ticket_id[-8:]) +
+                                    detail_row("Regarding", pet_name or "Your Pet")
+                                ) +
+                                "<p style='font-size:13px;color:#666;'>Simply reply to this email to continue the conversation — we're here for you.</p>"
+                            ),
+                            cta_text="View full conversation →",
+                            cta_url="https://thedoggycompany.com/my-requests",
+                        )
                     })
                     message["email_sent"] = True
                     logger.info(f"[EMAIL] Sent reply email to {member_email} for ticket {ticket_id}")
