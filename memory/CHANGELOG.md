@@ -1,6 +1,20 @@
 # TDC Changelog
 
-## April 10, 2026 — Razorpay Verify Bug Fix (Membership Activation)
+## April 10, 2026 — WhatsApp Ticket Dedup Fix (Pillar-Aware)
+
+### whatsapp_routes.py
+- Added `_WA_PILLAR_KEYWORDS` — ordered keyword-to-pillar map (11 pillars: celebrate, dine, care, emergency, vet, play, go, learn, services, shop, paperwork)
+- Added `_detect_pillar_from_wa_message(text)` helper — scans message for keywords, returns pillar string or None
+- Moved pillar detection BEFORE `if _resolved_pet:` so `_detected_pillar` is always in scope
+- **Fixed standard dedup lookup** (was: phone + any open ticket → attach): now matches on phone + SAME PILLAR. If no pillar detected → `sd_ticket = None` → new ticket created (safe fallback)
+- Fixed new-ticket fallback creation: uses `_detected_pillar` for `pillar` and `category` fields (was hardcoded `"support"`)
+
+**Result:**
+- "Hi looking for a cake !!" → pillar=celebrate → does NOT merge into Doggy Daycare (play) ticket ✅
+- "hi any update on daycare" → pillar=play → correctly attaches to play ticket ✅
+- "Hi" → no pillar → creates fresh ticket (safe) ✅
+
+
 
 ### models.py
 - Added `user_email: Optional[str] = None` to `VerifyPaymentRequest` — was missing, causing `AttributeError` → membership never activated after payment
