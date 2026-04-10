@@ -6,7 +6,7 @@
 # ⚠️ READ THIS FIRST — EVERY AGENT EVERY SESSION
 
 ## The "Restore Database" Button Does EVERYTHING:
-1. Restores ALL 133 collections (20,500+ docs)
+1. Restores ALL 150 collections (88,244+ docs)
 2. Auto-fixes "Website Visitor" tickets → real owner names
 3. Runs soul archetype inference → all pets get `primary_archetype`
 4. Toast confirms: "✅ Database restored · X tickets patched · Y archetypes live"
@@ -29,18 +29,19 @@ See table below for what triggers a re-export.
 Any data change in preview must be exported to migration files 
 BEFORE deploying. Otherwise Restore Database loads OLD data.
 
-## Migration Coverage (as of April 10, 2026)
-**132 collections | ~20,500 docs | restored on every "Restore Database"**
+## Migration Coverage (as of April 11, 2026 — Post-Audit)
+**150 collections | 88,244 docs | restored on every "Restore Database"**
 
-Previously only 14 collections were restored. Now ALL state data is covered:
-- Core: users, pets (with primary_archetype), products_master, services_master, breed_products
-- WhatsApp: whatsapp_logs, whatsapp_digest_log, live_conversation_threads  
-- Mira: mira_conversations, mira_memories, mira_tickets, mira_sessions, nudge_schedules
-- Tickets: service_desk_tickets, tickets, mira_tickets, unified_inbox, channel_intakes
-- Orders: orders, birthday_box_orders, membership_orders, cake_orders
-- Content: blog_posts, faqs, learn_*, team_members, testimonials, stay_*, restaurants
+Full coverage after April 11 gap audit. ALL state data is covered:
+- Core: users (21), pets (33), products_master (9,358), services_master (1,040), breed_products (4,941)
+- Mira AI: mira_product_scores (44,891), mira_signals (12,240), mira_conversations (785), mira_memories (170)
+- Notifications: admin_notifications (2,270), member_notifications (1,374), email_logs (574)
+- WhatsApp: whatsapp_logs, whatsapp_digest_log, live_conversation_threads (267)
+- Tickets: service_desk_tickets (124), tickets (238), unified_inbox (134), channel_intakes (741)
+- Orders: orders (15), birthday_box_orders (41), membership_orders (9), cake_orders (7)
+- Content: blog_posts, faqs, learn_* (10 cols), team_members, testimonials, stay_*, restaurants
 - Config: app_settings, settings, escalation_rules, ticket_templates, pricing_tiers
-- +90 more (see COLLECTIONS_CONFIG in db_restore_routes.py)
+- Intentionally excluded (correct): *_backup_* collections, curated_picks_cache, mira_imagines_cache, user_sessions, sync_logs, notification_logs, health_reminder_logs
 
 ## What triggers a re-export?
 
