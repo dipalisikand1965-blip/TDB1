@@ -159,8 +159,9 @@ const AdminGuideDashboard = () => {
             const summary  = `${lines}${patchLine}${archLine}\n\nTotal: ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s`;
             const patchMsg = patched  > 0 ? ` · ${patched} tickets patched`  : '';
             const archMsg  = inferred > 0 ? ` · ${inferred} archetypes live` : '';
-            setRestoreMsg({ ok: true, text: `✅ Database restored${patchMsg}${archMsg}` });
-            toast({ title: '✅ Database Restored!', description: summary, duration: 10000 });
+            // Show full summary inline (persistent) + in toast
+            setRestoreMsg({ ok: true, text: `✅ Database restored${patchMsg}${archMsg} · ${state.total_docs?.toLocaleString()} docs in ${state.duration_seconds}s\n\n${summary}` });
+            toast({ title: '✅ Database Restored!', description: summary, duration: 30000 });
           } else if (state.status === 'error') {
             clearInterval(poll);
             setRestoring(false);
