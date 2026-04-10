@@ -93,6 +93,7 @@ COLLECTIONS_CONFIG = [
     ("conversation_memories",    "conversation_memories",    "id"),
     ("nudge_schedules",          "nudge_schedules",          "id"),
     # ── WhatsApp ──────────────────────────────────────────────────────────────
+    ("wa_pet_state",             "wa_pet_state",             "phone"),
     ("whatsapp_logs",            "whatsapp_logs",            "id"),
     ("whatsapp_digest_log",      "whatsapp_digest_log",      "id"),
     ("live_conversation_threads","live_conversation_threads","id"),
