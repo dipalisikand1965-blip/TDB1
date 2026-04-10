@@ -506,8 +506,12 @@ async def process_gupshup_webhook(body: dict):
                             first_pet = pet
                             logger.info(f"[GUPSHUP] Pet name '{pet.get('name')}' detected in message — using as active pet")
                             break
-                    if not first_pet and found_pets:
-                        first_pet = found_pets[0]
+                    if not first_pet:
+                        if len(found_pets) == 1:
+                            # Single-pet household — auto-assign, no disambiguation needed
+                            first_pet = found_pets[0]
+                        # Multi-pet household with no pet named in message → leave as None
+                        # get_mira_ai_response will fire the "which dog?" disambiguation question
                     logger.info(f"[GUPSHUP] Matched member {member_email} with {len(found_pets)} pet(s) | active_pet={first_pet.get('name') if first_pet else None}")
                 else:
                     logger.info(f"[GUPSHUP] No registered member found for {phone_10} — creating anonymous ticket")
@@ -1989,51 +1993,15 @@ RAINBOW BRIDGE RULE (WhatsApp):
 - If a pet has passed (rainbow_bridge: true), use gentle past tense: "I remember how [Pet] loved..."
 - NEVER recommend products for a departed pet as if they're still alive.{allergen_rule}{condition_rule}{catalog_instruction}{near_me_instruction}{context_block}
 
-RESPONSE STRUCTURE — follow this format exactly:
-
-Hey [Parent first name]! 🐾
-
-[2-3 warm sentences — use dog's name, reference their actual personality/breed/favourites naturally.
- Lead with what you know about THIS dog specifically, not generic breed facts.]
-
-- [Product Name] — ₹[price]
-  [link e.g. thedoggycompany.com/dine]
-  ✦ Why: [max 10 words — dog's actual name + real allergy/breed/favourite reason]
-
-(add up to 3 products for the SAME dog — one block only, never two dogs)
-
-[If NearMe detected: include Google Maps link]
-
-[One warm, specific follow-up question relevant to this dog and this request]
-
-Need help? Your Concierge is here →
-thedoggycompany.com/my-requests 🐾
-
-IF NO CATALOG MATCH — use Mira Imagines format instead:
-
-Hey [Parent first name]! 🐾
-
-I don't have [specific item] in our catalog yet —
-but Mira imagines the perfect [thing] for [pet]! 🎨
-
-✦ Mira Imagines: [visual, specific — breed + energy + occasion e.g. "A birthday bandana + party hat combo for an energetic Indie like Mojo"]
-
-[If closest real products exist:]
-Meanwhile — these are perfect:
-- [Real Product Name] — thedoggycompany.com/[pillar]
-
-🛒 Explore more options: [Amazon URL]
-
-Your Concierge can source it →
-thedoggycompany.com/my-requests 🐾
-
-RULES FOR ✦ Why line:
-- Must use the dog's actual name (e.g. "Mojo", "Badmash")
-- Must reference a real reason: favourite ingredient, blocked allergen, breed trait, life stage
-- Max 10 words. Examples:
-  ✦ Why: Salmon (Mojo's favourite), no chicken or beef
-  ✦ Why: Perfect for high-energy Indie dogs
-  ✦ Why: Gentle on Badmash's Newfoundland joints
+RESPONSE STYLE — guidelines (NOT a rigid template):
+- Open with the pet's name and something real you know about them — never a generic greeting
+- Weave in their personality, breed quirks, favourite ingredients naturally — like you've known this dog for years
+- Product recommendations feel like personal picks, not a menu
+- ✦ Why line is written like you're talking to a friend, not filling a form
+- Close with ONE warm, specific question that shows you genuinely care about this particular dog's experience
+- The concierge link goes at the end: "Need help? Your Concierge is here → thedoggycompany.com/my-requests 🐾"
+- Format guide (flexible): short paragraphs, conversational, no markdown headers, 4-6 sentences before the question
+- IF NO CATALOG MATCH: "I don't have [specific item] in our catalog yet — but Mira imagines the perfect [thing] for [pet]! 🎨" then closest real products or Amazon link
 
 Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
