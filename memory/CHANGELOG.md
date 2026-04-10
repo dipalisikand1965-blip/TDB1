@@ -1,6 +1,23 @@
 # TDC Changelog
 
-## April 10, 2026 — WhatsApp Ticket Dedup Fix (Pillar-Aware)
+## April 10, 2026 — Service Desk: BY CHANNEL Sidebar + Pillar Tag Badges
+
+### DoggyServiceDesk.jsx
+**BY CHANNEL sidebar section** (mirrors BY PILLAR exactly):
+- Shows 💬 WhatsApp / 🌐 Web / 📧 Email / 🤖 Mira Chat / 📞 Phone with open ticket counts
+- WhatsApp shows green unread badge (`has_unread_member_reply`) — concierge sees instantly
+- Clicking any channel filters ticket list immediately (uses existing `channelFilter` state)
+- Each channel highlights in its own brand colour when active
+
+**Pillar tag badges on ticket cards:**
+- Added `PILLAR_BADGE` const — Tailwind-safe class pairs per pillar
+- Every ticket card now shows coloured pill (e.g. `🎂 Celebrate`, `🛁 Care`) in meta row
+- Badge falls back to `ticket.pillar` if `ticket.category` is unrecognised
+
+**Stats:**
+- Added `unread_by_channel` to stats object — computed per channel using `has_unread_member_reply`
+
+
 
 ### whatsapp_routes.py
 - Added `_WA_PILLAR_KEYWORDS` — ordered keyword-to-pillar map (11 pillars: celebrate, dine, care, emergency, vet, play, go, learn, services, shop, paperwork)

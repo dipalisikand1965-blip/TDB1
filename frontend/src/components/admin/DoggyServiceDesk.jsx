@@ -96,6 +96,29 @@ const PILLARS = {
   }
 };
 
+// Pre-defined badge classes per pillar (Tailwind safe — classes must exist in source)
+const PILLAR_BADGE = {
+  celebrate: 'bg-pink-100 text-pink-600',
+  dine:      'bg-orange-100 text-orange-600',
+  stay:      'bg-blue-100 text-blue-600',
+  travel:    'bg-cyan-100 text-cyan-700 bg-cyan-100',
+  care:      'bg-red-100 text-red-600',
+  enjoy:     'bg-purple-100 text-purple-600',
+  play:      'bg-purple-100 text-purple-600',
+  fit:       'bg-green-100 text-green-600',
+  services:  'bg-green-100 text-green-600',
+  learn:     'bg-blue-100 text-blue-700',
+  paperwork: 'bg-gray-100 text-gray-600',
+  advisory:  'bg-slate-100 text-slate-600',
+  emergency: 'bg-red-100 text-red-700',
+  farewell:  'bg-purple-100 text-purple-600',
+  adopt:     'bg-emerald-100 text-emerald-600',
+  shop:      'bg-amber-100 text-amber-600',
+  go:        'bg-blue-100 text-blue-700',
+  support:   'bg-slate-100 text-slate-500',
+};
+
+
 // Special sections (not pillars but important categories)
 const SPECIAL_SECTIONS = {
   mira: { icon: Sparkles, emoji: '✨', color: 'bg-gradient-to-r from-purple-500 to-pink-500', name: 'Mira AI', sources: ['mira_chat', 'ai_conversation'] },
@@ -244,7 +267,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [stats, setStats] = useState({
     total: 0, open: 0, in_progress: 0, on_hold: 0, resolved: 0,
     overdue: 0, my_tickets: 0, unassigned: 0,
-    by_pillar: {}, by_channel: {}, by_priority: {}
+    by_pillar: {}, by_channel: {}, by_priority: {}, unread_by_channel: {}
   });
   
   // Play notification sound for new tickets
@@ -674,6 +697,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       // Count by channel
       Object.keys(CHANNELS).forEach(c => {
         statsObj.by_channel[c] = allTicketsList.filter(t => t.channel === c).length;
+      });
+      
+      // Count unread per channel (bold badge for concierge)
+      statsObj.unread_by_channel = {};
+      Object.keys(CHANNELS).forEach(c => {
+        statsObj.unread_by_channel[c] = allTicketsList.filter(
+          t => t.channel === c && t.has_unread_member_reply
+        ).length;
       });
       
       // Count by priority
@@ -2592,6 +2623,83 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </div>
           )}
           
+          {/* ==================== BY CHANNEL ==================== */}
+          {!sidebarCollapsed && (
+            <div className="mt-3 mb-2">
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider px-3 mb-2">By Channel</div>
+              <div className="space-y-0.5 px-1">
+                {/* All Channels */}
+                <button
+                  onClick={() => { setActiveNav('tickets'); setChannelFilter('all'); }}
+                  className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
+                    channelFilter === 'all' ? 'bg-slate-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span>📋</span>
+                    <span>All Channels</span>
+                  </div>
+                  {stats.total > 0 && <span className="opacity-60">{stats.open}</span>}
+                </button>
+
+                {/* WhatsApp — shows unread badge in green */}
+                {(() => {
+                  const count = stats.by_channel['whatsapp'] || 0;
+                  const unread = stats.unread_by_channel['whatsapp'] || 0;
+                  const isActive = channelFilter === 'whatsapp';
+                  return (
+                    <button
+                      key="whatsapp"
+                      onClick={() => { setActiveNav('tickets'); setChannelFilter('whatsapp'); }}
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
+                        isActive ? 'bg-green-600/80 text-white' : 'text-slate-500 hover:text-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>💬</span>
+                        <span>WhatsApp</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {unread > 0 && (
+                          <span className="bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                            {unread}
+                          </span>
+                        )}
+                        {count > 0 && <span className={isActive ? 'opacity-80' : 'opacity-60'}>{count}</span>}
+                      </div>
+                    </button>
+                  );
+                })()}
+
+                {/* Web */}
+                {[
+                  { key: 'web',   emoji: '🌐', label: 'Web',       active: 'bg-purple-600/80' },
+                  { key: 'email', emoji: '📧', label: 'Email',     active: 'bg-blue-600/80'   },
+                  { key: 'mira',  emoji: '🤖', label: 'Mira Chat', active: 'bg-pink-600/80'   },
+                  { key: 'phone', emoji: '📞', label: 'Phone',     active: 'bg-orange-600/80' },
+                ].map(({ key, emoji, label, active }) => {
+                  const count = stats.by_channel[key] || 0;
+                  const isActive = channelFilter === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => { setActiveNav('tickets'); setChannelFilter(key); }}
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
+                        isActive ? `${active} text-white` : 'text-slate-500 hover:text-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{emoji}</span>
+                        <span>{label}</span>
+                      </div>
+                      {count > 0 && <span className="opacity-60">{count}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* ==================== SPECIAL SECTIONS ==================== */}
           {!sidebarCollapsed && (
             <div className="mt-3 mb-2">
@@ -4389,6 +4497,17 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                                   <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600">
                                     <Bell className="w-3 h-3" />
                                     {ticket.pending_reminders_count}
+                                  </span>
+                                )}
+                                {/* Pillar tag badge */}
+                                {pillar && (
+                                  <span
+                                    className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium leading-none ${
+                                      PILLAR_BADGE[ticket.category] || PILLAR_BADGE[ticket.pillar] || 'bg-slate-100 text-slate-500'
+                                    }`}
+                                    title={pillar.name}
+                                  >
+                                    {pillar.emoji} {pillar.name}
                                   </span>
                                 )}
                               </div>
