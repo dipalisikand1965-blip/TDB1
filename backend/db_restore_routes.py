@@ -203,6 +203,7 @@ COLLECTIONS_CONFIG = [
     ("concierge_threads",        "concierge_threads",        "id"),
     ("custom_cake_designs",      "custom_cake_designs",      "id"),
     ("member_password_resets",   "member_password_resets",   "email"),
+    ("learn_requests",           "learn_requests",           "ticket_id"),
 ]
 
 # ── In-memory restore progress state ─────────────────────────────────────────
