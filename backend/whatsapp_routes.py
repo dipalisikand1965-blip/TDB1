@@ -316,16 +316,60 @@ async def process_gupshup_webhook(body: dict):
                 logger.info(f"[GUPSHUP] Added message to ticket {ticket.get('ticket_id')}")
 
                 # ── ALSO update service_desk_tickets (Concierge® inbox) ──────
-                sd_ticket = await db.service_desk_tickets.find_one(
-                    {
-                        "$or": [
-                            {"member.phone": {"$regex": from_number[-10:]}},
-                            {"user_phone": {"$regex": from_number[-10:]}},
-                        ],
-                        "status": {"$nin": ["closed", "resolved"]},
-                    },
-                    sort=[("updated_at", -1)],
-                )
+                # ── Fix A: Smart ticket routing ────────────────────────────────
+                # If the user is answering a multi-pet disambiguation question,
+                # route to a pet-specific ticket instead of any open ticket.
+                _phone_10_wa = "".join(filter(str.isdigit, str(from_number)))[-10:]
+                _wa_state = await db.wa_pet_state.find_one({"phone": _phone_10_wa})
+                _resolved_pet = None
+
+                if _wa_state and _wa_state.get("awaiting_pet_selection"):
+                    # Fuzzy-match the incoming message against this user's pets
+                    _wa_user = await db.users.find_one(
+                        {"$or": [
+                            {"phone": {"$regex": _phone_10_wa + "$"}},
+                            {"whatsapp": {"$regex": _phone_10_wa + "$"}},
+                        ]},
+                        {"_id": 0, "email": 1}
+                    )
+                    if _wa_user and _wa_user.get("email"):
+                        _wa_pets = await db.pets.find(
+                            {"owner_email": _wa_user["email"]},
+                            {"_id": 0, "name": 1}
+                        ).to_list(20)
+                        _wa_pet_names = [p["name"] for p in _wa_pets if p.get("name")]
+                        _resolved_pet = _fuzzy_pet_match(content, _wa_pet_names)
+                        if _resolved_pet:
+                            logger.info(f"[GUPSHUP] Fix A: Disambiguation reply '{content}' → resolved pet '{_resolved_pet}'")
+
+                if _resolved_pet:
+                    # Look for an existing open ticket for THIS specific pet
+                    sd_ticket = await db.service_desk_tickets.find_one(
+                        {
+                            "$or": [
+                                {"member.phone": {"$regex": _phone_10_wa + "$"}},
+                                {"user_phone": {"$regex": _phone_10_wa + "$"}},
+                            ],
+                            "pet_name": _resolved_pet,
+                            "status": {"$nin": ["closed", "resolved"]},
+                        },
+                        sort=[("updated_at", -1)],
+                    )
+                    # If no pet-specific ticket exists, fall through to create a new one (sd_ticket=None)
+                    if not sd_ticket:
+                        logger.info(f"[GUPSHUP] Fix A: No existing ticket for '{_resolved_pet}' — will create fresh one")
+                else:
+                    # Standard lookup — most recently updated open ticket for this phone
+                    sd_ticket = await db.service_desk_tickets.find_one(
+                        {
+                            "$or": [
+                                {"member.phone": {"$regex": from_number[-10:]}},
+                                {"user_phone": {"$regex": from_number[-10:]}},
+                            ],
+                            "status": {"$nin": ["closed", "resolved"]},
+                        },
+                        sort=[("updated_at", -1)],
+                    )
                 wa_msg = {
                     "id": str(uuid.uuid4()),
                     "sender": "member",
@@ -1600,19 +1644,92 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 message_text
             )
             logger.info(f"[MIRA-AI] Pet selection resolved: '{message_text}' → '{matched}' | original: '{original_msg[:60]}'")
-            # Clear state from both sources
+            # ── Fix B: Ticket routing — don't contaminate the existing ticket ──
+            # If resolved pet ≠ open ticket's pet (e.g. Mojo ≠ Sultan),
+            # leave Sultan's ticket clean and create/find a fresh Mojo ticket.
             try:
                 if db is not None and phone_10:
                     await db.wa_pet_state.delete_one({"phone": phone_10})
+
                 if open_ticket:
-                    await db.service_desk_tickets.update_one(
-                        {"_id": open_ticket["_id"]},
-                        {"$set": {"pet_name": matched,
-                                  "wa_awaiting_pet_selection": False,
-                                  "wa_original_message": None}}
-                    )
-            except Exception:
-                pass
+                    existing_ticket_pet = (open_ticket.get("pet_name") or "").strip()
+                    same_pet = (not existing_ticket_pet) or (existing_ticket_pet.lower() == matched.lower())
+
+                    if same_pet:
+                        # Same pet or no pet locked — update ticket normally
+                        await db.service_desk_tickets.update_one(
+                            {"_id": open_ticket["_id"]},
+                            {"$set": {"pet_name": matched,
+                                      "wa_awaiting_pet_selection": False,
+                                      "wa_original_message": None}}
+                        )
+                        logger.info(f"[MIRA-AI] Fix B: Updated existing ticket for '{matched}' (same pet)")
+                    else:
+                        # Different pet — leave existing ticket untouched ─────────────────
+                        # Find or create a fresh ticket for the resolved pet
+                        logger.info(f"[MIRA-AI] Fix B: Resolved pet '{matched}' ≠ ticket pet '{existing_ticket_pet}' — routing to clean ticket")
+                        mojo_ticket = await db.service_desk_tickets.find_one(
+                            {
+                                "$or": [
+                                    {"user_phone": {"$regex": phone_10 + "$"}},
+                                    {"member.phone": {"$regex": phone_10 + "$"}},
+                                ],
+                                "pet_name": matched,
+                                "status": {"$nin": ["closed", "resolved"]},
+                            },
+                            sort=[("created_at", -1)],
+                        )
+                        if not mojo_ticket:
+                            # Create a brand-new service_desk_ticket for the resolved pet
+                            now_iso = datetime.now(timezone.utc).isoformat()
+                            new_tid = f"WA-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+                            # Get pet allergies for the briefing card
+                            pet_doc = await db.pets.find_one(
+                                {"name": matched, "owner_email": user_email},
+                                {"_id": 0, "name": 1, "breed": 1, "allergies": 1}
+                            ) if user_email else None
+                            allergies = pet_doc.get("allergies", []) if pet_doc else []
+                            if isinstance(allergies, str):
+                                allergies = [a.strip() for a in allergies.split(",") if a.strip()]
+                            allergy_brief = (f"🔴 ALLERGY ALERT: No {', '.join(allergies)} in ANY product"
+                                            if allergies else None)
+                            new_sd = {
+                                "id": new_tid,
+                                "ticket_id": new_tid,
+                                "type": "whatsapp_inquiry",
+                                "category": "support",
+                                "subject": f"WhatsApp: {matched} — {original_msg[:60]}",
+                                "description": original_msg,
+                                "status": "open",
+                                "priority": "normal",
+                                "channel": "whatsapp",
+                                "source": "whatsapp",
+                                "pillar": "support",
+                                "pet_name": matched,
+                                "member": {
+                                    "name": user_name,
+                                    "phone": str(user_phone),
+                                    "whatsapp": str(user_phone),
+                                },
+                                "user_phone": str(user_phone),
+                                "user_name": user_name,
+                                "user_email": user_email,
+                                "allergy_alert": allergy_brief,
+                                "mira_briefing": allergy_brief,
+                                "conversation": [],
+                                "has_unread_member_reply": True,
+                                "created_at": now_iso,
+                                "updated_at": now_iso,
+                                "assigned_to": None,
+                            }
+                            await db.service_desk_tickets.insert_one(new_sd)
+                            mojo_ticket = new_sd
+                            logger.info(f"[MIRA-AI] Fix B: Created fresh ticket {new_tid} for '{matched}'")
+                        # Redirect get_mira_ai_response to use the correct ticket going forward
+                        open_ticket = mojo_ticket
+
+            except Exception as fix_b_err:
+                logger.warning(f"[MIRA-AI] Fix B ticket routing error: {fix_b_err}")
             message_text = original_msg  # answer the ORIGINAL question about the matched pet
         else:
             # Can't match — ask again with a gentle hint
