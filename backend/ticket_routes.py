@@ -2144,6 +2144,34 @@ async def add_reply(ticket_id: str, reply: TicketReply):
     # TWO-WAY SYNC: Sync reply to Concierge thread if linked
     # ============================================================
     if not reply.is_internal:
+        # SEND WHATSAPP if channel is 'whatsapp'
+        if reply.channel == "whatsapp":
+            wa_phone = (
+                ticket.get("user_phone") or
+                ticket.get("member_phone") or
+                ticket.get("member", {}).get("phone") or
+                ticket.get("member", {}).get("whatsapp") or ""
+            )
+            if wa_phone:
+                try:
+                    from concierge_routes import send_whatsapp_reply as _send_wa
+                    wa_result = await _send_wa(ticket_id, reply.message, wa_phone)
+                    if wa_result.get("sent_via") == "gupshup_api":
+                        message["whatsapp_sent"] = True
+                        logger.info(f"[WHATSAPP] Reply sent to {wa_phone} for ticket {ticket_id}")
+                    elif wa_result.get("link"):
+                        message["whatsapp_link"] = wa_result.get("link")
+                        logger.info(f"[WHATSAPP] Fallback link generated for {wa_phone}")
+                except Exception as e:
+                    logger.error(f"[WHATSAPP] Send failed for ticket {ticket_id}: {e}")
+                    import urllib.parse
+                    clean = wa_phone.replace(" ", "").replace("-", "").replace("+", "")
+                    if not clean.startswith("91") and len(clean) == 10:
+                        clean = "91" + clean
+                    message["whatsapp_link"] = f"https://wa.me/{clean}?text={urllib.parse.quote(reply.message)}"
+            else:
+                logger.warning(f"[WHATSAPP] No phone found on ticket {ticket_id} — cannot send")
+
         # SEND EMAIL if channel is 'email'
         if reply.channel == "email" and member_email:
             resend_client = get_resend()
