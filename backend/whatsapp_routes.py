@@ -562,6 +562,7 @@ async def process_gupshup_webhook(body: dict):
             # ── Mira full AI response ──────────────────────────────────────────────
             # Send real Mira intelligence back to the WhatsApp user immediately
             try:
+                logger.info(f"[GUPSHUP] Calling send_auto_mira_reply for {from_number[:6]}*** | msg={content[:60]}")
                 await send_auto_mira_reply(from_number, content, sender_name)
             except Exception as ack_err:
                 logger.warning(f"[GUPSHUP] Mira reply failed (non-critical): {ack_err}")
@@ -1920,20 +1921,22 @@ async def send_auto_mira_reply(from_number: str, incoming_message: str, sender_n
     """Automatically send Mira's AI response to incoming WhatsApp messages"""
     try:
         # Get Mira's AI response (with fallback to patterns)
+        logger.info(f"[MIRA-AI] Generating response for {from_number[:6]}*** → '{incoming_message[:60]}'")
         mira_response = await get_mira_ai_response(incoming_message, sender_name, from_number)
+        logger.info(f"[MIRA-AI] Response generated ({len(mira_response)} chars): '{mira_response[:80]}'")
         
         # Send via Gupshup WhatsApp API
         if is_gupshup_configured():
             result = await send_mira_reply(from_number, mira_response)
             if result.get("success"):
-                logger.info(f"[MIRA-AI] Auto-replied to {from_number[:6]}***")
+                logger.info(f"[MIRA-AI] ✅ Auto-replied to {from_number[:6]}*** | ID: {result.get('message_id')}")
             else:
-                logger.warning(f"[MIRA-AI] Auto-reply failed: {result.get('error')}")
+                logger.warning(f"[MIRA-AI] ❌ Auto-reply failed: {result.get('error')} | Response was: '{mira_response[:100]}'")
         else:
-            logger.info(f"[MIRA-AI] Response ready (Gupshup not configured): {mira_response[:50]}...")
+            logger.warning(f"[MIRA-AI] Gupshup not configured — response NOT sent: '{mira_response[:100]}'")
             
     except Exception as e:
-        logger.error(f"[MIRA-AI] Error sending auto-reply: {e}")
+        logger.error(f"[MIRA-AI] Error sending auto-reply: {e}", exc_info=True)
 
 
 
@@ -2019,3 +2022,38 @@ async def test_whatsapp_notification(request: TestNotificationRequest):
     except Exception as e:
         logger.error(f"Test notification error: {e}")
         return {"success": False, "error": str(e)}
+
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DEBUG: Simulate WhatsApp response WITHOUT sending — use from production admin
+# Hit: GET /api/whatsapp/debug-response?phone=919876543210&message=treats
+# ══════════════════════════════════════════════════════════════════════════════
+@router.get("/debug-response")
+async def debug_whatsapp_response(
+    phone: str = "919876543210",
+    message: str = "What's a good treat for my dog",
+    sender_name: str = "Test"
+):
+    """
+    Simulate the full WhatsApp AI response flow without actually sending anything.
+    Use this from production to diagnose why WhatsApp is only showing 🐾.
+    Example: /api/whatsapp/debug-response?phone=REAL_PHONE&message=treats
+    """
+    try:
+        response_text = await get_mira_ai_response(message, sender_name, phone)
+        gupshup_ok    = is_gupshup_configured()
+        config        = get_gupshup_config()
+        return {
+            "input":            {"phone": phone[:6] + "***", "message": message, "sender": sender_name},
+            "response_length":  len(response_text),
+            "response_preview": response_text[:300],
+            "full_response":    response_text,
+            "gupshup_configured": gupshup_ok,
+            "gupshup_source":   config.get("source_number", "NOT SET"),
+            "gupshup_app":      config.get("app_name", "NOT SET"),
+            "api_key_set":      bool(config.get("api_key")),
+        }
+    except Exception as e:
+        import traceback
+        return {"error": str(e), "traceback": traceback.format_exc()}
