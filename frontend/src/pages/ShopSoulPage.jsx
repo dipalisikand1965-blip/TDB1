@@ -184,7 +184,7 @@ function MiraPicksSection({ pet }) {
         <div style={{ display:"flex", gap:14, overflowX:"auto", paddingBottom:10, scrollbarWidth:"thin" }}>
           {picks.filter(p => p.entity_type !== "service").map((pick,i) => {
             const isService = pick.entity_type === "service";
-            const img = [pick.image_url, pick.image, ...(pick.images||[])].find(u=>u&&u.startsWith("http")) || null;
+            const img = [pick.watercolor_image, pick.cloudinary_url, pick.image_url, pick.image, ...(pick.images||[])].find(u=>u&&u.startsWith("http")&&!u.includes("emergentagent.com")&&!u.includes("static.prod-images")) || null;
             const score = pick.mira_score || 0;
             const scoreColor = score>=80 ? "#16A34A" : score>=70 ? G.gold : "#6B7280";
             return (

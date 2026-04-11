@@ -313,9 +313,10 @@ function applyMiraIntelligence(products, allergies, coat, condition, pet) {
 // ─────────────────────────────────────────────────────────────
 // MIRA'S PICKS — AI scored products + services
 // ─────────────────────────────────────────────────────────────
+const _goodPickImg = (url) => url && url.startsWith("http") && !url.includes("emergentagent.com") && !url.includes("static.prod-images");
 function resolvePickImage(pick) {
-  const candidates = [pick.image_url, pick.image, pick.media?.primary_image, ...(pick.images || [])];
-  return candidates.find(url => url && url.startsWith("http")) || null;
+  const candidates = [pick.watercolor_image, pick.cloudinary_url, pick.image_url, pick.media?.primary_image, pick.image, ...(pick.images || [])];
+  return candidates.find(_goodPickImg) || null;
 }
 
 // ─────────────────────────────────────────────────────────────
