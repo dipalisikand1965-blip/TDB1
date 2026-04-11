@@ -594,7 +594,7 @@ const UnifiedCheckout = () => {
 
             {/* Download Invoice Button */}
             <Button
-              onClick={() => window.open(`${API_URL}/api/checkout/order/${orderDetails.order_id}/invoice`, '_blank')}
+              onClick={() => window.open(`${API_URL}/api/checkout/order/${orderDetails.order_id}/invoice/pdf`, '_blank')}
               variant="outline"
               className="mb-4 w-full"
             >
