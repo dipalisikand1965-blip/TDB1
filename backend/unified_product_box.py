@@ -2906,3 +2906,141 @@ async def archive_breed_duplicates(dry_run: bool = False):
         "sample_archived": [d["id"] for d in to_archive[:10]]
     }
 
+
+
+
+# ── Rule-Based Allergen Tagger ─────────────────────────────────────────────────
+
+ALLERGEN_RULES = {
+    "chicken": ["chicken", "poultry", "fowl"],
+    "beef":    ["beef", "bovine"],
+    "fish":    ["fish", "salmon", "tuna", "cod",
+                "anchovy", "sardine", "mackerel",
+                "herring", "whitefish"],
+    "lamb":    ["lamb", "mutton"],
+    "pork":    ["pork", "ham", "bacon"],
+    "dairy":   ["milk", "cheese", "butter",
+                "lactose", "whey", "cream", "dairy",
+                "yoghurt", "yogurt", "curd"],
+    "egg":     ["egg", "eggs"],
+    "soy":     ["soy", "soya", "tofu"],
+    "wheat":   ["wheat", "gluten", "barley", "flour"],
+    "peanut":  ["peanut", "groundnut", "peanut butter"],
+}
+
+
+def _tag_allergens_product(product: dict) -> list:
+    """
+    Returns sorted list of allergens found in product name + ingredients.
+    Respects free-from claims in allergy_free field and the product name itself.
+    Does NOT scan description (too many false positives).
+    """
+    name         = (product.get("name") or "").lower()
+    ingredients  = " ".join(product.get("ingredients") or []).lower()
+    allergy_free = (product.get("allergy_free") or "").lower()
+
+    # Check BOTH allergy_free field AND name for "X-free" claims
+    free_from_text = allergy_free + " " + name
+
+    # Normalise compound phrases so their components don't trigger false positives
+    # "peanut butter" must not flag dairy via the word "butter"
+    raw = name + " " + ingredients
+    searchtext = (
+        raw
+        .replace("peanut butter",    "peanut_spread")
+        .replace("almond butter",    "almond_spread")
+        .replace("coconut butter",   "coconut_spread")
+        .replace("cocoa butter",     "cocoa_fat")
+        .replace("shea butter",      "shea_fat")
+        .replace("sunflower butter", "sunflower_spread")
+        .replace("nut butter",       "nut_spread")
+    )
+
+    found = []
+    for allergen, keywords in ALLERGEN_RULES.items():
+        for kw in keywords:
+            if f"{kw}-free" in free_from_text or f"{kw} free" in free_from_text:
+                continue
+            if kw in searchtext:
+                found.append(allergen)
+                break
+
+    return sorted(set(found))
+
+
+@product_box_router.post("/admin/tag-allergens")
+async def tag_allergens_batch(dry_run: bool = True, limit: int = 0):
+    """
+    Rule-based allergen tagger. Sets allergen_contains on all products in products_master.
+
+    Scans only: product name + ingredients list (NOT description).
+    Respects free-from claims. Handles compound phrases (peanut butter ≠ dairy).
+
+    ?dry_run=true  — preview only, no DB writes (default)
+    ?dry_run=false — write allergen_contains to all products
+    ?limit=N       — process only first N products (for testing)
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialised")
+
+    # Fetch all active products
+    query = {"visibility.status": {"$ne": "archived"}}
+    projection = {"_id": 0, "id": 1, "name": 1, "ingredients": 1,
+                  "allergy_free": 1, "allergen_contains": 1, "pillar": 1, "category": 1}
+
+    cursor = db.products_master.find(query, projection)
+    all_products = await cursor.to_list(length=50000)
+
+    if limit and limit > 0:
+        all_products = all_products[:limit]
+
+    total          = len(all_products)
+    with_allergens = 0
+    without        = 0
+    preview        = []
+
+    updates = []
+    for p in all_products:
+        pid    = p.get("id")
+        if not pid:
+            continue
+        result = _tag_allergens_product(p)
+        if result:
+            with_allergens += 1
+        else:
+            without += 1
+
+        if len(preview) < 30:
+            preview.append({
+                "id":               pid,
+                "name":             p.get("name", ""),
+                "allergen_contains": result,
+            })
+
+        if not dry_run:
+            updates.append({
+                "filter": {"id": pid},
+                "update": {"$set": {"allergen_contains": result}},
+            })
+
+    written = 0
+    if not dry_run and updates:
+        from pymongo import UpdateOne
+        ops = [UpdateOne(u["filter"], u["update"]) for u in updates]
+        result_bulk = await db.products_master.bulk_write(ops, ordered=False)
+        written = result_bulk.modified_count
+
+    return {
+        "dry_run":          dry_run,
+        "total_scanned":    total,
+        "with_allergens":   with_allergens,
+        "without_allergens": without,
+        "written_to_db":    written if not dry_run else 0,
+        "preview":          preview,
+        "message": (
+            f"DRY RUN — would tag {with_allergens}/{total} products. "
+            f"Call with ?dry_run=false to apply."
+        ) if dry_run else (
+            f"DONE — tagged {written}/{total} products with allergen_contains."
+        )
+    }
