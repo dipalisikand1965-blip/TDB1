@@ -37,6 +37,11 @@ load_dotenv()
 _scoring_semaphore = asyncio.Semaphore(1)
 _scoring_active_pet: Optional[str] = None  # track which pet is currently scoring
 
+# ── In-memory guard: tracks (pet_id, pillar) pairs currently being scored ──────
+# Prevents race-condition score loops where multiple API calls each trigger a
+# background task, and each task's delete_many wipes the previous task's results.
+_scoring_in_progress: set = set()
+
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
@@ -204,35 +209,48 @@ Score these {len(items)} items:
 async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Optional[List[str]]):
     """Background task: score ALL items for a pet and persist to DB.
     Uses semaphore to prevent multiple concurrent scoring jobs blocking the event loop."""
-    global _scoring_active_pet
+    global _scoring_active_pet, _scoring_in_progress
 
-    # If semaphore is locked (another job running), skip this one
-    if _scoring_semaphore.locked():
-        print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — another job is running for {_scoring_active_pet}")
+    # ── Guard: prevent duplicate scoring tasks for the same pet+pillar ──────────
+    guard_key = (pet_id, pillar)
+    if guard_key in _scoring_in_progress:
+        print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} pillar={pillar} — already in progress")
         return
+    _scoring_in_progress.add(guard_key)
 
-    async with _scoring_semaphore:
-        _scoring_active_pet = pet_id
+    try:
+        # If semaphore is locked (another job running), skip this one
+        if _scoring_semaphore.locked():
+            print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — another job is running for {_scoring_active_pet}")
+            return
 
-        # ── Cooldown: skip if scored within the last 60 minutes ──────────────
-        from datetime import datetime, timezone, timedelta
-        recent = await _db.mira_product_scores.find_one(
-            {"pet_id": pet_id},
-            sort=[("scored_at", -1)]
-        )
-        if recent:
-            scored_at = recent.get("scored_at")
-            if isinstance(scored_at, str):
-                try:
-                    scored_at = datetime.fromisoformat(scored_at.replace("Z",""))
-                    scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
-                except Exception:
-                    scored_at = None
-            if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=24):
-                print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} — scored <24hr ago")
-                return
+        async with _scoring_semaphore:
+            _scoring_active_pet = pet_id
 
-        print(f"[MiraScoreEngine] Starting scoring for pet={pet_id} pillar={pillar}")
+            # ── Cooldown: skip if THIS PILLAR was scored within the last 24 hours ──
+            # CRITICAL: cooldown is PER-PILLAR, not global. Global cooldown caused
+            # all non-dine pillars to never get scored after dine was scored first.
+            from datetime import datetime, timezone, timedelta
+            cooldown_q = {"pet_id": pet_id}
+            if pillar:
+                cooldown_q["pillar"] = pillar  # per-pillar cooldown
+            recent = await _db.mira_product_scores.find_one(
+                cooldown_q,
+                sort=[("scored_at", -1)]
+            )
+            if recent:
+                scored_at = recent.get("scored_at")
+                if isinstance(scored_at, str):
+                    try:
+                        scored_at = datetime.fromisoformat(scored_at.replace("Z",""))
+                        scored_at = scored_at.replace(tzinfo=timezone.utc) if scored_at.tzinfo is None else scored_at
+                    except Exception:
+                        scored_at = None
+                if scored_at and (datetime.now(timezone.utc) - scored_at) < timedelta(hours=24):
+                    print(f"[MiraScoreEngine] Skipping scoring for pet={pet_id} pillar={pillar} — scored <24hr ago")
+                    return
+
+            print(f"[MiraScoreEngine] Starting scoring for pet={pet_id} pillar={pillar}")
 
         # Fetch pet
         pet = await _db.pets.find_one({"id": pet_id}, {"_id": 0})
@@ -348,6 +366,10 @@ async def _run_full_scoring(pet_id: str, pillar: Optional[str], entity_types: Op
             )
             print(f"[MiraScoreEngine] Saved {len(ops)} scores for {pet_profile['name']}")
 
+    finally:
+        # Always release the in-progress guard so future requests can re-trigger scoring
+        _scoring_in_progress.discard(guard_key)
+
 
 # ── API Routes ────────────────────────────────────────────────────────────────
 
@@ -380,13 +402,14 @@ async def score_for_pet(req: ScoreForPetRequest, background_tasks: BackgroundTas
     if _db is None:
         return {"status": "db_not_ready"}
 
-    # ── EARLY EXIT — return in 5ms if already scored within 6 hours ──────────
+    # ── EARLY EXIT — return in 5ms if this PILLAR was already scored within 24h ──
     try:
         pet = await _db.pets.find_one({"id": req.pet_id}, {"_id": 0, "overall_score": 1, "last_mira_scored_at": 1})
         if pet:
             overall = pet.get("overall_score", 0) or 0
             last_scored = pet.get("last_mira_scored_at")
-            if overall > 0 and last_scored:
+            # Only use global cooldown if NO specific pillar was requested
+            if not req.pillar and overall > 0 and last_scored:
                 from datetime import datetime, timezone as tz
                 try:
                     last_dt = datetime.fromisoformat(str(last_scored).replace("Z", "+00:00"))
@@ -403,14 +426,34 @@ async def score_for_pet(req: ScoreForPetRequest, background_tasks: BackgroundTas
                         }
                 except Exception:
                     pass  # If date parse fails, proceed with scoring
-            elif overall > 0:
-                # Has score but no timestamp — still skip if score is good
+            elif not req.pillar and overall > 0:
                 return {
                     "status":  "already_scored",
                     "score":   overall,
                     "cached":  True,
                     "message": "Mira already has scores for this pet.",
                 }
+            elif req.pillar:
+                # Per-pillar cooldown: check if THIS specific pillar has recent scores
+                from datetime import datetime, timezone as tz, timedelta
+                recent_pillar = await _db.mira_product_scores.find_one(
+                    {"pet_id": req.pet_id, "pillar": req.pillar},
+                    sort=[("scored_at", -1)]
+                )
+                if recent_pillar and recent_pillar.get("scored_at"):
+                    try:
+                        scored_at = datetime.fromisoformat(str(recent_pillar["scored_at"]).replace("Z", "+00:00"))
+                        if scored_at.tzinfo is None:
+                            scored_at = scored_at.replace(tzinfo=tz.utc)
+                        if (datetime.now(tz.utc) - scored_at) < timedelta(hours=24):
+                            return {
+                                "status":   "already_scored_pillar",
+                                "pillar":   req.pillar,
+                                "cached":   True,
+                                "message":  f"Mira already has fresh {req.pillar} scores for this pet.",
+                            }
+                    except Exception:
+                        pass
     except Exception:
         pass  # If check fails, proceed with scoring (safe fallback)
 
@@ -616,37 +659,100 @@ async def get_top_picks(
                 already_ids.add(entity_id)
                 layer3_count += 1
 
-    # ── Fallback: if not enough results, fill with breed-neutral top products ──────────
+    # ── Fallback: breed-safe pillar products when AI scoring not yet complete ──
     if len(results) < limit // 2 and pillar:
-        # Only trigger re-scoring if no scores exist at all (don't re-trigger if recently scored)
+        # Trigger background re-scoring for this pet+pillar
         existing_count = await _db.mira_product_scores.count_documents({"pet_id": pet_id, "pillar": pillar})
         if existing_count == 0:
             import asyncio
             asyncio.create_task(_run_full_scoring(pet_id, pillar, None))
-        fb_q: dict = {"$or": [{"pillar": pillar}, {"pillars": pillar}], "active": {"$ne": False}, "price": {"$gt": 0}}
-        if breed_clean:
-            fb_q["$or"] = [
-                {"breed_name": breed_clean}, {"breed_name": {"$in": ["all","All",""]}},
-                {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
-            ]
-        fb_cursor = _db.products_master.find(
-            {"$and": [
-                {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
-                {"active": {"$ne": False}},
-                {"price": {"$gt": 0}},
-                # ← BREED FILTER: never show wrong breed products in fallback
-                {"$or": [
-                    {"breed": breed_clean} if breed_clean else {"breed": {"$exists": False}},
-                    {"breed": {"$in": ["all", "All", "", None, "none", "None"]}},
-                    {"breed": {"$exists": False}},
-                ]},
-            ]},
-            {"_id": 0}
-        ).sort([("mira_score", -1)]).limit(limit)
-        fallback = await fb_cursor.to_list(length=limit)
+
+        # ── Pillar category allowlist: only show truly relevant product categories ──
+        PILLAR_CATS = {
+            "celebrate": ["cakes", "breed-cakes", "mini-cakes", "dognuts", "pupcakes",
+                          "treats", "desi-treats", "frozen-treats", "hampers",
+                          "accessories", "cat-cakes", "cat-party", "cat-hampers",
+                          "cat-gotcha", "nut-butters"],
+            "dine":      ["food", "dry-food", "wet-food", "raw-meals", "fresh-meals",
+                          "treats", "supplements", "probiotics", "nut-butters",
+                          "freeze-dried", "chews"],
+            "care":      ["grooming", "dental", "health", "supplements", "skin-care",
+                          "ear-care", "paw-care", "shampoo", "conditioner"],
+            "play":      ["toys", "balls", "ropes", "interactive", "puzzle", "fetch",
+                          "chew-toys", "plush"],
+            "shop":      ["apparel", "bandanas", "collars", "leashes", "harnesses",
+                          "beds", "bowls", "crates", "canvas_prints", "portrait_frames",
+                          "tote_bags"],
+            "go":        ["travel", "carriers", "seat-covers", "accessories"],
+            "fit":       ["fitness", "training", "agility", "weights"],
+            "learn":     ["books", "guides", "courses"],
+        }
+        allowed_cats = PILLAR_CATS.get(pillar)
+
+        # ── Known breed names — used to exclude wrong-breed products by name ────
+        ALL_KNOWN_BREEDS = [
+            "labrador", "golden retriever", "german shepherd", "beagle", "bulldog",
+            "poodle", "rottweiler", "yorkshire", "boxer", "dachshund", "husky",
+            "doberman", "great dane", "shih tzu", "shihtzu", "pug", "chihuahua",
+            "pomeranian", "maltese", "cocker spaniel", "border collie", "cavalier",
+            "french bulldog", "indie", "indian pariah", "american bully", "chow chow",
+            "dalmatian", "jack russell", "lhasa apso", "shiba inu", "shibainu",
+            "st bernard", "schnauzer", "irish setter", "toy poodle", "mutt",
+            "spitz", "samoyed", "bichon", "corgi", "akita", "basenji", "whippet",
+            "weimaraner", "vizsla", "great pyrenees", "newfoundland", "mastiff",
+        ]
+        breed_lower = breed_clean.lower().replace(" ", "") if breed_clean else ""
+        # Breeds to actively exclude from product names (not the pet's own breed)
+        excluded_breeds = [
+            b for b in ALL_KNOWN_BREEDS
+            if breed_lower and breed_lower not in b.replace(" ", "") and b.replace(" ", "") not in breed_lower
+        ]
+
+        fb_filters: list = [
+            {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
+            {"price": {"$gt": 0}},
+        ]
+
+        # Only show categories relevant to this pillar
+        if allowed_cats:
+            fb_filters.append({"$or": [
+                {"category": {"$in": allowed_cats}},
+                {"sub_category": {"$in": allowed_cats}},
+            ]})
+
+        # Exclude products whose NAME contains a different breed
+        # (checks the actual product name, not just the `breed` field which is often blank)
+        for eb in excluded_breeds[:15]:
+            fb_filters.append({"name": {"$not": {"$regex": f"\\b{eb}\\b", "$options": "i"}}})
+
+        fb_cursor = _db.products_master.find({"$and": fb_filters}, {"_id": 0}).limit(limit * 3)
+        fallback_raw = await fb_cursor.to_list(length=limit * 3)
+
+        # Score fallback products: pet's breed in name/tags → higher score
+        def _fb_score(p):
+            name_l = (p.get("name") or "").lower()
+            tags_l = " ".join(p.get("tags") or []).lower()
+            s = 55  # base
+            if breed_lower and (breed_lower in name_l.replace(" ", "") or breed_lower in tags_l.replace(" ", "")):
+                s += 30  # breed match bonus
+            if p.get("is_bestseller"):
+                s += 8
+            if p.get("shopify_id"):
+                s += 5  # live inventory bonus
+            return s
+
+        fallback_raw.sort(key=_fb_score, reverse=True)
+        fallback = fallback_raw[:limit]
+
         for p in fallback:
-            p["mira_reason"] = f"Top {pillar} pick — Mira is personalising scores for you."
-            p["is_fallback"]  = True
+            p["mira_score"]  = _fb_score(p)
+            p["mira_reason"] = (
+                f"Top {pillar} pick for {breed_clean} — Mira is personalising your scores."
+                if breed_clean else
+                f"Top {pillar} pick — Mira is personalising your scores."
+            )
+            p["is_fallback"] = True
+
         return {"picks": fallback, "count": len(fallback), "scoring_pending": True}
 
     # ── Life-stage filter: HIDE puppy products from adult/senior dogs ──────────
