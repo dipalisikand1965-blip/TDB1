@@ -272,6 +272,7 @@ from app.api.archetype_routes import router as archetype_router, set_archetype_d
 
 # Admin Archetype Inference Route (one-click inference on live DB)
 from archetype_routes import router as admin_archetype_inference_router
+from archetype_routes import _infer_archetype as _infer_pet_archetype
 
 # Soul Products Routes (Product tier management)
 from app.api.soul_products_routes import router as soul_products_router, set_soul_products_db
@@ -15312,6 +15313,55 @@ async def save_pet_soul_answer_alias(pet_id: str, answer_data: dict, current_use
             "answered_count": score_data["answered_count"]
         },
         "next_question": None  # Frontend handles question flow
+    }
+
+
+@api_router.post("/pets/{pet_id}/infer-archetype")
+async def infer_pet_archetype(pet_id: str, current_user: dict = Depends(get_current_user_optional)):
+    """
+    Infer and persist soul archetype for a single pet.
+    Called automatically after onboarding completion.
+    Returns the archetype name and a human-readable label.
+    """
+    from datetime import datetime, timezone
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1, "name": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+
+    soul = pet.get("doggy_soul_answers") or {}
+    archetype, reason = _infer_pet_archetype(soul)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "primary_archetype": archetype,
+            "archetype_reason": reason,
+            "archetype_inferred_at": today,
+        }}
+    )
+
+    # Human-friendly archetype labels
+    ARCHETYPE_LABELS = {
+        "velcro_baby":       "The Velcro Baby",
+        "social_butterfly":  "The Social Butterfly",
+        "wild_explorer":     "The Wild Explorer",
+        "drama_queen":       "The Drama Queen",
+        "lone_wolf":         "The Lone Wolf",
+        "foodie":            "The Foodie",
+        "gentle_soul":       "The Gentle Soul",
+        "guardian":          "The Guardian",
+        "playful_spirit":    "The Playful Spirit",
+        "curious_mind":      "The Curious Mind",
+    }
+
+    logger.info(f"[ARCHETYPE] Inferred '{archetype}' for pet {pet_id} ({pet.get('name', '?')})")
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet.get("name", ""),
+        "archetype": archetype,
+        "archetype_label": ARCHETYPE_LABELS.get(archetype, archetype.replace("_", " ").title()),
+        "reason": reason,
     }
 
 
