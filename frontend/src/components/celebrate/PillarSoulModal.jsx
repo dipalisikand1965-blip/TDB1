@@ -120,7 +120,11 @@ const PillarSoulModal = ({ pillar, pet, token, isOpen, onClose, onComplete }) =>
   const [success, setSuccess] = useState(false);
 
   const petName = pet?.name || 'your pet';
-  const questions = PILLAR_QUESTIONS[pillar?.id] || [];
+  // Filter out questions already answered in doggy_soul_answers — same logic as MyPets QUICK_QUESTIONS
+  const existingAnswers = pet?.doggy_soul_answers || {};
+  const questions = (PILLAR_QUESTIONS[pillar?.id] || []).filter(
+    q => !existingAnswers[q.soul_field] && !existingAnswers[q.id]
+  );
   const totalQ = questions.length;
   const progress = totalQ > 0 ? Math.round(((currentQ) / totalQ) * 100) : 0;
   const activeQ = questions[currentQ];
@@ -193,6 +197,32 @@ const PillarSoulModal = ({ pillar, pet, token, isOpen, onClose, onComplete }) =>
   };
 
   if (!isOpen || !pillar) return null;
+
+  // All questions already answered — show a completion message instead
+  if (totalQ === 0) {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={onClose} className="fixed inset-0 z-50"
+              style={{ background: 'rgba(26,0,48,0.65)', backdropFilter: 'blur(4px)' }}
+            />
+            <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.94 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+                <div className="text-4xl mb-3">✨</div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">All done!</h3>
+                <p className="text-gray-500 text-sm mb-4">Mira already knows everything she needs for {petName}'s {pillar.name} profile.</p>
+                <button onClick={onClose} className="px-5 py-2 bg-purple-600 text-white rounded-full text-sm font-medium hover:bg-purple-700 transition-colors">Close</button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>

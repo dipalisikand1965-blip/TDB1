@@ -745,6 +745,15 @@ const ShopSoulPage = () => {
     }
   }, [currentPet]);
 
+  // Live soul score — overrides stale context value with fresh DB read
+  useEffect(() => {
+    if (!currentPet?.id) return;
+    fetch(`${API_URL}/api/pet-soul/profile/${currentPet.id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setSoulScore(data.soul_score || data.overall_score || data.scores?.overall || 0); })
+      .catch(() => {});
+  }, [currentPet?.id]);
+
   usePlatformTracking({ pillar: "shop", pet: currentPet });
 
   const handleAddPet = useCallback(() => {

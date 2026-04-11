@@ -1,5 +1,5 @@
 {
-  "summary": "Comprehensive frontend testing of 14 pillar pages for Gold Standard section additions. All 10 updated pages have the new PillarDailyTip, PillarHelpBuckets, and PillarGuidedPaths sections correctly rendered. EmergencyPage and PaperworkPage also have Ask Mira Bar and Topics Grid. All 4 regression pages (Care, Dine, Fit, Learn) continue to load correctly.",
+  "summary": "Tested all 3 soul profile system fixes. All confirmed working. Backend: 19/20 tests passed. Frontend: all 7 pillar pages show live soul score correctly, PillarSoulModal filter logic verified, archetype shown on Celebrate page.",
   "backend_issues": {
     "critical": [],
     "minor": []
@@ -10,84 +10,58 @@
     "design_issues": []
   },
   "test_results": {
-    "travel_page": {
-      "ask_mira_bar": "✅ PASS - Input visible with correct placeholder",
-      "topic_cards_grid": "✅ PASS - 4 topic cards (Air Travel, Road Trips, Destinations, Travel Gear)",
-      "daily_tip": "✅ PASS - 'TODAY'S TRAVEL TIP' card visible with rotating tip",
-      "help_buckets": "✅ PASS - 3 help buckets (Plan My Trip, Travel Gear, Calm Travel Anxiety)",
-      "guided_paths": "✅ PASS - 'Guided Travel Paths' section with 6 paths"
+    "fix1_soul_score_sync": {
+      "api_test": "PASS - GET /api/pet-soul/profile/pet-mojo-7327ad56 returns scores.overall=100.0, tier='soul_master', answered_count=26",
+      "care_page": "PASS - shows 'Soul 100%'",
+      "dine_page": "PASS - shows 'Soul 100%'",
+      "go_page": "PASS - shows 'Soul 100%'",
+      "play_page": "PASS - shows '100% SOUL'",
+      "learn_page": "PASS - shows 'Soul 100%'",
+      "services_page": "PASS - shows 'Soul Score 100%'",
+      "shop_page": "PASS - shows 'Soul Score 100%'"
     },
-    "stay_page": {
-      "daily_tip": "✅ PASS - 'TODAY'S STAY TIP' visible",
-      "help_buckets": "✅ PASS - 3 help buckets present",
-      "guided_paths": "✅ PASS - 'Guided Stay Paths' heading confirmed"
+    "fix2_pillar_soul_modal_filter": {
+      "code_review": "PASS - PillarSoulModal.jsx lines 123-127 filter questions against pet.doggy_soul_answers (both soul_field and id)",
+      "all_done_screen": "PASS - 'All done!' screen renders when totalQ===0 (all questions already answered)",
+      "celebrate_page_mojo": "PASS - shows 'Mojo's soul is fully known. Mira knows everything.' confirming 0 new questions",
+      "soul_answers_api": "PASS - soul_answers has 93 entries (general_nature, describe_3_words etc all present)"
     },
-    "enjoy_page": {
-      "daily_tip": "✅ PASS - Daily tip section visible",
-      "help_buckets": "✅ PASS - 3 help buckets present",
-      "guided_paths": "✅ PASS - Guided paths section present"
-    },
-    "celebrate_page": {
-      "daily_tip": "✅ PASS - Daily tip visible",
-      "help_buckets": "✅ PASS - 3 help buckets present"
-    },
-    "emergency_page": {
-      "ask_mira_bar": "✅ PASS - Search input visible",
-      "topic_cards_grid": "✅ PASS - 4 topic cards (Emergency Vet, First Aid, Hospitals, Lost Pet)",
-      "daily_tip": "✅ PASS - 'TODAY'S PREPAREDNESS TIP' card visible",
-      "help_buckets": "✅ PASS - 3 help buckets present",
-      "guided_paths": "✅ PASS - Guided paths section present"
-    },
-    "advisory_page": {
-      "daily_tip": "✅ PASS - 'TODAY'S ADVISORY TIP' visible with content",
-      "help_buckets": "✅ PASS - 3 help buckets (Nutrition Advice, Behaviour Help, Health Guidance)"
-    },
-    "farewell_page": {
-      "daily_tip": "✅ PASS - Daily tip section visible",
-      "help_buckets": "✅ PASS - 3 help buckets present"
-    },
-    "adopt_page": {
-      "daily_tip": "✅ PASS - Daily tip section visible",
-      "help_buckets": "✅ PASS - 3 help buckets present"
-    },
-    "shop_page": {
-      "daily_tip": "✅ PASS - Daily tip section visible",
-      "help_buckets": "✅ PASS - 3 help buckets present",
-      "guided_paths": "✅ PASS - Guided paths section present"
-    },
-    "paperwork_page": {
-      "ask_mira_bar": "✅ PASS - Ask Mira bar present with 'Find vaccination records... insurance renewal dates' placeholder",
-      "topic_cards_grid": "✅ PASS - 6 topic cards (Identity & Safety, Medical & Health, Travel Documents, Insurance & Financial, Care & Training, Legal & Compliance)",
-      "daily_tip": "✅ PASS - 'TODAY'S DOCUMENT TIP' visible",
-      "help_buckets": "✅ PASS - 3 help buckets present",
-      "guided_paths": "✅ PASS - Guided paths section present"
-    },
-    "regression_tests": {
-      "care_page": "✅ PASS - Loads correctly, no errors",
-      "dine_page": "✅ PASS - Loads correctly, no errors",
-      "fit_page": "✅ PASS - Loads correctly, no errors",
-      "learn_page": "✅ PASS - Loads correctly, no errors"
+    "fix3_infer_archetype": {
+      "endpoint_200": "PASS - POST /api/pets/pet-mojo-7327ad56/infer-archetype returns 200",
+      "archetype_field": "PASS - returns archetype='wild_explorer'",
+      "archetype_label": "PASS - returns archetype_label='The Wild Explorer'",
+      "reason_field": "PASS - returns reason='Score 9: high energy + outdoor lover + pulls on leash + adventurous spirit + action-oriented'",
+      "pet_info": "PASS - returns pet_id and pet_name='Mojo'",
+      "no_auth": "PASS - works without auth token (optional auth confirmed)",
+      "404_unknown": "PASS - returns 404 for non-existent pet",
+      "db_persistence": "PASS - primary_archetype='wild_explorer' persisted to pet record",
+      "celebrate_page_archetype": "PASS - Celebrate page shows 'Playful . Loyal . The Wild Explorer' in traits bar"
     }
   },
-  "minor_observations": [
-    "StayPage and EnjoyPage show 'Error fetching nearby places' in console - pre-existing issue unrelated to new sections, location-based feature fails gracefully",
-    "EmergencyPage shows a 'Find Your Location' modal on load - expected behavior for location-based emergency services"
-  ],
   "test_report_links": [
-    "/app/test_reports/iteration_100.json"
+    "/app/backend/tests/test_soul_profile_fixes_iter100.py",
+    "/app/test_reports/pytest/soul_profile_fixes_iter100.xml"
   ],
   "action_items": [],
-  "critical_code_review_comments": [],
-  "updated_files": [],
+  "critical_code_review_comments": [
+    "Duplicate React keys warning in console for pet-home page (paper-health-wallet, adv-health-monitor, shopify-IDs) - pre-existing issue unrelated to these fixes",
+    "Shop/Services pages need slightly longer load time for PillarContext to initialize vs direct navigation - not a bug, context loads asynchronously"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_soul_profile_fixes_iter100.py"
+  ],
   "success_rate": {
-    "frontend": "100% (14/14 pages pass, all new sections present)"
+    "backend": "95% (19/20 tests passed, 1 skipped - no pet without answers available for default archetype test)",
+    "frontend": "100% (all 7 pillar pages show live soul score, PillarSoulModal filter working, archetype shown on Celebrate page)"
   },
   "test_credentials": {
     "user_email": "dipali@clubconcierge.in",
-    "user_password": "test123"
+    "user_password": "test123",
+    "pet_id": "pet-mojo-7327ad56",
+    "pet_name": "Mojo"
   },
   "seed_data_creation": "None required",
   "retest_needed": false,
   "should_main_agent_self_test": false,
-  "context_for_next_testing_agent": "All 14 pillar pages have Gold Standard sections implemented and working. The 10 updated pages (Travel, Stay, Enjoy, Celebrate, Emergency, Advisory, Farewell, Adopt, Shop, Paperwork) all have PillarDailyTip and PillarHelpBuckets sections. Travel, Stay, Enjoy, Shop, Emergency, and Paperwork also have PillarGuidedPaths. EmergencyPage and PaperworkPage have Ask Mira Bar and Topics Grid. All sections render correctly with default fallback data when CMS returns empty."
+  "context_for_next_testing_agent": "All 3 soul profile fixes are working. Fix1: Live soul score fetch from GET /api/pet-soul/profile/{id} on all 7 pillar pages (Care/Dine/Go/Play/Learn/Services/Shop) - verified showing 100% for Mojo. Fix2: PillarSoulModal.jsx filters already-answered questions and shows All Done screen (totalQ===0). Fix3: POST /api/pets/{id}/infer-archetype works, returns archetype/label/reason, persists to DB, Celebrate page shows archetype in traits. Mojo archetype is 'wild_explorer'/'The Wild Explorer'. Note: test for 'default archetype for pet without answers' was skipped as all 17 pets for this account appear to have soul answers."
 }
