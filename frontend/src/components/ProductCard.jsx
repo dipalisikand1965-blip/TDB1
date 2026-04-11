@@ -16,6 +16,7 @@ import { findBreedIllustration, getBreedIllustrationByName } from '../utils/bree
 import { getProductMockup } from '../utils/productMockups';
 import { tdc } from '../utils/tdc_intent';
 import { bookViaConcierge } from '../utils/MiraCardActions';
+import { getAllergiesFromPet } from '../hooks/useMiraFilter';
 
 // Autoship tier discount rates
 const AUTOSHIP_DISCOUNT_TIERS = [
@@ -1065,6 +1066,33 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                         (product.product_type || '').toLowerCase().includes('cake') ||
                         (product.sub_category || '').toLowerCase().includes('cake');
   const requiresDate = isCakeProduct || !!product.requires_date;
+
+  // ── Allergen-aware cake flavour logic ─────────────────────────────────────
+  const _activePet = selectedPet;
+  const _petAllergies = getAllergiesFromPet(_activePet);
+  const CAKE_FLAVOUR_ALLERGENS = {
+    'Fish / Salmon': ['fish', 'salmon'],
+    'Chicken':       ['chicken', 'poultry'],
+    'Chicken Liver': ['chicken', 'poultry'],
+    'Mutton':        ['lamb', 'mutton'],
+  };
+  const isFlavourAllergen = (flavourName) => {
+    const triggers = CAKE_FLAVOUR_ALLERGENS[flavourName] || [];
+    return triggers.some(t => _petAllergies.some(a => a.includes(t) || t.includes(a)));
+  };
+  // For cake products: ensure Fish / Salmon is always in the displayed flavours list,
+  // placed first, with Chicken allergens moved to the end.
+  const enrichedFlavours = (() => {
+    if (!isCakeProduct) return product.flavors || [];
+    const base = (product.flavors || []).filter(f => (f.name || '') !== 'Fish / Salmon' && (f.name || '') !== 'Fish & Salmon');
+    const hasFish = (product.flavors || []).some(f => /fish|salmon/i.test(f.name || ''));
+    const fish = hasFish
+      ? (product.flavors || []).filter(f => /fish|salmon/i.test(f.name || ''))
+      : [{ name: 'Fish / Salmon' }];
+    const safe    = base.filter(f => !isFlavourAllergen(f.name));
+    const allergen = base.filter(f =>  isFlavourAllergen(f.name));
+    return [...fish, ...safe, ...allergen];
+  })();
   
   const [cartInput, setCartInput] = useState(() => {
     // Compute default age from selectedPet prop (priority: age > life_stage > age_stage > birthday)
@@ -1627,20 +1655,26 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             )}
 
             {/* Flavors Display - For Cakes */}
-            {product.flavors && product.flavors.length > 0 && (
+            {(enrichedFlavours.length > 0) && (
               <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-100">
                 <h4 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-2">
                   <span>🍰</span> Available Flavours
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
-                  {product.flavors.map((flavor, idx) => (
-                    <span 
-                      key={idx} 
-                      className="px-2 py-1 bg-white text-xs rounded-full border border-amber-200 text-amber-700"
-                    >
-                      {flavor.name}
-                    </span>
-                  ))}
+                  {enrichedFlavours.map((flavor, idx) => {
+                    const allergen = isFlavourAllergen(flavor.name);
+                    return (
+                      <span
+                        key={idx}
+                        className="px-2 py-1 text-xs rounded-full border"
+                        style={allergen
+                          ? { background: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.35)', color: '#DC2626' }
+                          : { background: '#fff', borderColor: '#fcd34d', color: '#92400e' }}
+                      >
+                        {allergen && '⚠ '}{flavor.name}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1682,9 +1716,20 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             {productOptions.length > 0 && (
               <div className="space-y-4 mb-4">
                 {productOptions.map((option, optionIndex) => {
-                  const values = getOptionValues(option.name, optionIndex);
+                  const isFlavourOption = /flavou?r/i.test(option.name);
+                  let values = getOptionValues(option.name, optionIndex);
+
+                  // For cake Flavour options: inject Fish / Salmon first, reorder allergens to end
+                  if (isCakeProduct && isFlavourOption) {
+                    const hasFish = values.some(v => /fish|salmon/i.test(v));
+                    if (!hasFish) values = ['Fish / Salmon', ...values];
+                    const safe     = values.filter(v => !isFlavourAllergen(v));
+                    const allergens = values.filter(v =>  isFlavourAllergen(v));
+                    values = [...safe, ...allergens];
+                  }
+
                   if (values.length <= 1) return null;
-                  
+
                   return (
                     <div key={option.name}>
                       <label className="text-sm font-semibold text-gray-700 block mb-2">
@@ -1693,21 +1738,31 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                       <div className="flex flex-wrap gap-2">
                         {values.map((value) => {
                           const isSelected = selectedOptions[option.name] === value;
+                          const isAllerg = isCakeProduct && isFlavourOption && isFlavourAllergen(value);
                           return (
                             <button
                               key={value}
                               onClick={() => handleOptionChange(option.name, value)}
-                              className={`px-3 py-1.5 text-xs rounded-full border-2 transition-all ${
+                              className={`px-3 py-1.5 text-xs rounded-full border-2 transition-all`}
+                              style={
                                 isSelected
-                                  ? 'border-purple-600 bg-purple-50 text-purple-700'
-                                  : 'border-gray-200 hover:border-gray-300'
-                              }`}
+                                  ? { borderColor: '#7c3aed', background: '#f5f3ff', color: '#7c3aed' }
+                                  : isAllerg
+                                  ? { borderColor: 'rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.06)', color: '#DC2626' }
+                                  : { borderColor: '#e5e7eb' }
+                              }
                             >
-                              {value}
+                              {isAllerg && '⚠ '}{value}
                             </button>
                           );
                         })}
                       </div>
+                      {/* Allergen banner for selected allergen flavour */}
+                      {isCakeProduct && isFlavourOption && isFlavourAllergen(selectedOptions[option.name] || '') && (
+                        <p style={{ fontSize: 11, color: '#DC2626', marginTop: 6, background: 'rgba(239,68,68,0.06)', borderRadius: 8, padding: '6px 10px' }}>
+                          ⚠ {selectedOptions[option.name]} contains an allergen for {_activePet?.name || 'your dog'} — only order if this cake is for another dog.
+                        </p>
+                      )}
                     </div>
                   );
                 })}
