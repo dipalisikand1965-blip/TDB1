@@ -339,26 +339,20 @@ const MemberMobileNav = () => {
                     data-testid={`switch-pet-${pet.name?.toLowerCase()}`}
                   >
                     <div className="flex items-center gap-3">
-                      {(pet.photo_url || pet.photo) ? (
+                      {pet.photo ? (
                         <img 
-                          src={
-                            (pet.photo_url || pet.photo).startsWith('/')
-                              ? `${process.env.REACT_APP_BACKEND_URL}${pet.photo_url || pet.photo}`
-                              : (pet.photo_url || pet.photo)
-                          }
+                          src={pet.photo} 
                           alt={pet.name} 
                           className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                           style={{ pointerEvents: 'none' }}
-                          onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
                         />
-                      ) : null}
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        isSelected ? 'bg-white/20' : 'bg-purple-100'
-                      } ${(pet.photo_url || pet.photo) ? 'hidden' : 'flex'}`}
-                        style={{ display: (pet.photo_url || pet.photo) ? 'none' : 'flex' }}
-                      >
-                        <PawPrint className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-purple-500'}`} style={{ pointerEvents: 'none' }} />
-                      </div>
+                      ) : (
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          isSelected ? 'bg-white/20' : 'bg-purple-100'
+                        }`}>
+                          <PawPrint className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-purple-500'}`} style={{ pointerEvents: 'none' }} />
+                        </div>
+                      )}
                       <div style={{ pointerEvents: 'none' }}>
                         <p className={`font-semibold text-sm ${isSelected ? 'text-white' : 'text-gray-900'}`}>{pet.name}</p>
                         <p className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>{pet.breed || 'Good Pet'}</p>
