@@ -2143,28 +2143,6 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
 
-
-    # Daily Morning Digest - 8:00 AM IST = 2:30 AM UTC
-    def run_daily_digest():
-        try:
-            from daily_digest import run_digest
-            run_digest(dry_run=False)
-            logger.info("Daily digest sent")
-        except Exception as e:
-            logger.error(f"Daily digest failed: {e}")
-
-    scheduler.add_job(run_daily_digest, CronTrigger(hour=2, minute=30, timezone="UTC"), id="daily_morning_digest", replace_existing=True)
-
-
-    # Daily Digest 8AM IST
-    def _run_digest():
-        try:
-            from daily_digest import run_digest
-            run_digest(dry_run=False)
-        except Exception as e:
-            logger.error(f"Daily digest failed: {e}")
-    scheduler.add_job(_run_digest, CronTrigger(hour=2, minute=30, timezone="UTC"), id="daily_digest", replace_existing=True)
-
     scheduler.start()
     logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10), DAILY DIGEST (8 AM IST)")
     

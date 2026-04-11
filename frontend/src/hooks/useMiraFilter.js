@@ -631,6 +631,29 @@ function getSoulBonus(product, pet) {
 
 function productContainsAllergen(product, allergen) {
   const synonyms = ALLERGEN_MAP[allergen] || [allergen];
+
+  // ── Layer 0: pre-tagged allergen_contains field (fastest + most accurate) ──
+  // Set by tag_products.py — direct lookup, no text scan needed
+  const preTagged = product.allergen_contains || product.base_tags?.allergen_contains;
+  if (Array.isArray(preTagged) && preTagged.length > 0) {
+    const tagged = preTagged.map(a => a.toLowerCase().trim());
+    const freeFromTagged = (product.allergy_free || '').toLowerCase();
+    if (synonyms.some(syn => freeFromTagged.includes(`${syn}-free`) || freeFromTagged.includes(`${syn} free`))) return false;
+    return synonyms.some(syn => tagged.includes(syn)) || tagged.includes(allergen.toLowerCase());
+  }
+
+  // ── Layer 1: protein_source from base_tags (set by AI tagger, maps to allergens) ──
+  const proteinSource = product.base_tags?.protein_source;
+  if (Array.isArray(proteinSource) && proteinSource.length > 0 && !proteinSource.includes('none')) {
+    const proteins = proteinSource.map(p => p.toLowerCase().trim());
+    const freeFromTagged = (product.allergy_free || '').toLowerCase();
+    if (synonyms.some(syn => freeFromTagged.includes(`${syn}-free`) || freeFromTagged.includes(`${syn} free`))) return false;
+    // If protein_source says chicken → allergen confirmed. If populated with no match → safe.
+    return synonyms.some(syn => proteins.includes(syn)) || proteins.includes(allergen.toLowerCase());
+  }
+
+  // ── Layer 2: fallback — text scan on name / description / ingredients ──────
+  // Used only for products with no pre-computed tags
   const haystack = [
     product.name || '',
     product.description || product.desc || '',
