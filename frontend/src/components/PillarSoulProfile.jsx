@@ -242,17 +242,7 @@ export default function PillarSoulProfile({
         clearTimeout(timer);
         if (data) {
           setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
-          if (data.current_score !== undefined) {
-            setLiveScore(data.current_score);
-            // Silently patch stale stored score if API calculates higher
-            if (pet.overall_score !== undefined && data.current_score > pet.overall_score) {
-              fetch(`${API}/api/pets/${pet.id}/score`, {
-                method: 'PATCH',
-                headers: { 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}) },
-                body: JSON.stringify({ score: data.current_score }),
-              }).catch(() => {});
-            }
-          }
+          if (data.current_score !== undefined) setLiveScore(data.current_score);
         }
       })
       .catch(err => { if (err.name !== 'AbortError') console.error('[PillarProfile]', err); })
