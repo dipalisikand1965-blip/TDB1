@@ -155,6 +155,13 @@ function MiraPicksSection({ pet }) {
         .then(r => r.ok ? r.json() : null).catch(() => null),
     ]).then(([pData, sData]) => {
       const ranked = applyMiraFilter(pData?.products || [], pet);
+      // Shop pillar boosts — breed-specific items and bundles always surface first
+      ranked.forEach(p => {
+        const text = ((p.name||'') + ' ' + (p.description||'')).toLowerCase();
+        if (pet?.breed && text.includes((pet.breed||'').toLowerCase())) p._miraRank = Math.max(1, (p._miraRank||10) - 3);
+        if (text.includes('bundle') || text.includes('starter kit') || text.includes('essentials')) p._miraRank = Math.max(2, (p._miraRank||10) - 1);
+      });
+      ranked.sort((a, b) => (a._miraRank||10) - (b._miraRank||10));
       const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
       const merged = []; let pi = 0, si = 0;
       while ((pi < ranked.length || si < svcs.length) && merged.length < 16) {
@@ -199,7 +206,8 @@ function MiraPicksSection({ pet }) {
             const isService = pick.entity_type === "service";
             const img = [pick.watercolor_image, pick.cloudinary_url, pick.image_url, pick.image, ...(pick.images||[])].find(u=>u&&u.startsWith("http")&&!u.includes("emergentagent.com")&&!u.includes("static.prod-images")) || null;
             const score = pick.mira_score || 0;
-            const scoreColor = score>=80 ? "#16A34A" : score>=70 ? G.gold : "#6B7280";
+            const displayScore = pick._miraRank !== undefined ? Math.max(0, Math.round((15 - pick._miraRank) / 15 * 100)) : score;
+            const scoreColor = displayScore>=80 ? "#16A34A" : displayScore>=70 ? G.gold : "#6B7280";
             return (
               <div key={pick.id||i}
                 style={{ flexShrink:0, width:168, background:"#fff", borderRadius:14,
@@ -232,10 +240,16 @@ function MiraPicksSection({ pet }) {
                   </div>
                   <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:5 }}>
                     <div style={{ flex:1, height:4, background:G.pale, borderRadius:4, overflow:"hidden" }}>
-                      <div style={{ width:`${score}%`, height:"100%", background:scoreColor, borderRadius:4 }}/>
+                      <div style={{ width:`${displayScore}%`, height:"100%", background:scoreColor, borderRadius:4 }}/>
                     </div>
-                    <span style={{ fontSize:10, fontWeight:800, color:scoreColor, minWidth:26 }}>{score}</span>
+                    <span style={{ fontSize:10, fontWeight:800, color:scoreColor, minWidth:26 }}>{displayScore}</span>
                   </div>
+                  {pick._soulMatchReason && (
+                    <p style={{ fontSize:10, color:"#D97706", margin:"0 0 4px", lineHeight:1.3,
+                                display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                      ✦ {pick._soulMatchReason}
+                    </p>
+                  )}
                   {pick.mira_reason && (
                     <p style={{ fontSize:10, color:"#888", lineHeight:1.4, margin:0,
                                 display:"-webkit-box", WebkitLineClamp:2,
