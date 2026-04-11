@@ -242,7 +242,17 @@ export default function PillarSoulProfile({
         clearTimeout(timer);
         if (data) {
           setQuestions((data.questions || []).map(q => ({ ...q, pet_id: pet.id })));
-          if (data.current_score !== undefined) setLiveScore(data.current_score);
+          if (data.current_score !== undefined) {
+            setLiveScore(data.current_score);
+            // Silently patch stale stored score if API calculates higher
+            if (pet.overall_score !== undefined && data.current_score > pet.overall_score) {
+              fetch(`${API}/api/pets/${pet.id}/score`, {
+                method: 'PATCH',
+                headers: { 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+                body: JSON.stringify({ score: data.current_score }),
+              }).catch(() => {});
+            }
+          }
         }
       })
       .catch(err => { if (err.name !== 'AbortError') console.error('[PillarProfile]', err); })
@@ -479,6 +489,14 @@ export default function PillarSoulProfile({
               )}
               {!isComplete && qLoading && (
                 <div style={{ textAlign:'center', padding:16, color:'rgba(245,240,232,0.3)', fontSize:13, marginBottom:20 }}>Loading questions for {name}...</div>
+              )}
+              {!isComplete && !qLoading && questions.length === 0 && Object.keys(submitted).length === 0 && (
+                <div style={{ background:`${pColor}08`, border:`1px solid ${pColor}20`, borderRadius:12, padding:'12px 14px', marginBottom:20, display:'flex', alignItems:'center', gap:10 }}>
+                  <span style={{ fontSize:16 }}>✓</span>
+                  <div style={{ fontSize:13, color:'rgba(245,240,232,0.6)', lineHeight:1.4 }}>
+                    Mira has all of <strong style={{ color:pColor }}>{name}'s</strong> answers saved — every recommendation is tuned to their soul.
+                  </div>
+                </div>
               )}
 
               {/* SECTION 1: What Mira knows */}
