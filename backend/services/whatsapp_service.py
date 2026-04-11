@@ -29,7 +29,8 @@ from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-GUPSHUP_API_URL = "https://api.gupshup.io/wa/api/v1/msg"
+GUPSHUP_API_URL         = "https://api.gupshup.io/wa/api/v1/msg"
+GUPSHUP_TEMPLATE_API_URL = "https://api.gupshup.io/wa/api/v1/template/msg"
 
 def _templates_approved() -> bool:
     """Read WHATSAPP_TEMPLATES_APPROVED at call time (not import time) so env changes take effect after restart."""
@@ -146,7 +147,7 @@ async def _send_freeform(phone: str, message: str, context: str = "general") -> 
 
 
 async def _send_template(phone: str, template_name: str, params: List[str]) -> Dict[str, Any]:
-    """Send an approved template message via Gupshup."""
+    """Send an approved template message via Gupshup's template endpoint."""
     if not is_configured():
         return {"success": False, "reason": "Gupshup not configured"}
 
@@ -156,24 +157,19 @@ async def _send_template(phone: str, template_name: str, params: List[str]) -> D
         return {"success": False, "reason": "Invalid phone"}
 
     import json
-    msg = json.dumps({
-        "type": "template",
-        "template": {
-            "id": template_name,
-            "params": params,
-        }
-    })
+    # Gupshup template endpoint uses 'template' key (not 'message')
+    # Format: {"id": "template_name", "params": ["p1", "p2", ...]}
     payload = {
-        "channel":    "whatsapp",
-        "source":     cfg["source_number"],
+        "channel":     "whatsapp",
+        "source":      cfg["source_number"],
         "destination": cleaned,
-        "message":    msg,
-        "src.name":   cfg["app_name"],
+        "template":    json.dumps({"id": template_name, "params": params}),
+        "src.name":    cfg["app_name"],
     }
     try:
         async with httpx.AsyncClient(timeout=15) as client:
             resp = await client.post(
-                GUPSHUP_API_URL,
+                GUPSHUP_TEMPLATE_API_URL,          # ← correct: /template/msg endpoint
                 headers={"apikey": cfg["api_key"], "Content-Type": "application/x-www-form-urlencoded"},
                 data=payload,
             )
