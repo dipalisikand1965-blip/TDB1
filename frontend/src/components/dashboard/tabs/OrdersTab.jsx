@@ -157,7 +157,7 @@ const OrdersTab = ({ orders }) => {
                           variant="outline" 
                           size="sm"
                           className="flex-1 bg-slate-700/50 border-white/10 text-white hover:bg-slate-600/50"
-                          onClick={() => window.open(`${API_URL}/api/checkout/order/${order.orderId || order.id}/invoice`, '_blank')}
+                          onClick={() => window.open(`${API_URL}/api/checkout/order/${order.orderId || order.id}/invoice/pdf`, '_blank')}
                           data-testid={`view-invoice-${order.orderId || order.id}`}
                         >
                           <Download className="w-4 h-4 mr-1.5" /> View Invoice
