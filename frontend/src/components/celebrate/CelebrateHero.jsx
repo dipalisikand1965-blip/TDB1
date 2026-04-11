@@ -245,19 +245,21 @@ const CelebrateHero = ({ pet, soulScore }) => {
               width: 96, height: 96,
               borderRadius: '50%',
               border: '3px solid transparent',
-              background: 'linear-gradient(#3d0060, #3d0060) padding-box, linear-gradient(135deg, #00E676, #C44DFF) border-box'
+              background: 'linear-gradient(#3d0060, #3d0060) padding-box, linear-gradient(135deg, #C44DFF, #FF6B9D) border-box'
             }}
           >
-            {petPhoto ? (
-              <img
-                src={petPhoto}
-                alt={petName}
-                className="w-full h-full object-cover rounded-full"
-                style={{ width: 84, height: 84, borderRadius: '50%' }}
-              />
-            ) : (
-              <span className="text-5xl">🐕</span>
-            )}
+            {/* Inner wrapper ensures opaque bg so transparent PNGs don't bleed */}
+            <div style={{ width: 88, height: 88, borderRadius: '50%', overflow: 'hidden', background: '#3d0060', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {petPhoto ? (
+                <img
+                  src={petPhoto}
+                  alt={petName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                  onError={e => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                />
+              ) : null}
+              <span style={{ fontSize: 40, display: petPhoto ? 'none' : 'flex' }}>🐕</span>
+            </div>
 
             {/* Soul % chip */}
             <div
