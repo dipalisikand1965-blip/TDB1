@@ -29,7 +29,7 @@ import AmazonExplorerBox from "../components/shop/AmazonExplorerBox";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
-import { filterBreedProducts } from "../hooks/useMiraFilter";
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from "../hooks/useMiraFilter";
 import { ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
@@ -144,15 +144,28 @@ function MiraPicksSection({ pet }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
-    const breed = encodeURIComponent(getBreed(pet));
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=shop&limit=12&min_score=60&entity_type=product&breed=${breed}`)
-      .then(r=>r.ok?r.json():null)
-      .then(pData => {
-        const prods = filterBreedProducts(pData?.picks||[], pet?.breed);
-        if (prods.length) setPicks(prods.slice(0,12));
-        setLoading(false);
-      }).catch(() => setLoading(false));
-  }, [pet?.id]);
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = { Authorization: `Bearer ${localStorage.getItem('tdb_auth_token') || ''}` };
+    Promise.all([
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&limit=200${breedParam}${allergenParam}`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${API_URL}/api/services?pillar=shop&limit=4`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([pData, sData]) => {
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged = []; let pi = 0, si = 0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 16) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)   merged.push(svcs[si++]);
+      }
+      if (merged.length) setPicks(merged.slice(0, 16));
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [pet?.id, pet?.breed]);
 
   const showImagines = !loading && picks.length === 0;
 

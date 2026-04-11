@@ -48,7 +48,7 @@ import PillarSoulProfile from "../components/PillarSoulProfile";
 import SoulMadeModal from "../components/SoulMadeModal";
 import { useConcierge } from "../hooks/useConcierge";
 import CareMobilePage from './CareMobilePage';
-import { filterBreedProducts } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import FirstTimePawrent from '../components/common/FirstTimePawrent';
 // ─────────────────────────────────────────────────────────────
@@ -418,30 +418,28 @@ export function MiraPicksSection({ pet, onOpenService }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = { Authorization: `Bearer ${localStorage.getItem('tdb_auth_token') || ''}` };
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=care&limit=12&min_score=60&entity_type=product`).then(r => r.ok ? r.json() : null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=care&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
-    ])
-      .then(([pData, sData]) => {
-        const prods = pData?.picks || [];
-        const svcs  = sData?.picks || [];
-        const merged = [];
-        let pi = 0, si = 0;
-        while (pi < prods.length || si < svcs.length) {
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (si < svcs.length)  merged.push(svcs[si++]);
-        }
-        if (merged.length) { 
-          setPicks(merged.slice(0, 16));
-          // Check if any results are fallback (scoring pending)
-          const hasFallback = merged.some(p => p.is_fallback);
-          setScoringPending(hasFallback);
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [pet?.id]);
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=200${breedParam}${allergenParam}`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${API_URL}/api/services?pillar=care&limit=4`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([pData, sData]) => {
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged = []; let pi = 0, si = 0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 16) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)   merged.push(svcs[si++]);
+      }
+      if (merged.length) setPicks(merged.slice(0, 16));
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [pet?.id, pet?.breed]);
 
   if (loading) return (
     <section style={{ marginBottom: 32 }}>

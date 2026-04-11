@@ -40,7 +40,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { bookViaConcierge } from "../utils/MiraCardActions";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
-import { applyMiraFilter, filterBreedProducts } from "../hooks/useMiraFilter";
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from "../hooks/useMiraFilter";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
@@ -333,80 +333,31 @@ export function MiraPicksSection({ pet, onOpenService }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
-    const makeAbortable = (url) => {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000); // 8s — handles scoring job blocking
-      return fetch(url, { signal: ctrl.signal, headers: { Authorization: `Bearer ${token || ""}` } })
-        .then(r => r.ok ? r.json() : null)
-        .finally(() => clearTimeout(timer))
-        .catch(() => null);
-    };
-    Promise.allSettled([
-      makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=12&min_score=60&entity_type=product${pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : ""}`),
-      makeAbortable(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=play&limit=6&min_score=60&entity_type=service`),
-    ]).then(async ([pRes, sRes]) => {
-      const pData = pRes.status === "fulfilled" ? pRes.value : null;
-      const sData = sRes.status === "fulfilled" ? sRes.value : null;
-      const filterBreedPicks = (picks) => {
-        const petBreed = (pet?.breed||"").toLowerCase();
-        const breedWords = petBreed.split(/\s+/).filter(w=>w.length>2);
-        const knownBreeds = ['american bully','beagle','border collie','boxer','chow chow','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire','lhasa apso','dalmatian','dachshund','chihuahua','doberman','cavalier','jack russell','cocker spaniel','samoyed','corgi','schnauzer'];
-        return picks.filter(p => {
-          const name=(p.name||"").toLowerCase();
-          for (const b of knownBreeds) {
-            if (name.includes(b)) {
-              if (!petBreed) return false;
-              if (name.includes(petBreed)) return true;
-              if (breedWords.some(w=>b.includes(w))) return true;
-              return false;
-            }
-          }
-          return true;
-        });
-      };
-      const prods=filterBreedPicks(pData?.picks||[]); const svcs=sData?.picks||[];
-      const merged=[]; let pi=0,si=0;
-      while(pi<prods.length||si<svcs.length){
-        if(pi<prods.length) merged.push(prods[pi++]);
-        if(pi<prods.length) merged.push(prods[pi++]);
-        if(si<svcs.length)  merged.push(svcs[si++]);
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = { Authorization: `Bearer ${localStorage.getItem('tdb_auth_token') || ''}` };
+    Promise.all([
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=200${breedParam}${allergenParam}`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${API_URL}/api/services?pillar=play&limit=4`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([pData, sData]) => {
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged = []; let pi=0, si=0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 16) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)   merged.push(svcs[si++]);
       }
       if(merged.length) {
         setPicks(merged.slice(0,16));
         setLoading(false);
       } else {
-        // No AI picks yet — fall back to actual play products, filtered by breed
-        try {
-          const fallbackRes = await fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=60`);
-          if (fallbackRes.ok) {
-            const fallbackData = await fallbackRes.json();
-            const petBreed = (pet?.breed || '').toLowerCase().trim();
-            const fallbackPicks = (fallbackData.products||[])
-              .filter(p => {
-                const bt  = (p.breed_tags||[]).map(b=>b.toLowerCase());
-                const btr = (p.breed_targets||[]).map(b=>b.toLowerCase());
-                if (!petBreed) return true;
-                // breed_targets takes priority (if specific)
-                const hasSpecificTarget = btr.length > 0 && !btr.includes('all_breeds') && !btr.includes('all');
-                if (hasSpecificTarget) return btr.some(b => petBreed.includes(b) || b.includes(petBreed));
-                // No specific target → accept if breed_tags are generic/missing, or name matches
-                if (bt.includes('all_breeds') || bt.includes('all') || bt.length === 0) {
-                  const nm = (p.name||'').toLowerCase();
-                  const isBreedSpecificName = /bandana|playdate card|play date card|lookalike toy|plush lookalike/i.test(nm);
-                  if (isBreedSpecificName) return nm.includes(petBreed);
-                  return true;
-                }
-                return bt.includes(petBreed);
-              })
-              .map(p => ({
-                ...p, mira_score: p.mira_score||Math.floor(Math.random()*20+60), entity_type:"product", mira_reason: `Matched to ${pet?.name || 'your dog'}'s play profile`,
-              }));
-            setPicks(fallbackPicks.slice(0,12));
-          }
-        } catch {}
         setLoading(false);
       }
-    });
+    }).catch(() => setLoading(false));
   }, [pet?.id]);
 
   const showImagines = !loading && picks.length === 0;
