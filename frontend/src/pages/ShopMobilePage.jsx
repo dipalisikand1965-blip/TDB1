@@ -14,7 +14,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
-import { applyMiraFilter, filterBreedProducts, KNOWN_BREEDS, excludeCakeProducts } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, KNOWN_BREEDS, excludeCakeProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
@@ -61,15 +61,14 @@ function MiraPicksSection({ pet, token, onConcierge }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
-    const breed = encodeURIComponent(getBreed(pet));
-    fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=shop&limit=12&min_score=60&entity_type=product&breed=${breed}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {}
-    })
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = token ? { Authorization: `Bearer ${token}` } : {};
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=shop&limit=200${breedParam}${allergenParam}`, { headers: auth })
       .then(r => r.ok ? r.json() : null)
       .then(pData => {
-        const breedFiltered = filterBreedProducts(excludeCakeProducts(pData?.picks || []), pet?.breed);
-        // Apply full v2 Mira ranking (allergen + size + life stage + loves scoring)
-        const ranked = applyMiraFilter(breedFiltered, pet);
+        const ranked = applyMiraFilter(excludeCakeProducts(pData?.products || []), pet);
         if (ranked.length) setPicks(ranked.slice(0, 12));
         setLoading(false);
       }).catch(() => setLoading(false));

@@ -16,7 +16,7 @@ import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
 import ConciergeCTA from '../components/ConciergeCTA';
-import { applyMiraFilter, filterBreedProducts, excludeCakeProducts} from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, excludeCakeProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import DesktopSoulCard from '../components/common/DesktopSoulCard';
@@ -132,13 +132,16 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook, all
   const [playing, setPlaying] = useState(null);
 
   useEffect(() => {
-    // Mira's Picks dim: use claude-picks API — EXACT same as desktop
+    // Mira's Picks dim: use pillar-products + applyMiraFilter (no stale claude-picks)
     if (dim.id === 'mira' && pet?.id) {
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=learn`, {
-        headers: token ? { Authorization:`Bearer ${token}` } : {}
+      const allergyList   = getAllergiesFromPet(pet);
+      const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+      const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&limit=200${breedParam}${allergenParam}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
       })
         .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d?.products) setProducts(filterBreedProducts(d.products, pet?.breed)); })
+        .then(d => { if (d?.products) setProducts(applyMiraFilter(d.products, pet)); })
         .catch(() => {});
       return;
     }
