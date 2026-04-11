@@ -713,18 +713,24 @@ async def get_all_products(
             ]})
     
     if search:
+        import re as _re
+        try:
+            _re.compile(search)   # validate — raises if search is an invalid regex (e.g. "[u")
+            safe_search = search
+        except _re.error:
+            safe_search = _re.escape(search)  # escape so literal text still works
         and_conditions.append({"$or": [
-            {"name": {"$regex": search, "$options": "i"}},
-            {"title": {"$regex": search, "$options": "i"}},
-            {"id": {"$regex": search, "$options": "i"}},
-            {"sku": {"$regex": search, "$options": "i"}},
-            {"sub_category": {"$regex": search, "$options": "i"}},
-            {"pillar": {"$regex": search, "$options": "i"}},
-            {"tags": {"$regex": search, "$options": "i"}},
-            {"category": {"$regex": search, "$options": "i"}},
-            {"description": {"$regex": search, "$options": "i"}},
-            {"breed": {"$regex": search, "$options": "i"}},
-            {"breed_name": {"$regex": search, "$options": "i"}}
+            {"name": {"$regex": safe_search, "$options": "i"}},
+            {"title": {"$regex": safe_search, "$options": "i"}},
+            {"id": {"$regex": safe_search, "$options": "i"}},
+            {"sku": {"$regex": safe_search, "$options": "i"}},
+            {"sub_category": {"$regex": safe_search, "$options": "i"}},
+            {"pillar": {"$regex": safe_search, "$options": "i"}},
+            {"tags": {"$regex": safe_search, "$options": "i"}},
+            {"category": {"$regex": safe_search, "$options": "i"}},
+            {"description": {"$regex": safe_search, "$options": "i"}},
+            {"breed": {"$regex": safe_search, "$options": "i"}},
+            {"breed_name": {"$regex": safe_search, "$options": "i"}}
         ]})
     
     if and_conditions:
