@@ -464,7 +464,171 @@ function sensitivityMatch(product, petHealthCondition) {
   return senses.some(s => health.includes(s) || s.includes('sensitive') || s.includes('joint'));
 }
 
-// ── Allergen helpers ──────────────────────────────────────────────────────────
+// ── Soul Bonus Layer ──────────────────────────────────────────────────────────
+// Reads doggy_soul_answers fields applyMiraFilter currently ignores.
+// Returns {bonus, reason} — bonus is negative = moves product UP in ranking.
+// Max bonus: -4 (all four soul signals matched)
+//
+// Field normalizer handles inconsistent DB storage across different soul quizzes:
+//   energy_level: 'High energy, great napper' → 'very_active'
+//   sensitive_stomach: 'Sometimes'            → health concern: digestion
+//   separation_anxiety: 'Moderate'            → health concern: anxiety
+
+function normalizeSoulFields(pet) {
+  const soul = pet?.doggy_soul_answers || {};
+
+  // ── Activity Level ─────────────────────────────────────────────────────────
+  let activityLevel = (soul.activity_level || '').toLowerCase();
+  if (!activityLevel) {
+    const el = (soul.energy_level || soul.exercise_needs || '').toLowerCase();
+    if (el.includes('very active') || el.includes('high energy') || el.includes('athlete') || el.includes('running')) activityLevel = 'very_active';
+    else if (el.includes('calm') || el.includes('low') || el.includes('light') || el.includes('couch') || el.includes('indoor')) activityLevel = 'low';
+    else if (el) activityLevel = 'moderate';
+  }
+
+  // ── Health Concerns ────────────────────────────────────────────────────────
+  // Collect from multiple fields, including implicit signals
+  const healthConcerns = new Set();
+  const rawHealth = [
+    ...(Array.isArray(soul.health_concerns) ? soul.health_concerns : []),
+    ...(Array.isArray(soul.health_conditions) ? soul.health_conditions : [soul.health_conditions || '']),
+    soul.medical_conditions || '',
+    soul.vet_conditions || '',
+  ].join(' ').toLowerCase();
+
+  if (rawHealth.includes('joint') || rawHealth.includes('arthritis') || rawHealth.includes('hip') || rawHealth.includes('mobility')) healthConcerns.add('joint');
+  if (rawHealth.includes('dental') || rawHealth.includes('teeth') || rawHealth.includes('tartar')) healthConcerns.add('dental');
+  if (rawHealth.includes('skin') || rawHealth.includes('itch') || rawHealth.includes('coat') || rawHealth.includes('omega')) healthConcerns.add('skin');
+  if (rawHealth.includes('cancer') || rawHealth.includes('lymphoma') || rawHealth.includes('tumour') || rawHealth.includes('tumor')) healthConcerns.add('oncology');
+  if (rawHealth.includes('weight') || rawHealth.includes('obese') || rawHealth.includes('overweight')) healthConcerns.add('weight');
+
+  // Implicit signals from other soul fields
+  const stomachVal = (soul.sensitive_stomach || '').toLowerCase();
+  if (stomachVal.includes('sometimes') || stomachVal.includes('yes') || stomachVal.includes('often')) healthConcerns.add('digestion');
+
+  const anxietyVal = (soul.separation_anxiety || soul.anxiety_triggers || '').toLowerCase();
+  if (anxietyVal.includes('moderate') || anxietyVal.includes('severe') || anxietyVal.includes('yes')) healthConcerns.add('anxiety');
+
+  // ── Coat Type ──────────────────────────────────────────────────────────────
+  const coatType = (soul.coat_type || pet?.coat_type || soul.grooming_style || '').toLowerCase();
+
+  // ── Personality ───────────────────────────────────────────────────────────
+  const personalityText = [
+    ...(Array.isArray(soul.personality) ? soul.personality : []),
+    soul.temperament || '',
+    soul.general_nature || '',
+    soul.describe_3_words || '',
+    soul.motivation_type || '',
+    soul.food_motivation || '',
+  ].join(' ').toLowerCase();
+
+  return { activityLevel, healthConcerns, coatType, personalityText };
+}
+
+const ACTIVITY_TAG_MAP = {
+  very_active: ['high energy', 'active', 'athlete', 'performance', 'endurance', 'sport', 'protein', 'energy'],
+  moderate:    ['everyday', 'moderate', 'balanced', 'regular', 'daily'],
+  low:         ['low calorie', 'light', 'calm', 'indoor', 'couch', 'weight management', 'senior', 'gentle'],
+};
+
+const HEALTH_TAG_MAP = {
+  joint:     ['joint', 'glucosamine', 'chondroitin', 'mobility', 'hip', 'arthritis', 'movement'],
+  dental:    ['dental', 'teeth', 'tartar', 'oral', 'chew', 'breath'],
+  skin:      ['skin', 'coat', 'omega', 'fatty acid', 'shiny', 'itch', 'derm'],
+  digestion: ['probiotic', 'digestive', 'gut', 'stomach', 'sensitive', 'fiber', 'prebiotic'],
+  anxiety:   ['calm', 'calming', 'anxiety', 'stress', 'soothe', 'relax', 'gentle'],
+  weight:    ['weight', 'light', 'low calorie', 'diet', 'lean', 'slim'],
+  oncology:  ['antioxidant', 'immune', 'turmeric', 'supplement', 'gentle', 'light', 'low fat'],
+};
+
+const COAT_TAG_MAP = {
+  long:   ['coat', 'omega', 'shine', 'grooming', 'detangle', 'silky', 'conditioner'],
+  double: ['coat', 'omega', 'shedding', 'undercoat', 'dense', 'deshedding'],
+  short:  ['easy care', 'smooth coat', 'low maintenance'],
+  curly:  ['curl', 'frizz', 'moisture', 'conditioner'],
+};
+
+const PERSONALITY_TAG_MAP = {
+  anxious:        ['calm', 'calming', 'stress', 'anxiety', 'soothe', 'gentle', 'relax'],
+  playful:        ['fun', 'play', 'interactive', 'toy', 'game', 'enrichment'],
+  social:         ['social', 'group', 'party', 'interactive', 'fun'],
+  food_motivated: ['treat', 'reward', 'training treat', 'snack', 'chew', 'bite'],
+  energetic:      ['energy', 'active', 'sport', 'performance', 'high protein'],
+};
+
+function getSoulBonus(product, pet) {
+  const { activityLevel, healthConcerns, coatType, personalityText } = normalizeSoulFields(pet);
+
+  const text = [
+    product.name || '',
+    product.description || product.desc || '',
+    product.mira_tag || '',
+    product.sub_category || '',
+    product.category || '',
+    ...(Array.isArray(product.tags) ? product.tags : []),
+    ...(Array.isArray(product.soul_tags) ? product.soul_tags : []),
+  ].join(' ').toLowerCase();
+
+  let bonus = 0;
+  const reasons = [];
+
+  // Signal 1 — Activity Level
+  if (activityLevel) {
+    for (const [level, keywords] of Object.entries(ACTIVITY_TAG_MAP)) {
+      if (activityLevel === level || activityLevel.includes(level.replace('_', ' '))) {
+        if (keywords.some(kw => text.includes(kw))) {
+          bonus -= 1;
+          if (level === 'very_active') reasons.push('great for active dogs');
+          else if (level === 'low') reasons.push('gentle for lower-energy dogs');
+          break;
+        }
+      }
+    }
+  }
+
+  // Signal 2 — Health Concerns (first matched concern wins bonus)
+  for (const concern of healthConcerns) {
+    const keywords = HEALTH_TAG_MAP[concern] || [];
+    if (keywords.some(kw => text.includes(kw))) {
+      bonus -= 1;
+      const labels = { joint: 'joint support', dental: 'dental health', skin: 'coat & skin', digestion: 'gentle on digestion', anxiety: 'calming support', weight: 'weight management', oncology: 'immune support' };
+      reasons.push(labels[concern] || concern);
+      break;
+    }
+  }
+
+  // Signal 3 — Coat Type
+  if (coatType) {
+    for (const [type, keywords] of Object.entries(COAT_TAG_MAP)) {
+      if (coatType.includes(type)) {
+        if (keywords.some(kw => text.includes(kw))) {
+          bonus -= 1;
+          reasons.push(`${type} coat care`);
+          break;
+        }
+      }
+    }
+  }
+
+  // Signal 4 — Personality / Motivation
+  if (personalityText) {
+    for (const [trait, keywords] of Object.entries(PERSONALITY_TAG_MAP)) {
+      if (personalityText.includes(trait) || (trait === 'food_motivated' && personalityText.includes('food')) || (trait === 'energetic' && personalityText.includes('energy'))) {
+        if (keywords.some(kw => text.includes(kw))) {
+          bonus -= 1;
+          if (trait === 'food_motivated') reasons.push('great for food-motivated dogs');
+          else if (trait === 'anxious') reasons.push('calming for anxious dogs');
+          else if (trait === 'playful') reasons.push('matched to playful personality');
+          break;
+        }
+      }
+    }
+  }
+
+  return { bonus, reason: reasons.length ? `Soul match: ${reasons.join(' · ')}` : null };
+}
+
+
 function productContainsAllergen(product, allergen) {
   const synonyms = ALLERGEN_MAP[allergen] || [allergen];
   const haystack = [
@@ -628,38 +792,51 @@ export function applyMiraFilter(products, pet) {
       // ── Compute rank ──────────────────────────────────────────────────────
       let rank = 10; // neutral/universal default
 
+      // ── Soul Bonus (reads activity, health concerns, coat, personality) ───
+      // Each matched signal subtracts 1 from rank (moves product UP)
+      // Max bonus: -4 (perfect soul match across all 4 signals)
+      const { bonus: soulBonus, reason: soulMatchReason } = getSoulBonus(product, pet);
+
       // Health condition hard block — same severity as allergen block
-      if (condBlocked) rank = 100; // will be filtered out below
+      if (condBlocked) rank = 100;
 
       else if (matchedLove && breedScore === 'match') rank = 0;
       else if (matchedLove)               rank = 1;
       else if (breedScore === 'match')    rank = 2;
       else if (isHealthSafe)              rank = 3;
       else if (isAllergySafe)             rank = 4;
-      else if (conditionNote)             rank = 3; // condition-safe boost
+      else if (conditionNote)             rank = 3;
       else if (sizeScore === 'match')     rank = 5;
       else if (lifeScore === 'match')     rank = 6;
       else if (dietaryMatches)            rank = 7;
       else if (sensMatches)               rank = 8;
 
-      // Deprioritisation signals (rank worse than neutral)
+      // Apply soul bonus — moves product up by up to 4 positions
+      // Never pushes above rank 1 (love match always wins)
+      if (soulBonus < 0 && rank > 1) {
+        rank = Math.max(2, rank + soulBonus);
+      }
+
+      // Deprioritisation signals
       if (lifeScore === 'mismatch' && rank >= 10)  rank = 11;
       if (!canSuggest && rank >= 10)               rank = Math.max(rank, 12);
       if (sizeScore === 'mismatch' && rank >= 10)  rank = 13;
       if (breedScore === 'mismatch' && rank >= 10) rank = 14;
       if (conflictsGoal)                           rank = 15;
 
-      // ── Build mira_hint ───────────────────────────────────────────────────
+      // ── Build mira_hint (soul match reason takes priority after love/breed) ──
       let mira_hint = product.mira_hint || null;
       if (!mira_hint) {
         if (conditionNote) {
-          mira_hint = conditionNote; // health condition safe note takes priority
+          mira_hint = conditionNote;
         } else if (matchedLove && breedScore === 'match') {
           mira_hint = `${petName} loves ${matchedLove.charAt(0).toUpperCase() + matchedLove.slice(1)} — made for their breed`;
         } else if (matchedLove) {
           mira_hint = `${petName} loves ${matchedLove.charAt(0).toUpperCase() + matchedLove.slice(1)}`;
         } else if (breedScore === 'match') {
           mira_hint = `Made for ${pet?.breed || petName}'s breed`;
+        } else if (soulMatchReason) {
+          mira_hint = soulMatchReason;
         } else if (isHealthSafe) {
           mira_hint = `Safe during ${petName}'s treatment`;
         } else if (isAllergySafe) {
@@ -673,7 +850,6 @@ export function applyMiraFilter(products, pet) {
         } else if (sensMatches) {
           mira_hint = `Gentle on ${petName}'s sensitivities`;
         } else if (breedScore === 'mismatch') {
-          // Deprioritised breed mismatch — do NOT label as "Chosen for X"
           mira_hint = `For specific breeds`;
         } else if (product.mira_tag) {
           mira_hint = product.mira_tag;
@@ -687,15 +863,17 @@ export function applyMiraFilter(products, pet) {
       return {
         ...product,
         mira_hint,
-        _loved:       !!matchedLove,
-        _healthSafe:  isHealthSafe,
-        _breedMatch:  breedScore === 'match',
-        _sizeMatch:   sizeScore === 'match',
-        _stageMatch:  lifeScore === 'match',
-        _dimmed:      !!conflictsGoal,
-        miraPick:     false,
-        _miraRank:    rank,
-        _canSuggest:  canSuggest,
+        _loved:           !!matchedLove,
+        _healthSafe:      isHealthSafe,
+        _breedMatch:      breedScore === 'match',
+        _sizeMatch:       sizeScore === 'match',
+        _stageMatch:      lifeScore === 'match',
+        _dimmed:          !!conflictsGoal,
+        _soulMatchReason: soulMatchReason,  // "Soul match: joint support · gentle on digestion"
+        _soulBonus:       soulBonus,        // -4 to 0
+        miraPick:         false,
+        _miraRank:        rank,
+        _canSuggest:      canSuggest,
       };
     })
     // Filter out health-condition-blocked products entirely (rank 100)
