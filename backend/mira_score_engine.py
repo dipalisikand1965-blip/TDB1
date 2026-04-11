@@ -708,25 +708,33 @@ async def get_top_picks(
             if breed_lower and breed_lower not in b.replace(" ", "") and b.replace(" ", "") not in breed_lower
         ]
 
+        # ── Fast DB query: category allowlist only (NO per-name regex — too slow) ──
+        # Per-breed regex on 9,459 products caused 18s response times.
+        # Category allowlist is enough to prevent wrong products (toys in celebrate, etc.)
+        # Breed-specificity is handled in Python after fetch (fast, in-memory).
         fb_filters: list = [
             {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
             {"price": {"$gt": 0}},
         ]
-
-        # Only show categories relevant to this pillar
         if allowed_cats:
             fb_filters.append({"$or": [
                 {"category": {"$in": allowed_cats}},
                 {"sub_category": {"$in": allowed_cats}},
             ]})
 
-        # Exclude products whose NAME contains a different breed
-        # (checks the actual product name, not just the `breed` field which is often blank)
-        for eb in excluded_breeds[:15]:
-            fb_filters.append({"name": {"$not": {"$regex": f"\\b{eb}\\b", "$options": "i"}}})
+        fb_cursor = _db.products_master.find({"$and": fb_filters}, {"_id": 0}).limit(limit * 6)
+        fallback_raw = await fb_cursor.to_list(length=limit * 6)
 
-        fb_cursor = _db.products_master.find({"$and": fb_filters}, {"_id": 0}).limit(limit * 3)
-        fallback_raw = await fb_cursor.to_list(length=limit * 3)
+        # ── Post-fetch Python filter: remove products whose name contains a wrong breed ──
+        def _has_wrong_breed(p):
+            name_l = (p.get("name") or "").lower().replace(" ", "")
+            for eb in excluded_breeds[:20]:
+                eb_clean = eb.replace(" ", "")
+                if eb_clean in name_l:
+                    return True
+            return False
+
+        fallback_raw = [p for p in fallback_raw if not _has_wrong_breed(p)]
 
         # Score fallback products: pet's breed in name/tags → higher score
         def _fb_score(p):
