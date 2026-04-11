@@ -336,7 +336,8 @@ export default function CelebrateMobilePage() {
           id: p.id || p._id, name: p.name,
           desc: p.mira_hint || p.mira_reason || p.description || 'For the celebration',
           price: p.price ? `₹${p.price}` : 'Price on request',
-          imageUrl: p.watercolor_image || p.media?.primary_image || p.cloudinary_url || p.image_url,
+          imageUrl: [p.watercolor_image, p.media?.primary_image, p.cloudinary_url, p.image_url]
+            .find(u => u && u.startsWith('http') && !u.includes('emergentagent.com') && !u.includes('static.prod-images')) || null,
           mira_hint: p.mira_hint,
           miraPick: p.miraPick,
           _dimmed: p._dimmed,

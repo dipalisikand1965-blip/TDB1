@@ -127,6 +127,12 @@ const CONCIERGE_EXPERIENCES = [
   { id: 'milestone', title: 'Milestone Moments', icon: '📸', gradient: 'from-indigo-500 to-purple-500' },
 ];
 
+// Filter out bad placeholder image URLs (static.prod-images / emergentagent.com)
+const _goodImg = (url) =>
+  url && url.startsWith('http') &&
+  !url.includes('emergentagent.com') &&
+  !url.includes('static.prod-images');
+
 // ============================================
 // PRODUCT CARD - iOS-Like Quick View
 // ============================================
@@ -167,12 +173,18 @@ const QuickProductTile = ({ product, onTap }) => {
     >
       {/* Image */}
       <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-pink-50 to-purple-50">
-        <img
-          src={product.image_url || product.image || product.images?.[0] || ''}
-          alt={product.name || product.title}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-          loading="lazy"
-        />
+        {_goodImg(product.image_url || product.image || product.images?.[0]) ? (
+          <img
+            src={product.image_url || product.image || product.images?.[0]}
+            alt={product.name || product.title}
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Cake className="w-12 h-12 text-pink-300" />
+          </div>
+        )}
         
         {/* Quick Add Button - Luxurious style */}
         <button
