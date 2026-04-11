@@ -26,6 +26,7 @@ import { API_URL } from "../utils/api";
 import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
 import { tdc } from "../utils/tdc_intent";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
+import { applyMiraFilter, getAllergiesFromPet } from "../hooks/useMiraFilter";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
@@ -908,43 +909,69 @@ function MiraPicksSection({ pet }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
-    const breedParam = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : "";
-    // Fetch both products+services picks in parallel for diversity
+
+    // Categories that belong to Celebrate — must NEVER appear on Dine picks
+    const CELEBRATE_CATS = new Set([
+      'cakes','breed-cakes','mini-cakes','pupcakes','dognuts',
+      'hampers','cat-cakes','cat-party','cat-hampers','cat-gotcha','birthday-cakes',
+    ]);
+
+    const breed       = pet?.breed || '';
+    const allergyList = getAllergiesFromPet(pet);
+    const breedParam  = breed       ? `&breed=${encodeURIComponent(breed)}`               : '';
+    const allergenParam = allergyList.length > 0
+      ? `&allergens=${encodeURIComponent(allergyList.join(','))}`
+      : '';
+
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=12&min_score=60&entity_type=product${breedParam}`).then(r => r.ok ? r.json() : null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=dine&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
-    ])
-      .then(([pData, sData]) => {
-        const prods = (pData?.picks||[]).filter(p => {
-          const name = (p.name||"").toLowerCase();
-          const knownBreeds = ['american bully','beagle','border collie','boxer','chow chow','english bulldog','french bulldog','german shepherd','golden retriever','husky','indie','labrador','maltese','pomeranian','poodle','pug','rottweiler','shih tzu','yorkshire','lhasa apso','dalmatian','dachshund','chihuahua','doberman','cavalier','jack russell','cocker spaniel','samoyed','corgi','pomeranian','schnauzer'];
-          const petBreed = (pet?.breed||"").toLowerCase();
-          const breedWords = petBreed.split(/\s+/).filter(w=>w.length>2);
-          for (const b of knownBreeds) {
-            if (name.includes(b)) {
-              if (!petBreed) return false;
-              if (name.includes(petBreed)) return true;
-              if (breedWords.some(w=>b.includes(w))) return true;
-              return false;
-            }
-          }
-          return true;
-        });
-        const svcs = sData?.picks || [];
-        // Interleave: product, product, service, product, product, service…
-        const merged = [];
-        let pi = 0, si = 0;
-        while (pi < prods.length || si < svcs.length) {
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (si < svcs.length) merged.push(svcs[si++]);
-        }
-        if (merged.length) setPicks(merged.slice(0, 16));
-          if (merged?.some?.(p=>p?.is_fallback)) setScoringPending(true);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [pet?.id]);
+      // Products: pillar-products with backend breed + allergen pre-filter
+      fetch(
+        `${API_URL}/api/admin/pillar-products?pillar=dine&limit=200${breedParam}${allergenParam}`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      ).then(r => r.ok ? r.json() : null).catch(() => null),
+
+      // Services: direct from service box (no stale scores)
+      fetch(
+        `${API_URL}/api/services?pillar=dine&limit=4`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      ).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([pData, sData]) => {
+      // Step 1 — strip celebrate categories AND any product whose primary pillar is celebrate
+      const cleanProds = (pData?.products || []).filter(p => {
+        const cat = (p.category    || '').toLowerCase().replace(/_/g, '-').trim();
+        const sub = (p.sub_category|| '').toLowerCase().replace(/_/g, '-').trim();
+        const pillarField = (p.pillar || '').toLowerCase();
+        // Hard block: celebrate-pillar products must never appear on Dine
+        if (pillarField === 'celebrate') return false;
+        // Hard block: celebrate categories that leak via pillars[] multi-pillar tagging
+        return !CELEBRATE_CATS.has(cat) && !CELEBRATE_CATS.has(sub);
+      });
+
+      // Step 2 — apply full Mira intelligence:
+      //   allergens BLOCKED → loves FIRST → breed PRIORITISED → size/stage/dietary next
+      const ranked = applyMiraFilter(cleanProds, pet);
+
+      // Step 3 — services (flat array from service box)
+      const svcs = (sData?.services || sData?.data || []).slice(0, 4).map(s => ({
+        ...s,
+        entity_type:  'service',
+        product_type: 'service',
+        mira_reason:  s.description || `Dine concierge for ${pet.name || 'your pet'}`,
+      }));
+
+      // Step 4 — interleave: product, product, service, repeat
+      const merged = [];
+      let pi = 0, si = 0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 16) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)  merged.push(svcs[si++]);
+      }
+
+      if (merged.length) setPicks(merged.slice(0, 16));
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [pet?.id, pet?.breed, token]);
 
   if (loading || !picks.length) return null;
 
