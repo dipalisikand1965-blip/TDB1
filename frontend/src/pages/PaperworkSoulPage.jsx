@@ -225,6 +225,17 @@ function MiraPicksSection({ pet, onOpenService }) {
         .then(r=>r.ok?r.json():null).catch(()=>null),
     ]).then(([pData, sData])=>{
       const ranked = applyMiraFilter(pData?.products || [], pet);
+      // Paperwork pillar boosts
+      ranked.forEach(p => {
+        const text = ((p.name||'') + ' ' + (p.description||'')).toLowerCase();
+        if ((pet?.health_data?.chronic_conditions||[]).length > 0) {
+          if (text.includes('medical') || text.includes('insurance') || text.includes('vet') || text.includes('treatment'))
+            p._miraRank = Math.max(1, (p._miraRank||10) - 2);
+        }
+        if (pet?.breed && text.includes((pet.breed||'').toLowerCase()))
+          p._miraRank = Math.max(1, (p._miraRank||10) - 3);
+      });
+      ranked.sort((a, b) => (a._miraRank||10) - (b._miraRank||10));
       const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
       const merged=[]; let pi=0,si=0;
       while((pi<ranked.length||si<svcs.length)&&merged.length<12){
@@ -259,8 +270,8 @@ function MiraPicksSection({ pet, onOpenService }) {
         <div style={{display:"flex",gap:14,overflowX:"auto",paddingBottom:10,scrollbarWidth:"thin"}}>
           {picks.map((pick,i)=>{
             const isService=pick.entity_type==='service'||pick.type==='service';
-            const score=pick.mira_score||0;
-            const col=score>=80?"#16A34A":score>=70?G.teal:"#6B7280";
+            const displayScore=pick._miraRank!==undefined?Math.max(0,Math.round((15-pick._miraRank)/15*100)):(pick.mira_score||0);
+            const col=displayScore>=80?"#16A34A":displayScore>=70?G.teal:"#6B7280";
             const _ri=[pick.cloudinary_url,pick.mockup_url,pick.image_url,pick.image].find(u=>u&&u.startsWith("http"))||null;
             const img=_ri&&(!_ri.includes("ai_generated")||_ri.includes("cloudinary.com"))?_ri:null;
             return(
@@ -277,10 +288,11 @@ function MiraPicksSection({ pet, onOpenService }) {
                   <div style={{fontSize:12,fontWeight:700,color:G.darkText,lineHeight:1.3,marginBottom:6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{pick.name||"—"}</div>
                   {isService
                     ?<p style={{fontSize:11,color:G.teal,lineHeight:1.45,margin:'0 0 8px'}}>Concierge® can arrange this for {petName}.</p>
-                    :<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}>
-                      <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${score}%`,height:"100%",background:col,borderRadius:4}}/></div>
-                      <span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{score}</span>
+                    :<div style={{display:"flex",alignItems:"center",gap:5,marginBottom:5}}>
+                      <div style={{flex:1,height:4,background:G.pale,borderRadius:4,overflow:"hidden"}}><div style={{width:`${displayScore}%`,height:"100%",background:col,borderRadius:4}}/></div>
+                      <span style={{fontSize:10,fontWeight:800,color:col,minWidth:26}}>{displayScore}</span>
                     </div>}
+                  {pick._soulMatchReason&&<p style={{fontSize:10,color:"#D97706",margin:"0 0 4px",lineHeight:1.3,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>✦ {pick._soulMatchReason}</p>}
                   <button
                     onClick={e=>{e.stopPropagation();
                       if(isService){tdc.book({service:pick.name,pillar:'paperwork',pet,channel:'paperwork_mira_picks_service'});onOpenService?.(pick.name);}
