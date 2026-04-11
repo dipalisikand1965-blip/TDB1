@@ -316,7 +316,9 @@ const ProductBoxEditor = ({
       
       if (response.ok) {
         const data = await response.json();
-        // Single atomic update — avoids React batching losing earlier fields
+        // Single atomic update — avoids React batching losing earlier fields.
+        // Also set watercolor_image & cloudinary_url which have the highest display
+        // priority so the new upload is immediately visible in the media preview.
         const newProduct = JSON.parse(JSON.stringify(product));
         newProduct.media = newProduct.media || {};
         newProduct.media.primary_image = data.url;
@@ -325,6 +327,8 @@ const ProductBoxEditor = ({
         newProduct.image_url = data.url;
         newProduct.images = [data.url];
         newProduct.thumbnail = data.url;
+        newProduct.watercolor_image = data.url;
+        newProduct.cloudinary_url = data.url;
         setProduct(newProduct);
         alert(isExistingProduct
           ? 'Image uploaded to Cloudinary successfully! Image is now linked to this product and will persist.'
