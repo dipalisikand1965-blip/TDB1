@@ -357,85 +357,115 @@ const PetHomePage = () => {
   // Fetch pet and user data
   useEffect(() => {
     const fetchData = async () => {
-      // 10-second hard timeout so loading never hangs if backend is unresponsive
-      const ctrl = new AbortController();
-      const timeout = setTimeout(() => ctrl.abort(), 10000);
       try {
+        console.log('[PetHome] === FETCH DATA STARTED ===');
+        console.log('[PetHome] API_URL:', API_URL);
+        
         // Small delay to ensure localStorage is fully available after page load
         await new Promise(resolve => setTimeout(resolve, 200));
         
         const token = localStorage.getItem('tdb_auth_token');
+        console.log('[PetHome] Token exists:', !!token, token ? `(${token.substring(0, 20)}...)` : '');
         
         if (!token) {
+          console.log('[PetHome] No token found, retrying in 500ms...');
           // Retry once after delay
           setTimeout(async () => {
             const retryToken = localStorage.getItem('tdb_auth_token');
-            if (retryToken) window.location.reload();
+            if (retryToken) {
+              console.log('[PetHome] Token found on retry, reloading...');
+              window.location.reload();
+            }
           }, 500);
           return;
         }
+        
+        console.log('[PetHome] Token found, fetching data...');
         
         // Check for active_pet in URL query params
         const urlParams = new URLSearchParams(window.location.search);
         const activePetId = urlParams.get('active_pet');
         
         // Fetch user data
+        console.log('[PetHome] Fetching /api/auth/me...');
         const userRes = await fetch(`${API_URL}/api/auth/me`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-          signal: ctrl.signal,
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        if (!userRes.ok) return;
+        console.log('[PetHome] /api/auth/me status:', userRes.status);
+        if (!userRes.ok) {
+          console.log('[PetHome] /api/auth/me FAILED with status:', userRes.status);
+          return;
+        }
         
         const userData = await userRes.json();
+        console.log('[PetHome] User data received:', userData?.email);
         setUser(userData);
         
         // Fetch pets
+        console.log('[PetHome] Fetching /api/pets/my-pets...');
         const petsRes = await fetch(`${API_URL}/api/pets/my-pets`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-          signal: ctrl.signal,
+          headers: { 'Authorization': `Bearer ${token}` }
         });
+        
+        console.log('[PetHome] /api/pets/my-pets status:', petsRes.status);
         
         if (petsRes.ok) {
           const petsResponse = await petsRes.json();
+          console.log('[PetHome] Raw petsResponse type:', typeof petsResponse);
+          console.log('[PetHome] Raw petsResponse:', JSON.stringify(petsResponse).substring(0, 500));
+          
+          // API returns {pets: [...]} so extract the array
           const petsData = Array.isArray(petsResponse) ? petsResponse : (petsResponse.pets || []);
+          console.log('[PetHome] Extracted petsData length:', petsData.length);
+          console.log('[PetHome] Pet names:', petsData.map(p => p.name).join(', '));
           
           setPets(petsData);
+          console.log('[PetHome] setPets called with', petsData.length, 'pets');
           
           if (petsData.length > 0) {
+            // If active_pet ID provided in URL, select that pet
             let primaryPet = petsData[0];
             if (activePetId) {
               const foundPet = petsData.find(p => p.id === activePetId || p._id === activePetId);
-              if (foundPet) primaryPet = foundPet;
+              if (foundPet) {
+                primaryPet = foundPet;
+                console.log('[PetHome] Selected pet from URL param:', primaryPet.name);
+              }
             }
+            console.log('[PetHome] Setting selectedPet to:', primaryPet.name);
             setSelectedPet(primaryPet);
             updatePetContext(primaryPet);
+          } else {
+            console.log('[PetHome] WARNING: petsData is empty after extraction!');
           }
+        } else {
+          console.log('[PetHome] /api/pets/my-pets FAILED with status:', petsRes.status);
+          const errorText = await petsRes.text();
+          console.log('[PetHome] Error response:', errorText);
         }
         
         // Fetch open tickets/requests (gracefully handle if endpoint doesn't exist)
         try {
           const ticketsRes = await fetch(`${API_URL}/api/tickets/my-tickets?status=open`, {
-            headers: { 'Authorization': `Bearer ${token}` },
-            signal: ctrl.signal,
+            headers: { 'Authorization': `Bearer ${token}` }
           });
           
           if (ticketsRes.ok) {
             const ticketsResponse = await ticketsRes.json();
+            // Handle both array and {tickets: [...]} response formats
             const ticketsData = Array.isArray(ticketsResponse) ? ticketsResponse : (ticketsResponse.tickets || []);
             setOpenRequests(ticketsData.slice(0, 3));
           }
         } catch (ticketErr) {
           // Tickets endpoint may not exist, that's okay
+          console.debug('Tickets fetch skipped:', ticketErr);
         }
         
       } catch (err) {
-        if (err.name !== 'AbortError') {
-          console.error('Error fetching data:', err);
-          toast.error('Failed to load your pet\'s home');
-        }
+        console.error('Error fetching data:', err);
+        toast.error('Failed to load your pet\'s home');
       } finally {
-        clearTimeout(timeout);
         setLoading(false);
       }
     };
