@@ -29,7 +29,7 @@ import DesktopSoulCard from "../components/common/DesktopSoulCard";
 import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import FarewellMobilePage from './FarewellMobilePage';
-import { filterBreedProducts } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -152,18 +152,23 @@ function MiraPicksSection({ pet, onOpenService }) {
   ];
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = { Authorization: `Bearer ${localStorage.getItem('tdb_auth_token') || ''}` };
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=farewell&limit=12&min_score=60&entity_type=product`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=farewell&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=200${breedParam}${allergenParam}`, { headers: auth })
+        .then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`${API_URL}/api/services?pillar=farewell&limit=4`, { headers: auth })
+        .then(r=>r.ok?r.json():null).catch(()=>null),
     ]).then(([pData, sData])=>{
-      const filtered=filterBreedProducts(pData?.picks||[],pet?.breed);
-      const svcs = sData?.picks || [];
-      const merged = [];
-      let pi = 0, si = 0;
-      while (pi < filtered.length || si < svcs.length) {
-        if (pi < filtered.length) merged.push(filtered[pi++]);
-        if (pi < filtered.length) merged.push(filtered[pi++]);
-        if (si < svcs.length) merged.push(svcs[si++]);
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged = []; let pi = 0, si = 0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 12) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)   merged.push(svcs[si++]);
       }
       if(merged.length)setPicks(merged.slice(0,12));setPicksLoading(false);
     }).catch(()=>setPicksLoading(false));
