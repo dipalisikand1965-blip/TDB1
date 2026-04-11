@@ -22205,13 +22205,22 @@ async def regenerate_single_product_image(
 async def generate_product_image_async(
     product_id: str,
     background_tasks: BackgroundTasks,
+    data: dict = Body(default={}),
     username: str = Depends(verify_admin_auth),
 ):
     """Start AI image generation for a single product as a background task.
+    Accepts optional { prompt } in the request body — if provided, it overrides
+    the auto-generated prompt so admins can dictate the exact style/scene.
     Returns immediately. Poll /admin/products/{id}/image-status for result."""
     product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+
+    # If admin supplied a custom prompt, inject it so _run_single_product_image uses it
+    custom_prompt = (data.get("prompt") or "").strip()
+    if custom_prompt:
+        product["ai_image_prompt"] = custom_prompt
+        logger.info(f"Custom prompt received for '{product.get('name')}': {custom_prompt[:80]}")
 
     # Mark as in-progress
     _single_image_jobs[product_id] = {"status": "generating", "product_id": product_id, "started_at": datetime.now(timezone.utc).isoformat()}
