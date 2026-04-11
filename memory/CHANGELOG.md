@@ -1,5 +1,21 @@
 # TDC Changelog
 
+## April 11, 2026 — Soul Profile System: 3 Critical Fixes
+
+**Fix 1: Soul Score Sync (all 7 pillar pages)**
+- All pillar pages (Care/Dine/Go/Play/Learn/Services/Shop) now call `GET /api/pet-soul/profile/{id}` live on pet change. Previously showed stale 0% from PillarContext.
+
+**Fix 2: Duplicate Questions in PillarSoulModal**
+- `PillarSoulModal.jsx` now filters `PILLAR_QUESTIONS` against `pet.doggy_soul_answers`. Already-answered questions are skipped. Added "All done!" screen when nothing remains.
+
+**Fix 3: Archetype After Onboarding**
+- Added `POST /api/pets/{pet_id}/infer-archetype` backend endpoint (calls `_infer_pet_archetype` from `archetype_routes.py`). Called from `PetSoulOnboarding.jsx` on completion. Archetype label shown on celebration screen.
+
+**Service Desk: Channel Emoji Swap**
+- Replaced colored priority dots with channel emojis (💬🌐📧🤖📞). Added `CHANNEL_EMOJI` const to `DoggyServiceDesk.jsx`.
+
+---
+
 ## April 10, 2026 — Service Desk: BY CHANNEL Sidebar + Pillar Tag Badges
 
 ### DoggyServiceDesk.jsx
