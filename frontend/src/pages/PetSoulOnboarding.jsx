@@ -798,6 +798,7 @@ export default function PetSoulOnboarding() {
   const [petsLoaded,   setPetsLoaded]   = useState(false);
   const [textAnswer,   setTextAnswer]   = useState('');
   const [isResuming,   setIsResuming]   = useState(false); // Fix 1: resume banner
+  const [archetype,    setArchetype]    = useState(null);  // Fix 3: soul archetype
 
   const startChapterRef = useRef(null);
 
@@ -916,7 +917,16 @@ export default function PetSoulOnboarding() {
     setSaving(false);
 
     if (qIdx + 1 >= ALL_QUESTIONS.length) {
-      // Celebration!
+      // Celebration! Infer archetype in background
+      if (currentPet?.id) {
+        fetch(`${API_URL}/api/pets/${currentPet.id}/infer-archetype`, {
+          method: 'POST',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => { if (data?.archetype_label) setArchetype(data.archetype_label); })
+          .catch(() => {});
+      }
       setTimeout(() => {
         setScreen('celebration');
         setAnimating(false);
@@ -938,6 +948,16 @@ export default function PetSoulOnboarding() {
     const nextChapterIdx = q.chapterIdx + 1;
     const nextQIdx = ALL_QUESTIONS.findIndex(q => q.chapterIdx === nextChapterIdx);
     if (nextQIdx === -1) {
+      // Last chapter — infer archetype before showing celebration
+      if (currentPet?.id) {
+        fetch(`${API_URL}/api/pets/${currentPet.id}/infer-archetype`, {
+          method: 'POST',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => { if (data?.archetype_label) setArchetype(data.archetype_label); })
+          .catch(() => {});
+      }
       setScreen('celebration');
     } else {
       setQIdx(nextQIdx);
@@ -1486,6 +1506,24 @@ export default function PetSoulOnboarding() {
           textAlign: 'left',
           animation: 'fadeUp 0.6s ease 0.3s both',
         }}>
+          {/* Soul Archetype — shown if inferred */}
+          {archetype && (
+            <div style={{
+              textAlign: 'center', marginBottom: 16,
+              paddingBottom: 14,
+              borderBottom: '1px solid rgba(155,89,182,0.2)',
+            }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: C.amber, letterSpacing: '0.08em', marginBottom: 6 }}>
+                SOUL ARCHETYPE
+              </div>
+              <div style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 22, fontWeight: 400, color: C.ivory,
+              }}>
+                {archetype}
+              </div>
+            </div>
+          )}
           <div style={{
             fontSize: 11, fontWeight: 700, color: C.purple,
             letterSpacing: '0.08em', marginBottom: 12,
