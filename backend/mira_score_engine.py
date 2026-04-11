@@ -738,15 +738,29 @@ async def get_top_picks(
             breed_filter,
         ]
 
-        # Get pet allergies from DB
+        # Get pet allergies from DB — check ALL known allergy stores
         try:
-            pet_doc = await _db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1})
+            pet_doc = await _db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1, "health_data": 1, "vault": 1, "allergies": 1})
             if pet_doc:
-                soul = pet_doc.get("doggy_soul_answers") or {} or {}
-                allergies = [
-                    a.lower() for a in soul.get("food_allergies", [])
-                    if a and a.lower() not in ["none", "none known", "no_allergies", ""]
-                ]
+                soul = pet_doc.get("doggy_soul_answers") or {}
+                raw_allergies = []
+                # 1. doggy_soul_answers.food_allergies
+                raw_allergies += soul.get("food_allergies", [])
+                # 2. health_data.allergies (primary store)
+                hd = pet_doc.get("health_data") or {}
+                raw_allergies += hd.get("allergies", [])
+                # 3. vault.allergies (objects with .name)
+                for alg in (pet_doc.get("vault") or {}).get("allergies", []):
+                    if isinstance(alg, dict) and alg.get("name"):
+                        raw_allergies.append(alg["name"])
+                    elif isinstance(alg, str):
+                        raw_allergies.append(alg)
+                # 4. top-level allergies field
+                raw_allergies += (pet_doc.get("allergies") or [])
+                allergies = list({
+                    a.lower() for a in raw_allergies
+                    if a and str(a).lower() not in ["none", "none known", "no_allergies", ""]
+                })
                 ALLERGEN_MAP = {
                     "chicken": ["chicken", "poultry"],
                     "beef":    ["beef", "lamb"],
