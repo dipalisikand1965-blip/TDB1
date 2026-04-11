@@ -51,16 +51,16 @@ const isAllergen = (flavourName, pet) => {
 
 /* ── Flavours (TDB actual range) ────────────────────────────────────────── */
 const FLAVOURS = [
+  { name: 'Fish / Salmon', emoji: '🐟' },  // allergen-safe default for salmon-loving dogs
   { name: 'Banana',        emoji: '🍌' },
   { name: 'Carrot',        emoji: '🥕' },
-  { name: 'Chicken',       emoji: '🍗' },
   { name: 'Mutton',        emoji: '🥩' },
   { name: 'Peanut Butter', emoji: '🥜' },
   { name: 'Blueberry',     emoji: '🫐' },
   { name: 'Coconut Cream', emoji: '🥥' },
   { name: 'Strawberry',    emoji: '🍓' },
-  { name: 'Fish & Salmon', emoji: '🐟' },
   { name: 'Pumpkin',       emoji: '🎃' },
+  { name: 'Chicken',       emoji: '🍗' },  // allergen — end of list
 ];
 
 /* ── Favourite flavour detection (maps pet soul answers → FLAVOUR names) ── */
@@ -73,7 +73,7 @@ const FLAVOUR_KEYWORDS = {
   'Blueberry':     ['blueberry', 'berry'],
   'Coconut Cream': ['coconut'],
   'Strawberry':    ['strawberry'],
-  'Fish & Salmon': ['fish', 'salmon', 'seafood'],
+  'Fish / Salmon': ['fish', 'salmon', 'seafood'],
   'Pumpkin':       ['pumpkin'],
 };
 
