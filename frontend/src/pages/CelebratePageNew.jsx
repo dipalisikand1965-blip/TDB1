@@ -62,7 +62,7 @@ import { tdc } from '../utils/tdc_intent';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import CelebrateMobilePage from './CelebrateMobilePage';
-import { filterBreedProducts } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 
 const CELEBRATE_SERVICE_BLACKLIST = [
   'pet loss', 'grief', 'memorial', 'euthanasia', 'farewell', 'aftercare', 'counseling', 'counselling', 'rainbow bridge'
@@ -97,22 +97,30 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
     setPicks([]);setPicksLoading(true);
-    const breedParam=encodeURIComponent((pet?.breed||"").toLowerCase().trim());
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = token ? {Authorization:`Bearer ${token}`} : {};
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=celebrate&limit=12&min_score=60&entity_type=product&breed=${breedParam}`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=celebrate&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
+      // Products: pillar-products for celebrate — cakes, hampers, pupcakes (breed-first)
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200${breedParam}${allergenParam}`, {headers:auth})
+        .then(r=>r.ok?r.json():null).catch(()=>null),
+      // Services: direct from service box, filtered by isCelebrateSafeService
+      fetch(`${API_URL}/api/services?pillar=celebrate&limit=8`, {headers:auth})
+        .then(r=>r.ok?r.json():null).catch(()=>null),
     ])
       .then(([pData, sData]) => {
-        const prods = filterBreedProducts(pData?.picks || [], pet?.breed);
-        const svcs = (sData?.picks || []).filter(isCelebrateSafeService);
-        const merged = [];
-        let pi = 0, si = 0;
-        while (pi < prods.length || si < svcs.length) {
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (si < svcs.length) merged.push(svcs[si++]);
+        // Apply full Mira intelligence: allergens BLOCKED → loves FIRST → breed FIRST
+        const ranked = applyMiraFilter(pData?.products || [], pet);
+        const svcs   = (sData?.services || []).filter(isCelebrateSafeService).slice(0, 4)
+          .map(s => ({ ...s, entity_type:'service' }));
+        const merged = []; let pi=0, si=0;
+        while((pi<ranked.length||si<svcs.length)&&merged.length<12){
+          if(pi<ranked.length)merged.push(ranked[pi++]);
+          if(pi<ranked.length)merged.push(ranked[pi++]);
+          if(si<svcs.length)  merged.push(svcs[si++]);
         }
-        if (merged.length) setPicks(merged.slice(0, 12));
+        if(merged.length)setPicks(merged.slice(0,12));
         setPicksLoading(false);
       })
       .catch(()=>setPicksLoading(false));

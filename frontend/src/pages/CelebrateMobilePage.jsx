@@ -16,7 +16,7 @@ import { useConcierge } from '../hooks/useConcierge';
 import { usePlatformTracking } from '../hooks/usePlatformTracking';
 import { tdc } from '../utils/tdc_intent';
 import { API_URL } from '../utils/api';
-import { applyMiraFilter } from '../hooks/useMiraFilter';
+import { applyMiraFilter, getAllergiesFromPet } from '../hooks/useMiraFilter';
 import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import DesktopSoulCard from '../components/common/DesktopSoulCard';
@@ -326,13 +326,16 @@ export default function CelebrateMobilePage() {
 
   useEffect(() => {
     if (!token || !currentPet?.id) return;
-    fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=celebrate&limit=6&min_score=60&entity_type=product`,
+    const allergyList   = getAllergiesFromPet(currentPet);
+    const breedParam    = currentPet?.breed ? `&breed=${encodeURIComponent(currentPet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200${breedParam}${allergenParam}`,
       { headers:{ Authorization:`Bearer ${token}` } })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        const rawPicks = d?.picks || [];
-        const filtered = applyMiraFilter(rawPicks, currentPet);
-        setMiraProducts(filtered.map(p => ({
+        // applyMiraFilter: allergens BLOCKED → breed cakes FIRST → loves FIRST
+        const filtered = applyMiraFilter(d?.products || [], currentPet);
+        setMiraProducts(filtered.slice(0, 6).map(p => ({
           id: p.id || p._id, name: p.name,
           desc: p.mira_hint || p.mira_reason || p.description || 'For the celebration',
           price: p.price ? `₹${p.price}` : 'Price on request',
@@ -346,7 +349,7 @@ export default function CelebrateMobilePage() {
         })));
       })
       .catch(() => {});
-  }, [token, currentPet]);
+  }, [token, currentPet?.id, currentPet?.breed]);
 
   const showToast = msg => { setToastMsg(msg); setTimeout(() => setToastMsg(null), 2400); };
 
