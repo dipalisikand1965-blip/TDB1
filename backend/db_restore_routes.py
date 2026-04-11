@@ -35,13 +35,17 @@ ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
 
 MIGRATION_DIR = Path(__file__).parent / "migration_data"
 
-# AI-computed / regeneratable collections — always drop+bulk-insert (much faster than upsert)
+# Collections that use DROP + bulk-insert instead of upsert.
+# This guarantees a clean slate — no stale/fake documents survive the restore.
+# services_master is here because the production DB had 4,150+ fake svc-breed-* entries
+# that upsert cannot remove. Drop+insert ensures only the real 1,026 services land.
 BULK_INSERT_COLLECTIONS = {
     "mira_product_scores",
     "mira_signals",
     "mira_inferences",
     "breed_soul_products",
     "product_soul_tiers",
+    "services_master",       # DROP + INSERT — prevents fake service entries from surviving restore
 }
 
 COLLECTIONS_CONFIG = [
