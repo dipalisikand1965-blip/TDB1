@@ -14859,6 +14859,21 @@ async def delete_pet_profile(pet_id: str):
     return {"message": "Pet profile deleted"}
 
 
+@api_router.patch("/pets/{pet_id}/score")
+async def patch_pet_score(pet_id: str, payload: dict = Body(...)):
+    """Silently sync a stale stored soul score to the freshly calculated value."""
+    new_score = payload.get("score")
+    if new_score is None:
+        raise HTTPException(status_code=400, detail="score required")
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "overall_score": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    stored = pet.get("overall_score") or 0
+    if new_score > stored:
+        await db.pets.update_one({"id": pet_id}, {"$set": {"overall_score": new_score}})
+    return {"ok": True, "stored": stored, "updated_to": new_score if new_score > stored else stored}
+
+
 # ============================================
 # RAINBOW BRIDGE MEMORIAL - For Mystique 💜
 # ============================================
