@@ -429,7 +429,7 @@ export default function PillarSoulProfile({
                           <div style={{ fontSize:13, fontWeight:600, color:'rgba(245,240,232,0.85)', marginBottom:10, lineHeight:1.4 }}>
                             {(q.question_text || q.question || '').replace(/\{name\}/g, name)}
                           </div>
-                          {q.options ? (
+                          {q.options && q.options.length > 0 ? (
                             <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom: hasAns ? 10 : 0 }}>
                               {q.options.map(opt => {
                                 const sel = q.type === 'multi_select' ? (ans || []).includes(opt) : ans === opt;
