@@ -339,12 +339,13 @@ const MemberMobileNav = () => {
                     data-testid={`switch-pet-${pet.name?.toLowerCase()}`}
                   >
                     <div className="flex items-center gap-3">
-                      {pet.photo ? (
+                      {(pet.photo || pet.photo_url) ? (
                         <img 
-                          src={pet.photo} 
+                          src={pet.photo || pet.photo_url} 
                           alt={pet.name} 
                           className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                           style={{ pointerEvents: 'none' }}
+                          onError={e => { e.target.style.display='none'; }}
                         />
                       ) : (
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
