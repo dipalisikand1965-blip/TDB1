@@ -2155,8 +2155,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
         )}
       </div>
 
-      {/* ── SOUL MADE™ Cross-sell Strip — shows in ALL categories ── */}
-      {category !== 'soul_made' && (
+      {/* ── SOUL MADE™ Cross-sell Strip — shows in ALL categories except soul_made and soul-picks (which have their own) ── */}
+      {category !== 'soul_made' && category !== 'soul-picks' && (
         <div style={{ padding: '0 20px' }}>
           <div
             data-testid="soul-made-cross-sell"
