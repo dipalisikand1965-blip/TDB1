@@ -329,12 +329,25 @@ export default function CelebrateMobilePage() {
     const allergyList   = getAllergiesFromPet(currentPet);
     const breedParam    = currentPet?.breed ? `&breed=${encodeURIComponent(currentPet.breed)}` : '';
     const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
-    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200${breedParam}${allergenParam}`,
+    fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=400${breedParam}${allergenParam}`,
       { headers:{ Authorization:`Bearer ${token}` } })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
+        // Categories that belong to Dine/Care — must NEVER appear in Celebrate Mira Picks
+        const DINE_BLOCK_CATS = new Set([
+          'food','dry-food','wet-food','supplements','probiotics','grooming',
+          'leashes','collars','harnesses','training',
+        ]);
+        const rawProds = (d?.products || []).filter(p => {
+          const cat = (p.category || '').toLowerCase().replace(/_/g, '-').trim();
+          const sub = (p.sub_category || '').toLowerCase().replace(/_/g, '-').trim();
+          const pillarField = (p.pillar || '').toLowerCase();
+          // Hard block: dine-pillar products must never appear in Celebrate
+          if (pillarField === 'dine') return false;
+          return !DINE_BLOCK_CATS.has(cat) && !DINE_BLOCK_CATS.has(sub);
+        });
         // applyMiraFilter: allergens BLOCKED → breed cakes FIRST → loves FIRST
-        const filtered = applyMiraFilter(d?.products || [], currentPet);
+        const filtered = applyMiraFilter(rawProds, currentPet);
         setMiraProducts(filtered.slice(0, 6).map(p => ({
           id: p.id || p._id, name: p.name,
           desc: p.mira_hint || p.mira_reason || p.description || 'For the celebration',

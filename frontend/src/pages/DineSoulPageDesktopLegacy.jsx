@@ -1473,7 +1473,7 @@ const DineSoulPage = () => {
     const breedParam = petData?.breed ? `&breed=${encodeURIComponent(petData.breed)}` : '';
     Promise.all(
       FOOD_CATS.map(cat =>
-        fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=100&category=${encodeURIComponent(cat)}${breedParam}`, {
+        fetch(`${API_URL}/api/admin/pillar-products?pillar=dine&limit=200&category=${encodeURIComponent(cat)}${breedParam}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         })
           .then(r => r.ok ? r.json() : null)
