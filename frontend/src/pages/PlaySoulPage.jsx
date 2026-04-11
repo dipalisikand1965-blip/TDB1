@@ -433,7 +433,7 @@ export function MiraPicksSection({ pet, onOpenService }) {
           <style>{`.play-picks-scroll::-webkit-scrollbar{height:4px}.play-picks-scroll::-webkit-scrollbar-thumb{background:${G.green}50;border-radius:4px}`}</style>
           {picks.map((pick,i) => {
             const isService = pick.entity_type==="service";
-            const img = [pick.image_url,pick.image,pick.media?.primary_image,...(pick.images||[])].find(u=>u&&u.startsWith("http"))||null;
+            const img = [pick.watercolor_image,pick.cloudinary_url,pick.image_url,pick.image,pick.media?.primary_image,...(pick.images||[])].find(u=>u&&u.startsWith("http")&&!u.includes("emergentagent.com")&&!u.includes("static.prod-images"))||null;
             const score = pick.mira_score||0;
             const scoreColor = score>=80?"#16A34A":score>=70?G.green:"#6B7280";
             return (

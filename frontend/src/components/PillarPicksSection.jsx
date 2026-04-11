@@ -34,6 +34,12 @@ import { Badge } from './ui/badge';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+// Filter out known bad placeholder image URLs (seeded by old agent jobs with toy images)
+const _resolvePillarImg = (item) => {
+  const candidates = [item.watercolor_image, item.cloudinary_url, item.image_url, item.media?.primary_image, item.image, ...(item.images || [])];
+  return candidates.find(u => u && u.startsWith('http') && !u.includes('emergentagent.com') && !u.includes('static.prod-images')) || null;
+};
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // FALLBACK PICKS - Never leave the section empty
 // These are soul-driven Concierge® curated items per pillar
@@ -156,7 +162,7 @@ const ProductDetailModal = ({ product, pet, pillar, onClose, onAddToCart }) => {
         
         {/* Product Image */}
         <div className="aspect-square bg-gray-100 relative overflow-hidden">
-          {product.image_url || product.image ? (
+          {(product.image_url || product.image) && !((product.image_url||product.image||'').includes('emergentagent.com')) && !((product.image_url||product.image||'').includes('static.prod-images')) ? (
             <img 
               src={product.image_url || product.image} 
               alt={product.name}
@@ -278,7 +284,7 @@ const ProductPickCard = ({ pick, pet, pillar, onAddToCart }) => {
         <div className="aspect-square bg-gray-50 relative overflow-hidden">
           {pick.image_url || pick.image ? (
             <img 
-              src={pick.image_url || pick.image} 
+              src={(pick.image_url || pick.image)?.includes('emergentagent.com') || (pick.image_url || pick.image)?.includes('static.prod-images') ? null : (pick.image_url || pick.image)} 
               alt={pick.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
             />

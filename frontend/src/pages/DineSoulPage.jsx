@@ -251,12 +251,16 @@ export const DINE_DIMS = [
 ];
 
 // ── Normalise product card ─────────────────────────────────────
+// Filter known bad placeholder image hosts (seeded by old agent jobs)
+const _goodImg = (url) => url && url.startsWith('http') && !url.includes('emergentagent.com') && !url.includes('static.prod-images');
+const _resolveImg = (p) => [p.watercolor_image, p.media?.primary_image, p.cloudinary_url, p.image_url, p.mockup_url, p.image].find(_goodImg) || null;
+
 export const normCard = (p, petName) => ({
   id: p.id || p._id,
   name: p.name,
   desc: p.sub_category?.replace(/_/g, ' ') || `For ${petName}`,
   price: `₹${Math.round(p.price || p.pricing?.selling_price || 499)}`,
-  imageUrl: p.watercolor_image || p.media?.primary_image || p.cloudinary_url || p.image_url || p.mockup_url || p.image,
+  imageUrl: _resolveImg(p),
   tag: p.breed && p.breed !== 'all' ? `For ${p.breed}` : null,
   mira_hint: p.mira_hint,
   miraPick: p.miraPick || false,
