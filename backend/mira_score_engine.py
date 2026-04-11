@@ -42,9 +42,11 @@ _scoring_active_pet: Optional[str] = None  # track which pet is currently scorin
 # background task, and each task's delete_many wipes the previous task's results.
 _scoring_in_progress: set = set()
 
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+import litellm
 
 EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
+# Emergent proxy — routes through to Anthropic without exposing keys directly
+_EMERGENT_PROXY_URL = "https://integrations.emergentagent.com"
 MODEL_PROVIDER = "anthropic"
 MODEL_NAME = "claude-sonnet-4-6"
 BATCH_SIZE = 20          # products per Claude call
@@ -158,15 +160,12 @@ async def _score_batch(
     pet_profile: dict,
     items: List[dict],
 ) -> List[dict]:
-    """Send one batch to Claude and return scored items."""
+    """Send one batch to Claude and return scored items.
+    Uses litellm.acompletion (truly async) so the event loop is never blocked
+    during the 10-15 second Claude API call.
+    """
     if not items:
         return []
-
-    chat = LlmChat(
-        api_key=EMERGENT_LLM_KEY,
-        session_id=session_id,
-        system_message=SYSTEM_PROMPT,
-    ).with_model(MODEL_PROVIDER, MODEL_NAME)
 
     pet_str = json.dumps(pet_profile, ensure_ascii=False)
     items_str = json.dumps([
@@ -189,10 +188,21 @@ async def _score_batch(
 Score these {len(items)} items:
 {items_str}"""
 
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user",   "content": prompt},
+    ]
+
     try:
-        response = await chat.send_message(UserMessage(text=prompt))
-        # Parse JSON from response
-        text = response.strip()
+        # litellm.acompletion is truly async — does NOT block the event loop
+        resp = await litellm.acompletion(
+            model=MODEL_NAME,
+            messages=messages,
+            api_key=EMERGENT_LLM_KEY,
+            api_base=_EMERGENT_PROXY_URL + "/llm",
+            custom_llm_provider="openai",
+        )
+        text = resp.choices[0].message.content.strip()
         # Handle markdown code blocks if present
         if "```" in text:
             text = text.split("```")[1]
@@ -202,7 +212,7 @@ Score these {len(items)} items:
         return scored if isinstance(scored, list) else []
     except Exception as e:
         print(f"[MiraScoreEngine] Claude batch error: {e}")
-        # Return neutral scores on error
+        # Return neutral scores on error so no batch is silently dropped
         return [{"id": p.get("id"), "score": 50, "reason": "Mira is still learning about this"} for p in items]
 
 
