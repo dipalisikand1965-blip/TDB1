@@ -25792,3 +25792,32 @@ async def get_batch_image_status(username: str = Depends(verify_admin)):
     job = dict(_batch_image_job)
     job["progress_pct"] = round(job["processed"] / job["total"] * 100) if job.get("total") else 0
     return job
+
+
+
+@app.post("/api/admin/cleanup-fake-services")
+async def cleanup_fake_services(username: str = Depends(verify_admin)):
+    """One-time cleanup: remove fake service entries injected by seed scripts."""
+    results = {}
+
+    r1 = await db.services_master.delete_many({"id": {"$regex": "^svc-breed-"}})
+    results["svc_breed"] = r1.deleted_count
+
+    r2 = await db.services_master.delete_many({"id": {"$regex": "^svc-69"}})
+    results["svc_69"] = r2.deleted_count
+
+    r3 = await db.services_master.delete_many({"id": {"$regex": "^svc-mira-imagines-"}})
+    results["svc_mira_imagines"] = r3.deleted_count
+
+    r4 = await db.services_master.delete_many({"created_at": {"$regex": "^2026-04-11"}})
+    results["created_apr11"] = r4.deleted_count
+
+    total_deleted = sum(results.values())
+    remaining = await db.services_master.count_documents({})
+
+    return {
+        "status": "done",
+        "deleted": results,
+        "total_deleted": total_deleted,
+        "services_remaining": remaining
+    }
