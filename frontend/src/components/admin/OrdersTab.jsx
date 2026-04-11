@@ -132,7 +132,7 @@ const OrdersTab = ({
                     {order.created_at ? new Date(order.created_at).toLocaleString() : 'N/A'}
                   </p>
                 </div>
-                <p className="text-xl font-bold text-purple-600">{formatCurrencySafe(order.total || order.total_amount)}</p>
+                <p className="text-xl font-bold text-purple-600">{formatCurrencySafe(order.total_amount || order.pricing?.grand_total || order.total)}</p>
               </div>
 
               <div className="grid md:grid-cols-3 gap-4 mb-4">
@@ -214,6 +214,16 @@ const OrdersTab = ({
                     )}
                   </div>
                 ))}
+                {/* Pricing breakdown */}
+                {order.pricing && (
+                  <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-500 space-y-0.5">
+                    <div className="flex justify-between"><span>Subtotal</span><span>₹{order.pricing.subtotal || 0}</span></div>
+                    {order.pricing.shipping_fee > 0 && <div className="flex justify-between"><span>Shipping</span><span>₹{order.pricing.shipping_fee}</span></div>}
+                    {order.pricing.gst_details?.total_tax > 0 && <div className="flex justify-between"><span>GST</span><span>₹{order.pricing.gst_details.total_tax}</span></div>}
+                    {order.pricing.discount_amount > 0 && <div className="flex justify-between text-green-600"><span>Discount</span><span>-₹{order.pricing.discount_amount}</span></div>}
+                    <div className="flex justify-between font-semibold text-gray-900 text-sm pt-1 border-t border-gray-200 mt-1"><span>Total Paid</span><span>₹{order.pricing.grand_total || order.total_amount || order.total || '—'}</span></div>
+                  </div>
+                )}
               </div>
 
               {order.specialInstructions && (

@@ -1,6 +1,22 @@
 # TDC Changelog
 
-## April 11, 2026 — Soul Profile System: 3 Critical Fixes
+## April 11, 2026 — Commerce & Mira Picks Fixes (3 production bugs)
+
+**Fix: Add to Cart from Mira Picks (ProductCard.jsx)**
+- Root cause: `cartInput.age` was empty for pets onboarded via soul profile (`age_stage` answer, e.g. "puppy"), not via numeric `age` field. Celebration products require age → silent validation failure.
+- Fix: `cartInput` initialization now reads `selectedPet.doggy_soul_answers?.age_stage` as fallback (converts "young_adult" → "Young Adult"). Same fix applied to `handlePetSelect`.
+- Additional guard: If pet is selected by ID and age still empty, `handleAddToCart` auto-fills 'Adult' so validation never blocks a pet-selected add.
+
+**Fix: Admin Orders showing ₹450 instead of ₹708 (checkout_routes.py + OrdersTab.jsx)**
+- Root cause: `order_doc` stored only `pricing.grand_total` (₹708) but admin read `order.total || order.total_amount` (both undefined) → fell back to "Price on WhatsApp".
+- Fix: Added `total_amount: grand_total` at top level of `order_doc` for NEW orders. `OrdersTab.jsx` now reads `order.total_amount || order.pricing?.grand_total || order.total`.
+- Added a pricing breakdown section (Subtotal / Shipping / GST / Total Paid) below item list in order cards.
+
+**Fix: PDF Invoice Taxable Amount confusion (checkout_routes.py `generate_invoice_pdf`)**
+- Root cause: Invoice showed Subtotal (₹450) then Taxable Amount (₹600) — the ₹150 shipping was included in taxable but shown AFTER, making it look like a mystery amount.
+- Fix: Invoice totals now ordered: Subtotal → Discount → Shipping → Taxable Amount (incl. shipping) → CGST/SGST/IGST → Grand Total. The arithmetic is now transparent.
+
+
 
 **Fix 1: Soul Score Sync (all 7 pillar pages)**
 - All pillar pages (Care/Dine/Go/Play/Learn/Services/Shop) now call `GET /api/pet-soul/profile/{id}` live on pet change. Previously showed stale 0% from PillarContext.

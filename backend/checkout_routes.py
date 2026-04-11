@@ -386,6 +386,7 @@ async def create_checkout_order(request: CreateOrderRequest):
                 "shipping_fee": shipping,
                 "grand_total": grand_total
             },
+            "total_amount": grand_total,   # top-level for admin display
             "special_instructions": request.special_instructions,
             "is_gift": request.is_gift,
             "gift_message": request.gift_message,
@@ -817,7 +818,14 @@ def generate_invoice_pdf(order: dict) -> io.BytesIO:
     if discount > 0:
         totals_data.append(['', 'Discount:', f"-₹{discount:.2f}"])
     
-    totals_data.append(['', 'Taxable Amount:', f"₹{taxable:.2f}"])
+    # Show shipping BEFORE taxable so the arithmetic is clear:
+    # Subtotal (±Discount) + Shipping = Taxable Amount → GST → Grand Total
+    if shipping > 0:
+        totals_data.append(['', 'Shipping & Handling:', f"₹{shipping:.2f}"])
+    else:
+        totals_data.append(['', 'Shipping & Handling:', 'FREE'])
+    
+    totals_data.append(['', 'Taxable Amount (incl. shipping):', f"₹{taxable:.2f}"])
     
     # GST breakdown
     if gst_details.get('is_same_state'):
@@ -826,7 +834,6 @@ def generate_invoice_pdf(order: dict) -> io.BytesIO:
     else:
         totals_data.append(['', f"IGST @ {gst_details.get('igst_rate', 18)}%:", f"₹{gst_details.get('igst_amount', 0):.2f}"])
     
-    totals_data.append(['', 'Shipping:', 'FREE' if shipping == 0 else f"₹{shipping:.2f}"])
     totals_data.append(['', 'Grand Total:', f"₹{grand_total:.2f}"])
     
     totals_table = Table(totals_data, colWidths=[280, 120, 100])
