@@ -878,6 +878,7 @@ function MiraPicksSection({ pet }) {
   const [conciergeSent, setConciergeSent] = useState(false);
   const { token } = useAuth();
   const petName = pet?.name || "your dog";
+  const petAllergens = getAllergiesFromPet(pet);
   const { note, orderCount, topInterest } = useMiraIntelligence(pet?.id, token);
   const intelligenceLine = getMiraIntelligenceSubtitle(petName, note, orderCount, topInterest);
 
@@ -994,8 +995,10 @@ function MiraPicksSection({ pet }) {
         {picks.map((pick, i) => {
           const isService = pick.entity_type === 'service';
           const img = resolvePickImage(pick);
-          const score = pick.mira_score || 0;
-          const scoreColor = score >= 80 ? '#16A34A' : score >= 70 ? '#F59E0B' : '#6B7280';
+          const displayScore = pick._miraRank !== undefined
+            ? Math.max(0, Math.round((15 - pick._miraRank) / 15 * 100))
+            : (pick.mira_score || 0);
+          const scoreColor = displayScore >= 80 ? '#16A34A' : displayScore >= 70 ? '#F59E0B' : '#6B7280';
           return (
             <div key={pick.id || i} style={{
               flexShrink: 0, width: 168,
@@ -1033,10 +1036,22 @@ function MiraPicksSection({ pet }) {
                 {/* Mira score bar */}
                 {!isService && <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 5 }}>
                   <div style={{ flex: 1, height: 4, background: '#F0E8E0', borderRadius: 4, overflow: 'hidden' }}>
-                    <div style={{ width: `${score}%`, height: '100%', background: scoreColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
+                    <div style={{ width: `${displayScore}%`, height: '100%', background: scoreColor, borderRadius: 4, transition: 'width 0.8s ease' }} />
                   </div>
-                  <span style={{ fontSize: 10, fontWeight: 800, color: scoreColor, minWidth: 26 }}>{score}</span>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: scoreColor, minWidth: 26 }}>{displayScore}</span>
                 </div>}
+                {/* Soul match reason chip */}
+                {pick._soulMatchReason && (
+                  <p style={{ fontSize: 10, color: '#D97706', margin: '0 0 4px', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    ✦ {pick._soulMatchReason}
+                  </p>
+                )}
+                {/* Allergen-safe chip */}
+                {petAllergens.length > 0 && Array.isArray(pick.allergen_contains) && pick.allergen_contains.length === 0 && (
+                  <span style={{ display: 'inline-block', fontSize: 10, color: '#16A34A', background: '#DCFCE7', borderRadius: 20, padding: '2px 8px', margin: '0 0 4px' }}>
+                    Safe for {petName}
+                  </span>
+                )}
                 {!isService && pick.mira_reason && (
                   <p style={{ fontSize: 10, color: '#888', lineHeight: 1.4, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontStyle: 'italic' }}>
                     {pick.mira_reason}
