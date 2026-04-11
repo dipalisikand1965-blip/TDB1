@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useScrollLock } from '../hooks/useScrollLock';
-import { applyMiraFilter, filterBreedProducts } from '../hooks/useMiraFilter';
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Loader2, Check } from "lucide-react";
@@ -159,25 +159,28 @@ function MiraPicksSection({ pet, onOpenService }) {
   ];
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = { Authorization: `Bearer ${localStorage.getItem('tdb_auth_token') || ''}` };
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=adopt&limit=12&min_score=60&entity_type=product`).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=adopt&limit=6&min_score=60&entity_type=service`).then(r=>r.ok?r.json():null),
-    ])
-      .then(([pData, sData]) => {
-        const prods = pData?.picks || [];
-        const svcs = sData?.picks || [];
-        const merged = [];
-        let pi = 0, si = 0;
-        while (pi < prods.length || si < svcs.length) {
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (si < svcs.length) merged.push(svcs[si++]);
-        }
-        if (merged.length) setPicks(merged.slice(0, 12));
-        setPicksLoading(false);
-      })
-      .catch(() => setPicksLoading(false));
-  },[pet?.id]);
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=adopt&limit=200${breedParam}${allergenParam}`, { headers: auth })
+        .then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`${API_URL}/api/services?pillar=adopt&limit=4`, { headers: auth })
+        .then(r=>r.ok?r.json():null).catch(()=>null),
+    ]).then(([pData, sData]) => {
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged = []; let pi = 0, si = 0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 12) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)   merged.push(svcs[si++]);
+      }
+      if (merged.length) setPicks(merged.slice(0, 12));
+      setPicksLoading(false);
+    }).catch(() => setPicksLoading(false));
+  },[pet?.id, pet?.breed]);
   const productPicks = picks.filter(p => p.entity_type === 'product' || p.type === 'product' || (!p.entity_type && !p.type));
   const servicePicks = picks.filter(p => p.entity_type === 'service' || p.type === 'service');
   const badgeLabel = productPicks.length > 0 ? 'AI Scored' : servicePicks.length > 0 ? 'Concierge® Curated' : 'Curated';

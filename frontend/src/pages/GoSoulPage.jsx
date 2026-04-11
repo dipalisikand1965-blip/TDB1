@@ -43,7 +43,7 @@ import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/Pro
 import { tdc } from "../utils/tdc_intent";
 import { bookViaConcierge } from "../utils/MiraCardActions";
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMiraIntelligence";
-import { applyMiraFilter, filterBreedProducts } from "../hooks/useMiraFilter";
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from "../hooks/useMiraFilter";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
@@ -361,26 +361,29 @@ export function MiraPicksSection({ pet, onOpenService }) {
 
   useEffect(() => {
     if (!pet?.id) { setLoading(false); return; }
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = { Authorization: `Bearer ${localStorage.getItem('tdb_auth_token') || ''}` };
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=go&limit=12&min_score=60&entity_type=product${pet?.breed?`&breed=${encodeURIComponent(pet.breed)}`:"" }`).then(r => r.ok ? r.json() : null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=go&limit=6&min_score=60&entity_type=service`).then(r => r.ok ? r.json() : null),
-    ])
-      .then(([pData, sData]) => {
-        // Keep all products for go pillar — travel items are NOT breed-specific
-        const prods = pData?.picks || [];
-        const svcs  = sData?.picks || [];
-        const merged = [];
-        let pi = 0, si = 0;
-        while (pi < prods.length || si < svcs.length) {
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (pi < prods.length) merged.push(prods[pi++]);
-          if (si < svcs.length)  merged.push(svcs[si++]);
-        }
-        setPicks(merged.slice(0, 16)); // always set (empty → imagines show)
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [pet?.id]);
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=200${breedParam}${allergenParam}`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${API_URL}/api/services?pillar=go&limit=4`, { headers: auth })
+        .then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([pData, sData]) => {
+      // applyMiraFilter: allergens BLOCKED → breed FIRST → loves FIRST → size/stage
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged = []; let pi = 0, si = 0;
+      while ((pi < ranked.length || si < svcs.length) && merged.length < 16) {
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (pi < ranked.length) merged.push(ranked[pi++]);
+        if (si < svcs.length)   merged.push(svcs[si++]);
+      }
+      setPicks(merged.slice(0, 16));
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [pet?.id, pet?.breed]);
 
   const showImagines = !loading && picks.length === 0;
 
