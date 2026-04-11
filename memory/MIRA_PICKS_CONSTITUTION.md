@@ -91,10 +91,13 @@ DINE pillar — block these categories:
   [cakes, breed-cakes, mini-cakes, pupcakes, dognuts, hampers,
    cat-cakes, cat-party, cat-hampers, cat-gotcha, birthday-cakes]
   Also block: any product with pillar=celebrate
+  Applied on: DineSoulPageDesktopLegacy (CELEBRATE_CATS) + DineMobilePage (CELEBRATE_CATS) ✅
 
-CELEBRATE pillar — block these categories (TBD during celebrate sprint):
-  [food, dry-food, wet-food, supplements, probiotics, grooming, leashes]
+CELEBRATE pillar — block these categories:
+  [food, dry-food, wet-food, supplements, probiotics, grooming, leashes,
+   collars, harnesses, training]
   Also block: any product with pillar=dine
+  Applied on: CelebrateMobilePage (DINE_BLOCK_CATS) + CelebratePageNew (DINE_BLOCK_CATS) ✅
 
 GO pillar — block these categories:
   [cakes, food, supplements] ← not yet implemented; add during verify sprint
@@ -150,7 +153,8 @@ fix is validated and the scores are clean.
 
 | Pillar | Breed-First | Allergen Block | No Cross-Pillar | Services | Status |
 |--------|-------------|----------------|-----------------|----------|--------|
-| Dine | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ✅ | VERIFIED PENDING |
+| Dine | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 (desktop + mobile) | ✅ | VERIFIED ✅ |
+| Celebrate | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 (mobile + desktop) | ✅ | VERIFIED ✅ |
 | Go | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ Not added yet | ✅ | VERIFY NEXT |
 | Care | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
 | Play | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
@@ -158,10 +162,9 @@ fix is validated and the scores are clean.
 | Adopt | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
 | Farewell | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
 | Emergency | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
-| Celebrate | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ | SPRINT 2 |
-| Learn | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ | SPRINT 2 |
-| Paperwork | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ | SPRINT 2 |
-| Fit | ⬜ Pending | ⬜ Pending | ⬜ Pending | ⬜ | SPRINT 2 |
+| Learn | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
+| Paperwork | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
+| Fit | ✅ Fixed Apr 11 | ✅ Fixed Apr 11 | ⬜ | ✅ | VERIFY NEXT |
 
 ---
 

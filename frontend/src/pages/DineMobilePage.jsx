@@ -111,15 +111,26 @@ export default function DineMobilePage() {
           }).then(r => r.ok ? r.json() : null).catch(() => null)
         )
       );
+      // Categories that belong to Celebrate — must NEVER appear on Dine Mira Picks
+      const CELEBRATE_CATS = new Set([
+        'cakes','breed-cakes','mini-cakes','pupcakes','dognuts',
+        'hampers','cat-cakes','cat-party','cat-hampers','cat-gotcha','birthday-cakes',
+      ]);
       const grouped = {};
       results.forEach(data => {
         if (!data?.products?.length) return;
         data.products.forEach(p => {
-          const cat = p.category || '';
-          const sub = p.sub_category || '';
-          if (!grouped[cat]) grouped[cat] = {};
-          if (!grouped[cat][sub]) grouped[cat][sub] = [];
-          grouped[cat][sub].push(p);
+          const cat = (p.category || '').toLowerCase().replace(/_/g, '-').trim();
+          const sub = (p.sub_category || '').toLowerCase().replace(/_/g, '-').trim();
+          const pillarField = (p.pillar || '').toLowerCase();
+          // Hard block: celebrate-pillar products and celebrate categories must never appear on Dine
+          if (pillarField === 'celebrate') return;
+          if (CELEBRATE_CATS.has(cat) || CELEBRATE_CATS.has(sub)) return;
+          const catRaw = p.category || '';
+          const subRaw = p.sub_category || '';
+          if (!grouped[catRaw]) grouped[catRaw] = {};
+          if (!grouped[catRaw][subRaw]) grouped[catRaw][subRaw] = [];
+          grouped[catRaw][subRaw].push(p);
         });
       });
       setApiProducts(grouped);

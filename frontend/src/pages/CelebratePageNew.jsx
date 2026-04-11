@@ -103,15 +103,27 @@ function CelebrateMiraPicksSection({ pet, token, onOpenService }) {
     const auth = token ? {Authorization:`Bearer ${token}`} : {};
     Promise.all([
       // Products: pillar-products for celebrate — cakes, hampers, pupcakes (breed-first)
-      fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=200${breedParam}${allergenParam}`, {headers:auth})
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=celebrate&limit=400${breedParam}${allergenParam}`, {headers:auth})
         .then(r=>r.ok?r.json():null).catch(()=>null),
       // Services: direct from service box, filtered by isCelebrateSafeService
       fetch(`${API_URL}/api/services?pillar=celebrate&limit=8`, {headers:auth})
         .then(r=>r.ok?r.json():null).catch(()=>null),
     ])
       .then(([pData, sData]) => {
+        // Categories that belong to Dine/Care — must NEVER appear in Celebrate Mira Picks
+        const DINE_BLOCK_CATS = new Set([
+          'food','dry-food','wet-food','supplements','probiotics','grooming',
+          'leashes','collars','harnesses','training',
+        ]);
+        const rawProds = (pData?.products || []).filter(p => {
+          const cat = (p.category || '').toLowerCase().replace(/_/g, '-').trim();
+          const sub = (p.sub_category || '').toLowerCase().replace(/_/g, '-').trim();
+          const pillarField = (p.pillar || '').toLowerCase();
+          if (pillarField === 'dine') return false;
+          return !DINE_BLOCK_CATS.has(cat) && !DINE_BLOCK_CATS.has(sub);
+        });
         // Apply full Mira intelligence: allergens BLOCKED → loves FIRST → breed FIRST
-        const ranked = applyMiraFilter(pData?.products || [], pet);
+        const ranked = applyMiraFilter(rawProds, pet);
         const svcs   = (sData?.services || []).filter(isCelebrateSafeService).slice(0, 4)
           .map(s => ({ ...s, entity_type:'service' }));
         const merged = []; let pi=0, si=0;
