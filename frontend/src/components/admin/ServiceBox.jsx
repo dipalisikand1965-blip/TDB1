@@ -153,8 +153,8 @@ export default function ServiceBox() {
     try {
       // When showing archived, fetch from the dedicated archive endpoint
       const endpoint = showArchived
-        ? `${API_URL}/api/service-box/services/archived?pillar=${activePillar}&limit=200`
-        : `${API_URL}/api/admin/services?pillar=${activePillar}&limit=200`;
+        ? `${API_URL}/api/service-box/services/archived?pillar=${activePillar}&limit=500`
+        : `${API_URL}/api/admin/services?pillar=${activePillar}&limit=500`;
       const res = await fetch(endpoint, { headers: getAdminHeaders() });
       const data = res.ok ? await res.json() : {};
       setServices(data.services || data.items || []);
