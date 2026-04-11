@@ -1387,7 +1387,56 @@ async def lifespan(app: FastAPI):
     
     # Ensure default user exists for login
     await safe_startup_step("ensure_default_user_exists", ensure_default_user_exists())
-    
+
+    # ── Ensure critical MongoDB indexes (idempotent — safe to run every deploy) ──
+    async def ensure_critical_indexes():
+        """
+        Create performance-critical indexes (idempotent — safe to run every deploy).
+        Each index wrapped individually so one conflict never blocks the others.
+        """
+        async def safe_index(collection, keys, **kwargs):
+            try:
+                await collection.create_index(keys, background=True, **kwargs)
+            except Exception as e:
+                if "already exists" in str(e).lower() or "IndexOptionsConflict" in str(e):
+                    pass  # index is already there — that's fine
+                else:
+                    logger.warning(f"[INDEX] Could not create {keys}: {e}")
+
+        # products_master — compound pillar+active+visibility covers every pillar page query
+        await safe_index(db.products_master,
+            [("pillar", 1), ("is_active", 1), ("visibility.status", 1)],
+            name="idx_pillar_active_visibility")
+
+        # products_master — id field for $in joins from mira_product_scores
+        await safe_index(db.products_master,
+            [("id", 1)],
+            name="idx_id", unique=True, sparse=True)
+
+        # products_master — pillars array field (multi-pillar products)
+        await safe_index(db.products_master,
+            [("pillars", 1)],
+            name="idx_pillars_array")
+
+        # products_master — breed compound eliminates 10k-row Python filter
+        await safe_index(db.products_master,
+            [("pillar", 1), ("breed", 1), ("is_active", 1)],
+            name="idx_pillar_breed_active")
+
+        # mira_product_scores — covers every Layer-3 claude-picks query
+        await safe_index(db.mira_product_scores,
+            [("pet_id", 1), ("pillar", 1), ("score", -1)],
+            name="idx_pet_pillar_score")
+
+        # services_master — pillar page service lists
+        await safe_index(db.services_master,
+            [("pillar", 1), ("is_active", 1)],
+            name="idx_service_pillar_active")
+
+        logger.info("✅ Critical indexes ensured: products_master / mira_product_scores / services_master")
+
+    await safe_startup_step("ensure_critical_indexes", ensure_critical_indexes())
+
     # Seed initial products if database is empty
     await safe_startup_step("seed_initial_products", seed_initial_products())
     
