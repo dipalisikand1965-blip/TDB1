@@ -128,6 +128,8 @@ export default function DineMobilePage() {
       const breedFiltered = filterBreedProducts(rawFlat, pet.breed);
       const miraRanked = applyMiraFilter(breedFiltered, pet).map(p => normCard(p, pet.name));
       setFlatProducts(miraRanked);
+      // Mira Picks section reuses the already-ranked list — no extra claude-picks call needed
+      setMiraProducts(miraRanked.slice(0, 6));
       setVisibleCount(4);
     } catch {
       setApiProducts({});
@@ -137,34 +139,20 @@ export default function DineMobilePage() {
 
   useEffect(() => { fetchProducts(currentPet); }, [currentPet, fetchProducts]);
 
-  // Fetch Mira picks
+  // Fetch dine services directly (no stale claude-picks needed)
   useEffect(() => {
     if (!token || !currentPet?.id) return;
-    const h = { Authorization:`Bearer ${token}` };
-
-    fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=dine&limit=6&min_score=60&entity_type=product`, { headers:h })
+    const h = { Authorization: `Bearer ${token}` };
+    fetch(`${API_URL}/api/services?pillar=dine&limit=3`, { headers: h })
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        const raw = (d?.picks || []);
-        // Use centralized breed filter + Mira ranking (replaces old applyMiraIntelligence)
-        const breedFiltered = filterBreedProducts(raw, currentPet.breed);
-        const intelligent = applyMiraFilter(breedFiltered, currentPet);
-        setMiraProducts(intelligent.map(p => normCard(p, currentPet.name)));
-      })
-      .catch(() => {});
-
-    fetch(`${API_URL}/api/mira/claude-picks/${currentPet.id}?pillar=dine&limit=3&min_score=60&entity_type=service`, { headers:h })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        setMiraServices((d?.picks || []).map(s => ({
-          id: s.id || s._id,
-          name: s.name,
-          desc: s.mira_reason || s.description || 'Concierge® dining help',
+        setMiraServices((d?.services || []).map(s => ({
+          id: s.id, name: s.name,
+          desc: s.description || 'Concierge® dining help',
           raw: s,
         })));
-      })
-      .catch(() => {});
-  }, [token, currentPet]);
+      }).catch(() => {});
+  }, [token, currentPet?.id]);
 
   const handleAddToCart = useCallback(product => {
     if (!product?.raw) return;

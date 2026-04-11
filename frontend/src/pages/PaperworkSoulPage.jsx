@@ -36,7 +36,7 @@ import GuidedPaperworkPaths from "../components/paperwork/GuidedPaperworkPaths";
 import DocumentVault from "../components/paperwork/DocumentVault";
 import PaperworkNearMe from "../components/paperwork/PaperworkNearMe";
 import { API_URL } from "../utils/api";
-import { filterBreedProducts } from "../hooks/useMiraFilter";
+import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from "../hooks/useMiraFilter";
 import { tdc } from "../utils/tdc_intent";
 import { usePlatformTracking } from "../hooks/usePlatformTracking";
 import PillarSoulProfile from "../components/PillarSoulProfile";
@@ -214,35 +214,34 @@ function MiraPicksSection({ pet, onOpenService }) {
 
   useEffect(()=>{
     if(!pet?.id){setPicksLoading(false);return;}
-    const breed=encodeURIComponent(pet?.breed?.toLowerCase().trim()||"");
-    // Fix 3: no entity_type filter — fetch both products and services in one call
+    const allergyList   = getAllergiesFromPet(pet);
+    const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+    const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+    const auth = token ? {Authorization:`Bearer ${token}`} : {};
     Promise.all([
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=12&min_score=40&breed=${breed}&entity_type=product`,
-        {headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.ok?r.json():null),
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=6&min_score=40&entity_type=service`,
-        {headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.ok?r.json():null),
-    ])
-      .then(([pData, sData])=>{
-        const prods=pData?.picks||[];
-        const svcs=sData?.picks||[];
-        const merged=[];let pi=0,si=0;
-        while(pi<prods.length||si<svcs.length){
-          if(pi<prods.length)merged.push(prods[pi++]);
-          if(pi<prods.length)merged.push(prods[pi++]);
-          if(si<svcs.length)merged.push(svcs[si++]);
-        }
-        // Deduplicate by id/name so no item appears twice
-        const seen=new Set();
-        const deduped=merged.filter(p=>{
-          const key=p.id||p._id||p.name||JSON.stringify(p);
-          if(seen.has(key))return false;
-          seen.add(key);return true;
-        });
-        if(deduped.length)setPicks(deduped.slice(0,12));
-        setPicksLoading(false);
-      })
-      .catch(()=>setPicksLoading(false));
-  },[pet?.id,token]);
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&limit=200${breedParam}${allergenParam}`,{headers:auth})
+        .then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch(`${API_URL}/api/services?pillar=paperwork&limit=4`,{headers:auth})
+        .then(r=>r.ok?r.json():null).catch(()=>null),
+    ]).then(([pData, sData])=>{
+      const ranked = applyMiraFilter(pData?.products || [], pet);
+      const svcs   = (sData?.services || []).slice(0, 4).map(s => ({ ...s, entity_type: 'service' }));
+      const merged=[]; let pi=0,si=0;
+      while((pi<ranked.length||si<svcs.length)&&merged.length<12){
+        if(pi<ranked.length)merged.push(ranked[pi++]);
+        if(pi<ranked.length)merged.push(ranked[pi++]);
+        if(si<svcs.length)  merged.push(svcs[si++]);
+      }
+      const seen=new Set();
+      const deduped=merged.filter(p=>{
+        const key=p.id||p._id||p.name||JSON.stringify(p);
+        if(seen.has(key))return false;
+        seen.add(key);return true;
+      });
+      if(deduped.length)setPicks(deduped.slice(0,12));
+      setPicksLoading(false);
+    }).catch(()=>setPicksLoading(false));
+  },[pet?.id,pet?.breed,token]);
 
   const productPicks=picks.filter(p=>p.entity_type==='product'||p.type==='product'||(!p.entity_type&&!p.type));
   const servicePicks=picks.filter(p=>p.entity_type==='service'||p.type==='service');
@@ -448,12 +447,14 @@ export function PaperworkContentModal({ isOpen, onClose, category, pet }) {
     }
     if(category==="mira"){
       if(!pet?.id){setLoading(false);return;}
-      fetch(`${API_URL}/api/mira/claude-picks/${pet.id}?pillar=paperwork&limit=16&min_score=40`,{headers:token?{Authorization:`Bearer ${token}`}:{}})
-        .then(r=>r.json()).then(d=>{
-          const scored=d.picks||[];
-          if(scored.length>0){setProducts(scored);setLoading(false);return;}
-          return fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&limit=100`,{headers:token?{Authorization:`Bearer ${token}`}:{}}).then(r=>r.json()).then(pd=>setProducts((pd.products||[]).slice(0,16)));
-        }).catch(()=>setProducts([])).finally(()=>setLoading(false));
+      const allergyList   = getAllergiesFromPet(pet);
+      const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
+      const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
+      fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&limit=200${breedParam}${allergenParam}`,
+        {headers:token?{Authorization:`Bearer ${token}`}:{}})
+        .then(r=>r.ok?r.json():null)
+        .then(d=>{ setProducts(applyMiraFilter(d?.products||[],pet).slice(0,16)); })
+        .catch(()=>setProducts([])).finally(()=>setLoading(false));
       return;
     }
     const catLabel={identity:"Identity & Safety",health:"Health Records",travel:"Travel Documents",insurance:"Insurance & Finance",breeds:"Breed & Advisory",advisory:"Expert Advisory",soul:"Soul Documents"}[category]||category;
