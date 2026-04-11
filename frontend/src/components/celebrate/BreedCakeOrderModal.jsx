@@ -101,7 +101,7 @@ const ALL_FLAVOURS = [
   { id:'apple',         label:'🍎 Apple & Cinnamon',allergens:[],                 price:950  },
   { id:'cheese',        label:'🧀 Cheese',          allergens:['dairy'],          price:999  },
   { id:'chicken',       label:'🍗 Chicken',         allergens:['chicken','poultry'],price:999},
-  { id:'fish_salmon',   label:'🐟 Fish (Salmon)',   allergens:['fish'],           price:999  },
+  { id:'fish_salmon',   label:'🐟 Fish / Salmon',  allergens:['fish'],           price:999  },
   { id:'lamb',          label:'🍖 Lamb',            allergens:['lamb'],           price:1200 },
 ];
 
