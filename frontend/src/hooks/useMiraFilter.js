@@ -507,7 +507,15 @@ export function applyMiraFilter(products, pet) {
   const petStage       = extractLifeStage(pet);
   const petDietary     = extractDietaryPrefs(pet);
 
-  const filtered = products
+  // Normalize: products with product_type/category === 'service' must have entity_type
+  // so all rendering components treat them as service cards (opening concierge modal)
+  const normalizedProducts = products.map(p =>
+    ((p.product_type === 'service' || p.category === 'service') && !p.entity_type)
+      ? { ...p, entity_type: 'service' }
+      : p
+  );
+
+  const filtered = normalizedProducts
     // Step 1 — remove allergen-containing products
     .filter(product => {
       if (!allergies.length) return true;
@@ -699,12 +707,26 @@ export function applyMiraFilter(products, pet) {
       return (a._miraRank || 10) - (b._miraRank || 10);
     });
 
+  // Step 4 — Deduplication: remove products with identical normalised names
+  // Keeps only the highest-ranked version when the same product name appears twice
+  // (e.g. soul-breed-*-collar_tag AND breed-*-id_tag with identical display names)
+  const seenNames = new Set();
+  const deduped = filtered.filter(p => {
+    const key = (p.name || p.product_name || p.title || '').toLowerCase()
+      .trim()
+      .replace(/\s+/g, ' ')
+      .replace(/[^a-z0-9 ]/g, '');
+    if (seenNames.has(key)) return false;
+    seenNames.add(key);
+    return true;
+  });
+
   // Mark the top result as Mira's pick
-  if (filtered.length > 0) {
-    filtered[0] = { ...filtered[0], miraPick: true };
+  if (deduped.length > 0) {
+    deduped[0] = { ...deduped[0], miraPick: true };
   }
 
-  return filtered;
+  return deduped;
 }
 
 // React hook alias
