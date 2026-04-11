@@ -165,6 +165,18 @@ const CHANNELS = {
   api: { icon: Zap, label: 'API', color: 'text-gray-500' }
 };
 
+const CHANNEL_EMOJI = {
+  whatsapp: '💬',
+  web: '🌐',
+  email: '📧',
+  mira: '🤖',
+  phone: '📞',
+  order: '🛍️',
+  reservation: '🍽️',
+  booking: '🏨',
+  api: '⚡',
+};
+
 // ==================== TICKET TYPE CONFIG ====================
 const TICKET_TYPES = {
   // Orders & Transactions
@@ -4438,12 +4450,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               className="w-4 h-4 rounded border-gray-300 mt-0.5"
                             />
                             
-                            {/* Priority + Pillar */}
+                            {/* Channel Emoji + Pillar */}
                             <div 
                               className="flex flex-col items-center gap-1"
                               onClick={() => handleSelectTicket(ticket)}
                             >
-                              <div className={`w-2.5 h-2.5 rounded-full ${priority.dot}`} title={priority.label} />
+                              <span className="text-base leading-none" title={channel.label}>{CHANNEL_EMOJI[ticket.channel] || '🌐'}</span>
                               {pillar && <span className="text-sm" title={pillar.name}>{pillar.emoji}</span>}
                             </div>
                             
@@ -6976,7 +6988,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                               <Badge className={`text-xs ${statusConfig.bgLight} ${statusConfig.textColor}`}>
                                 {statusConfig.label}
                               </Badge>
-                              <div className={`w-2 h-2 rounded-full ${priorityConfig.dot}`} title={priorityConfig.label} />
+                              <span className="text-base leading-none" title={CHANNELS[ticket.channel]?.label || ticket.channel}>
+                                {CHANNEL_EMOJI[ticket.channel] || '🌐'}
+                              </span>
                             </div>
                           </div>
                         </div>
