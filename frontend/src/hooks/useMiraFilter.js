@@ -532,13 +532,26 @@ const ACTIVITY_TAG_MAP = {
 };
 
 const HEALTH_TAG_MAP = {
-  joint:     ['joint', 'glucosamine', 'chondroitin', 'mobility', 'hip', 'arthritis', 'movement'],
-  dental:    ['dental', 'teeth', 'tartar', 'oral', 'chew', 'breath'],
-  skin:      ['skin', 'coat', 'omega', 'fatty acid', 'shiny', 'itch', 'derm'],
-  digestion: ['probiotic', 'digestive', 'gut', 'stomach', 'sensitive', 'fiber', 'prebiotic'],
-  anxiety:   ['calm', 'calming', 'anxiety', 'stress', 'soothe', 'relax', 'gentle'],
-  weight:    ['weight', 'light', 'low calorie', 'diet', 'lean', 'slim'],
-  oncology:  ['antioxidant', 'immune', 'turmeric', 'supplement', 'gentle', 'light', 'low fat'],
+  // Existing
+  joint:        ['joint', 'glucosamine', 'chondroitin', 'mobility', 'hip', 'arthritis', 'movement'],
+  dental:       ['dental', 'teeth', 'tartar', 'oral', 'chew', 'breath'],
+  skin:         ['skin', 'coat', 'omega', 'fatty acid', 'shiny', 'itch', 'derm'],
+  digestion:    ['probiotic', 'digestive', 'gut', 'stomach', 'sensitive', 'fiber', 'prebiotic'],
+  anxiety:      ['calm', 'calming', 'anxiety', 'stress', 'soothe', 'relax', 'gentle'],
+  weight:       ['weight', 'light', 'low calorie', 'diet', 'lean', 'slim'],
+  oncology:     ['antioxidant', 'immune', 'turmeric', 'supplement', 'gentle', 'light', 'low fat'],
+
+  // Added April 11
+  cancer:       ['lymphoma', 'antioxidant', 'immune support', 'treatment safe',
+                 'recovery', 'low sugar', 'anti-inflammatory', 'omega-3'],
+  diabetes:     ['sugar-free', 'no added sugar', 'unsweetened', 'low glycemic',
+                 'low carb', 'low sugar', 'high protein', 'grain-free'],
+  kidney:       ['low protein', 'renal', 'kidney support', 'low phosphorus', 'low sodium'],
+  heart:        ['low sodium', 'omega-3', 'heart support', 'sodium-free', 'taurine'],
+  pancreatitis: ['low fat', 'lean', 'fat-free', 'baked', 'light', 'dehydrated'],
+  thyroid:      ['iodine', 'selenium', 'thyroid support', 'grain-free', 'high protein'],
+  liver:        ['milk thistle', 'liver support', 'low copper', 'antioxidant', 'low sodium'],
+  epilepsy:     ['natural', 'no artificial', 'whole ingredient', 'no preservative', 'mct oil'],
 };
 
 const COAT_TAG_MAP = {
