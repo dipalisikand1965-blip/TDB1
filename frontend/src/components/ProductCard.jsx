@@ -965,7 +965,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     }
   };
   // ────────────────────────────────────────────────────────────────────────────
-  
+
   // Pet Soul Integration - Fetch user's pets
   const [userPets, setUserPets] = useState([]);
   const [selectedPetId, setSelectedPetId] = useState(selectedPet?.id || '');
@@ -1003,18 +1003,22 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     }
     const pet = userPets.find(p => p.id === petId);
     if (pet) {
-      // Calculate age from birthday
+      // Calculate age from birthday / life_stage / age_stage (onboarding field)
       let ageStr = '';
       if (pet.age && Number(pet.age) > 0) {
         ageStr = `${pet.age} year${Number(pet.age) !== 1 ? 's' : ''}`;
       } else if (pet.life_stage) {
         ageStr = pet.life_stage.charAt(0).toUpperCase() + pet.life_stage.slice(1);
+      } else if (pet.doggy_soul_answers?.age_stage) {
+        const stage = pet.doggy_soul_answers.age_stage;
+        ageStr = stage.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       } else if (pet.birthday) {
         const birthDate = new Date(pet.birthday);
         const today = new Date();
         const ageYears = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        // Only use birthday if it gives a sensible age — never show "Less than 1 year"
-        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : '';
+        ageStr = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Puppy';
+      } else {
+        ageStr = 'Adult'; // safe fallback so validation passes
       }
       setCartInput(prev => ({ 
         ...prev, 
@@ -1063,17 +1067,20 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   const requiresDate = isCakeProduct || !!product.requires_date;
   
   const [cartInput, setCartInput] = useState(() => {
-    // Compute default age from selectedPet prop (priority: age > life_stage > birthday)
+    // Compute default age from selectedPet prop (priority: age > life_stage > age_stage > birthday)
     let defaultAge = '';
     if (selectedPet) {
       if (selectedPet.age && Number(selectedPet.age) > 0) {
         defaultAge = `${selectedPet.age} year${Number(selectedPet.age) !== 1 ? 's' : ''}`;
       } else if (selectedPet.life_stage) {
         defaultAge = selectedPet.life_stage.charAt(0).toUpperCase() + selectedPet.life_stage.slice(1);
+      } else if (selectedPet.doggy_soul_answers?.age_stage) {
+        // Onboarding stores age as age_stage (e.g. 'puppy', 'young_adult', 'senior')
+        const stage = selectedPet.doggy_soul_answers.age_stage;
+        defaultAge = stage.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       } else if (selectedPet.birthday) {
         const ageYears = Math.floor((Date.now() - new Date(selectedPet.birthday)) / (365.25 * 24 * 60 * 60 * 1000));
-        // Only use birthday if it gives a sensible age — never show "Less than 1 year"
-        defaultAge = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : '';
+        defaultAge = ageYears > 0 ? `${ageYears} year${ageYears > 1 ? 's' : ''}` : 'Puppy';
       }
     }
     // Default delivery date = today + 3 days
@@ -1363,7 +1370,12 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     const isCelebrationProduct = requiresDate || ['cakes','hampers','pupcakes','dognuts'].some(c => (product.category||'').toLowerCase().includes(c));
     if (isCelebrationProduct) {
       const missingName = !cartInput.petName?.trim();
-      const missingAge  = !cartInput.age?.trim();
+      // If a pet is selected by ID, auto-fill 'Adult' so the validation never blocks
+      const resolvedAge = cartInput.age?.trim() || (cartInput.selectedPetId ? 'Adult' : '');
+      if (resolvedAge && !cartInput.age?.trim()) {
+        setCartInput(prev => ({ ...prev, age: resolvedAge }));
+      }
+      const missingAge  = !resolvedAge;
       const missingDate = !cartInput.date;
       setNameError(missingName);
       setAgeError(missingAge);
