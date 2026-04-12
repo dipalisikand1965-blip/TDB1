@@ -34,6 +34,10 @@ const RainbowBridgeWall = () => {
   const [tributeText, setTributeText] = useState('');
   const [tributeName, setTributeName] = useState('');
   const [submittingTribute, setSubmittingTribute] = useState(false);
+  const [showAddMemorial, setShowAddMemorial] = useState(false);
+  const [addForm, setAddForm] = useState({ pet_name:'', breed:'', crossing_date:'', tribute_message:'', photo:'' });
+  const [submittingMemorial, setSubmittingMemorial] = useState(false);
+  const [memorialSubmitted, setMemorialSubmitted] = useState(false);
 
   // Fetch all public memorials
   useEffect(() => {
@@ -95,6 +99,26 @@ const RainbowBridgeWall = () => {
     }
   };
 
+  // Submit a new community memorial
+  const handleAddMemorial = async () => {
+    if (!addForm.pet_name.trim() || !addForm.tribute_message.trim()) return;
+    setSubmittingMemorial(true);
+    try {
+      const res = await fetch(`${API_URL}/api/rainbow-bridge/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(addForm)
+      });
+      if (res.ok) {
+        setMemorialSubmitted(true);
+        setAddForm({ pet_name:'', breed:'', crossing_date:'', tribute_message:'', photo:'' });
+        setShowAddMemorial(false);
+        toast({ title: '💜 Submitted for Review', description: `${addForm.pet_name}'s memorial will appear after approval.`, duration: 5000 });
+      }
+    } catch (e) { console.error(e); }
+    finally { setSubmittingMemorial(false); }
+  };
+
   // Calculate time since crossing
   const getTimeSince = (date) => {
     if (!date) return '';
@@ -120,6 +144,7 @@ const RainbowBridgeWall = () => {
   }
 
   return (
+    <>
     <section className="bg-gradient-to-b from-slate-900 via-purple-950/95 to-slate-950 rounded-3xl p-6 sm:p-10 mt-8 shadow-2xl shadow-purple-950/40">
     <div className="space-y-8">
       {/* Memorial Wall Header */}
@@ -146,6 +171,23 @@ const RainbowBridgeWall = () => {
               {memorials.reduce((sum, m) => sum + (m.tribute_count || 0), 0)} tributes shared
             </span>
           </div>
+        )}
+
+        {/* Add Memorial CTA */}
+        {token && !memorialSubmitted && (
+          <div className="flex justify-center pt-2">
+            <Button
+              data-testid="wall-add-memorial-btn"
+              onClick={() => setShowAddMemorial(true)}
+              className="bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white font-semibold px-6 py-2 rounded-full shadow-lg shadow-purple-900/40 transition-all duration-200"
+            >
+              <PawPrint className="w-4 h-4 mr-2" />
+              Add Your Pet's Memorial
+            </Button>
+          </div>
+        )}
+        {token && memorialSubmitted && (
+          <p className="text-center text-purple-300/70 text-sm">💜 Submitted — we'll add it to the wall after review.</p>
         )}
       </div>
 
@@ -501,6 +543,64 @@ const RainbowBridgeWall = () => {
       </Dialog>
     </div>
     </section>
+
+    {/* Add Your Pet's Memorial — Dialog (desktop) */}
+    <Dialog open={showAddMemorial} onOpenChange={setShowAddMemorial}>
+      <DialogContent className="bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 border-purple-500/30 max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-white text-xl flex items-center gap-2">
+            🌷 Add a Memorial
+          </DialogTitle>
+        </DialogHeader>
+        <p className="text-purple-300/70 text-sm -mt-2 mb-4 leading-relaxed">
+          Share your pet's story with the community. We'll review it with care before it appears on the wall.
+        </p>
+        <div className="space-y-4">
+          {[
+            { key:'pet_name', label:"Pet's Name *", placeholder:'e.g. Mystique', type:'text' },
+            { key:'breed', label:'Breed', placeholder:'e.g. Shih Tzu', type:'text' },
+            { key:'crossing_date', label:'When did they cross the bridge?', placeholder:'e.g. March 2023 or 2024-01-15', type:'text' },
+            { key:'photo', label:'Photo URL (optional)', placeholder:'https://...', type:'url' },
+          ].map(f => (
+            <div key={f.key}>
+              <label className="text-purple-300 text-sm mb-1 block font-medium">{f.label}</label>
+              <input
+                type={f.type}
+                placeholder={f.placeholder}
+                value={addForm[f.key]}
+                onChange={e => setAddForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                className="w-full bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 placeholder:text-slate-500"
+              />
+            </div>
+          ))}
+          <div>
+            <label className="text-purple-300 text-sm mb-1 block font-medium">Your tribute message *</label>
+            <Textarea
+              placeholder="Tell us about your beloved companion — their spirit, their quirks, what made them irreplaceable…"
+              rows={4}
+              value={addForm.tribute_message}
+              onChange={e => setAddForm(prev => ({ ...prev, tribute_message: e.target.value }))}
+              className="bg-slate-800 border-slate-700 text-white text-sm placeholder:text-slate-500 resize-none"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <Button variant="outline" onClick={() => setShowAddMemorial(false)} className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-800">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddMemorial}
+              disabled={submittingMemorial || !addForm.pet_name.trim() || !addForm.tribute_message.trim()}
+              className="flex-1 bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 text-white"
+              data-testid="wall-submit-memorial-btn"
+            >
+              {submittingMemorial ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Heart className="w-4 h-4 mr-2" />}
+              Submit Memorial
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
 

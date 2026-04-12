@@ -650,9 +650,24 @@ export default function FarewellMobilePage() {
             style={{ position:'fixed', inset:0, zIndex:10002, background:'rgba(0,0,0,0.75)', display:'flex', alignItems:'flex-end', touchAction:'none' }}>
             <div onClick={e => e.stopPropagation()}
               style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'92vh', overflowY:'auto',
-                padding:'24px 20px calc(40px + env(safe-area-inset-bottom))' }}>
-              {/* Handle */}
-              <div style={{ width:36, height:4, background:'#E5E7EB', borderRadius:4, margin:'0 auto 20px', flexShrink:0 }} />
+                padding:'20px 20px calc(40px + env(safe-area-inset-bottom))',
+                WebkitOverflowScrolling:'touch', overscrollBehavior:'contain' }}>
+              {/* Handle bar + X button */}
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
+                <div style={{ flex:1 }} />
+                <div style={{ width:36, height:4, background:'#E5E7EB', borderRadius:4 }} />
+                <div style={{ flex:1, display:'flex', justifyContent:'flex-end' }}>
+                  <button
+                    data-testid="memorial-modal-close"
+                    onClick={() => setShowAddMemorial(false)}
+                    aria-label="Close"
+                    style={{ width:30, height:30, borderRadius:15, border:'1.5px solid #E5E7EB',
+                      background:'#F9FAFB', display:'flex', alignItems:'center', justifyContent:'center',
+                      cursor:'pointer', fontSize:16, color:'#6B7280', lineHeight:1 }}>
+                    ✕
+                  </button>
+                </div>
+              </div>
               <div style={{ fontSize:22, fontWeight:700, color:G.deep, marginBottom:4 }}>🌷 Add a Memorial</div>
               <div style={{ fontSize:13, color:G.mutedText, marginBottom:20, lineHeight:1.5 }}>
                 Share your pet's story with the community. We'll review it with care before it appears on the wall.
@@ -661,7 +676,7 @@ export default function FarewellMobilePage() {
               {[
                 { key:'pet_name', label:"Pet's Name *", placeholder:'e.g. Mystique', type:'text' },
                 { key:'breed', label:'Breed', placeholder:'e.g. Golden Retriever', type:'text' },
-                { key:'crossing_date', label:'Date they crossed the bridge', placeholder:'', type:'date' },
+                { key:'crossing_date', label:'When did they cross the bridge?', placeholder:'e.g. March 2023', type:'text' },
                 { key:'photo', label:'Photo URL (optional)', placeholder:'https://...', type:'url' },
               ].map(f => (
                 <div key={f.key} style={{ marginBottom:14 }}>
@@ -687,7 +702,7 @@ export default function FarewellMobilePage() {
                   data-testid="memorial-field-tribute"
                   style={{ width:'100%', padding:'11px 14px', borderRadius:12, border:`1.5px solid ${G.border}`,
                     fontSize:14, color:G.darkText, fontFamily:'inherit', boxSizing:'border-box',
-                    resize:'vertical', outline:'none', lineHeight:1.6 }} />
+                    resize:'none', outline:'none', lineHeight:1.6 }} />
               </div>
 
               <button
