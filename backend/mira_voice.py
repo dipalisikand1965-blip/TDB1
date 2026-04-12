@@ -32,6 +32,26 @@ LILY_VOICE_SETTINGS = {
 }
 
 
+def create_voice_summary(full_response: str) -> str:
+    """
+    Extract first 2 sentences for voice output.
+    Strips markdown, bullets, and emojis first — then phonetic preprocessing.
+    Keeps voice output warm, brief, and natural.
+    """
+    import re
+    # Strip markdown, bullets, and common emojis
+    clean = re.sub(r'[*#•🐾🌿🏔️🌱🥕✦→®™🎉✨🔥💡🛒💰🏥📋🎤]', '', full_response)
+    clean = re.sub(r'\n+', ' ', clean).strip()
+    # Collapse multiple spaces
+    clean = re.sub(r' +', ' ', clean)
+    # Split on sentence boundaries and keep first 2
+    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', clean) if s.strip()]
+    summary = ' '.join(sentences[:2])
+    if summary and summary[-1] not in '.!?':
+        summary += '.'
+    return preprocess_for_voice(summary)  # Concierge / Mira / ₹ fixes too
+
+
 def preprocess_for_voice(text: str) -> str:
     """
     Fix pronunciations before sending to ElevenLabs Lily.
