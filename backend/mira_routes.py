@@ -22520,7 +22520,8 @@ async def get_reorder_suggestions(pet_id: str):
     
     # Get order history for this pet
     orders = await db.orders.find(
-        {"pet_id": pet_id, "status": {"$in": ["delivered", "completed"]}},
+        {"pet_id": pet_id, "status": {"$in": ["delivered", "completed"]},
+         "order_id": {"$regex": "^TDC-"}, "total": {"$gt": 0}},
         {"items": 1, "created_at": 1, "_id": 0}
     ).sort("created_at", -1).limit(20).to_list(20)
     
