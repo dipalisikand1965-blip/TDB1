@@ -504,6 +504,14 @@ export default function EmergencyMobilePage() {
         pillar="emergency"
         token={token}
       />
+
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
+
       <div style={{ padding: '0 16px' }}>
         <ConciergeCTA pillar="emergency" pet={currentPet} />
       </div>
