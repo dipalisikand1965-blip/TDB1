@@ -56,6 +56,12 @@ const PILLAR_CONFIG = {
     subtitle: 'Emergency preparedness personalised for you',
     loadingText: (name) => `Mira is building ${name}'s emergency plan…`,
   },
+  farewell: {
+    color: '#6B21A8', colorSoft: '#C084FC', bg: '#0F0A1E', emoji: '🌷',
+    title: (name) => `${name}'s Farewell Plan`,
+    subtitle: 'Mira built this around who you are',
+    loadingText: (name) => `Mira is building ${name}'s farewell plan with love…`,
+  },
 };
 
 const FALLBACK_CARDS = {
