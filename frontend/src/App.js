@@ -74,7 +74,7 @@ function ConditionalFloatingButton() {
 function ConditionalMobileNav() {
   const { pathname } = useLocation();
   // Don't show on admin, login, register, demo, or pillar pages (mobile pillar pages have their own nav)
-  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo', '/dine', '/care', '/celebrate', '/go', '/play', '/learn', '/shop', '/services', '/adopt', '/farewell', '/emergency', '/paperwork', '/stay', '/travel', '/fit', '/enjoy', '/advisory'];
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo', '/pet-home', '/dine', '/care', '/celebrate', '/go', '/play', '/learn', '/shop', '/services', '/adopt', '/farewell', '/emergency', '/paperwork', '/stay', '/travel', '/fit', '/enjoy', '/advisory'];
   if (hiddenPaths.some(path => pathname.startsWith(path))) {
     return null;
   }
