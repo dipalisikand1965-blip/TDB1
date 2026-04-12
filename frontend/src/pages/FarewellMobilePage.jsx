@@ -418,9 +418,9 @@ export default function FarewellMobilePage() {
         {/* Tab Bar — sticky */}
         <div className="ios-tab-bar">
           {[
-            { id:'farewell',  label:'🌷 Farewell' },
-            { id:'services',  label:'🐕 Services' },
-            { id:'find',      label:'📍 Find Care' },
+            { id:'farewell',  label:'Farewell' },
+            { id:'services',  label:'Services' },
+            { id:'find',      label:'Find Care' },
             { id:'wall',      label:'🌈 Wall' },
           ].map(tab => (
             <button key={tab.id}
@@ -605,33 +605,42 @@ export default function FarewellMobilePage() {
         {/* TAB 4: Rainbow Wall */}
         {activeTab === 'wall' && (
           <div style={{ padding:'16px 16px 32px' }}>
-            {/* Add Memorial CTA */}
-            {token && !memorialSubmitted && (
-              <button
-                data-testid="add-memorial-btn"
-                onClick={() => { vibe('medium'); setShowAddMemorial(true); }}
-                style={{ width:'100%', minHeight:52, borderRadius:16, border:'none', marginBottom:16,
-                  background:'linear-gradient(135deg,#4B4B6E,#6366F1)',
-                  color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
-                  display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
-                <span style={{ fontSize:20 }}>🌷</span>
-                <span>Add Your Pet's Memorial</span>
-              </button>
-            )}
-            {memorialSubmitted && (
-              <div style={{ background:'rgba(99,102,241,0.12)', border:'1px solid rgba(99,102,241,0.35)', borderRadius:14, padding:'14px 16px', marginBottom:16, textAlign:'center' }}>
-                <div style={{ fontSize:22, marginBottom:4 }}>💜</div>
-                <div style={{ fontSize:14, fontWeight:700, color:G.indigo }}>Memorial Submitted</div>
-                <div style={{ fontSize:13, color:G.mutedText, marginTop:4 }}>We'll review it with care and add it to the wall shortly.</div>
-              </div>
-            )}
-            {!token && (
-              <div style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)', borderRadius:14, padding:'14px 16px', marginBottom:16, textAlign:'center', fontSize:13, color:G.mutedText }}>
-                Sign in to add your pet's memorial to the community wall.
-              </div>
-            )}
-            {/* The wall itself */}
+            {/* Section header — immediately visible */}
+            <div style={{ textAlign:'center', marginBottom:16 }}>
+              <div style={{ fontSize:22, fontWeight:800, color:G.deep, marginBottom:4 }}>🌈 Rainbow Bridge Wall</div>
+              <div style={{ fontSize:13, color:G.mutedText, lineHeight:1.5 }}>A place to honour the dogs who shaped us.<br/>Forever loved. Never forgotten.</div>
+            </div>
+
+            {/* The wall — shown FIRST so it's immediately visible */}
             <RainbowBridgeWall />
+
+            {/* Add Memorial CTA — below the wall */}
+            <div style={{ marginTop:20 }}>
+              {token && !memorialSubmitted && (
+                <button
+                  data-testid="add-memorial-btn"
+                  onClick={() => { vibe('medium'); setShowAddMemorial(true); }}
+                  style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+                    background:'linear-gradient(135deg,#4B4B6E,#6366F1)',
+                    color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+                    display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                  <span style={{ fontSize:20 }}>🌷</span>
+                  <span>Add Your Pet's Memorial</span>
+                </button>
+              )}
+              {memorialSubmitted && (
+                <div style={{ background:'rgba(99,102,241,0.12)', border:'1px solid rgba(99,102,241,0.35)', borderRadius:14, padding:'14px 16px', textAlign:'center' }}>
+                  <div style={{ fontSize:22, marginBottom:4 }}>💜</div>
+                  <div style={{ fontSize:14, fontWeight:700, color:G.indigo }}>Memorial Submitted</div>
+                  <div style={{ fontSize:13, color:G.mutedText, marginTop:4 }}>We'll review it with care and add it to the wall shortly.</div>
+                </div>
+              )}
+              {!token && (
+                <div style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)', borderRadius:14, padding:'14px 16px', textAlign:'center', fontSize:13, color:G.mutedText }}>
+                  Sign in to add your pet's memorial to the community wall.
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -732,6 +741,12 @@ export default function FarewellMobilePage() {
       services={services}
       onBook={handleBookService}
     />
+      <ConciergeRequestBuilder
+        pet={currentPet}
+        token={token}
+        isOpen={conciergeBuilderOpen}
+        onClose={() => setConciergeBuilderOpen(false)}
+      />
       <div style={{ padding: '0 16px' }}>
         <ConciergeCTA pillar="farewell" pet={currentPet} />
       </div>
