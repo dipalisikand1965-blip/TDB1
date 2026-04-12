@@ -47,22 +47,25 @@ function isPuppy(pet) { const a=getAge(pet); return a!==null&&a<=1; }
 function isSenior(pet) { const a=getAge(pet); return a!==null&&a>=7; }
 
 function getEmergencyScore(pet) {
+  const dsa = pet?.doggy_soul_answers || {};
   let s=0;
-  if(pet?.doggy_soul_answers?.microchipped)        s+=20;
-  if(pet?.doggy_soul_answers?.has_medical_tag)     s+=20;
-  if(pet?.doggy_soul_answers?.emergency_vet_saved) s+=20;
-  if(pet?.doggy_soul_answers?.first_aid_kit)       s+=15;
-  if(pet?.doggy_soul_answers?.insurance)           s+=15;
-  if(pet?.doggy_soul_answers?.emergency_card)      s+=10;
+  // Microchipped: check pet.microchip (primary) OR DSA answer
+  if(pet?.microchip || dsa?.microchipped)                                              s+=20;
+  if(dsa?.has_medical_tag && !String(dsa.has_medical_tag).toLowerCase().includes('no')) s+=20;
+  if(dsa?.emergency_vet_saved && !String(dsa.emergency_vet_saved).toLowerCase().includes('no')) s+=20;
+  if(dsa?.first_aid_kit && !String(dsa.first_aid_kit).toLowerCase().includes('no'))     s+=15;
+  if(dsa?.insurance && !String(dsa.insurance).toLowerCase().includes('no'))              s+=15;
+  if(dsa?.emergency_card && !String(dsa.emergency_card).toLowerCase().includes('no'))    s+=10;
   return s;
 }
 function getMissingItems(pet) {
+  const dsa = pet?.doggy_soul_answers || {};
   const m=[];
-  if(!pet?.doggy_soul_answers?.microchipped)        m.push("Microchip not registered");
-  if(!pet?.doggy_soul_answers?.has_medical_tag)     m.push("No medical alert tag");
-  if(!pet?.doggy_soul_answers?.emergency_vet_saved) m.push("No emergency vet saved");
-  if(!pet?.doggy_soul_answers?.first_aid_kit)       m.push("No first aid kit");
-  if(!pet?.doggy_soul_answers?.insurance)           m.push("No pet insurance");
+  if(!pet?.microchip && !dsa?.microchipped)                                                  m.push("Microchip not registered");
+  if(!dsa?.has_medical_tag || String(dsa.has_medical_tag).toLowerCase().includes('no'))      m.push("No medical alert tag");
+  if(!dsa?.emergency_vet_saved || String(dsa.emergency_vet_saved).toLowerCase().includes('no')) m.push("No emergency vet saved");
+  if(!dsa?.first_aid_kit || String(dsa.first_aid_kit).toLowerCase().includes('no'))          m.push("No first aid kit");
+  if(!dsa?.insurance || String(dsa.insurance).toLowerCase().includes('no'))                   m.push("No pet insurance");
   return m;
 }
 

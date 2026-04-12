@@ -76,24 +76,40 @@ function isRescue(p)   { return !!(p?.doggy_soul_answers?.is_rescue||(""+p?.orig
 
 // ─── DOCUMENT COMPLETENESS SCORE ───────────────────────────
 function getDocScore(pet) {
-  // Until API wired — estimate from soul profile data
+  // Map against actual pet data fields (not hardcoded DSA keys)
   let score = 0;
-  if (pet?.vaccinated)                         score += 15;
-  if (pet?.doggy_soul_answers?.microchipped)   score += 20;
-  if (pet?.doggy_soul_answers?.insurance)      score += 15;
-  if (pet?.doggy_soul_answers?.registered)     score += 15;
-  if (pet?.doggy_soul_answers?.travel_docs)    score += 10;
-  if (pet?.emergency_contact)                  score += 10;
-  if (pet?.health?.medical_conditions)         score += 15;
+  const dsa = pet?.doggy_soul_answers || {};
+  // Vaccinated: check DSA answer OR health_vault OR top-level flag
+  const isVaccinated = !!(pet?.vaccinated) ||
+    (Array.isArray(dsa?.vaccinated) ? dsa.vaccinated[0]?.toLowerCase().includes('yes') : dsa?.vaccination_status === 'up_to_date') ||
+    (pet?.health_vault?.vaccinations?.length > 0);
+  if (isVaccinated) score += 15;
+  // Microchipped: check pet.microchip (primary) or DSA
+  const isMicrochipped = !!pet?.microchip || !!dsa?.microchipped;
+  if (isMicrochipped) score += 20;
+  // Insurance
+  if (dsa?.insurance && !String(dsa.insurance).toLowerCase().includes('no')) score += 15;
+  // Municipal registration
+  if (dsa?.registered && !String(dsa.registered).toLowerCase().includes('no')) score += 15;
+  // Travel docs
+  if (dsa?.travel_docs && !String(dsa.travel_docs).toLowerCase().includes('no')) score += 10;
+  // Emergency contact
+  if (pet?.emergency_contact || dsa?.emergency_contact) score += 10;
+  // Medical conditions documented
+  if (pet?.health?.medical_conditions || dsa?.health_conditions || pet?.health_conditions) score += 15;
   return score;
 }
 
 function getMissingDocs(pet) {
+  const dsa = pet?.doggy_soul_answers || {};
   const missing = [];
-  if (!pet?.vaccinated)                           missing.push("Vaccination records");
-  if (!pet?.doggy_soul_answers?.microchipped)     missing.push("Microchip registration");
-  if (!pet?.doggy_soul_answers?.insurance)        missing.push("Pet insurance");
-  if (!pet?.doggy_soul_answers?.registered)       missing.push("Society/municipal registration");
+  const isVaccinated = !!(pet?.vaccinated) ||
+    (Array.isArray(dsa?.vaccinated) ? dsa.vaccinated[0]?.toLowerCase().includes('yes') : dsa?.vaccination_status === 'up_to_date') ||
+    (pet?.health_vault?.vaccinations?.length > 0);
+  if (!isVaccinated)                                                  missing.push("Vaccination records");
+  if (!pet?.microchip && !dsa?.microchipped)                         missing.push("Microchip registration");
+  if (!dsa?.insurance || String(dsa.insurance).toLowerCase().includes('no')) missing.push("Pet insurance");
+  if (!dsa?.registered || String(dsa.registered).toLowerCase().includes('no')) missing.push("Society/municipal registration");
   return missing;
 }
 
