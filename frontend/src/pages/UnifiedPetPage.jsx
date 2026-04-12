@@ -30,6 +30,29 @@ import ShareablePetCard from '../components/ShareablePetCard';
 // Lazy load Soul Explainer
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
 
+// 26 canonical scoring fields — single source of truth for "questions answered" count
+// Must match backend: /app/backend/member_logic_config.py → CANONICAL_SCORING_FIELDS
+const CANONICAL_SCORING_FIELDS = new Set([
+  "food_allergies", "health_conditions", "vet_comfort", "life_stage",
+  "grooming_tolerance", "noise_sensitivity", "temperament", "energy_level",
+  "social_with_dogs", "social_with_people", "behavior_issues",
+  "alone_time_comfort", "car_comfort", "travel_readiness", "favorite_spot",
+  "morning_routine", "exercise_needs", "feeding_times", "favorite_protein",
+  "food_motivation", "training_level", "motivation_type", "primary_bond",
+  "other_pets", "kids_at_home", "sleep_preferences"
+]);
+const TOTAL_CANONICAL = CANONICAL_SCORING_FIELDS.size; // 26
+
+/** Count how many canonical fields have non-empty answers */
+function countCanonicalAnswered(doggy_soul_answers = {}) {
+  let count = 0;
+  for (const field of CANONICAL_SCORING_FIELDS) {
+    const v = doggy_soul_answers[field];
+    if (v !== undefined && v !== null && v !== "" && !(Array.isArray(v) && v.length === 0)) count++;
+  }
+  return count;
+}
+
 // 12 Life Pillars — The Doggy Company (updated Mar 2026)
 const LIFE_PILLARS = [
   { id: 'dine',       name: 'Dine',       icon: '🍖', path: '/dine',       color: 'from-amber-400 to-orange-400',    description: 'Nutrition, restaurants & cafes' },
@@ -1151,8 +1174,8 @@ const UnifiedPetPage = () => {
                       <p className="text-xs text-white/70">Current Tier</p>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 text-center">
-                      <p className="text-2xl font-bold text-white">{Object.keys(safePet.doggy_soul_answers || {}).length}</p>
-                      <p className="text-xs text-white/70">Questions Answered</p>
+                      <p className="text-2xl font-bold text-white">{countCanonicalAnswered(safePet.doggy_soul_answers)}/{TOTAL_CANONICAL}</p>
+                      <p className="text-xs text-white/70">Soul Questions</p>
                     </div>
                   </div>
                 </>
@@ -1399,8 +1422,8 @@ const UnifiedPetPage = () => {
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-purple-50 rounded-lg p-3 text-center">
-                    <p className="text-2xl font-bold text-purple-600">{Object.keys(safePet.doggy_soul_answers || {}).length}</p>
-                    <p className="text-xs text-gray-600">Questions Answered</p>
+                    <p className="text-2xl font-bold text-purple-600">{countCanonicalAnswered(safePet.doggy_soul_answers)}/{TOTAL_CANONICAL}</p>
+                    <p className="text-xs text-gray-600">Soul Questions</p>
                   </div>
                   <div className="bg-pink-50 rounded-lg p-3 text-center">
                     <p className="text-2xl font-bold text-pink-600">{unlockedAchievements.length}</p>
@@ -1978,7 +2001,7 @@ const UnifiedPetPage = () => {
                     </div>
                     <div className="flex-1 bg-blue-50 rounded-lg p-3">
                       <p className="font-semibold text-gray-900">Soul Journey Started</p>
-                      <p className="text-sm text-gray-600">{Object.keys(safePet.doggy_soul_answers || {}).length} questions answered</p>
+                      <p className="text-sm text-gray-600">{countCanonicalAnswered(safePet.doggy_soul_answers)} of {TOTAL_CANONICAL} soul questions answered</p>
                       <p className="text-xs text-blue-600 mt-1">Pet Soul™ Score: {displayScore}%</p>
                     </div>
                   </div>

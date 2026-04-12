@@ -113,8 +113,12 @@ async def get_orders(
 
 @orders_router.get("/orders/my-orders")
 async def get_my_orders(current_user: dict = Depends(get_current_user_from_token)):
-    """Get orders for the logged-in user"""
-    query = {"customer.email": current_user["email"]}
+    """Get orders for the logged-in user — only real TDC orders with a value"""
+    query = {
+        "customer.email": current_user["email"],
+        "order_id": {"$regex": "^TDC-"},
+        "total": {"$gt": 0}
+    }
     orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
     return {"orders": orders}
 

@@ -304,14 +304,35 @@ async def generate_nudges_for_pet(pet_id: str, background_tasks: BackgroundTasks
     # Get nudge types
     config = await db.app_settings.find_one({"key": "nudge_types"}, {"_id": 0})
     nudge_types = config.get("value", DEFAULT_NUDGE_TYPES) if config else DEFAULT_NUDGE_TYPES
-    
+
+    # Load user notification preferences (from notification_preferences collection)
+    user_email = (user or {}).get("email", pet.get("owner_email", "")).lower()
+    _prefs_doc = {}
+    if user_email:
+        _prefs_doc = await db.notification_preferences.find_one(
+            {"email": user_email}, {"_id": 0}
+        ) or {}
+
     generated_nudges = []
     today = datetime.now(timezone.utc).date()
     
     for nudge_type in nudge_types:
         if not nudge_type.get("is_active", True):
             continue
-        
+
+        # ── Check user's automation toggle preferences ──────────────────────
+        _nid = nudge_type.get("id", "")
+        # Birthday reminder toggle
+        if "birthday" in _nid and not _prefs_doc.get("whatsapp_birthday_reminder", True):
+            continue
+        # Medication / deworming / vaccination / vet reminder toggle
+        if any(k in _nid for k in ("medication", "deworming", "vaccination", "vet", "supplement")):
+            if not _prefs_doc.get("whatsapp_medication_reminder", True):
+                continue
+        # Daily digest toggle (future cron nudges)
+        if "daily_digest" in _nid or "daily" in _nid:
+            if not _prefs_doc.get("whatsapp_daily_digest", True):
+                continue
         trigger_type = nudge_type.get("trigger_type")
         trigger_config = nudge_type.get("trigger_config", {})
         
