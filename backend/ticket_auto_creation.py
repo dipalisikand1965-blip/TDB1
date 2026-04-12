@@ -29,6 +29,29 @@ logger = logging.getLogger(__name__)
 # Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
 from utils.spine_helper import handoff_to_spine
 
+# ── Admin instant WhatsApp alerts ──────────────────────────────────────────────
+# Dipali's number gets a WhatsApp for every new order and new ticket
+ADMIN_WHATSAPP = os.environ.get("ADMIN_WHATSAPP_NUMBER", "919739908844")
+
+async def _alert_admin(subject: str, member_name: str, member_phone: str = "", ticket_id: str = "") -> None:
+    """Send an instant WhatsApp ping to Dipali for every new order / ticket."""
+    try:
+        from whatsapp_notifications import send_whatsapp_message
+        lines = [
+            f"🔔 *New: {subject}*",
+        ]
+        if member_name:
+            lines.append(f"👤 {member_name}")
+        if member_phone:
+            lines.append(f"📞 {member_phone}")
+        if ticket_id:
+            lines.append(f"🎫 {ticket_id}")
+        lines.append("— TDC Service Desk")
+        await send_whatsapp_message(ADMIN_WHATSAPP, "\n".join(lines), "admin_alert")
+        logger.info(f"[ADMIN ALERT] WhatsApp sent to {ADMIN_WHATSAPP}: {subject}")
+    except Exception as e:
+        logger.warning(f"[ADMIN ALERT] WhatsApp ping failed (non-critical): {e}")
+
 # Database reference (set by server.py)
 db = None
 
@@ -159,6 +182,16 @@ async def create_auto_ticket(
     ticket_id = spine_result["ticket_id"]
     
     logger.info(f"[SPINE-MIGRATED] ticket_auto_creation.py:/auto/{event_type} → {ticket_id} | pillar={pillar} category={event_type}")
+
+    # ── Instant admin WhatsApp alert for actionable events ──────────────────
+    if action_required:
+        import asyncio
+        asyncio.ensure_future(_alert_admin(
+            subject=subject,
+            member_name=member_data.get("name") or member_data.get("email") or "",
+            member_phone=member_data.get("phone") or "",
+            ticket_id=ticket_id
+        ))
     
     return {
         "success": True,
