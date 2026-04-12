@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { usePillarContext } from '../../context/PillarContext';
 import { useAuth } from '../../context/AuthContext';
+import { applyMiraFilter } from '../../hooks/useMiraFilter';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -186,7 +187,22 @@ export default function MealBoxCard() {
       const res = await fetch(`${API}/api/mira/meal-box-products?${params}`);
       if (res.ok) {
         const data = await res.json();
-        setSlotsData(data.slots || []);
+        // ── Wire applyMiraFilter: re-rank each slot's candidate pool
+        // through full soul intelligence (health blocks, allergy synonyms,
+        // breed, life stage, soul bonus) before slotting.
+        const reRanked = (data.slots || []).map(slot => {
+          const pool = [slot.pick, ...(slot.alternatives || [])].filter(Boolean);
+          const ranked = applyMiraFilter(pool, pet);
+          const [newPick, ...newAlts] = ranked;
+          return {
+            ...slot,
+            pick: newPick
+              ? { ...newPick, mira_reason: newPick.miraReason || newPick.mira_reason }
+              : slot.pick,
+            alternatives: newAlts,
+          };
+        });
+        setSlotsData(reRanked);
         setTeaserDesc(data.teaser_desc || '');
       }
     } catch (e) {
