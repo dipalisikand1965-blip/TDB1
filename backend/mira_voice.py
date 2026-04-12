@@ -22,7 +22,49 @@ ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
 # - "Xb7hH8MSUJpSbSDYk0k2" - Alice (British, confident, news)
 # - "5TRppDPuxBF23owe37hG" - Articulate British Female
 # - "ptBd2v6mebIps3ZQEXD7" - Adela (Neutral British Female)
-VOICE_ID = "pFZP5JQG7iQjIQuC4Bku"  # Lily - British, warm, narration style (closest to Eloise)
+VOICE_ID = "pFZP5JQG7iQjIQuC4Bku"  # Lily - British, warm, narration style
+
+# ── Lily voice settings — tuned for warmth ────────────────────────────────────
+LILY_VOICE_SETTINGS = {
+    "stability":        0.75,   # Consistent, not robotic
+    "similarity_boost": 0.85,   # Stay close to Lily's natural voice
+    "style":            0.20,   # Subtle warmth — not dramatic
+}
+
+
+def preprocess_for_voice(text: str) -> str:
+    """
+    Fix pronunciations before sending to ElevenLabs Lily.
+    Lily is British English — adjust for Indian/TDC context.
+    """
+    replacements = {
+        # Concierge — the main offender (French loanword Lily botches)
+        "Concierge®":          "kon-see-airj",
+        "Concierge":           "kon-see-airj",
+        "concierge":           "kon-see-airj",
+        # Indian currency symbol
+        "₹":                   "rupees",
+        # TDC brand terms
+        "Mira®":               "Meera",
+        "Mira":                "Meera",
+        "Pet Soul™":           "Pet Soul",
+        "Soul Made™":          "Soul Made",
+        # Dog-parent terms Lily might flatten
+        "pawrent":             "paw-rent",
+        "Pawrent":             "Paw-rent",
+        "pawrents":            "paw-rents",
+        "Pawrents":            "Paw-rents",
+        # Markdown artefacts
+        "**":                  "",
+        "##":                  "",
+        "---":                 "",
+    }
+    for original, phonetic in replacements.items():
+        text = text.replace(original, phonetic)
+    # Strip leftover emoji (they cause Lily to stutter)
+    import re
+    text = re.sub(r'[^\x00-\x7F₹]+', ' ', text)
+    return text.strip()
 
 # OpenAI TTS Configuration (backup)
 OPENAI_API_KEY = os.environ.get("LLM_API_KEY") or os.environ.get("OPENAI_API_KEY")
@@ -30,11 +72,11 @@ OPENAI_API_KEY = os.environ.get("LLM_API_KEY") or os.environ.get("OPENAI_API_KEY
 class TTSRequest(BaseModel):
     text: str
     voice_id: Optional[str] = VOICE_ID
-    stability: float = 0.5
-    similarity_boost: float = 0.8
-    style: float = 0.5
+    stability: float = LILY_VOICE_SETTINGS["stability"]
+    similarity_boost: float = LILY_VOICE_SETTINGS["similarity_boost"]
+    style: float = LILY_VOICE_SETTINGS["style"]
     speed: float = 1.0
-    use_openai_backup: bool = False  # Set to True to force OpenAI TTS
+    use_openai_backup: bool = False
 
 class TTSResponse(BaseModel):
     audio_base64: str
@@ -96,36 +138,39 @@ async def generate_speech(request: TTSRequest):
     """
     provider = "elevenlabs"
     audio_data = None
-    
+
+    # Preprocess text for Lily's British English voice
+    processed_text = preprocess_for_voice(request.text)
+
     # Try ElevenLabs first (unless OpenAI backup is forced)
     if not request.use_openai_backup:
         try:
             client = get_eleven_client()
             if client:
                 from elevenlabs import VoiceSettings
-                
-                # Voice settings for warm, conversational British tone
+
+                # Lily voice settings — warm, full, close to natural
                 voice_settings = VoiceSettings(
                     stability=request.stability,
                     similarity_boost=request.similarity_boost,
                     style=request.style,
-                    use_speaker_boost=True
+                    use_speaker_boost=True,   # Clearer, fuller audio
                 )
-                
+
                 # Generate audio with ElevenLabs
                 audio_generator = client.text_to_speech.convert(
-                    text=request.text,
+                    text=processed_text,
                     voice_id=request.voice_id or VOICE_ID,
                     model_id="eleven_multilingual_v2",
                     voice_settings=voice_settings
                 )
-                
+
                 # Collect audio chunks
                 audio_data = b""
                 for chunk in audio_generator:
                     audio_data += chunk
-                    
-                logger.info(f"[VOICE] ElevenLabs generated speech for {len(request.text)} chars")
+
+                logger.info(f"[VOICE] ElevenLabs ✅ {len(request.text)}→{len(processed_text)} chars")
                 
         except Exception as e:
             logger.warning(f"[VOICE] ElevenLabs failed, trying OpenAI backup: {e}")
@@ -134,7 +179,7 @@ async def generate_speech(request: TTSRequest):
     # Fallback to OpenAI TTS
     if audio_data is None:
         logger.info("[VOICE] Using OpenAI TTS backup")
-        audio_data = await generate_with_openai(request.text)
+        audio_data = await generate_with_openai(processed_text)
         provider = "openai"
         
         if audio_data is None:
