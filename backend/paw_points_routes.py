@@ -468,9 +468,9 @@ async def get_ways_to_earn():
         {
             "id": "order",
             "name": "Place Orders",
-            "description": "Earn 1 point for every ₹10 spent",
+            "description": "Earn 5 Paw Points for every ₹100 spent",
             "icon": "🛒",
-            "points_example": "₹1000 order = 100 points"
+            "points_example": "₹1000 order = 50 points"
         },
         {
             "id": "soul_journey",

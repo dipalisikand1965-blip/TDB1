@@ -500,6 +500,11 @@ const Checkout = () => {
   const handleRedeemPoints = (points) => {
     const maxRedeemable = Math.min(loyaltyBalance?.points || 0, Math.floor(getCartTotal() / 0.5)); // Max based on cart value
     const validPoints = Math.max(0, Math.min(points, maxRedeemable));
+    if (validPoints > 0 && validPoints < 500) {
+      setPointsToRedeem(0);
+      setLoyaltyDiscount(0);
+      return; // Minimum 500 points required
+    }
     setPointsToRedeem(validPoints);
     setLoyaltyDiscount(validPoints * 0.5); // 1 point = ₹0.50
   };
@@ -2009,7 +2014,7 @@ _GST applicable on final invoice_
                             <Input
                               type="number"
                               placeholder="Points to redeem"
-                              min={100}
+                              min={500}
                               max={loyaltyBalance.points}
                               value={pointsToRedeem || ''}
                               onChange={(e) => handleRedeemPoints(parseInt(e.target.value) || 0)}
@@ -2025,14 +2030,14 @@ _GST applicable on final invoice_
                               Use All
                             </Button>
                           </div>
-                          <p className="text-xs text-gray-500">Min 100 points. 1 point = ₹0.50</p>
+                          <p className="text-xs text-gray-500">Min 500 points. 1 point = ₹0.50</p>
                         </div>
                       )}
                     </div>
                   ) : formData.email ? (
                     <div className="text-center py-4">
                       <p className="text-sm text-gray-500">No points yet</p>
-                      <p className="text-xs text-gray-400 mt-1">Earn 1 point for every ₹10 spent!</p>
+                      <p className="text-xs text-gray-400 mt-1">Earn 5 Paw Points for every ₹100 spent!</p>
                     </div>
                   ) : (
                     <div className="text-center py-4">
