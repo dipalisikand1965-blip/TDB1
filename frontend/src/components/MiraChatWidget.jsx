@@ -954,8 +954,27 @@ const MiraChatWidget = ({
   }, [voiceEnabled]);
   
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
-  const speakText = useCallback(async (text) => {
-    if (!voiceEnabledRef.current) return;
+  // Extract first 2 sentences for voice — warm, brief, British 🌸
+  const createVoiceSummary = useCallback((fullResponse) => {
+    // Strip markdown, bullets, and emojis
+    let clean = (fullResponse || '')
+      .replace(/[*#•🐾🌿🏔️🌱🥕✦→®™🎉✨🔥💡🛒💰🏥📋🎤]/g, '')
+      .replace(/\n+/g, ' ')
+      .replace(/ +/g, ' ')
+      .trim();
+    // Split on sentence boundaries and keep first 2
+    const sentences = clean.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(Boolean);
+    let summary = sentences.slice(0, 2).join(' ');
+    if (summary && !/[.!?]$/.test(summary)) summary += '.';
+    // Pronunciation fixes (matches backend preprocess_for_voice)
+    return summary
+      .replace(/Concierge®?/gi, 'kon-see-airj')
+      .replace(/Mira®?/g,       'Meera')
+      .replace(/₹/g,            'rupees')
+      .replace(/pawrents?/gi,   m => m[0] === 'P' ? 'Paw-rent' : 'paw-rent');
+  }, []);
+
+  const speakText = useCallback(async (text) => {    if (!voiceEnabledRef.current) return;
 
     // Stop any in-progress audio before starting new — prevents overlap on fast responses
     if (audioRef.current) {
@@ -1296,9 +1315,9 @@ const MiraChatWidget = ({
             }
           }
 
-          // ── ElevenLabs / TTS — speak the FULL completed text once ──
+          // ── ElevenLabs / TTS — speak first 2 sentences of completed response ──
           if (voiceEnabledRef.current && fullText) {
-            speakText(fullText);
+            speakText(createVoiceSummary(fullText));
           }
 
           // tdc.chat tracking
@@ -1380,7 +1399,7 @@ const MiraChatWidget = ({
             }]);
             
             if (voiceEnabledRef.current && !streamingWorked) {
-              speakText(data.response);
+              speakText(createVoiceSummary(data.response));
             }
             setIsSending(false);
             return; // Don't continue to regular message handling
@@ -1507,7 +1526,7 @@ const MiraChatWidget = ({
         }
         
         if (voiceEnabledRef.current && !streamingWorked) {
-          speakText(data.response);
+          speakText(createVoiceSummary(data.response));
         }
       } else {
         // Log the actual error response for debugging
