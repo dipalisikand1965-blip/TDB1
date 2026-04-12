@@ -101,7 +101,7 @@ const ConciergePickCard = ({
         `I'd like help with "${title}" for ${pet.name}. ${getPersonalizationMessage()}`
       );
       const returnUrl = encodeURIComponent(location.pathname);
-      navigate(`/mira-os?context=${context}&pillar=${pillar}&returnUrl=${returnUrl}`);
+      navigate(`/mira-search?context=${context}&pillar=${pillar}&returnUrl=${returnUrl}`);
     }
     
     setIsSubmitting(false);

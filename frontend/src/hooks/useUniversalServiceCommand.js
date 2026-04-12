@@ -215,7 +215,7 @@ const useUniversalServiceCommand = () => {
           description: `Your ${pillar} request has been received`,
           action: {
             label: 'View in inbox',
-            onClick: () => navigate(`/mira-os?openConcierge=true&ticket=${data.ticket_id}`)
+            onClick: () => navigate(`/mira-search?openConcierge=true&ticket=${data.ticket_id}`)
           },
           duration: 5000
         });
@@ -224,7 +224,7 @@ const useUniversalServiceCommand = () => {
       // Navigate to Mira OS Concierge (unified inbox)
       if (navigateToInbox) {
         setTimeout(() => {
-          navigate(`/mira-os?openConcierge=true&ticket=${data.ticket_id}`);
+          navigate(`/mira-search?openConcierge=true&ticket=${data.ticket_id}`);
         }, 1500);
       }
       

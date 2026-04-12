@@ -1187,7 +1187,7 @@ const Home = () => {
               <div>
                 <h4 className="text-white font-semibold mb-4">Services</h4>
                 <div className="space-y-2">
-                  <Link to="/mira-os" className="block text-white/50 hover:text-white transition-colors text-sm">Meet Mira AI</Link>
+                  <Link to="/mira-search" className="block text-white/50 hover:text-white transition-colors text-sm">Meet Mira AI</Link>
                   <Link to="/products" className="block text-white/50 hover:text-white transition-colors text-sm">Shop Products</Link>
                   <Link to="/services" className="block text-white/50 hover:text-white transition-colors text-sm">Concierge® Services</Link>
                 </div>

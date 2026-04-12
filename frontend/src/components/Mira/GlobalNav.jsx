@@ -174,7 +174,7 @@ const GlobalNav = ({
         </button>
 
         <button
-          onClick={() => navigate('/mira-demo')}
+          onClick={() => navigate('/mira-search')}
           className={`
             flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all
             ${isMiraActive 

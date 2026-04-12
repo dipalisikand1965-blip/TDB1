@@ -1689,7 +1689,7 @@ const CarePage = () => {
                 <Button variant="outline" onClick={resetWizard} className="flex-1">
                   New Request
                 </Button>
-                <Button onClick={() => { resetWizard(); window.location.href = `/mira-os?openConcierge=true&ticket=${requestResult?.ticket_id || ''}`; }} className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+                <Button onClick={() => { resetWizard(); window.location.href = `/mira-search?openConcierge=true&ticket=${requestResult?.ticket_id || ''}`; }} className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white">
                   View in Concierge® Inbox
                 </Button>
               </div>
