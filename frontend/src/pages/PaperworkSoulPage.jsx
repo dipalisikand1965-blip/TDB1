@@ -82,7 +82,7 @@ function getDocScore(pet) {
   // Vaccinated: check DSA answer OR health_vault OR top-level flag
   const isVaccinated = !!(pet?.vaccinated) ||
     (Array.isArray(dsa?.vaccinated) ? dsa.vaccinated[0]?.toLowerCase().includes('yes') : dsa?.vaccination_status === 'up_to_date') ||
-    (pet?.health_vault?.vaccinations?.length > 0);
+    (pet?.vault?.vaccines?.length > 0);
   if (isVaccinated) score += 15;
   // Microchipped: check pet.microchip (primary) or DSA
   const isMicrochipped = !!pet?.microchip || !!dsa?.microchipped;
@@ -105,7 +105,7 @@ function getMissingDocs(pet) {
   const missing = [];
   const isVaccinated = !!(pet?.vaccinated) ||
     (Array.isArray(dsa?.vaccinated) ? dsa.vaccinated[0]?.toLowerCase().includes('yes') : dsa?.vaccination_status === 'up_to_date') ||
-    (pet?.health_vault?.vaccinations?.length > 0);
+    (pet?.vault?.vaccines?.length > 0);
   if (!isVaccinated)                                                  missing.push("Vaccination records");
   if (!pet?.microchip && !dsa?.microchipped)                         missing.push("Microchip registration");
   if (!dsa?.insurance || String(dsa.insurance).toLowerCase().includes('no')) missing.push("Pet insurance");

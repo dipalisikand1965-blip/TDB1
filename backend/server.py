@@ -136,7 +136,7 @@ from data_migration import (
     set_migration_admin_verify
 )
 from health_vault_routes import (
-    health_vault_router,
+    health_vault_router as _health_vault_router_unused,
     set_database as set_health_vault_db
 )
 from pet_soul_routes import (
@@ -22974,7 +22974,8 @@ set_source_download_admin(verify_admin, {"username": ADMIN_USERNAME, "password":
 
 # Concierge Command Center
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
-app.include_router(health_vault_router)  # Health Vault at /api/health-vault/*
+# health_vault_router RETIRED — ghost backend. All vault data lives in pet.vault.* via pet_vault_routes.py
+# app.include_router(health_vault_router)
 set_command_center_db(db)  # Initialize Command Center with database
 set_os_concierge_db(db)  # Initialize OS Concierge (tab in MiraDemoPage) with database
 set_health_vault_db(db)  # Initialize Health Vault with database
