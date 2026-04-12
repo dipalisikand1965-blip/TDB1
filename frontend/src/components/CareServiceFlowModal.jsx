@@ -296,7 +296,7 @@ const CareServiceFlowModal = ({
         // Navigate to Mira OS with Concierge® panel open and ticket focused
         // Using state to tell MiraDemoPage to open Concierge® with this ticket
         setTimeout(() => {
-          window.location.href = `/mira-demo?openConcierge=true&ticket=${result.ticketId}`;
+          window.location.href = `/mira-search?openConcierge=true&ticket=${result.ticketId}`;
         }, 500);
       } else {
         throw new Error(result.error);

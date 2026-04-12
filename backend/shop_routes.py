@@ -215,7 +215,7 @@ async def export_shop_products():
     """Export all products for CSV download"""
     db = get_db()
     
-    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(5000)  # Cap: prevents OOM on large catalogs
     return {"products": products}
 
 
@@ -326,7 +326,7 @@ async def export_shop_orders(
         else:
             query["created_at"] = {"$lte": end_date}
     
-    orders = await db.orders.find(query, {"_id": 0}).to_list(10000)
+    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(2000)  # Cap: admin export bounded by date range
     return {"orders": orders}
 
 
@@ -522,7 +522,7 @@ async def sync_to_unified_products():
     db = get_db()
     logger = get_logger()
     
-    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(7500)  # Cap at 7500 for sync safety
     
     synced = 0
     for product in products:

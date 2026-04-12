@@ -29,7 +29,7 @@ const WallLightbox = ({ photo, isOwn, liked, onLike, onClose, onPrev, onNext, ha
       style={{
         position: 'fixed', inset: 0,
         background: 'rgba(0,0,0,0.90)',
-        zIndex: 3000,
+        zIndex: 10000,
         display: 'flex',
         alignItems: isMobile ? 'flex-start' : 'center',
         justifyContent: 'center',

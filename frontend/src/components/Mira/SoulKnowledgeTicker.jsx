@@ -338,7 +338,7 @@ const SoulKnowledgeTicker = ({
             <button className="action-icon-btn" title="Profile" onClick={() => navigate(`/my-pets?pet=${petId}`)}>
               <span>🔗</span>
             </button>
-            <button className="action-icon-btn" title="Add Memory" onClick={() => navigate(`/mira-demo`)}>
+            <button className="action-icon-btn" title="Add Memory" onClick={() => navigate(`/mira-search`)}>
               <span>+</span>
             </button>
           </div>

@@ -724,6 +724,34 @@ async def save_soul_answer_simple(request: Request):
         
         await db.pets.update_one(pet_filter, {"$set": update_data})
         
+        # Auto-sync celebration dates: if birth_date or celebration_preferences saved, update celebrations array
+        try:
+            refreshed = await db.pets.find_one(pet_filter, {"_id": 0, "birth_date": 1, "doggy_soul_answers": 1, "celebrations": 1})
+            birth_date = refreshed.get("birth_date") or (refreshed.get("doggy_soul_answers") or {}).get("birth_date")
+            cel_prefs = (refreshed.get("doggy_soul_answers") or {}).get("celebration_preferences", [])
+            existing_celebrations = refreshed.get("celebrations") or []
+            existing_occasions = [c.get("occasion") for c in existing_celebrations]
+            
+            new_celebrations = list(existing_celebrations)
+            if birth_date and ("Birthday" in cel_prefs or question_id in ("birth_date", "celebration_preferences")):
+                # Normalize to MM-DD for recurring yearly
+                bd = birth_date if len(birth_date) == 5 else birth_date[5:]  # Strip year if YYYY-MM-DD
+                if "birthday" not in existing_occasions:
+                    new_celebrations.append({"occasion": "birthday", "date": bd, "is_recurring": True, "custom_name": None})
+                    logger.info(f"[CELEBRATE] Auto-created birthday entry ({bd}) for pet {pet_id}")
+            
+            gotcha_date = (refreshed.get("doggy_soul_answers") or {}).get("gotcha_date") or refreshed.get("gotcha_date")
+            if gotcha_date and ("Gotcha Day" in cel_prefs or question_id in ("gotcha_date", "celebration_preferences")):
+                gd = gotcha_date if len(gotcha_date) == 5 else gotcha_date[5:]
+                if "gotcha_day" not in existing_occasions:
+                    new_celebrations.append({"occasion": "gotcha_day", "date": gd, "is_recurring": True, "custom_name": None})
+                    logger.info(f"[CELEBRATE] Auto-created gotcha_day entry ({gd}) for pet {pet_id}")
+            
+            if len(new_celebrations) > len(existing_celebrations):
+                await db.pets.update_one(pet_filter, {"$set": {"celebrations": new_celebrations}})
+        except Exception as _cel_err:
+            logger.warning(f"[CELEBRATE] Auto-sync celebrations failed: {_cel_err}")
+        
         # Recalculate scores
         pet = await db.pets.find_one(pet_filter, {"_id": 0})
         answers = pet.get("doggy_soul_answers") or {}
@@ -1340,6 +1368,27 @@ async def learn_from_order(db, order_data: dict):
             {"id": pet_id},
             {"$set": soul_updates}
         )
+        
+        # Also write new allergies to vault.allergies for immediate UI visibility
+        if "food_allergies" in updates:
+            for allergy_name in updates["food_allergies"]:
+                # Only push if not already in vault
+                already_in_vault = await db.pets.find_one(
+                    {"id": pet_id, "vault.allergies.name": allergy_name},
+                    {"_id": 1}
+                )
+                if not already_in_vault:
+                    await db.pets.update_one(
+                        {"id": pet_id},
+                        {"$push": {"vault.allergies": {
+                            "id": f"allergy-{allergy_name.lower().replace(' ', '-')}-auto",
+                            "name": allergy_name,
+                            "severity": "unknown",
+                            "source": "mira_learned_from_order",
+                            "noted_at": datetime.now(timezone.utc).isoformat()
+                        }}}
+                    )
+                    logger.info(f"[ALLERGY] Wrote '{allergy_name}' to vault.allergies for pet {pet_id}")
         
         # Add to pillar_interactions
         await db.pets.update_one(
