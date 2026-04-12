@@ -10,16 +10,30 @@ Handles:
 import os
 import logging
 import uuid
+import secrets
 from email_templates import get_email_template, detail_box, detail_row
 from whatsapp_notifications import send_whatsapp_message, format_phone_number
 import io
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict, Any
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, EmailStr
 import razorpay
 import resend
+
+# Local admin verification (mirrors server.py verify_admin)
+_checkout_security = HTTPBasic(auto_error=True)
+_ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "aditya")
+_ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "lola4304")
+
+def _verify_admin(credentials: HTTPBasicCredentials = Depends(_checkout_security)):
+    ok_user = secrets.compare_digest(credentials.username, _ADMIN_USERNAME)
+    ok_pass = secrets.compare_digest(credentials.password, _ADMIN_PASSWORD)
+    if not (ok_user and ok_pass):
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    return credentials.username
 
 # PDF generation
 from reportlab.lib import colors
@@ -577,93 +591,103 @@ async def verify_payment(request: VerifyPaymentRequest):
                 _order_id   = order.get("order_id", request.order_id)
                 _now_iso    = datetime.now(timezone.utc).isoformat()
                 _sd_id      = f"ORD-{_order_id[-8:].upper()}" if _order_id else f"ORD-{uuid.uuid4().hex[:8].upper()}"
-                _items_summary = ", ".join([f"{i.get('name','Item')} ×{i.get('quantity',1)}" for i in _items])
-                _items_lines   = "\n".join([
-                    f"  • {i.get('name','?')} ×{i.get('quantity',1)} — ₹{i.get('price',0)}"
-                    for i in _items
-                ])
-                _gst_total = _pricing.get("gst_details", {}).get("total_tax", 0)
-                _briefing = (
-                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                    f"  🛒 SHOP ORDER — RAZORPAY PAID ✅\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                    f"🧾 Order ID: {_order_id}\n"
-                    f"📦 Items:\n{_items_lines}\n\n"
-                    f"💰 Subtotal: ₹{_pricing.get('subtotal', 0):.2f}  |  "
-                    f"Shipping: ₹{_pricing.get('shipping_fee', 0):.2f}  |  "
-                    f"GST: ₹{_gst_total:.2f}  |  "
-                    f"Total: ₹{_pricing.get('grand_total', 0):.2f}\n"
-                    f"💳 Payment: PAID via Razorpay\n"
-                    f"👤 Customer: {_customer.get('name','?')} | {_customer.get('email','?')} | {_customer.get('phone','?')}\n"
-                    f"🐾 Pet: {_pet.get('name','?')} ({_pet.get('breed','?')})\n"
-                    f"📍 Delivery: {_delivery.get('address','?')}, {_delivery.get('city','?')} — {_delivery.get('method','delivery').upper()}\n"
-                    f"📝 Instructions: {order.get('special_instructions') or 'None'}\n"
-                )
-                _sd_ticket = {
-                    "id":               _sd_id,
-                    "ticket_id":        _sd_id,
-                    "channel":          "web",
-                    "category":         "shop",
-                    "request_type":     "product_order",
-                    "status":           "open",
-                    "priority":         "normal",
-                    "subject":          f"Shop Order — {_items_summary[:60]}",
-                    "order_id":         _order_id,
-                    "customer_name":    _customer.get("name"),
-                    "customer_email":   _customer.get("email"),
-                    "customer_phone":   _customer.get("phone"),
-                    "user_email":       _customer.get("email"),
-                    "member": {
-                        "name":  _customer.get("name"),
-                        "email": _customer.get("email"),
-                        "phone": _customer.get("phone"),
-                    },
-                    "pet_name":         _pet.get("name"),
-                    "pet_breed":        _pet.get("breed"),
-                    "pillar":           "shop",
-                    "items":            _items,
-                    "items_summary":    _items_summary,
-                    "total":            _pricing.get("grand_total"),
-                    "delivery":         _delivery,
-                    "special_instructions": order.get("special_instructions"),
-                    "description":      _briefing,
-                    "conversation": [{
-                        "sender":     "mira",
-                        "source":     "order_briefing",
-                        "is_briefing": True,
-                        "text":       _briefing,
-                        "timestamp":  _now_iso,
-                    }],
-                    "messages":      [],
-                    "activity_log":  [{"event": "payment_confirmed", "at": _now_iso}],
-                    "created_at":    _now_iso,
-                    "updated_at":    _now_iso,
-                }
-                await db.service_desk_tickets.insert_one(_sd_ticket)
-                _sd_ticket.pop("_id", None)
-                # Admin bell notification
-                await db.admin_notifications.insert_one({
-                    "id":        f"notif-{uuid.uuid4().hex[:12]}",
-                    "type":      "order",
-                    "title":     f"🛒 Paid Order #{_order_id}",
-                    "message":   f"{_customer.get('name','Customer')} • {len(_items)} item(s) • ₹{_pricing.get('grand_total', 0):.0f} • PAID ✅",
-                    "category":  "shop",
-                    "related_id": _sd_id,
-                    "link_to":   f"/admin?tab=servicedesk&ticket={_sd_id}",
-                    "priority":  "high",
-                    "metadata": {
-                        "order_id":      _order_id,
-                        "customer_name": _customer.get("name"),
-                        "customer_email": _customer.get("email"),
-                        "total":         _pricing.get("grand_total"),
-                        "items_count":   len(_items),
-                    },
-                    "read":       False,
-                    "created_at": _now_iso,
-                })
-                logger.info(f"✅ Service desk ticket {_sd_id} + admin notification created for order {_order_id}")
+                
+                # Guard: never proceed if db is not initialized
+                if db is None:
+                    logger.error(f"[ORDER SD] db is None — ticket NOT created for {_order_id}. Check set_checkout_db() call in server.py")
+                    raise RuntimeError("DB not initialized in checkout_routes")
+
+                # Check for duplicate before inserting
+                existing = await db.service_desk_tickets.find_one({"order_id": _order_id}, {"_id": 0, "id": 1})
+                if existing:
+                    logger.info(f"[ORDER SD] Ticket already exists for order {_order_id}: {existing['id']} — skipping")
+                else:
+                    _items_summary = ", ".join([f"{i.get('name','Item')} ×{i.get('quantity',1)}" for i in _items])
+                    _items_lines   = "\n".join([
+                        f"  • {i.get('name','?')} ×{i.get('quantity',1)} — ₹{i.get('price',0)}"
+                        for i in _items
+                    ])
+                    _gst_total = _pricing.get("gst_details", {}).get("total_tax", 0)
+                    _briefing = (
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        f"  🛒 SHOP ORDER — RAZORPAY PAID ✅\n"
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                        f"🧾 Order ID: {_order_id}\n"
+                        f"📦 Items:\n{_items_lines}\n\n"
+                        f"💰 Subtotal: ₹{_pricing.get('subtotal', 0):.2f}  |  "
+                        f"Shipping: ₹{_pricing.get('shipping_fee', 0):.2f}  |  "
+                        f"GST: ₹{_gst_total:.2f}  |  "
+                        f"Total: ₹{_pricing.get('grand_total', 0):.2f}\n"
+                        f"💳 Payment: PAID via Razorpay\n"
+                        f"👤 Customer: {_customer.get('name','?')} | {_customer.get('email','?')} | {_customer.get('phone','?')}\n"
+                        f"🐾 Pet: {_pet.get('name','?')} ({_pet.get('breed','?')})\n"
+                        f"📍 Delivery: {_delivery.get('address','?')}, {_delivery.get('city','?')} — {_delivery.get('method','delivery').upper()}\n"
+                        f"📝 Instructions: {order.get('special_instructions') or 'None'}\n"
+                    )
+                    _sd_ticket = {
+                        "id":               _sd_id,
+                        "ticket_id":        _sd_id,
+                        "channel":          "web",
+                        "category":         "shop",
+                        "request_type":     "product_order",
+                        "status":           "open",
+                        "priority":         "normal",
+                        "subject":          f"Shop Order — {_items_summary[:60]}",
+                        "order_id":         _order_id,
+                        "customer_name":    _customer.get("name"),
+                        "customer_email":   _customer.get("email"),
+                        "customer_phone":   _customer.get("phone"),
+                        "user_email":       _customer.get("email"),
+                        "member": {
+                            "name":  _customer.get("name"),
+                            "email": _customer.get("email"),
+                            "phone": _customer.get("phone"),
+                        },
+                        "pet_name":         _pet.get("name"),
+                        "pet_breed":        _pet.get("breed"),
+                        "pillar":           "shop",
+                        "items":            _items,
+                        "items_summary":    _items_summary,
+                        "total":            _pricing.get("grand_total"),
+                        "delivery":         _delivery,
+                        "special_instructions": order.get("special_instructions"),
+                        "description":      _briefing,
+                        "conversation": [{
+                            "sender":     "mira",
+                            "source":     "order_briefing",
+                            "is_briefing": True,
+                            "text":       _briefing,
+                            "timestamp":  _now_iso,
+                        }],
+                        "messages":      [],
+                        "activity_log":  [{"event": "payment_confirmed", "at": _now_iso}],
+                        "created_at":    _now_iso,
+                        "updated_at":    _now_iso,
+                    }
+                    await db.service_desk_tickets.insert_one(_sd_ticket)
+                    _sd_ticket.pop("_id", None)
+                    await db.admin_notifications.insert_one({
+                        "id":        f"notif-{uuid.uuid4().hex[:12]}",
+                        "type":      "order",
+                        "title":     f"🛒 Paid Order #{_order_id}",
+                        "message":   f"{_customer.get('name','Customer')} • {len(_items)} item(s) • ₹{_pricing.get('grand_total', 0):.0f} • PAID ✅",
+                        "category":  "shop",
+                        "related_id": _sd_id,
+                        "link_to":   f"/admin?tab=servicedesk&ticket={_sd_id}",
+                        "priority":  "high",
+                        "metadata": {
+                            "order_id":      _order_id,
+                            "customer_name": _customer.get("name"),
+                            "customer_email": _customer.get("email"),
+                            "total":         _pricing.get("grand_total"),
+                            "items_count":   len(_items),
+                        },
+                        "read":       False,
+                        "created_at": _now_iso,
+                    })
+                    logger.info(f"✅ Service desk ticket {_sd_id} + admin notification created for order {_order_id}")
             except Exception as _e:
-                logger.error(f"[ORDER SD] Failed to create service desk ticket: {_e}", exc_info=True)
+                logger.error(f"[ORDER SD] Failed to create service desk ticket for {order.get('order_id','?')}: {type(_e).__name__}: {_e}", exc_info=True)
 
         # ═══════════════════════════════════════════════════════════════════════
         # TRAIT GRAPH UPDATE - Per MOJO Bible Part 7 §4
@@ -1077,3 +1101,72 @@ async def download_invoice_pdf(order_id: str):
             "Content-Disposition": f"attachment; filename=Invoice-{order_id}.pdf"
         }
     )
+
+
+@checkout_router.post("/admin/repair-missing-tickets")
+async def repair_missing_order_tickets(username: str = Depends(_verify_admin)):
+    """
+    Retroactive repair: scan all paid orders that have no service_desk ticket.
+    Creates a minimal ticket for each orphaned order so it shows in the Service Desk.
+    Safe to call multiple times — duplicate-checks before inserting.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="DB not initialized")
+
+    repaired, skipped, errors = [], [], []
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    paid_orders = await db.orders.find(
+        {"payment_status": "paid"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=500)
+
+    for order in paid_orders:
+        oid = order.get("order_id", "")
+        if not oid:
+            continue
+        existing = await db.service_desk_tickets.find_one({"order_id": oid}, {"_id": 0, "id": 1})
+        if existing:
+            skipped.append(oid)
+            continue
+        try:
+            sd_id   = f"ORD-{oid[-8:].upper()}"
+            customer = order.get("customer", {})
+            pricing  = order.get("pricing", {})
+            pet      = order.get("pet", {})
+            items    = order.get("items", [])
+            delivery = order.get("delivery", {})
+            summary  = ", ".join([f"{i.get('name','Item')} ×{i.get('quantity',1)}" for i in items])
+            ticket = {
+                "id": sd_id, "ticket_id": sd_id,
+                "channel": "web", "category": "shop", "request_type": "product_order",
+                "status": "open", "priority": "normal",
+                "subject": f"Shop Order (Repaired) — {summary[:60]}",
+                "order_id": oid,
+                "customer_name": customer.get("name"), "customer_email": customer.get("email"),
+                "customer_phone": customer.get("phone"), "user_email": customer.get("email"),
+                "member": {"name": customer.get("name"), "email": customer.get("email"), "phone": customer.get("phone")},
+                "pet_name": pet.get("name"), "pet_breed": pet.get("breed"),
+                "pillar": "shop", "items": items, "items_summary": summary,
+                "total": pricing.get("grand_total"), "delivery": delivery,
+                "description": f"[REPAIRED] Ticket auto-created retroactively. Order {oid}. Paid ✅",
+                "conversation": [{"sender":"mira","text":f"Order {oid} confirmed. ₹{pricing.get('grand_total',0):.0f} paid.","timestamp":now_iso,"is_briefing":True}],
+                "messages": [], "activity_log": [{"event":"ticket_repaired","at":now_iso}],
+                "created_at": order.get("created_at", now_iso), "updated_at": now_iso,
+            }
+            await db.service_desk_tickets.insert_one(ticket)
+            ticket.pop("_id", None)
+            repaired.append(oid)
+            logger.info(f"[REPAIR] Created ticket {sd_id} for order {oid}")
+        except Exception as e:
+            errors.append({"order_id": oid, "error": str(e)})
+            logger.error(f"[REPAIR] Failed for {oid}: {e}")
+
+    return {
+        "success": True,
+        "repaired": len(repaired),
+        "skipped_already_had_ticket": len(skipped),
+        "errors": len(errors),
+        "repaired_orders": repaired,
+        "error_details": errors,
+    }
