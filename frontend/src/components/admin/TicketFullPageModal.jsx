@@ -772,7 +772,8 @@ const TicketFullPageModal = ({
                 </div>
 
                 {/* ========== PINNED REPLY INPUT - ALWAYS VISIBLE ========== */}
-                <div className="border-t bg-white p-3 flex-shrink-0">
+                <div className="border-t bg-white p-3 flex-shrink-0 sticky bottom-0"
+                     style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom, 12px))' }}>
                   
                   {/* Internal Note Toggle + AI Controls Row */}
                   <div className="flex items-center justify-between mb-2">
