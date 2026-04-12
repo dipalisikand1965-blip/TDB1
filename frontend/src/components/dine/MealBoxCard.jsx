@@ -183,22 +183,52 @@ export default function MealBoxCard() {
         fav_protein: favProtein,
         health_condition: healthCondition,
         pet_name: petName,
+        pet_breed: pet?.breed || '',
       });
       const res = await fetch(`${API}/api/mira/meal-box-products?${params}`);
       if (res.ok) {
         const data = await res.json();
-        // ── Wire applyMiraFilter: re-rank each slot's candidate pool
-        // through full soul intelligence (health blocks, allergy synonyms,
-        // breed, life stage, soul bonus) before slotting.
+
+        // ── Breed mismatch guard ──────────────────────────────────────────
+        // Product names like "Cocker Spaniel Food Bowl" should never be the
+        // top pick for an Indie (or any non-Cocker-Spaniel) dog.
+        // applyMiraFilter can't catch this because breed_tags are empty in DB.
+        // This function re-sorts a ranked pool so:
+        //   1. Breed-matched names (e.g. "Indie Bowl") come first
+        //   2. Generic names (no breed in name) come next
+        //   3. Breed-mismatched names come last (last resort only)
+        const BREED_NAMES_IN_PRODUCTS = [
+          'cocker spaniel','labrador','golden retriever','german shepherd',
+          'rottweiler','irish setter','poodle','beagle','dachshund','pug',
+          'boxer','husky','dalmatian','bulldog','shih tzu','maltese',
+          'chihuahua','dobermann','doberman','great dane','saint bernard',
+          'border collie','australian shepherd','indie','mixed breed',
+        ];
+        const guardBreedMismatch = (ranked, petBreed) => {
+          const breed = (petBreed || '').toLowerCase();
+          const matched = [], generic = [], mismatched = [];
+          for (const p of ranked) {
+            const name = (p.name || '').toLowerCase();
+            const foundBreed = BREED_NAMES_IN_PRODUCTS.find(b => name.includes(b));
+            if (!foundBreed)                                              generic.push(p);
+            else if (breed.includes(foundBreed) || foundBreed.includes(breed)) matched.push(p);
+            else                                                          mismatched.push(p);
+          }
+          return [...matched, ...generic, ...mismatched];
+        };
+
+        // ── Wire applyMiraFilter + breed guard ───────────────────────────
         const reRanked = (data.slots || []).map(slot => {
           const pool = [slot.pick, ...(slot.alternatives || [])].filter(Boolean);
-          const ranked = applyMiraFilter(pool, pet);
-          const [newPick, ...newAlts] = ranked;
+          const miraRanked  = applyMiraFilter(pool, pet);
+          const finalRanked = guardBreedMismatch(miraRanked, pet?.breed);
+          const [newPick, ...newAlts] = finalRanked;
+          const reason = newPick?.miraReason || newPick?.mira_reason ||
+            (newPick?.name?.toLowerCase().includes((pet?.breed||'').toLowerCase())
+              ? `Matched for ${pet?.breed}` : 'Best allergy-safe option for Mojo');
           return {
             ...slot,
-            pick: newPick
-              ? { ...newPick, mira_reason: newPick.miraReason || newPick.mira_reason }
-              : slot.pick,
+            pick: newPick ? { ...newPick, mira_reason: reason } : slot.pick,
             alternatives: newAlts,
           };
         });
