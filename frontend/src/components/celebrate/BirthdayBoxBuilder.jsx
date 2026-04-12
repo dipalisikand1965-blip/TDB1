@@ -491,7 +491,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
         style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          zIndex: 9200,
+          zIndex: 10000,
           background: 'rgba(10,0,26,0.80)',
           backdropFilter: 'blur(4px)',
         }}
@@ -512,7 +512,7 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 9201,
+          zIndex: 10001,
           display: 'flex',
           // Mobile: pin to top so X button clears the sticky header
           alignItems: isMobile ? 'flex-start' : 'center',

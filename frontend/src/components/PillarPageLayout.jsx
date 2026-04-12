@@ -340,7 +340,7 @@ const PillarPageLayout = ({
                     // Custom creations flow to Mira concierge
                     <Link
                       key={subcat.id}
-                      to="/mira-demo?custom=true"
+                      to="/mira-search?custom=true"
                       className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl font-medium text-xs sm:text-sm transition-all min-w-[80px] bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-300 text-purple-700 hover:from-purple-200 hover:to-pink-200`}
                       data-testid={`subcat-${subcat.id}`}
                     >

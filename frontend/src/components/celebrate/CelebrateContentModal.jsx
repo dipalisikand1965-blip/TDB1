@@ -1664,9 +1664,8 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
         borderTopRightRadius: 24,
         display: 'flex',
         flexDirection: 'column',
-        zIndex: 56,
+        zIndex: 10001,
       }}
-      data-testid={`celebrate-modal-${category}`}
     >
       {/* Drag handle (mobile only) */}
       {!isDesktop && (
@@ -2220,10 +2219,10 @@ const CelebrateContentModal = ({ isOpen, onClose, category, pet, onConciergeRequ
   return ReactDOM.createPortal(
     <>
       {/* Backdrop — rendered directly in document.body to escape any CSS transform stacking context */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" style={{ zIndex: 55 }} onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" style={{ zIndex: 10000 }} onClick={onClose} />
       {/* Desktop: flex centering wrapper */}
       {isDesktop ? (
-        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 56, pointerEvents: 'none' }}>
+        <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 10001, pointerEvents: 'none' }}>
           <div style={{ pointerEvents: 'auto' }}>{ModalContent}</div>
         </div>
       ) : (

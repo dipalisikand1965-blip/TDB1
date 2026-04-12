@@ -97,9 +97,9 @@ function PetSoulJourneyRedirect() {
   return <Navigate to={`/pets/${petId}/soul`} replace />;
 }
 
-// Redirect from old /mira-demo to new /mira-os
+// Redirect from old /mira-demo to new /mira-search
 function MiraDemoRedirect() {
-  return <Navigate to="/mira-os" replace />;
+  return <Navigate to="/mira-search" replace />;
 }
 
 // Redirect component for celebrate sub-categories to main celebrate page

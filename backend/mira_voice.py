@@ -161,6 +161,7 @@ async def generate_speech(request: TTSRequest):
 
     # Preprocess text for Lily's British English voice
     processed_text = preprocess_for_voice(request.text)
+    logger.info(f"[VOICE] Lily will say: {processed_text[:200]!r}")  # Confirm Concierge → kon-see-airj, Mira → Meera
 
     # Try ElevenLabs first (unless OpenAI backup is forced)
     if not request.use_openai_backup:
