@@ -81,6 +81,14 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   // Layout
   const [isExpanded, setIsExpanded] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  // Detect mobile on resize
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
   
   // Conversation ref for auto-scroll
   const conversationEndRef = useRef(null);
@@ -472,13 +480,13 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   }
 
   return (
-    <div className={`flex h-[calc(100vh-120px)] bg-white rounded-lg border shadow-sm overflow-hidden ${
+    <div className={`flex ${isMobile ? 'flex-col' : ''} h-[calc(100vh-120px)] bg-white rounded-lg border shadow-sm overflow-hidden ${
       isExpanded ? 'fixed inset-4 z-50' : ''
     }`} data-testid="service-desk-workspace">
       
-      {/* LEFT PANEL - Ticket Queue */}
-      {showSidebar && (
-        <div className={`border-r flex flex-col ${isExpanded ? 'w-[350px]' : 'w-[320px]'} flex-shrink-0`}>
+      {/* LEFT PANEL - Ticket Queue — hidden on mobile when ticket is selected */}
+      {(showSidebar && (!isMobile || !selectedTicket)) && (
+        <div className={`border-r flex flex-col ${isMobile ? 'w-full flex-1' : isExpanded ? 'w-[350px]' : 'w-[320px]'} flex-shrink-0`}>
           {/* Queue Header */}
           <div className="p-3 border-b bg-gray-50">
             <div className="flex items-center justify-between mb-3">
@@ -564,7 +572,8 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
         </div>
       )}
       
-      {/* RIGHT PANEL - Ticket Workspace */}
+      {/* RIGHT PANEL - Ticket Workspace — on mobile, only shown when a ticket is selected */}
+      {(!isMobile || selectedTicket) && (
       <div className="flex-1 flex flex-col min-w-0">
         {!selectedTicket ? (
           /* No Ticket Selected State */
@@ -582,7 +591,13 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    {!showSidebar && (
+                    {/* Mobile back button */}
+                    {isMobile && (
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedTicket(null)} className="mr-1 -ml-2 text-blue-600">
+                        ← Tickets
+                      </Button>
+                    )}
+                    {!showSidebar && !isMobile && (
                       <Button variant="ghost" size="sm" onClick={() => setShowSidebar(true)} className="mr-2">
                         <PanelLeft className="w-4 h-4" />
                       </Button>
@@ -926,6 +941,8 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
             </div>
           </div>
         </div>
+      )}
+      </div>
       )}
     </div>
   );
