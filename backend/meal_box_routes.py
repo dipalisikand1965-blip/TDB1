@@ -250,7 +250,7 @@ async def get_meal_box_products(
             reason = mira_scores.get(pick["id"], {}).get("mira_reason", "")
             if not reason and prot:
                 reason = f"Matches {pet_name or 'your dog'}'s {prot.lower()} preference"
-            alts = candidates[1:4]
+            alts = candidates[1:8]   # wider pool → frontend can strip mismatches and still have good options
             slot_result = {
                 "key": slot_cfg["key"],
                 "label": slot_cfg["label"],
