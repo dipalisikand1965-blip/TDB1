@@ -756,32 +756,9 @@ const MiraChatWidget = ({
           } else {
             fullGreeting = `Hi! Good ${getTimeOfDay()}! How can I help you today?`;
           }
-          
-          const utterance = new SpeechSynthesisUtterance(fullGreeting);
-          utterance.pitch = 1.15;
-          utterance.rate = 0.92;
-          
-          // STRICT FEMALE voice selection
-          const voices = synth.getVoices();
-          const knownMaleVoices = ['Daniel', 'George', 'James', 'David', 'Mark', 'Alex', 'Fred', 'Google US English', 'Microsoft David'];
-          const femaleVoice = voices.find(v => 
-            v.name === 'Kate' || v.name === 'Serena' || v.name === 'Martha' ||
-            v.name.includes('Google UK English Female') || v.name.includes('Microsoft Hazel') ||
-            v.name.includes('Microsoft Susan')
-          ) || voices.find(v =>
-            v.name === 'Samantha' || v.name === 'Victoria' || v.name === 'Karen' ||
-            v.name.includes('Google US English Female') || v.name.includes('Microsoft Zira')
-          ) || voices.find(v => 
-            v.name.toLowerCase().includes('female')
-          ) || voices.find(v => 
-            v.lang.startsWith('en') && 
-            !knownMaleVoices.some(male => v.name.toLowerCase().includes(male.toLowerCase()))
-          );
-          if (femaleVoice) {
-            utterance.voice = femaleVoice;
-            console.log('[Mira Widget] Speaking with voice:', femaleVoice.name);
-          }
-          synth.speak(utterance);
+
+          // ElevenLabs only — no Web Speech fallback
+          speakText(fullGreeting);
         }, 600);
       }
     }
@@ -1008,132 +985,17 @@ const MiraChatWidget = ({
       .replace(/concierge team/gi, 'con-see-erzh team')
       .replace(/\bconcierge\b/gi, 'con-see-erzh');
 
-    // Try ElevenLabs first for premium voice
+    // ElevenLabs ONLY — no Web Speech fallback. Better silence than wrong voice.
     if (useElevenLabs) {
       await new Promise(resolve => setTimeout(resolve, 100));
-      const success = await speakWithElevenLabs(cleanText);  // ← pass cleaned text
-      if (success) return;
-    }
-    
-    // Fallback to Web Speech API
-    if (!synthRef.current) return;
-    synthRef.current.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.volume = 1.0;
-    
-    // Get a BRITISH ENGLISH FEMALE voice for Mira - STRICT SELECTION
-    const voices = synthRef.current.getVoices();
-    
-    // Debug: Log all available voices
-    console.log('[Mira Voice] Available voices:', voices.map(v => `${v.name} (${v.lang})`));
-    
-    // STRICT list of CONFIRMED FEMALE voice names only
-    // iOS Safari voices are named differently - prioritize them
-    const confirmedFemaleVoices = [
-      // iOS/Safari British English Female - TOP PRIORITY for iPhone
-      'Stephanie', 'Karen', 'Samantha',  // Common iOS voices
-      'Kate', 'Serena', 'Martha',        // iOS British voices
-      'Fiona', 'Moira',                  // iOS Celtic voices
-      // iOS Enhanced voices (downloaded)
-      'Samantha (Enhanced)', 'Karen (Enhanced)',
-      // Google British voices (Android/Chrome)
-      'Google UK English Female',
-      'Microsoft Hazel', 'Microsoft Susan', 'Hazel', 'Susan',
-      'Amy', 'Emma',
-      // American English Female - FALLBACK
-      'Victoria', 'Tessa', 'Allison',
-      'Google US English Female', 'Microsoft Zira',
-      'Ava', 'Nicky',
-      // Generic female identifiers
-      'Female', 'female'
-    ];
-    
-    // List of KNOWN MALE voice names to ALWAYS exclude
-    const knownMaleVoices = [
-      'Daniel', 'George', 'James', 'Oliver', 'Harry', 'Arthur',
-      'David', 'Mark', 'Tom', 'Alex', 'Fred', 'Ralph', 'Albert',
-      'Google US English', 'Google UK English Male', 'Microsoft David',
-      'Microsoft Mark', 'Microsoft George', 'Aaron', 'Bruce'
-    ];
-    
-    let selectedVoice = null;
-    
-    // Step 1: Try to find a British female voice by exact name match
-    for (const femaleName of confirmedFemaleVoices.slice(0, 12)) { // British voices first
-      selectedVoice = voices.find(v => 
-        v.name === femaleName || 
-        v.name.includes(femaleName)
-      );
-      if (selectedVoice) {
-        console.log('[Mira Voice] ✓ Found British female voice:', selectedVoice.name);
-        break;
+      const success = await speakWithElevenLabs(cleanText);
+      if (!success) {
+        console.log('[Mira Voice] ElevenLabs unavailable — staying silent');
       }
+      return;
     }
-    
-    // Step 2: Try en-GB voices but EXCLUDE known males
-    if (!selectedVoice) {
-      selectedVoice = voices.find(v => 
-        v.lang === 'en-GB' && 
-        !knownMaleVoices.some(male => v.name.toLowerCase().includes(male.toLowerCase()))
-      );
-      if (selectedVoice) console.log('[Mira Voice] ✓ Using en-GB voice:', selectedVoice.name);
-    }
-    
-    // Step 3: Try American female voices
-    if (!selectedVoice) {
-      for (const femaleName of confirmedFemaleVoices.slice(12)) {
-        selectedVoice = voices.find(v => 
-          v.name === femaleName || 
-          v.name.includes(femaleName)
-        );
-        if (selectedVoice) {
-          console.log('[Mira Voice] ✓ Found American female voice:', selectedVoice.name);
-          break;
-        }
-      }
-    }
-    
-    // Step 4: Any voice with "female" in name
-    if (!selectedVoice) {
-      selectedVoice = voices.find(v => 
-        v.name.toLowerCase().includes('female')
-      );
-      if (selectedVoice) console.log('[Mira Voice] ✓ Using female voice:', selectedVoice.name);
-    }
-    
-    // Step 5: Last resort - filter out ALL known male voices
-    if (!selectedVoice) {
-      selectedVoice = voices.find(v => 
-        v.lang.startsWith('en') &&
-        !knownMaleVoices.some(male => v.name.toLowerCase().includes(male.toLowerCase()))
-      );
-      if (selectedVoice) console.log('[Mira Voice] ⚠ Fallback voice:', selectedVoice.name);
-    }
-    
-    // Apply voice and FEMININE parameters
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-      console.log('[Mira Voice] Final selected voice:', selectedVoice.name);
-    } else {
-      console.log('[Mira Voice] ⚠ No suitable voice found, using default with high pitch');
-    }
-    
-    // FEMININE speech parameters - higher pitch makes voice sound more feminine
-    utterance.rate = 0.92;   // Measured pace, British style
-    utterance.pitch = 1.15;  // Higher pitch = more feminine sound
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = (e) => {
-      console.error('[Mira Voice] Speech error:', e);
-      setIsSpeaking(false);
-    };
-    
-    // On some mobile browsers, we need to trigger speech with a small delay
-    setTimeout(() => {
-      synthRef.current.speak(utterance);
-    }, 50);
+    // Voice enabled but ElevenLabs not configured — stay silent
+    console.log('[Mira Voice] ElevenLabs not configured — skipping TTS');
   }, [voiceEnabled, useElevenLabs, speakWithElevenLabs]);
   
   const sendMessage = async (directMessage = null) => {

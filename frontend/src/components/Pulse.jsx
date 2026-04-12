@@ -936,19 +936,20 @@ const Pulse = ({
     }
   }, [isMuted, cleanTextForSpeech]);
   
-  // Main speak function - tries ElevenLabs first, then falls back
+  // Main speak function - ElevenLabs ONLY. No Web Speech fallback.
+  // Better silence than the Tamil boy. 🌸
   const speak = useCallback(async (text) => {
     if (isMuted) return;
-    
+
     if (useElevenLabs) {
       const success = await speakWithElevenLabs(text);
       if (!success) {
-        speakWithWebSpeech(text);
+        // ElevenLabs unavailable — stay silent
+        console.log('[Pulse Voice] ElevenLabs unavailable — skipping TTS');
       }
-    } else {
-      speakWithWebSpeech(text);
     }
-  }, [isMuted, useElevenLabs, speakWithElevenLabs, speakWithWebSpeech]);
+    // No Web Speech fallback — intentional
+  }, [isMuted, useElevenLabs, speakWithElevenLabs]);
   
   const addPulseMessage = useCallback((text) => {
     setMessages(prev => [...prev, { role: 'pulse', text, timestamp: new Date() }]);

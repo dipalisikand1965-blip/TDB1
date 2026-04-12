@@ -150,12 +150,9 @@ const VoiceQuickActions = ({
         const result = await response.json();
         setActionResult(result);
         
-        // Speak the response
-        if (window.speechSynthesis && result.response_text) {
-          const utterance = new SpeechSynthesisUtterance(result.response_text);
-          utterance.rate = 0.9;
-          window.speechSynthesis.speak(utterance);
-        }
+        // Speak the response — ElevenLabs only, no Web Speech fallback
+        // (Web Speech on iOS gives Tamil male voice — better silence)
+        console.log('[VoiceQuickActions] TTS skipped — use MiraChatWidget for voice responses');
       }
     } catch (error) {
       console.error('Failed to process voice command:', error);
