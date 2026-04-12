@@ -333,12 +333,12 @@ const TicketFullPageModal = ({
         </div>
 
         {/* ==================== MAIN CONTENT - ZOHO STYLE ==================== */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
           
           {/* ========== COLLAPSIBLE LEFT SIDEBAR ========== */}
           <div 
             className={`border-r bg-gray-50 transition-all duration-300 flex flex-col ${
-              sidebarCollapsed ? 'w-12' : 'w-[280px]'
+              sidebarCollapsed ? 'md:w-12 w-full max-h-12 md:max-h-none overflow-hidden' : 'md:w-[280px] w-full max-h-[45vh] md:max-h-none overflow-y-auto'
             }`}
           >
             {/* Sidebar Toggle */}
@@ -617,7 +617,7 @@ const TicketFullPageModal = ({
           </div>
 
           {/* ========== MAIN CHAT AREA - ZOHO STYLE ========== */}
-          <div className="flex-1 flex flex-col bg-white overflow-hidden">
+          <div className="flex-1 flex flex-col bg-white overflow-hidden min-h-0">
             
             {/* Tab Navigation - Minimal */}
             <div className="flex items-center gap-4 px-4 py-2 border-b bg-gray-50/80">
