@@ -20,7 +20,7 @@ const NOTIF_TYPES = [
   { key: 'birthday_reminders',   label: 'Birthday Reminders',   desc: '7-day advance warning',         icon: '🎂' },
   { key: 'medication_reminders', label: 'Medication Reminders', desc: 'Upcoming medication due alerts', icon: '💊' },
   { key: 'order_updates',        label: 'Order Updates',        desc: 'Shipping, delivery, confirmation',icon: '📦' },
-  { key: 'concierge_updates',    label: 'Concierge Updates',    desc: 'Mira replies and requests',     icon: '✦' },
+  { key: 'concierge_updates',    label: 'Concierge® Updates',    desc: 'Mira replies and requests',     icon: '✦' },
 ];
 
 function NotificationPreferencesPanel({ pets, token }) {
