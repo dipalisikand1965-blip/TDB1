@@ -211,6 +211,26 @@ const RainbowBridgeWall = () => {
                     </p>
                   </div>
                 )}
+
+                {/* Owner Photo — artwork/memory shared by the family */}
+                {memorial.owner_photo && (
+                  <div className="mt-2 -mx-4 -mb-4">
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={memorial.owner_photo}
+                        alt={memorial.owner_photo_caption || `${memorial.pet_name} — a memory`}
+                        className="w-full object-cover max-h-64"
+                        style={{ objectPosition: 'top' }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                      {memorial.owner_photo_caption && (
+                        <p className="absolute bottom-2 left-0 right-0 text-center text-white/80 text-xs italic px-3">
+                          {memorial.owner_photo_caption}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
                 
                 {/* Action Buttons */}
                 <div className="flex gap-2 pt-2">
@@ -335,6 +355,25 @@ const RainbowBridgeWall = () => {
                       style={{ width: `${selectedMemorial.soul_score}%` }}
                     />
                   </div>
+                </div>
+              )}
+
+              {/* Owner's artwork / Gyan — shown full width when present */}
+              {selectedMemorial.owner_photo && (
+                <div className="relative -mx-6 overflow-hidden rounded-xl">
+                  <img
+                    src={selectedMemorial.owner_photo}
+                    alt={selectedMemorial.owner_photo_caption || `${selectedMemorial.pet_name} — a memory`}
+                    className="w-full object-cover"
+                    style={{ maxHeight: '520px', objectPosition: 'top' }}
+                  />
+                  {selectedMemorial.owner_photo_caption && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-6 py-4">
+                      <p className="text-white/90 text-sm italic text-center tracking-wide">
+                        {selectedMemorial.owner_photo_caption}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
               
