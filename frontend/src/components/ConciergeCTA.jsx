@@ -1,35 +1,19 @@
 /**
  * ConciergeCTA — "Need something arranged?"
  * Floating dark banner with a single "Request →" button.
- * Opens ServiceBookingModal with the correct serviceType for each pillar.
+ * Opens ServiceConciergeModal with pillar-specific options.
  *
  * Usage:
  *   import ConciergeCTA from '../components/ConciergeCTA';
- *   <ConciergeCTA pillar="care" />
+ *   <ConciergeCTA pillar="care" pet={pet} />
  */
 
 import { useState } from 'react';
-import ServiceBookingModal from './ServiceBookingModal';
-
-// Map pillar name → the closest ServiceBookingModal serviceType key
-const PILLAR_SERVICE_TYPE = {
-  care:      'grooming',
-  learn:     'training',
-  emergency: 'vet',
-  farewell:  'grooming',
-  go:        'walking',
-  play:      'daycare',
-  dine:      'grooming',
-  fit:       'daycare',
-  stay:      'boarding',
-  paperwork: 'grooming',
-  adopt:     'grooming',
-  celebrate: 'grooming',
-};
+import ServiceConciergeModal from './services/ServiceConciergeModal';
 
 export default function ConciergeCTA({ pillar = 'care', pet = null, style = {} }) {
   const [open, setOpen] = useState(false);
-  const serviceType = PILLAR_SERVICE_TYPE[pillar] || 'grooming';
+  const user = (() => { try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; } })();
 
   return (
     <>
@@ -79,11 +63,12 @@ export default function ConciergeCTA({ pillar = 'care', pet = null, style = {} }
       </div>
 
       {open && (
-        <ServiceBookingModal
-          isOpen={open}
-          onClose={() => setOpen(false)}
-          serviceType={serviceType}
+        <ServiceConciergeModal
+          service={{ pillar }}
           pet={pet}
+          user={user}
+          onClose={() => setOpen(false)}
+          onBooked={() => setOpen(false)}
         />
       )}
     </>
