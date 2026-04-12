@@ -222,14 +222,27 @@ export default function MealBoxCard() {
           const pool = [slot.pick, ...(slot.alternatives || [])].filter(Boolean);
           const miraRanked  = applyMiraFilter(pool, pet);
           const finalRanked = guardBreedMismatch(miraRanked, pet?.breed);
-          const [newPick, ...newAlts] = finalRanked;
+          const [newPick, ...allAlts] = finalRanked;
+
+          // Strip breed-mismatched products from alternatives entirely.
+          // Only fall back to mismatched if no safe alternative exists at all.
+          const safeAlts = allAlts.filter(p => {
+            const name = (p.name || '').toLowerCase();
+            const bowlMatch = name.match(/^(.+?)\s+food\s+bowl/);
+            if (!bowlMatch) return true;  // not a breed bowl → keep
+            const bowlBreed = bowlMatch[1].trim();
+            const breed = (pet?.breed || '').toLowerCase();
+            return breed && (breed.includes(bowlBreed) || bowlBreed.includes(breed));
+          });
+          const newAlts = safeAlts.length > 0 ? safeAlts : allAlts.slice(0, 3);
+
           const reason = newPick?.miraReason || newPick?.mira_reason ||
             (newPick?.name?.toLowerCase().includes((pet?.breed||'').toLowerCase())
               ? `Matched for ${pet?.breed}` : 'Best allergy-safe option for Mojo');
           return {
             ...slot,
             pick: newPick ? { ...newPick, mira_reason: reason } : slot.pick,
-            alternatives: newAlts,
+            alternatives: newAlts.slice(0, 4),
           };
         });
         setSlotsData(reRanked);
