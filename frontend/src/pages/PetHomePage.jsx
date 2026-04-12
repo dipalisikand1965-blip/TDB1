@@ -852,7 +852,7 @@ const PetHomePage = () => {
         <motion.button
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          onClick={() => navigate('/mira-os')}
+          onClick={() => navigate('/mira-search')}
           className="mt-6 w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2 hover:shadow-pink-500/50 transition-all"
           data-testid="see-picks-btn"
         >

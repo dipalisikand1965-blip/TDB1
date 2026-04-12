@@ -263,6 +263,8 @@ async def submit_nps_score(submission: NPSSubmission):
             "message": "Thank you for your feedback!"
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to submit NPS: {e}")
         raise HTTPException(status_code=500, detail=str(e))

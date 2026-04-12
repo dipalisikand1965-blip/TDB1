@@ -25,6 +25,7 @@ import {
   ChevronDown, ChevronUp, Package, Plus
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
+import PawmoterNPSModal from './PawmoterNPSModal';
 
 // Indian States for GST calculation
 const INDIAN_STATES = [
@@ -50,6 +51,10 @@ const UnifiedCheckout = () => {
   // Config from backend
   const [config, setConfig] = useState(null);
   const [loadingConfig, setLoadingConfig] = useState(true);
+  
+  // Pawmoter NPS
+  const [showNPSModal, setShowNPSModal] = useState(false);
+  const [npsOrderCount, setNpsOrderCount] = useState(0);
   
   // User's pets for pet selector
   const [userPets, setUserPets] = useState([]);
@@ -478,6 +483,11 @@ const UnifiedCheckout = () => {
         setOrderComplete(true);
         clearCart();
         toast({ title: 'Payment Successful!', description: `Order ${orderId} confirmed` });
+        // ── Pawmoter NPS trigger (after 3rd/6th/9th order) ──
+        if (data.should_show_nps) {
+          setNpsOrderCount(data.order_count || 3);
+          setTimeout(() => setShowNPSModal(true), 2000); // slight delay after success screen
+        }
       } else {
         throw new Error('Payment verification failed');
       }
@@ -634,6 +644,7 @@ const UnifiedCheckout = () => {
   const subtotal = getCartTotal();
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50 py-6 md:py-10">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
@@ -1226,6 +1237,15 @@ const UnifiedCheckout = () => {
         </div>
       </div>
     </div>
+    {/* Pawmoter NPS Modal */}
+    <PawmoterNPSModal
+      isOpen={showNPSModal}
+      onClose={() => setShowNPSModal(false)}
+      userEmail={customer.email || user?.email || ''}
+      userName={customer.name || user?.name || ''}
+      orderCount={npsOrderCount}
+    />
+    </>
   );
 };
 

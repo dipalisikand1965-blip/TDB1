@@ -680,13 +680,59 @@ async def verify_payment(request: VerifyPaymentRequest):
             except Exception as e:
                 logger.warning(f"[TRAIT-GRAPH] Error updating MOJO from purchase: {e}")
         
+        # ── NPS / Pawmoter trigger after 3rd completed order ─────────────────
+        should_show_nps = False
+        nps_order_count = 0
+        try:
+            customer_email = order.get("customer", {}).get("email") if order else None
+            if customer_email:
+                # Count completed (paid/confirmed) real orders for this user
+                completed_orders = await db.orders.count_documents({
+                    "customer.email": customer_email,
+                    "order_id": {"$regex": "^TDC-"},
+                    "payment_status": "paid",
+                    "pricing.grand_total": {"$gt": 0}
+                })
+                nps_order_count = completed_orders
+                # Trigger on 3rd, 6th, 9th... order
+                if completed_orders > 0 and completed_orders % 3 == 0:
+                    # Check if NPS submitted in last 30 days
+                    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+                    recent_nps = await db.nps_submissions.find_one({
+                        "user_email": customer_email,
+                        "created_at": {"$gte": thirty_days_ago}
+                    })
+                    if not recent_nps:
+                        should_show_nps = True
+                        # Also send WhatsApp nudge
+                        try:
+                            _nps_phone = order.get("customer", {}).get("whatsapp") or order.get("customer", {}).get("phone", "")
+                            _nps_name  = order.get("customer", {}).get("name", "there")
+                            _nps_msg = (
+                                f"🐾 Hi {_nps_name}! You've completed {completed_orders} orders with The Doggy Company!\n\n"
+                                f"How likely are you to recommend us to a fellow pet parent? (0 = not at all, 10 = absolutely!)\n\n"
+                                f"Please reply with a number 0-10. Your feedback shapes Mira's next upgrade! 💜"
+                            )
+                            await send_whatsapp_message(
+                                to=format_phone_number(_nps_phone),
+                                message=_nps_msg,
+                                log_context="nps_trigger"
+                            )
+                            logger.info(f"[NPS WA] Sent Pawmoter nudge after order #{completed_orders} to {_nps_phone[:6]}***")
+                        except Exception as _nps_wa_err:
+                            logger.warning(f"[NPS WA] Failed to send NPS WhatsApp: {_nps_wa_err}")
+        except Exception as _nps_err:
+            logger.warning(f"[NPS] Error checking NPS trigger: {_nps_err}")
+
         return {
             "success": True,
             "order_id": request.order_id,
             "payment_status": "paid",
             "payment_method": payment.get("method"),
             "message": "Payment verified successfully",
-            "mojo_updated": mojo_updated
+            "mojo_updated": mojo_updated,
+            "should_show_nps": should_show_nps,
+            "order_count": nps_order_count
         }
         
     except razorpay.errors.SignatureVerificationError:
