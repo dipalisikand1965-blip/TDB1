@@ -23,8 +23,8 @@ export default function DocumentVault({ pet, token, onConcierge }) {
       id: 'microchip',
       label: 'Microchip registration',
       icon: '🔬',
-      complete: !!(soul?.microchipped || soul?.microchipped === 'yes'),
-      detail: soul?.microchip_id || 'Not registered',
+      complete: !!(pet?.microchip || soul?.microchipped === 'yes'),
+      detail: pet?.microchip || soul?.microchip_id || 'Not registered',
       urgent: true,
     },
     {
