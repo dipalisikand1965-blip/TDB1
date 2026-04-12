@@ -120,7 +120,7 @@ def get_product_image_prompt(product: dict) -> str:
         # Fallback for unknown breed-* category
         return f"Premium personalised pet product '{name}' featuring a beautiful watercolour {breed_full} illustration, {soul_style}"
 
-    style = "clean white background, professional product photography, sharp focus, photorealistic, high detail, commercial quality, 4K"
+    style = "flat lay style, pure white background, professional product photography, no text, no words, no labels, no branding, soft natural lighting, sharp focus, photorealistic, high detail, commercial quality, centered composition, minimalist, 4K"
     
     # ── DINE PILLAR: Food products ──────────────────────────────────────────
     if pillar == "dine" or category in ["daily meals", "treats & rewards", "supplements", "frozen & fresh", "homemade & recipes"]:
