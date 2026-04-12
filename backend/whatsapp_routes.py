@@ -2001,6 +2001,25 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 "\n\nCLOSEST REAL PRODUCTS (related, not exact — present as 'Meanwhile — these are perfect:'):\n"
                 + "\n".join(closest_lines)
             )
+        else:
+            # ── True catalog miss — BOTH found_products AND closest_products are
+            # empty after allergen + breed filters.  Skip the LLM entirely;
+            # send a reliable, clean Amazon affiliate fallback directly. ────────
+            _fb_name      = ticket_pet_name or (all_pet_names[0] if all_pet_names else "your dog")
+            _fb_clean_q   = _build_amazon_query(message_text, all_pet_names)
+            _fb_amazon    = (
+                f"https://www.amazon.in/s?k=dog+{_fb_clean_q.replace(' ', '+')}"
+                f"&tag={AFFILIATE_TAG}"
+            )
+            logger.info(f"[MIRA-AI] True catalog miss → Amazon fallback ({_fb_clean_q!r})")
+            return (
+                f"I don't have that in our catalogue right now 🙏\n\n"
+                f"But I found some options for {_fb_name} on Amazon:\n\n"
+                f"🛒 {_fb_amazon}\n\n"
+                f"All purchases support The Doggy Company 🐾\n\n"
+                f"Want something custom instead? Reply and our Concierge will arrange it:\n"
+                f"thedoggycompany.com/my-requests"
+            )
         catalog_instruction = (
             f"\n\nNo exact TDC catalog match found for this query."
             f"\n\nMIRA IMAGINES PROTOCOL — follow this EXACTLY:"
