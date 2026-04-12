@@ -22,7 +22,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { usePillarContext } from '../../context/PillarContext';
 import { useAuth } from '../../context/AuthContext';
-import { applyMiraFilter } from '../../hooks/useMiraFilter';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -183,85 +182,11 @@ export default function MealBoxCard() {
         fav_protein: favProtein,
         health_condition: healthCondition,
         pet_name: petName,
-        pet_breed: pet?.breed || '',
       });
       const res = await fetch(`${API}/api/mira/meal-box-products?${params}`);
       if (res.ok) {
         const data = await res.json();
-
-        // ── Breed mismatch guard ──────────────────────────────────────────
-        // Product names like "Cocker Spaniel Food Bowl" should never be the
-        // top pick for an Indie (or any non-Cocker-Spaniel) dog.
-        // applyMiraFilter can't catch this because breed_tags are empty in DB.
-        // This function re-sorts a ranked pool so:
-        //   1. Breed-matched names (e.g. "Indie Bowl") come first
-        //   2. Generic names (no breed in name) come next
-        //   3. Breed-mismatched names come last (last resort only)
-        const BREED_NAMES_IN_PRODUCTS = [
-          'cocker spaniel','labrador','golden retriever','german shepherd',
-          'rottweiler','irish setter','poodle','beagle','dachshund','pug',
-          'boxer','husky','dalmatian','bulldog','shih tzu','maltese',
-          'chihuahua','dobermann','doberman','great dane','saint bernard',
-          'border collie','australian shepherd','indie','mixed breed',
-        ];
-        const guardBreedMismatch = (ranked, petBreed) => {
-          const breed = (petBreed || '').toLowerCase();
-          const matched = [], generic = [], mismatched = [];
-          for (const p of ranked) {
-            const name = (p.name || '').toLowerCase();
-            const foundBreed = BREED_NAMES_IN_PRODUCTS.find(b => name.includes(b));
-            if (!foundBreed)                                              generic.push(p);
-            else if (breed.includes(foundBreed) || foundBreed.includes(breed)) matched.push(p);
-            else                                                          mismatched.push(p);
-          }
-          return [...matched, ...generic, ...mismatched];
-        };
-
-        // ── Wire applyMiraFilter + breed guard ───────────────────────────
-        const reRanked = (data.slots || []).map(slot => {
-          const pool = [slot.pick, ...(slot.alternatives || [])].filter(Boolean);
-          const miraRanked  = applyMiraFilter(pool, pet);
-          const finalRanked = guardBreedMismatch(miraRanked, pet?.breed);
-          const [newPick, ...allAlts] = finalRanked;
-
-          // Strip breed-mismatched products from alternatives entirely.
-          // Catches ALL breed-named product types: Food Bowl, Feeding Mat,
-          // Dining Placemat, Treat Jar, Food Storage Container, etc.
-          const BREED_PRODUCT_RE = /^(.+?)\s+(?:food bowl|feeding mat|dining placemat|food storage container|treat jar|personalized food bowl|personalized bowl|dining mat|food container|water bowl|elevated bowl|slow feeder|placemat|feeding station|food dispenser|pet bowl)/i;
-          const BREED_KEYWORDS_FE = [
-            'cocker spaniel','labrador','golden retriever','german shepherd','rottweiler',
-            'irish setter','poodle','beagle','dachshund','pug','boxer','husky','dalmatian',
-            'bulldog','shih tzu','maltese','chihuahua','dobermann','doberman','great dane',
-            'saint bernard','border collie','australian shepherd','pomeranian','samoyed',
-            'akita','chow chow','basenji','vizsla','weimaraner','saluki','havanese',
-            'shetland sheepdog','yorkshire terrier','cavalier','lhasa apso','jack russell',
-            'italian greyhound','indian pariah',
-          ];
-          const isBreedMismatch = (p) => {
-            const name = (p.name || '').toLowerCase();
-            const breed = (pet?.breed || '').toLowerCase();
-            const m = name.match(BREED_PRODUCT_RE);
-            if (m) {
-              const itemBreed = m[1].trim();
-              return !(breed && (breed.includes(itemBreed) || itemBreed.includes(breed)));
-            }
-            const found = BREED_KEYWORDS_FE.find(b => name.includes(b));
-            if (!found) return false;
-            return !(breed && (breed.includes(found) || found.includes(breed)));
-          };
-          const safeAlts = allAlts.filter(p => !isBreedMismatch(p));
-          const newAlts = safeAlts.length > 0 ? safeAlts : allAlts.slice(0, 3);
-
-          const reason = newPick?.miraReason || newPick?.mira_reason ||
-            (newPick?.name?.toLowerCase().includes((pet?.breed||'').toLowerCase())
-              ? `Matched for ${pet?.breed}` : 'Best allergy-safe option for Mojo');
-          return {
-            ...slot,
-            pick: newPick ? { ...newPick, mira_reason: reason } : slot.pick,
-            alternatives: newAlts.slice(0, 4),
-          };
-        });
-        setSlotsData(reRanked);
+        setSlotsData(data.slots || []);
         setTeaserDesc(data.teaser_desc || '');
       }
     } catch (e) {
