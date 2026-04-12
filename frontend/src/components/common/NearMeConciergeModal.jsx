@@ -135,7 +135,7 @@ export default function NearMeConciergeModal({ isOpen, venue, place, pet, pillar
         {sent ? (
           <div style={{ padding: "40px 24px", textAlign: "center" }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
-            <h3 style={{ fontSize: 18, fontWeight: 800, color: "#1A1A2E", marginBottom: 8 }}>Sent to your Concierge!</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 800, color: "#1A1A2E", marginBottom: 8 }}>Sent to your Concierge®!</h3>
             <p style={{ fontSize: 14, color: "#666", marginBottom: 8 }}>
               We'll reach out within 48 hours to arrange {petName}'s visit to {venueName}.
             </p>

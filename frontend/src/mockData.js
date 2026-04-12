@@ -2597,7 +2597,7 @@ export const testimonials = [
     location: 'Gurugram',
     image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ayesha',
     rating: 5,
-    text: "Booked a pet-friendly hotel in Goa through the Stay pillar. The Concierge team ensured everything was perfect — from room setup to nearby walking spots. Ninja had the time of his life! Already planning our next trip with them.",
+    text: "Booked a pet-friendly hotel in Goa through the Stay pillar. The Concierge® team ensured everything was perfect — from room setup to nearby walking spots. Ninja had the time of his life! Already planning our next trip with them.",
     date: '2024-12-01',
     petName: 'Ninja',
     pillars: ['Stay', 'Travel', 'Enjoy']
