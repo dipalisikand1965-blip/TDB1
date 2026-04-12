@@ -121,6 +121,19 @@ def get_all_allergies(pet: dict) -> list:
     return list(all_allergies)
 
 
+def get_health_condition(pet: dict) -> str:
+    """Read health condition from all field paths — mirrors frontend getHealthCondition()."""
+    # Path 1: health_data.chronic_conditions (primary — where PetVault writes)
+    cond = (pet.get("health_data") or {}).get("chronic_conditions")
+    if cond:
+        arr = cond if isinstance(cond, list) else [cond]
+        first = next((c for c in arr if c and c.lower() not in ("none", "none_confirmed")), None)
+        if first:
+            return first
+    # Path 2: top-level health_condition (legacy)
+    return pet.get("health_condition") or pet.get("healthCondition") or ""
+
+
 def get_slot_1_hero_cake(pet: dict) -> dict:
     """Slot 1 — Hero Item: Birthday Cake based on favorite food or breed"""
     all_allergies = get_all_allergies(pet)
@@ -238,7 +251,7 @@ def get_slot_5_health_item(pet: dict) -> dict:
         pet_age = float(pet_age) if pet_age is not None else 3
     except (ValueError, TypeError):
         pet_age = 3
-    health_condition = pet.get("health_condition") or pet.get("healthCondition")
+    health_condition = get_health_condition(pet)
     
     # Use the comprehensive allergy check
     all_allergies = get_all_allergies(pet)
@@ -275,8 +288,9 @@ def calculate_soul_percent(pet: dict) -> int:
     soul_answers = pet.get("doggy_soul_answers") or {}
     key_fields = ["favorite_protein", "favourite_food1", "allergies", "top_soul_pillar", "favorite_activity", "favorite_toy", "archetype", "pet_archetype", "grooming_score", "memory_score", "health_score"]
     filled = sum(1 for k in key_fields if soul_answers.get(k))
-    pet_fields = ["birthday", "breed", "age", "health_condition"]
+    pet_fields = ["birthday", "breed", "age"]
     filled += sum(1 for k in pet_fields if pet.get(k))
+    filled += 1 if get_health_condition(pet) else 0
     total = len(key_fields) + len(pet_fields)
     return int((filled / total) * 100) if total > 0 else 0
 
@@ -306,7 +320,7 @@ async def get_birthday_box_preview(pet_id: str):
         "soulPercent": soul_percent,
         "hasAllergies": len(all_allergies) > 0, "allergies": all_allergies,
         "hasBirthday": bool(pet.get("birthday")), "hasGotchaDay": bool(pet.get("gotcha_day")),
-        "healthCondition": pet.get("health_condition"), "petAge": pet.get("age", 0), "petBreed": pet.get("breed", ""),
+        "healthCondition": get_health_condition(pet), "petAge": pet.get("age", 0), "petBreed": pet.get("breed", ""),
         "signals": {"slot1": slot1.get("signal"), "slot2": slot2.get("signal"), "slot3": slot3.get("signal"), "slot4": slot4.get("signal"), "slot5": slot5.get("signal"), "slot6": slot6.get("signal")}
     }
 
