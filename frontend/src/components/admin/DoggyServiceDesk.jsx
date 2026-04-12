@@ -6317,6 +6317,82 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </div>
           )}
           
+          {/* ── Orders Section ── */}
+          {activeNav === 'orders' && (
+            <div className="flex-1 p-6 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
+                  <p className="text-sm text-gray-500 mt-1">{ordersData.length} orders loaded</p>
+                </div>
+              </div>
+
+              {ordersData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+                  <Package className="w-12 h-12 mb-4 opacity-30" />
+                  <p className="text-base font-medium">No orders found</p>
+                  <p className="text-sm mt-1">Orders will appear here once placed.</p>
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Order ID</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Customer</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Items</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Total</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Status</th>
+                        <th className="text-left px-4 py-3 font-semibold text-gray-600">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {ordersData.map((order, idx) => {
+                        const statusColors = {
+                          completed: 'bg-emerald-100 text-emerald-700',
+                          confirmed: 'bg-blue-100 text-blue-700',
+                          processing: 'bg-amber-100 text-amber-700',
+                          pending: 'bg-yellow-100 text-yellow-700',
+                          cancelled: 'bg-red-100 text-red-700',
+                        };
+                        const status = order.status || 'pending';
+                        const statusClass = statusColors[status] || 'bg-gray-100 text-gray-600';
+                        const date = order.created_at
+                          ? new Date(order.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })
+                          : '—';
+                        const itemSummary = Array.isArray(order.items)
+                          ? order.items.map(i => `${i.name}${i.quantity > 1 ? ` ×${i.quantity}` : ''}`).join(', ')
+                          : '—';
+                        return (
+                          <tr key={order.id || idx} className="hover:bg-amber-50/40 cursor-pointer transition-colors">
+                            <td className="px-4 py-3 font-mono text-xs text-amber-700 font-semibold">
+                              {order.orderId || order.order_id || order.id?.slice(0,8)}
+                            </td>
+                            <td className="px-4 py-3 text-gray-700">
+                              {order.customer?.name || order.customer?.email || '—'}
+                            </td>
+                            <td className="px-4 py-3 text-gray-500 max-w-[200px] truncate" title={itemSummary}>
+                              {itemSummary}
+                            </td>
+                            <td className="px-4 py-3 font-semibold text-gray-800">
+                              {order.total != null ? `₹${Number(order.total).toLocaleString('en-IN')}` : '—'}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${statusClass}`}>
+                                {status}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-gray-500 text-xs">{date}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Analytics & Reports Section */}
           {activeNav === 'analytics' && (
             <div className="flex-1 p-6 overflow-y-auto">
