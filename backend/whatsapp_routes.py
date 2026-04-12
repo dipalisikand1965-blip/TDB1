@@ -21,6 +21,7 @@ import json
 
 from condition_map import get_conditions_for_pet, build_condition_rule
 from mira_soul import MIRA_CORE_SOUL
+from mira_score_engine import has_wrong_breed_for_pet
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/whatsapp", tags=["whatsapp"])
@@ -1444,6 +1445,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     active_pet_archetype = None   # ← set later if pet profile found
     ticket_pet_name      = None   # ← set if open ticket with pet lock
     member_name          = None   # ← set if registered member found
+    _wa_pet_breed        = ""     # ← active pet's breed for product breed filtering
 
     if db is not None and user_phone:
         try:
@@ -1615,6 +1617,9 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             ticket_pet_name and name.lower() == ticket_pet_name.lower()
                         )
                         if is_active_pet and not active_pet_archetype:
+                            # Capture breed for product breed filtering (first / active pet only)
+                            if not _wa_pet_breed:
+                                _wa_pet_breed = p.get("breed", "")
                             # primary_archetype at top level (written by infer_archetype.py), fall back to archetype/soul_answers
                             arch_raw = p.get("primary_archetype") or p.get("archetype") or soul.get("primary_archetype") or ""
                             if isinstance(arch_raw, dict):
@@ -1918,6 +1923,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                  "pillar": 1, "cloudinary_url": 1, "image_url": 1}
             ).limit(2)
             closest_products = await fallback_cursor.to_list(2)
+            # ── Breed safety filter on fallback results ───────────────────────
+            closest_products = [p for p in closest_products if not has_wrong_breed_for_pet(p, _wa_pet_breed)]
             if closest_products:
                 logger.info(f"[MIRA-AI] Pillar fallback ({fallback_pillars}) → {len(closest_products)} product(s)")
         except Exception as fb_err:
@@ -1925,6 +1932,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
     # Build catalog block from real products
     if found_products:
+        # ── Breed safety filter: never recommend a wrong-breed product ────────
+        before_breed = len(found_products)
+        found_products = [p for p in found_products if not has_wrong_breed_for_pet(p, _wa_pet_breed)]
+        if len(found_products) < before_breed:
+            logger.info(f"[MIRA-AI] Breed filter ({_wa_pet_breed}): {before_breed} → {len(found_products)} products")
+
         prod_lines = []
         for p in found_products:
             price = p.get("original_price") or p.get("price", 0)

@@ -62,7 +62,40 @@ def set_database(db):
     _db = db
 
 
-# ── Pydantic models ───────────────────────────────────────────────────────────
+# ── Breed filter — shared utility used by WhatsApp Mira + fallback scoring ───
+# Full list of known breed names used to detect wrong-breed products by name.
+ALL_KNOWN_BREEDS = [
+    "labrador", "golden retriever", "german shepherd", "beagle", "bulldog",
+    "poodle", "rottweiler", "yorkshire", "boxer", "dachshund", "husky",
+    "doberman", "great dane", "shih tzu", "shihtzu", "pug", "chihuahua",
+    "pomeranian", "maltese", "cocker spaniel", "border collie", "cavalier",
+    "french bulldog", "indie", "indian pariah", "american bully", "chow chow",
+    "dalmatian", "jack russell", "lhasa apso", "shiba inu", "shibainu",
+    "st bernard", "schnauzer", "irish setter", "toy poodle", "mutt",
+    "spitz", "samoyed", "bichon", "corgi", "akita", "basenji", "whippet",
+    "weimaraner", "vizsla", "great pyrenees", "newfoundland", "mastiff",
+]
+
+def has_wrong_breed_for_pet(product: dict, pet_breed: str) -> bool:
+    """
+    Return True if the product's name contains a known breed name that is
+    NOT the pet's own breed. Prevents e.g. a Pug from getting a
+    "Golden Retriever Birthday Cake" recommendation.
+
+    Safe for universal (non-breed-specific) products — those pass through.
+    """
+    breed_clean = (pet_breed or "").lower().strip().replace(" ", "")
+    if not breed_clean:
+        return False  # unknown breed — never block
+    name_l = (product.get("name") or "").lower().replace(" ", "")
+    excluded = [
+        b for b in ALL_KNOWN_BREEDS
+        if breed_clean not in b.replace(" ", "") and b.replace(" ", "") not in breed_clean
+    ]
+    for eb in excluded[:20]:
+        if eb.replace(" ", "") in name_l:
+            return True
+    return False
 
 class ScoreForPetRequest(BaseModel):
     pet_id: str
@@ -700,17 +733,6 @@ async def get_top_picks(
         allowed_cats = PILLAR_CATS.get(pillar)
 
         # ── Known breed names — used to exclude wrong-breed products by name ────
-        ALL_KNOWN_BREEDS = [
-            "labrador", "golden retriever", "german shepherd", "beagle", "bulldog",
-            "poodle", "rottweiler", "yorkshire", "boxer", "dachshund", "husky",
-            "doberman", "great dane", "shih tzu", "shihtzu", "pug", "chihuahua",
-            "pomeranian", "maltese", "cocker spaniel", "border collie", "cavalier",
-            "french bulldog", "indie", "indian pariah", "american bully", "chow chow",
-            "dalmatian", "jack russell", "lhasa apso", "shiba inu", "shibainu",
-            "st bernard", "schnauzer", "irish setter", "toy poodle", "mutt",
-            "spitz", "samoyed", "bichon", "corgi", "akita", "basenji", "whippet",
-            "weimaraner", "vizsla", "great pyrenees", "newfoundland", "mastiff",
-        ]
         breed_lower = breed_clean.lower().replace(" ", "") if breed_clean else ""
         # Breeds to actively exclude from product names (not the pet's own breed)
         excluded_breeds = [
