@@ -215,9 +215,7 @@ const CelebrationMemoryWall = ({ pet }) => {
   // Subtitle: 4 states
   const subtitle = hasSubmitted
     ? 'Your story is on the wall ♥'
-    : petName
-    ? `Where ${petName}'s community celebrates. Add yours to the wall.`
-    : 'Real moments of joy from our pet parent community 💕';
+    : 'Where our community honours those forever loved. Add yours to the wall.';
 
   // Share button state
   const shareButtonText = hasSubmitted ? '✓ Your story is on the wall' : '📸 Share Your Story';
