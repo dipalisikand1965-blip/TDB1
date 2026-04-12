@@ -32,6 +32,7 @@ const RainbowBridgeWall = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showTributeModal, setShowTributeModal] = useState(false);
   const [tributeText, setTributeText] = useState('');
+  const [tributeName, setTributeName] = useState('');
   const [submittingTribute, setSubmittingTribute] = useState(false);
 
   // Fetch all public memorials
@@ -67,7 +68,7 @@ const RainbowBridgeWall = () => {
         },
         body: JSON.stringify({
           message: tributeText,
-          from_name: user?.name || user?.email?.split('@')[0] || 'Anonymous',
+          from_name: tributeName.trim() || user?.name || user?.email?.split('@')[0] || 'Anonymous',
           from_email: user?.email || 'anonymous'
         })
       });
@@ -79,6 +80,7 @@ const RainbowBridgeWall = () => {
           duration: 4000
         });
         setTributeText('');
+        setTributeName('');
         setShowTributeModal(false);
         fetchMemorials(); // Refresh to show new tribute count
       }
@@ -147,9 +149,9 @@ const RainbowBridgeWall = () => {
         )}
       </div>
 
-      {/* Memorial Grid */}
+      {/* Memorial Grid — auto-fill like Celebration Wall */}
       {memorials.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
           {memorials.map((memorial) => (
             <Card 
               key={memorial.id || memorial.pet_id}
@@ -238,7 +240,7 @@ const RainbowBridgeWall = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="flex-1 text-purple-300 hover:text-white hover:bg-purple-500/20"
+                    className="flex-1 text-purple-300 hover:text-white hover:bg-purple-500/20 text-xs"
                     onClick={() => {
                       setSelectedMemorial(memorial);
                       setShowDetailModal(true);
@@ -248,17 +250,26 @@ const RainbowBridgeWall = () => {
                   </Button>
                   <Button 
                     size="sm"
-                    className="bg-gradient-to-r from-pink-500/80 to-purple-500/80 hover:from-pink-500 hover:to-purple-500 text-white text-xs"
+                    className="flex-1 bg-gradient-to-r from-pink-500/80 to-purple-500/80 hover:from-pink-500 hover:to-purple-500 text-white text-xs"
                     onClick={() => {
                       setSelectedMemorial(memorial);
+                      setTributeName(user?.name || '');
                       setShowTributeModal(true);
                     }}
                     data-testid={`tribute-btn-${memorial.pet_id}`}
                   >
-                    <Heart className="w-4 h-4 mr-1" />
-                    Leave a Tribute
+                    <Heart className="w-3 h-3 mr-1" />
+                    Tribute for {memorial.pet_name}
                   </Button>
                 </div>
+                
+                {/* Tribute count */}
+                {memorial.tribute_count > 0 && (
+                  <p className="text-pink-400/70 text-xs text-center pt-1 flex items-center justify-center gap-1">
+                    <Heart className="w-3 h-3 fill-pink-400/50" />
+                    {memorial.tribute_count} {memorial.tribute_count === 1 ? 'tribute' : 'tributes'} shared
+                  </p>
+                )}
               </div>
             </Card>
           ))}
@@ -418,47 +429,55 @@ const RainbowBridgeWall = () => {
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
               <Heart className="w-5 h-5 text-pink-400" />
-              Send a Tribute
+              Leave a Tribute{selectedMemorial ? ` for ${selectedMemorial.pet_name}` : ''}
             </DialogTitle>
           </DialogHeader>
           
           {selectedMemorial && (
             <div className="space-y-4 pt-4">
+              {/* Pet thumbnail */}
               <div className="flex items-center gap-3 bg-purple-900/20 rounded-lg p-3">
                 <img 
                   src={selectedMemorial.photo || ''}
                   alt={selectedMemorial.pet_name}
-                  className="w-12 h-12 rounded-full object-cover"
+                  className="w-12 h-12 rounded-full object-cover border border-purple-500/30"
                 />
                 <div>
                   <p className="text-white font-medium">{selectedMemorial.pet_name}</p>
-                  <p className="text-purple-300/60 text-sm">In loving memory</p>
+                  <p className="text-purple-300/60 text-sm">In loving memory 🌈</p>
                 </div>
               </div>
               
-              <Textarea
-                placeholder={`Share a few words for ${selectedMemorial.pet_name}...`}
-                value={tributeText}
-                onChange={(e) => setTributeText(e.target.value)}
-                className="bg-slate-800 border-slate-700 text-white min-h-[100px]"
-                data-testid="tribute-text-input"
-              />
+              {/* Your name */}
+              <div>
+                <label className="text-purple-300 text-sm mb-1 block">Your name</label>
+                <input
+                  type="text"
+                  value={tributeName}
+                  onChange={(e) => setTributeName(e.target.value)}
+                  placeholder={user?.name || 'Your name'}
+                  className="w-full bg-slate-800 border border-slate-700 text-white rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  data-testid="tribute-name-input"
+                />
+              </div>
               
-              {user ? (
-                <p className="text-purple-300/60 text-sm">
-                  Sending as {user.name || user.email}
-                </p>
-              ) : (
-                <p className="text-purple-300/60 text-sm">
-                  Sign in to attach your name to this tribute
-                </p>
-              )}
+              {/* Your message */}
+              <div>
+                <label className="text-purple-300 text-sm mb-1 block">Your message for {selectedMemorial.pet_name}</label>
+                <Textarea
+                  placeholder={`Share a few words for ${selectedMemorial.pet_name}...`}
+                  value={tributeText}
+                  onChange={(e) => setTributeText(e.target.value)}
+                  className="bg-slate-800 border-slate-700 text-white min-h-[100px] text-sm"
+                  data-testid="tribute-text-input"
+                />
+              </div>
               
               <div className="flex gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setShowTributeModal(false)}
-                  className="flex-1"
+                  className="flex-1 border-slate-700 text-slate-300"
                 >
                   Cancel
                 </Button>
@@ -473,7 +492,7 @@ const RainbowBridgeWall = () => {
                   ) : (
                     <Send className="w-4 h-4 mr-2" />
                   )}
-                  Send Tribute
+                  Submit Tribute
                 </Button>
               </div>
             </div>
