@@ -166,20 +166,16 @@ async def get_meal_box_products(
     )
 
     def _breed_priority(product_name: str) -> int:
-        """
-        0 = safe for this pet (generic or breed-matched)
-        1 = breed-specific product that doesn't match this pet's breed
-        """
+        """0 = safe for this pet, 1 = breed-specific mismatch."""
         name = product_name.lower()
         m = _BREED_PRODUCT_RE.match(name)
         if m:
             item_breed = m.group(1).strip()
             if not breed:
-                return 1   # unknown pet breed — treat all breed-specific as mismatched
+                return 1
             if breed in item_breed or item_breed in breed:
-                return 0   # breed match
-            return 1       # wrong breed
-        # Non-pattern products: check known breed keyword list
+                return 0
+            return 1
         BREED_KEYWORDS = [
             "cocker spaniel","labrador","golden retriever","german shepherd",
             "rottweiler","irish setter","poodle","beagle","dachshund","pug",
@@ -192,10 +188,10 @@ async def get_meal_box_products(
         ]
         found = next((b for b in BREED_KEYWORDS if b in name), None)
         if not found:
-            return 0   # generic — safe for all breeds
+            return 0
         if breed and (breed in found or found in breed):
-            return 0   # keyword match
-        return 1       # keyword mismatch
+            return 0
+        return 1
 
     # Fetch all dine food products once
     food_cats = ["Daily Meals", "Treats & Rewards", "Supplements", "Frozen & Fresh", "Homemade & Recipes"]
