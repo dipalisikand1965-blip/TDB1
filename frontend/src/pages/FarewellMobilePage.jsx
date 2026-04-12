@@ -33,6 +33,7 @@ import PillarServiceSection from '../components/PillarServiceSection';
 import PillarHero from '../components/PillarHero';
 import '../styles/mobile-design-system.css';
 import ConciergeRequestBuilder from '../components/services/ConciergeRequestBuilder';
+import RainbowBridgeWall from '../components/RainbowBridgeWall';
 
 const FAREWELL_STRIP_CATS = [
   { id:"eol",      icon:"🕊️", label:"End of Life",      iconBg:"linear-gradient(135deg,#EEF2FF,#E0E7FF)" },
@@ -292,6 +293,10 @@ export default function FarewellMobilePage() {
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [catModal, setCatModal] = useState(null);
   const [selectedSvc, setSelectedSvc] = useState(null);
+  const [showAddMemorial, setShowAddMemorial] = useState(false);
+  const [memorialForm, setMemorialForm] = useState({ pet_name:'', breed:'', crossing_date:'', tribute_message:'', photo:'' });
+  const [memorialSubmitting, setMemorialSubmitting] = useState(false);
+  const [memorialSubmitted, setMemorialSubmitted] = useState(false);
 
   useEffect(() => {
     if (contextPets !== undefined) setLoading(false);
@@ -326,6 +331,20 @@ export default function FarewellMobilePage() {
   const handleAddToCart = useCallback(p => {
     addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'farewell', quantity:1 });
   }, [addToCart]);
+
+  const handleSubmitMemorial = async () => {
+    if (!memorialForm.pet_name.trim() || !memorialForm.tribute_message.trim()) return;
+    setMemorialSubmitting(true);
+    try {
+      const r = await fetch(`${API_URL}/api/rainbow-bridge/submit`, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+        body: JSON.stringify(memorialForm)
+      });
+      if (r.ok) { setMemorialSubmitted(true); setMemorialForm({ pet_name:'', breed:'', crossing_date:'', tribute_message:'', photo:'' }); }
+    } catch(e) { console.error(e); }
+    finally { setMemorialSubmitting(false); }
+  };
 
   const handleBookService = (svc) => {
     vibe('medium');
@@ -402,6 +421,7 @@ export default function FarewellMobilePage() {
             { id:'farewell',  label:'🌷 Farewell' },
             { id:'services',  label:'🐕 Services' },
             { id:'find',      label:'📍 Find Care' },
+            { id:'wall',      label:'🌈 Wall' },
           ].map(tab => (
             <button key={tab.id}
               className={`ios-tab${activeTab===tab.id?' active':''}`}
@@ -582,7 +602,105 @@ export default function FarewellMobilePage() {
           </div>
         )}
 
-        {/* Concierge® Confirmation Sheet */}
+        {/* TAB 4: Rainbow Wall */}
+        {activeTab === 'wall' && (
+          <div style={{ padding:'16px 16px 32px' }}>
+            {/* Add Memorial CTA */}
+            {token && !memorialSubmitted && (
+              <button
+                data-testid="add-memorial-btn"
+                onClick={() => { vibe('medium'); setShowAddMemorial(true); }}
+                style={{ width:'100%', minHeight:52, borderRadius:16, border:'none', marginBottom:16,
+                  background:'linear-gradient(135deg,#4B4B6E,#6366F1)',
+                  color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+                <span style={{ fontSize:20 }}>🌷</span>
+                <span>Add Your Pet's Memorial</span>
+              </button>
+            )}
+            {memorialSubmitted && (
+              <div style={{ background:'rgba(99,102,241,0.12)', border:'1px solid rgba(99,102,241,0.35)', borderRadius:14, padding:'14px 16px', marginBottom:16, textAlign:'center' }}>
+                <div style={{ fontSize:22, marginBottom:4 }}>💜</div>
+                <div style={{ fontSize:14, fontWeight:700, color:G.indigo }}>Memorial Submitted</div>
+                <div style={{ fontSize:13, color:G.mutedText, marginTop:4 }}>We'll review it with care and add it to the wall shortly.</div>
+              </div>
+            )}
+            {!token && (
+              <div style={{ background:'rgba(99,102,241,0.08)', border:'1px solid rgba(99,102,241,0.25)', borderRadius:14, padding:'14px 16px', marginBottom:16, textAlign:'center', fontSize:13, color:G.mutedText }}>
+                Sign in to add your pet's memorial to the community wall.
+              </div>
+            )}
+            {/* The wall itself */}
+            <RainbowBridgeWall />
+          </div>
+        )}
+
+        {/* ── Add Memorial Modal ── */}
+        {showAddMemorial && (
+          <div onClick={() => setShowAddMemorial(false)}
+            style={{ position:'fixed', inset:0, zIndex:10002, background:'rgba(0,0,0,0.75)', display:'flex', alignItems:'flex-end', touchAction:'none' }}>
+            <div onClick={e => e.stopPropagation()}
+              style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', maxHeight:'92vh', overflowY:'auto',
+                padding:'24px 20px calc(40px + env(safe-area-inset-bottom))' }}>
+              {/* Handle */}
+              <div style={{ width:36, height:4, background:'#E5E7EB', borderRadius:4, margin:'0 auto 20px', flexShrink:0 }} />
+              <div style={{ fontSize:22, fontWeight:700, color:G.deep, marginBottom:4 }}>🌷 Add a Memorial</div>
+              <div style={{ fontSize:13, color:G.mutedText, marginBottom:20, lineHeight:1.5 }}>
+                Share your pet's story with the community. We'll review it with care before it appears on the wall.
+              </div>
+
+              {[
+                { key:'pet_name', label:"Pet's Name *", placeholder:'e.g. Mystique', type:'text' },
+                { key:'breed', label:'Breed', placeholder:'e.g. Golden Retriever', type:'text' },
+                { key:'crossing_date', label:'Date they crossed the bridge', placeholder:'', type:'date' },
+                { key:'photo', label:'Photo URL (optional)', placeholder:'https://...', type:'url' },
+              ].map(f => (
+                <div key={f.key} style={{ marginBottom:14 }}>
+                  <label style={{ display:'block', fontSize:13, fontWeight:600, color:G.darkText, marginBottom:5 }}>{f.label}</label>
+                  <input type={f.type} placeholder={f.placeholder}
+                    value={memorialForm[f.key]}
+                    onChange={e => setMemorialForm(prev => ({ ...prev, [f.key]: e.target.value }))}
+                    data-testid={`memorial-field-${f.key}`}
+                    style={{ width:'100%', padding:'11px 14px', borderRadius:12, border:`1.5px solid ${G.border}`,
+                      fontSize:14, color:G.darkText, fontFamily:'inherit', boxSizing:'border-box', outline:'none' }} />
+                </div>
+              ))}
+
+              <div style={{ marginBottom:20 }}>
+                <label style={{ display:'block', fontSize:13, fontWeight:600, color:G.darkText, marginBottom:5 }}>
+                  Your tribute message *
+                </label>
+                <textarea
+                  placeholder={`Tell us about your beloved companion — their spirit, their quirks, what made them irreplaceable…`}
+                  rows={4}
+                  value={memorialForm.tribute_message}
+                  onChange={e => setMemorialForm(prev => ({ ...prev, tribute_message: e.target.value }))}
+                  data-testid="memorial-field-tribute"
+                  style={{ width:'100%', padding:'11px 14px', borderRadius:12, border:`1.5px solid ${G.border}`,
+                    fontSize:14, color:G.darkText, fontFamily:'inherit', boxSizing:'border-box',
+                    resize:'vertical', outline:'none', lineHeight:1.6 }} />
+              </div>
+
+              <button
+                data-testid="memorial-submit-btn"
+                disabled={memorialSubmitting || !memorialForm.pet_name.trim() || !memorialForm.tribute_message.trim()}
+                onClick={async () => { await handleSubmitMemorial(); setShowAddMemorial(false); }}
+                style={{ width:'100%', minHeight:52, borderRadius:16, border:'none',
+                  background: (memorialForm.pet_name.trim() && memorialForm.tribute_message.trim())
+                    ? 'linear-gradient(135deg,#4B4B6E,#6366F1)' : '#E5E7EB',
+                  color: (memorialForm.pet_name.trim() && memorialForm.tribute_message.trim()) ? '#fff' : '#9CA3AF',
+                  fontSize:16, fontWeight:700, cursor:'pointer', marginBottom:12 }}>
+                {memorialSubmitting ? 'Submitting…' : 'Submit Memorial 💜'}
+              </button>
+              <button onClick={() => setShowAddMemorial(false)}
+                style={{ width:'100%', padding:'13px', borderRadius:14, border:'none', background:'transparent',
+                  color:G.mutedText, fontSize:14, cursor:'pointer' }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
         {conciergeOpen && selectedSvc && (
           <div onClick={() => setConciergeOpen(false)} style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'flex-end', touchAction:'none' }}>
             <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'24px 24px 0 0', width:'100%', padding:'24px 20px 40px', paddingTop:'env(safe-area-inset-top, 0px)' }}>

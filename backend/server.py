@@ -15074,6 +15074,89 @@ async def get_memorial_tributes(pet_id: str):
     }
 
 
+@api_router.post("/rainbow-bridge/submit")
+async def submit_community_memorial(memorial_data: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Any logged-in pet parent can submit their own memorial to the community wall.
+    Status is 'pending' until an admin approves it.
+    """
+    pet_name = (memorial_data.get("pet_name") or "").strip()
+    if not pet_name:
+        raise HTTPException(status_code=400, detail="Pet name is required")
+
+    entry = {
+        "id": f"memorial-{uuid.uuid4().hex[:12]}",
+        "pet_id": f"community-{uuid.uuid4().hex[:8]}",
+        "pet_name": pet_name,
+        "breed": (memorial_data.get("breed") or "").strip(),
+        "photo": (memorial_data.get("photo") or "").strip(),
+        "crossing_date": memorial_data.get("crossing_date") or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "tribute_message": (memorial_data.get("tribute_message") or "").strip(),
+        "favorite_memory": (memorial_data.get("favorite_memory") or "").strip(),
+        "owner_email": current_user.get("email"),
+        "owner_name": current_user.get("name") or current_user.get("email"),
+        "memorial_status": "pending",
+        "created_at": get_utc_timestamp()
+    }
+    await db.rainbow_bridge_memorials.insert_one(entry)
+
+    # Admin notification
+    try:
+        await db.admin_notifications.insert_one({
+            "id": f"notif-{uuid.uuid4().hex[:12]}",
+            "type": "memorial_submission",
+            "title": f"🌷 New memorial: {pet_name}",
+            "message": f"{current_user.get('name', current_user.get('email'))} submitted a memorial for {pet_name}. Awaiting your approval.",
+            "memorial_id": entry["id"],
+            "owner_email": current_user.get("email"),
+            "read": False,
+            "priority": "medium",
+            "created_at": get_utc_timestamp()
+        })
+    except Exception as e:
+        logger.error(f"Memorial submission notification failed: {e}")
+
+    return {
+        "success": True,
+        "message": f"{pet_name}'s memorial has been submitted. It will appear on the wall once approved. 💜",
+        "memorial_id": entry["id"]
+    }
+
+
+@api_router.get("/admin/rainbow-bridge/pending")
+async def get_pending_memorials(username: str = Depends(verify_admin)):
+    """Admin: Get all pending community memorial submissions"""
+    pending = await db.rainbow_bridge_memorials.find(
+        {"memorial_status": "pending"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(length=200)
+    return {"success": True, "memorials": pending, "count": len(pending)}
+
+
+@api_router.patch("/admin/rainbow-bridge/{memorial_id}/approve")
+async def approve_community_memorial(memorial_id: str, username: str = Depends(verify_admin)):
+    """Admin: Approve a pending memorial — makes it live on the wall"""
+    result = await db.rainbow_bridge_memorials.update_one(
+        {"id": memorial_id},
+        {"$set": {"memorial_status": "active", "approved_at": get_utc_timestamp(), "approved_by": username}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Memorial not found")
+    return {"success": True, "message": "Memorial approved and now live on the Rainbow Wall"}
+
+
+@api_router.patch("/admin/rainbow-bridge/{memorial_id}/reject")
+async def reject_community_memorial(memorial_id: str, username: str = Depends(verify_admin)):
+    """Admin: Reject a pending memorial"""
+    result = await db.rainbow_bridge_memorials.update_one(
+        {"id": memorial_id},
+        {"$set": {"memorial_status": "rejected", "rejected_at": get_utc_timestamp(), "rejected_by": username}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Memorial not found")
+    return {"success": True, "message": "Memorial rejected"}
+
+
 @api_router.post("/admin/rainbow-bridge/fix-memorials")
 async def fix_rainbow_bridge_memorials(username: str = Depends(verify_admin)):
     """Fix existing memorials that are missing the memorial_status field"""
