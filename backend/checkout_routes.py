@@ -11,6 +11,7 @@ import os
 import logging
 import uuid
 from email_templates import get_email_template, detail_box, detail_row
+from whatsapp_notifications import send_whatsapp_message, format_phone_number
 import io
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List, Dict, Any
@@ -525,7 +526,46 @@ async def verify_payment(request: VerifyPaymentRequest):
         if order:
             await send_order_confirmation_email(order)
 
-        # ── Create service desk ticket + admin bell notification ──────────────
+        # ── Send WhatsApp confirmation to customer ────────────────────────────
+        if order:
+            try:
+                _wa_customer  = order.get("customer", {})
+                _wa_phone     = _wa_customer.get("whatsapp") or _wa_customer.get("phone", "")
+                _wa_name      = _wa_customer.get("name", "there")
+                _wa_pet       = order.get("pet", {}).get("name", "your pet")
+                _wa_order_id  = order.get("order_id", request.order_id)
+                _wa_items     = order.get("items", [])
+                _wa_pricing   = order.get("pricing", {})
+                _wa_total     = _wa_pricing.get("grand_total", 0)
+
+                # Build a concise item line (max 3 items, then "+N more")
+                _wa_item_lines = "\n".join([
+                    f"  🐾 {i.get('name','Item')} ×{i.get('quantity',1)}"
+                    for i in _wa_items[:3]
+                ])
+                if len(_wa_items) > 3:
+                    _wa_item_lines += f"\n  + {len(_wa_items) - 3} more item(s)"
+
+                _wa_msg = (
+                    f"✦ Order Confirmed! #{_wa_order_id}\n\n"
+                    f"Hi {_wa_name}! Your order for {_wa_pet} is confirmed. 🎉\n\n"
+                    f"🛍️ Items:\n{_wa_item_lines}\n\n"
+                    f"💰 Total: ₹{_wa_total:.0f}\n\n"
+                    f"We're preparing it with love. Reply to this message for any help. 🐾\n\n"
+                    f"Track your order: thedoggycompany.com/my-requests"
+                )
+
+                _wa_result = await send_whatsapp_message(
+                    to=format_phone_number(_wa_phone),
+                    message=_wa_msg,
+                    log_context="order_confirm",
+                )
+                logger.info(f"[ORDER WA] {_wa_result.get('success')} → {_wa_phone[:6]}*** | order {_wa_order_id}")
+            except Exception as _wa_err:
+                # Never block payment success due to WA failure
+                logger.error(f"[ORDER WA] Failed to send WhatsApp confirmation: {_wa_err}")
+
+
         # This makes the order visible in: Admin Service Desk, My Requests page
         if order:
             try:
