@@ -524,7 +524,107 @@ async def verify_payment(request: VerifyPaymentRequest):
         # Send order confirmation email
         if order:
             await send_order_confirmation_email(order)
-        
+
+        # ── Create service desk ticket + admin bell notification ──────────────
+        # This makes the order visible in: Admin Service Desk, My Requests page
+        if order:
+            try:
+                _customer   = order.get("customer", {})
+                _pricing    = order.get("pricing", {})
+                _pet        = order.get("pet", {})
+                _items      = order.get("items", [])
+                _delivery   = order.get("delivery", {})
+                _order_id   = order.get("order_id", request.order_id)
+                _now_iso    = datetime.now(timezone.utc).isoformat()
+                _sd_id      = f"ORD-{_order_id[-8:].upper()}" if _order_id else f"ORD-{uuid.uuid4().hex[:8].upper()}"
+                _items_summary = ", ".join([f"{i.get('name','Item')} ×{i.get('quantity',1)}" for i in _items])
+                _items_lines   = "\n".join([
+                    f"  • {i.get('name','?')} ×{i.get('quantity',1)} — ₹{i.get('price',0)}"
+                    for i in _items
+                ])
+                _gst_total = _pricing.get("gst_details", {}).get("total_tax", 0)
+                _briefing = (
+                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                    f"  🛒 SHOP ORDER — RAZORPAY PAID ✅\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                    f"🧾 Order ID: {_order_id}\n"
+                    f"📦 Items:\n{_items_lines}\n\n"
+                    f"💰 Subtotal: ₹{_pricing.get('subtotal', 0):.2f}  |  "
+                    f"Shipping: ₹{_pricing.get('shipping_fee', 0):.2f}  |  "
+                    f"GST: ₹{_gst_total:.2f}  |  "
+                    f"Total: ₹{_pricing.get('grand_total', 0):.2f}\n"
+                    f"💳 Payment: PAID via Razorpay\n"
+                    f"👤 Customer: {_customer.get('name','?')} | {_customer.get('email','?')} | {_customer.get('phone','?')}\n"
+                    f"🐾 Pet: {_pet.get('name','?')} ({_pet.get('breed','?')})\n"
+                    f"📍 Delivery: {_delivery.get('address','?')}, {_delivery.get('city','?')} — {_delivery.get('method','delivery').upper()}\n"
+                    f"📝 Instructions: {order.get('special_instructions') or 'None'}\n"
+                )
+                _sd_ticket = {
+                    "id":               _sd_id,
+                    "ticket_id":        _sd_id,
+                    "channel":          "web",
+                    "category":         "shop",
+                    "request_type":     "product_order",
+                    "status":           "open",
+                    "priority":         "normal",
+                    "subject":          f"Shop Order — {_items_summary[:60]}",
+                    "order_id":         _order_id,
+                    "customer_name":    _customer.get("name"),
+                    "customer_email":   _customer.get("email"),
+                    "customer_phone":   _customer.get("phone"),
+                    "user_email":       _customer.get("email"),
+                    "member": {
+                        "name":  _customer.get("name"),
+                        "email": _customer.get("email"),
+                        "phone": _customer.get("phone"),
+                    },
+                    "pet_name":         _pet.get("name"),
+                    "pet_breed":        _pet.get("breed"),
+                    "pillar":           "shop",
+                    "items":            _items,
+                    "items_summary":    _items_summary,
+                    "total":            _pricing.get("grand_total"),
+                    "delivery":         _delivery,
+                    "special_instructions": order.get("special_instructions"),
+                    "description":      _briefing,
+                    "conversation": [{
+                        "sender":     "mira",
+                        "source":     "order_briefing",
+                        "is_briefing": True,
+                        "text":       _briefing,
+                        "timestamp":  _now_iso,
+                    }],
+                    "messages":      [],
+                    "activity_log":  [{"event": "payment_confirmed", "at": _now_iso}],
+                    "created_at":    _now_iso,
+                    "updated_at":    _now_iso,
+                }
+                await db.service_desk_tickets.insert_one(_sd_ticket)
+                _sd_ticket.pop("_id", None)
+                # Admin bell notification
+                await db.admin_notifications.insert_one({
+                    "id":        f"notif-{uuid.uuid4().hex[:12]}",
+                    "type":      "order",
+                    "title":     f"🛒 Paid Order #{_order_id}",
+                    "message":   f"{_customer.get('name','Customer')} • {len(_items)} item(s) • ₹{_pricing.get('grand_total', 0):.0f} • PAID ✅",
+                    "category":  "shop",
+                    "related_id": _sd_id,
+                    "link_to":   f"/admin?tab=servicedesk&ticket={_sd_id}",
+                    "priority":  "high",
+                    "metadata": {
+                        "order_id":      _order_id,
+                        "customer_name": _customer.get("name"),
+                        "customer_email": _customer.get("email"),
+                        "total":         _pricing.get("grand_total"),
+                        "items_count":   len(_items),
+                    },
+                    "read":       False,
+                    "created_at": _now_iso,
+                })
+                logger.info(f"✅ Service desk ticket {_sd_id} + admin notification created for order {_order_id}")
+            except Exception as _e:
+                logger.error(f"[ORDER SD] Failed to create service desk ticket: {_e}", exc_info=True)
+
         # ═══════════════════════════════════════════════════════════════════════
         # TRAIT GRAPH UPDATE - Per MOJO Bible Part 7 §4
         # "When purchases complete: update traits (food preferences, etc.)"
