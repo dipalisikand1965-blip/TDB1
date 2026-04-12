@@ -76,7 +76,7 @@ const MobileNavBar = () => {
     { id: 'home', icon: Home, label: 'Home', path: isAuthenticated ? '/pet-home' : '/' },
     { id: 'inbox', icon: Inbox, label: 'Inbox', path: '/notifications' },
     { id: 'mira', icon: Sparkles, label: miraConfig.label, isMira: true },
-    { id: 'orders', icon: Package, label: 'Orders', path: '/dashboard?tab=orders' },
+    { id: 'orders', icon: Package, label: 'Orders', path: '/my-requests?tab=Orders' },
     { 
       id: 'mypet', 
       icon: PawPrint, 
