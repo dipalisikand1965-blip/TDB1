@@ -138,7 +138,6 @@ async def get_meal_box_products(
     fav_protein: str = "",
     health_condition: str = "",
     pet_name: str = "",
-    pet_breed: str = "",
 ):
     """
     Curate 5 meal-box slots from the products DB.
@@ -150,48 +149,8 @@ async def get_meal_box_products(
     allergy_list = [a.strip().lower() for a in allergies.split(",") if a.strip()] if allergies else []
     prot = fav_protein.strip()
     cond = health_condition.strip()
-    breed = pet_breed.strip().lower()
     if cond.lower() in ("none", "none_confirmed", "[]", ""):
         cond = ""
-
-    import re as _re
-
-    # All breed-specific product name patterns in the catalog follow: "[BreedName] [ProductType]"
-    _BREED_PRODUCT_RE = _re.compile(
-        r'^(.+?)\s+(?:food bowl|feeding mat|dining placemat|food storage container|'
-        r'treat jar|personalized food bowl|personalized bowl|dining mat|'
-        r'food container|water bowl|elevated bowl|slow feeder|placemat|'
-        r'feeding station|food dispenser|pet bowl)',
-        _re.IGNORECASE
-    )
-
-    def _breed_priority(product_name: str) -> int:
-        """0 = safe for this pet, 1 = breed-specific mismatch."""
-        name = product_name.lower()
-        m = _BREED_PRODUCT_RE.match(name)
-        if m:
-            item_breed = m.group(1).strip()
-            if not breed:
-                return 1
-            if breed in item_breed or item_breed in breed:
-                return 0
-            return 1
-        BREED_KEYWORDS = [
-            "cocker spaniel","labrador","golden retriever","german shepherd",
-            "rottweiler","irish setter","poodle","beagle","dachshund","pug",
-            "boxer","husky","dalmatian","bulldog","shih tzu","maltese",
-            "chihuahua","dobermann","doberman","great dane","saint bernard",
-            "border collie","australian shepherd","pomeranian","samoyed",
-            "akita","chow chow","basenji","vizsla","weimaraner","saluki",
-            "havanese","shetland sheepdog","yorkshire terrier","cavalier",
-            "lhasa apso","jack russell","italian greyhound","indian pariah",
-        ]
-        found = next((b for b in BREED_KEYWORDS if b in name), None)
-        if not found:
-            return 0
-        if breed and (breed in found or found in breed):
-            return 0
-        return 1
 
     # Fetch all dine food products once
     food_cats = ["Daily Meals", "Treats & Rewards", "Supplements", "Frozen & Fresh", "Homemade & Recipes"]
@@ -217,7 +176,7 @@ async def get_meal_box_products(
         pass
 
     def best_in(category, sub_category=None, exclude_ids=None):
-        """Return candidates sorted: allergy-safe → breed-appropriate → highest Mira score."""
+        """Return (pick, alternatives) from safe_products."""
         exclude_ids = exclude_ids or set()
         candidates = [
             p for p in safe_products
@@ -225,9 +184,9 @@ async def get_meal_box_products(
             and p["id"] not in exclude_ids
             and (sub_category is None or p.get("sub_category") == sub_category)
         ]
-        # Sort: breed-appropriate first (0), mismatched last (1), then by Mira score desc
+        # Sort by Mira score desc, then by name
         candidates.sort(
-            key=lambda p: (_breed_priority(p.get("name", "")), -(mira_scores.get(p["id"], {}).get("score", 0)))
+            key=lambda p: -(mira_scores.get(p["id"], {}).get("score", 0))
         )
         if not candidates:
             # Relax sub-category constraint
@@ -235,12 +194,7 @@ async def get_meal_box_products(
                 p for p in safe_products
                 if p.get("category") == category and p["id"] not in exclude_ids
             ]
-            candidates.sort(
-                key=lambda p: (_breed_priority(p.get("name", "")), -(mira_scores.get(p["id"], {}).get("score", 0)))
-            )
-        # If ALL remaining candidates are breed-mismatched, signal Mira Imagines
-        if candidates and all(_breed_priority(p.get("name", "")) == 1 for p in candidates):
-            return []   # ← triggers Mira Imagines fallback (breed-safe, personalised)
+            candidates.sort(key=lambda p: -(mira_scores.get(p["id"], {}).get("score", 0)))
         return candidates
 
     result_slots = []
@@ -254,7 +208,7 @@ async def get_meal_box_products(
             reason = mira_scores.get(pick["id"], {}).get("mira_reason", "")
             if not reason and prot:
                 reason = f"Matches {pet_name or 'your dog'}'s {prot.lower()} preference"
-            alts = candidates[1:8]   # wider pool → frontend can strip mismatches and still have good options
+            alts = candidates[1:4]
             slot_result = {
                 "key": slot_cfg["key"],
                 "label": slot_cfg["label"],
