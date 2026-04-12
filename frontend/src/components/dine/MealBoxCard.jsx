@@ -225,15 +225,31 @@ export default function MealBoxCard() {
           const [newPick, ...allAlts] = finalRanked;
 
           // Strip breed-mismatched products from alternatives entirely.
-          // Only fall back to mismatched if no safe alternative exists at all.
-          const safeAlts = allAlts.filter(p => {
+          // Catches ALL breed-named product types: Food Bowl, Feeding Mat,
+          // Dining Placemat, Treat Jar, Food Storage Container, etc.
+          const BREED_PRODUCT_RE = /^(.+?)\s+(?:food bowl|feeding mat|dining placemat|food storage container|treat jar|personalized food bowl|personalized bowl|dining mat|food container|water bowl|elevated bowl|slow feeder|placemat|feeding station|food dispenser|pet bowl)/i;
+          const BREED_KEYWORDS_FE = [
+            'cocker spaniel','labrador','golden retriever','german shepherd','rottweiler',
+            'irish setter','poodle','beagle','dachshund','pug','boxer','husky','dalmatian',
+            'bulldog','shih tzu','maltese','chihuahua','dobermann','doberman','great dane',
+            'saint bernard','border collie','australian shepherd','pomeranian','samoyed',
+            'akita','chow chow','basenji','vizsla','weimaraner','saluki','havanese',
+            'shetland sheepdog','yorkshire terrier','cavalier','lhasa apso','jack russell',
+            'italian greyhound','indian pariah',
+          ];
+          const isBreedMismatch = (p) => {
             const name = (p.name || '').toLowerCase();
-            const bowlMatch = name.match(/^(.+?)\s+food\s+bowl/);
-            if (!bowlMatch) return true;  // not a breed bowl → keep
-            const bowlBreed = bowlMatch[1].trim();
             const breed = (pet?.breed || '').toLowerCase();
-            return breed && (breed.includes(bowlBreed) || bowlBreed.includes(breed));
-          });
+            const m = name.match(BREED_PRODUCT_RE);
+            if (m) {
+              const itemBreed = m[1].trim();
+              return !(breed && (breed.includes(itemBreed) || itemBreed.includes(breed)));
+            }
+            const found = BREED_KEYWORDS_FE.find(b => name.includes(b));
+            if (!found) return false;
+            return !(breed && (breed.includes(found) || found.includes(breed)));
+          };
+          const safeAlts = allAlts.filter(p => !isBreedMismatch(p));
           const newAlts = safeAlts.length > 0 ? safeAlts : allAlts.slice(0, 3);
 
           const reason = newPick?.miraReason || newPick?.mira_reason ||
