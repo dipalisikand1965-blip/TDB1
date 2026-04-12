@@ -58,26 +58,38 @@ def preprocess_for_voice(text: str) -> str:
     Lily is British English — adjust for Indian/TDC context.
     """
     replacements = {
-        # Concierge — the main offender (French loanword Lily botches)
-        "Concierge®":          "kon-see-airj",
-        "Concierge":           "kon-see-airj",
-        "concierge":           "kon-see-airj",
+        # Remove ® before Lily sees it — she reads it aloud!
+        "Concierge®": "kawn-see-air",
+        "Concierge":  "kawn-see-air",
+        "concierge":  "kawn-see-air",
+
         # Indian currency symbol
-        "₹":                   "rupees",
+        "₹":          "rupees",
+
         # TDC brand terms
-        "Mira®":               "Meera",
-        "Mira":                "Meera",
-        "Pet Soul™":           "Pet Soul",
-        "Soul Made™":          "Soul Made",
+        "Mira®":      "Meera",
+        "Mira":       "Meera",
+
+        # Remove other symbols Lily mispronounces:
+        "®":          "",   # Remove any remaining registered marks
+        "™":          "",   # Remove trademark symbols
+        "✦":          "",   # Remove decorative symbols
+        "🐾":         "",   # Remove emojis
+
+        # Pet Soul / Soul Made
+        "Pet Soul":   "Pet Soul",
+        "Soul Made":  "Soul Made",
+
         # Dog-parent terms Lily might flatten
-        "pawrent":             "paw-rent",
-        "Pawrent":             "Paw-rent",
-        "pawrents":            "paw-rents",
-        "Pawrents":            "Paw-rents",
+        "pawrent":    "paw-rent",
+        "Pawrent":    "Paw-rent",
+        "pawrents":   "paw-rents",
+        "Pawrents":   "Paw-rents",
+
         # Markdown artefacts
-        "**":                  "",
-        "##":                  "",
-        "---":                 "",
+        "**":         "",
+        "##":         "",
+        "---":        "",
     }
     for original, phonetic in replacements.items():
         text = text.replace(original, phonetic)

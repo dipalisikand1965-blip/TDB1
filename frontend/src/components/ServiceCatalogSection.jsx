@@ -566,7 +566,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                     <div className="flex justify-between items-center pt-2 border-t border-gray-700">
                       <span className="font-bold">Your Price</span>
                       <span className="text-xl sm:text-2xl font-bold text-rose-400">
-                        {calculatedPrice.total > 0 ? `₹${calculatedPrice.total.toLocaleString()}` : 'Concierge Quote'}
+                        {calculatedPrice.total > 0 ? `₹${calculatedPrice.total.toLocaleString()}` : 'Concierge® Quote'}
                       </span>
                     </div>
                     {calculatedPrice.deposit_amount && (

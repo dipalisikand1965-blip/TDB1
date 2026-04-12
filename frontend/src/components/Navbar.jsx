@@ -630,7 +630,7 @@ const Navbar = () => {
       });
     } catch { /* fire and forget */ }
     toast({
-      title: `Request sent to Concierge`,
+      title: `Request sent to Concierge®`,
       description: `We'll arrange a photoshoot for ${primaryPet?.name || 'your pet'}'s special day. Our team will reach out on WhatsApp.`,
       duration: 5000,
     });

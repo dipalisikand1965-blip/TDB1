@@ -208,7 +208,7 @@ function ImagineChip({ petName, query, idx, onConcierge, onAmazonClick }) {
   const intentLabel = resolveImagineLabel(query);
   const labels = [
     `Mira imagines ${intentLabel} for ${petName}`,
-    `Concierge will source ${intentLabel} for ${petName}`,
+    `Concierge® will source ${intentLabel} for ${petName}`,
     `Tell us more about what ${petName} needs`,
   ];
   return (
@@ -1126,7 +1126,7 @@ export default function MiraSearchPage() {
                             metadata: { query: turn.query, intent: turn.intent, source: 'mira_search', imagines: true },
                             silent: true,
                           });
-                          toast.success('Sent to Concierge! We\'ll find the right match for ' + petName);
+                          toast.success('Sent to Concierge®! We\'ll find the right match for ' + petName);
                         } catch {
                           toast.error('Could not send — please try again');
                         }
@@ -1147,7 +1147,7 @@ export default function MiraSearchPage() {
                           silent: true,
                           metadata: { source: 'mira_search_imagines', query: turn.query }
                         });
-                        toast.success(`Sent to Concierge! 📥`);
+                        toast.success(`Sent to Concierge®! 📥`);
                       } catch {
                         toast.error('Could not send — please try again');
                       }

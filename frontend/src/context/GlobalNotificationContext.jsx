@@ -154,7 +154,7 @@ export const GlobalNotificationProvider = ({ children }) => {
     socket.on('member:concierge_reply', (data) => {
       console.log('[GLOBAL SOCKET] 💬 Concierge reply:', data);
       toast({
-        title: '💬 Concierge Reply',
+        title: '💬 Concierge® Reply',
         description: data.preview || 'You have a new message from your concierge',
       });
     });

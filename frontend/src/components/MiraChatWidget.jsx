@@ -968,7 +968,9 @@ const MiraChatWidget = ({
     if (summary && !/[.!?]$/.test(summary)) summary += '.';
     // Pronunciation fixes (matches backend preprocess_for_voice)
     return summary
-      .replace(/Concierge®?/gi, 'kon-see-airj')
+      .replace(/Concierge®?/gi, 'kawn-see-air')
+      .replace(/®|™/g, '')
+      .replace(/✦/g, '')
       .replace(/Mira®?/g,       'Meera')
       .replace(/₹/g,            'rupees')
       .replace(/pawrents?/gi,   m => m[0] === 'P' ? 'Paw-rent' : 'paw-rent');

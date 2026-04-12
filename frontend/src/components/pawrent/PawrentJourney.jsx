@@ -145,7 +145,7 @@ const FIRST_STEPS = {
       desc:"New routes, new smells — keep walks exciting year-round.",
       cta:"Find routes with Mira", pillar:"go", intent:"walk_guide" },
     { id:"go-boarding", icon:"🏠", title:"Boarding & daycare",
-      desc:"Trusted care when you travel — Concierge arranges everything.",
+      desc:"Trusted care when you travel — Concierge® arranges everything.",
       cta:"Book via Concierge®", pillar:"go", intent:"boarding_booking" },
     { id:"go-travel-plan", icon:"✈️", title:"Travel plan",
       desc:"Taking your dog on a trip? Mira handles all the logistics.",
