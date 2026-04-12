@@ -518,7 +518,7 @@ async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     """Reindex all products in the search engine (admin only)"""
     verify_admin(credentials)
 
-    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(7500)  # Reindex cap: prevents OOM
 
     if products:
         await search_service.index_products_batch(products)

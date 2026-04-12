@@ -125,7 +125,7 @@ const WallUploadModal = ({ isOpen, onClose, petName, petId, onSubmitted }) => {
       onClick={handleClose}
       style={{
         position: 'fixed', inset: 0,
-        background: 'rgba(0,0,0,0.50)', zIndex: 2000,
+        background: 'rgba(0,0,0,0.50)', zIndex: 10000,
         display: 'flex',
         alignItems: isMobile ? 'flex-start' : 'center',
         justifyContent: 'center',

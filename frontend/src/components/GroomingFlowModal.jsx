@@ -378,7 +378,7 @@ const GroomingFlowModal = ({
             
             <div className="space-y-3">
               <Button 
-                onClick={() => window.location.href = `/mira-demo?openConcierge=true&ticket=${ticketId}`}
+                onClick={() => window.location.href = `/mira-search?openConcierge=true&ticket=${ticketId}`}
                 className="w-full bg-white text-teal-600 hover:bg-teal-50"
               >
                 View in Concierge® Inbox

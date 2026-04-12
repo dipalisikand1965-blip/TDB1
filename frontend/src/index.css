@@ -505,6 +505,12 @@ body {
    The heart of Pet Life OS
    ============================================ */
 
+/* ── Z-Index Hierarchy (global stacking order) ──
+   mobile-nav-container: 9995
+   Modals (portal into body): 10000 (overlay) / 10001 (sheet)
+   Never let widgets (Mira fab, tooltips) exceed 9999
+   ─────────────────────────────────────────── */
+
 /* Mobile Nav Container - Fixed bottom navigation bar */
 .mobile-nav-container {
   position: fixed;

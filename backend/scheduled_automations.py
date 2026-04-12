@@ -161,6 +161,60 @@ async def send_daily_digest_to_user(user: dict, pets: list) -> dict:
 
     tip = get_todays_tip(pet_name, coat_type)
 
+    # ── Weather block ─────────────────────────────────────────────────────────
+    weather_block = ""
+    try:
+        from services.openweather_service import get_weather_by_city
+        city = (primary_pet or {}).get("city") or user.get("city") or "Bangalore"
+        weather = await get_weather_by_city(city)
+        if weather:
+            temp = weather.get("temperature", 28)
+            condition = (weather.get("condition") or "").lower()
+            description = (weather.get("description") or condition).lower()
+            is_raining = any(w in condition + description for w in ["rain", "drizzle", "storm", "shower", "thunder"])
+            
+            if temp >= 35:
+                weather_block = (
+                    f"🌡️ It's {temp}°C in {city} today — quite hot. "
+                    f"Walk {pet_name} before 7am or after 6:30pm. Water! 💧"
+                )
+            elif is_raining:
+                weather_block = (
+                    f"🌧️ Rainy day in {city} today. "
+                    f"Perfect for indoor play with {pet_name}! "
+                    f"Keep it short if you must go out. 🏠"
+                )
+            elif temp <= 15:
+                weather_block = (
+                    f"🧥 Chilly {temp}°C in {city} today. "
+                    f"Midday is best for {pet_name}'s walk — warmest part of the day. ☀️"
+                )
+            else:
+                weather_block = (
+                    f"☀️ Beautiful {temp}°C in {city} today — "
+                    f"perfect weather for {pet_name}'s morning walk! 🐾"
+                )
+    except Exception as _we:
+        logger.warning(f"[AUTOMATION] Weather fetch failed: {_we}")
+        weather_block = ""  # fail silently
+
+    # ── Allergy note ──────────────────────────────────────────────────────────
+    allergy_note = ""
+    if primary_pet and db is not None:
+        try:
+            pet_full = await db.pets.find_one(
+                {"id": primary_pet.get("id")},
+                {"_id": 0, "vault": 1, "doggy_soul_answers": 1}
+            )
+            if pet_full:
+                vault_allergies = [a.get("name") for a in (pet_full.get("vault") or {}).get("allergies", []) if a.get("name")]
+                soul_allergies  = (pet_full.get("doggy_soul_answers") or {}).get("food_allergies", [])
+                all_allergies = list({a for a in vault_allergies + soul_allergies if a})
+                if all_allergies:
+                    allergy_note = f"\n⚠️ No {', '.join(all_allergies)} for {pet_name}\n"
+        except Exception as _ae:
+            logger.warning(f"[AUTOMATION] Allergy fetch failed: {_ae}")
+
     # Collect upcoming reminders
     reminders = []
     db = get_automation_db()
@@ -203,9 +257,10 @@ async def send_daily_digest_to_user(user: dict, pets: list) -> dict:
         reminder_text = "\n\n⏰ *Upcoming reminders:*\n" + "\n".join(f"• {r}" for r in reminders)
 
     message = (
-        f"🌅 *Good morning!*\n\n"
-        f"Mira here — your personal pet intelligence.\n\n"
-        f"*Today's tip for {pet_name}:*\n{tip}"
+        f"✦ Good morning! Here's {pet_name}'s daily briefing 🐾\n\n"
+        f"{weather_block + chr(10) if weather_block else ''}"
+        f"{allergy_note}"
+        f"*Today's tip:*\n{tip}"
         f"{reminder_text}\n\n"
         f"Have a beautiful day with {pet_name} 🐾\n"
         f"— *The Doggy Company*"

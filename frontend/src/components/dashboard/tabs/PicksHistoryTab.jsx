@@ -244,7 +244,7 @@ const PicksHistoryTab = ({ pet, user }) => {
             Start chatting with Mira to get personalized picks for {pet?.name}!
           </p>
           <Button 
-            onClick={() => window.location.href = '/mira-demo'}
+            onClick={() => window.location.href = '/mira-search'}
             className="bg-gradient-to-r from-pink-500 to-purple-500"
           >
             <Sparkles className="w-4 h-4 mr-2" />

@@ -89,7 +89,7 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
           position: 'fixed',
           inset: 0,
           background: 'rgba(0,0,0,0.50)',
-          zIndex: 1000,
+          zIndex: 10000,
           display: 'flex',
           alignItems: isMobile ? 'flex-start' : 'center',
           justifyContent: 'center',
@@ -110,7 +110,7 @@ const ConciergeIntakeModal = ({ isOpen, onClose, serviceType, petName, petId }) 
             maxHeight: isMobile ? 'none' : '90vh',
             overflowY: 'auto',
             position: 'relative',
-            zIndex: 1001
+            zIndex: 10001
           }}
           data-testid="concierge-intake-modal"
         >

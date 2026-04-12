@@ -20,7 +20,7 @@ const PawmoterNPSModal = ({ isOpen, onClose, userEmail, userName, orderCount = 3
     if (score === null) return;
     setSubmitting(true);
     try {
-      await fetch(`${API_URL}/api/rewards/nps/submit`, {
+      const res = await fetch(`${API_URL}/api/rewards/nps/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -32,6 +32,7 @@ const PawmoterNPSModal = ({ isOpen, onClose, userEmail, userName, orderCount = 3
           reward_points: 50
         })
       });
+      if (!res.ok) throw new Error(`NPS submit failed: ${res.status}`);
       setSubmitted(true);
       setTimeout(onClose, 2500);
     } catch (e) {
