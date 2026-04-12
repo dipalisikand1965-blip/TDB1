@@ -424,7 +424,7 @@ const NotificationsInbox = () => {
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
-    else navigate('/mira-os');
+    else navigate('/mira-search');
   };
 
   const totalActive = activeTickets.length + waitingTickets.length;

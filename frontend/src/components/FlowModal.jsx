@@ -507,7 +507,7 @@ const FlowModal = ({
         description: `Ticket #${data.ticket_id || data.id} created`,
         action: {
           label: 'View in inbox',
-          onClick: () => navigate(`/mira-os?openConcierge=true&ticket=${data.ticket_id || data.id}`)
+          onClick: () => navigate(`/mira-search?openConcierge=true&ticket=${data.ticket_id || data.id}`)
         },
         duration: 8000  // Keep toast visible longer
       });

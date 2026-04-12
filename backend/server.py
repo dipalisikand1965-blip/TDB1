@@ -14613,6 +14613,12 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     pets_raw = await db.pets.find({"owner_email": current_user["email"]}, {"_id": 0, "photo_base64": 0, "photo_content_type": 0}).to_list(50)
     pets = [sanitize_objectids(p) for p in pets_raw]
     
+    # Determine user's pet_pass_status from their account — enrich pets that don't have it set
+    user_pass_status = current_user.get("pet_pass_status") or (
+        "active" if current_user.get("membership_tier") not in (None, "free", "pending") else "pending"
+    )
+    user_pass_plan = "foundation" if current_user.get("membership_tier") in ("gold", "platinum", "pack_leader") else "trial"
+    
     for pet in pets:
         stored_score = pet.get("overall_score", 0) or 0
         answers = pet.get("doggy_soul_answers") or pet.get("soul_answers") or {}
@@ -14629,6 +14635,12 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
         else:
             pet["overall_score"] = 0
             pet["score_tier"] = "newcomer"
+        
+        # Inject user's pet_pass_status into pets that don't have it
+        if not pet.get("pet_pass_status"):
+            pet["pet_pass_status"] = user_pass_status
+        if not pet.get("pet_pass_plan"):
+            pet["pet_pass_plan"] = user_pass_plan
     
     return {"pets": pets}
 

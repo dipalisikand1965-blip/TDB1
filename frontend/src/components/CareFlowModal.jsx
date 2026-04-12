@@ -322,7 +322,7 @@ const CareFlowModal = ({
             
             <div className="space-y-3">
               <Button 
-                onClick={() => window.location.href = `/mira-os?openConcierge=true&ticket=${ticketId}`}
+                onClick={() => window.location.href = `/mira-search?openConcierge=true&ticket=${ticketId}`}
                 className="w-full bg-white text-gray-900 hover:bg-gray-100"
               >
                 View in Concierge® Inbox

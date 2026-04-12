@@ -1168,7 +1168,7 @@ const MyPets = () => {
                                 !miraKnowledge[pet.id].memory_knowledge?.length) && (
                                 <div className="text-center py-4">
                                   <p className="text-gray-600">Mira is still learning about {pet.name}.</p>
-                                  <Link to="/mira-os">
+                                  <Link to="/mira-search">
                                     <Button variant="outline" className="mt-2">
                                       Chat with Mira to build knowledge →
                                     </Button>
@@ -1179,7 +1179,7 @@ const MyPets = () => {
                           ) : (
                             <div className="text-center py-4">
                               <p className="text-gray-600">Start chatting with Mira to build {pet.name}'s knowledge profile!</p>
-                              <Link to="/mira-os">
+                              <Link to="/mira-search">
                                 <Button variant="outline" className="mt-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none">
                                   <Sparkles className="w-4 h-4 mr-2" />
                                   Chat with Mira
