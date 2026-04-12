@@ -606,12 +606,13 @@ const PetHomePage = () => {
         {/* Mira Teaser Bar */}
         <button
           data-testid="mira-teaser-bar"
+          className="mira-search-bar"
           onClick={() => navigate('/mira-search')}
           style={{
             width: '100%',
             display: 'flex', alignItems: 'center', gap: 12,
             background: 'linear-gradient(135deg, rgba(109,40,217,0.35), rgba(124,58,237,0.2))',
-            border: '1.5px solid rgba(139,92,246,0.45)',
+            border: '1.5px solid rgba(168,85,247,0.4)',
             borderRadius: 16,
             padding: '13px 18px',
             marginBottom: 16,
