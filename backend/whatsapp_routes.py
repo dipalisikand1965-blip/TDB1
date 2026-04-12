@@ -531,6 +531,22 @@ async def process_gupshup_webhook(body: dict):
                         "assigned_to": None,
                     }
                     await db.service_desk_tickets.insert_one(new_sd)
+                    new_sd.pop("_id", None)
+                    # ── Admin bell notification for new WhatsApp ticket ──────────
+                    _wa_ticket_id = new_sd.get("ticket_id") or new_sd.get("id")
+                    await db.admin_notifications.insert_one({
+                        "id":        f"notif-{uuid.uuid4().hex[:12]}",
+                        "type":      "whatsapp_new",
+                        "title":     f"💬 New WhatsApp — {enrich_name}",
+                        "message":   content[:120] + ("…" if len(content) > 120 else ""),
+                        "ticket_id": _wa_ticket_id,
+                        "pillar":    _detected_pillar or "support",
+                        "category":  _detected_pillar or "support",
+                        "link_to":   f"/admin?tab=servicedesk&ticket={_wa_ticket_id}",
+                        "read":      False,
+                        "created_at": now,
+                        "metadata":  {"from_phone": from_number, "text_preview": content[:200]},
+                    })
                     logger.info(f"[GUPSHUP] ✅ Created new service_desk_ticket {legacy_tid} for existing legacy ticket")
             else:
                 # ═══════════════════════════════════════════════════════════════════════════
