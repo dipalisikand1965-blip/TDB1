@@ -118,17 +118,18 @@ const RainbowBridgeWall = () => {
   }
 
   return (
+    <section className="bg-gradient-to-b from-slate-900 via-purple-950/95 to-slate-950 rounded-3xl p-6 sm:p-10 mt-8 shadow-2xl shadow-purple-950/40">
     <div className="space-y-8">
       {/* Memorial Wall Header */}
-      <div className="text-center space-y-4">
-        <h2 className="text-2xl font-bold text-white flex items-center justify-center gap-3">
-          <Rainbow className="w-7 h-7 text-purple-400" />
+      <div className="text-center space-y-3">
+        <h2 className="text-3xl font-bold text-white flex items-center justify-center gap-3">
+          <Rainbow className="w-8 h-8 text-purple-400" />
           Memorial Wall
-          <Rainbow className="w-7 h-7 text-pink-400" />
+          <Rainbow className="w-8 h-8 text-pink-400" />
         </h2>
-        <p className="text-white/60 max-w-2xl mx-auto">
-          A community space to honor and remember our beloved companions who wait for us at the Rainbow Bridge. 
-          Leave a tribute to show you care.
+        <p className="text-white/70 text-base max-w-xl mx-auto leading-relaxed">
+          A place to honour the dogs who shaped us.<br />
+          Forever loved. Never forgotten.
         </p>
         
         {memorials.length > 0 && (
@@ -247,7 +248,7 @@ const RainbowBridgeWall = () => {
                   </Button>
                   <Button 
                     size="sm"
-                    className="bg-gradient-to-r from-pink-500/80 to-purple-500/80 hover:from-pink-500 hover:to-purple-500 text-white"
+                    className="bg-gradient-to-r from-pink-500/80 to-purple-500/80 hover:from-pink-500 hover:to-purple-500 text-white text-xs"
                     onClick={() => {
                       setSelectedMemorial(memorial);
                       setShowTributeModal(true);
@@ -255,7 +256,7 @@ const RainbowBridgeWall = () => {
                     data-testid={`tribute-btn-${memorial.pet_id}`}
                   >
                     <Heart className="w-4 h-4 mr-1" />
-                    Tribute
+                    Leave a Tribute
                   </Button>
                 </div>
               </div>
@@ -480,6 +481,7 @@ const RainbowBridgeWall = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </section>
   );
 };
 
