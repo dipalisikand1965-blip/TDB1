@@ -156,24 +156,30 @@ async def get_meal_box_products(
 
     import re as _re
 
+    # All breed-specific product name patterns in the catalog follow: "[BreedName] [ProductType]"
+    _BREED_PRODUCT_RE = _re.compile(
+        r'^(.+?)\s+(?:food bowl|feeding mat|dining placemat|food storage container|'
+        r'treat jar|personalized food bowl|personalized bowl|dining mat|'
+        r'food container|water bowl|elevated bowl|slow feeder|placemat|'
+        r'feeding station|food dispenser|pet bowl)',
+        _re.IGNORECASE
+    )
+
     def _breed_priority(product_name: str) -> int:
         """
         0 = safe for this pet (generic or breed-matched)
         1 = breed-specific product that doesn't match this pet's breed
-        Strategy: detect "[BreedName] Food Bowl" pattern first (covers all ~60+ bowl SKUs),
-        then fall back to checking a known-breeds list for other product types.
         """
         name = product_name.lower()
-        # Pattern: "[BreedName] Food Bowl" — covers the entire bowl catalog
-        bowl_match = _re.match(r'^(.+?)\s+food\s+bowl', name)
-        if bowl_match:
-            bowl_breed = bowl_match.group(1).strip()
+        m = _BREED_PRODUCT_RE.match(name)
+        if m:
+            item_breed = m.group(1).strip()
             if not breed:
-                return 1  # unknown pet breed — treat all specific bowls as mismatched
-            if breed in bowl_breed or bowl_breed in breed:
-                return 0  # pet's breed matches this bowl
-            return 1      # wrong breed bowl
-        # For non-bowl products, check known breed list
+                return 1   # unknown pet breed — treat all breed-specific as mismatched
+            if breed in item_breed or item_breed in breed:
+                return 0   # breed match
+            return 1       # wrong breed
+        # Non-pattern products: check known breed keyword list
         BREED_KEYWORDS = [
             "cocker spaniel","labrador","golden retriever","german shepherd",
             "rottweiler","irish setter","poodle","beagle","dachshund","pug",
@@ -181,13 +187,15 @@ async def get_meal_box_products(
             "chihuahua","dobermann","doberman","great dane","saint bernard",
             "border collie","australian shepherd","pomeranian","samoyed",
             "akita","chow chow","basenji","vizsla","weimaraner","saluki",
+            "havanese","shetland sheepdog","yorkshire terrier","cavalier",
+            "lhasa apso","jack russell","italian greyhound","indian pariah",
         ]
         found = next((b for b in BREED_KEYWORDS if b in name), None)
         if not found:
             return 0   # generic — safe for all breeds
         if breed and (breed in found or found in breed):
-            return 0   # breed match
-        return 1        # mismatch
+            return 0   # keyword match
+        return 1       # keyword mismatch
 
     # Fetch all dine food products once
     food_cats = ["Daily Meals", "Treats & Rewards", "Supplements", "Frozen & Fresh", "Homemade & Recipes"]
