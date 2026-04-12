@@ -118,15 +118,17 @@ const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|no allergies)$/i;
 function getAllergies(pet) {
   const s = new Set();
   const add = v => {
-    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(x); });
-    else if (v && !CLEAN_NONE.test(String(v).trim())) s.add(v);
+    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(String(x).trim().toLowerCase()); });
+    else if (v && !CLEAN_NONE.test(String(v).trim())) {
+      String(v).split(',').forEach(a => { const t = a.trim().toLowerCase(); if (t && !CLEAN_NONE.test(t)) s.add(t); });
+    }
   };
   add(pet?.preferences?.allergies); add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.doggy_soul_answers?.allergies); add(pet?.allergies);
   // vault.allergies — vet-confirmed severe allergies (PRIMARY source)
   if (pet?.vault?.allergies) {
     const va = pet.vault.allergies;
-    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim()); });
+    if (Array.isArray(va)) va.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim().toLowerCase()); });
     else add(va);
   }
   add(pet?.health_data?.allergies);

@@ -86,12 +86,19 @@ const CLEAN_NONE = /^(no|none|none_confirmed|no_allergies|n\/a)$/i;
 function getAllergies(pet) {
   const s = new Set();
   const add = v => {
-    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(x); });
-    else if (v && !CLEAN_NONE.test(String(v).trim())) s.add(v);
+    if (Array.isArray(v)) v.forEach(x => { if (x && !CLEAN_NONE.test(String(x).trim())) s.add(String(x).trim().toLowerCase()); });
+    else if (v && !CLEAN_NONE.test(String(v).trim())) {
+      String(v).split(',').forEach(a => { const t = a.trim().toLowerCase(); if (t && !CLEAN_NONE.test(t)) s.add(t); });
+    }
   };
   add(pet?.preferences?.allergies);
   add(pet?.doggy_soul_answers?.food_allergies);
   add(pet?.allergies);
+  // vault.allergies — primary confirmed allergy store
+  if (Array.isArray(pet?.vault?.allergies)) {
+    pet.vault.allergies.forEach(alg => { const n = alg?.name || alg; if (n && !CLEAN_NONE.test(String(n).trim())) s.add(String(n).trim().toLowerCase()); });
+  }
+  add(pet?.health_data?.allergies);
   return [...s].filter(Boolean);
 }
 
