@@ -22197,7 +22197,7 @@ async def regenerate_single_product_image(
     async def _regen():
         from ai_image_service import generate_ai_image
         prompt = product.get("ai_image_prompt") or \
-            f"Premium dog product, {product['name']}, clean white background, professional product photography"
+            f"Professional product photography, flat lay style, pure white background, {product['name']} for dogs, no text, no words, no labels, no branding, soft natural lighting, high quality commercial photography, centered composition, minimalist style"
         url = await generate_ai_image(prompt)
         if url:
             await db.products_master.update_one(

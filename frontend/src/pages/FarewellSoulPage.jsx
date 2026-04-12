@@ -30,6 +30,7 @@ import PillarServiceSection from "../components/PillarServiceSection";
 import SoulMadeModal from "../components/SoulMadeModal";
 import FarewellMobilePage from './FarewellMobilePage';
 import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from '../hooks/useMiraFilter';
+import RainbowBridgeWall from '../components/RainbowBridgeWall';
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -450,6 +451,11 @@ const FarewellSoulPage = () => {
                 </>
               );
             })()}
+
+            {/* Rainbow Bridge — Community Memorial Wall */}
+            <div style={{marginTop: 32, marginBottom: 8}}>
+              <RainbowBridgeWall currentPetId={petData?.id} showAddMemorial={!!petData?.rainbow_bridge} />
+            </div>
           </>
         )}
 
