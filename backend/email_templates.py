@@ -25,9 +25,11 @@ def detail_row(label: str, value: str) -> str:
     return f"""
         <tr>
           <td style="padding:7px 12px;color:rgba(255,255,255,0.7);
-                     font-size:13px;white-space:nowrap;">{label}</td>
+                     font-size:13px;white-space:nowrap;width:60%;
+                     vertical-align:top;">{label}</td>
           <td style="padding:7px 12px;color:#ffffff;
-                     font-size:13px;font-weight:600;">{value}</td>
+                     font-size:13px;font-weight:600;width:40%;
+                     text-align:right;vertical-align:top;">{value}</td>
         </tr>"""
 
 
@@ -160,7 +162,7 @@ def get_email_template(
                 The Doggy Company · Pet Concierge®
               </p>
               <p style="margin:0;color:rgba(255,255,255,0.4);font-size:11px;">
-                📞 +91 96631 85747 &nbsp;·&nbsp;
+                📞 +91 89717 02582 &nbsp;·&nbsp;
                 📧 woof@thedoggycompany.com
               </p>
             </td>

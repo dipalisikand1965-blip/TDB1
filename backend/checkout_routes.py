@@ -65,7 +65,7 @@ BUSINESS_DETAILS = {
     "pan": "AABCT1332L",
     "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034",
     "email": "woof@thedoggycompany.com",
-    "phone": "+91 9663185747",
+    "phone": "+91 89717 02582",
     "state": "Karnataka",
     "state_code": "29"
 }
@@ -162,7 +162,7 @@ async def send_order_confirmation_email(order: dict) -> bool:
         pricing_rows = (
             detail_row("Subtotal", f"₹{pricing.get('subtotal', 0):.2f}") +
             detail_row("Shipping", "FREE" if pricing.get("shipping_fee", 0) == 0 else f"₹{pricing.get('shipping_fee', 0):.2f}") +
-            detail_row("GST", f"₹{pricing.get('gst_amount', pricing.get('total_gst', 0)):.2f}") +
+            detail_row("GST", f"₹{pricing.get('gst_details', {}).get('total_tax', pricing.get('gst_amount', pricing.get('total_gst', 0))):.2f}") +
             detail_row("Total Paid", f"₹{pricing.get('grand_total', 0):.2f}")
         )
 
@@ -178,7 +178,7 @@ async def send_order_confirmation_email(order: dict) -> bool:
                 ) +
                 f"<p style='font-size:13px;color:#666;'>"
                 f"You'll receive shipping updates on WhatsApp. "
-                f"For any questions, reply to this email or call +91 9663185747.</p>"
+                f"For any questions, <a href='https://wa.me/918971702582' style='color:#DAA520;'>WhatsApp us</a> or reply to this email.</p>"
             ),
             cta_text="Download Invoice →",
             cta_url=f"https://thedoggycompany.com/api/checkout/order/{order_id}/invoice/pdf",
