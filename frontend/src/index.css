@@ -4,6 +4,19 @@
    Consistent typography across all pages
    ============================================ */
 
+/* ── Mira Search Bar — gentle pulse glow ──────────────────────── */
+.mira-search-bar {
+  animation: miraPulse 3s ease-in-out infinite;
+}
+@keyframes miraPulse {
+  0%,  100% { box-shadow: 0 0 8px  rgba(168, 85, 247, 0.3); }
+  50%        { box-shadow: 0 0 20px rgba(168, 85, 247, 0.7); }
+}
+.mira-search-bar:hover {
+  animation-play-state: paused;
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.8);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
