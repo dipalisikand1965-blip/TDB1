@@ -911,7 +911,7 @@ function MiraPicksSection({ pet }) {
   };
 
   useEffect(() => {
-    if (!pet?.id) { setLoading(false); return; }
+    if (!pet?.id || !pet?.breed) { setLoading(false); return; }
 
     // Categories that belong to Celebrate — must NEVER appear on Dine picks
     const CELEBRATE_CATS = new Set([

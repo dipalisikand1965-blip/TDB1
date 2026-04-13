@@ -133,7 +133,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook, all
 
   useEffect(() => {
     // Mira's Picks dim: use pillar-products + applyMiraFilter (no stale claude-picks)
-    if (dim.id === 'mira' && pet?.id) {
+    if (dim.id === 'mira' && pet?.id && pet?.breed) {
       const allergyList   = getAllergiesFromPet(pet);
       const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
       const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
@@ -145,7 +145,7 @@ function LearnDimPanel({ dim, pet, token, addToCart, onProductClick, onBook, all
         .catch(() => {});
       return;
     }
-    if (!dim.dbCategory) return;
+    if (!dim.dbCategory || !pet?.breed) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=learn&category=${encodeURIComponent(dim.dbCategory)}&limit=40&breed=${encodeURIComponent(pet?.breed||'')}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })
