@@ -225,6 +225,15 @@ async def get_meal_box_products(
                 and p["id"] not in exclude_ids
             ]
             candidates.sort(key=_score)
+        if not candidates:
+            # Final fallback — universal products (no breed restriction, any food category)
+            candidates = [
+                p for p in safe_products
+                if not p.get("breed_tags")
+                and not p.get("is_mira_imagines")
+                and p["id"] not in exclude_ids
+            ]
+            candidates.sort(key=_score)
         return candidates
 
     result_slots = []
