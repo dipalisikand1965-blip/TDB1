@@ -420,7 +420,7 @@ export function MiraPicksSection({ pet, onOpenService }) {
   };
 
   useEffect(() => {
-    if (!pet?.id) { setLoading(false); return; }
+    if (!pet?.id || !pet?.breed) { setLoading(false); return; }
     const allergyList   = getAllergiesFromPet(pet);
     const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
     const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';

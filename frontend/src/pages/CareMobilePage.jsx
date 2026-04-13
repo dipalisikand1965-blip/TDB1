@@ -154,8 +154,8 @@ export default function CareMobilePage() {
 
   // Fetch all care products — same logic as desktop CareSoulPage
   useEffect(() => {
-    if (!currentPet) return;
-    const petBreed = (currentPet?.breed || 'indie').toLowerCase().trim();
+    if (!currentPet || !currentPet?.breed) return;
+    const petBreed = currentPet.breed.toLowerCase().trim();
     fetch(`${API_URL}/api/admin/pillar-products?pillar=care&limit=600&breed=${encodeURIComponent(petBreed)}`)
       .then(r => r.ok ? r.json() : null)
       .then(async data => {

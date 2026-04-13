@@ -96,7 +96,7 @@ function PwDimPanel({ dim, pet, token, addToCart, onProductClick }) {
         .catch(() => {});
       return;
     }
-    if (!dim.dbCategory) return;
+    if (!dim.dbCategory || !pet?.breed) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=paperwork&category=${encodeURIComponent(dim.dbCategory)}&limit=30&breed=${encodeURIComponent(pet?.breed||'')}`, {
       headers: token ? { Authorization:`Bearer ${token}` } : {}
     })

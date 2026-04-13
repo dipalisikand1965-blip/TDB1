@@ -325,7 +325,7 @@ export default function CelebrateMobilePage() {
   }, []);
 
   useEffect(() => {
-    if (!token || !currentPet?.id) return;
+    if (!token || !currentPet?.id || !currentPet?.breed) return;
     const allergyList   = getAllergiesFromPet(currentPet);
     const breedParam    = currentPet?.breed ? `&breed=${encodeURIComponent(currentPet.breed)}` : '';
     const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
