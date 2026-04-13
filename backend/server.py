@@ -136,7 +136,7 @@ from data_migration import (
     set_migration_admin_verify
 )
 from health_vault_routes import (
-    health_vault_router as _health_vault_router_unused,
+    health_vault_router as _health_vault_router_unused,  # RETIRED — router never mounted, import kept for IDE compat only
     set_database as set_health_vault_db
 )
 from pet_soul_routes import (
