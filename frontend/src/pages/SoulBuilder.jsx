@@ -617,7 +617,11 @@ const SoulBuilder = () => {
         birth_date: petData.birth_date,
         soul_answers: allAnswers,
         soul_score: calculatedScore,
-        pet_data: petData,
+        pet_data: {
+          ...petData,
+          photo: petPhotoPreview || petData.photo || null,
+        },
+        photo: petPhotoPreview || petData.photo || null,
         // Mark which questions have been answered (for deduplication)
         answered_question_ids: Object.keys(allAnswers).filter(k => 
           allAnswers[k] && !(typeof allAnswers[k] === 'object' && allAnswers[k].skipped)
