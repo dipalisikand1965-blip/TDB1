@@ -1453,10 +1453,35 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             if len(phone_clean) == 12 and phone_clean.startswith('91'):
                 phone_clean = phone_clean[2:]
 
-            # ── 1a. Check open ticket first → which pet is this conversation about? ──
-            ticket_pet_name = None
             # Always use last 10 digits for ticket lookup (tickets store phone_10 without leading 0)
             phone_10 = phone_clean[-10:]
+
+            # ── 0. wa_pet_state: user's EXPLICIT pet selection — checked FIRST, wins over everything ──
+            # This mirrors the widget's pet-chip selector. Once a user picks Mojo, all messages
+            # stay on Mojo until the session expires (30 min idle) or they pick a new pet.
+            _wa_active_pet = None
+            _wa_pre = None
+            try:
+                _wa_pre = await db.wa_pet_state.find_one({"phone": phone_10})
+                if _wa_pre and _wa_pre.get("active_pet") and not _wa_pre.get("awaiting_pet_selection"):
+                    _ts = _wa_pre.get("updated_at")
+                    _age_ok = True
+                    if _ts:
+                        try:
+                            _dt = datetime.fromisoformat(_ts) if isinstance(_ts, str) else _ts
+                            if _dt.tzinfo is None:
+                                _dt = _dt.replace(tzinfo=timezone.utc)
+                            _age_ok = (datetime.now(timezone.utc) - _dt).total_seconds() / 60 <= 30
+                        except Exception:
+                            pass
+                    if _age_ok:
+                        _wa_active_pet = _wa_pre["active_pet"]
+                        logger.info(f"[MIRA-AI] wa_pet_state → active pet '{_wa_active_pet}' (user's explicit selection)")
+            except Exception:
+                pass
+
+            # ── 1a. Check open ticket → but wa_pet_state.active_pet always wins ──
+            ticket_pet_name = _wa_active_pet  # Pre-seed from explicit user selection if available
             open_ticket = await db.service_desk_tickets.find_one(
                 {
                     "$or": [
@@ -1468,10 +1493,11 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 },
                 sort=[("updated_at", -1)],
             )
-            if open_ticket:
+            if open_ticket and not _wa_active_pet:
+                # Only use ticket's pet lock if the user hasn't explicitly chosen one this session
                 ticket_pet_name = open_ticket.get("pet_name")
                 if ticket_pet_name:
-                    logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
+                    logger.info(f"[MIRA-AI] Ongoing ticket → pet '{ticket_pet_name}' (no wa_pet_state override)")
 
             # ── Smart user lookup: normalize phone variants to avoid test-account collision ──
             # phone_10 = last 10 digits (e.g. "9739908844").
@@ -1735,7 +1761,14 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     )
 
     if awaiting_selection and len(all_pet_names) > 1:
-        matched = _fuzzy_pet_match(message_text, all_pet_names)
+        # Handle numeric reply (user types "1" or "2" from the widget-style numbered list)
+        _num_match = None
+        _stripped = message_text.strip()
+        if _stripped.isdigit():
+            _idx = int(_stripped) - 1
+            if 0 <= _idx < len(all_pet_names):
+                _num_match = all_pet_names[_idx]
+        matched = _num_match or _fuzzy_pet_match(message_text, all_pet_names)
         if matched:
             ticket_pet_name = matched
             original_msg = (
@@ -1749,7 +1782,19 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             # leave Sultan's ticket clean and create/find a fresh Mojo ticket.
             try:
                 if db is not None and phone_10:
-                    await db.wa_pet_state.delete_one({"phone": phone_10})
+                    # Save the resolved pet as the active selection so future messages stay locked
+                    await db.wa_pet_state.update_one(
+                        {"phone": phone_10},
+                        {"$set": {
+                            "phone": phone_10,
+                            "active_pet": matched,
+                            "awaiting_pet_selection": False,
+                            "original_message": None,
+                            "updated_at": datetime.now(timezone.utc).isoformat(),
+                        }},
+                        upsert=True,
+                    )
+                    _wa_active_pet = matched  # keep in-memory state in sync
 
                 if open_ticket:
                     existing_ticket_pet = (open_ticket.get("pet_name") or "").strip()
@@ -1836,8 +1881,11 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
             pet_list = " or ".join(all_pet_names[:4])
             return f"Sorry, I didn't catch that! Did you mean {pet_list}? Just type the name 🐾"
 
-    # ── 2b-ii. First time asking — save state to wa_pet_state (always) and ask ──
-    if not ticket_pet_name and len(all_pet_names) > 1:
+    # ── 2b-ii. Widget-style pet picker — ask FIRST if no explicit selection this session ──
+    # Fires whenever the user has multiple pets and hasn't explicitly chosen one via wa_pet_state.
+    # Mirrors the widget's pet-chip selector. Even if an open ticket for another pet exists,
+    # we always ask the user to confirm which dog they want to chat about today.
+    if not _wa_active_pet and len(all_pet_names) > 1:
         shown = all_pet_names[:4]
         if len(all_pet_names) > 4:
             pet_list = ", ".join(shown[:-1]) + f", {shown[-1]} (or {len(all_pet_names) - 4} more)"
@@ -1867,7 +1915,13 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 )
         except Exception as e:
             logger.warning(f"[MIRA-AI] Failed to save pet disambiguation state: {e}")
-        return f"Hey {first_name}! Which of your dogs are we chatting about — {pet_list}? 🐾"
+
+        # Widget-style numbered pet list
+        lines = [f"Hey {first_name}! 🐾 Which of your dogs are we focusing on today?"]
+        for i, name in enumerate(all_pet_names[:5], 1):
+            lines.append(f"{i}. {name}")
+        lines.append("\nJust reply with their name (or number) and I'll pick up right where we left off!")
+        return "\n".join(lines)
 
     # ── 3. Semantic search → real TDC products ────────────────────────────────
     catalog_block  = ""
