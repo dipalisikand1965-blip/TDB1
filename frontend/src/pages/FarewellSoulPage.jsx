@@ -262,7 +262,8 @@ const FarewellSoulPage = () => {
   useEffect(()=>{ if(contextPets?.length>0&&!currentPet)setCurrentPet(contextPets[0]); if(contextPets!==undefined)setLoading(false); },[contextPets,currentPet,setCurrentPet]);
   useEffect(()=>{ if(currentPet){ const n={...currentPet,photo_url:currentPet.photo_url||currentPet.avatar_url||null,avatar:currentPet.avatar||"🐕",breed:currentPet.breed||""}; setPetData(n); } },[currentPet]);
   useEffect(()=>{
-    const breedParam = petData?.breed ? `&breed=${encodeURIComponent(petData.breed)}` : '';
+    if(!petData?.breed) return;  // wait until breed is known — prevents showing all-breeds alphabetical dump
+    const breedParam = `&breed=${encodeURIComponent(petData.breed)}`;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=farewell&limit=500${breedParam}`).then(r=>r.ok?r.json():null).then(d=>{
       const grouped={};(d?.products||[]).forEach(p=>{const c=p.category||"";if(!grouped[c])grouped[c]={};const s=p.sub_category||"";if(!grouped[c][s])grouped[c][s]=[];grouped[c][s].push(p);});setApiProducts(grouped);
     }).catch(()=>{});
