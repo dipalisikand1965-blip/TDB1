@@ -9,7 +9,7 @@
  * Built in loving memory of Mystique 💜
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -38,6 +38,23 @@ const RainbowBridgeWall = () => {
   const [addForm, setAddForm] = useState({ pet_name:'', breed:'', crossing_date:'', tribute_message:'', photo:'' });
   const [submittingMemorial, setSubmittingMemorial] = useState(false);
   const [memorialSubmitted, setMemorialSubmitted] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handlePhotoFile = (file) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { toast({ title: 'File too large', description: 'Max 10MB', variant: 'destructive' }); return; }
+    setPhotoUploading(true);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result;
+      setPhotoPreview(base64);
+      setAddForm(prev => ({ ...prev, photo: base64 }));
+      setPhotoUploading(false);
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Fetch all public memorials
   useEffect(() => {
@@ -112,6 +129,7 @@ const RainbowBridgeWall = () => {
       if (res.ok) {
         setMemorialSubmitted(true);
         setAddForm({ pet_name:'', breed:'', crossing_date:'', tribute_message:'', photo:'' });
+        setPhotoPreview(null);
         setShowAddMemorial(false);
         toast({ title: '💜 Submitted for Review', description: `${addForm.pet_name}'s memorial will appear after approval.`, duration: 5000 });
       }
@@ -560,7 +578,6 @@ const RainbowBridgeWall = () => {
             { key:'pet_name', label:"Pet's Name *", placeholder:'e.g. Mystique', type:'text' },
             { key:'breed', label:'Breed', placeholder:'e.g. Shih Tzu', type:'text' },
             { key:'crossing_date', label:'When did they cross the bridge?', placeholder:'e.g. March 2023 or 2024-01-15', type:'text' },
-            { key:'photo', label:'Photo URL (optional)', placeholder:'https://...', type:'url' },
           ].map(f => (
             <div key={f.key}>
               <label className="text-purple-300 text-sm mb-1 block font-medium">{f.label}</label>
@@ -573,6 +590,41 @@ const RainbowBridgeWall = () => {
               />
             </div>
           ))}
+
+          {/* Photo upload — same pattern as Celebration Wall */}
+          <div>
+            <label className="text-purple-300 text-sm mb-1 block font-medium">Photo (optional)</label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={e => handlePhotoFile(e.target.files?.[0])}
+            />
+            {photoPreview ? (
+              <div className="relative">
+                <img src={photoPreview} alt="Preview" className="w-full h-40 object-cover rounded-lg border border-purple-500/40" />
+                <button
+                  onClick={() => { setPhotoPreview(null); setAddForm(prev => ({ ...prev, photo: '' })); }}
+                  className="absolute top-2 right-2 bg-black/60 text-white rounded-full w-6 h-6 text-xs flex items-center justify-center hover:bg-black/80"
+                >✕</button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={photoUploading}
+                className="w-full h-24 border-2 border-dashed border-purple-500/40 rounded-lg text-purple-300/60 text-sm hover:border-purple-400/70 hover:text-purple-300 transition-colors flex flex-col items-center justify-center gap-1"
+                data-testid="memorial-photo-upload-btn"
+              >
+                {photoUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>
+                  <span className="text-2xl">🐾</span>
+                  <span>Upload a photo of {addForm.pet_name || 'your pet'}</span>
+                  <span className="text-xs opacity-60">JPG, PNG — max 10MB</span>
+                </>}
+              </button>
+            )}
+          </div>
           <div>
             <label className="text-purple-300 text-sm mb-1 block font-medium">Your tribute message *</label>
             <Textarea
