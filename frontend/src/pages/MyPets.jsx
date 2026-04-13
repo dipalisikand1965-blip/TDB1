@@ -26,6 +26,16 @@ import BreedSelector from '../components/BreedSelector';
 import GlobalNav from '../components/Mira/GlobalNav';
 
 // Persona icons mapping
+const CANONICAL_IDS = [
+  'food_allergies', 'health_conditions', 'vet_comfort',
+  'grooming_tolerance', 'social_with_people', 'life_stage', 'kids_at_home',
+  'other_pets', 'morning_routine', 'feeding_times', 'exercise_needs',
+  'favorite_spot', 'food_motivation', 'favorite_protein', 'treat_preference',
+  'motivation_type', 'behavior_issues', 'training_level', 'most_attached_to',
+  'separation_anxiety', 'general_nature', 'stranger_reaction', 'loud_sounds',
+  'social_preference', 'handling_comfort', 'attention_seeking',
+];
+
 const PERSONA_ICONS = {
   royal: Crown,
   shadow: Moon,
@@ -1004,7 +1014,7 @@ const MyPets = () => {
                           <HelpCircle className="w-5 h-5 text-teal-600" />
                           <h4 className="font-bold text-gray-900">Help us know {pet.name} better</h4>
                           <Badge variant="outline" className="ml-auto">
-                            {Object.keys(pet.doggy_soul_answers || {}).length} answered
+                            {CANONICAL_IDS.filter(id => pet.doggy_soul_answers?.[id]).length} / 26 answered
                           </Badge>
                         </div>
                         
@@ -1039,7 +1049,12 @@ const MyPets = () => {
                         <div className="mt-4 pt-3 border-t border-gray-200 text-center">
                           <Link to={`/pet/${pet.id}`}>
                             <Button variant="link" className="text-teal-600">
-                              Answer all {26 - Object.keys(pet.doggy_soul_answers || {}).length} remaining questions →
+                              {(() => {
+                                const remaining = Math.max(0, 26 - CANONICAL_IDS.filter(id => pet.doggy_soul_answers?.[id]).length);
+                                return remaining > 0
+                                  ? `Answer ${remaining} more questions →`
+                                  : 'Soul profile complete ✓';
+                              })()}
                             </Button>
                           </Link>
                         </div>
