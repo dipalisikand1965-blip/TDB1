@@ -1472,21 +1472,6 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 ticket_pet_name = open_ticket.get("pet_name")
                 if ticket_pet_name:
                     logger.info(f"[MIRA-AI] Ongoing ticket → active pet locked to: {ticket_pet_name}")
-            # ── 1b. If no open ticket, detect pet name FROM the message itself ──
-            # e.g. "treat for Badmash" or "what can Mojo eat" → prioritise that pet
-            if not ticket_pet_name and user_email:
-                # Only check THIS user's pets (not all pets in DB)
-                user_pet_names = await db.pets.find(
-                    {"owner_email": user_email},
-                    {"_id": 0, "name": 1}
-                ).to_list(10)
-                msg_lower = message_text.lower()
-                for candidate in user_pet_names:
-                    cname = candidate.get("name", "")
-                    if cname and cname.lower() in msg_lower:
-                        ticket_pet_name = cname
-                        logger.info(f"[MIRA-AI] Pet name '{cname}' detected in message — using as active pet")
-                        break  # first match wins
 
             # ── Smart user lookup: normalize phone variants to avoid test-account collision ──
             # phone_10 = last 10 digits (e.g. "9739908844").
@@ -1528,19 +1513,39 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 if membership.get("tier"):
                     context_parts.append(f"Member tier: {membership['tier']}")
 
-                # ── 1b. Detect pet name from message (scoped to THIS user's pets) ──
-                if not ticket_pet_name:
-                    user_pet_names = await db.pets.find(
-                        {"owner_email": user_email},
-                        {"_id": 0, "name": 1}
-                    ).to_list(10)
-                    msg_lower = message_text.lower()
-                    for candidate in user_pet_names:
-                        cname = candidate.get("name", "")
-                        if cname and cname.lower() in msg_lower:
-                            ticket_pet_name = cname
-                            logger.info(f"[MIRA-AI] Pet name '{cname}' found in message → using as active pet")
-                            break  # first match wins
+                # ── 1b. Detect/switch active pet using fuzzy match — always runs ──
+                # Uses _fuzzy_pet_match so "Mystique" matches even if message says "what about Mystique?"
+                # Critically: runs even when ticket_pet_name is set — allows mid-conversation pet switching.
+                _quick_pets = await db.pets.find(
+                    {"owner_email": user_email},
+                    {"_id": 0, "name": 1}
+                ).to_list(20)
+                _quick_pet_names = [p["name"] for p in _quick_pets if p.get("name")]
+                _msg_pet = _fuzzy_pet_match(message_text, _quick_pet_names)
+                if _msg_pet:
+                    if not ticket_pet_name:
+                        # No lock yet — set it from the message
+                        ticket_pet_name = _msg_pet
+                        logger.info(f"[MIRA-AI] Pet '{_msg_pet}' detected in message (fuzzy) → locked as active pet")
+                    elif _msg_pet.lower() != ticket_pet_name.lower():
+                        # Different pet name detected — user is switching context ("What about Mystique?")
+                        logger.info(f"[MIRA-AI] Pet switch: '{ticket_pet_name}' → '{_msg_pet}' (fuzzy match in message)")
+                        ticket_pet_name = _msg_pet
+                        # Persist switch so subsequent messages stay on the new pet
+                        if phone_10:
+                            try:
+                                await db.wa_pet_state.update_one(
+                                    {"phone": phone_10},
+                                    {"$set": {
+                                        "phone": phone_10,
+                                        "active_pet": ticket_pet_name,
+                                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                                        "awaiting_pet_selection": False,
+                                    }},
+                                    upsert=True
+                                )
+                            except Exception:
+                                pass
 
                 # ── Multi-account linking ────────────────────────────────────────
                 # A user may have registered with two emails (e.g. work + personal).
