@@ -448,6 +448,7 @@ const SoulBuilder = () => {
   // Basic Info screen state
   const [showBreedDropdown, setShowBreedDropdown] = useState(false);
   const [breedSearch, setBreedSearch] = useState('');
+  const [otherBreedSelected, setOtherBreedSelected] = useState(false);
   const [birthdayMode, setBirthdayMode] = useState('date');
   const [dateType, setDateType] = useState('birthday'); // 'birthday' | 'gotcha' | 'both'
   
@@ -1292,19 +1293,27 @@ const SoulBuilder = () => {
     );
     
     // Quick breed options - mutually exclusive with typed breed
-    const quickBreedOptions = ['Mixed / Indie', 'Not sure'];
+    const quickBreedOptions = ['Mixed / Indie', 'Not sure', 'Mixed Breed', 'Other'];
     
     // Handle breed selection from search - clears quick options
     const handleBreedSelect = (breed) => {
       setPetData(prev => ({ ...prev, breed }));
       setBreedSearch(breed);
       setShowBreedDropdown(false);
+      setOtherBreedSelected(false);
     };
     
     // Handle quick breed option - clears typed breed
     const handleQuickBreed = (opt) => {
-      setPetData(prev => ({ ...prev, breed: opt }));
-      setBreedSearch(''); // Clear typed breed
+      if (opt === 'Other') {
+        setOtherBreedSelected(true);
+        setPetData(prev => ({ ...prev, breed: 'other' }));
+        setBreedSearch('');
+      } else {
+        setOtherBreedSelected(false);
+        setPetData(prev => ({ ...prev, breed: opt }));
+        setBreedSearch('');
+      }
       setShowBreedDropdown(false);
     };
     
@@ -1439,13 +1448,13 @@ const SoulBuilder = () => {
               </div>
               
               {/* Quick options - mutually exclusive with typed breed */}
-              <div className="flex gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-2">
                 {quickBreedOptions.map(opt => (
                   <button
                     key={opt}
                     onClick={() => handleQuickBreed(opt)}
                     className={`px-3 py-1 rounded-full text-xs transition-all ${
-                      petData.breed === opt
+                      (opt === 'Other' ? otherBreedSelected : petData.breed === opt)
                         ? 'bg-purple-500/30 border border-purple-400/50 text-purple-300'
                         : 'bg-white/5 border border-white/10 text-white/50 hover:text-white/70'
                     }`}
@@ -1454,6 +1463,17 @@ const SoulBuilder = () => {
                   </button>
                 ))}
               </div>
+
+              {/* Free text input when Other is selected */}
+              {otherBreedSelected && (
+                <input
+                  type="text"
+                  placeholder="Describe your dog's breed..."
+                  onChange={e => setPetData(prev => ({ ...prev, breed: e.target.value }))}
+                  className="mt-2 w-full px-4 py-3 bg-white/5 border border-purple-400/30 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-400/60"
+                  autoFocus
+                />
+              )}
             </div>
             
             {/* Gender - Compact segmented control */}
