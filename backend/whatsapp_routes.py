@@ -112,6 +112,20 @@ _WA_PILLAR_KEYWORDS: list[tuple[str, list[str]]] = [
                    "microchip", "id card"]),
 ]
 
+def _is_wa_state_fresh(state: dict, max_minutes: int = 30) -> bool:
+    """Returns True if wa_pet_state.updated_at is within max_minutes ago."""
+    ts = state.get("updated_at")
+    if not ts:
+        return False
+    try:
+        dt = datetime.fromisoformat(ts) if isinstance(ts, str) else ts
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return (datetime.now(timezone.utc) - dt).total_seconds() / 60 <= max_minutes
+    except Exception:
+        return False
+
+
 def _detect_pillar_from_wa_message(text: str) -> str | None:
     """
     Detect the most likely pillar from a WhatsApp message's keywords.
@@ -394,25 +408,30 @@ async def process_gupshup_webhook(body: dict):
                 _detected_pillar = _detect_pillar_from_wa_message(content)
 
                 if _wa_state and _wa_state.get("awaiting_pet_selection"):
-                    # Fuzzy-match the incoming message against ALL of this user's pets
-                    # (across all linked email accounts, not just the primary one)
-                    _wa_users = await db.users.find(
-                        {"$or": [
-                            {"phone": {"$regex": _phone_10_wa + "$"}},
-                            {"whatsapp": {"$regex": _phone_10_wa + "$"}},
-                        ]},
-                        {"_id": 0, "email": 1}
-                    ).to_list(10)
-                    _wa_all_emails = list({u.get("email") for u in _wa_users if u.get("email")})
-                    if _wa_all_emails:
-                        _wa_pets = await db.pets.find(
-                            {"owner_email": {"$in": _wa_all_emails}},
-                            {"_id": 0, "name": 1}
-                        ).to_list(30)
-                        _wa_pet_names = [p["name"] for p in _wa_pets if p.get("name")]
-                        _resolved_pet = _fuzzy_pet_match(content, _wa_pet_names)
-                        if _resolved_pet:
-                            logger.info(f"[GUPSHUP] Fix A: Disambiguation reply '{content}' → resolved pet '{_resolved_pet}'")
+                    if not _is_wa_state_fresh(_wa_state):
+                        # Stale awaiting state — delete it, fall through to fresh picker
+                        await db.wa_pet_state.delete_one({"phone": _phone_10_wa})
+                        _wa_state = None
+                        print(f"[MIRA-WA-DEBUG] Deleted stale awaiting_pet_selection for {_phone_10_wa}", flush=True)
+                    else:
+                        # Fresh — try to resolve pet name from message (text or number)
+                        _wa_users = await db.users.find(
+                            {"$or": [
+                                {"phone": {"$regex": _phone_10_wa + "$"}},
+                                {"whatsapp": {"$regex": _phone_10_wa + "$"}},
+                            ]},
+                            {"_id": 0, "email": 1}
+                        ).to_list(10)
+                        _wa_all_emails = list({u.get("email") for u in _wa_users if u.get("email")})
+                        if _wa_all_emails:
+                            _wa_pets = await db.pets.find(
+                                {"owner_email": {"$in": _wa_all_emails}},
+                                {"_id": 0, "name": 1}
+                            ).to_list(30)
+                            _wa_pet_names = [p["name"] for p in _wa_pets if p.get("name")]
+                            _resolved_pet = _fuzzy_pet_match(content, _wa_pet_names)
+                            if _resolved_pet:
+                                logger.info(f"[GUPSHUP] Fix A: Disambiguation reply '{content}' → resolved pet '{_resolved_pet}'")
 
                 if _resolved_pet:
                     # Look for an existing open ticket for THIS specific pet
@@ -1877,6 +1896,11 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                     else:
                         # Different pet — leave existing ticket untouched ─────────────────
                         # Find or create a fresh ticket for the resolved pet
+                        # Also clear the awaiting flag on the OLD ticket so it stops hijacking
+                        await db.service_desk_tickets.update_one(
+                            {"_id": open_ticket["_id"]},
+                            {"$set": {"wa_awaiting_pet_selection": False, "wa_original_message": None}}
+                        )
                         logger.info(f"[MIRA-AI] Fix B: Resolved pet '{matched}' ≠ ticket pet '{existing_ticket_pet}' — routing to clean ticket")
                         mojo_ticket = await db.service_desk_tickets.find_one(
                             {
@@ -1942,9 +1966,15 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 logger.warning(f"[MIRA-AI] Fix B ticket routing error: {fix_b_err}")
             message_text = original_msg  # answer the ORIGINAL question about the matched pet
         else:
-            # Can't match — ask again with a gentle hint
-            pet_list = " or ".join(all_pet_names[:4])
-            return f"Sorry, I didn't catch that! Did you mean {pet_list}? Just type the name 🐾"
+            # Real question but no pet selected yet — re-show picker with their question as context
+            first_name = (user_name or "there").split()[0]
+            lines = [f"I'd love to help! 🐾 Which of your dogs are we focusing on today?"]
+            for i, name in enumerate(all_pet_names[:5], 1):
+                lines.append(f"{i}. {name}")
+            if len(all_pet_names) > 5:
+                lines.append(f"...and {len(all_pet_names) - 5} more")
+            lines.append("\nJust reply with their name (or number) and I'll answer your question for them!")
+            return "\n".join(lines)
 
     # ── 2b-ii. Widget-style pet picker — ask FIRST if no explicit selection this session ──
     # Fires whenever the user has multiple pets and hasn't explicitly chosen one via wa_pet_state.
