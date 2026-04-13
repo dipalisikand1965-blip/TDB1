@@ -27949,7 +27949,7 @@ async def get_mira_plan(
             )
 
         pet_name = (pet or {}).get("name", "your dog")
-        breed    = (pet or {}).get("breed", "Indie")
+        breed    = (pet or {}).get("breed") or "Mixed Breed"
         age      = (pet or {}).get("age", "adult")
         allergies = (pet or {}).get("allergies", []) or []
         loves    = (pet or {}).get("favorite_foods", []) or (pet or {}).get("likes", []) or []
