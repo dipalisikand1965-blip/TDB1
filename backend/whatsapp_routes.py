@@ -1586,6 +1586,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 all_owner_emails = list({u.get("email") for u in _user_candidates if u.get("email")})
                 if not all_owner_emails:
                     all_owner_emails = [user_email]
+                print(f"[MIRA-DEBUG] all_owner_emails={all_owner_emails}", flush=True)
                 logger.info(f"[MIRA-AI] Pet lookup across {len(all_owner_emails)} account(s): {all_owner_emails}")
 
                 # Full soul profile for each pet — across ALL linked accounts
