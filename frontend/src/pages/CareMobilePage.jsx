@@ -34,7 +34,7 @@ import CareNearMe from '../components/care/CareNearMe';
 import GuidedCarePaths from '../components/care/GuidedCarePaths';
 import SoulMadeModal from '../components/SoulMadeModal';
 import ServiceBookingModal, { guessServiceType } from '../components/ServiceBookingModal';
-import ConciergeCTA from '../components/ConciergeCTA';
+import CareConciergeModal from '../components/care/CareConciergeModal';
 import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import { WellnessProfile, MiraPicksSection, getCareDims, DimExpanded, CARE_SERVICES, CareServiceFlowModal } from './CareSoulPage';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
@@ -135,7 +135,7 @@ export default function CareMobilePage() {
   const [svcBooking, setSvcBooking] = useState({ isOpen:false, serviceType:'grooming' });
   const [openDim, setOpenDim]             = useState(null);
   const [apiProducts, setApiProducts]     = useState({});
-  const [activeServicePath, setActiveSvcPath] = useState(null); // CareServiceFlowModal
+  const [careConciergeMobileOpen, setCareConciergeMobileOpen] = useState(false);
   const dimExpandedRef                    = useRef(null);
 
   // Auto-scroll into expanded dim panel whenever a dim is opened
@@ -491,9 +491,22 @@ export default function CareMobilePage() {
 
       </div>
 
-      {/* Concierge CTA — mobile: above modal stack */}
+      {/* Concierge CTA — opens Care Concierge modal (not generic service booking) */}
       <div style={{ padding: '0 16px' }}>
-        <ConciergeCTA pillar="care" pet={currentPet} />
+        <div
+          onClick={() => setCareConciergeMobileOpen(true)}
+          style={{ background: 'linear-gradient(135deg,#1a1040,#2d1b69)', borderRadius: 20, padding: '20px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}
+          data-testid="care-concierge-cta-mobile"
+        >
+          <div>
+            <div style={{ fontSize: 11, letterSpacing: '0.14em', color: 'rgba(116,198,157,0.9)', fontWeight: 700, marginBottom: 8 }}>✦ CONCIERGE®</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 4 }}>Need something arranged?</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Our team handles everything for you</div>
+          </div>
+          <button style={{ flexShrink: 0, background: '#74C69D', border: 'none', borderRadius: 14, padding: '12px 18px', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer' }}>
+            Request →
+          </button>
+        </div>
       </div>
 
       {/* Service Booking Modal */}
@@ -505,6 +518,13 @@ export default function CareMobilePage() {
           onClose={() => setActiveSvcPath(null)}
         />
       )}
+
+      <CareConciergeModal
+        isOpen={careConciergeMobileOpen}
+        onClose={() => setCareConciergeMobileOpen(false)}
+        petName={currentPet?.name}
+        petId={currentPet?.id}
+      />
 
       <ServiceBookingModal
         isOpen={svcBooking.isOpen}
