@@ -138,6 +138,7 @@ async def get_meal_box_products(
     fav_protein: str = "",
     health_condition: str = "",
     pet_name: str = "",
+    breed: str = "",
 ):
     """
     Curate 5 meal-box slots from the products DB.
@@ -149,19 +150,23 @@ async def get_meal_box_products(
     allergy_list = [a.strip().lower() for a in allergies.split(",") if a.strip()] if allergies else []
     prot = fav_protein.strip()
     cond = health_condition.strip()
+    breed_clean = breed.strip()
     if cond.lower() in ("none", "none_confirmed", "[]", ""):
         cond = ""
 
-    # Fetch all dine food products once
+    # Fetch all dine food products — use 1000 to avoid cutting off Morning/Evening Meal sub-categories
     food_cats = ["Daily Meals", "Treats & Rewards", "Supplements", "Frozen & Fresh", "Homemade & Recipes"]
     cursor = db.products_master.find(
         {"pillar": "dine", "category": {"$in": food_cats}, "active": True},
         {"_id": 0},
     )
-    all_food = await cursor.to_list(200)
+    all_food = await cursor.to_list(1000)
 
     # Filter allergy-safe products
     safe_products = [p for p in all_food if _allergy_safe(p, allergy_list)]
+
+    # Normalise pet protein preference for matching
+    prot_norm = prot.lower() if prot else ""
 
     # Try to get Mira scores for this pet to sort picks by score
     mira_scores = {}
@@ -176,25 +181,50 @@ async def get_meal_box_products(
         pass
 
     def best_in(category, sub_category=None, exclude_ids=None):
-        """Return (pick, alternatives) from safe_products."""
+        """Return candidates sorted: pet protein preference → breed match → Mira score."""
         exclude_ids = exclude_ids or set()
+
+        def _score(p):
+            # 1. PET FIRST — does this product match the pet's favourite protein?
+            searchable = " ".join([
+                p.get("name", ""),
+                p.get("description", ""),
+                " ".join(p.get("tags", [])),
+                " ".join(p.get("ingredients", [])),
+            ]).lower()
+            protein_match = 1 if (prot_norm and prot_norm in searchable) else 0
+
+            # 2. BREED SECOND — normalise to lowercase+underscores for comparison
+            breed_norm = breed_clean.lower().replace(" ", "_") if breed_clean else ""
+            tags_norm = [b.lower().replace(" ", "_") for b in (p.get("breed_tags") or [])]
+            if tags_norm:
+                # Breed-specific product: promote on match, penalise on mismatch
+                breed_score = 1 if (breed_norm and breed_norm in tags_norm) else -1
+            else:
+                breed_score = 0  # Universal product — always neutral
+
+            # 3. MIRA SCORE THIRD
+            mira = mira_scores.get(p["id"], {}).get("score", 0)
+            return (-protein_match, -breed_score, -mira)
+
+        # Exclude persisted Mira Imagines placeholders — they should only appear as real fallbacks
         candidates = [
             p for p in safe_products
             if p.get("category") == category
+            and not p.get("is_mira_imagines")
             and p["id"] not in exclude_ids
             and (sub_category is None or p.get("sub_category") == sub_category)
         ]
-        # Sort by Mira score desc, then by name
-        candidates.sort(
-            key=lambda p: -(mira_scores.get(p["id"], {}).get("score", 0))
-        )
+        candidates.sort(key=_score)
         if not candidates:
-            # Relax sub-category constraint
+            # Relax sub-category constraint (still exclude Mira Imagines placeholders)
             candidates = [
                 p for p in safe_products
-                if p.get("category") == category and p["id"] not in exclude_ids
+                if p.get("category") == category
+                and not p.get("is_mira_imagines")
+                and p["id"] not in exclude_ids
             ]
-            candidates.sort(key=lambda p: -(mira_scores.get(p["id"], {}).get("score", 0)))
+            candidates.sort(key=_score)
         return candidates
 
     result_slots = []
