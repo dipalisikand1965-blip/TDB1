@@ -172,7 +172,8 @@ const CHAPTERS = [
       // SCORING: treat_preference = 3 points
       { id: 'treat_preference', question: "What type of treats does {pet} prefer?", type: 'select', options: ['Soft/chewy', 'Crunchy', 'Freeze-dried', 'Fresh meat', 'Dental chews', 'Fruits/vegetables'], weight: 3, scoring: true, canonicalField: 'treat_preference' },
       // NON-SCORING: diet_type (Mira context)
-      { id: 'diet_type', question: "What type of diet is {pet} on?", type: 'select', options: ['Kibble/dry food', 'Wet food', 'Raw diet', 'Home-cooked', 'Mixed (dry + wet)', 'Grain-free', 'Prescription diet'], weight: 0, scoring: false },
+      { id: 'diet_type', question: "What type of diet is {pet} on?", type: 'multi_select', options: ['Kibble/dry food', 'Wet food', 'Raw diet', 'Home-cooked', 'Mixed (dry + wet)', 'Grain-free', 'Prescription diet'], weight: 0, scoring: false },
+      { id: 'fears', question: "Does {pet} have any fears?", type: 'multi_select', options: ['No known fears', 'Loud noises (fireworks, thunder)', 'Strangers', 'Other dogs', 'Being alone', 'Vehicles', 'Vet visits'], weight: 3, scoring: true },
       // NON-SCORING: sensitive_stomach (Mira context)
       { id: 'sensitive_stomach', question: "Does {pet} have a sensitive stomach?", type: 'select', options: ['Yes', 'No', 'Sometimes'], weight: 0, scoring: false }
     ],
