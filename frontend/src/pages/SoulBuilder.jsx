@@ -592,6 +592,11 @@ const SoulBuilder = () => {
         return false;
       }
       
+      // Guard: if user selected 'Other' breed chip but typed nothing, clear the placeholder value
+      if (petData.breed === 'other') {
+        petData.breed = '';
+      }
+
       // Calculate score from all answers (including pre-existing ones)
       // DOCTRINE: Only scoring questions count (weight > 0 and scoring: true)
       const allAnswers = { ...answers, ...currentAnswers };
