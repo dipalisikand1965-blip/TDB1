@@ -106,3 +106,12 @@
 ### Docs Updated
 - !!!START_HERE_NEXT_AGENT!!!.md: updated to 150 collections / 89,878 docs
 - DEPLOYMENT_RULES.md: updated to 150 collections / 89,878 docs
+
+### Session: Meal Box Breed+Pet Sort Fix (Apr 2026)
+- Fixed `meal_box_routes.py` `best_in()` sort: now follows **Pet First** logic — allergy-safe (absolute block) → protein preference → breed match → Mira score
+- Fixed `to_list(200)` → `to_list(1000)` so Morning/Evening Meal sub_category products aren't cut off
+- Fixed breed normalisation: "Golden Retriever" → "golden_retriever" to match DB breed_tags format
+- Breed-mismatched products (e.g. Cocker Spaniel bowl for Indie dog) are now penalised (score = -1) not just unsorted
+- Persisted Mira Imagines items excluded from real product candidates to prevent cross-slot contamination
+- Added `breed` query param to `GET /api/mira/meal-box-products` endpoint
+- Updated `MealBoxCard.jsx` to pass `pet.breed` to the API

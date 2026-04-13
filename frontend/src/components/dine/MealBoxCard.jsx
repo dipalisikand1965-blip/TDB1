@@ -182,6 +182,7 @@ export default function MealBoxCard() {
         fav_protein: favProtein,
         health_condition: healthCondition,
         pet_name: petName,
+        breed: pet.breed || '',
       });
       const res = await fetch(`${API}/api/mira/meal-box-products?${params}`);
       if (res.ok) {
