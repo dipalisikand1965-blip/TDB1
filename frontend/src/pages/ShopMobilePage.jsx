@@ -60,7 +60,7 @@ function MiraPicksSection({ pet, token, onConcierge }) {
   const petName = pet?.name || 'your dog';
 
   useEffect(() => {
-    if (!pet?.id) { setLoading(false); return; }
+    if (!pet?.id || !pet?.breed) { setLoading(false); return; }
     const allergyList   = getAllergiesFromPet(pet);
     const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
     const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
@@ -79,7 +79,7 @@ function MiraPicksSection({ pet, token, onConcierge }) {
         if (ranked.length) setPicks(ranked.slice(0, 12));
         setLoading(false);
       }).catch(() => setLoading(false));
-  }, [pet?.id, token]);
+  }, [pet?.id, pet?.breed, token]);
 
   if (loading) return (
     <div style={{ textAlign: 'center', padding: '24px 0', color: '#888' }}>

@@ -96,7 +96,7 @@ export default function DineMobilePage() {
 
   // Fetch products — breed param ensures backend pre-filters so Mojo sees only Indie products
   const fetchProducts = useCallback(async (pet) => {
-    if (!pet?.id) return;
+    if (!pet?.id || !pet?.breed) return;
     const FOOD_CATS = ['Daily Meals', 'Treats & Rewards', 'Supplements', 'Frozen & Fresh', 'Homemade & Recipes'];
     // Always pass breed so the backend pre-filters: Indie dog sees Indie + universal products only
     const breedParam = pet.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';

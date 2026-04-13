@@ -114,12 +114,12 @@ export default function PlayMobilePage() {
   }, [contextPets, currentPet, setCurrentPet]);
 
   useEffect(() => {
-    if (!currentPet?.id) return;
+    if (!currentPet?.id || !currentPet?.breed) return;
     fetch(`${API_URL}/api/admin/pillar-products?pillar=play&limit=600&breed=${encodeURIComponent(currentPet?.breed||'')}`, { headers: token ? { Authorization:`Bearer ${token}` } : {} })
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.products) setAllRaw(filterBreedProducts(excludeCakeProducts(d.products), currentPet?.breed)); })
       .catch(() => {});
-  }, [currentPet?.id, token]);
+  }, [currentPet?.id, currentPet?.breed, token]);
 
   const handleAddToCart = useCallback(p => {
     addToCart({ id:p.id||p._id, name:p.name, price:p.price||0, image:p.image_url||p.images?.[0], pillar:'play', quantity:1 });

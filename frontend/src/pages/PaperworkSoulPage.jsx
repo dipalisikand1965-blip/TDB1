@@ -229,7 +229,7 @@ function MiraPicksSection({ pet, onOpenService }) {
   const petName=pet?.name||"your dog";
 
   useEffect(()=>{
-    if(!pet?.id){setPicksLoading(false);return;}
+    if(!pet?.id || !pet?.breed){setPicksLoading(false);return;}
     const allergyList   = getAllergiesFromPet(pet);
     const breedParam    = pet?.breed ? `&breed=${encodeURIComponent(pet.breed)}` : '';
     const allergenParam = allergyList.length ? `&allergens=${encodeURIComponent(allergyList.join(','))}` : '';
