@@ -88,12 +88,12 @@ def get_all_allergies(pet: dict) -> list:
         all_allergies.add(pet["allergy2"].lower())
     
     # Check health_data.allergies
-    health_data = pet.get("health_data", {})
+    health_data = pet.get("health_data") or {}
     if health_data.get("allergies"):
         all_allergies.update([a.lower() for a in health_data["allergies"] if a])
     
     # Check health.allergies
-    health = pet.get("health", {})
+    health = pet.get("health") or {}
     if health.get("allergies"):
         all_allergies.update([a.lower() for a in health["allergies"] if a])
     
