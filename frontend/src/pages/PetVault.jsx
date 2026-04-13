@@ -108,6 +108,8 @@ const PetVault = () => {
   const [vets, setVets]             = useState([]);
   const [allergies, setAllergies]   = useState([]);
   const [documents, setDocuments]   = useState([]);
+  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [uploadData, setUploadData] = useState({ name: '', type: 'prescription', date: '', notes: '', url: '' });
   const [activeTab, setActiveTab]   = useState('overview');
   const [saving, setSaving]         = useState(false);
 
@@ -838,13 +840,85 @@ const PetVault = () => {
                 )}
               </div>
             ))}
-            <button
-              data-testid="vault-upload-document-btn"
-              onClick={() => request(`Document upload request for ${petName}`, { channel: 'vault_document_upload' })}
-              style={{ width: '100%', padding: '12px', borderRadius: 10, border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.03)', color: G.muted, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}
-            >
-              + Upload document (PDF or image) — Concierge® will assist
-            </button>
+            {!showUploadForm ? (
+              <button
+                data-testid="vault-upload-document-btn"
+                onClick={() => setShowUploadForm(true)}
+                style={{ width: '100%', padding: '12px', borderRadius: 10, border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.03)', color: G.muted, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit', marginTop: 4 }}
+              >
+                + Upload Document
+              </button>
+            ) : (
+              <div style={{ marginTop: 8, padding: 14, background: 'rgba(255,255,255,0.05)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <input
+                  data-testid="vault-doc-name"
+                  placeholder="Document name"
+                  value={uploadData.name}
+                  onChange={e => setUploadData(p => ({ ...p, name: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: 12, fontFamily: 'inherit', boxSizing: 'border-box' }}
+                />
+                <select
+                  data-testid="vault-doc-type"
+                  value={uploadData.type}
+                  onChange={e => setUploadData(p => ({ ...p, type: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(40,30,60,0.9)', color: '#fff', fontSize: 12, fontFamily: 'inherit' }}
+                >
+                  <option value="prescription">Prescription</option>
+                  <option value="lab_report">Lab Report</option>
+                  <option value="xray">X-Ray</option>
+                  <option value="certificate">Certificate</option>
+                  <option value="other">Other</option>
+                </select>
+                <input
+                  data-testid="vault-doc-date"
+                  type="date"
+                  value={uploadData.date}
+                  onChange={e => setUploadData(p => ({ ...p, date: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: 12, fontFamily: 'inherit', boxSizing: 'border-box' }}
+                />
+                <input
+                  data-testid="vault-doc-notes"
+                  placeholder="Notes (optional)"
+                  value={uploadData.notes}
+                  onChange={e => setUploadData(p => ({ ...p, notes: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: 12, fontFamily: 'inherit', boxSizing: 'border-box' }}
+                />
+                <input
+                  data-testid="vault-doc-url"
+                  placeholder="File URL (Cloudinary / Drive link)"
+                  value={uploadData.url}
+                  onChange={e => setUploadData(p => ({ ...p, url: e.target.value }))}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: 12, fontFamily: 'inherit', boxSizing: 'border-box' }}
+                />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    data-testid="vault-doc-save-btn"
+                    onClick={async () => {
+                      if (!uploadData.name) return;
+                      await fetch(`${API_URL}/api/pet-vault/${petId}/documents`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                        body: JSON.stringify({ ...uploadData, file_url: uploadData.url }),
+                      });
+                      setShowUploadForm(false);
+                      setUploadData({ name: '', type: 'prescription', date: '', notes: '', url: '' });
+                      const res = await fetch(`${API_URL}/api/pet-vault/${petId}/documents`, { headers: { Authorization: `Bearer ${token}` } });
+                      if (res.ok) setDocuments((await res.json()).documents || []);
+                    }}
+                    style={{ flex: 1, padding: '9px', borderRadius: 8, border: 'none', background: '#7C3AED', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    data-testid="vault-doc-cancel-btn"
+                    onClick={() => setShowUploadForm(false)}
+                    style={{ padding: '9px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: G.muted, fontSize: 12, cursor: 'pointer', fontFamily: 'inherit' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
