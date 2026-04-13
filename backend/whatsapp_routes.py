@@ -394,19 +394,21 @@ async def process_gupshup_webhook(body: dict):
                 _detected_pillar = _detect_pillar_from_wa_message(content)
 
                 if _wa_state and _wa_state.get("awaiting_pet_selection"):
-                    # Fuzzy-match the incoming message against this user's pets
-                    _wa_user = await db.users.find_one(
+                    # Fuzzy-match the incoming message against ALL of this user's pets
+                    # (across all linked email accounts, not just the primary one)
+                    _wa_users = await db.users.find(
                         {"$or": [
                             {"phone": {"$regex": _phone_10_wa + "$"}},
                             {"whatsapp": {"$regex": _phone_10_wa + "$"}},
                         ]},
                         {"_id": 0, "email": 1}
-                    )
-                    if _wa_user and _wa_user.get("email"):
+                    ).to_list(10)
+                    _wa_all_emails = list({u.get("email") for u in _wa_users if u.get("email")})
+                    if _wa_all_emails:
                         _wa_pets = await db.pets.find(
-                            {"owner_email": _wa_user["email"]},
+                            {"owner_email": {"$in": _wa_all_emails}},
                             {"_id": 0, "name": 1}
-                        ).to_list(20)
+                        ).to_list(30)
                         _wa_pet_names = [p["name"] for p in _wa_pets if p.get("name")]
                         _resolved_pet = _fuzzy_pet_match(content, _wa_pet_names)
                         if _resolved_pet:
@@ -1946,9 +1948,9 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
     # ── 2b-ii. Widget-style pet picker — ask FIRST if no explicit selection this session ──
     # Fires whenever the user has multiple pets and hasn't explicitly chosen one via wa_pet_state.
-    # Mirrors the widget's pet-chip selector. Even if an open ticket for another pet exists,
-    # we always ask the user to confirm which dog they want to chat about today.
+    # ONE-LINE FIX: Nullify any ticket-inherited pet so stale tickets can NEVER bypass the picker.
     if not _wa_active_pet and len(all_pet_names) > 1:
+        ticket_pet_name = None  # user must confirm their dog — ticket context is irrelevant
         shown = all_pet_names[:4]
         if len(all_pet_names) > 4:
             pet_list = ", ".join(shown[:-1]) + f", {shown[-1]} (or {len(all_pet_names) - 4} more)"
