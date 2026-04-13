@@ -2042,12 +2042,22 @@ const SoulBuilder = () => {
               })}
               
               {isMultiSelect && multiSelectValues.length > 0 && (
-                <button
-                  onClick={() => handleAnswer(multiSelectValues)}
-                  className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl"
-                >
-                  Continue
-                </button>
+                <>
+                  {question.id === 'health_conditions' && multiSelectValues.includes('Other chronic condition') && (
+                    <input
+                      type="text"
+                      placeholder="Please describe the condition..."
+                      onChange={e => setPetData(prev => ({ ...prev, health_condition_other: e.target.value }))}
+                      className="mt-2 w-full p-2 rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/10 focus:outline-none focus:border-purple-400/50"
+                    />
+                  )}
+                  <button
+                    onClick={() => handleAnswer(multiSelectValues)}
+                    className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl"
+                  >
+                    Continue
+                  </button>
+                </>
               )}
             </div>
           )}
