@@ -94,9 +94,10 @@ body {
   animation: fadeUp 1s ease 0.6s both;
 }
 .scroll-hint {
-  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
   font-size: 11px; letter-spacing: 3px; color: var(--mist);
   text-transform: uppercase;
+  text-align: center;
   animation: fadeUp 1s ease 1s both, pulse 2s ease 2s infinite;
 }
 
@@ -468,13 +469,17 @@ body {
   <div class="hero-orb hero-orb-1"></div>
   <div class="hero-orb hero-orb-2"></div>
   <div class="hero-orb hero-orb-3"></div>
+  <img src="/logo.png" alt="The Doggy Company" style="width:120px; margin: 20px auto; display:block; opacity:0.85;">
   <div class="hero-tag">The Doggy Company · Pet Wrapped · 2026</div>
   <div class="hero-name"><span>Mystique's</span><br>Year</div>
   <div class="hero-sub">Shih Tzu · Empress · Mother · In Loving Memory</div>
   <div class="hero-dates">20 May 2020 — Forever in our hearts</div>
   <div class="hero-line"></div>
   <div class="hero-quote">"Her eyes held a universe of love.<br>And she left it behind."</div>
-  <div class="scroll-hint">Scroll to explore</div>
+  <div class="scroll-hint">
+    Scroll to explore
+    <div style="margin-top:8px; font-size:20px;">↓</div>
+  </div>
 </section>
 
 <!-- ══ EMOTIONAL CARDS ══ -->
