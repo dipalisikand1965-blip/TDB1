@@ -1544,7 +1544,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 # Critically: runs even when ticket_pet_name is set — allows mid-conversation pet switching.
                 # Also checks the open ticket's owner email so admin/linked accounts find cross-account pets.
                 _ticket_email = (open_ticket.get("user_email") or "") if open_ticket else ""
-                _pet_lookup_emails = list(set(filter(None, [user_email, _ticket_email])))
+                _all_candidate_emails = list({u.get("email") for u in _user_candidates if u.get("email")})
+                _pet_lookup_emails = list(set(filter(None, _all_candidate_emails + [_ticket_email])))
                 _quick_pets = await db.pets.find(
                     {"owner_email": {"$in": _pet_lookup_emails}} if _pet_lookup_emails else {},
                     {"_id": 0, "name": 1}
@@ -1579,17 +1580,13 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 # ── Multi-account linking ────────────────────────────────────────
                 # A user may have registered with two emails (e.g. work + personal).
                 # Find all accounts with the same name and collect pets from ALL of them.
-                all_owner_emails = [user_email]
-                if member_name:
-                    linked = await db.users.find(
-                        {"name": member_name, "email": {"$ne": user_email}},
-                        {"_id": 0, "email": 1}
-                    ).to_list(5)
-                    for lu in linked:
-                        if lu.get("email"):
-                            all_owner_emails.append(lu["email"])
-                    if len(all_owner_emails) > 1:
-                        logger.info(f"[MIRA-AI] Multi-account user '{member_name}' → emails: {all_owner_emails}")
+                # Cast the widest net: include ALL user accounts that matched this phone number.
+                # This handles split accounts (e.g. dipali@clubconcierge.in vs dipali.sikand1965@gmail.com
+                # both matching 9739908844) so pets registered under either email are always found.
+                all_owner_emails = list({u.get("email") for u in _user_candidates if u.get("email")})
+                if not all_owner_emails:
+                    all_owner_emails = [user_email]
+                logger.info(f"[MIRA-AI] Pet lookup across {len(all_owner_emails)} account(s): {all_owner_emails}")
 
                 # Full soul profile for each pet — across ALL linked accounts
                 pets = await db.pets.find(
