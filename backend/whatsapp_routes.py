@@ -1516,8 +1516,11 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 # ── 1b. Detect/switch active pet using fuzzy match — always runs ──
                 # Uses _fuzzy_pet_match so "Mystique" matches even if message says "what about Mystique?"
                 # Critically: runs even when ticket_pet_name is set — allows mid-conversation pet switching.
+                # Also checks the open ticket's owner email so admin/linked accounts find cross-account pets.
+                _ticket_email = (open_ticket.get("user_email") or "") if open_ticket else ""
+                _pet_lookup_emails = list(set(filter(None, [user_email, _ticket_email])))
                 _quick_pets = await db.pets.find(
-                    {"owner_email": user_email},
+                    {"owner_email": {"$in": _pet_lookup_emails}} if _pet_lookup_emails else {},
                     {"_id": 0, "name": 1}
                 ).to_list(20)
                 _quick_pet_names = [p["name"] for p in _quick_pets if p.get("name")]
