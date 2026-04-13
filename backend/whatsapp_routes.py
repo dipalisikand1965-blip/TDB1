@@ -1465,17 +1465,27 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 _wa_pre = await db.wa_pet_state.find_one({"phone": phone_10})
                 if _wa_pre and _wa_pre.get("active_pet") and not _wa_pre.get("awaiting_pet_selection"):
                     _ts = _wa_pre.get("updated_at")
-                    _age_ok = True
+                    _age_ok = False  # SAFE DEFAULT: expired unless proven fresh
                     if _ts:
                         try:
                             _dt = datetime.fromisoformat(_ts) if isinstance(_ts, str) else _ts
                             if _dt.tzinfo is None:
                                 _dt = _dt.replace(tzinfo=timezone.utc)
-                            _age_ok = (datetime.now(timezone.utc) - _dt).total_seconds() / 60 <= 30
+                            _age_min = (datetime.now(timezone.utc) - _dt).total_seconds() / 60
+                            _age_ok = _age_min <= 30
+                            if not _age_ok:
+                                # Auto-clear the stale record
+                                await db.wa_pet_state.delete_one({"phone": phone_10})
+                                print(f"[MIRA-WA-DEBUG] Cleared stale wa_pet_state for {phone_10} (age={_age_min:.1f}min)", flush=True)
                         except Exception:
-                            pass
+                            _age_ok = False  # Parse error → treat as expired
+                    else:
+                        # No timestamp → definitely stale, delete it
+                        await db.wa_pet_state.delete_one({"phone": phone_10})
+                        print(f"[MIRA-WA-DEBUG] Cleared no-timestamp wa_pet_state for {phone_10}", flush=True)
                     if _age_ok:
                         _wa_active_pet = _wa_pre["active_pet"]
+                        print(f"[MIRA-WA-DEBUG] wa_pet_state VALID: active_pet='{_wa_active_pet}'", flush=True)
                         logger.info(f"[MIRA-AI] wa_pet_state → active pet '{_wa_active_pet}' (user's explicit selection)")
             except Exception:
                 pass
@@ -1717,6 +1727,39 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
         except Exception as ctx_err:
             logger.warning(f"[MIRA-AI] Context fetch error: {ctx_err}")
 
+    # ── 1d. Fallback pet lookup via ticket email (when user not matched by phone) ──
+    # This fires when the user's DB record has no phone stored, so _user_candidates=[].
+    # We recover by looking up pets via the open ticket's user_email.
+    if not all_pet_names and db is not None:
+        _fallback_email = None
+        if open_ticket:
+            _fallback_email = (
+                open_ticket.get("user_email") or
+                (open_ticket.get("member") or {}).get("email")
+            )
+        if _fallback_email:
+            try:
+                _fb_pets = await db.pets.find(
+                    {"owner_email": _fallback_email},
+                    {"_id": 0, "name": 1}
+                ).to_list(20)
+                all_pet_names = [p.get("name") for p in _fb_pets if p.get("name")]
+                if not user_email:
+                    user_email = _fallback_email
+                print(f"[MIRA-WA-DEBUG] Fallback: {len(all_pet_names)} pets via ticket email={_fallback_email}: {all_pet_names}", flush=True)
+                # Also auto-save phone to user record so future lookups work
+                if phone_10 and _fallback_email:
+                    try:
+                        await db.users.update_one(
+                            {"email": _fallback_email},
+                            {"$set": {"phone": phone_10, "whatsapp": str(user_phone)}}
+                        )
+                        print(f"[MIRA-WA-DEBUG] Auto-saved phone={phone_10} to user {_fallback_email}", flush=True)
+                    except Exception:
+                        pass
+            except Exception as _fb_err:
+                print(f"[MIRA-WA-DEBUG] Fallback pet lookup failed: {_fb_err}", flush=True)
+
     # ── 2. Detect near-me intent ──────────────────────────────────────────────
     is_near_me = _detect_near_me(message_text)
 
@@ -1749,7 +1792,13 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             await db.wa_pet_state.delete_one({"phone": phone_10})
                             wa_state = None
                     except Exception:
-                        pass
+                        # Bad timestamp → clear it
+                        await db.wa_pet_state.delete_one({"phone": phone_10})
+                        wa_state = None
+                else:
+                    # No timestamp → definitely stale, clear it
+                    await db.wa_pet_state.delete_one({"phone": phone_10})
+                    wa_state = None
         except Exception as e:
             logger.warning(f"[MIRA-AI] wa_pet_state fetch error: {e}")
 
