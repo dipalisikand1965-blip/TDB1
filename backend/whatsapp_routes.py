@@ -215,31 +215,48 @@ async def verify_webhook(
 async def receive_whatsapp_webhook(request: Request):
     """
     Receive incoming WhatsApp messages and status updates.
-    Supports both Meta Cloud API and Gupshup webhook formats.
+    Returns 200 IMMEDIATELY so Gupshup never retries (retries cause duplicate responses).
+    Processing runs in a background asyncio task.
     """
+    import asyncio
     try:
         body = await request.json()
-        logger.info(f"Received WhatsApp webhook: {json.dumps(body, indent=2)[:500]}")
         
         # ============== GUPSHUP FORMAT ==============
-        # Gupshup sends: {"app": "App", "timestamp": ..., "type": "message", "payload": {...}}
         if "payload" in body and body.get("type") in ["message", "message-event"]:
-            await process_gupshup_webhook(body)
+            # Deduplicate: skip if we already processed this message_id
+            msg_id = body.get("payload", {}).get("id", "")
+            if msg_id:
+                try:
+                    from motor.motor_asyncio import AsyncIOMotorClient
+                    _dc = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
+                    _ddb = _dc[os.environ.get("DB_NAME", "test_database")]
+                    existing = await _ddb.wa_processed_msgs.find_one({"msg_id": msg_id})
+                    if existing:
+                        print(f"[MIRA-WA-DEBUG] Duplicate webhook msg_id={msg_id} — skipping", flush=True)
+                        _dc.close()
+                        return {"status": "ok", "note": "duplicate"}
+                    await _ddb.wa_processed_msgs.insert_one({
+                        "msg_id": msg_id,
+                        "created_at": datetime.now(timezone.utc).isoformat()
+                    })
+                    # Auto-expire after 10 minutes
+                    await _ddb.wa_processed_msgs.create_index("created_at", expireAfterSeconds=600)
+                    _dc.close()
+                except Exception:
+                    pass  # Dedup failure is non-critical
+            # Process in background — return 200 immediately to prevent Gupshup retries
+            asyncio.create_task(process_gupshup_webhook(body))
             return {"status": "ok"}
         
         # ============== META CLOUD API FORMAT ==============
-        # Meta sends: {"entry": [{"changes": [{"value": {"messages": [...]}}]}]}
         if "entry" in body:
             for entry in body.get("entry", []):
                 for change in entry.get("changes", []):
                     value = change.get("value", {})
-                    
-                    # Handle incoming messages
                     if "messages" in value:
                         for message in value.get("messages", []):
-                            await process_incoming_message(message, value.get("contacts", []))
-                    
-                    # Handle status updates (sent, delivered, read)
+                            asyncio.create_task(process_incoming_message(message, value.get("contacts", [])))
                     if "statuses" in value:
                         for status in value.get("statuses", []):
                             await process_status_update(status)
@@ -248,7 +265,6 @@ async def receive_whatsapp_webhook(request: Request):
         
     except Exception as e:
         logger.error(f"WhatsApp webhook error: {e}")
-        # Always return 200 to acknowledge receipt
         return {"status": "error", "message": str(e)}
 
 
