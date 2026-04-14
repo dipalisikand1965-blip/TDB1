@@ -1638,7 +1638,7 @@ Ask me anything about him!`
                 { year: "1998", title: "LesConcierges®", desc: "Dipali Sikand builds premium concierge services" },
                 { year: "2008", title: "Club Concierge®", desc: "Scales to serve 1M+ customers across India" },
                 { year: "2020", title: "The Doggy Bakery®", desc: "Aditya launches, celebrates 45,000+ pets" },
-                { year: "2025", title: "Mira OS™", desc: "AI + Human concierge for pets. India's first." },
+                { year: "2026", title: "The Doggy Company®", desc: "AI + Human concierge for pets. India's first." },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -1689,14 +1689,14 @@ Ask me anything about him!`
             <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-2xl p-6">
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <Shield className="w-5 h-5 text-green-400" />
-                14 Life Pillars
+                12 Life Pillars
               </h3>
               <p className="text-white/70 mb-4">
                 Every aspect of pet parenting, covered by one intelligent system:
               </p>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                {['Shop', 'Care', 'Groom', 'Learn', 'Travel', 'Stay', 'Celebrate', 
-                  'Protect', 'Feed', 'Fit', 'Adopt', 'Farewell', 'Enjoy', 'Paperwork'].map((pillar, i) => (
+                {['Dine', 'Care', 'Go', 'Play', 'Learn', 'Services', 
+                  'Shop', 'Celebrate', 'Emergency', 'Adopt', 'Farewell', 'Paperwork'].map((pillar, i) => (
                   <div key={i} className="flex items-center gap-2 text-white/60">
                     <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-400 to-pink-400" />
                     {pillar}
@@ -1730,7 +1730,7 @@ Ask me anything about him!`
                 <h4 className="text-lg font-semibold text-blue-300 mb-4">The Pet Market</h4>
                 <div className="space-y-4">
                   {[
-                    { stat: "₹30,000 Cr", label: "Indian pet care market (2025)", growth: "+25% YoY" },
+                    { stat: "₹30,000 Cr", label: "Indian pet care market (2026)", growth: "+25% YoY" },
                     { stat: "31 Million", label: "Pet dogs in India", growth: "+12% annually" },
                     { stat: "₹18,000+", label: "Monthly spend per pet (urban)", growth: "Premium segment" },
                     { stat: "89%", label: "Pet parents call pets 'family members'", growth: "Emotional bond" },
@@ -1945,7 +1945,7 @@ Ask me anything about him!`
             <span className="text-white font-bold">thedoggycompany</span>
           </div>
           <p className="text-white/40 text-sm">
-            © 2025 The Doggy Company®. Mira OS™ is a trademark of The Doggy Company.
+            © 2026 The Doggy Company®. Mira™ is a trademark of The Doggy Company.
           </p>
         </div>
       </footer>
