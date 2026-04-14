@@ -1408,6 +1408,8 @@ I can help you with:
 🎂 Birthday celebrations
 🏨 Boarding & daycare
 
+💡 Tip: Start your message with your dog's name — e.g. 'Mystique needs grooming help' — and I'll focus on them.
+
 Just tell me what you need! Or visit: https://thedoggycompany.com
 
 What would you like help with today? 🐕"""
