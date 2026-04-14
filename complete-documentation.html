@@ -3,1810 +3,544 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Doggy Company — Complete Technical Handover Documentation</title>
+<title>The Doggy Company — Complete Technical Documentation · April 14, 2026</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1a2e; line-height: 1.7; background: #f8fafc; }
-  header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white; padding: 40px; }
-  header h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 8px; }
-  header .subtitle { font-size: 1rem; opacity: 0.7; }
-  header .meta { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
-  header .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
-  header .badge.new { background: rgba(34,197,94,0.3); border-color: rgba(34,197,94,0.6); }
-  .critical { background: #fee2e2; border-left: 4px solid #ef4444; padding: 16px 20px; margin: 20px 40px; border-radius: 8px; font-weight: 600; color: #991b1b; }
-  nav { background: white; border-bottom: 1px solid #e2e8f0; padding: 0 40px; position: sticky; top: 0; z-index: 100; display: flex; gap: 4px; overflow-x: auto; }
-  nav a { display: block; padding: 14px 16px; font-size: 0.82rem; font-weight: 600; color: #64748b; text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; }
+  header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white; padding: 48px 40px; }
+  header h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 8px; }
+  header .subtitle { font-size: 1rem; opacity: 0.7; margin-bottom: 16px; }
+  header .meta { display: flex; gap: 10px; flex-wrap: wrap; }
+  header .badge { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 4px 14px; border-radius: 20px; font-size: 0.82rem; }
+  header .badge.green { background: rgba(34,197,94,0.25); border-color: rgba(34,197,94,0.5); }
+  header .badge.amber { background: rgba(251,191,36,0.25); border-color: rgba(251,191,36,0.5); }
+  nav { background: white; border-bottom: 2px solid #e2e8f0; padding: 0 40px; position: sticky; top: 0; z-index: 100; display: flex; gap: 2px; overflow-x: auto; }
+  nav a { display: block; padding: 14px 16px; font-size: 0.8rem; font-weight: 600; color: #64748b; text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; }
   nav a:hover { color: #7c3aed; border-bottom-color: #7c3aed; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px 60px; }
-  section { margin-top: 48px; }
-  h2 { font-size: 1.6rem; font-weight: 700; color: #1a1a2e; border-bottom: 2px solid #7c3aed; padding-bottom: 8px; margin-bottom: 20px; }
-  h3 { font-size: 1.1rem; font-weight: 700; color: #0f3460; margin: 24px 0 10px; }
-  h4 { font-size: 0.95rem; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px 80px; }
+  section { margin-top: 56px; }
+  h2 { font-size: 1.7rem; font-weight: 800; color: #1a1a2e; border-bottom: 3px solid #7c3aed; padding-bottom: 10px; margin-bottom: 24px; }
+  h3 { font-size: 1.1rem; font-weight: 700; color: #0f3460; margin: 28px 0 10px; }
+  h4 { font-size: 0.95rem; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; }
   p { color: #4a5568; margin-bottom: 12px; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; }
-  th { background: #1a1a2e; color: white; padding: 10px 14px; text-align: left; font-weight: 600; }
-  td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.875rem; border-radius: 8px; overflow: hidden; }
+  th { background: #1a1a2e; color: white; padding: 11px 16px; text-align: left; font-weight: 600; font-size: 0.82rem; letter-spacing: 0.03em; }
+  td { padding: 10px 16px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
   tr:nth-child(even) td { background: #f8fafc; }
   tr:hover td { background: #f1f5f9; }
-  .status-done { color: #059669; font-weight: 700; }
-  .status-live { color: #059669; font-weight: 700; }
-  .status-pending { color: #d97706; font-weight: 700; }
-  .status-blocked { color: #dc2626; font-weight: 700; }
-  .status-new { color: #7c3aed; font-weight: 700; }
-  code { background: #1e293b; color: #7dd3fc; padding: 2px 6px; border-radius: 4px; font-family: 'SF Mono', monospace; font-size: 0.85em; }
-  pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.83rem; margin: 12px 0; line-height: 1.6; }
+  .done { color: #059669; font-weight: 700; }
+  .live { color: #059669; font-weight: 700; }
+  .pending { color: #d97706; font-weight: 700; }
+  .blocked { color: #dc2626; font-weight: 700; }
+  .new { color: #7c3aed; font-weight: 700; }
+  code { background: #1e293b; color: #7dd3fc; padding: 2px 7px; border-radius: 4px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.83em; }
+  pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 10px; overflow-x: auto; font-size: 0.83rem; margin: 14px 0; line-height: 1.65; }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 16px 0; }
-  .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 16px 0; }
+  .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
   .card.highlight { border-color: #7c3aed; border-width: 2px; }
-  .alert { padding: 14px 18px; border-radius: 8px; margin: 12px 0; font-size: 0.9rem; }
+  .card.green-border { border-color: #22c55e; border-width: 2px; }
+  .card.amber-border { border-color: #f59e0b; border-width: 2px; }
+  .card.red-border { border-color: #ef4444; border-width: 2px; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: #7c3aed; }
+  .stat-lbl { font-size: 0.78rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+  .alert { padding: 14px 18px; border-radius: 10px; margin: 14px 0; font-size: 0.88rem; }
   .alert-red { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
-  .alert-yellow { background: #fef9c3; border-left: 4px solid #f59e0b; color: #92400e; }
+  .alert-amber { background: #fef9c3; border-left: 4px solid #f59e0b; color: #92400e; }
   .alert-green { background: #dcfce7; border-left: 4px solid #22c55e; color: #14532d; }
   .alert-blue { background: #dbeafe; border-left: 4px solid #3b82f6; color: #1e3a8a; }
-  ul { padding-left: 24px; color: #4a5568; }
-  ul li { margin-bottom: 6px; }
-  .pill-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-  .pill { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 20px; font-size: 0.83rem; font-weight: 600; }
-  .pill.done { background: #dcfce7; border-color: #86efac; color: #14532d; }
-  .pill.warn { background: #fef9c3; border-color: #fcd34d; color: #78350f; }
-  .changelog-entry { border-left: 3px solid #7c3aed; padding: 12px 16px; margin: 12px 0; background: white; border-radius: 0 8px 8px 0; }
-  .changelog-entry .date { font-size: 0.78rem; color: #7c3aed; font-weight: 700; margin-bottom: 4px; }
-  .changelog-entry h4 { margin-bottom: 6px; }
-  @media (max-width: 768px) { .grid-2,.grid-3 { grid-template-columns: 1fr; } .container { padding: 0 16px 40px; } header { padding: 24px 16px; } }
+  .alert-purple { background: #f3e8ff; border-left: 4px solid #7c3aed; color: #4c1d95; }
+  ul { padding-left: 22px; color: #4a5568; }
+  ul li { margin-bottom: 5px; }
+  .pill { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; margin: 2px; }
+  .pill.purple { background: #f3e8ff; border-color: #c4b5fd; color: #6d28d9; }
+  .pill.green { background: #dcfce7; border-color: #86efac; color: #15803d; }
+  .pill.amber { background: #fef9c3; border-color: #fcd34d; color: #b45309; }
+  .pill.red { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+  .session-header { background: linear-gradient(90deg, #7c3aed11, transparent); border-left: 4px solid #7c3aed; padding: 12px 18px; border-radius: 0 8px 8px 0; margin: 24px 0 16px; }
+  .session-header h3 { margin: 0; color: #5b21b6; }
+  .session-date { font-size: 0.78rem; color: #7c3aed; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  footer { background: #1a1a2e; color: rgba(255,255,255,0.5); text-align: center; padding: 32px; font-size: 0.82rem; margin-top: 60px; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>🐾 The Doggy Company — Technical Handover Documentation</h1>
-  <p class="subtitle">Pet Life OS · React + FastAPI + MongoDB · 12 Pillars · 56 Breeds · AI-Powered by Mira</p>
+  <h1>The Doggy Company® — Technical Documentation</h1>
+  <p class="subtitle">Complete system reference · Auto-regenerated April 14, 2026</p>
   <div class="meta">
-    <span class="badge new">Updated: 2026-04-09</span>
-    <span class="badge new">Session 14 Complete</span>
-    <span class="badge">Preview: pet-soul-ranking.preview.emergentagent.com</span>
-    <span class="badge">Cloudinary: duoapcx1p</span>
-    <span class="badge">9,348 Products Visible to Members</span>
-    <span class="badge">4,941 Soul Products in Source</span>
-    <span class="badge">56 Breeds</span>
-    <span class="badge new">Health Condition Filtering — LIVE EVERYWHERE</span>
+    <span class="badge green">✅ Live in Production</span>
+    <span class="badge">89,192 Documents · 151 Collections</span>
+    <span class="badge">802,020 Lines of Code · 1,514 Files</span>
+    <span class="badge amber">⚠️ Atlas IP Whitelist — Blocked</span>
+    <span class="badge">Last export: April 14, 2026 · 06:32 UTC</span>
   </div>
 </header>
 
-<div class="critical">
-  ⚠️ NEXT AGENT — READ THIS ENTIRE DOCUMENT BEFORE WRITING A SINGLE LINE OF CODE.<br><br>
-  1. Desktop *SoulPage.jsx files are STRICTLY LOCKED — do not touch.<br>
-  2. PyMongo: NEVER use <code>if collection:</code> — always <code>if collection is not None:</code><br>
-  3. NEVER run AI image generation on non-soul products — they have <code>ai_generation_locked: True</code><br>
-  4. Indie and Indian Pariah are the SAME BREED — aliases already handled in backend + frontend. Do NOT merge their DB records without a full migration plan.<br>
-  5. The <code>breed_products → products_master</code> sync ONLY runs during batch image generation. If you seed products without generating images, manually run the sync script or set <code>product_type</code> and <code>visibility</code> correctly.<br>
-  6. Check <code>product_type</code> in products_master is NOT stuck as <code>soul_made</code> — run the sync fix script if needed.<br>
-  7. Production DB is BLOCKED (Atlas IP whitelist). Always use local preview DB. To push data to production: update .json.gz in migration_data → Save to GitHub → deploy → click Restore Database in production Admin.<br>
-  8. VERIFIED (Session 9): Members ARE seeing their soul products. products_master contains 7,737 visible products vs 4,941 in breed_products source.<br>
-  9. CONDITION_BLOCK_MAP in <code>useMiraFilter.js</code> MUST stay in sync with <code>condition_map.py</code>. Any new condition added to one MUST be added to the other.
-</div>
-
 <nav>
-  <a href="#changelog">📋 Changelog</a>
-  <a href="#rules">🔴 Critical Rules</a>
-  <a href="#arch">Architecture</a>
-  <a href="#pipeline">Soul Pipeline</a>
-  <a href="#breeds">Breeds</a>
-  <a href="#aliases">Aliases</a>
-  <a href="#db">Database</a>
-  <a href="#api">Key APIs</a>
-  <a href="#admin">Admin</a>
-  <a href="#scripts">Scripts</a>
-  <a href="#integrations">Integrations</a>
+  <a href="#live-stats">Live Stats</a>
+  <a href="#architecture">Architecture</a>
+  <a href="#changelog">Changelog</a>
   <a href="#whatsapp">WhatsApp</a>
-  <a href="#wa-intelligence" style="color:#7c3aed;font-weight:800;">🧠 WA Intelligence</a>
-  <a href="#creds">Credentials</a>
-  <a href="#todo">Next Tasks</a>
-  <a href="#mira-phase2" style="color:#7c3aed;font-weight:800;">🧠 Phase 2 Roadmap</a>
-  <a href="#audit">Soul Audit</a>
-  <a href="#visibility">Visibility Matrix</a>
+  <a href="#mira">Mira AI</a>
+  <a href="#admin">Admin</a>
+  <a href="#db">Database</a>
+  <a href="#deploy">Deploy</a>
+  <a href="#credentials">Credentials</a>
+  <a href="#backlog">Backlog</a>
+  <a href="#static-pages">Static Pages</a>
 </nav>
 
 <div class="container">
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="changelog">
-  <h2>📋 Session Changelog</h2>
-  <p>Every agent MUST append their session summary here before finishing.</p>
-
-  <div class="changelog-entry" style="border-left-color:#c9973a; background:#fffbf0;">
-    <div class="date" style="color:#c9973a;">Session 14 — 2026-04-09 ✦ MiraSearchPage Safety + ResultChip Intelligence</div>
-    <h4>Health Condition Filter wired into /mira-search · Mira Pick badge + mira_hint on ResultChip</h4>
-    <ul>
-      <li><strong>FIXED: MiraSearchPage.jsx bypassed health condition safety.</strong> The global <code>/mira-search</code> page was fetching products raw and displaying them without running any of the allergen/condition filtering logic. A dog with pancreatitis could see high-fat treats in search results. Fixed by importing <code>applyMiraFilter</code> from <code>useMiraFilter.js</code> and passing all products through it before display. Applied to both paths: (1) enriched stream products and (2) semantic-search fallback hits. <code>applyMiraFilter</code> hard-blocks allergens, health conditions (rank=100 → removed), life-stage mismatches, and breed mismatches in a single pass.</li>
-      <li><strong>NEW: ✦ MIRA PICK badge on top-ranked product.</strong> <code>ResultChip</code> in <code>MiraSearchPage.jsx</code> now shows an amber <code>✦ MIRA PICK</code> badge (absolute-positioned, top-right of image) when <code>item.miraPick === true</code>. Only the #1 ranked product (rank 0 via <code>applyMiraFilter</code>) gets this badge.</li>
-      <li><strong>NEW: ✦ mira_hint display under price.</strong> <code>ResultChip</code> now shows the Mira reasoning line in soft purple italic under the price when <code>item._miraRank &gt; 0 &amp;&amp; item.mira_hint</code>. Examples: <em>"✦ low fat — safe for pancreatitis"</em>, <em>"✦ Badmash loves Salmon"</em>, <em>"✦ Made for Labrador's breed"</em>. Makes Mira's intelligence visible to pet parents — trust builds when they see WHY a product was picked.</li>
-      <li><strong>Image wrapper:</strong> Added <code>position: 'relative'</code> to the <code>ResultChip</code> image div to correctly anchor the absolute-positioned badge.</li>
-    </ul>
-    <div class="alert alert-green" style="margin-top:12px;">
-      Health Condition Filtering is now complete across ALL Mira surfaces: useMiraFilter.js (pillar pages), whatsapp_routes.py (WhatsApp), server.py (Mira Widget), and MiraSearchPage.jsx (global search). A dog with a health condition will never see a violating product anywhere on the platform.
+  <!-- LIVE STATS -->
+  <section id="live-stats">
+    <h2>Live System Stats</h2>
+    <div class="grid-4">
+      <div class="card highlight">
+        <div class="stat-num">89,192</div>
+        <div class="stat-lbl">Total MongoDB Documents</div>
+      </div>
+      <div class="card highlight">
+        <div class="stat-num">151</div>
+        <div class="stat-lbl">Collections</div>
+      </div>
+      <div class="card highlight">
+        <div class="stat-num">802K</div>
+        <div class="stat-lbl">Lines of Code</div>
+      </div>
+      <div class="card highlight">
+        <div class="stat-num">1,514</div>
+        <div class="stat-lbl">Source Files</div>
+      </div>
     </div>
-  </div>
-
-  <div class="changelog-entry" style="border-left-color:#7c3aed; background:#faf5ff;">
-    <div class="date" style="color:#7c3aed;">Session 13 — 2026-04-09 🧠 WhatsApp Mira Intelligence LIVE + Health Condition Filtering BUILT</div>
-    <h4>WhatsApp Mira tone refined · Pet confusion fixed · Health Condition Filtering implemented globally · DB Restore background task · Admin Pet search</h4>
-    <ul>
-      <li><strong>WhatsApp Mira system prompt refined.</strong> Banned generic fluff words ("absolutely", "certainly", "of course"). Upgraded tone to TDC Concierge style — precise, warm, direct. Added <code>✦ Why</code> format: Mira now explains why it picks each product (e.g. "✦ Why: low fat — safe for Badmash's pancreatitis"). Tested via Python simulation.</li>
-      <li><strong>FIXED: Pet confusion bug in <code>whatsapp_routes.py</code>.</strong> Session histories were bleeding between different pets/owners sharing a WhatsApp number. Fixed by enforcing 10-digit phone number matching (strips +91 prefix consistently) and isolating each conversation session by phone. Badmash and Sultan can no longer bleed into each other's sessions.</li>
-      <li><strong>FIXED: <code>mira_nudges.py</code> owner lookup.</strong> Was using <code>user_id</code> to look up the owner, but the correct field is <code>owner_email</code>. This was causing "Website Visitor" tickets to be created for legitimate members. Fixed.</li>
-      <li><strong>Admin: Pet Profiles search bar.</strong> Added live search input to the Pet Profiles tab in <code>Admin.jsx</code>. Searches across pet name, owner email, and breed. Results are sorted newest-first (by <code>created_at</code>) with a 200-pet display limit to prevent UI lag.</li>
-      <li><strong>DB Restore refactored to background task.</strong> <code>db_restore_routes.py</code> now dispatches the restore to a background thread and returns immediately (no more 60s Kubernetes proxy timeout). Frontend polls <code>GET /api/admin/db/restore-status</code> for live progress. The restore is non-blocking.</li>
-      <li><strong>NEW: <code>POST /api/admin/backfill-visitor-tickets</code>.</strong> Endpoint that patches all "Website Visitor" tickets by re-looking up the member via phone and applying correct name/email. Automatically called at the end of the DB restore flow.</li>
-      <li><strong>NEW: <code>/app/backend/condition_map.py</code>.</strong> Central dictionary mapping health conditions to blocked ingredient keywords. Conditions covered: pancreatitis, pancreatitis chronic, diabetes, obesity, kidney disease, kidney failure, heart disease, hip dysplasia, arthritis, cancer, dental disease, epilepsy. Used by both backend (WhatsApp, Widget) and mirrored in <code>useMiraFilter.js</code> (CONDITION_BLOCK_MAP).</li>
-      <li><strong>NEW: Health Condition Filtering in <code>useMiraFilter.js</code>.</strong> <code>extractConditions(pet)</code> reads from <code>pet.health_conditions</code>, <code>pet.doggy_soul_answers.health_conditions</code>, and <code>pet.health_data.conditions</code>. <code>productViolatesCondition(product, conditions)</code> checks product name/description/tags/ingredients against <code>CONDITION_BLOCK_MAP</code>. Products that violate high-severity conditions get rank=100 and are removed. Exported: <code>productViolatesCondition</code>.</li>
-      <li><strong>NEW: Health Condition context in WhatsApp Mira (<code>whatsapp_routes.py</code>).</strong> System prompt now includes a <code>HEALTH CONDITIONS</code> block per pet. Uses <code>condition_map.py</code> to add a concrete allergen-like rule: "❌ For pancreatitis — avoid: high fat, fatty, cream, butter, pork…"</li>
-      <li><strong>NEW: Health Condition context in Mira Widget (<code>server.py</code>).</strong> The <code>/mira/chat</code> endpoint's system prompt now includes the pet's health conditions with a concrete block rule when conditions are present.</li>
-      <li><strong>Updated <code>pets.json.gz</code> snapshot</strong> (3.7MB, Apr 9) in <code>migration_data/</code> for production DB restore.</li>
-    </ul>
-    <div class="alert alert-blue" style="margin-top:12px;">
-      <strong>Code Architecture added this session:</strong><br>
-      <code>backend/condition_map.py</code> — master condition → blocked keywords dictionary.<br>
-      <code>frontend/src/hooks/useMiraFilter.js</code> — CONDITION_BLOCK_MAP (JS mirror), productViolatesCondition(), extractConditions(), getConditionNote().<br>
-      <strong>Sync rule:</strong> Any change to <code>condition_map.py</code> must be mirrored in <code>CONDITION_BLOCK_MAP</code> in <code>useMiraFilter.js</code> and vice versa.
+    <div class="grid-4">
+      <div class="card">
+        <div class="stat-num">9,497</div>
+        <div class="stat-lbl">products_master</div>
+      </div>
+      <div class="card">
+        <div class="stat-num">4,941</div>
+        <div class="stat-lbl">breed_products</div>
+      </div>
+      <div class="card">
+        <div class="stat-num">1,026</div>
+        <div class="stat-lbl">services_master</div>
+      </div>
+      <div class="card">
+        <div class="stat-num">4,936</div>
+        <div class="stat-lbl">mira_conversations</div>
+      </div>
     </div>
-  </div>
-
-  <div class="changelog-entry" style="border-left-color:#7c3aed; background:#faf5ff;">
-    <div class="date" style="color:#7c3aed;">Session 12 — 2026-04-07 🟣 Bug Sprint + Amazon Explorer + WhatsApp Intelligence Plan</div>
-    <h4>LearnNearMe Fix · Gupshup Crash Fix · ProductCard Images · Mira Imagines Layout · Amazon Explorer · WhatsApp Intelligence Design</h4>
-    <ul>
-      <li><strong>FIXED: LearnNearMe.jsx</strong> — <code>tdc</code> object was used but never imported into the component. All suggestion handlers (<code>handleSuggestionClick</code>, <code>handleSearchSubmit</code>) were referencing undefined <code>tdc.book()</code> and crashing silently. Fixed by importing <code>useTDC</code> at the top of <code>LearnNearMe.jsx</code> and destructuring the <code>tdc</code> object.</li>
-      <li><strong>FIXED: Gupshup webhook crash in <code>whatsapp_routes.py</code></strong> — The <code>get_mira_ai_response()</code> function was using <code>from database import get_db</code> which is a sync FastAPI dependency injector and cannot be called directly from async code. This caused a <code>TypeError</code> that silently crashed the Mira AI response path (webhook still worked but AI reply was never sent). Fixed by replacing with a direct <code>AsyncIOMotorClient</code> connection matching the pattern used in the rest of the file.</li>
-      <li><strong>FIXED: WhatsApp Mira context — wrong collection</strong> — <code>get_mira_ai_response()</code> was querying <code>db.tickets</code> for conversation history. All tickets are stored in <code>db.service_desk_tickets</code>. Fixed to query the correct collection. Mira now has full thread context when replying.</li>
-      <li><strong>FIXED: WhatsApp prompt — dog vs toy confusion</strong> — Added <code>CRITICAL RULES</code> block to the WhatsApp system prompt: "Animal names like 'rabbit', 'bunny', 'duck' refer to DOG TOYS, NOT actual animals. The customer has a dog. Always respond in the context of dog products and dog care." Prevents Mira from confusing product categories.</li>
-      <li><strong>FIXED: ProductCard.jsx — admin-edited images were blank</strong> — <code>getProductImage()</code> was reading <code>product.image || product.cloudinary_url || product.mockup_url</code>. When an admin uploads an image via the Product Box editor, it is saved to <code>media.primary_image</code>. Fixed by adding <code>product.media?.primary_image</code> as the first priority in the lookup chain. Now all admin-edited images render correctly on the frontend.</li>
-      <li><strong>FIXED: Mira Imagines horizontal scroll on mobile</strong> — <code>MiraPlanModal.jsx</code> and <code>MiraImaginesCard.jsx</code> had overflow issues causing the carousel to overflow the viewport on mobile. Fixed by adding <code>overflowX: 'auto'</code>, <code>WebkitOverflowScrolling: 'touch'</code>, and proper <code>minWidth</code> constraints to the cards.</li>
-      <li><strong>FIXED: Invisible text on Guided Paths</strong> — <code>GuidedCelebrationPaths.jsx</code>, <code>GuidedNutritionPaths.jsx</code>, and <code>GuidedCarePaths.jsx</code> all had <code>color: '#fff'</code> on text rendered over very light transparent backgrounds (10–16% opacity) outside the dark hero area. On the white page background these were completely unreadable. Fixed by changing all card text to <code>#1A0A2E</code> (heading) and <code>#4B5563</code> (body).</li>
-      <li><strong>NEW: Amazon Explorer Box</strong> — Created <code>/app/frontend/src/components/shop/AmazonExplorerBox.jsx</code>. A branded card that lets members type their intent (e.g. "hypoallergenic shampoo") and opens Amazon.in pre-filtered to that query with TDC affiliate tag (<code>tag=thedoggyco-21</code>). Added to both <code>ShopMobilePage.jsx</code> and <code>ShopSoulPage.jsx</code> (desktop). Shows after the main product grid.</li>
-      <li><strong>NEW: WhatsApp Mira Intelligence Plan documented</strong> — Full technical spec saved to <code>/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md</code>. Phase 2 upgrade to wire the 9,348-product semantic search engine into the WhatsApp Mira response flow. See the "WhatsApp Mira Intelligence Plan" section below.</li>
-      <li><strong>Duplicate products analysis</strong> — 473 products with <code>soul-</code> prefix in <code>products_master</code> identified as likely duplicates of the canonical <code>breed-</code> prefix variants. Cleanup script not yet run (requires production DB access — Atlas IP whitelist currently blocked from preview environment).</li>
-    </ul>
-    <div class="alert alert-yellow" style="margin-top:12px;">
-      <strong>Pending redeploy:</strong> Gupshup crash fix + ProductCard image fix + Amazon Explorer are live in preview codebase but NOT yet in production. User must click "Redeploy" in Emergent dashboard to push to live.
+    <div class="grid-4">
+      <div class="card">
+        <div class="stat-num">26,040</div>
+        <div class="stat-lbl">mira_signals</div>
+      </div>
+      <div class="card">
+        <div class="stat-num">608</div>
+        <div class="stat-lbl">service_desk_tickets</div>
+      </div>
+      <div class="card">
+        <div class="stat-num">45</div>
+        <div class="stat-lbl">pets registered</div>
+      </div>
+      <div class="card">
+        <div class="stat-num">34</div>
+        <div class="stat-lbl">users registered</div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="changelog-entry" style="border-left-color:#16a34a; background:#f0fdf4;">
-    <div class="date" style="color:#16a34a;">Session 11 — 2026-04-06 🟢 WhatsApp Pipeline Live</div>
-    <h4>Gupshup Inbound → Service Desk Auto-Ticket + Mira Auto-Ack</h4>
-    <ul>
-      <li><strong>FIXED: Gupshup inbound webhook now creates proper service_desk_tickets.</strong> Previously the webhook only created a generic <code>tickets</code> record with no <code>member</code> object, no <code>conversation</code> array, and no pet data — so the Admin Service Desk showed nothing. Now <code>process_gupshup_webhook</code> in <code>whatsapp_routes.py</code> does a full DB enrichment step after ticket creation.</li>
-      <li><strong>Enrichment step:</strong> After <code>handoff_to_spine()</code> creates the canonical ticket, we update the <code>service_desk_ticket</code> to add: <code>member {name, email, phone, whatsapp}</code>, <code>user_phone</code>, <code>pet_name</code>, <code>pet_profile {allergies, fav_food}</code>, <code>allergy_alert</code>, <code>mira_briefing</code>, and the first <code>conversation[]</code> message.</li>
-      <li><strong>Legacy ticket fallback:</strong> If an existing <code>db.tickets</code> record is found for the phone BUT no matching <code>service_desk_ticket</code> exists (legacy tickets pre-spine), a fresh <code>service_desk_ticket</code> is created so it surfaces in the admin inbox.</li>
-      <li><strong>Follow-up message threading:</strong> After the first message creates the ticket, follow-up messages from the same number correctly append to the <code>service_desk_ticket</code> conversation array. Also patches <code>db.tickets</code> with <code>member.phone</code> so phone-based lookup works for subsequent messages.</li>
-      <li><strong>FIXED: Gupshup HTTP 202 bug.</strong> The <code>/api/whatsapp/gupshup/send</code> endpoint was rejecting successful Gupshup responses because it only accepted HTTP 200. Gupshup returns 202 (Accepted). Fixed to accept <code>[200, 202]</code>.</li>
-      <li><strong>Mira Auto-Acknowledgement:</strong> New <code>send_mira_ack()</code> function sends a warm, personalised WhatsApp reply immediately when a message comes in. Uses pet name from DB. Example: <em>"Hi Aditya! I'm Mira, mahi's Concierge® 🐾 Got your message! Our Concierge team will review it..."</em></li>
-      <li><strong>Admin flow unchanged:</strong> The full human-in-the-loop flow remains — "Ask Mira" button drafts a reply, Concierge reviews and hits the WhatsApp button to send.</li>
-      <li><strong>Tested with:</strong> Real phone <code>9739908844</code> (Dipali Sikand / mahi). 2 messages threaded correctly to same ticket. Ack delivered via Gupshup with pet name ✅</li>
-    </ul>
-    <p style="margin-top:8px; padding:8px; background:#dcfce7; border-radius:6px; font-size:0.85rem;">
-      <strong>WhatsApp pipeline: User texts TDC number → ticket auto-created in Admin Service Desk with full member + pet + allergy context → Mira sends personalised ack → Admin sees ticket, uses "Ask Mira" to draft reply → sends via WhatsApp button.</strong>
-    </p>
-  </div>
-
-  <div class="changelog-entry" style="border-left-color:#2563eb; background:#eff6ff;">
-    <div class="date" style="color:#2563eb;">Session 10b — 2026-04-06 🔵 Amazon Affiliate Fallback + NearMe + TTS Fix</div>
-    <h4>Amazon Affiliate Fallback, Universal NearMe, Mira Intent Fixes, TTS Symbol Cleaning</h4>
-    <ul>
-      <li><strong>Amazon Affiliate Fallback:</strong> When Mira Search or MiraChatWidget has no products to show, it now renders a styled "Your Concierge recommends exploring here →" button. The URL is built intelligently: <code>buildAmazonQuery(text)</code> extracts the core noun, prepends "dog ", appends affiliate tag. Clicks silently log to the Concierge service desk via <code>conciergefire()</code>. Files: <code>MiraSearchPage.jsx</code>, <code>MiraChatWidget.jsx</code>.</li>
-      <li><strong>Universal NearMe Regex:</strong> Replaced hardcoded city-list approach with <code>/\bin\s+([A-Z][a-z]{2,}(?:\s+[A-Z][a-z]{2,})*)/</code> which catches any capitalised city name globally. NearMe UI is now a horizontal <code>ScrollStrip</code> with city input chips.</li>
-      <li><strong>Mira intent fix:</strong> Removed "treat" and "gift" from <code>birthday_celebration</code> intent in <code>mira_routes.py</code> to prevent query hijacking when user searches for treats in non-birthday context.</li>
-      <li><strong>Guided Path overlay fix:</strong> Readable text, scrollable chip layout, wired missing intents to the fallback modal.</li>
-      <li><strong>TTS cleaning:</strong> <code>clean_text_for_speech()</code> strips "®" before ANY text-to-speech call (Web Speech API + ElevenLabs in <code>MiraChatWidget.jsx</code>). The "®" symbol is intentionally retained in UI text for branding — only stripped at TTS layer.</li>
-      <li><strong>useMiraFilter fav food expansion:</strong> Loving "salmon" now maps to loving "fish" via <code>ALLERGEN_MAP</code>. Favourite foods expand through allergen synonyms for richer matching.</li>
-      <li><strong>City mandatory in PetSoulOnboarding:</strong> Pet onboarding now enforces city input. Backfilled 21 pets with missing city. Soul answers sync to root <code>pet.city</code>.</li>
-      <li><strong>AI Image Gen 502 fix:</strong> Long-running image generation refactored to background task + polling pattern (<code>/api/products/{id}/image-status</code>). Frontend polls every 3s to avoid Kubernetes proxy 30s timeout.</li>
-      <li><strong>Admin SoulBox restore fixed:</strong> Restore endpoint corrected to <code>/api/admin/breed-products/{id}</code>.</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry" style="border-left-color:#dc2626; background:#fff5f5;">
-    <div class="date" style="color:#dc2626;">Session 10 — 2026-04-06 ⚠️ LOCKED ADMIN BEHAVIOURS</div>
-    <h4>Complete Admin Box Audit — All Boxes Now Bulletproof (28/28 Tests Pass)</h4>
-    <ul>
-      <li><strong>LOCKED ✅ Image Dominance Contract:</strong> When any AI image is generated (Product Box, Service Box, or Soul Box), the new URL is written to EVERY image field simultaneously: <code>watercolor_image</code>, <code>cloudinary_url</code>, <code>image_url</code>, <code>image</code>, <code>images[0]</code>, <code>media.primary_image</code>. Frontend <code>getProductImage()</code> reads in this same priority order. This ensures the generated image is ALWAYS the dominant image shown to members. <strong>Do NOT alter this write-all-fields pattern.</strong></li>
-      <li><strong>LOCKED ✅ Soft Archive Contract:</strong> ALL delete/archive operations MUST be soft-deletes. Hard deletes are BANNED. Archive sets: <code>visibility.status = "archived"</code> + <code>is_active = False</code>. For services: also sets <code>approval_status = "archived"</code>. NEVER call <code>delete_one()</code> or <code>delete_many()</code> on products or services.</li>
-      <li><strong>LOCKED ✅ Restore Contract:</strong> Archive is ALWAYS reversible. Restore sets <code>visibility.status = "active"</code> + <code>is_active = True</code> + <code>archived = False</code>. For breed products (breed_products collection): same three fields.</li>
-      <li><strong>LOCKED ✅ Admin Service List Filter:</strong> <code>admin_get_services</code> (GET /api/admin/services) filters <code>approval_status != "archived"</code>. Archived services are ONLY visible at <code>GET /api/service-box/services/archived</code>. Do NOT remove this filter.</li>
-      <li><strong>LOCKED ✅ Soul Box Image Gen (entity_type):</strong> The inline ✨ Gen button in SoulBox.jsx MUST always send <code>entity_type: "breed_product"</code> + <code>entity_id: product.id</code> in the POST body to <code>/api/admin/generate-image</code>. Without these, the backend generates the image but NEVER saves it to DB. The ProductBoxEditor opened from SoulBox uses <code>entityConfig.generateImageBasePath = /api/product-box/breed-products</code> to route to the correct endpoint.</li>
-      <li><strong>LOCKED ✅ Breed Products Image Endpoint:</strong> <code>POST /api/product-box/breed-products/{id}/generate-image</code> is the dedicated endpoint that saves AI images directly to the <code>breed_products</code> MongoDB collection. Do NOT route Soul Box image gen to the general <code>/api/admin/products/{id}/generate-image</code> (that saves to products_master).</li>
-      <li><strong>LOCKED ✅ Dominant Image Preview Strip:</strong> ProductBoxEditor now shows a persistent image preview strip between the dialog header and the tabs. It is visible on ALL tabs. It shows the current dominant image, source badge (Cloudinary = green, External = amber), "Replace with AI" button, and "Upload / Edit →" button. Do NOT remove this strip.</li>
-      <li><strong>LOCKED ✅ ServiceBox Restore UI:</strong> ServiceBox has a "📦 Show Archived" toggle. When active, it switches to the archived endpoint and shows "↩ Restore" buttons instead of Edit/Delete. Do NOT remove this UI.</li>
-      <li><strong>admin_delete_service (DELETE /api/admin/services/{id}) CONVERTED TO SOFT ARCHIVE.</strong> Previously this was a hard delete. Now it sets <code>approval_status: "archived"</code>. Keep it this way.</li>
-      <li><strong>breed_products supplement in get_all_products:</strong> Now applies visibility.status filter using the same rules as products_master (archived items stay hidden). Deduplication is O(1) set lookup, not O(n) scan.</li>
-      <li><strong>Data fix:</strong> Removed duplicate <code>bp-akita-designer-bandana-969f46</code> from products_master (React key warning fixed). Removed duplicate <code>BulkCategoryAssign</code> class from unified_product_box.py.</li>
-    </ul>
-    <p style="margin-top:8px; padding:8px; background:#fef2f2; border-radius:6px; font-size:0.85rem;">
-      <strong>⛔ FUTURE AGENTS: The behaviours above are LOCKED. Do not refactor or "simplify" the archive, restore, or image generation save patterns. If you believe a change is needed, document your reasoning here before touching any of these functions.</strong>
-    </p>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="date">Session 9 — 2026-04-06</div>
-    <h4>Product Visibility Audit — Breed × Pillar Matrix</h4>
-    <ul>
-      <li><strong>Audit question answered:</strong> "Does a member see all soul products we have generated?" — YES. Verified live from DB.</li>
-      <li><strong>Initial analysis was WRONG:</strong> First analysis only counted <code>bp-</code> prefixed IDs and reported a false 3,264-product gap. Corrected by matching on breed_tags + breed field + name/ID pattern across ALL ID formats.</li>
-      <li><strong>Correct picture:</strong> 7,737 products visible to members vs 4,941 in breed_products source. Members are OVER-served because products_master contains additional breed-specific items from Shopify sync, birthday cakes, portrait frames that are not in breed_products.</li>
-      <li><strong>ID formats in products_master:</strong> Soul products use multiple ID formats: <code>breed-{breed}-{type}</code>, <code>soul-breed-{breed}-{type}</code>, <code>bp-{breed}-{type}</code>, <code>cake-{breed}-{variant}</code>, <code>shopify-XXXXXXX</code>, <code>celebrate-{breed}-{type}-{hash}</code>.</li>
-      <li><strong>Only real gap — PLAY pillar:</strong> 12 breeds are missing exactly 1 Play soul product each (8 visible vs 9 in source). Breeds affected: Akita, Australian Shepherd, Bernese Mountain, Boston Terrier, Cavalier King Charles, Havanese, Samoyed, Shetland Sheepdog, Siberian Husky, Vizsla, Weimaraner, Yorkshire Terrier.</li>
-      <li><strong>Full breed × pillar matrix documented below</strong> in the Product Visibility Audit section.</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="date">Session 8 — 2026-04-05</div>
-    <h4>Soul Product Pipeline Audit, DB Fixes, Breed Aliases, Image Restore</h4>
-    <ul>
-      <li><strong>Answered Flat Art inquiry:</strong> Flat Art toggle exists in Dine/Play/Go code but dormant — needs illustration images. Only live in Celebrate.</li>
-      <li><strong>AI batch generation completed:</strong> adopt (104/104), farewell (311/311), corgi/basenji/bichon_frise/saint_bernard (all 95-97/each). All done.</li>
-      <li><strong>Birthday Cake Toppers seeded:</strong> 54 breeds seeded with wooden laser-cut MDF prompt. All 56/56 generated. Corgi+Basenji kept (already perfect).</li>
-      <li><strong>Golden Prompt (Cake Topper):</strong> "Professional product photography of a laser-cut natural MDF wooden birthday cake topper shaped exactly like the breed silhouette of a {BREED} dog viewed from the side, with 'Happy Birthday' text engraved in elegant cursive script directly on the wood surface, mounted on a thin wooden spike/stick at the bottom. Warm natural wood grain texture, light sandy beige colour, no paint or colour added. Clean white background, soft studio lighting."</li>
-      <li><strong>Image Restore (87 products):</strong> A previous agent's AI batch generation (April 3) overwrote images on 87 non-soul products across Dine/Care/Play/Go/Shop/Farewell/Emergency/Celebrate. Restored from <code>images[]</code> backup field. 3,332 non-soul products locked with <code>ai_generation_locked: True</code>.</li>
-      <li><strong>Product type sync fix (1,964 products):</strong> All 56 breeds had <code>product_type: 'soul_made'</code> stuck in products_master — the sync only runs during generation and these already had images. Fixed by manually syncing correct product_type from breed_products.</li>
-      <li><strong>Newfoundland visibility fix:</strong> 31 products had no <code>visibility</code> field → set to <code>{status: 'active'}</code>. Newfoundland has 119 full products.</li>
-      <li><strong>Indie ↔ Indian Pariah alias system:</strong> Both tags now treated as one breed in <code>pillar_products_routes.py</code> (BREED_ALIASES), <code>server.py</code>, and <code>useMiraFilter.js</code>. Member with indie pet now sees all 90 combined products.</li>
-      <li><strong>Adopt products fixed:</strong> bulldog/indie/cavalier/yorkshire adopt products had wrong <code>breed</code> field (pointing to canonical name not slug). Fixed breed_tags to include both slug + canonical.</li>
-      <li><strong>SoulBox Archive/Restore fix:</strong> Buttons were calling <code>/api/product-box/products/</code> (wrong — products_master). Fixed to <code>/api/admin/breed-products/{id}</code> (correct — breed_products).</li>
-      <li><strong>touch-action: pan-y fix:</strong> AdoptSoulPage journey strip + all overflowX:auto carousels. Same fix applied to FarewellSoulPage and EmergencySoulPage.</li>
-      <li><strong>OG image:</strong> Uploaded to Cloudinary (<code>tdc/og_image.png</code>, 1200×630). Updated index.html. URL: <code>https://res.cloudinary.com/duoapcx1p/image/upload/v1775401993/tdc/og_image.png</code></li>
-      <li><strong>Full Soul Audit generated:</strong> Saved to <code>/app/memory/SOUL_AUDIT_FINAL.md</code>. 5,616 active soul products across 56 breeds.</li>
-      <li><strong>Audit watcher script:</strong> <code>/app/backend/scripts/audit_when_done.py</code> — auto-triggers cake topper batch then runs full audit when main generation completes.</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="date">Session 7 — 2026-04-03 / 04</div>
-    <h4>DB Cleanup, Image Generation, Soul Briefing</h4>
-    <ul>
-      <li>Restored 693 falsely archived products in products_master (Celebrate/Dine)</li>
-      <li>Backfilled missing breed_tags for 1,793 products</li>
-      <li>Stamped is_mockup: True on 1,838 existing Soul Generator products</li>
-      <li>Fixed space-to-underscore in breed_tags for 683 products across 56 breeds</li>
-      <li>Archived 21 recipe cards with wrong images (DOG FOOD bags) + 18 generic bulldog portraits</li>
-      <li>Fixed image pointers for 4 food mats → correct feeding_mat.webp</li>
-      <li>Seeded 84 new adopt + farewell entries with correct AI prompts</li>
-      <li>Seeded 228 missing entries for sparse breeds (corgi, basenji, bichon, saint_bernard)</li>
-      <li>Created /app/memory/SOUL_PRODUCTS_BRIEFING.md master briefing</li>
-      <li>Launched monitor_generation.py background batch generation</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="date">Session 5 & 6 — 2026-03-30 / 04-01</div>
-    <h4>Mira Filtering, Service Booking, Admin Fixes</h4>
-    <ul>
-      <li>Built /app/frontend/src/hooks/useMiraFilter.js — client-side AI filtering by allergies/favorites</li>
-      <li>Applied Mira filtering to all 12 *MobilePage.jsx files + DineSoulPageDesktopLegacy</li>
-      <li>Replaced mobile service fallbacks with full multi-step ServiceBookingModal (Care, Go, Play, Learn, Services)</li>
-      <li>Fixed Admin Unified Product Box to filter out visibility.status == "archived" products</li>
-      <li>Fixed toggle-active endpoint to restore visibility state correctly</li>
-      <li>Fixed AIImagePromptField 401 error — correct adminAuth headers passed</li>
-      <li>Fixed MongoDB NotImplementedError on /admin/generate-image (was using "if collection:" — changed to "if collection is not None:")</li>
-      <li>Fixed ProductBoxEditor to hide ₹0 prices and show "Price on Request" for services</li>
-    </ul>
-  </div>
-
-  <div class="changelog-entry">
-    <div class="date">Sessions 1–4 — 2026-03-01 to 03-26</div>
-    <h4>Foundation: Pet Life OS, 12 Pillars, Mobile, Admin</h4>
-    <ul>
-      <li>Built full React + FastAPI + MongoDB stack</li>
-      <li>12 pillars: Dine, Care, Play, Go, Learn, Celebrate, Shop, Paperwork, Emergency, Farewell, Adopt, (Love — pending)</li>
-      <li>Soul Generator: breed-specific AI watercolour product generation pipeline</li>
-      <li>Mira AI persona: GPT-4o powered product recommendations and chat</li>
-      <li>Admin panel: UnifiedProductBox, ServiceBox, SoulBox, DoggyServiceDesk</li>
-      <li>Razorpay payment integration</li>
-      <li>Gupshup WhatsApp integration</li>
-      <li>Cloudinary image hosting (cloud: duoapcx1p)</li>
-    </ul>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="rules">
-  <h2>🔴 Critical Rules for Every Agent</h2>
-
-  <div class="alert alert-red">
-    <strong>RULE 1 — PyMongo collections:</strong> NEVER use <code>if collection:</code> — PyMongo throws NotImplementedError. Always use <code>if collection is not None:</code>
-  </div>
-  <div class="alert alert-red">
-    <strong>RULE 2 — Desktop pages LOCKED:</strong> Never touch *SoulPage.jsx desktop files unless explicitly asked. All new features go to *MobilePage.jsx.
-  </div>
-  <div class="alert alert-red">
-    <strong>RULE 3 — Non-soul image protection:</strong> 3,332 non-soul products have <code>ai_generation_locked: True</code>. NEVER run AI generation on them. Check this flag before any batch generation.
-  </div>
-  <div class="alert alert-red">
-    <strong>RULE 4 — breed_products → products_master sync:</strong> The sync ONLY runs when <code>_sync_to_products_master</code> is called during batch image generation. If you add/edit products directly in breed_products, manually update products_master too. Check that <code>product_type</code> is NOT stuck as <code>soul_made</code>.
-  </div>
-  <div class="alert alert-green">
-    <strong>RULE 4b — Visibility confirmed (Session 9):</strong> Members ARE seeing their soul products. Do NOT assume a sync gap exists without re-running the breed × pillar audit query. The 3,264 "unsynced bp- IDs" reported in Session 8 were a false alarm — those products exist in products_master under <code>breed-</code>, <code>soul-breed-</code>, <code>cake-</code>, and <code>shopify-</code> ID formats.
-  </div>
-  <div class="alert alert-red">
-    <strong>RULE 5 — MongoDB ObjectId:</strong> Always exclude <code>_id</code> from responses. Use <code>{"_id": 0}</code> in projections. Never return raw mongo documents.
-  </div>
-  <div class="alert alert-yellow">
-    <strong>RULE 6 — Indie ↔ Indian Pariah:</strong> These are the SAME breed, split across two DB tags. Do NOT physically merge without a full migration plan. The alias system handles them transparently — never remove it.
-  </div>
-  <div class="alert alert-yellow">
-    <strong>RULE 7 — Production DB:</strong> ALWAYS use local preview DB (localhost:27017). The production Atlas cluster is IP-blocked. Never attempt production writes.
-  </div>
-  <div class="alert alert-yellow">
-    <strong>RULE 8 — Orphaned products:</strong> ~1,204 orphaned products in products_master (no breed_tags). Leave them — they help members see products. Do NOT archive them.
-  </div>
-  <div class="alert alert-blue">
-    <strong>RULE 9 — server.py:</strong> Over 25,000 lines. Always grep for the exact function before editing. Use search_replace, never rewrite sections.
-  </div>
-  <div class="alert alert-blue">
-    <strong>RULE 10 — Documentation:</strong> Every agent MUST update this file (/app/complete-documentation.html) before finishing their session. Add a new changelog-entry block at the top of the changelog section.
-  </div>
-  <div class="alert" style="background:#fff5f5; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin:10px 0;">
-    <strong style="color:#dc2626;">RULE 11 — LOCKED: Admin Box Image Dominance (Session 10, 2026-04-06)</strong><br>
-    When ANY AI image is generated for a product, service, or soul product, the generated URL MUST be written to ALL of these fields simultaneously: <code>watercolor_image</code>, <code>cloudinary_url</code>, <code>image_url</code>, <code>image</code>, <code>images[0]</code>, <code>media.primary_image</code>. This is the "write-all-fields" pattern. <strong>Do NOT change this pattern or add a "dominant image" concept that writes to only one field.</strong>
-  </div>
-  <div class="alert" style="background:#fff5f5; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin:10px 0;">
-    <strong style="color:#dc2626;">RULE 12 — LOCKED: Soft Archive Only (Session 10, 2026-04-06)</strong><br>
-    <strong>HARD DELETES ARE BANNED</strong> for products and services. Archive = set <code>visibility.status="archived"</code> + <code>is_active=False</code>. For services: also <code>approval_status="archived"</code>. Restore = reverse all three. The <code>admin_get_services</code> endpoint MUST always filter <code>approval_status != "archived"</code>. The endpoint <code>GET /api/service-box/services/archived</code> is the ONLY place archived services appear. Do NOT remove these filters or convert soft-deletes back to hard deletes.
-  </div>
-  <div class="alert" style="background:#fff5f5; border-left:4px solid #dc2626; padding:12px 16px; border-radius:8px; margin:10px 0;">
-    <strong style="color:#dc2626;">RULE 13 — LOCKED: Soul Box entity_type in Image Gen (Session 10, 2026-04-06)</strong><br>
-    SoulBox.jsx's inline ✨ Gen button MUST send <code>entity_type: "breed_product"</code> + <code>entity_id: product.id</code> to <code>POST /api/admin/generate-image</code>. Without these, the backend generates an image but NEVER saves it to DB (silent failure). The ProductBoxEditor opened from SoulBox MUST use <code>entityConfig.generateImageBasePath = /api/product-box/breed-products</code> so the editor's generate button hits the correct endpoint (<code>POST /api/product-box/breed-products/{id}/generate-image</code>) that saves to the <code>breed_products</code> collection — NOT <code>products_master</code>.
-  </div>
-  <div class="alert" style="background:#f0fdf4; border-left:4px solid #16a34a; padding:12px 16px; border-radius:8px; margin:10px 0;">
-    <strong style="color:#16a34a;">RULE 14 — Dominant Image Preview Strip (Session 10, 2026-04-06)</strong><br>
-    ProductBoxEditor.jsx contains a persistent image preview strip between the dialog header and the tabs. It uses the priority chain <code>watercolor_image → cloudinary_url → media.primary_image → image → image_url → images[]</code> to determine and display the dominant image — exactly what members see on the site. The strip has "Replace with AI" and "Upload / Edit →" buttons. Do NOT remove or restructure this strip.
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="arch">
-  <h2>Architecture Overview</h2>
-  <div class="grid-2">
-    <div class="card">
-      <h4>Frontend</h4>
-      <ul>
-        <li>React 18, CRA, Tailwind CSS</li>
-        <li>Port 3000 (hot reload via supervisor)</li>
-        <li>shadcn/ui components in <code>/frontend/src/components/ui/</code></li>
-        <li>Mobile-first: *MobilePage.jsx for each pillar</li>
-        <li>Desktop: *SoulPage.jsx (LOCKED)</li>
-        <li>Mira filter: <code>/frontend/src/hooks/useMiraFilter.js</code></li>
-      </ul>
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <h2>System Architecture</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Frontend</h3>
+        <ul>
+          <li>React (CRA) + TailwindCSS + Shadcn/UI</li>
+          <li>Lucide React icons</li>
+          <li>12 desktop <code>*SoulPage.jsx</code> — LOCKED</li>
+          <li>12 mobile <code>*MobilePage.jsx</code></li>
+          <li><code>useMiraFilter.js</code> — client-side AI ranking</li>
+          <li>ElevenLabs voice (Elise, ID: <code>AZnzlk1XvdvUeBnXmlld</code>)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Backend</h3>
+        <ul>
+          <li>FastAPI + MongoDB (Motor async)</li>
+          <li><code>server.py</code> — 25,907 lines (monolith)</li>
+          <li><code>mira_routes.py</code> — 28,022 lines (web Mira)</li>
+          <li><code>whatsapp_routes.py</code> — Gupshup webhook</li>
+          <li><code>mira_soul.py</code> — shared Mira soul (web + WA)</li>
+          <li>OpenAI GPT-4o via Emergent LLM Key</li>
+        </ul>
+      </div>
     </div>
-    <div class="card">
-      <h4>Backend</h4>
-      <ul>
-        <li>FastAPI, Python 3.11</li>
-        <li>Port 8001 (all routes prefixed /api)</li>
-        <li>Main router: <code>server.py</code> (~25,000 lines — needs splitting)</li>
-        <li>Soul product routes: <code>app/api/mockup_routes.py</code></li>
-        <li>Pillar filter: <code>pillar_products_routes.py</code></li>
-        <li>Mira AI: <code>mira_score_engine.py</code></li>
-      </ul>
+    <h3>Key File Map</h3>
+    <table>
+      <tr><th>File</th><th>Purpose</th><th>Lines</th></tr>
+      <tr><td><code>backend/mira_soul.py</code></td><td>Canonical Mira soul — shared by web + WhatsApp</td><td>~800</td></tr>
+      <tr><td><code>backend/whatsapp_routes.py</code></td><td>Gupshup webhook, pet picker, Mira WA AI</td><td>~2,500</td></tr>
+      <tr><td><code>backend/server.py</code></td><td>Central FastAPI router (monolith)</td><td>25,907</td></tr>
+      <tr><td><code>backend/mira_routes.py</code></td><td>Web widget Mira AI</td><td>28,022</td></tr>
+      <tr><td><code>backend/unified_product_box.py</code></td><td>Admin product CRUD</td><td>~600</td></tr>
+      <tr><td><code>backend/db_restore_routes.py</code></td><td>DB export/restore (151 collections)</td><td>~900</td></tr>
+      <tr><td><code>frontend/src/hooks/useMiraFilter.js</code></td><td>Client-side product ranking by soul profile</td><td>1,147</td></tr>
+      <tr><td><code>frontend/src/components/ProductCard.jsx</code></td><td>Universal product card with Mira explains why</td><td>~1,800</td></tr>
+      <tr><td><code>frontend/src/pages/Admin.jsx</code></td><td>Admin panel monolith</td><td>7,232</td></tr>
+      <tr><td><code>frontend/src/components/admin/DoggyServiceDesk.jsx</code></td><td>Service desk / tickets UI</td><td>7,287</td></tr>
+    </table>
+  </section>
+
+  <!-- CHANGELOG -->
+  <section id="changelog">
+    <h2>Changelog — April 10–14, 2026</h2>
+
+    <div class="alert alert-purple">This document was regenerated on April 14, 2026. It captures all changes since the previous documentation snapshot (April 10).</div>
+
+    <!-- TODAY -->
+    <div class="session-header">
+      <span class="session-date">April 14, 2026 — Today</span>
+      <h3>WhatsApp Multi-Pet Overhaul + Vercel Deploy + Data Updates</h3>
     </div>
-    <div class="card">
-      <h4>Database</h4>
-      <ul>
-        <li>MongoDB, local preview: <code>mongodb://localhost:27017</code></li>
-        <li>DB name: <code>pet-os-live-test_database</code></li>
-        <li>Key collections: products_master, breed_products, pets, members, services_master, mira_product_scores</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h4>Infrastructure</h4>
-      <ul>
-        <li>Supervisor manages frontend + backend</li>
-        <li>Cloudinary: cloud=<code>duoapcx1p</code></li>
-        <li>OG image: <code>tdc/og_image.png</code> on Cloudinary</li>
-        <li>Emergent LLM Key for OpenAI (GPT-4o, gpt-image-1)</li>
-        <li>Gupshup (WhatsApp), Razorpay (payments)</li>
-      </ul>
-    </div>
-  </div>
-</section>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="pipeline">
-  <h2>Soul Product Pipeline</h2>
-  <div class="alert alert-blue">
-    The pipeline flows ONE WAY: breed_products → (on generation) → products_master → Frontend (filtered by breed_tags + pillar)
-  </div>
+    <h4>WhatsApp: Complete Multi-Pet Picker Rewrite (<code>whatsapp_routes.py</code>)</h4>
+    <table>
+      <tr><th>Fix</th><th>What changed</th><th>Impact</th></tr>
+      <tr><td>Async webhook</td><td><code>asyncio.create_task(process_gupshup_webhook(body))</code> — returns 200 instantly</td><td>Stops Gupshup 3x retry spam</td></tr>
+      <tr><td>Message deduplication</td><td><code>msg_id</code> stored in <code>wa_dedupe</code> collection — second delivery ignored</td><td>No duplicate replies</td></tr>
+      <tr><td>Stale state expiry</td><td><code>_is_wa_state_fresh()</code> — ignores <code>awaiting_pet_selection</code> older than 30 min</td><td>Clean re-picker flow</td></tr>
+      <tr><td>Multi-email lookup</td><td>Queries ALL linked emails for a phone — not just first match</td><td>Finds all pets correctly</td></tr>
+      <tr><td>Ticket hijack fix</td><td><code>ticket_pet_name</code> nullified for multi-pet users — open tickets no longer override picker</td><td>Chang, Mojo no longer hijack</td></tr>
+      <tr><td>Fuzzy match fallback</td><td>Removed early "Sorry" return — falls through to <code>get_mira_ai_response</code> cleanly</td><td>No dead-end error messages</td></tr>
+    </table>
 
-  <h3>Step by Step</h3>
-  <table>
-    <tr><th>Step</th><th>What happens</th><th>Key fields</th></tr>
-    <tr><td>1. Seed</td><td>Product entry created in <code>breed_products</code> with prompt</td><td>id, breed, pillar, product_type, mockup_prompt, is_active=true, mockup_url=null</td></tr>
-    <tr><td>2. Generate</td><td>POST /api/mockups/generate-batch triggers AI image generation (GPT-Image-1)</td><td>mockup_url gets set, is_mockup=true</td></tr>
-    <tr><td>3. Sync</td><td>_sync_to_products_master() called automatically → upserts into products_master by id</td><td>cloudinary_url, breed_tags, product_type, visibility={status:active}, soul_made=true</td></tr>
-    <tr><td>4. Member sees</td><td>Frontend fetches /api/admin/pillar-products?pillar=X&breed=Y</td><td>Filtered by pillar_products_routes.py → _should_show_for_breed()</td></tr>
-  </table>
+    <h4>Birthday Box Fix (<code>birthday_box_routes.py</code>)</h4>
+    <ul>
+      <li>Fixed 500 error on <code>GET /api/birthday-box/{pet_id}/preview</code> — null health field crash resolved</li>
+    </ul>
 
-  <div class="alert alert-yellow">
-    <strong>Known gap (corrected Session 9):</strong> The previously documented "sync gap of 3,264 products" was a false alarm. Members DO see all their soul products. The only confirmed gap is <strong>1 Play product missing for 12 breeds</strong> — the specific product_type is unidentified; investigate by comparing breed_products Play entries vs products_master Play entries per breed.
-  </div>
+    <h4>Welcome Message Update (<code>whatsapp_routes.py</code> line 1411)</h4>
+    <pre>💡 Tip: Start your message with your dog's name — e.g. 'Mystique needs grooming help' — and I'll focus on them.</pre>
 
-  <h3>Sync Fix Script (run after batch seeding)</h3>
-  <pre>python3 << 'PYEOF'
-from pymongo import MongoClient
-from datetime import datetime, timezone
-client = MongoClient('mongodb://localhost:27017')
-db = client['pet-os-live-test_database']
-now = datetime.now(timezone.utc).isoformat()
-
-for bp in db.breed_products.find({'is_active': True}, {'_id': 0}):
-    pid = bp.get('id')
-    if not pid: continue
-    pm = db.products_master.find_one({'id': pid}, {'_id': 0, 'product_type': 1, 'visibility': 1})
-    if not pm: continue
-    correct_type = bp.get('product_type') or bp.get('category') or 'soul_made'
-    img = bp.get('cloudinary_url') or bp.get('mockup_url')
-    update = {'product_type': correct_type, 'soul_made': True, 'updated_at': now}
-    if img: update.update({'cloudinary_url': img, 'image_url': img, 'image': img})
-    if not pm.get('visibility'): update['visibility'] = {'status': 'active'}
-    db.products_master.update_one({'id': pid}, {'$set': update})
-print('Sync complete')
-PYEOF</pre>
-
-  <h3>Birthday Cake Topper — Golden Prompt</h3>
-  <p>All 56 breeds have <code>product_type: birthday_cake_topper</code> in breed_products with this prompt (wooden laser-cut style):</p>
-  <pre>"Professional product photography of a laser-cut natural MDF wooden birthday cake topper
-shaped exactly like the breed silhouette of a {BREED} dog viewed from the side,
-with 'Happy Birthday' text engraved in elegant cursive script directly on the wood surface,
-mounted on a thin wooden spike/stick at the bottom.
-Warm natural wood grain texture, light sandy beige colour, no paint or colour added.
-Clean white background, soft studio lighting.
-The silhouette is precise and recognisable as a {BREED}."</pre>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="aliases">
-  <h2>Breed Alias System</h2>
-  <div class="alert alert-blue">
-    These aliases exist in THREE places: <code>pillar_products_routes.py</code> (BREED_ALIASES dict), <code>server.py</code> (two locations), and <code>useMiraFilter.js</code> (filterBreedProducts function). All three must be kept in sync.
-  </div>
-
-  <table>
-    <tr><th>Slug</th><th>Aliases (treated as same breed)</th><th>Notes</th></tr>
-    <tr><td><code>indie</code></td><td>indie, indian_pariah, indian pariah</td><td>Same breed. 90 combined products. DO NOT physically merge DB records.</td></tr>
-    <tr><td><code>indian_pariah</code></td><td>indie, indian_pariah, indian pariah</td><td>Mirror of above</td></tr>
-    <tr><td><code>cavalier</code></td><td>cavalier, cavalier_king_charles, cavalier king charles</td><td></td></tr>
-    <tr><td><code>yorkshire</code></td><td>yorkshire, yorkshire_terrier, yorkshire terrier</td><td></td></tr>
-    <tr><td><code>bulldog</code></td><td>bulldog, english_bulldog, english bulldog</td><td></td></tr>
-    <tr><td><code>husky</code></td><td>husky, siberian_husky, siberian husky</td><td></td></tr>
-    <tr><td><code>st_bernard</code></td><td>st bernard, saint bernard</td><td></td></tr>
-  </table>
-
-  <h3>How indie/indian_pariah Combined Coverage Looks</h3>
-  <table>
-    <tr><th>Pillar</th><th>indie tags</th><th>indian_pariah tags</th><th>Combined</th></tr>
-    <tr><td>Dine</td><td>4</td><td>8</td><td>10 unique</td></tr>
-    <tr><td>Care</td><td>7</td><td>8</td><td>~12 unique</td></tr>
-    <tr><td>Play</td><td>5</td><td>6</td><td>~9 unique</td></tr>
-    <tr><td>Go</td><td>10</td><td>7</td><td>~14 unique</td></tr>
-    <tr><td>Celebrate</td><td>10</td><td>7</td><td>~15 unique</td></tr>
-    <tr><td>Adopt</td><td>2</td><td>2</td><td>2 (shared)</td></tr>
-    <tr><td>Total</td><td>53</td><td>57</td><td><strong>~90</strong></td></tr>
-  </table>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="breeds">
-  <h2>Breed Coverage Status</h2>
-  <p>Total: <strong>56 active breeds</strong>, <strong>5,616 active soul products</strong>. All breeds have Adopt (Adoption Folder + Welcome Kit).</p>
-
-  <h3>Most Popular by Member Registrations (32 pets total)</h3>
-  <table>
-    <tr><th>Rank</th><th>Breed</th><th>Pets</th><th>Soul Products</th><th>Status</th></tr>
-    <tr><td>1</td><td>Indie (Indian Pariah)</td><td>12</td><td>~90 combined</td><td class="status-done">✅ via alias</td></tr>
-    <tr><td>2</td><td>Golden Retriever</td><td>5</td><td>94</td><td class="status-done">✅ Full</td></tr>
-    <tr><td>3</td><td>Labrador</td><td>4</td><td>94</td><td class="status-done">✅ Full</td></tr>
-    <tr><td>4</td><td>Maltipoo</td><td>3</td><td>93</td><td class="status-done">✅ Full</td></tr>
-    <tr><td>5</td><td>Shih Tzu</td><td>2</td><td>94</td><td class="status-done">✅ Full</td></tr>
-    <tr><td>6</td><td>Newfoundland</td><td>2</td><td>119</td><td class="status-done">✅ Richest</td></tr>
-    <tr><td>7</td><td>Maltese</td><td>1</td><td>97</td><td class="status-done">✅ Full</td></tr>
-  </table>
-
-  <h3>Breed Health Summary</h3>
-  <table>
-    <tr><th>Status</th><th>Breeds</th><th>Products range</th></tr>
-    <tr><td class="status-done">✅ Full (90–119 products)</td><td>Corgi, Basenji, Bichon Frise, Saint Bernard, Maltese, Maltipoo, Golden Retriever, Labrador, Pug, Shih Tzu, Pomeranian, and most common breeds</td><td>90–119</td></tr>
-    <tr><td class="status-pending">⚠️ Moderate (45–70)</td><td>Cavalier, Yorkshire, French Bulldog, Dalmatian, Husky, Chow Chow, Irish Setter, Jack Russell, Greyhound, American Bully</td><td>45–70</td></tr>
-    <tr><td class="status-blocked">❌ Thin (&lt;35)</td><td>Bulldog (27), Alaskan Malamute, Indian Spitz, Labradoodle</td><td>17–35</td></tr>
-  </table>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="db">
-  <h2>Database Schema</h2>
-
-  <h3>products_master (Member-facing catalog)</h3>
-  <pre>{
-  id:              "breed-labrador-bowl",       // unique
-  name:            "Labrador Ceramic Bowl",
-  pillar:          "dine",
-  product_type:    "bowl",                      // NOT 'soul_made' — fix if stuck
-  soul_made:       true,
-  is_active:       true,
-  visibility:      { status: "active" },        // REQUIRED — must exist
-  breed_tags:      ["labrador"],                // array, lowercase, underscores
-  cloudinary_url:  "https://res.cloudinary.com/duoapcx1p/...",
-  image_url:       "same as cloudinary_url",
-  ai_generation_locked: true/false,            // true = AI batch will skip this product
-  mockup_url:      "same as cloudinary_url",
-  original_price:  0,
-  tags:            ["labrador", "dine", "bowl", "soul_made"]
+    <h4>Vercel Deployment Fix (<code>vercel.json</code>)</h4>
+    <pre>{
+  "buildCommand": "cd frontend && yarn install && CI=false yarn build",
+  "outputDirectory": "frontend/build",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }</pre>
+    <ul>
+      <li>Root cause: Vercel couldn't find React app in <code>/frontend</code> subfolder → built in 2s with nothing</li>
+      <li>Fix: <code>vercel.json</code> at repo root tells Vercel exactly where to build and output</li>
+    </ul>
 
-  <h3>breed_products (Soul Generator source of truth)</h3>
-  <pre>{
-  id:              "breed-labrador-bowl",
-  breed:           "labrador",                  // lowercase, underscore slug
-  pillar:          "dine",
-  product_type:    "bowl",
-  mockup_prompt:   "Professional product photography...",
-  mockup_url:      "https://res.cloudinary.com/...",  // null until generated
-  cloudinary_url:  "same",
-  is_active:       true,
-  is_mockup:       true/false,                 // true after generation
-  soul_made:       true,
-  breed_tags:      ["labrador"]
+    <h4>Data: Chang's Allergy — MongoDB Direct Update</h4>
+    <pre>db.pets.updateOne(
+  { "name": /^chang$/i },
+  { "$addToSet": { "vault.allergies": {
+    "name": "Chicken", "allergy_type": "food",
+    "severity": "moderate", "confirmed_by": "Soul Journey"
+  }}}
+)</pre>
+
+    <h4>DB Re-export — April 14, 06:32 UTC</h4>
+    <ul>
+      <li>151/151 collections · 89,192 documents · 0 errors · 4.1 seconds</li>
+      <li>+8 docs vs yesterday (Chang's allergy + new WA logs)</li>
+    </ul>
+
+    <!-- APRIL 13 -->
+    <div class="session-header" style="margin-top:40px;">
+      <span class="session-date">April 12–13, 2026</span>
+      <h3>Race Condition Fix + Rainbow Wall Mobile Parity</h3>
+    </div>
+
+    <h4>Race Condition — Breed Guard (15 files)</h4>
+    <ul>
+      <li>Fixed P0 race: <code>useEffect</code> product fetches now wait for <code>pet.breed</code> before calling <code>/api/admin/pillar-products</code></li>
+      <li>Added <code>!currentPet?.breed</code> guard to: <code>PlayMobilePage</code>, <code>GoMobilePage</code>, <code>EmergencyMobilePage</code>, <code>CelebrateMobilePage</code>, <code>CareMobilePage</code>, <code>DineMobilePage</code>, <code>LearnMobilePage</code>, <code>AdoptSoulPage</code>, <code>PaperworkMobilePage</code>, <code>ShopMobilePage</code>, <code>CareSoulPage</code>, <code>PlaySoulPage</code>, <code>PaperworkSoulPage</code>, <code>DineSoulPageDesktopLegacy</code>, <code>ShopSoulPage</code></li>
+      <li>Removed <code>|| 'indie'</code> fallback in <code>CareMobilePage.jsx</code> — was showing Indie products to all breeds before profile loaded</li>
+    </ul>
+
+    <h4>Rainbow Bridge Wall — Mobile Parity (<code>FarewellMobilePage.jsx</code>)</h4>
+    <ul>
+      <li>Added <code>RainbowBridgeWall</code> as 4th tab '🌈 Wall' — Mystique's memorial now visible on mobile</li>
+      <li>Built "Add Your Memorial" flow: modal → <code>POST /api/rainbow-bridge/submit</code> → <code>memorial_status: "pending"</code></li>
+      <li>Admin endpoints: <code>GET /api/admin/rainbow-bridge/pending</code>, PATCH approve/reject</li>
+    </ul>
+
+    <!-- APRIL 11 -->
+    <div class="session-header" style="margin-top:40px;">
+      <span class="session-date">April 11, 2026</span>
+      <h3>Commerce Fixes + Soul Score + Service Desk</h3>
+    </div>
+
+    <table>
+      <tr><th>Fix</th><th>File</th><th>Detail</th></tr>
+      <tr><td>Add to Cart (age_stage)</td><td><code>ProductCard.jsx</code></td><td><code>cartInput</code> now reads <code>doggy_soul_answers.age_stage</code> as fallback. Auto-fills 'Adult' if pet selected by ID</td></tr>
+      <tr><td>Orders showing ₹450 vs ₹708</td><td><code>checkout_routes.py</code>, <code>OrdersTab.jsx</code></td><td>Added <code>total_amount: grand_total</code> to <code>order_doc</code>. Admin reads <code>total_amount || pricing.grand_total</code></td></tr>
+      <tr><td>PDF Invoice taxable confusion</td><td><code>checkout_routes.py</code></td><td>Reordered: Subtotal → Discount → Shipping → Taxable → GST → Grand Total</td></tr>
+      <tr><td>Soul Score sync</td><td>All 7 pillar pages</td><td>Now calls <code>GET /api/pet-soul/profile/{id}</code> live on pet change. Was stale 0%</td></tr>
+      <tr><td>Duplicate questions</td><td><code>PillarSoulModal.jsx</code></td><td>Filters already-answered questions. "All done!" screen when nothing remains</td></tr>
+      <tr><td>Archetype after onboarding</td><td><code>PetSoulOnboarding.jsx</code></td><td>Calls <code>POST /api/pets/{id}/infer-archetype</code> on completion. Label shown on celebration screen</td></tr>
+      <tr><td>Service Desk channel emoji</td><td><code>DoggyServiceDesk.jsx</code></td><td>Replaced coloured dots → 💬🌐📧🤖📞 channel emojis</td></tr>
+    </table>
+
+    <!-- APRIL 10 -->
+    <div class="session-header" style="margin-top:40px;">
+      <span class="session-date">April 10, 2026</span>
+      <h3>Service Desk BY CHANNEL + WhatsApp Pillar Detection + Payments</h3>
+    </div>
+
+    <table>
+      <tr><th>Feature</th><th>Detail</th></tr>
+      <tr><td>Service Desk: BY CHANNEL sidebar</td><td>💬 WhatsApp / 🌐 Web / 📧 Email / 🤖 Mira Chat / 📞 Phone with open ticket counts. Click to filter</td></tr>
+      <tr><td>Pillar tag badges on tickets</td><td>Every ticket card shows coloured pill (🎂 Celebrate, 🛁 Care etc.)</td></tr>
+      <tr><td>WhatsApp pillar detection</td><td><code>_WA_PILLAR_KEYWORDS</code> + <code>_detect_pillar_from_wa_message()</code> — 11 pillars. Dedup now matches phone + SAME PILLAR</td></tr>
+      <tr><td>Payment: membership activation</td><td>Added <code>user_email</code> to <code>VerifyPaymentRequest</code> model. Membership now activates correctly after Razorpay payment</td></tr>
+      <tr><td>Member email/bell gating</td><td><code>SILENT_MEMBER_INTENT_TYPES</code> frozenset (13 types) — browse/search/mira_chat never spam member inbox</td></tr>
+      <tr><td>DB migration: 133 → 151 collections</td><td>Added mira_product_scores (17,178), mira_signals (26,040), admin_notifications, member_notifications, email_logs + 11 more</td></tr>
+    </table>
+  </section>
+
+  <!-- WHATSAPP -->
+  <section id="whatsapp">
+    <h2>WhatsApp Architecture</h2>
+    <div class="alert alert-green">All fixes deployed via GitHub PR #94 → Vercel auto-deploy (April 14, 2026)</div>
+
+    <h3>Pet Picker Flow (Post-Fix)</h3>
+    <table>
+      <tr><th>Step</th><th>Logic</th></tr>
+      <tr><td>1. Message received</td><td>Gupshup POST → return 200 instantly → <code>asyncio.create_task</code> processes in background</td></tr>
+      <tr><td>2. Deduplication</td><td>Check <code>msg_id</code> in <code>wa_dedupe</code> → skip if seen</td></tr>
+      <tr><td>3. Phone lookup</td><td>Query ALL emails linked to phone → fetch all pets</td></tr>
+      <tr><td>4. Single pet</td><td>Set <code>wa_pet_state.active_pet</code> → proceed to Mira AI</td></tr>
+      <tr><td>5. Multi-pet</td><td>Check <code>wa_pet_state.awaiting_pet_selection</code> (fresh = &lt;30 min)</td></tr>
+      <tr><td>6. Pet name in message</td><td>Fuzzy match against pet list → set active pet → proceed</td></tr>
+      <tr><td>7. No match</td><td>Fall through to <code>get_mira_ai_response</code> — clean re-picker, no "Sorry" dead end</td></tr>
+    </table>
+
+    <h3>Key Constants</h3>
+    <pre>MIRA_DEFAULT_RESPONSE — line 1402 (welcome message for new users)
+_is_wa_state_fresh()  — line 115  (30-min expiry check)
+asyncio.create_task() — line 263  (async webhook — returns 200 instantly)
+[MIRA-WA-DEBUG]       — line 250  (deduplication log)</pre>
+
+    <h3>wa_pet_state Schema</h3>
+    <pre>{
+  phone:                  "91XXXXXXXXXX",
+  active_pet:             "Mystique",
+  updated_at:             ISODate,
+  awaiting_pet_selection: true/false
 }</pre>
+  </section>
 
-  <h3>Important: Image fields priority (frontend reads in this order)</h3>
-  <pre>cloudinary_url → mockup_url → image_url → image → images[0]</pre>
-
-  <h3>Key Collections</h3>
-  <table>
-    <tr><th>Collection</th><th>Purpose</th><th>Count (approx)</th></tr>
-    <tr><td>products_master</td><td>Member-facing product catalog</td><td>9,348 total | <strong>7,737 visible to members</strong> (active + not archived)</td></tr>
-    <tr><td>breed_products</td><td>Soul Generator source of truth</td><td>4,941 total | 4,569 with image | 372 pending generation</td></tr>
-    <tr><td>services_master</td><td>Services shown in Care/Go/Play pillars</td><td>~200</td></tr>
-    <tr><td>pets</td><td>Member pet profiles</td><td>32</td></tr>
-    <tr><td>members</td><td>Member accounts</td><td>~25</td></tr>
-    <tr><td>mira_product_scores</td><td>AI-scored product recommendations</td><td>~500</td></tr>
-    <tr><td>breed_catalogue</td><td>Breed metadata and descriptions</td><td>56</td></tr>
-  </table>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="api">
-  <h2>Key API Endpoints</h2>
-  <table>
-    <tr><th>Method</th><th>Endpoint</th><th>Purpose</th><th>Notes</th></tr>
-    <tr><td>GET</td><td>/api/admin/pillar-products</td><td>Fetch products for a pillar+breed</td><td>Uses pillar_products_routes.py with BREED_ALIASES + strict filter</td></tr>
-    <tr><td>POST</td><td>/api/mockups/generate-batch</td><td>Trigger AI image generation batch</td><td>Body: {product_type_filter, breed_filter, pillar, limit}. Skips products that already have mockup_url.</td></tr>
-    <tr><td>GET</td><td>/api/mockups/status</td><td>Check generation status</td><td>Returns {running, progress, total, completed_at}</td></tr>
-    <tr><td>GET</td><td>/api/mockups/breed-products</td><td>Fetch breed_products for Soul Generator</td><td>Params: breed, product_type, limit</td></tr>
-    <tr><td>PUT</td><td>/api/admin/breed-products/{id}</td><td>Update a breed_product (SoulBox)</td><td>Used for Archive/Restore. Accepts any fields via $set.</td></tr>
-    <tr><td>GET</td><td>/api/product-box/products</td><td>Fetch products_master list (Admin)</td><td>Filters out visibility.status == 'archived'</td></tr>
-    <tr><td>PUT</td><td>/api/product-box/products/{id}</td><td>Update products_master product</td><td>Admin ProductBox editor</td></tr>
-    <tr><td>PATCH</td><td>/api/products/{id}/toggle-active</td><td>Toggle is_active preserving visibility</td><td>Fixed in session 5/6</td></tr>
-    <tr><td>POST</td><td>/api/admin/generate-image</td><td>AI image generation for admin</td><td>Requires Basic Auth header. Uses background task + polling to avoid 502.</td></tr>
-    <tr><td>GET</td><td>/api/products/{id}/image-status</td><td>Poll AI image generation status</td><td>Frontend polls every 3s. Returns {status, image_url}</td></tr>
-    <tr><td>GET</td><td>/api/mira/claude-picks/{pet_id}</td><td>Mira AI product recommendations</td><td>Params: pillar, limit, min_score, entity_type</td></tr>
-    <tr><td>GET</td><td>/api/pets</td><td>Fetch user's pets</td><td>Requires Bearer token</td></tr>
-    <tr><td>POST</td><td>/api/auth/login</td><td>Login</td><td>Returns token</td></tr>
-    <tr><td>POST</td><td>/api/whatsapp/webhook</td><td>Gupshup inbound webhook</td><td>Auto-creates service_desk_ticket with member+pet enrichment. Sends Mira ack.</td></tr>
-    <tr><td>POST</td><td>/api/whatsapp/gupshup/send</td><td>Send WhatsApp via Gupshup</td><td>Accepts HTTP 202 (Gupshup success code). Used by Admin WhatsApp button.</td></tr>
-    <tr><td>GET</td><td>/api/service_desk/tickets</td><td>Admin service desk tickets</td><td>Reads from service_desk_tickets collection. WhatsApp tickets appear here.</td></tr>
-  </table>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="admin">
-  <h2>Admin Panel</h2>
-  <p>URL: <code>/admin</code> | Credentials: <code>aditya / lola4304</code></p>
-
-  <div class="grid-2">
-    <div class="card">
-      <h4>UnifiedProductBox</h4>
-      <p>Admin interface for products_master. Archive/Restore work correctly. AI image generation requires Basic Auth header (adminAuth).</p>
-      <p>File: <code>/frontend/src/components/admin/UnifiedProductBox.jsx</code></p>
+  <!-- MIRA AI -->
+  <section id="mira">
+    <h2>Mira AI</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Web Widget</h3>
+        <ul>
+          <li>File: <code>backend/mira_routes.py</code> (28K lines)</li>
+          <li>Soul: imports <code>MIRA_CORE_SOUL</code> from <code>mira_soul.py</code></li>
+          <li>Model: GPT-4o via Emergent LLM Key</li>
+          <li>Voice: ElevenLabs Elise (<code>AZnzlk1XvdvUeBnXmlld</code>)</li>
+          <li>Status: DO NOT TOUCH</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>WhatsApp (Gupshup)</h3>
+        <ul>
+          <li>File: <code>backend/whatsapp_routes.py</code></li>
+          <li>Webhook: <code>POST /api/whatsapp/webhook</code></li>
+          <li>Model: GPT-4o (upgraded from gpt-4o-mini)</li>
+          <li>Soul: same <code>MIRA_CORE_SOUL</code></li>
+          <li>Status: ✅ Multi-pet fixed April 14</li>
+        </ul>
+      </div>
     </div>
-    <div class="card">
-      <h4>SoulBox</h4>
-      <p>Admin interface for breed_products (Soul Generator). Archive/Restore now correctly call <code>/api/admin/breed-products/{id}</code>.</p>
-      <p>File: <code>/frontend/src/components/admin/SoulBox.jsx</code></p>
+
+    <h3>useMiraFilter.js — Client-Side Ranking</h3>
+    <table>
+      <tr><th>Rank</th><th>Signal</th></tr>
+      <tr><td>0</td><td>Breed match + loved food</td></tr>
+      <tr><td>1</td><td>Loved food / favourite treat</td></tr>
+      <tr><td>2</td><td>Breed-specific match</td></tr>
+      <tr><td>3</td><td>Health-safe / treatment-safe</td></tr>
+      <tr><td>4</td><td>Allergy-safe (explicitly free-from)</td></tr>
+      <tr><td>5–8</td><td>Size / life-stage / dietary / sensitivity match</td></tr>
+      <tr><td>10</td><td>Neutral / universal</td></tr>
+      <tr><td>11–15</td><td>Deprioritised (wrong stage/size/breed/goal conflict)</td></tr>
+      <tr><td>100</td><td>Blocked (health condition violation) — filtered out entirely</td></tr>
+    </table>
+
+    <h3>Chang's Allergy (April 14, 2026)</h3>
+    <div class="alert alert-amber">Chang now has Chicken allergy in <code>vault.allergies</code>. Mira will block all chicken products for Chang automatically.</div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin">
+    <h2>Admin Panel</h2>
+    <div class="alert alert-blue">Admin URL: <strong>https://thedoggycompany.com/admin</strong> · Login: aditya / lola4304</div>
+
+    <h3>Key Admin Features</h3>
+    <table>
+      <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+      <tr><td>Unified Product Box</td><td class="live">✅ Live</td><td>12 pillars, archive/active toggle, AI image gen</td></tr>
+      <tr><td>Service Box</td><td class="live">✅ Live</td><td>1,026 services, price on request</td></tr>
+      <tr><td>Service Desk</td><td class="live">✅ Live</td><td>608 tickets, BY CHANNEL sidebar, pillar badges</td></tr>
+      <tr><td>Re-export Migration</td><td class="live">✅ Live</td><td>151 collections, 89,192 docs, ~4 sec</td></tr>
+      <tr><td>AI Image Generator</td><td class="live">✅ Live</td><td>Fixed 401 auth — uses adminAuth headers correctly</td></tr>
+      <tr><td>Orders</td><td class="live">✅ Live</td><td>33 orders, correct totals (grand_total field)</td></tr>
+      <tr><td>Rainbow Bridge Admin</td><td class="live">✅ Live</td><td>Approve/reject community memorials</td></tr>
+    </table>
+
+    <h3>Critical PyMongo Rule</h3>
+    <div class="alert alert-red">NEVER use <code>if collection:</code> — PyMongo throws <code>NotImplementedError</code>. Always use <code>if collection is not None:</code></div>
+  </section>
+
+  <!-- DATABASE -->
+  <section id="db">
+    <h2>Database</h2>
+    <div class="alert alert-red">⚠️ Production MongoDB Atlas: IP whitelist BLOCKS direct agent access. Use Admin Re-export/Restore as workaround.</div>
+
+    <h3>Top Collections by Document Count</h3>
+    <table>
+      <tr><th>Collection</th><th>Docs</th><th>Purpose</th></tr>
+      <tr><td><code>mira_signals</code></td><td>26,040</td><td>All Mira intelligence signals</td></tr>
+      <tr><td><code>mira_product_scores</code></td><td>17,178</td><td>Per-pet product relevance scores</td></tr>
+      <tr><td><code>products_master</code></td><td>9,497</td><td>Main product catalog</td></tr>
+      <tr><td><code>breed_products</code></td><td>4,941</td><td>Soul Made breed-specific products</td></tr>
+      <tr><td><code>mira_conversations</code></td><td>4,936</td><td>All Mira chat conversations</td></tr>
+      <tr><td><code>admin_notifications</code></td><td>4,518</td><td>Admin bell notifications</td></tr>
+      <tr><td><code>services_master</code></td><td>1,026</td><td>All services across 12 pillars</td></tr>
+      <tr><td><code>channel_intakes</code></td><td>1,081</td><td>All channel intake records</td></tr>
+      <tr><td><code>service_desk_tickets</code></td><td>608</td><td>All concierge tickets</td></tr>
+      <tr><td><code>email_logs</code></td><td>638</td><td>All outbound email records</td></tr>
+      <tr><td><code>users</code></td><td>34</td><td>Registered users</td></tr>
+      <tr><td><code>pets</code></td><td>45</td><td>Registered pets (45 across 34 users)</td></tr>
+      <tr><td><code>wa_pet_state</code></td><td>1</td><td>Active WhatsApp pet context</td></tr>
+    </table>
+  </section>
+
+  <!-- DEPLOY -->
+  <section id="deploy">
+    <h2>Deployment</h2>
+    <div class="grid-2">
+      <div class="card green-border">
+        <h3>Production (Vercel)</h3>
+        <ul>
+          <li>URL: <strong>https://thedoggycompany.com</strong></li>
+          <li>Repo: dipalisikand1965-blip/TDB1</li>
+          <li>Branch: <code>main</code></li>
+          <li>Auto-deploys on merge to main</li>
+          <li>Build: <code>cd frontend && yarn install && CI=false yarn build</code></li>
+          <li>Output: <code>frontend/build</code></li>
+          <li>Config: <code>vercel.json</code> at repo root ✅</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Preview (Emergent)</h3>
+        <ul>
+          <li>URL: https://pet-soul-ranking.preview.emergentagent.com</li>
+          <li>Backend: port 8001 (FastAPI, hot reload)</li>
+          <li>Frontend: port 3000 (React, hot reload)</li>
+          <li>MongoDB: localhost:27017</li>
+          <li>Supervisor managed — restart only for .env changes</li>
+        </ul>
+      </div>
     </div>
-    <div class="card">
-      <h4>ServiceBox</h4>
-      <p>Admin interface for services_master. Price hiding (₹0 → "Price on Request") fixed.</p>
-      <p>File: <code>/frontend/src/components/admin/ServiceBox.jsx</code></p>
-    </div>
-    <div class="card">
-      <h4>ProductBoxEditor</h4>
-      <p>Editor for individual product details. Saves to products_master only.</p>
-      <p>File: <code>/frontend/src/components/admin/ProductBoxEditor.jsx</code></p>
-    </div>
-  </div>
-</section>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="scripts">
-  <h2>Backend Scripts</h2>
-  <table>
-    <tr><th>Script</th><th>Purpose</th><th>Run how</th></tr>
-    <tr><td><code>scripts/monitor_generation.py</code></td><td>Triggers batch generation for queued breeds sequentially. Respects API busy state.</td><td><code>nohup python3 /app/backend/scripts/monitor_generation.py &gt; /tmp/monitor_gen.log 2&gt;&amp;1 &amp;</code></td></tr>
-    <tr><td><code>scripts/audit_when_done.py</code></td><td>Waits for generation to complete, triggers cake topper batch, then runs full soul audit → SOUL_AUDIT_FINAL.md</td><td>Same nohup pattern. Check /tmp/audit_watcher.log</td></tr>
-    <tr><td><code>scripts/seed_cake_toppers.py</code></td><td>Seeds birthday_cake_topper for all 56 breeds with wooden laser-cut prompt. Safe to re-run (skips existing).</td><td><code>python3 /app/backend/scripts/seed_cake_toppers.py</code></td></tr>
-    <tr><td><code>scripts/seed_missing_adopt_farewell.py</code></td><td>Seeds adopt + farewell products for breeds missing them.</td><td>Run once</td></tr>
-    <tr><td><code>scripts/seed_sparse_breeds.py</code></td><td>Seeds full product set for corgi, basenji, bichon_frise, saint_bernard.</td><td>Run once</td></tr>
-    <tr><td><code>auto_mockup_generator.py</code></td><td>Legacy auto-generation scheduler. Still referenced by some routes.</td><td>Managed by monitor_generation.py</td></tr>
-  </table>
+    <h3>Deploy Workflow</h3>
+    <table>
+      <tr><th>Step</th><th>Action</th></tr>
+      <tr><td>1</td><td>Make changes in Emergent preview</td></tr>
+      <tr><td>2</td><td>Run Re-export Migration Data in Admin</td></tr>
+      <tr><td>3</td><td>Click "Save to Github" in Emergent</td></tr>
+      <tr><td>4</td><td>GitHub → Pull requests → Merge PR</td></tr>
+      <tr><td>5</td><td>Vercel auto-detects merge → builds → deploys (~3 min)</td></tr>
+      <tr><td>6</td><td>Verify on thedoggycompany.com</td></tr>
+    </table>
+  </section>
 
-  <h3>Generation API Check</h3>
-  <pre>python3 -c "
-from pymongo import MongoClient
-db = MongoClient('mongodb://localhost:27017')['pet-os-live-test_database']
-pending = db.breed_products.count_documents({
-    'is_active': True,
-    'mockup_prompt': {'\$exists': True, '\$ne': ''},
-    '\$or': [{'mockup_url': {'\$in': [None,'']}}, {'mockup_url': {'\$exists': False}}]
-})
-print(f'Total pending generation: {pending}')
-"</pre>
-</section>
+  <!-- CREDENTIALS -->
+  <section id="credentials">
+    <h2>Credentials &amp; Keys</h2>
+    <table>
+      <tr><th>Service</th><th>Detail</th></tr>
+      <tr><td>Member login</td><td>dipali@clubconcierge.in / test123</td></tr>
+      <tr><td>Admin login</td><td>aditya / lola4304 → /admin</td></tr>
+      <tr><td>ElevenLabs API Key</td><td><code>2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc</code></td></tr>
+      <tr><td>ElevenLabs Voice (Elise)</td><td><code>AZnzlk1XvdvUeBnXmlld</code></td></tr>
+      <tr><td>OpenAI / Mira</td><td>Emergent LLM Key (managed)</td></tr>
+      <tr><td>Gupshup (WhatsApp)</td><td>User API Key required</td></tr>
+      <tr><td>Razorpay</td><td>User API Key required</td></tr>
+      <tr><td>Cloudinary</td><td>User API Key required</td></tr>
+    </table>
+  </section>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="integrations">
-  <h2>Third-Party Integrations</h2>
-  <table>
-    <tr><th>Service</th><th>Usage</th><th>Key source</th><th>Status</th></tr>
-    <tr><td>OpenAI (GPT-4o, gpt-image-1)</td><td>Mira AI chat, AI product descriptions, mockup image generation</td><td>Emergent LLM Key (env)</td><td class="status-done">✅ Active</td></tr>
-    <tr><td>Cloudinary</td><td>Image hosting for all generated mockups</td><td>CLOUDINARY_CLOUD_NAME=duoapcx1p (backend .env)</td><td class="status-done">✅ Active</td></tr>
-    <tr><td>Gupshup</td><td>WhatsApp inbound webhook → service desk tickets + Mira auto-ack outbound. Admin WhatsApp send button. Source: +918971702582</td><td>GUPSHUP_API_KEY + GUPSHUP_APP_NAME + GUPSHUP_SOURCE_NUMBER (backend .env)</td><td class="status-done">✅ Live — Session 11</td></tr>
-    <tr><td>Razorpay</td><td>Payment processing</td><td>User API Key (backend .env)</td><td class="status-done">✅ Active</td></tr>
-    <tr><td>MongoDB Atlas (Production)</td><td>Production database</td><td>MONGO_URL (backend .env)</td><td class="status-blocked">❌ BLOCKED — Atlas IP whitelist</td></tr>
-  </table>
-</section>
+  <!-- BACKLOG -->
+  <section id="backlog">
+    <h2>Backlog &amp; Pending</h2>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="creds">
-  <h2>Credentials</h2>
-  <table>
-    <tr><th>What</th><th>Credential</th></tr>
-    <tr><td>Member login (test)</td><td>dipali@clubconcierge.in / test123 | Pet: Mojo, Breed: Indie</td></tr>
-    <tr><td>Admin login</td><td>aditya / lola4304 | URL: /admin</td></tr>
-    <tr><td>Local MongoDB</td><td>mongodb://localhost:27017 | DB: pet-os-live-test_database</td></tr>
-    <tr><td>Cloudinary</td><td>Cloud: duoapcx1p | API Key: 396757862875471 (backend .env)</td></tr>
-    <tr><td>Preview URL</td><td>https://pet-soul-ranking.preview.emergentagent.com</td></tr>
-  </table>
-</section>
+    <h3>🔴 Blocked</h3>
+    <div class="alert alert-red">Production MongoDB Atlas — IP whitelist blocks agent direct access. Fix: whitelist agent IP in Atlas Network Access. Workaround: Admin Re-export / Restore.</div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="todo">
-  <h2>Next Tasks (Prioritised)</h2>
+    <h3>🟡 P1 — High Priority</h3>
+    <table>
+      <tr><th>Item</th><th>Notes</th></tr>
+      <tr><td>Razorpay checkout bug</td><td><code>/api/orders/create-order</code> body error — not yet investigated</td></tr>
+      <tr><td>Multi-Pet Household Safety</td><td>Basket splitting when pets have conflicting health conditions</td></tr>
+      <tr><td>Real-time WebSocket notifications</td><td>Admin reply → user sees instantly</td></tr>
+    </table>
 
-  <h3>P0 — COMPLETE ✅</h3>
-  <table>
-    <tr><th>Task</th><th>Details</th><th>Status</th></tr>
-    <tr><td style="color:#059669;font-weight:700;">WhatsApp Mira Intelligence</td><td>Soul profile, allergens, health conditions, NearMe, Amazon fallback, ✦ Why format wired into <code>whatsapp_routes.py</code>. Tone refined. Pet confusion fixed.</td><td class="status-done">✅ Done (Session 13)</td></tr>
-    <tr><td style="color:#059669;font-weight:700;">Health Condition Filtering — ALL surfaces</td><td><code>condition_map.py</code> + <code>CONDITION_BLOCK_MAP</code> in useMiraFilter.js. Applied: pillar pages, WhatsApp, Mira Widget, MiraSearchPage.</td><td class="status-done">✅ Done (Session 13/14)</td></tr>
-    <tr><td style="color:#059669;font-weight:700;">Mira Pick badge + mira_hint on /mira-search</td><td><code>✦ MIRA PICK</code> badge on top result chip. Purple italic hint line on all chips. Intelligence visible to pet parents.</td><td class="status-done">✅ Done (Session 14)</td></tr>
-  </table>
+    <h3>🟢 P2 — Upcoming</h3>
+    <table>
+      <tr><th>Item</th><th>Notes</th></tr>
+      <tr><td>Watch &amp; Learn YouTube sections</td><td>Care + Go pillars</td></tr>
+      <tr><td>Mira Remembers</td><td>Cross-session memory</td></tr>
+      <tr><td>WhatsApp Vision</td><td>Gemini image analysis</td></tr>
+      <tr><td>Cron jobs</td><td>Daily Digest, Medication reminders, Mira Nudge Engine</td></tr>
+    </table>
 
-  <h3>P1 — Next session</h3>
-  <table>
-    <tr><th>Task</th><th>Details</th><th>Status</th></tr>
-    <tr><td>"Mira explains why" expandable row</td><td>Add expandable row on Dine/Care/Celebrate product cards. One tap reveals the full soul profile reasoning (mira_hint). User-approved feature.</td><td class="status-new">Ready to build</td></tr>
-    <tr><td>Multi-Pet Household Safety</td><td>If user asks for treats for "all dogs", Mira splits the basket when one dog's allergen/condition conflicts with another. WhatsApp + Widget. User approved concept.</td><td class="status-new">Ready to build</td></tr>
-    <tr><td>Celebrate mobile parity</td><td>Add BirthdayCountdown, CelebrationMemoryWall, MiraSoulNudge to CelebrateMobilePage</td><td class="status-pending">Pending</td></tr>
-    <tr><td>Missing mobile components</td><td>Add LearnNearMe, PaperworkNearMe, GoNearMe to their mobile pages</td><td class="status-pending">Pending</td></tr>
-  </table>
+    <h3>🔵 Future / Refactoring</h3>
+    <ul>
+      <li>Split <code>server.py</code> (25,907 lines) into route modules</li>
+      <li>Split <code>Admin.jsx</code> (7,232 lines) into components</li>
+      <li>Split <code>whatsapp_routes.py</code> into modules</li>
+      <li>Build the <code>Love</code> pillar</li>
+      <li>WhatsApp Daily Digest cron + Medication reminders</li>
+    </ul>
+  </section>
 
-  <h3>P2 — Future</h3>
-  <ul>
-    <li>Watch &amp; Learn YouTube video sections for Care and Go pillars</li>
-    <li>Life Stage Transition Alerts (proactive Senior Care nudge when dog turns 7)</li>
-    <li>Purchase + Consumption Pattern Learning (reorder nudges based on past purchase data)</li>
-    <li>WhatsApp Daily Digest cron job + medication refill reminders (Gupshup templates needed)</li>
-    <li>Production DB migration (Atlas IP whitelist must be fixed first)</li>
-    <li>Build the Love pillar</li>
-    <li>Fill Indie soul gaps (Pet Journal, Starter Kit, Learning Cards, Medical File)</li>
-  </ul>
+  <!-- STATIC PAGES -->
+  <section id="static-pages">
+    <h2>Static &amp; Demo Pages</h2>
+    <table>
+      <tr><th>Page</th><th>URL</th><th>Purpose</th></tr>
+      <tr><td>Home / Landing</td><td><code>/</code></td><td>Main landing page</td></tr>
+      <tr><td>Investor Overview</td><td><code>/investor.html</code></td><td>Static investor deck (Cormorant Garamond, dark theme)</td></tr>
+      <tr><td>Dreamfolks Demo</td><td><code>/demo/dreamfolks</code></td><td>Partner demo for Dreamfolks</td></tr>
+      <tr><td>General Demo</td><td><code>/demo</code></td><td>General product demo</td></tr>
+      <tr><td>Pet Soul Demo</td><td><code>/pet-soul-demo</code></td><td>Soul profile demo</td></tr>
+      <tr><td>Partner Onboarding</td><td><code>/partner</code> or <code>/become-a-partner</code></td><td>Partner registration flow</td></tr>
+      <tr><td>Admin Guide</td><td><code>/app/admin-guide.html</code></td><td>Internal — last updated Mar 12</td></tr>
+      <tr><td>Admin Documentation</td><td><code>/app/admin-documentation.html</code></td><td>Internal — last updated Mar 24</td></tr>
+      <tr><td>Go+Play Documentation</td><td><code>/app/complete-go-play-documentation.html</code></td><td>Internal — last updated Mar 18</td></tr>
+    </table>
+  </section>
 
-  <h3>Refactoring (non-urgent but important)</h3>
-  <ul>
-    <li><code>server.py</code> — 25,000+ lines. Split into domain-specific routers.</li>
-    <li><code>Admin.jsx</code> — 7,000+ lines. Heavy componentization needed.</li>
-  </ul>
-</section>
+</div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="whatsapp">
-  <h2>WhatsApp Pipeline Architecture</h2>
-  <p>The complete WhatsApp ↔ Service Desk integration. All pieces live and tested as of Session 11.</p>
-
-  <h3>Inbound Flow (User → TDC)</h3>
-  <pre style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:8px;font-size:0.85rem;">
-User texts TDC WhatsApp (+91 89717 02582)
-  ↓
-Gupshup fires POST /api/whatsapp/webhook
-  ↓
-process_gupshup_webhook() in whatsapp_routes.py
-  ↓
-  [A] Existing open ticket found by phone?
-      YES → Append message to db.tickets
-            Check for matching service_desk_ticket:
-              Found → $push conversation message
-              Not found → CREATE new service_desk_ticket (legacy ticket case)
-  [B] No existing ticket:
-      → Look up user by phone (db.users)
-      → Get their pets (db.pets)
-      → handoff_to_spine() → creates TCK-YYYY-NNNNNN in db.tickets + service_desk_tickets
-      → Enrich service_desk_ticket: member{}, pet_profile, allergy_alert, conversation[]
-      → Patch db.tickets with member.phone for future lookups
-  ↓
-Admin notification (realtime via WebSocket)
-  ↓
-Mira auto-ack sent back via send_mira_ack() → Gupshup API</pre>
-
-  <h3>Outbound Flow (TDC → User, human-in-the-loop)</h3>
-  <pre style="background:#1e293b;color:#e2e8f0;padding:16px;border-radius:8px;font-size:0.85rem;">
-Admin opens Admin Service Desk → sees WhatsApp ticket
-  ↓
-Reads conversation, pet profile, allergy alerts
-  ↓
-Clicks "Ask Mira" button → Mira drafts reply using pet context
-  ↓
-Admin reviews, edits if needed, types in reply box
-  ↓
-Clicks WhatsApp button (green dot) → POST /api/whatsapp/gupshup/send
-  ↓
-Message delivered to user's WhatsApp via Gupshup</pre>
-
-  <h3>Gupshup Config (.env)</h3>
-  <table>
-    <tr><th>Key</th><th>Value</th></tr>
-    <tr><td>GUPSHUP_API_KEY</td><td>sk_2609497c... (backend .env)</td></tr>
-    <tr><td>GUPSHUP_APP_NAME</td><td>The Doggy Company</td></tr>
-    <tr><td>GUPSHUP_SOURCE_NUMBER</td><td>918971702582</td></tr>
-  </table>
-
-  <h3>Key file: whatsapp_routes.py</h3>
-  <ul>
-    <li><code>process_gupshup_webhook()</code> — main inbound handler (lines ~163–555)</li>
-    <li><code>send_mira_ack()</code> — personalised ack with pet name (new in Session 11)</li>
-    <li><code>send_mira_reply()</code> — low-level Gupshup send. Accepts HTTP 202 as success.</li>
-    <li><code>get_mira_ai_response()</code> — GPT-4o-mini contextual response with user/pet/order context</li>
-    <li>Webhook URL: <code>POST /api/whatsapp/webhook</code></li>
-    <li>Status check: <code>GET /api/whatsapp/status</code></li>
-  </ul>
-
-  <h3>Amazon Affiliate Fallback</h3>
-  <p>When Mira has no products in the DB to show for a query:</p>
-  <ul>
-    <li>Button text: <strong>"Your Concierge recommends exploring here →"</strong></li>
-    <li>URL builder: <code>buildAmazonQuery(text)</code> — extracts core noun, prepends "dog ", appends affiliate tag <code>tag=thedoggyco-21</code></li>
-    <li>Click silently fires <code>conciergefire()</code> → logs intent to service_desk_tickets with <code>source: "amazon_fallback"</code></li>
-    <li>Files: <code>MiraSearchPage.jsx</code> (search results), <code>MiraChatWidget.jsx</code> (chat widget)</li>
-    <li>Example: User asks "rubber duck toy for mojo" → <code>https://www.amazon.in/s?k=dog+rubber+duck+toy&tag=thedoggyco-21</code></li>
-  </ul>
-
-  <h3>Bulk Duplicate Cleanup — One-Click API</h3>
-  <div class="alert alert-green">
-    1,050 duplicate <code>breed-</code> prefix products identified and archived in preview DB (Session 12). For production, call the endpoint below once after redeploying.
-  </div>
-  <table>
-    <tr><th>Pillar</th><th>Duplicates archived</th></tr>
-    <tr><td>Celebrate</td><td>361</td></tr>
-    <tr><td>Care</td><td>227</td></tr>
-    <tr><td>Go</td><td>198</td></tr>
-    <tr><td>Learn</td><td>66</td></tr>
-    <tr><td>Play</td><td>66</td></tr>
-    <tr><td>Emergency</td><td>66</td></tr>
-    <tr><td>Farewell</td><td>66</td></tr>
-    <tr><td><strong>Total</strong></td><td><strong>1,050</strong></td></tr>
-  </table>
-  <h4>To run on production (after redeploy):</h4>
-  <pre># Step 1: Preview — check what will be archived
-curl -X POST https://thedoggycompany.com/api/product-box/admin/archive-breed-duplicates?dry_run=true
-
-# Step 2: Apply the archive (one call, all 1,050 done)
-curl -X POST https://thedoggycompany.com/api/product-box/admin/archive-breed-duplicates
-
-# Expected response:
-# { "archived": 1050, "message": "Successfully archived 1050 duplicate breed- products..." }</pre>
-  <p>Rule: <strong>keep</strong> <code>soul-breed-{breed}-{type}</code> (correct AI watercolor image) | <strong>archive</strong> <code>breed-{breed}-{type}</code> (old, may have stale cake/wrong images).</p>
-  <p>Full list saved to: <code>/app/duplicate_products_to_archive.json</code> and <code>/app/duplicate_products_to_archive.txt</code></p>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="wa-intelligence">
-  <h2>🧠 WhatsApp Mira Intelligence Plan (Phase 2)</h2>
-  <div class="alert alert-blue">
-    <strong>Status: APPROVED — PENDING IMPLEMENTATION.</strong> Full spec in <code>/app/memory/WHATSAPP_MIRA_INTELLIGENCE_PLAN.md</code>. Only file to touch: <code>backend/whatsapp_routes.py</code>, only function: <code>get_mira_ai_response()</code>.
-  </div>
-
-  <h3>Current State vs Target State</h3>
-  <div class="grid-2">
-    <div class="card" style="border-color:#ef4444;">
-      <h4 style="color:#dc2626;">Current (broken)</h4>
-      <pre style="font-size:0.82rem;margin-top:8px;">User: "A baby rabbit toy"
-→ GPT has no product data
-→ Guesses → replies as if user
-  has a pet rabbit</pre>
-    </div>
-    <div class="card" style="border-color:#22c55e;">
-      <h4 style="color:#16a34a;">Target (after this plan)</h4>
-      <pre style="font-size:0.82rem;margin-top:8px;">User: "A baby rabbit toy"
-→ Semantic search: Rope Bunny Chew
-  ₹699, Latex Rabbit Squeaky ₹450
-→ Pet: Badmash + Sultan = Newfoundland
-  (big chewers)
-→ Mira: "For big chewers like Badmash
-  &amp; Sultan, skip the plush — grab the
-  Rope Bunny Chew (₹699). Want me
-  to order it?"</pre>
-    </div>
-  </div>
-
-  <h3>Zero-Risk Zones — DO NOT TOUCH</h3>
-  <div class="alert alert-red">
-    The following files must NOT be modified during this upgrade. The only file to touch is <code>whatsapp_routes.py</code>.
-  </div>
-  <div class="pill-grid">
-    <span class="pill">frontend/src/pages/*MobilePage.jsx</span>
-    <span class="pill">frontend/src/pages/*SoulPage.jsx</span>
-    <span class="pill">frontend/src/pages/MiraSearchPage.jsx</span>
-    <span class="pill">frontend/src/components/MiraChatWidget.jsx</span>
-    <span class="pill">frontend/src/components/ProductCard.jsx</span>
-    <span class="pill">frontend/src/hooks/useMiraFilter.js</span>
-    <span class="pill">backend/unified_product_box.py</span>
-    <span class="pill">backend/service_box_routes.py</span>
-    <span class="pill">backend/server.py</span>
-  </div>
-
-  <h3>Implementation Steps</h3>
-  <table>
-    <tr><th>#</th><th>Step</th><th>What changes</th><th>Risk</th></tr>
-    <tr>
-      <td>1</td>
-      <td><strong>Load full pet soul profile</strong></td>
-      <td>Add <code>allergies</code>, <code>health_conditions</code>, <code>doggy_soul_answers</code>, <code>favorite_foods</code>, <code>weight</code>, <code>life_stage</code> to the pets DB query inside <code>get_mira_ai_response()</code></td>
-      <td>Zero — additive only</td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td><strong>Run message through semantic search</strong></td>
-      <td>Internal HTTP call to <code>http://localhost:8001/api/mira/semantic-search</code> with the user's message text and pet allergies. Gets top 3 products + 2 services from the 9,348-product catalog.</td>
-      <td>Low — 2–4s latency increase</td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td><strong>Build rich context block for GPT</strong></td>
-      <td>Append to system prompt: allergens to avoid, favorite foods, RELEVANT PRODUCTS FROM CATALOG (real names + prices + descriptions), RELEVANT SERVICES.</td>
-      <td>Zero</td>
-    </tr>
-    <tr>
-      <td>4</td>
-      <td><strong>Enhanced system prompt rules</strong></td>
-      <td>Add: "Use ONLY real product names from CATALOG above. Consider allergens. Match energy level. Always suggest ordering via Concierge."</td>
-      <td>Zero</td>
-    </tr>
-  </table>
-
-  <h3>Success Criteria (3 test scenarios)</h3>
-  <table>
-    <tr><th>Test</th><th>Input</th><th>Expected response</th></tr>
-    <tr><td>Product search</td><td>"Looking for a treat for my dog"</td><td>Real product names from catalog with prices</td></tr>
-    <tr><td>Allergen awareness</td><td>"What treats do you recommend?" (pet has chicken allergy)</td><td>NO chicken-based treats in response</td></tr>
-    <tr><td>Breed intelligence</td><td>"Any toy suggestions?" (Newfoundland — big breed, heavy chewer)</td><td>Durable/rope toys recommended, not plush</td></tr>
-  </table>
-
-  <h3>What the semantic search endpoint returns</h3>
-  <pre>{
-  "success": true,
-  "intent_detected": "play",
-  "products": [
-    {
-      "id": "prod-123",
-      "name": "Rope Bunny Chew",
-      "original_price": 699,
-      "description": "Durable rope toy shaped like a rabbit",
-      "tags": ["chew", "rope", "large-breed"],
-      "pillar": "play"
-    }
-  ],
-  "services": [],
-  "total_results": 8
-}</pre>
-
-  <h3>Sequencing</h3>
-  <div class="pill-grid">
-    <span class="pill done">Phase 0 ✅ Gupshup crash fix (done)</span>
-    <span class="pill done">Phase 0 ✅ service_desk_tickets context (done)</span>
-    <span class="pill done">Phase 0 ✅ Dog vs toy system prompt rules (done)</span>
-    <span class="pill warn">Phase 1 — User verifies WhatsApp works after redeploy</span>
-    <span class="pill" style="background:#ede9fe;border-color:#a78bfa;color:#5b21b6;">Phase 2 — Implement Steps 1–4 above in whatsapp_routes.py</span>
-    <span class="pill">Phase 3 (Future) — Inject last 5 conversation turns from service_desk_tickets.conversation[]</span>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-<section id="visibility">
-  <h2>Product Visibility Audit — Session 9 (2026-04-06)</h2>
-
-  <div class="alert alert-green">
-    <strong>CONFIRMED:</strong> Members ARE seeing their soul products. 7,737 products visible vs 4,941 in breed_products source. Members are over-served because products_master contains additional breed items from Shopify sync, birthday cakes, and portrait frames.
-  </div>
-
-  <div class="alert alert-yellow">
-    <strong>Only confirmed gap:</strong> 1 Play soul product missing for 12 breeds (8 visible vs 9 in source). All other pillars are at parity or over-served.
-  </div>
-
-  <h3>How to read this table</h3>
-  <p>Format: <code>visible / source</code> where visible = products in products_master matching that breed, source = entries in breed_products.<br>
-  Negative MISS = more visible than source (extra Shopify/cake/portrait products in products_master).<br>
-  <code>!</code> flag = visible &lt; source (real gap).</p>
-
-  <h3>Breeds with Play gap (! flag)</h3>
-  <table>
-    <tr><th>Breed</th><th>Play Visible</th><th>Play Source</th><th>Gap</th></tr>
-    <tr><td>Akita</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Australian Shepherd</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Bernese Mountain</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Boston Terrier</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Cavalier King Charles</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Havanese</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Samoyed</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Shetland Sheepdog</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Siberian Husky</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Vizsla</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Weimaraner</td><td>8</td><td>9</td><td class="status-pending">−1</td></tr>
-    <tr><td>Yorkshire Terrier</td><td>11</td><td>12</td><td class="status-pending">−1</td></tr>
-  </table>
-
-  <h3>Full Breed × Pillar Visibility Matrix [visible / source]</h3>
-  <p style="font-size:0.82rem;color:#64748b;">Columns: DINE · CARE · PLAY · GO · LEARN · CELE · SHOP · PAPER · EMER · FARE · ADPT · VIS_TOTAL · SRC_TOTAL</p>
-  <table style="font-size:0.75rem;font-family:monospace;">
-    <tr><th>Breed</th><th>DINE</th><th>CARE</th><th>PLAY</th><th>GO</th><th>LEARN</th><th>CELE</th><th>SHOP</th><th>PAPER</th><th>EMER</th><th>FARE</th><th>ADPT</th><th>VIS</th><th>SRC</th></tr>
-    <tr><td>akita</td><td>12/7</td><td>14/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>19/16</td><td>33/25</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>115</td><td>93</td></tr>
-    <tr><td>alaskan_malamute</td><td>8/3</td><td>1/1</td><td>2/2</td><td>3/3</td><td>1/1</td><td>6/6</td><td>25/25</td><td>1/1</td><td>4/4</td><td>8/8</td><td>2/2</td><td>61</td><td>56</td></tr>
-    <tr><td>american_bully</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>8/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>80</td><td>54</td></tr>
-    <tr><td>australian_shepherd</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>16/11</td><td>31/23</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>110</td><td>85</td></tr>
-    <tr><td>basenji</td><td>12/7</td><td>13/13</td><td>8/8</td><td>11/11</td><td>6/6</td><td>17/17</td><td>14/14</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>102</td><td>97</td></tr>
-    <tr><td>beagle</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>bernese_mountain</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>16/11</td><td>14/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>93</td><td>68</td></tr>
-    <tr><td>bichon_frise</td><td>12/7</td><td>13/13</td><td>8/8</td><td>11/11</td><td>6/6</td><td>17/17</td><td>12/12</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>100</td><td>95</td></tr>
-    <tr><td>border_collie</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>boston_terrier</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>15/11</td><td>6/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>78</td><td>68</td></tr>
-    <tr><td>boxer</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>18/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>119</td></tr>
-    <tr><td>bulldog</td><td>28/6</td><td>34/4</td><td>24/5</td><td>35/6</td><td>16/1</td><td>55/13</td><td>42/9</td><td>9/1</td><td>14/4</td><td>16/2</td><td>4/2</td><td>277</td><td>53</td></tr>
-    <tr><td>cavalier</td><td>21/5</td><td>20/5</td><td>14/4</td><td>21/9</td><td>10/3</td><td>34/10</td><td>22/6</td><td>7/1</td><td>7/2</td><td>9/2</td><td>2/2</td><td>167</td><td>49</td></tr>
-    <tr><td>cavalier_king_charles</td><td>17/7</td><td>12/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>19/13</td><td>16/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/0</td><td>101</td><td>71</td></tr>
-    <tr><td>chihuahua</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>chow_chow</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>8/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>80</td><td>54</td></tr>
-    <tr><td>cocker_spaniel</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>corgi</td><td>12/7</td><td>18/13</td><td>8/8</td><td>11/11</td><td>7/6</td><td>18/17</td><td>20/12</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>115</td><td>95</td></tr>
-    <tr><td>dachshund</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>dalmatian</td><td>8/8</td><td>13/8</td><td>9/7</td><td>14/12</td><td>6/3</td><td>18/18</td><td>17/9</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>98</td><td>73</td></tr>
-    <tr><td>doberman</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>31/28</td><td>19/11</td><td>6/5</td><td>6/4</td><td>10/8</td><td>2/2</td><td>153</td><td>124</td></tr>
-    <tr><td>english_bulldog</td><td>13/9</td><td>18/14</td><td>13/11</td><td>18/15</td><td>8/5</td><td>29/19</td><td>8/8</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/0</td><td>130</td><td>97</td></tr>
-    <tr><td>french_bulldog</td><td>8/8</td><td>13/8</td><td>9/7</td><td>14/12</td><td>6/3</td><td>19/19</td><td>17/9</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>99</td><td>74</td></tr>
-    <tr><td>german_shepherd</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>golden_retriever</td><td>13/12</td><td>23/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>36/27</td><td>18/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>158</td><td>120</td></tr>
-    <tr><td>great_dane</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>148</td><td>119</td></tr>
-    <tr><td>greyhound</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>21/15</td><td>9/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>84</td><td>57</td></tr>
-    <tr><td>havanese</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>15/11</td><td>6/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>78</td><td>68</td></tr>
-    <tr><td>husky</td><td>20/8</td><td>24/8</td><td>17/7</td><td>23/12</td><td>10/3</td><td>38/22</td><td>26/9</td><td>7/1</td><td>7/2</td><td>10/3</td><td>4/2</td><td>186</td><td>77</td></tr>
-    <tr><td>indian_pariah</td><td>12/7</td><td>9/9</td><td>9/8</td><td>9/9</td><td>4/1</td><td>15/13</td><td>8/8</td><td>4/3</td><td>3/2</td><td>5/5</td><td>2/0</td><td>80</td><td>65</td></tr>
-    <tr><td>indian_spitz</td><td>11/6</td><td>4/4</td><td>5/5</td><td>6/6</td><td>1/1</td><td>13/13</td><td>9/9</td><td>1/1</td><td>4/4</td><td>8/8</td><td>2/2</td><td>64</td><td>59</td></tr>
-    <tr><td>indie</td><td>17/8</td><td>23/8</td><td>14/8</td><td>22/12</td><td>9/6</td><td>60/21</td><td>30/9</td><td>5/3</td><td>8/2</td><td>10/3</td><td>4/2</td><td>202</td><td>82</td></tr>
-    <tr><td>irish_setter</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>9/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>81</td><td>54</td></tr>
-    <tr><td>jack_russell</td><td>9/5</td><td>10/5</td><td>6/4</td><td>12/9</td><td>6/3</td><td>19/12</td><td>16/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>91</td><td>54</td></tr>
-    <tr><td>labradoodle</td><td>11/6</td><td>4/4</td><td>5/5</td><td>6/6</td><td>1/1</td><td>13/13</td><td>9/9</td><td>1/1</td><td>4/4</td><td>8/8</td><td>2/2</td><td>64</td><td>59</td></tr>
-    <tr><td>labrador</td><td>14/12</td><td>27/17</td><td>15/14</td><td>20/18</td><td>9/5</td><td>39/29</td><td>20/12</td><td>7/5</td><td>7/4</td><td>10/8</td><td>2/2</td><td>170</td><td>126</td></tr>
-    <tr><td>lhasa_apso</td><td>9/5</td><td>10/5</td><td>6/4</td><td>12/9</td><td>6/3</td><td>19/12</td><td>17/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>92</td><td>54</td></tr>
-    <tr><td>maltese</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>31/26</td><td>18/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>151</td><td>119</td></tr>
-    <tr><td>maltipoo</td><td>13/12</td><td>21/17</td><td>17/15</td><td>24/18</td><td>8/5</td><td>35/26</td><td>12/10</td><td>5/5</td><td>7/4</td><td>10/7</td><td>2/2</td><td>154</td><td>121</td></tr>
-    <tr><td>newfoundland</td><td>13/12</td><td>21/17</td><td>17/15</td><td>24/18</td><td>8/5</td><td>32/24</td><td>12/10</td><td>5/5</td><td>7/4</td><td>10/7</td><td>2/2</td><td>151</td><td>119</td></tr>
-    <tr><td>pomeranian</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>148</td><td>119</td></tr>
-    <tr><td>poodle</td><td>12/12</td><td>23/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>19/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>152</td><td>120</td></tr>
-    <tr><td>pug</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>29/26</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>148</td><td>119</td></tr>
-    <tr><td>rottweiler</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>28/25</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>147</td><td>118</td></tr>
-    <tr><td>saint_bernard</td><td>12/7</td><td>18/13</td><td>8/8</td><td>11/11</td><td>7/6</td><td>19/17</td><td>20/12</td><td>5/5</td><td>6/6</td><td>8/8</td><td>2/2</td><td>116</td><td>95</td></tr>
-    <tr><td>samoyed</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>17/13</td><td>16/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>97</td><td>73</td></tr>
-    <tr><td>schnoodle</td><td>9/5</td><td>9/5</td><td>6/4</td><td>12/9</td><td>5/3</td><td>18/12</td><td>8/8</td><td>2/1</td><td>4/2</td><td>5/3</td><td>2/2</td><td>80</td><td>54</td></tr>
-    <tr><td>scottish_terrier</td><td>13/9</td><td>18/14</td><td>13/11</td><td>18/15</td><td>8/5</td><td>28/19</td><td>10/8</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>131</td><td>99</td></tr>
-    <tr><td>shetland_sheepdog</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>15/11</td><td>6/6</td><td>5/5</td><td>3/2</td><td>4/4</td><td>2/2</td><td>78</td><td>68</td></tr>
-    <tr><td>shih_tzu</td><td>12/12</td><td>22/17</td><td>16/14</td><td>20/18</td><td>9/5</td><td>30/27</td><td>17/9</td><td>6/5</td><td>6/4</td><td>9/7</td><td>2/2</td><td>149</td><td>120</td></tr>
-    <tr><td>siberian_husky</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>16/13</td><td>8/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>82</td><td>73</td></tr>
-    <tr><td>st_bernard</td><td>13/9</td><td>21/14</td><td>12/11</td><td>18/15</td><td>8/5</td><td>32/19</td><td>11/8</td><td>6/5</td><td>7/4</td><td>10/7</td><td>2/2</td><td>140</td><td>99</td></tr>
-    <tr><td>vizsla</td><td>12/7</td><td>10/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>4/3</td><td>16/13</td><td>8/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>82</td><td>73</td></tr>
-    <tr><td>weimaraner</td><td>12/7</td><td>15/10</td><td class="status-pending">8/9!</td><td>9/9</td><td>5/3</td><td>17/13</td><td>16/8</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/2</td><td>97</td><td>73</td></tr>
-    <tr><td>yorkshire</td><td>22/5</td><td>23/5</td><td>17/4</td><td>24/9</td><td>10/3</td><td>39/10</td><td>24/6</td><td>7/1</td><td>7/2</td><td>9/2</td><td>2/2</td><td>184</td><td>49</td></tr>
-    <tr><td>yorkshire_terrier</td><td>18/10</td><td>15/13</td><td class="status-pending">11/12!</td><td>12/12</td><td>5/3</td><td>24/20</td><td>18/9</td><td>5/5</td><td>3/2</td><td>5/5</td><td>2/0</td><td>118</td><td>91</td></tr>
-    <tr style="font-weight:700;background:#1a1a2e;color:white;"><td>TOTAL</td><td colspan="11"></td><td>6,905</td><td>4,941</td></tr>
-  </table>
-
-  <h3>Audit Query (re-run to verify)</h3>
-  <pre>python3 &lt;&lt; 'EOF'
-import pymongo
-from collections import defaultdict
-client = pymongo.MongoClient('mongodb://localhost:27017', serverSelectionTimeoutMS=3000)
-db = client['pet-os-live-test_database']
-
-PILLARS = ["dine","care","play","go","learn","celebrate","shop","paperwork","emergency","farewell","adopt"]
-breeds = sorted(db.breed_products.distinct("breed"))
-visible = list(db.products_master.find(
-    {"is_active": {"$ne": False}, "visibility.status": {"$nin": ["inactive","archived"]}},
-    {"_id": 0, "id": 1, "name": 1, "pillar": 1, "breed_tags": 1, "breed": 1}
-))
-breed_set = set(breeds)
-
-def get_product_breeds(doc):
-    bt = doc.get("breed_tags") or []
-    br = doc.get("breed") or ""
-    pid = (doc.get("id") or "").lower()
-    name = (doc.get("name") or "").lower()
-    matched = set()
-    if bt and isinstance(bt, list):
-        matched |= {b for b in bt if b in breed_set}
-    if br and br in breed_set:
-        matched.add(br)
-    for b in breed_set:
-        for bv in [b, b.replace("_"," "), b.replace("_","-")]:
-            if bv in pid or bv in name:
-                matched.add(b)
-                break
-    return matched
-
-vis_counts = defaultdict(lambda: defaultdict(int))
-for doc in visible:
-    p = doc.get("pillar","")
-    if p not in PILLARS: continue
-    for b in get_product_breeds(doc):
-        vis_counts[b][p] += 1
-
-src_agg = list(db.breed_products.aggregate([{"$group":{"_id":{"breed":"$breed","pillar":"$pillar"},"count":{"$sum":1}}}]))
-src_counts = defaultdict(lambda: defaultdict(int))
-for row in src_agg:
-    src_counts[row["_id"]["breed"]][row["_id"]["pillar"]] = row["count"]
-
-gaps = []
-for breed in breeds:
-    for p in PILLARS:
-        v = vis_counts[breed][p]
-        s = src_counts[breed][p]
-        if v &lt; s:
-            gaps.append((breed, p, v, s))
-
-print(f"Total gaps found: {len(gaps)}")
-for breed, p, v, s in gaps:
-    print(f"  {breed} | {p}: visible={v} source={s} (missing {s-v})")
-EOF</pre>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════ -->
-  <h2>Soul Product Audit (as of 2026-04-05)</h2>
-  <p>Full audit saved to <code>/app/memory/SOUL_AUDIT_FINAL.md</code>. Summary table below.</p>
-  <p>Legend: number = distinct product types | — = missing entirely</p>
-
-  <div class="alert alert-green">
-    Total: 5,616 active soul products | 56 breeds | All breeds have Adopt ✅ | All breeds have Birthday Cake Topper ✅
-  </div>
-
-  <table style="font-size:0.8rem;">
-    <tr><th>Breed</th><th>Total</th><th>Dine</th><th>Care</th><th>Play</th><th>Go</th><th>Learn</th><th>Celeb</th><th>Shop</th><th>Paper</th><th>Emerg</th><th>Fare</th><th>Adopt</th></tr>
-    <tr><td>Corgi</td><td>82</td><td>6</td><td>13</td><td>7</td><td>9</td><td>6</td><td>15</td><td>5</td><td>5</td><td>6</td><td>8</td><td>2</td></tr>
-    <tr><td>Newfoundland</td><td>119</td><td>12</td><td>17</td><td>11</td><td>15</td><td>6</td><td>15</td><td>7</td><td>5</td><td>6</td><td>7</td><td>2</td></tr>
-    <tr><td>Maltese</td><td>97</td><td>8</td><td>15</td><td>12</td><td>16</td><td>6</td><td>17</td><td>6</td><td>5</td><td>4</td><td>6</td><td>2</td></tr>
-    <tr><td>Maltipoo</td><td>93</td><td>10</td><td>14</td><td>11</td><td>15</td><td>5</td><td>15</td><td>6</td><td>5</td><td>4</td><td>6</td><td>2</td></tr>
-    <tr><td>Golden Retriever</td><td>94</td><td>8</td><td>14</td><td>12</td><td>16</td><td>6</td><td>15</td><td>6</td><td>5</td><td>4</td><td>6</td><td>2</td></tr>
-    <tr><td>Indie</td><td>53</td><td>4</td><td>7</td><td>5</td><td>10</td><td>4</td><td>10</td><td>—</td><td>1</td><td>3</td><td>2</td><td>2</td></tr>
-    <tr><td>Indian Pariah</td><td>57</td><td>8</td><td>8</td><td>6</td><td>7</td><td>—</td><td>7</td><td>3</td><td>3</td><td>2</td><td>4</td><td>2</td></tr>
-    <tr><td>Indie (combined)</td><td>~90</td><td>10</td><td>12</td><td>9</td><td>14</td><td>4</td><td>15</td><td>3</td><td>4</td><td>4</td><td>5</td><td>2</td></tr>
-    <tr><td>Shih Tzu</td><td>94</td><td>8</td><td>14</td><td>12</td><td>16</td><td>6</td><td>15</td><td>5</td><td>5</td><td>4</td><td>6</td><td>2</td></tr>
-    <tr><td>Pug</td><td>94</td><td>8</td><td>15</td><td>12</td><td>16</td><td>6</td><td>15</td><td>5</td><td>5</td><td>4</td><td>6</td><td>2</td></tr>
-    <tr><td>Labrador</td><td>94</td><td>8</td><td>14</td><td>12</td><td>16</td><td>6</td><td>15</td><td>5</td><td>5</td><td>4</td><td>6</td><td>2</td></tr>
-    <tr><td>Bulldog</td><td>27</td><td>3</td><td>1</td><td>2</td><td>3</td><td>—</td><td>5</td><td>5</td><td>1</td><td>5</td><td>2</td><td>2</td></tr>
-    <tr><td>Cavalier</td><td>45</td><td>4</td><td>5</td><td>4</td><td>9</td><td>—</td><td>8</td><td>5</td><td>1</td><td>—</td><td>—</td><td>2</td></tr>
-    <tr><td>Yorkshire</td><td>45</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>3</td><td>2</td><td>1</td><td>—</td><td>—</td><td>2</td></tr>
-  </table>
-</section>
-
-</div><!-- /container -->
-
-<footer style="background:#1a1a2e;color:#94a3b8;text-align:center;padding:24px;font-size:0.85rem;margin-top:60px;">
-  The Doggy Company — Pet Life OS · Last updated 2026-04-09 · Session 14 · Phase 2 Proactive Layer documented · Always update this file before finishing your session
+<footer>
+  The Doggy Company® · Documentation auto-regenerated April 14, 2026 · 89,192 docs · 151 collections · 802,020 lines of code
 </footer>
-
-<section id="mira-intelligence-roadmap" style="border-top:4px solid #7c3aed;margin-top:48px">
-  <h2>🧠 Mira Intelligence Roadmap — Approved by Dipali (2026-04-09)</h2>
-  <p style="background:#faf5ff;border-left:4px solid #7c3aed;padding:12px 16px;border-radius:6px">
-    <strong>⚠️ AGENT INSTRUCTION:</strong> These intelligence enhancements were designed collaboratively and approved by the product owner.
-    Do NOT implement any of these without explicit instruction in the current session. Do NOT modify the priority order.
-    Implement one at a time. Each must be fully tested before the next begins.
-  </p>
-
-  <h3>Current Mira Intelligence Stack (as of 2026-04-09)</h3>
-  <table>
-    <tr><th>Layer</th><th>What it does</th><th>Where</th><th>Status</th></tr>
-    <tr><td>Allergen blocking</td><td>Blocks chicken/beef for Mojo via ALLERGEN_MAP synonyms</td><td>useMiraFilter.js + whatsapp_routes.py</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>Breed filtering</td><td>filterBreedProducts() — surfaces Indie products for Mojo</td><td>useMiraFilter.js</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>miraRank scoring</td><td>+2 breed, +1 size, +1 life stage, +1 favorites</td><td>useMiraFilter.js</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>Health Condition Filtering</td><td>Blocks high-fat for pancreatitis, sugar for diabetes, sodium for heart disease etc.</td><td>useMiraFilter.js + whatsapp_routes.py + server.py + MiraSearchPage.jsx</td><td class="status-live">✅ Live — Session 13/14</td></tr>
-    <tr><td>Mira Pick badge + hint</td><td>✦ MIRA PICK badge on top result · mira_hint "why" line on all chips in /mira-search</td><td>MiraSearchPage.jsx ResultChip</td><td class="status-live">✅ Live — Session 14</td></tr>
-    <tr><td>WhatsApp intelligence</td><td>Soul profile, allergens, health conditions, NearMe, Amazon fallback, ✦ Why format, archetype tone</td><td>whatsapp_routes.py</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>Mira Widget (chat)</td><td>Full soul profile in system prompt, pillar context, pet switcher, health conditions, archetype tone</td><td>server.py + mira_routes.py /chat endpoint</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>Mira Search (/os/stream)</td><td>Streaming chat + semantic product chips + archetype tone injection from DB or frontend body</td><td>mira_routes.py /os/stream</td><td class="status-live">✅ Live — Session 14</td></tr>
-    <tr><td>Archetype Tone Injection</td><td>10 archetypes (Social Butterfly, Wild Explorer, Velcro Baby…) adjust Mira's voice on all 3 surfaces</td><td>mira_routes.py ARCHETYPE_TONES + whatsapp_routes.py ARCHETYPE_TONES</td><td class="status-live">✅ Live — Session 14</td></tr>
-    <tr><td>Semantic search</td><td>TF-IDF product matching, allergen expansion server-side</td><td>mira_routes.py /semantic-search</td><td class="status-live">✅ Live</td></tr>
-    <tr><td>Multi-pet disambiguation</td><td>When 2+ pets and no name in message → asks "Which dog?" before searching</td><td>whatsapp_routes.py get_mira_ai_response()</td><td class="status-live">✅ Live — Session 14</td></tr>
-    <tr><td>Pillar-filtered fallback</td><td>0-result search → direct MongoDB query filtered to likely pillar (celebrate/shop, not food)</td><td>whatsapp_routes.py get_mira_ai_response()</td><td class="status-live">✅ Live — Session 14</td></tr>
-    <tr><td>Mira Imagines protocol</td><td>0 catalog results → GPT writes ✦ Mira Imagines: line + closest real products + Amazon + Concierge CTA</td><td>whatsapp_routes.py catalog_instruction</td><td class="status-live">✅ Live — Session 14</td></tr>
-  </table>
-
-  <h3 style="margin-top:32px">P0 — Health Condition Filtering <span style="color:#059669">✅ COMPLETE (Session 13/14)</span></h3>
-  <p style="background:#dcfce7;border-left:4px solid #22c55e;padding:12px 16px;border-radius:6px"><strong>Done.</strong> condition_map.py created. CONDITION_BLOCK_MAP mirrored in useMiraFilter.js. Health context added to WhatsApp + Widget system prompts. applyMiraFilter wired into MiraSearchPage.jsx (both product paths). ✦ MIRA PICK badge + mira_hint visible on ResultChip. Safety is consistent across all surfaces.</p>
-  <table>
-    <tr><th>Detail</th><th>Spec</th></tr>
-    <tr><td>DB field</td><td><code>pet.health_conditions</code> (array) e.g. ["pancreatitis", "hip dysplasia", "diabetes"]</td></tr>
-    <tr><td>What to block</td><td>High-fat treats → pancreatitis | Sugary biscuits → diabetes | High-impact toys → hip dysplasia | High-sodium → heart disease</td></tr>
-    <tr><td>Condition map</td><td>Build a <code>CONDITION_BLOCK_MAP</code> similar to ALLERGEN_MAP. Keys = condition names, values = ingredients/product-tags to block</td></tr>
-    <tr><td>Where to add</td><td>1. <code>useMiraFilter.js</code> — add health condition check alongside allergen check<br>2. <code>whatsapp_routes.py</code> — add to allergen_rule in system prompt<br>3. <code>mira_routes.py /semantic-search</code> — add to server-side filter<br>4. Mira widget system prompt in <code>server.py</code></td></tr>
-    <tr><td>✦ Why line</td><td>"Low fat (safe for Badmash's pancreatitis)" — health condition referenced explicitly</td></tr>
-    <tr><td>Test scenario</td><td>Pet with pancreatitis asks for treats → high-fat products blocked. Pet with diabetes → sugary biscuits blocked.</td></tr>
-  </table>
-
-  <h3 style="margin-top:32px">P1 — Multi-Pet Household Safety</h3>
-  <p><strong>Why:</strong> Dipali has 4 dogs. Mojo is allergic to chicken. Mystique loves chicken. If Dipali buys "treats for all four," Mira must split into safe baskets and flag cross-contamination risk. Unique to TDC — no competitor does this.</p>
-  <table>
-    <tr><th>Detail</th><th>Spec</th></tr>
-    <tr><td>Trigger</td><td>Message mentions multiple pet names OR "all my dogs" / "everyone"</td></tr>
-    <tr><td>Logic</td><td>Load all pets' allergen profiles → find conflicts → split recommendation into safe groups per dog</td></tr>
-    <tr><td>Warning format</td><td>"⚠️ Mojo can't share Mystique's treats — chicken allergy. I'll keep their baskets separate."</td></tr>
-    <tr><td>Where to add</td><td><code>whatsapp_routes.py get_mira_ai_response()</code> — detect multi-pet intent, pass conflict map to GPT</td></tr>
-  </table>
-
-  <h3 style="margin-top:32px">P1 — Seasonal + City Intelligence</h3>
-  <p><strong>Why:</strong> Mira knows city and date. A Newfoundland in Mumbai in April (38°C) has heat emergency risk. Zero new data needed — date + breed + city does the work.</p>
-  <table>
-    <tr><th>Detail</th><th>Spec</th></tr>
-    <tr><td>Data available</td><td><code>pet.breed</code>, <code>user.city</code>, <code>datetime.now()</code></td></tr>
-    <tr><td>Season map</td><td>Mumbai April-June = summer heat | June-Sept = monsoon (paw infections, ear care) | Dec-Feb = winter (joint pain for seniors)</td></tr>
-    <tr><td>Breed map</td><td>Newfoundland + summer = cooling mats, short walks, hydration treats | Indie + monsoon = paw wipes priority</td></tr>
-    <tr><td>Where to add</td><td>Build <code>_get_seasonal_context(city, breed, date)</code> → inject into system prompt as a context block</td></tr>
-  </table>
-
-  <h3 style="margin-top:32px">P2 — Life Stage Transition Alerts</h3>
-  <p><strong>Why:</strong> Life stage is a static label today. Mira doesn't proactively say "Mojo turns 7 next month — Indie dogs at 7 need joint support." All calculable from <code>pet.date_of_birth</code>.</p>
-  <table>
-    <tr><th>Detail</th><th>Spec</th></tr>
-    <tr><td>Trigger</td><td>Dog within 30 days of a life-stage boundary (puppy→junior, junior→adult, adult→senior)</td></tr>
-    <tr><td>Breed-specific ages</td><td>Indie: senior at 8yrs | Newfoundland: senior at 6yrs | Labrador: senior at 8yrs</td></tr>
-    <tr><td>Message</td><td>"Mojo turns 7 next month. For Indies at 7, joint supplements become important. Want me to build a Senior Care plan?"</td></tr>
-    <tr><td>Where to add</td><td><code>mira_nudges.py</code> — new nudge type <code>life_stage_transition</code> triggered 30 days before boundary</td></tr>
-  </table>
-
-  <h3 style="margin-top:32px">P2 — Purchase + Consumption Pattern Learning</h3>
-  <p><strong>Why:</strong> Mira recommends from catalogue cold. She doesn't know Mojo already has salmon biscuits at home. The food_reorder nudge exists but isn't connected to actual purchase data.</p>
-  <table>
-    <tr><th>Detail</th><th>Spec</th></tr>
-    <tr><td>Data needed</td><td>Order history from <code>orders</code> collection + average product consumption rate per category</td></tr>
-    <tr><td>Logic</td><td>Last purchase date + avg consumption days → predict "running low" date → proactive reorder message</td></tr>
-    <tr><td>Message</td><td>"Mojo's salmon biscuits are probably running low — you ordered 18 days ago and they last ~25 days. Reorder? 🐾"</td></tr>
-  </table>
-
-  <h3 style="margin-top:32px">Never Add (explicitly excluded)</h3>
-  <ul>
-    <li><strong>Star ratings / reviews</strong> — Mira is personal, not social. What works for another Labrador is irrelevant for Mojo.</li>
-    <li><strong>Generic AI chat</strong> — every Mira response must be anchored to a specific pet's actual data.</li>
-    <li><strong>More pillars before deepening existing ones</strong> — make each of the 12 genuinely intelligent per-pet first.</li>
-  </ul>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════════════
-     MIRA INTELLIGENCE PHASE 2 — THE PROACTIVE LAYER
-     Designed: 2026-04-09 | Do one at a time | Do not skip steps
-     ═══════════════════════════════════════════════════════════════════════ -->
-<section id="mira-phase2">
-  <h2>🧠 Mira Intelligence Phase 2 — The Proactive Layer</h2>
-
-  <div class="alert alert-blue" style="margin-bottom:24px">
-    <strong>⚠️ AGENT INSTRUCTION — READ BEFORE TOUCHING ANYTHING:</strong><br><br>
-    These 5 features were designed as a cohesive vision on 2026-04-09 by the product owner (Dipali) and the AI agent. They must be built <strong>one at a time, in order</strong>. Do NOT implement multiple simultaneously. Do NOT skip to a later one because it seems easier.<br><br>
-    <strong>Order:</strong> Feature 1 → test → Feature 2 → test → Feature 3 → test → Feature 4 → test → Feature 5.<br><br>
-    Each feature builds on the previous. Feature 2 (Life Event Intelligence) depends on Feature 1's memory layer. Feature 4 (Multi-Pet Basket) uses Feature 1's stored context.<br><br>
-    <strong>The principle behind all of this:</strong> Mira currently waits to be asked. After Phase 2, Mira notices, remembers, and acts. Every feature here moves Mira from reactive to proactive. That is the product direction. Do not deviate from it.
-  </div>
-
-  <p style="font-size:15px;line-height:1.8;color:#374151">
-    Phase 1 Mira is brilliant at responding. She knows Mojo's allergies, breed, archetype, health conditions. She blocks the right products. She imagines what doesn't exist. She speaks in Mojo's soul language.<br><br>
-    Phase 2 Mira <em>remembers</em>. She notices Mojo is turning 7 next month. She flags that Badmash's salmon treats are probably running low. She sees Mystique's rash photo and says the right thing. She notices Bruno hasn't been mentioned in 3 weeks and gently checks in.<br><br>
-    The difference between Phase 1 and Phase 2 is the difference between a smart tool and a relationship. That is what we are building.
-  </p>
-
-  <hr style="border:none;border-top:2px solid #e5e7eb;margin:32px 0">
-
-  <!-- ─── FEATURE 1 ─── -->
-  <h3 id="f1-mira-remembers" style="color:#7c3aed;font-size:1.4rem">
-    Feature 1 — Mira Remembers (Cross-Session Memory)
-    <span style="font-size:0.85rem;background:#faf5ff;color:#7c3aed;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD FIRST</span>
-  </h3>
-
-  <p><strong>The vision:</strong> Right now every conversation starts from zero. Mira has the soul profile, but not the history. She doesn't know Mojo got a new food last month, that Badmash tried a new grooming service and loved it, or that Dipali mentioned Bruno has been limping. This feature adds a persistent memory layer so Mira opens every conversation with context, not just profile data.</p>
-
-  <p><strong>Example of what becomes possible:</strong></p>
-  <div style="background:#1e1b4b;color:#c4b5fd;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
-    Dipali: Hi Mira<br>
-    Mira: Hey Dipali! Last time we spoke you were looking at salmon treats for Mojo — did he enjoy them? Also, Badmash's grooming was 8 weeks ago. Want me to book again? 🐾
-  </div>
-
-  <h4>Implementation Blueprint</h4>
-  <table>
-    <tr><th>Step</th><th>Detail</th></tr>
-    <tr>
-      <td><strong>1. New MongoDB collection</strong></td>
-      <td>
-        <code>mira_memory</code> — one document per user phone/email:<br>
-        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">{
-  "owner_email": "dipali@...",
-  "phone_10": "9876543210",
-  "memories": [
-    {
-      "date": "2026-04-09",
-      "pet_name": "Mojo",
-      "topic": "salmon treats",
-      "detail": "User asked for salmon treats. Mira recommended TDC Salmon Biscuits. Conversion unknown.",
-      "type": "product_inquiry",   // product_inquiry | service_booking | health_concern | general
-      "session_id": "whatsapp-9876543210-20260409"
-    }
-  ],
-  "last_grooming": {"Mojo": "2026-02-12", "Badmash": "2026-02-18"},
-  "last_vet": {"Mojo": "2026-01-05"},
-  "updated_at": "2026-04-09T14:00:00Z"
-}</pre>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>2. Write memory after each conversation</strong></td>
-      <td>
-        In <code>whatsapp_routes.py</code>, at the end of <code>get_mira_ai_response()</code>, call a new helper:<br>
-        <code>await _save_mira_memory(db, user_email, phone_10, message_text, mira_response, ticket_pet_name)</code><br><br>
-        This helper extracts key topics from the message (product name, service type, health concern) via a quick GPT extraction or simple regex, and appends to <code>mira_memory.memories</code>.<br>
-        Keep only last <strong>20 memories per user</strong> (trim oldest). Storage stays lean.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>3. Read memory at conversation start</strong></td>
-      <td>
-        In <code>get_mira_ai_response()</code>, after loading the soul profile (step 1), fetch <code>mira_memory</code> for this user.<br>
-        Build a <code>memory_block</code> string:<br>
-        <code>"MIRA MEMORY (last 5 interactions): [date] Mojo — asked about salmon treats | [date] Badmash — booked grooming | ..."</code><br>
-        Inject into system prompt BEFORE the catalog block but AFTER the soul profile block.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>4. Widget + MiraSearch</strong></td>
-      <td>
-        Same pattern. In <code>mira_routes.py /os/stream</code>, fetch <code>mira_memory</code> by <code>pet_id</code> owner email and inject.<br>
-        Write memory after each stream completes (after <code>full_response</code> is assembled).<br>
-        DO NOT write memory for anonymous (no pet_id) sessions.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>5. Grooming/vet tracking</strong></td>
-      <td>
-        Whenever a service booking is detected in the message (keywords: "groom", "vet", "bath", "trim", "vaccination"), update <code>mira_memory.last_grooming[pet_name]</code> or <code>last_vet[pet_name]</code> with today's date.<br>
-        This feeds Feature 2 (Life Event Intelligence).
-      </td>
-    </tr>
-    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code>, <code>mira_routes.py</code>. New collection <code>mira_memory</code> (auto-created on first write).</td></tr>
-    <tr><td><strong>Files NOT to touch</strong></td><td><code>useMiraFilter.js</code>, <code>MiraSearchPage.jsx</code>, all *SoulPage.jsx files, <code>condition_map.py</code>.</td></tr>
-    <tr><td><strong>Test scenario</strong></td><td>Send "treat for Mojo" on WhatsApp. Then send "Hi" the next day. Mira should reference the previous treat conversation in her opening.</td></tr>
-    <tr><td><strong>Rollback plan</strong></td><td>If <code>mira_memory</code> lookup fails, catch the exception silently and proceed with empty memory_block. Never let a memory error break a conversation.</td></tr>
-  </table>
-
-  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
-
-  <!-- ─── FEATURE 2 ─── -->
-  <h3 id="f2-life-events" style="color:#059669;font-size:1.4rem">
-    Feature 2 — Life Event Intelligence (Proactive Nudges)
-    <span style="font-size:0.85rem;background:#dcfce7;color:#059669;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD AFTER FEATURE 1</span>
-  </h3>
-
-  <p><strong>The vision:</strong> Mira watches the calendar. She knows Mojo's birthday, life-stage boundaries, and last grooming date (from Feature 1's memory). She proactively nudges Dipali before anything important — not when it's too late, not too often. Twice a week maximum. One nudge at a time.</p>
-
-  <div style="background:#f0fdf4;color:#14532d;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
-    [Unprompted WhatsApp from Mira]<br>
-    Hey Dipali! Mojo turns 7 next month 🎂<br>
-    For Indie dogs at 7, joints start needing support.<br>
-    Want me to put together a Senior Care plan for him?<br>
-    thedoggycompany.com/care 🐾
-  </div>
-
-  <h4>Implementation Blueprint</h4>
-  <table>
-    <tr><th>Step</th><th>Detail</th></tr>
-    <tr>
-      <td><strong>1. Event detection function</strong></td>
-      <td>
-        Create <code>_get_life_events(pets, mira_memory)</code> in <code>whatsapp_routes.py</code>. Returns a list of active events:<br>
-        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">events = [
-  {"type": "birthday_approaching", "pet": "Mojo", "days_until": 12, "years": 7},
-  {"type": "life_stage_transition", "pet": "Mojo", "from": "adult", "to": "senior", "days_until": 28},
-  {"type": "grooming_overdue", "pet": "Badmash", "weeks_since": 9},
-  {"type": "vet_overdue", "pet": "Mojo", "months_since": 4},
-]</pre>
-        Event logic:<br>
-        — Birthday approaching: <code>pet.date_of_birth</code> → next birthday within 14 days<br>
-        — Life stage transition: calculate age in days → within 30 days of breed-specific senior threshold<br>
-        — Grooming overdue: <code>mira_memory.last_grooming[pet]</code> → more than 8 weeks ago<br>
-        — Vet overdue: <code>mira_memory.last_vet[pet]</code> → more than 6 months ago
-      </td>
-    </tr>
-    <tr>
-      <td><strong>2. Breed-specific life stage thresholds</strong></td>
-      <td>
-        Add <code>BREED_SENIOR_AGE</code> dict to <code>whatsapp_routes.py</code>:<br>
-        <code>{"newfoundland": 6, "great_dane": 6, "saint_bernard": 6, "golden_retriever": 8, "labrador": 8, "indie": 8, "beagle": 9, "chihuahua": 10, "default": 8}</code><br>
-        Use <code>pet.breed.lower()</code> to look up. Fall back to "default" if breed not in dict.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>3. Nudge scheduling — anti-spam gate</strong></td>
-      <td>
-        In <code>mira_memory</code>, add field <code>"last_nudge_sent": "2026-04-07"</code>.<br>
-        Before sending any proactive nudge: check if last_nudge_sent was less than 3 days ago. If yes, skip.<br>
-        Maximum 2 nudges per week per user. This is non-negotiable — over-nudging destroys trust.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>4. Nudge delivery</strong></td>
-      <td>
-        Proactive nudges are sent via Gupshup outbound message (same as existing outbound in <code>whatsapp_routes.py</code>).<br>
-        Hook into the existing <code>mira_nudges.py</code> cron job. Add a new nudge type: <code>life_event_nudge</code>.<br>
-        The nudge message is GPT-generated using the same Mira system prompt + the event context. NOT a static template.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>5. Inject events into reactive conversations too</strong></td>
-      <td>
-        If an event is active AND user messages Mira, prepend the event to the system prompt context:<br>
-        <code>"ACTIVE LIFE EVENT: Mojo turns 7 in 12 days. Mention this naturally if relevant. Don't force it."</code><br>
-        Mira weaves it in naturally — not as a hard interrupt, just as awareness.
-      </td>
-    </tr>
-    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code>, <code>mira_nudges.py</code>. Reads from <code>mira_memory</code> (Feature 1 required).</td></tr>
-    <tr><td><strong>Test scenario</strong></td><td>Set a test pet's DOB to 10 days from now. Verify nudge is sent once. Change date forward 1 day, verify nudge is NOT sent again (anti-spam gate).</td></tr>
-    <tr><td><strong>Dependency</strong></td><td>⚠️ Feature 1 (mira_memory) MUST be live before building this. last_grooming and last_vet data feeds the overdue checks.</td></tr>
-  </table>
-
-  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
-
-  <!-- ─── FEATURE 3 ─── -->
-  <h3 id="f3-vision" style="color:#c9973a;font-size:1.4rem">
-    Feature 3 — WhatsApp Vision (Photo Understanding)
-    <span style="font-size:0.85rem;background:#fffbf0;color:#c9973a;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD AFTER FEATURE 2</span>
-  </h3>
-
-  <p><strong>The vision:</strong> A parent sends a photo of their dog's rash, a product label they found at a store, or food packaging. Mira reads it and responds with genuine care context. A dog's health safety can be in a single photo moment — allergic reaction, toxic ingredient on a label. Mira should see it.</p>
-
-  <div style="background:#fffbf0;color:#78350f;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
-    [Parent sends photo of chicken jerky packaging]<br>
-    Mira: I can see this is a chicken jerky product.<br>
-    ⚠️ Mojo is allergic to chicken — please don't feed him this.<br>
-    Want me to find salmon jerky alternatives? 🐾
-  </div>
-
-  <h4>Implementation Blueprint</h4>
-  <table>
-    <tr><th>Step</th><th>Detail</th></tr>
-    <tr>
-      <td><strong>1. Gupshup image webhook</strong></td>
-      <td>
-        Gupshup sends image messages with <code>type: "image"</code> and <code>payload.url</code> (the media URL).<br>
-        In <code>whatsapp_routes.py</code> webhook handler, detect <code>msg_type == "image"</code> (currently only handles "text").<br>
-        Extract <code>image_url = payload.get("url")</code>.<br>
-        Pass to <code>get_mira_ai_response(message_text="[image]", image_url=image_url, ...)</code>.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>2. GPT-4o Vision call</strong></td>
-      <td>
-        In <code>get_mira_ai_response()</code>, detect <code>image_url is not None</code>.<br>
-        Use <strong>OpenAI GPT-4o</strong> with vision (NOT litellm for this — use direct openai call with EMERGENT_LLM_KEY as the api_key, base_url="https://llm.emergentmind.io/v1"):<br>
-        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">messages = [
-  {"role": "system", "content": mira_system_prompt},
-  {"role": "user", "content": [
-    {"type": "text",      "text": "The parent sent this image. Analyse it in context of their dog's soul profile."},
-    {"type": "image_url", "image_url": {"url": image_url}}
-  ]}
-]</pre>
-        The same Mira system prompt applies — allergens, health conditions, soul profile. Mira analyses the image THROUGH the pet's safety lens.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>3. Photo type routing</strong></td>
-      <td>
-        Ask GPT to classify the image first (cheap call, 50 tokens):<br>
-        "Is this: (a) a product label, (b) a dog's body/health concern, (c) a dog doing something fun, or (d) other?"<br>
-        — Product label → allergen cross-check against pet profile<br>
-        — Health concern (rash, limp, eye) → care context + vet CTA (NEVER diagnose)<br>
-        — Fun photo → warm engagement ("Mojo looks incredible! 😍")<br>
-        — Other → general response
-      </td>
-    </tr>
-    <tr>
-      <td><strong>4. Health concern HARD RULE</strong></td>
-      <td>
-        <strong style="color:#dc2626">CRITICAL:</strong> If image contains a health concern, Mira MUST:<br>
-        1. NOT diagnose. Not even suggest a diagnosis.<br>
-        2. Always recommend vet consultation for anything health-related.<br>
-        3. Can offer comfort: "This looks like it's bothering Mojo. Let me get your Concierge to connect you with a vet."<br>
-        Add this as an UNBREAKABLE rule in the vision system prompt:<br>
-        "NEVER diagnose medical conditions from images. Always recommend: 'Please consult your vet.' You may express concern and escalate."
-      </td>
-    </tr>
-    <tr>
-      <td><strong>5. Allergen label cross-check</strong></td>
-      <td>
-        If image is a product label, GPT extracts ingredients list as text.<br>
-        Cross-check extracted ingredients against <code>all_allergies</code> and <code>all_conditions</code> from pet profile.<br>
-        Output: "✅ This looks safe for Mojo" OR "⚠️ Contains chicken — Mojo's allergen. Don't feed this."<br>
-        This is immediate, high-value safety intelligence.
-      </td>
-    </tr>
-    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code> webhook handler + <code>get_mira_ai_response()</code>. Add <code>image_url</code> parameter.</td></tr>
-    <tr><td><strong>Files NOT to touch</strong></td><td>Frontend files, mira_routes.py, useMiraFilter.js.</td></tr>
-    <tr><td><strong>API key</strong></td><td>Use EMERGENT_LLM_KEY (already in env). GPT-4o vision works with it via the Emergent proxy.</td></tr>
-    <tr><td><strong>Test scenario</strong></td><td>Send a photo of a chicken-based dog treat packaging to the WhatsApp number (Mojo's account). Verify Mira flags the allergen. Send a random dog photo. Verify warm engagement response.</td></tr>
-    <tr><td><strong>Liability note</strong></td><td>The "never diagnose" rule is non-negotiable from a legal standpoint. Always include vet CTA for health images. Log all health-concern image responses for review.</td></tr>
-  </table>
-
-  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
-
-  <!-- ─── FEATURE 4 ─── -->
-  <h3 id="f4-multipet-basket" style="color:#dc2626;font-size:1.4rem">
-    Feature 4 — Multi-Pet Basket Splitting
-    <span style="font-size:0.85rem;background:#fef2f2;color:#dc2626;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD AFTER FEATURE 3</span>
-  </h3>
-
-  <p><strong>The vision:</strong> When Dipali asks for "treats for all my dogs," Mira understands that each dog has a different safety profile. She splits the basket — one recommendation per dog, each safe for THAT dog, with a clear conflict flag when one dog's allergen is another dog's favourite ingredient.</p>
-
-  <div style="background:#fef2f2;color:#7f1d1d;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
-    Dipali: treat for all my dogs<br><br>
-    Mira: Got it! Each pup gets their own safe pick:<br><br>
-    🐕 Mojo (Indie, chicken allergy)<br>
-    → TDC Salmon Biscuits — ₹299 thedoggycompany.com/dine<br>
-    ✦ Salmon (his favourite), zero chicken<br><br>
-    🐕 Mystique (Golden)<br>
-    → TDC Chicken Jerky — ₹349 thedoggycompany.com/dine<br>
-    ✦ High-protein for her energy level<br><br>
-    ⚠️ Note: Mojo can't share Mystique's chicken jerky. Keep their treats separate! 🐾
-  </div>
-
-  <h4>Implementation Blueprint</h4>
-  <table>
-    <tr><th>Step</th><th>Detail</th></tr>
-    <tr>
-      <td><strong>1. Multi-pet intent detection</strong></td>
-      <td>
-        In <code>get_mira_ai_response()</code>, add detection before the semantic search step:<br>
-        <code>is_multi_pet = any(trigger in message_text.lower() for trigger in ["all my dogs", "all of them", "everyone", "all four", "all three", "both dogs", "all dogs"])</code><br>
-        Also: detect if 2+ pet names appear in the same message (e.g. "Mojo and Mystique").<br>
-        If <code>is_multi_pet</code> is True AND user has 2+ pets → switch to multi-pet mode.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>2. Per-pet semantic search</strong></td>
-      <td>
-        Run semantic search ONCE per dog (loop over pets):<br>
-        <code>for pet in pets: found = await semantic_search(query, allergies=pet.allergies)</code><br>
-        Store results as <code>per_pet_products = {"Mojo": [safe_products], "Mystique": [safe_products]}</code><br>
-        Limit: 1 top product per dog (clean WhatsApp format). 3+ recommendations per dog gets unreadable.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>3. Cross-contamination detection</strong></td>
-      <td>
-        After per-pet search, check for conflicts:<br>
-        <code>for petA in pets: for petB in pets: if petA != petB: check if petA's allergens appear in petB's recommended product</code><br>
-        If conflict found → add WARNING to system prompt:<br>
-        <code>"⚠️ CONFLICT: Mojo is allergic to chicken. Mystique's recommended product (Chicken Jerky) contains chicken. Flag this in your response — tell Dipali to keep their treats separate."</code>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>4. System prompt for multi-pet mode</strong></td>
-      <td>
-        Replace standard catalog_block with a per-pet structured block:<br>
-        <pre style="background:#f8f9fa;padding:8px;border-radius:4px;font-size:12px">MULTI-PET MODE: Show one safe product per dog. Format:
-🐕 [Pet Name] ([breed], [allergy summary])
-→ [Product Name] — ₹[price] [link]
-✦ Why: [reason specific to THIS dog]
-
-[Repeat for each dog]
-
-[If conflict detected:]
-⚠️ [Pet A] cannot share [Pet B]'s [product] — [allergen] allergy. Keep separate.</pre>
-      </td>
-    </tr>
-    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py get_mira_ai_response()</code> only.</td></tr>
-    <tr><td><strong>Test scenario</strong></td><td>Use Dipali's account (4 dogs, Mojo allergic to chicken). Send "treats for all my dogs." Verify: 4 separate blocks, Mojo's block has no chicken product, conflict warning appears if any other dog gets chicken.</td></tr>
-    <tr><td><strong>Note</strong></td><td>Multi-pet mode only for WhatsApp for now. Widget and MiraSearch show one pet at a time (pet switcher handles multi-pet there).</td></tr>
-  </table>
-
-  <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0">
-
-  <!-- ─── FEATURE 5 ─── -->
-  <h3 id="f5-soul-loop" style="color:#0891b2;font-size:1.4rem">
-    Feature 5 — Soul Completion Loop
-    <span style="font-size:0.85rem;background:#ecfeff;color:#0891b2;padding:2px 8px;border-radius:4px;margin-left:8px">BUILD LAST</span>
-  </h3>
-
-  <p><strong>The vision:</strong> Incomplete profiles = blind Mira. When a dog has no archetype, no breed, or no health conditions recorded, Mira is working without her most powerful tools. This feature adds a gentle, conversational profile-building loop — Mira asks 3 quick questions and unlocks the full intelligence for that dog.</p>
-
-  <div style="background:#ecfeff;color:#164e63;padding:16px;border-radius:8px;font-family:monospace;font-size:13px;margin-bottom:16px">
-    [Mira detects Coco has no breed or archetype]<br><br>
-    Mira: I don't know Coco well enough yet to find her perfect picks.<br>
-    Three quick questions — takes 30 seconds:<br><br>
-    1️⃣ What breed is she?<br>
-    (Reply with the breed name)<br><br>
-    [After reply]<br>
-    2️⃣ Is she more of a: (a) cuddle bug, (b) adventure seeker, (c) foodie, (d) anxious sweetie?<br><br>
-    [After reply]<br>
-    3️⃣ Any allergies or health conditions I should know?<br><br>
-    [After reply]<br>
-    Perfect! I know Coco now. Let me find her something wonderful. 🐾
-  </div>
-
-  <h4>Implementation Blueprint</h4>
-  <table>
-    <tr><th>Step</th><th>Detail</th></tr>
-    <tr>
-      <td><strong>1. Profile completeness check</strong></td>
-      <td>
-        Add <code>_is_profile_incomplete(pet)</code> to <code>whatsapp_routes.py</code>:<br>
-        Returns True if ANY of these are missing: <code>pet.breed</code>, <code>pet.archetype</code> (or soul_answers.primary_archetype), <code>pet.date_of_birth</code>.<br>
-        Only trigger the loop for the ACTIVE pet (ticket_pet_name or first pet). Not all pets at once.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>2. Soul loop session state</strong></td>
-      <td>
-        Store loop progress in <code>mira_memory</code> (Feature 1 required):<br>
-        <code>"soul_loop": {"Coco": {"step": 1, "started_at": "2026-04-09T14:00:00Z", "answers": {}}}</code><br>
-        Steps: 1=breed, 2=archetype_hint, 3=health. After step 3 → write to DB + clear loop state.<br>
-        Abandon loop after 24 hours of no response (set step back to 0).
-      </td>
-    </tr>
-    <tr>
-      <td><strong>3. Loop trigger logic</strong></td>
-      <td>
-        Only trigger when: <code>_is_profile_incomplete(active_pet)</code> AND <code>not soul_loop_active</code> AND user is NOT mid-transaction (no "buy", "book", "order" in message — don't interrupt a purchase).<br>
-        First occurrence only — if loop was already attempted and abandoned in the last 7 days, don't re-trigger.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>4. Archetype question format</strong></td>
-      <td>
-        Step 2 maps answers to archetypes:<br>
-        "cuddle bug" → <code>velcro_baby</code> | "adventure seeker" → <code>wild_explorer</code> | "foodie" → <code>snack_negotiator</code> | "anxious sweetie" → <code>brave_worrier</code> | "social butterfly" → <code>social_butterfly</code> | "born leader" → <code>gentle_aristocrat</code><br>
-        Write result to <code>pet.doggy_soul_answers.primary_archetype</code> in MongoDB.
-      </td>
-    </tr>
-    <tr>
-      <td><strong>5. Profile write-back</strong></td>
-      <td>
-        After step 3 completes, update the pet document in MongoDB:<br>
-        <code>db.pets.update_one({"name": pet_name, "owner_email": user_email}, {"$set": {"breed": breed, "doggy_soul_answers.primary_archetype": archetype, "health_conditions": conditions}})</code><br>
-        Log: "Soul loop complete for Coco — breed: Golden Retriever, archetype: velcro_baby".<br>
-        From this point, Mira has full intelligence for this dog — archetype tone, health blocking, breed filtering all unlock.
-      </td>
-    </tr>
-    <tr><td><strong>Files to touch</strong></td><td><code>whatsapp_routes.py</code>. Reads/writes <code>mira_memory</code> (Feature 1 required). Writes to <code>pets</code> collection.</td></tr>
-    <tr><td><strong>Test scenario</strong></td><td>Create a test pet with no breed/archetype. Message Mira on WhatsApp. Verify loop triggers. Complete 3 steps. Verify pet document in MongoDB is updated with breed + archetype. Verify next message uses archetype tone.</td></tr>
-    <tr><td><strong>Dependency</strong></td><td>⚠️ Feature 1 (mira_memory) MUST be live before building this. Loop state is stored in mira_memory.</td></tr>
-  </table>
-
-  <hr style="border:none;border-top:2px solid #e5e7eb;margin:32px 0">
-
-  <h3>Phase 2 Summary — Build Order</h3>
-  <table>
-    <tr><th>#</th><th>Feature</th><th>Depends on</th><th>Complexity</th><th>Impact</th><th>Status</th></tr>
-    <tr><td>1</td><td>Mira Remembers (cross-session memory)</td><td>Nothing</td><td>Medium</td><td>🔴 Highest — enables all other features</td><td class="status-pending">Not started</td></tr>
-    <tr><td>2</td><td>Life Event Intelligence (proactive nudges)</td><td>Feature 1</td><td>Medium</td><td>🟠 High — turns Mira from reactive to proactive</td><td class="status-pending">Not started</td></tr>
-    <tr><td>3</td><td>WhatsApp Vision (photo understanding)</td><td>None (independent)</td><td>Low-Medium</td><td>🟠 High — safety + delight in one photo</td><td class="status-pending">Not started</td></tr>
-    <tr><td>4</td><td>Multi-Pet Basket Splitting</td><td>Feature 1 for best results</td><td>Medium</td><td>🟡 Medium — unique to TDC, no competitor does this</td><td class="status-pending">Not started</td></tr>
-    <tr><td>5</td><td>Soul Completion Loop</td><td>Feature 1</td><td>Medium</td><td>🟡 Medium — growth loop, every completion unlocks full Mira</td><td class="status-pending">Not started</td></tr>
-  </table>
-
-  <div class="alert" style="background:#fef9c3;border-left:4px solid #d97706;padding:16px;border-radius:6px;margin-top:24px">
-    <strong>⚠️ FINAL AGENT NOTE:</strong><br>
-    Build Feature 1 first. Full stop. It is the memory foundation everything else sits on.<br>
-    Do not be tempted to build Feature 3 (Vision) first because it seems exciting and self-contained.<br>
-    Do not build Feature 4 (Multi-Pet Basket) without Feature 1 — the conflict detection is better with stored context.<br>
-    The order exists for a reason. Respect it.
-  </div>
-</section>
-
-
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<!-- MIRA SOUL UNIFICATION — Added April 2026                               -->
-<!-- ═══════════════════════════════════════════════════════════════════════ -->
-<section style="max-width:900px;margin:60px auto;padding:0 24px">
-  <h2 style="color:#0891b2;font-size:2rem;border-bottom:2px solid #0891b2;padding-bottom:8px">
-    Mira Soul Unification
-  </h2>
-  <p style="color:#475569;font-size:1.05rem;margin-top:12px">
-    <strong>One Brain. One Voice. WhatsApp + Widget.</strong><br>
-    Status: <span style="color:#16a34a;font-weight:700">IMPLEMENTING</span> — April 2026
-  </p>
-
-  <h3 style="color:#1e293b;margin-top:32px">The Problem</h3>
-  <p>Mira has two personalities. The widget sounds like a soul guardian. WhatsApp sounds like a customer service bot. Same data, same dog, completely different experience.</p>
-
-  <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:0.95rem">
-    <tr style="background:#0891b2;color:white">
-      <th style="padding:10px 14px;text-align:left">Capability</th>
-      <th style="padding:10px 14px;text-align:center">Widget</th>
-      <th style="padding:10px 14px;text-align:center">WhatsApp (before)</th>
-      <th style="padding:10px 14px;text-align:center">WhatsApp (after)</th>
-    </tr>
-    <tr style="background:#f8fafc">
-      <td style="padding:10px 14px">Competitor rule (Rover/Supertails blocked)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px">Chatbot phrases blocked ("Happy to help!")</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr style="background:#f8fafc">
-      <td style="padding:10px 14px">Context-adaptive voice (treats vs grief vs booking)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px">Governing principles (Remember→Ask→Confirm→Act)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr style="background:#f8fafc">
-      <td style="padding:10px 14px">Farewell & grief escalation protocol</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px">Context retention ("hold the intent")</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr style="background:#f8fafc">
-      <td style="padding:10px 14px">Service flows (ask before products)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px">Archetype tone (Wild Explorer, Velcro Baby etc.)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr style="background:#f8fafc">
-      <td style="padding:10px 14px">Allergen block (non-negotiable)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px">GPT-4o (not mini)</td>
-      <td style="text-align:center;color:#16a34a">✅</td>
-      <td style="text-align:center;color:#dc2626">❌</td>
-      <td style="text-align:center;color:#16a34a">✅ (fixed)</td>
-    </tr>
-  </table>
-
-  <h3 style="color:#1e293b;margin-top:36px">Architecture — One Source of Truth</h3>
-  <div style="background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:8px;font-family:monospace;margin-top:12px;font-size:0.9rem">
-    <div style="color:#94a3b8"># NEW — channel-agnostic soul</div>
-    <div style="color:#38bdf8">mira_soul.py</div>
-    <div style="color:#e2e8f0;margin-left:20px">└── MIRA_CORE_SOUL = """..."""</div>
-    <br>
-    <div style="color:#94a3b8"># Imports MIRA_CORE_SOUL — LOCKED, do not touch</div>
-    <div style="color:#f97316">mira_routes.py</div>
-    <div style="color:#e2e8f0;margin-left:20px">└── MIRA_OS_SYSTEM_PROMPT (widget brain)</div>
-    <br>
-    <div style="color:#94a3b8"># Imports MIRA_CORE_SOUL + WhatsApp format rules</div>
-    <div style="color:#4ade80">whatsapp_routes.py</div>
-    <div style="color:#e2e8f0;margin-left:20px">└── get_mira_ai_response() system_prompt</div>
-    <br>
-    <div style="color:#94a3b8"># LOCKED — no changes ever</div>
-    <div style="color:#f43f5e">MiraChatWidget.jsx ← DO NOT TOUCH</div>
-    <div style="color:#f43f5e">server.py ← DO NOT TOUCH</div>
-  </div>
-
-  <h3 style="color:#1e293b;margin-top:36px">What Goes in MIRA_CORE_SOUL</h3>
-  <ol style="color:#475569;line-height:2">
-    <li>🚫 Competitor Rule — Rover, Supertails, HUFT, Chewy blocked forever</li>
-    <li>🌟 Soulful Voice — Soul guardian language, chatbot phrases blocked</li>
-    <li>🎭 Context-Adaptive Voice — treats/health/booking/grief all different tones</li>
-    <li>🐾 Golden Doctrine — Pet name first, breed second (always)</li>
-    <li>⚠️ Absolute Rules — Products after alignment, never on first message</li>
-    <li>📐 Governing Principles 1–7 — Remember→Ask→Confirm→Act</li>
-    <li>⚡ Context Retention — Hold the intent, zero exceptions</li>
-    <li>🌷 Farewell & Grief Escalation — Full protocol, Concierge handoff</li>
-    <li>🔧 Service Flows — Grooming/boarding/trainer: ask before showing products</li>
-  </ol>
-
-  <h3 style="color:#1e293b;margin-top:32px">WhatsApp-Only Format Rules (stay in whatsapp_routes.py)</h3>
-  <ul style="color:#475569;line-height:2">
-    <li>4–6 sentences max (WhatsApp ≠ web app)</li>
-    <li>No markdown — no <code>**bold**</code>, no <code>### headers</code></li>
-    <li>Product format: <code>"Name — ₹X → link"</code></li>
-    <li>Allergen alert block (dynamic, from pet profile)</li>
-    <li>Condition rule block (dynamic, from pet profile)</li>
-    <li>Archetype tones dict + injection</li>
-    <li>Active pet lock (Mojo-only mode)</li>
-    <li>Catalog block / Mira Imagines protocol</li>
-    <li>Response structure template</li>
-    <li>Member profile context block</li>
-  </ul>
-
-  <h3 style="color:#1e293b;margin-top:32px">Before / After</h3>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
-    <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:16px">
-      <div style="font-weight:700;color:#dc2626;margin-bottom:8px">Before (chatbot voice)</div>
-      <div style="color:#374151;font-size:0.9rem;line-height:1.7">
-        "Sure! Here are some great treats for Mojo. Since he has allergies to chicken and beef, I recommend salmon treats. Happy to help!"
-      </div>
-    </div>
-    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px">
-      <div style="font-weight:700;color:#16a34a;margin-bottom:8px">After (Mira's soul)</div>
-      <div style="color:#374151;font-size:0.9rem;line-height:1.7">
-        "Mojo's been on my mind — a Wild Explorer always needs proper trail fuel. Since salmon is his favourite and chicken + beef are out:<br><br>
-        - Salmon Training Bites — ₹299 → thedoggycompany.com/dine<br>
-        &nbsp;&nbsp;✦ Why: Salmon (Mojo's favourite), zero allergens<br><br>
-        What are you two planning next? 🐾"
-      </div>
-    </div>
-  </div>
-
-  <h3 style="color:#1e293b;margin-top:32px">Files Changed</h3>
-  <table style="width:100%;border-collapse:collapse;font-size:0.9rem">
-    <tr style="background:#f1f5f9">
-      <td style="padding:10px 14px;font-weight:700">NEW</td>
-      <td style="padding:10px 14px"><code>/app/backend/mira_soul.py</code></td>
-      <td style="padding:10px 14px;color:#16a34a">MIRA_CORE_SOUL constant</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px;font-weight:700">EDIT</td>
-      <td style="padding:10px 14px"><code>/app/backend/whatsapp_routes.py</code></td>
-      <td style="padding:10px 14px;color:#0891b2">system_prompt in get_mira_ai_response() only</td>
-    </tr>
-    <tr style="background:#f1f5f9">
-      <td style="padding:10px 14px;font-weight:700;color:#dc2626">LOCKED</td>
-      <td style="padding:10px 14px"><code>mira_routes.py</code></td>
-      <td style="padding:10px 14px;color:#dc2626">Widget brain — DO NOT TOUCH</td>
-    </tr>
-    <tr>
-      <td style="padding:10px 14px;font-weight:700;color:#dc2626">LOCKED</td>
-      <td style="padding:10px 14px"><code>MiraChatWidget.jsx</code></td>
-      <td style="padding:10px 14px;color:#dc2626">Widget UI — DO NOT TOUCH</td>
-    </tr>
-    <tr style="background:#f1f5f9">
-      <td style="padding:10px 14px;font-weight:700;color:#dc2626">LOCKED</td>
-      <td style="padding:10px 14px"><code>server.py</code></td>
-      <td style="padding:10px 14px;color:#dc2626">DO NOT TOUCH</td>
-    </tr>
-  </table>
-</section>
 
 </body>
 </html>
