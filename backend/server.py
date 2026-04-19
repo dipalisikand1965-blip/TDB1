@@ -2143,6 +2143,23 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
 
+    # ── Auto Re-export Migration Data every 6 hours ──────────────────────────
+    async def auto_re_export():
+        """Automatically re-export all collections every 6 hours so GitHub backup is always fresh."""
+        try:
+            from db_restore_routes import _do_export
+            await _do_export()
+            logger.info("[AUTO-EXPORT] ✅ Scheduled re-export complete")
+        except Exception as e:
+            logger.warning(f"[AUTO-EXPORT] ⚠️ Re-export failed: {e}")
+
+    scheduler.add_job(
+        auto_re_export,
+        IntervalTrigger(hours=6),
+        id="auto_db_re_export",
+        replace_existing=True
+    )
+
     scheduler.start()
     logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10), DAILY DIGEST (8 AM IST)")
     
