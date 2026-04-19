@@ -635,8 +635,12 @@ export default function MiraSearchPage() {
 
       // ── Step 1: use enriched products from stream if available ────────────
       // applyMiraFilter hard-blocks allergens, health conditions, life-stage, breed mismatches
+      // Collect already-shown product IDs from previous turns to avoid duplicates
+      const shownIds = new Set(
+        turns.flatMap(t => (t.products || []).map(p => p.id)).filter(Boolean)
+      );
       const prods = applyMiraFilter(
-        enrichedProducts.filter(p => p.product_type !== 'service'),
+        enrichedProducts.filter(p => p.product_type !== 'service' && !shownIds.has(p.id)),
         activePet
       ).slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
@@ -645,6 +649,7 @@ export default function MiraSearchPage() {
       const petId  = activePet?.id || activePet?._id;
       const breed  = activePet?.breed || activePet?.identity?.breed || '';
       const allergens = getAllergiesFromPet(activePet);
+      const excludeIdsList = [...shownIds]; // pass already-shown IDs so backend skips them
       if (prods.length === 0) {
         fetch(`${getApiUrl()}/api/mira/semantic-search`, {
           method: 'POST',
@@ -652,7 +657,7 @@ export default function MiraSearchPage() {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, allergens, limit: 6, offset: 0 }),
+          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, allergens, limit: 6, offset: 0, exclude_ids: excludeIdsList }),
         })
           .then(r => r.ok ? r.json() : null)
           .then(d => {

@@ -23097,6 +23097,8 @@ async def semantic_product_search(request: Request):
     breed = (data.get("breed") or "").lower().strip()
     limit = data.get("limit", 8)
     offset = int(data.get("offset", 0))  # pagination: 0 = first page, 6 = page 2, etc.
+    # IDs to exclude — used when user says "more/different" to avoid returning already-shown products
+    exclude_ids: set = set(str(x) for x in (data.get("exclude_ids") or []) if x)
     # Allergens can be passed directly from frontend OR fetched via pet_id (backend is authoritative)
     client_allergens = [a.lower().strip() for a in (data.get("allergens") or []) if a]
 
@@ -23268,6 +23270,8 @@ async def semantic_product_search(request: Request):
             for k, v in config["priority_filter"].items():
                 pf[k] = v
             pf["is_active"] = True
+            if exclude_ids:
+                pf["id"] = {"$nin": list(exclude_ids)}
             priority_cursor = db.products_master.find(
                 pf,
                 {
@@ -23345,6 +23349,9 @@ async def semantic_product_search(request: Request):
         # Fallback: category match
         {"category": {"$regex": "|".join(config.get("product_categories", [])), "$options": "i"}} if config.get("product_categories") else {"_never": True}
     ]}
+    # Exclude already-shown product IDs (used when user says "more/different")
+    if exclude_ids:
+        product_query = {"$and": [product_query, {"id": {"$nin": list(exclude_ids)}}]}
     
     # Fetch products from products_master — include breed + price + image fields
     products = []
