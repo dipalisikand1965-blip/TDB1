@@ -15,6 +15,7 @@ from typing import Optional, List
 import httpx
 import os
 import logging
+import re
 from datetime import datetime, timezone
 import uuid
 import json
@@ -78,7 +79,66 @@ def _fuzzy_pet_match(text: str, pet_names: list) -> str | None:
     return best_pet
 
 
-# ── Keyword → Pillar map for WhatsApp message pillar detection ─────────────
+def _is_pet_switch_only(text: str, pet_name: str) -> bool:
+    """
+    Returns True if the message is ONLY switching pet context with no other request.
+    e.g. "oh its about Mystique", "actually Badmash", "what about Sultan?"
+    Prevents these from triggering catalog searches → Amazon fallbacks.
+    Only fires when the pet name is explicitly present in the text.
+    """
+    if not text or not pet_name:
+        return False
+    # Pet name must actually appear in the message (not just fuzzy-matched elsewhere)
+    if pet_name.lower() not in text.lower():
+        return False
+    # Short message only (≤10 words)
+    if len(text.split()) > 10:
+        return False
+    # Strip the pet name and common switch filler words
+    cleaned = re.sub(r'\b' + re.escape(pet_name) + r'\b', '', text, flags=re.IGNORECASE)
+    cleaned = re.sub(
+        r'\b(oh|its|it\'s|about|what|switching|switch|to|for|hi|hey|actually|now|the|this|is|a|no|yes|yep|ok|okay)\b',
+        '', cleaned, flags=re.IGNORECASE
+    )
+    cleaned = re.sub(r'[^a-z0-9]', ' ', cleaned.lower()).strip()
+    # If ≤1 meaningful word remains, it's a pure switch
+    remaining_words = [w for w in cleaned.split() if len(w) > 2]
+    return len(remaining_words) == 0
+
+
+async def _wa_get_history(db, phone_10: str, limit: int = 6) -> list:
+    """Fetch last N conversation turns for a WhatsApp number from MongoDB."""
+    if not phone_10:
+        return []
+    try:
+        doc = await db.wa_conversation_history.find_one({"phone": phone_10}, {"_id": 0, "turns": 1})
+        if doc and doc.get("turns"):
+            return doc["turns"][-limit:]
+    except Exception:
+        pass
+    return []
+
+
+async def _wa_save_history(db, phone_10: str, user_msg: str, bot_reply: str):
+    """Append a conversation turn to the phone's history in MongoDB. Keeps last 20 turns."""
+    if not phone_10:
+        return
+    try:
+        turn = {
+            "user": user_msg[:500],
+            "bot": bot_reply[:1000],
+            "ts": datetime.now(timezone.utc).isoformat()
+        }
+        await db.wa_conversation_history.update_one(
+            {"phone": phone_10},
+            {
+                "$push": {"turns": {"$each": [turn], "$slice": -20}},
+                "$set": {"updated_at": turn["ts"]}
+            },
+            upsert=True
+        )
+    except Exception:
+        pass
 _WA_PILLAR_KEYWORDS: list[tuple[str, list[str]]] = [
     ("celebrate", ["cake", "birthday", "bday", "b-day", "celebration", "celebrate", "party",
                    "anniversary", "gift", "doggo cake", "pupcake", "pup cake", "pawty"]),
@@ -1626,6 +1686,18 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                             except Exception:
                                 pass
 
+                    # ── Early return: pure pet-switch with no other request ────────────
+                    # e.g. "oh its about Mystique" / "actually Badmash" / "what about Sultan?"
+                    # Skip catalog search entirely — prevents Amazon fallback for switch messages
+                    if _is_pet_switch_only(message_text, _msg_pet):
+                        _switch_reply = (
+                            f"Got it! Focusing on {_msg_pet} now. 🐾 "
+                            f"What would you like to explore for them?"
+                        )
+                        await _wa_save_history(db, phone_10, message_text, _switch_reply)
+                        logger.info(f"[MIRA-AI] Pure pet-switch detected → early return for '{_msg_pet}'")
+                        return _switch_reply
+
                 # ── Multi-account linking ────────────────────────────────────────
                 # A user may have registered with two emails (e.g. work + personal).
                 # Find all accounts with the same name and collect pets from ALL of them.
@@ -2171,7 +2243,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 f"&tag={AFFILIATE_TAG}"
             )
             logger.info(f"[MIRA-AI] True catalog miss → Amazon fallback ({_fb_clean_q!r})")
-            return (
+            _amazon_reply = (
                 f"I don't have that in our catalogue right now 🙏\n\n"
                 f"But I found some options for {_fb_name} on Amazon:\n\n"
                 f"🛒 {_fb_amazon}\n\n"
@@ -2179,6 +2251,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                 f"Want something custom instead? Reply and our Concierge will arrange it:\n"
                 f"thedoggycompany.com/my-requests"
             )
+            await _wa_save_history(db, phone_10, message_text, _amazon_reply)
+            return _amazon_reply
         catalog_instruction = (
             f"\n\nNo exact TDC catalog match found for this query."
             f"\n\nMIRA IMAGINES PROTOCOL — follow this EXACTLY:"
@@ -2236,7 +2310,22 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
 
     # ── Build unified system prompt: shared soul + WhatsApp surface rules ────
     from mira_soul import MIRA_SOUL_CHARTER
-    system_prompt = MIRA_SOUL_CHARTER + MIRA_CORE_SOUL + f"""{active_pet_lock}{archetype_tone_block}
+
+    # ── Inject MongoDB-backed conversation history (survives redeploys) ───────
+    wa_history = await _wa_get_history(db, phone_10, limit=6)
+    history_block = ""
+    if wa_history:
+        history_lines = []
+        for turn in wa_history:
+            history_lines.append(f"User: {turn['user']}")
+            history_lines.append(f"Mira: {turn['bot'][:300]}")
+        history_block = (
+            "\n\nRECENT CONVERSATION HISTORY — read carefully to avoid repeating questions:\n"
+            + "\n".join(history_lines)
+            + "\n(Do NOT ask questions already answered above.)"
+        )
+
+    system_prompt = MIRA_SOUL_CHARTER + MIRA_CORE_SOUL + f"""{active_pet_lock}{archetype_tone_block}{history_block}
 
 ═══════════════════════════════════════════════════════
 📱 WHATSAPP SURFACE RULES (format only — soul rules above govern)
@@ -2299,6 +2388,7 @@ Website: thedoggycompany.com | Concierge: +91 8971702582"""
             logger.info(f"[MIRA-AI] ✅ Response for {(user_phone or '')[:6]}*** | "
                        f"products={n_products} services={n_services} "
                        f"allergies={len(all_allergies)} nearme={is_near_me}")
+            await _wa_save_history(db, phone_10, message_text, response)
             return response
 
     except Exception as ai_err:
