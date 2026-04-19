@@ -19097,6 +19097,13 @@ async def mira_chat_stream(request: Request, authorization: str = Header(None)):
         "The Doggy Company IS the solution. Always."
     )
 
+    # Prepend Soul Charter — WHO Mira is, before any technical instructions
+    try:
+        from mira_soul import MIRA_SOUL_CHARTER
+        pet_context = MIRA_SOUL_CHARTER + pet_context
+    except Exception:
+        pass
+
     # Build messages
     messages = [{"role": "system", "content": pet_context}]
     for h in history[-10:]:

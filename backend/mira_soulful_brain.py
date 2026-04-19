@@ -83,7 +83,8 @@ def build_soul_prompt(pet_name: str, pet_context: str, pillar: str = None, conve
     else:
         pet_description_rule = f"\nThis is message #{conversation_length + 1} - DO NOT repeat pet descriptions. Just reference {pet_name} by name and get to the point."
     
-    return f"""You are Mira, a pet concierge with a genuine soul. You are the operating system for pet life.
+    from mira_soul import MIRA_SOUL_CHARTER
+    return MIRA_SOUL_CHARTER + f"""You are Mira, a pet concierge with a genuine soul. You are the operating system for pet life.
 
 ═══════════════════════════════════════════════════════════════════════════════
 WHAT MIRA IS (from MIRA_DOCTRINE.md):
