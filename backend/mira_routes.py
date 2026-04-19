@@ -22936,7 +22936,7 @@ async def detect_pet_mood(request: Request):
 SEMANTIC_INTENTS = {
     "birthday_celebration": {
         "triggers": ["birthday", "celebrate", "party", "special day", "anniversary", "gotcha day", "cake"],
-        "priority_filter": {"pillar": "celebrate", "category": "cakes"},
+        "priority_filter": {"pillar": "celebrate", "category": {"$in": ["cakes", "breed-cakes"]}},
         "product_categories": ["cakes", "party_accessories", "celebrate", "hampers"],
         "product_tags": ["birthday", "celebration", "party", "special"],
         "service_pillar": "celebrate",
@@ -23231,8 +23231,11 @@ async def semantic_product_search(request: Request):
         ingredients_lower = (p.get("ingredients") or "").lower()
         combined = f"{name_lower} {tags_lower} {ingredients_lower}"
         pet_match = any(term in combined for term in loved_terms) if loved_terms else False
-        wrong_breed = tags and "all_breeds" not in tags and breed and breed.lower() not in tags
-        exact_breed = breed and breed.lower() in tags
+        # Normalize breed for comparison: DB uses underscores ("shih_tzu"), frontend sends spaces ("shih tzu")
+        breed_norm = breed.lower().replace(" ", "_") if breed else ""
+        breed_orig = breed.lower() if breed else ""
+        wrong_breed = tags and "all_breeds" not in tags and breed and breed_norm not in tags and breed_orig not in tags
+        exact_breed = breed and (breed_norm in tags or breed_orig in tags)
         if wrong_breed:
             breed_score = 0
         elif exact_breed:
@@ -23251,13 +23254,14 @@ async def semantic_product_search(request: Request):
         matched_food = next((f.title() for f in pet_loved_foods if any(syn in combined for syn in _LOVED_SYNONYMS.get(f, [f]))), None)
         if matched_food:
             return f"{pet_name} loves {matched_food}"
-        if breed and breed.lower() in p_tags:
+        breed_norm = breed.lower().replace(" ", "_") if breed else ""
+        if breed and (breed_norm in p_tags or breed.lower() in p_tags):
             return f"Made for {breed.title()} breed"
         return None
 
-    # ── Priority fetch: config-defined exact filter (e.g. TDB cakes for birthday) ──
+    # ── Priority fetch: config-defined exact filter (first page only to avoid duplicate "more" results) ──
     priority_products = []
-    if config.get("priority_filter"):
+    if config.get("priority_filter") and offset == 0:
         try:
             # Build query — supports flat values and MongoDB operators ($in, $regex, etc.)
             pf = {}
