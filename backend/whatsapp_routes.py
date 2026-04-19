@@ -2399,6 +2399,16 @@ Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
     if _circuit_open:
         logger.warning(f"[MIRA-AI] LLM circuit OPEN (too many 502s) — going straight to patterns")
+        # Send instant "thinking" ack so user isn't left with just the 🐾 sticker
+        try:
+            _pet_first = (ticket_pet_name or "").split()[0] if ticket_pet_name else ""
+            _thinking_msg = (
+                f"Mira is thinking... 🐾\n"
+                f"{'Give me a moment for ' + _pet_first + '!' if _pet_first else 'Just a moment!'}"
+            )
+            await send_mira_reply(user_phone, _thinking_msg)
+        except Exception:
+            pass
     else:
         try:
             import asyncio as _asyncio
