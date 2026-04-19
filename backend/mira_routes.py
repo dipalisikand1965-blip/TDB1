@@ -23215,7 +23215,7 @@ async def semantic_product_search(request: Request):
         try:
             pet_prefs = await db.pets.find_one(
                 {"$or": [{"id": pet_id}, {"_id": pet_id}]},
-                {"_id": 0, "preferences": 1, "doggy_soul_answers": 1, "soul_enrichments": 1}
+                {"_id": 0, "preferences": 1, "doggy_soul_answers": 1, "soul_enrichments": 1, "breed": 1, "name": 1}
             )
             if pet_prefs:
                 for ft in (pet_prefs.get("preferences") or {}).get("favorite_treats") or []:
@@ -23224,6 +23224,12 @@ async def semantic_product_search(request: Request):
                     if ft: pet_loved_foods.add(str(ft).lower().strip())
                 for ft in (pet_prefs.get("soul_enrichments") or {}).get("favorite_treats") or []:
                     if ft: pet_loved_foods.add(str(ft).lower().strip())
+                # ── Auto-populate breed from DB if not passed by frontend ──
+                if not breed and pet_prefs.get("breed"):
+                    breed = pet_prefs["breed"].lower().strip()
+                    logger.info(f"[SEMANTIC-SEARCH] Auto-resolved breed='{breed}' from pet_id={pet_id}")
+                if not pet_name or pet_name == "your pet":
+                    pet_name = pet_prefs.get("name") or pet_name
         except Exception:
             pass
 
