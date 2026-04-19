@@ -23240,20 +23240,66 @@ async def semantic_product_search(request: Request):
         if blocked_terms and len(products_raw) < len(products_raw_all):
             logger.info(f"semantic-search: blocked {len(products_raw_all) - len(products_raw)} allergen products for pet {pet_id} (allergens: {pet_allergens})")
         
-        # Score each product: intent match + breed boost
-        def _breed_score(p):
-            tags = [str(t).lower() for t in (p.get("breed_tags") or [])]
-            has_intent = intent_key in (p.get("semantic_intents") or [])
-            # Breed-specific product for a DIFFERENT breed — deprioritize
-            if tags and "all_breeds" not in tags and breed and breed not in tags:
-                return (0, int(has_intent), 0)
-            # Exact breed match — top
-            if breed and breed in tags:
-                return (2, int(has_intent), 0)
-            # all_breeds or untagged — middle
-            return (1, int(has_intent), 0)
+        # ── Fetch pet's loved foods for pet-first ranking ─────────────────────
+        pet_loved_foods: set = set()
+        if pet_id:
+            try:
+                pet_prefs = await db.pets.find_one(
+                    {"$or": [{"id": pet_id}, {"_id": pet_id}]},
+                    {"_id": 0, "preferences": 1, "doggy_soul_answers": 1, "soul_enrichments": 1}
+                )
+                if pet_prefs:
+                    for ft in (pet_prefs.get("preferences") or {}).get("favorite_treats") or []:
+                        if ft: pet_loved_foods.add(str(ft).lower().strip())
+                    for ft in (pet_prefs.get("doggy_soul_answers") or {}).get("favorite_treats") or []:
+                        if ft: pet_loved_foods.add(str(ft).lower().strip())
+                    for ft in (pet_prefs.get("soul_enrichments") or {}).get("favorite_treats") or []:
+                        if ft: pet_loved_foods.add(str(ft).lower().strip())
+            except Exception:
+                pass
 
-        products_raw.sort(key=_breed_score, reverse=True)
+        # Expand loved foods with synonyms (salmon → fish, fish-based etc.)
+        _LOVED_SYNONYMS = {
+            "salmon":  ["salmon", "fish", "omega", "seafood"],
+            "chicken": ["chicken", "poultry"],
+            "beef":    ["beef", "meat"],
+            "lamb":    ["lamb", "mutton"],
+            "peanut butter": ["peanut", "peanut butter"],
+            "turkey":  ["turkey"],
+            "duck":    ["duck"],
+            "venison": ["venison", "deer"],
+        }
+        loved_terms: set = set()
+        for food in pet_loved_foods:
+            syns = _LOVED_SYNONYMS.get(food, [food])
+            loved_terms.update(syns)
+
+        # Score each product: PET FIRST → breed second → generic
+        def _pet_breed_score(p):
+            tags = [str(t).lower() for t in (p.get("breed_tags") or [])]
+            name_lower = (p.get("name") or "").lower()
+            tags_lower = " ".join(str(t) for t in (p.get("semantic_tags") or []) + (p.get("tags") or [])).lower()
+            ingredients_lower = (p.get("ingredients") or "").lower()
+            combined = f"{name_lower} {tags_lower} {ingredients_lower}"
+            has_intent = intent_key in (p.get("semantic_intents") or [])
+
+            # Tier 3 — Pet's loved food match (highest priority)
+            pet_match = any(term in combined for term in loved_terms) if loved_terms else False
+
+            # Tier 2 — Breed match
+            wrong_breed = tags and "all_breeds" not in tags and breed and breed.lower() not in tags
+            exact_breed = breed and breed.lower() in tags
+
+            if wrong_breed:
+                breed_score = 0
+            elif exact_breed:
+                breed_score = 2
+            else:
+                breed_score = 1
+
+            return (int(pet_match) * 10 + breed_score, int(has_intent))
+
+        products_raw.sort(key=_pet_breed_score, reverse=True)
 
         # ── Merge: priority_products first, then breed-boosted, deduped by id ──
         seen_ids = set()
@@ -23290,6 +23336,26 @@ async def semantic_product_search(request: Request):
                 has_intent_match = intent_key in (p.get("semantic_intents") or [])
                 img = (p.get("cloudinary_url") or p.get("mockup_url") or p.get("image_url")
                        or (p.get("images") or [None])[0] or p.get("image"))
+
+                # Build why_for_pet — pet first, then breed, then generic
+                name_lower = (p.get("name") or "").lower()
+                tags_lower = " ".join(str(t) for t in (p.get("semantic_tags") or []) + (p.get("tags") or [])).lower()
+                ingredients_lower = (p.get("ingredients") or "").lower()
+                combined = f"{name_lower} {tags_lower} {ingredients_lower}"
+                p_tags = [str(t).lower() for t in (p.get("breed_tags") or [])]
+
+                matched_food = next((f.title() for f in pet_loved_foods if any(syn in combined for syn in _LOVED_SYNONYMS.get(f, [f]))), None)
+                exact_breed_match = breed and breed.lower() in p_tags
+
+                if matched_food:
+                    why = f"{pet_name} loves {matched_food}"
+                elif exact_breed_match:
+                    why = f"Made for {breed.title()} breed"
+                elif has_intent_match:
+                    why = f"{config['why_message']} for {pet_name}"
+                else:
+                    why = None
+
                 merged.append({
                     "id": pid,
                     "name": p.get("name", "Product"),
@@ -23300,7 +23366,7 @@ async def semantic_product_search(request: Request):
                     "images": p.get("images", []),
                     "category": p.get("category", ""),
                     "breed_tags": p.get("breed_tags", []),
-                    "why_for_pet": f"{config['why_message']} for {pet_name}" if has_intent_match else None,
+                    "why_for_pet": why,
                     "intent_match": has_intent_match,
                 })
 
