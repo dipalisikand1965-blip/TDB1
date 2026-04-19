@@ -2158,11 +2158,11 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"[AUTO-EXPORT] ⚠️ Migration export failed: {e}")
 
-        # Step 2 — Sync to Atlas
-        ATLAS_URL = os.environ.get(
-            "PRODUCTION_MONGO_URL",
-            "mongodb+srv://dipalisikand1965_db_user:tdc123@cluster0.pndqo6o.mongodb.net/?appName=Cluster0"
-        )
+        # Step 2 — Sync to Atlas (PRODUCTION_MONGO_URL must be set in .env — no hardcoded fallback)
+        ATLAS_URL = os.environ.get("PRODUCTION_MONGO_URL")
+        if not ATLAS_URL:
+            logger.warning("[ATLAS-SYNC] PRODUCTION_MONGO_URL not set — skipping Atlas sync")
+            return
         try:
             import pymongo as pymongo_sync
             local_db_sync = pymongo_sync.MongoClient("mongodb://localhost:27017")["pet-os-live-test_database"]
