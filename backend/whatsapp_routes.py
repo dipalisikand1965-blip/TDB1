@@ -30,6 +30,9 @@ router = APIRouter(prefix="/api/whatsapp", tags=["whatsapp"])
 # Import canonical ticket spine helper (SINGLE ENTRY POINT for all tickets)
 from utils.spine_helper import handoff_to_spine
 
+# Keep strong references to background tasks to prevent GC cancellation
+_bg_tasks: set = set()
+
 
 # WhatsApp Cloud API Configuration
 WHATSAPP_API_URL = "https://graph.facebook.com/v18.0"
@@ -299,8 +302,10 @@ async def receive_whatsapp_webhook(request: Request):
         # ============== GUPSHUP FORMAT ==============
         if "payload" in body and body.get("type") in ["message", "message-event"]:
             # Spawn background task FIRST, return 200 immediately
-            # Deduplication happens inside the background task — nothing blocks here
-            asyncio.create_task(process_gupshup_webhook(body))
+            # Keep a strong reference so it isn't GC-cancelled before completion
+            _task = asyncio.create_task(process_gupshup_webhook(body))
+            _bg_tasks.add(_task)
+            _task.add_done_callback(_bg_tasks.discard)
             return {"status": "ok"}
         
         # ============== META CLOUD API FORMAT ==============
@@ -1694,7 +1699,7 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                     # Skip catalog search entirely — prevents Amazon fallback for switch messages
                     # BUT: do NOT fire if user is answering the "which dog?" disambiguation question
                     _is_answering_disambig = bool(
-                        (wa_state and wa_state.get("awaiting_pet_selection")) or
+                        (_wa_pre and _wa_pre.get("awaiting_pet_selection")) or
                         (open_ticket and open_ticket.get("wa_awaiting_pet_selection") if open_ticket else False)
                     )
                     if not _is_answering_disambig and _is_pet_switch_only(message_text, _msg_pet):
@@ -2376,8 +2381,9 @@ RESPONSE STYLE — guidelines (NOT a rigid template):
 
 Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
-    # ── 5. Call GPT ───────────────────────────────────────────────────────────
+    # ── 5. Call GPT (25-second hard timeout — fail fast, never keep user waiting 3+ minutes) ──
     try:
+        import asyncio as _asyncio
         from emergentintegrations.llm.openai import LlmChat, UserMessage
         import uuid as uuid_mod
 
@@ -2388,7 +2394,10 @@ Website: thedoggycompany.com | Concierge: +91 8971702582"""
             system_message=system_prompt
         ).with_model("openai", "gpt-4o")
 
-        response = await chat.send_message(UserMessage(text=f"{user_name} says: {message_text}"))
+        response = await _asyncio.wait_for(
+            chat.send_message(UserMessage(text=f"{user_name} says: {message_text}")),
+            timeout=25.0
+        )
 
         if response:
             n_products = len(found_products)
@@ -2399,6 +2408,8 @@ Website: thedoggycompany.com | Concierge: +91 8971702582"""
             await _wa_save_history(db, phone_10, message_text, response)
             return response
 
+    except _asyncio.TimeoutError:
+        logger.warning(f"[MIRA-AI] GPT-4o timed out (>25s) — falling back to patterns")
     except Exception as ai_err:
         logger.warning(f"[MIRA-AI] AI failed, falling back to patterns: {ai_err}")
 
