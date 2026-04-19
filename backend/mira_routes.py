@@ -23261,6 +23261,27 @@ async def semantic_product_search(request: Request):
             return f"Made for {breed.title()} breed"
         return None
 
+    def _is_wrong_breed_cake(p: dict) -> bool:
+        """Hard block: breed-specific cakes from wrong breed must NEVER appear.
+        Rules:
+          - Own breed cake → show first
+          - Generic cake (no breed_tags) → always OK
+          - Other breed's cake → HARD BLOCK (never show)
+        """
+        cat = (p.get("category") or "").lower()
+        tags = [str(t).lower() for t in (p.get("breed_tags") or [])]
+        # Only enforce on breed-cake products
+        if cat != "breed-cakes" and "cake" not in cat:
+            return False  # Not a cake — no breed-block
+        if not tags or "all_breeds" in tags:
+            return False  # Generic/all-breeds cake — always OK
+        # Has specific breed tags — block if not this pet's breed
+        if not breed:
+            return True  # Unknown breed — block all breed-specific cakes to be safe
+        breed_norm = breed.lower().replace(" ", "_")
+        is_for_pet = breed_norm in tags or breed.lower() in tags
+        return not is_for_pet  # Block if cake belongs to a different breed
+
     # ── Priority fetch: config-defined exact filter (first page only to avoid duplicate "more" results) ──
     priority_products = []
     if config.get("priority_filter") and offset == 0:
@@ -23333,7 +23354,7 @@ async def semantic_product_search(request: Request):
                 existing_ids = {p.get("id") for p in raw_priority}
                 raw_priority = raw_priority + [p for p in breed_products_list if p.get("id") not in existing_ids]
             # ── SAFETY: strip allergen products from priority list ──
-            safe_priority = [p for p in raw_priority if _is_allergen_safe(p)]
+            safe_priority = [p for p in raw_priority if _is_allergen_safe(p) and not _is_wrong_breed_cake(p)]
             # ── RANK by pet preference first, then breed ──
             safe_priority.sort(key=lambda p: _pet_breed_score(p)[0], reverse=True)
             priority_products = safe_priority[:4]
@@ -23368,8 +23389,8 @@ async def semantic_product_search(request: Request):
         ).skip(offset).limit(limit * 4)  # fetch extra: breed re-rank + allergen drops
         products_raw_all = await product_cursor.to_list(limit * 4)
 
-        # ── SAFETY: strip allergen products BEFORE ranking ───────────────────
-        products_raw = [p for p in products_raw_all if _is_allergen_safe(p)]
+        # ── SAFETY: strip allergen products + wrong-breed cakes BEFORE ranking ──
+        products_raw = [p for p in products_raw_all if _is_allergen_safe(p) and not _is_wrong_breed_cake(p)]
         if blocked_terms and len(products_raw) < len(products_raw_all):
             logger.info(f"semantic-search: blocked {len(products_raw_all) - len(products_raw)} allergen products for pet {pet_id} (allergens: {pet_allergens})")
         
