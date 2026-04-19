@@ -1,6 +1,36 @@
 # TDC Changelog
 
-## April 11, 2026 — Commerce & Mira Picks Fixes (3 production bugs)
+## April 19, 2026 — Mira Soul Charter + Search Intelligence + Security
+
+### Security: MongoDB Atlas Credential Rotation
+- Credential `tdc123` was exposed in GitHub public repo (`server.py` hardcoded fallback)
+- Removed ALL hardcoded credentials from `server.py` — now uses `PRODUCTION_MONGO_URL` env var only
+- Atlas password rotated to new value (stored in `.env` only, never in code)
+- Repo made public again (old credential is dead/rotated — safe)
+
+### Mira Soul Charter (`mira_soul.py`)
+- Added `MIRA_SOUL_CHARTER` as the universal identity declaration for Mira across ALL surfaces
+- Prepended to system prompts of: Widget (`mira_soulful_brain.py`), Search stream (`mira_routes.py`), WhatsApp (`whatsapp_routes.py`)
+- Charter defines: companion not assistant, loves dog first, comforts first, never judges, carries grief gently, anticipates needs
+
+### Mira Search Intelligence Overhaul (`mira_routes.py`)
+- **Breed-specific cakes**: Fixed `birthday_celebration` priority filter to include `"breed-cakes"` category
+- **Breed scoring fix**: `_pet_breed_score` now normalises breed comparison (`"shih tzu"` ↔ `"shih_tzu"`) — was getting score=0 due to space vs underscore mismatch
+- **Hard breed block**: `_is_wrong_breed_cake()` — any product with `breed_tags` that don't match the pet's breed is HARD BLOCKED (not just ranked low). Applies to all categories (cakes, accessories, etc.)
+- **"More choices" dedup**: Priority products only shown on page 1 (offset=0) — page 2+ returns fresh products
+- **Follow-up dedup**: `exclude_ids` parameter added to `/api/mira/semantic-search` — frontend passes already-shown product IDs so backend excludes them
+- **Always use semantic-search**: `MiraSearchPage.jsx` now always calls semantic-search after stream (not just as fallback) — ensures breed-optimized results on BOTH preview and production
+- **Dinner intent fix**: Added "dinner", "lunch", "breakfast", "kibble", "wet food", "salmon", "what to feed" to `food_dining` triggers
+- **DB data fix**: Fixed 11 breed-cakes with empty `breed_tags` in MongoDB (Chow Chow, Italian Greyhound, Maltipoo, Newfoundland, etc.)
+
+### Mira Search — Pet Rules (Locked)
+- Own breed cake → shown first
+- Generic cakes (no breed_tags) → shown after own breed
+- Other breed cakes → HARD BLOCKED (never show)
+- Allergens → HARD BLOCKED across all categories
+- "More choices" / follow-up messages → always fresh products (no repeats)
+
+
 
 **Fix: Add to Cart from Mira Picks (ProductCard.jsx)**
 - Root cause: `cartInput.age` was empty for pets onboarded via soul profile (`age_stage` answer, e.g. "puppy"), not via numeric `age` field. Celebration products require age → silent validation failure.
