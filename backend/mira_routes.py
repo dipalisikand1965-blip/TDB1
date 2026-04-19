@@ -23298,6 +23298,32 @@ async def semantic_product_search(request: Request):
                 # Merge: loved products first (deduped), then general pool
                 seen_priority_ids = {p.get("id") for p in loved_products}
                 raw_priority = loved_products + [p for p in raw_priority if p.get("id") not in seen_priority_ids]
+
+            # ── Breed pre-query: fetch breed-specific products from ENTIRE collection ──
+            if breed:
+                # Match both "shih tzu" and "shih_tzu" formats
+                breed_normalized = breed.lower().strip()
+                breed_pattern = breed_normalized.replace(" ", "[_ ]").replace("_", "[_ ]")
+                breed_regex = re.compile(breed_pattern, re.IGNORECASE)
+                # Use base pillar filter WITHOUT restricting category (breed cakes use "breed-cakes")
+                breed_pf = {
+                    "pillar": pf.get("pillar", "celebrate"),
+                    "is_active": True,
+                    "breed_tags": breed_regex
+                }
+                breed_cursor = db.products_master.find(
+                    breed_pf,
+                    {
+                        "_id": 0, "id": 1, "name": 1,
+                        "original_price": 1, "base_price": 1, "price": 1,
+                        "cloudinary_url": 1, "mockup_url": 1, "image_url": 1, "images": 1, "image": 1,
+                        "category": 1, "breed_tags": 1, "semantic_tags": 1, "tags": 1, "ingredients": 1
+                    }
+                ).limit(20)
+                breed_products_list = await breed_cursor.to_list(20)
+                # Add breed products that aren't already in the pool
+                existing_ids = {p.get("id") for p in raw_priority}
+                raw_priority = raw_priority + [p for p in breed_products_list if p.get("id") not in existing_ids]
             # ── SAFETY: strip allergen products from priority list ──
             safe_priority = [p for p in raw_priority if _is_allergen_safe(p)]
             # ── RANK by pet preference first, then breed ──
