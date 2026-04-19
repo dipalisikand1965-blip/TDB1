@@ -633,8 +633,7 @@ export default function MiraSearchPage() {
         }
       }
 
-      // ── Step 1: use enriched products from stream if available ────────────
-      // applyMiraFilter hard-blocks allergens, health conditions, life-stage, breed mismatches
+      // ── Step 1: show stream products immediately for instant UI response ────
       // Collect already-shown product IDs from previous turns to avoid duplicates
       const shownIds = new Set(
         turns.flatMap(t => (t.products || []).map(p => p.id)).filter(Boolean)
@@ -645,33 +644,33 @@ export default function MiraSearchPage() {
       ).slice(0, 6);
       updateTurn({ streaming: false, response: fullText, products: prods, services: [], showImagines: false, productsOffset: 6, hasMore: false });
 
-      // ── Step 2: fallback to semantic-search (query-aware + breed-boosted + allergen-safe) ──
-      const petId  = activePet?.id || activePet?._id;
-      const breed  = activePet?.breed || activePet?.identity?.breed || '';
+      // ── Step 2: ALWAYS call semantic-search for breed-accurate, allergen-safe results ──
+      // This replaces stream products with properly ranked results (e.g. Shih Tzu cakes for Mystique)
+      const petId     = activePet?.id || activePet?._id;
+      const breed     = activePet?.breed || activePet?.identity?.breed || '';
       const allergens = getAllergiesFromPet(activePet);
-      const excludeIdsList = [...shownIds]; // pass already-shown IDs so backend skips them
-      if (prods.length === 0) {
-        fetch(`${getApiUrl()}/api/mira/semantic-search`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, allergens, limit: 6, offset: 0, exclude_ids: excludeIdsList }),
+      const excludeIdsList = [...shownIds];
+      fetch(`${getApiUrl()}/api/mira/semantic-search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ query: q, pet_id: petId, pet_name: petName, breed, allergens, limit: 6, offset: 0, exclude_ids: excludeIdsList }),
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+          const hits = applyMiraFilter(d?.products || [], activePet);
+          const intent = d?.primary_intent || null;
+          if (hits.length > 0) {
+            // Semantic-search found ranked results — replace stream products
+            updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q, intent });
+          } else if (prods.length === 0) {
+            // No semantic results AND no stream products → show MiraImagines
+            updateTurn({ showImagines: true, hasMore: false, intent });
+          }
         })
-          .then(r => r.ok ? r.json() : null)
-          .then(d => {
-            const hits = applyMiraFilter(d?.products || [], activePet);
-            const intent = d?.primary_intent || null;
-            if (hits.length > 0) {
-              updateTurn({ products: hits.slice(0, 6), productsOffset: 6, hasMore: d?.has_more === true, semanticQuery: q, intent });
-            } else {
-              // ── Step 3: no matches at all — show MiraImaginesBreed ──────
-              updateTurn({ showImagines: true, hasMore: false, intent });
-            }
-          })
-          .catch(() => { updateTurn({ showImagines: true, hasMore: false }); });
-      }
+        .catch(() => { if (prods.length === 0) updateTurn({ showImagines: true, hasMore: false }); });
 
       // Focus the follow-up input
       setTimeout(() => followUpRef.current?.focus(), 300);
