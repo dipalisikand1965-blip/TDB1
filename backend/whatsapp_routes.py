@@ -1692,7 +1692,12 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
                     # ── Early return: pure pet-switch with no other request ────────────
                     # e.g. "oh its about Mystique" / "actually Badmash" / "what about Sultan?"
                     # Skip catalog search entirely — prevents Amazon fallback for switch messages
-                    if _is_pet_switch_only(message_text, _msg_pet):
+                    # BUT: do NOT fire if user is answering the "which dog?" disambiguation question
+                    _is_answering_disambig = bool(
+                        (wa_state and wa_state.get("awaiting_pet_selection")) or
+                        (open_ticket and open_ticket.get("wa_awaiting_pet_selection") if open_ticket else False)
+                    )
+                    if not _is_answering_disambig and _is_pet_switch_only(message_text, _msg_pet):
                         _switch_reply = (
                             f"Got it! Focusing on {_msg_pet} now. 🐾 "
                             f"What would you like to explore for them?"
