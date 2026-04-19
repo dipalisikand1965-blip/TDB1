@@ -289,37 +289,17 @@ async def verify_webhook(
 async def receive_whatsapp_webhook(request: Request):
     """
     Receive incoming WhatsApp messages and status updates.
-    Returns 200 IMMEDIATELY so Gupshup never retries (retries cause duplicate responses).
-    Processing runs in a background asyncio task.
+    Returns 200 INSTANTLY — dedup + processing all happen in background task.
+    Cloudflare/Gupshup never timeout waiting for this endpoint.
     """
     import asyncio
     try:
         body = await request.json()
-        
+
         # ============== GUPSHUP FORMAT ==============
         if "payload" in body and body.get("type") in ["message", "message-event"]:
-            # Deduplicate: skip if we already processed this message_id
-            msg_id = body.get("payload", {}).get("id", "")
-            if msg_id:
-                try:
-                    from motor.motor_asyncio import AsyncIOMotorClient
-                    _dc = AsyncIOMotorClient(os.environ.get("MONGO_URL", "mongodb://localhost:27017"))
-                    _ddb = _dc[os.environ.get("DB_NAME", "test_database")]
-                    existing = await _ddb.wa_processed_msgs.find_one({"msg_id": msg_id})
-                    if existing:
-                        print(f"[MIRA-WA-DEBUG] Duplicate webhook msg_id={msg_id} — skipping", flush=True)
-                        _dc.close()
-                        return {"status": "ok", "note": "duplicate"}
-                    await _ddb.wa_processed_msgs.insert_one({
-                        "msg_id": msg_id,
-                        "created_at": datetime.now(timezone.utc).isoformat()
-                    })
-                    # Auto-expire after 10 minutes
-                    await _ddb.wa_processed_msgs.create_index("created_at", expireAfterSeconds=600)
-                    _dc.close()
-                except Exception:
-                    pass  # Dedup failure is non-critical
-            # Process in background — return 200 immediately to prevent Gupshup retries
+            # Spawn background task FIRST, return 200 immediately
+            # Deduplication happens inside the background task — nothing blocks here
             asyncio.create_task(process_gupshup_webhook(body))
             return {"status": "ok"}
         
@@ -386,6 +366,34 @@ async def process_gupshup_webhook(body: dict):
             message_id = payload.get("id", str(uuid.uuid4()))
             message_type = payload.get("type", "text")
             
+            # Connect to database first (shared for both dedup + processing)
+            mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+            db_name = os.environ.get("DB_NAME", "test_database")
+            client = AsyncIOMotorClient(mongo_url)
+            db_bg = client[db_name]
+
+            # ── Deduplication (now safely inside background task) ──────────────
+            if message_id:
+                try:
+                    existing = await db_bg.wa_processed_msgs.find_one({"msg_id": message_id})
+                    if existing:
+                        print(f"[MIRA-WA-DEBUG] Duplicate msg_id={message_id} — skipping", flush=True)
+                        client.close()
+                        return
+                    await db_bg.wa_processed_msgs.insert_one({
+                        "msg_id": message_id,
+                        "created_at": datetime.now(timezone.utc).isoformat()
+                    })
+                    # Create TTL index once (will no-op if already exists)
+                    try:
+                        await db_bg.wa_processed_msgs.create_index(
+                            "created_at", expireAfterSeconds=600, background=True
+                        )
+                    except Exception:
+                        pass
+                except Exception:
+                    pass  # Dedup failure is non-critical — continue processing
+
             # Extract content based on message type
             content = ""
             inner_payload = payload.get("payload", {})
@@ -408,12 +416,7 @@ async def process_gupshup_webhook(body: dict):
                 content = f"[{message_type} message]"
             
             logger.info(f"[GUPSHUP] Message from {from_number}: {content[:100]}")
-            
-            # Connect to database
-            mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
-            db_name = os.environ.get("DB_NAME", "test_database")
-            client = AsyncIOMotorClient(mongo_url)
-            db = client[db_name]
+            db = db_bg  # Use the connection already established for dedup
             
             # Find or create conversation/ticket
             ticket = await db.tickets.find_one({
