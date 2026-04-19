@@ -6,20 +6,29 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 ## Core Architecture
 - **Frontend**: React (CRA), TailwindCSS, Shadcn/UI, Lucide React
 - **Backend**: FastAPI + MongoDB (Motor async)
-- **AI**: OpenAI GPT-4o via Emergent LLM Key
+- **AI Models**:
+  - Mira Widget: **GPT-5.1** (OpenAI, via Emergent LLM Key)
+  - Mira Search Stream: **Claude Sonnet 4** (`claude-sonnet-4-20250514`)
+  - Mira WhatsApp: **GPT-4o** (OpenAI, via Emergent LLM Key)
+  - Mira Plan (background): **Claude Haiku 4.5**
 - **WhatsApp**: Gupshup webhook integration
 - **Payments**: Razorpay
 - **Images**: Cloudinary
+- **Database**: Local MongoDB + MongoDB Atlas (synced every 6 hours via APScheduler)
+  - Atlas user: `dipalisikand1965_db_user` | Password in `.env` only (rotated Apr 2026)
+  - Atlas URL in `PRODUCTION_MONGO_URL` env var — NEVER hardcode
 
 ## Key Files
-- `/app/backend/mira_soul.py` — ONE source of truth for Mira's soul (shared by web + WhatsApp)
-- `/app/backend/whatsapp_routes.py` — WhatsApp webhook + Mira AI (imports MIRA_CORE_SOUL)
-- `/app/backend/mira_routes.py` — Web widget Mira AI (DO NOT TOUCH — imports from mira_soul.py)
-- `/app/backend/server.py` — Central FastAPI router (>25k lines — needs splitting)
+- `/app/backend/mira_soul.py` — ONE source of truth for Mira's identity: `MIRA_SOUL_CHARTER` (WHO she is) + `MIRA_CORE_SOUL` (HOW she helps). Imported by widget, search, WhatsApp.
+- `/app/backend/mira_soulful_brain.py` — Widget brain (DO NOT TOUCH inner logic — imports from mira_soul.py)
+- `/app/backend/mira_routes.py` — All Mira API routes including `/mira/semantic-search` (breed filtering, allergen blocking, intent detection)
+- `/app/backend/whatsapp_routes.py` — WhatsApp webhook + Mira AI (imports MIRA_SOUL_CHARTER + MIRA_CORE_SOUL)
+- `/app/backend/server.py` — Central FastAPI router (>25k lines — needs splitting). Contains APScheduler Atlas sync job.
 - `/app/backend/db_restore_routes.py` — DB export/restore with bulk_write
 - `/app/backend/unified_product_box.py` — Admin product CRUD
 - `/app/backend/service_box_routes.py` — Admin service CRUD
 - `/app/frontend/src/hooks/useMiraFilter.js` — Client-side Mira product filtering
+- `/app/frontend/src/pages/MiraSearchPage.jsx` — Mira search page (always calls semantic-search for product tray)
 - `/app/frontend/src/pages/*MobilePage.jsx` — All 12 mobile pillar pages
 
 ## What's Been Implemented
