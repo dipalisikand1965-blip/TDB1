@@ -22962,7 +22962,7 @@ SEMANTIC_INTENTS = {
         "why_message": "For health and wellness"
     },
     "food_dining": {
-        "triggers": ["food", "eat", "meal", "restaurant", "cafe", "dine", "dining", "hungry", "feed", "nutrition", "diet", "treat"],
+        "triggers": ["food", "eat", "meal", "dinner", "lunch", "breakfast", "supper", "restaurant", "cafe", "dine", "dining", "hungry", "feed", "feeding", "nutrition", "diet", "treat", "kibble", "dry food", "wet food", "home cooked", "raw food", "salmon", "what to feed", "good food", "best food"],
         "priority_filter": {"pillar": "dine", "category": "Daily Meals"},
         "product_categories": ["Daily Meals", "Treats & Rewards", "Frozen & Fresh", "Supplements"],
         "product_tags": ["meal", "food", "nutrition", "treat"],
@@ -23262,25 +23262,21 @@ async def semantic_product_search(request: Request):
         return None
 
     def _is_wrong_breed_cake(p: dict) -> bool:
-        """Hard block: breed-specific cakes from wrong breed must NEVER appear.
+        """Hard block: breed-specific products that belong to a different breed must NEVER appear.
         Rules:
-          - Own breed cake → show first
-          - Generic cake (no breed_tags) → always OK
-          - Other breed's cake → HARD BLOCK (never show)
+          - Own breed products (cakes, accessories, etc.) → show first
+          - Generic products (no breed_tags or all_breeds) → always OK
+          - Other breed's products → HARD BLOCK (never show)
         """
-        cat = (p.get("category") or "").lower()
         tags = [str(t).lower() for t in (p.get("breed_tags") or [])]
-        # Only enforce on breed-cake products
-        if cat != "breed-cakes" and "cake" not in cat:
-            return False  # Not a cake — no breed-block
         if not tags or "all_breeds" in tags:
-            return False  # Generic/all-breeds cake — always OK
+            return False  # Generic product — always OK
         # Has specific breed tags — block if not this pet's breed
         if not breed:
-            return True  # Unknown breed — block all breed-specific cakes to be safe
+            return True  # Unknown breed — block all breed-specific products to be safe
         breed_norm = breed.lower().replace(" ", "_")
         is_for_pet = breed_norm in tags or breed.lower() in tags
-        return not is_for_pet  # Block if cake belongs to a different breed
+        return not is_for_pet  # Block if product is for a DIFFERENT breed
 
     # ── Priority fetch: config-defined exact filter (first page only to avoid duplicate "more" results) ──
     priority_products = []
