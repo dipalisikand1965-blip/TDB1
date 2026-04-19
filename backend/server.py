@@ -2143,18 +2143,52 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
 
-    # ── Auto Re-export Migration Data every 6 hours ──────────────────────────
-    async def auto_re_export():
-        """Automatically re-export all collections every 6 hours so GitHub backup is always fresh."""
+    # ── Auto Re-export + Atlas Sync every 6 hours ────────────────────────────
+    async def auto_re_export_and_atlas_sync():
+        """
+        Every 6 hours:
+        1. Re-export all collections to migration_data/*.json.gz (GitHub backup)
+        2. Sync all collections to MongoDB Atlas (cloud backup)
+        """
+        # Step 1 — Re-export migration files
         try:
             from db_restore_routes import _do_export
             await _do_export()
-            logger.info("[AUTO-EXPORT] ✅ Scheduled re-export complete")
+            logger.info("[AUTO-EXPORT] ✅ Migration files re-exported")
         except Exception as e:
-            logger.warning(f"[AUTO-EXPORT] ⚠️ Re-export failed: {e}")
+            logger.warning(f"[AUTO-EXPORT] ⚠️ Migration export failed: {e}")
+
+        # Step 2 — Sync to Atlas
+        ATLAS_URL = os.environ.get(
+            "PRODUCTION_MONGO_URL",
+            "mongodb+srv://dipalisikand1965_db_user:tdc123@cluster0.pndqo6o.mongodb.net/?appName=Cluster0"
+        )
+        try:
+            import pymongo as pymongo_sync
+            local_db_sync = pymongo_sync.MongoClient("mongodb://localhost:27017")["pet-os-live-test_database"]
+            atlas_db_sync = pymongo_sync.MongoClient(ATLAS_URL, serverSelectionTimeoutMS=15000)["pet-os-live-test_database"]
+
+            collections = local_db_sync.list_collection_names()
+            total_synced = 0
+            for coll_name in collections:
+                if coll_name.startswith("system."):
+                    continue
+                try:
+                    docs = list(local_db_sync[coll_name].find({}))
+                    if not docs:
+                        continue
+                    atlas_db_sync[coll_name].delete_many({})
+                    atlas_db_sync[coll_name].insert_many(docs, ordered=False)
+                    total_synced += len(docs)
+                except Exception as ce:
+                    logger.warning(f"[ATLAS-SYNC] Skipped {coll_name}: {ce}")
+
+            logger.info(f"[ATLAS-SYNC] ✅ Synced {total_synced:,} documents across {len(collections)} collections to Atlas")
+        except Exception as e:
+            logger.warning(f"[ATLAS-SYNC] ⚠️ Atlas sync failed: {e}")
 
     scheduler.add_job(
-        auto_re_export,
+        auto_re_export_and_atlas_sync,
         IntervalTrigger(hours=6),
         id="auto_db_re_export",
         replace_existing=True
