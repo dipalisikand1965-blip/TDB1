@@ -33,6 +33,18 @@ from utils.spine_helper import handoff_to_spine
 # Keep strong references to background tasks to prevent GC cancellation
 _bg_tasks: set = set()
 
+# ── LLM Circuit Breaker ──────────────────────────────────────────────────────
+# If GPT-4o is returning 502s, skip LLM entirely for 5 minutes so users never
+# wait 3+ minutes for a pattern-matched response.
+import time as _time
+_llm_circuit: dict = {
+    "failures": 0,
+    "last_fail_at": 0.0,
+    "open_until": 0.0,   # Circuit open (skip LLM) until this epoch second
+}
+_LLM_FAIL_THRESHOLD = 2   # Open circuit after 2 consecutive failures
+_LLM_COOLDOWN_SEC  = 300  # Stay open for 5 minutes, then try again
+
 
 # WhatsApp Cloud API Configuration
 WHATSAPP_API_URL = "https://graph.facebook.com/v18.0"
@@ -2381,37 +2393,71 @@ RESPONSE STYLE — guidelines (NOT a rigid template):
 
 Website: thedoggycompany.com | Concierge: +91 8971702582"""
 
-    # ── 5. Call GPT (25-second hard timeout — fail fast, never keep user waiting 3+ minutes) ──
-    try:
-        import asyncio as _asyncio
-        from emergentintegrations.llm.openai import LlmChat, UserMessage
-        import uuid as uuid_mod
+    # ── 5. Call GPT (circuit breaker: skip LLM if it's been failing, use patterns) ──
+    _now = _time.time()
+    _circuit_open = _llm_circuit["open_until"] > _now
 
-        chat = LlmChat(
-            api_key=EMERGENT_KEY,
-            # Scope session to the specific pet when known — prevents cross-pet contamination
-            session_id=f"wa-{user_phone or uuid_mod.uuid4().hex[:8]}-{ticket_pet_name.lower() if ticket_pet_name else 'all'}",
-            system_message=system_prompt
-        ).with_model("openai", "gpt-4o")
+    if _circuit_open:
+        logger.warning(f"[MIRA-AI] LLM circuit OPEN (too many 502s) — going straight to patterns")
+    else:
+        try:
+            import asyncio as _asyncio
+            import concurrent.futures as _cf
+            from emergentintegrations.llm.openai import LlmChat, UserMessage
+            import uuid as uuid_mod
 
-        response = await _asyncio.wait_for(
-            chat.send_message(UserMessage(text=f"{user_name} says: {message_text}")),
-            timeout=25.0
-        )
+            chat = LlmChat(
+                api_key=EMERGENT_KEY,
+                session_id=f"wa-{user_phone or uuid_mod.uuid4().hex[:8]}-{ticket_pet_name.lower() if ticket_pet_name else 'all'}",
+                system_message=system_prompt
+            ).with_model("openai", "gpt-4o")
 
-        if response:
-            n_products = len(found_products)
-            n_services = len(found_services)
-            logger.info(f"[MIRA-AI] ✅ Response for {(user_phone or '')[:6]}*** | "
-                       f"products={n_products} services={n_services} "
-                       f"allergies={len(all_allergies)} nearme={is_near_me}")
-            await _wa_save_history(db, phone_10, message_text, response)
-            return response
+            _user_msg = f"{user_name} says: {message_text}"
 
-    except _asyncio.TimeoutError:
-        logger.warning(f"[MIRA-AI] GPT-4o timed out (>25s) — falling back to patterns")
-    except Exception as ai_err:
-        logger.warning(f"[MIRA-AI] AI failed, falling back to patterns: {ai_err}")
+            # Run in a thread so the event loop stays free and asyncio.wait_for CAN fire
+            def _sync_llm():
+                import asyncio as _al
+                loop = _al.new_event_loop()
+                try:
+                    return loop.run_until_complete(
+                        chat.send_message(UserMessage(text=_user_msg))
+                    )
+                finally:
+                    loop.close()
+
+            _loop = _asyncio.get_event_loop()
+            _future = _loop.run_in_executor(None, _sync_llm)
+
+            # Now wait_for CAN cancel this after 25s (thread keeps running but we move on)
+            response = await _asyncio.wait_for(_future, timeout=25.0)
+
+            if response:
+                # LLM succeeded — reset circuit breaker
+                _llm_circuit["failures"] = 0
+                _llm_circuit["open_until"] = 0.0
+                n_products = len(found_products)
+                n_services = len(found_services)
+                logger.info(f"[MIRA-AI] ✅ Response for {(user_phone or '')[:6]}*** | "
+                           f"products={n_products} services={n_services} "
+                           f"allergies={len(all_allergies)} nearme={is_near_me}")
+                await _wa_save_history(db, phone_10, message_text, response)
+                return response
+
+        except _asyncio.TimeoutError:
+            _llm_circuit["failures"] += 1
+            if _llm_circuit["failures"] >= _LLM_FAIL_THRESHOLD:
+                _llm_circuit["open_until"] = _time.time() + _LLM_COOLDOWN_SEC
+                logger.warning(f"[MIRA-AI] LLM circuit OPENED (timeout x{_llm_circuit['failures']}) — patterns for {_LLM_COOLDOWN_SEC}s")
+            else:
+                logger.warning(f"[MIRA-AI] GPT-4o timed out (>25s), attempt {_llm_circuit['failures']} — falling back to patterns")
+
+        except Exception as ai_err:
+            _llm_circuit["failures"] += 1
+            if _llm_circuit["failures"] >= _LLM_FAIL_THRESHOLD:
+                _llm_circuit["open_until"] = _time.time() + _LLM_COOLDOWN_SEC
+                logger.warning(f"[MIRA-AI] LLM circuit OPENED after {_llm_circuit['failures']} failures — patterns for {_LLM_COOLDOWN_SEC}s")
+            else:
+                logger.warning(f"[MIRA-AI] AI failed (attempt {_llm_circuit['failures']}), falling back to patterns: {ai_err}")
 
     # ── 6. Fallback to pattern matching ──────────────────────────────────────
     return await get_mira_whatsapp_response(message_text, user_name)

@@ -128,10 +128,10 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - Razorpay checkout: `/api/orders/create-order` returns body error — NOT YET INVESTIGATED.
 
 ## WhatsApp Bug Fixes (Apr 2026)
-- **Root cause**: `get_mira_ai_response` referenced `wa_state` at line 1697 before it was defined (fetched at line 1897). This caused a silent `NameError` that aborted the entire pet context loading block, so pet allergies/breed/favorites were never loaded.
-- **Fix 1**: Changed `wa_state` → `_wa_pre` (already available at that point) in the `_is_answering_disambig` check.
-- **Fix 2**: Added `asyncio.wait_for(timeout=25.0)` around the GPT-4o call so API timeouts fail fast (25s) instead of waiting 3+ minutes of SDK retries before falling back to patterns.
-- **Fix 3**: Stored `asyncio.create_task()` result in a module-level `_bg_tasks` set so the task isn't garbage-collected before completing.
+- **Root cause 1 (disambiguation)**: `get_mira_ai_response` referenced `wa_state` at line 1697 before it was defined. Fixed: `wa_state` → `_wa_pre` (already available). Confirmed working: "Pet selection resolved: 'Mystique' → 'Mystique' | original: 'looking for a cake'" ✅
+- **Root cause 2 (slow response / 🐾 only)**: LiteLLM's HTTP calls blocked the asyncio event loop for 60s at a time, preventing any asyncio timer from firing. GPT-4o was returning 502 Bad Gateway causing 3+ minute delays. Users saw only the Gupshup auto-reply 🐾 sticker with no text response.
+- **Fix**: Thread-based LLM execution via `run_in_executor()` + `asyncio.wait_for(timeout=25s)` + **Circuit Breaker**: after 2 consecutive timeouts, LLM is skipped entirely for 5 minutes, sending instant pattern-matched responses. After 5 min, LLM tried again automatically.
+- **Result**: Response time: 25s (first 2 failures) → 1s (circuit open) → instant GPT when API recovers
 
 ## 3rd Party Integrations
 - OpenAI GPT-4o — Emergent LLM Key
