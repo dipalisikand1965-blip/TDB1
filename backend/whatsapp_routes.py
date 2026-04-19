@@ -2235,7 +2235,8 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
         logger.info(f"[MIRA-AI] Archetype tone injected: {label}")
 
     # ── Build unified system prompt: shared soul + WhatsApp surface rules ────
-    system_prompt = MIRA_CORE_SOUL + f"""{active_pet_lock}{archetype_tone_block}
+    from mira_soul import MIRA_SOUL_CHARTER
+    system_prompt = MIRA_SOUL_CHARTER + MIRA_CORE_SOUL + f"""{active_pet_lock}{archetype_tone_block}
 
 ═══════════════════════════════════════════════════════
 📱 WHATSAPP SURFACE RULES (format only — soul rules above govern)
