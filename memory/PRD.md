@@ -127,6 +127,12 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - Production MongoDB Atlas: IP whitelist blocks agent direct access. Use Admin Re-export/Restore as workaround.
 - Razorpay checkout: `/api/orders/create-order` returns body error — NOT YET INVESTIGATED.
 
+## WhatsApp Bug Fixes (Apr 2026)
+- **Root cause**: `get_mira_ai_response` referenced `wa_state` at line 1697 before it was defined (fetched at line 1897). This caused a silent `NameError` that aborted the entire pet context loading block, so pet allergies/breed/favorites were never loaded.
+- **Fix 1**: Changed `wa_state` → `_wa_pre` (already available at that point) in the `_is_answering_disambig` check.
+- **Fix 2**: Added `asyncio.wait_for(timeout=25.0)` around the GPT-4o call so API timeouts fail fast (25s) instead of waiting 3+ minutes of SDK retries before falling back to patterns.
+- **Fix 3**: Stored `asyncio.create_task()` result in a module-level `_bg_tasks` set so the task isn't garbage-collected before completing.
+
 ## 3rd Party Integrations
 - OpenAI GPT-4o — Emergent LLM Key
 - Gupshup WhatsApp — User API Key required
