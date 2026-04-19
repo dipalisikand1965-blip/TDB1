@@ -23248,9 +23248,9 @@ async def semantic_product_search(request: Request):
         if wrong_breed:
             breed_score = 0
         elif exact_breed:
-            breed_score = 2
+            breed_score = 15   # Breed-specific always outranks generic+loved (generic+loved = 10+1 = 11)
         else:
-            breed_score = 1
+            breed_score = 1    # Generic — loved food can still lift it
         return (int(pet_match) * 10 + breed_score, 0)
 
     def _get_why(p):
