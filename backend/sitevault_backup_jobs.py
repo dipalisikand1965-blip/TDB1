@@ -307,19 +307,29 @@ async def build_cloudinary_manifest(workdir: str) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 8. CLOUDINARY FULL DOWNLOAD (heavy — weekly only)
+# 8. CLOUDINARY FULL DOWNLOAD (heavy — weekly only, streaming + chunked)
 # ─────────────────────────────────────────────────────────────────────
-async def download_all_cloudinary(workdir: str, max_concurrent: int = 8) -> str:
+async def download_all_cloudinary(workdir: str, max_concurrent: int = 8,
+                                   shard_size: int = 2000,
+                                   drive_folder_id: Optional[str] = None) -> List[str]:
     """
-    Extract every URL from the manifest, download each image in parallel batches,
-    tar.gz them keyed by collection/public_id. This is the expensive one.
+    Interruption-resilient Cloudinary full backup.
+
+    Strategy:
+      - Chunk all URLs into shards of `shard_size` each (default 2000 ≈ 600 MB)
+      - For each shard:
+          (a) Open a streaming tar.gz writer
+          (b) Download images in parallel, add each directly to the tar as bytes
+              via tarfile.addfile() — no temp image files on disk
+          (c) Close tar → upload to Drive → unlink local tar → next shard
+      - If process crashes mid-shard, only that shard is lost; all previous
+        shards are safely in Drive.
+
+    Returns a list of local tarball paths (already deleted after upload).
     """
     manifest_path = await build_cloudinary_manifest(workdir)
     with open(manifest_path) as f:
         manifest = json.load(f)
-
-    images_dir = os.path.join(workdir, "cloudinary-images")
-    os.makedirs(images_dir, exist_ok=True)
 
     # Flatten all URLs
     all_urls: List[Tuple[str, str, str]] = []  # (collection, item_id, url)
@@ -336,64 +346,124 @@ async def download_all_cloudinary(workdir: str, max_concurrent: int = 8) -> str:
                         if isinstance(u, str) and u.startswith("http"):
                             all_urls.append((coll, str(item_id), u))
 
-    logger.info(f"[SITEVAULT] Cloudinary full download: {len(all_urls)} images to fetch")
+    total = len(all_urls)
+    shard_count = (total + shard_size - 1) // shard_size
+    logger.info(f"[SITEVAULT] Cloudinary full: {total} images → {shard_count} shards "
+                f"of {shard_size} each (max {shard_size * 600 // 1024} MB per shard)")
 
-    sem = asyncio.Semaphore(max_concurrent)
-    stats = {"ok": 0, "fail": 0, "bytes": 0}
+    # Import here to avoid issues with module reload
+    import sitevault_drive_client as _drive
 
-    async def fetch_one(client: httpx.AsyncClient, coll: str, item_id: str, url: str):
-        async with sem:
+    uploaded_tars: List[str] = []
+    overall_stats = {"ok": 0, "fail": 0, "bytes": 0, "shards_uploaded": 0}
+    ts = _timestamp()
+
+    for shard_idx in range(shard_count):
+        start = shard_idx * shard_size
+        end = min(start + shard_size, total)
+        shard_urls = all_urls[start:end]
+
+        shard_path = os.path.join(workdir, f"cloudinary-{ts}-shard{shard_idx + 1:03d}-of-{shard_count:03d}.tar.gz")
+        shard_stats = {"ok": 0, "fail": 0, "bytes": 0}
+
+        logger.info(f"[SITEVAULT] Shard {shard_idx + 1}/{shard_count}: downloading {len(shard_urls)} images → {os.path.basename(shard_path)}")
+
+        # Open streaming tar (gzip). `w:gz` = block-based, seekable;
+        # OK since our tar is file-backed (not a pipe). Use `w|gz` if truly streaming.
+        tar = tarfile.open(shard_path, "w:gz", compresslevel=6)
+        tar_lock = asyncio.Lock()  # tar is NOT thread-safe
+
+        sem = asyncio.Semaphore(max_concurrent)
+
+        async def fetch_into_tar(client: httpx.AsyncClient, coll: str, item_id: str, url: str):
+            async with sem:
+                try:
+                    resp = await client.get(url, timeout=60.0, follow_redirects=True)
+                    if resp.status_code != 200:
+                        shard_stats["fail"] += 1
+                        return
+                    data = resp.content
+                    # Deterministic name: collection/item_id/hash.ext
+                    parsed = urlparse(url)
+                    ext = os.path.splitext(parsed.path)[1] or ".jpg"
+                    if len(ext) > 6 or not ext.startswith("."):
+                        ext = ".jpg"
+                    url_hash = hashlib.sha1(url.encode()).hexdigest()[:16]
+                    arcname = f"cloudinary-images/{coll}/{item_id}/{url_hash}{ext}"
+
+                    info = tarfile.TarInfo(name=arcname)
+                    info.size = len(data)
+                    info.mtime = int(datetime.now(timezone.utc).timestamp())
+
+                    async with tar_lock:
+                        tar.addfile(info, io.BytesIO(data))
+                    shard_stats["ok"] += 1
+                    shard_stats["bytes"] += len(data)
+                except Exception as e:
+                    shard_stats["fail"] += 1
+                    logger.debug(f"[SITEVAULT] image fetch {url} failed: {e}")
+
+        try:
+            async with httpx.AsyncClient() as client:
+                tasks = [fetch_into_tar(client, c, i, u) for (c, i, u) in shard_urls]
+                # Process in mini-batches of 200 so we can log progress
+                progress_step = 200
+                for i in range(0, len(tasks), progress_step):
+                    await asyncio.gather(*tasks[i:i + progress_step])
+                    done = min(i + progress_step, len(tasks))
+                    logger.info(f"[SITEVAULT] Shard {shard_idx + 1}/{shard_count} progress: "
+                                f"{done}/{len(tasks)} "
+                                f"(ok={shard_stats['ok']} fail={shard_stats['fail']} "
+                                f"{shard_stats['bytes'] / 1024 / 1024:.1f} MB)")
+
+            # Add a per-shard stats file
+            stats_json = json.dumps({
+                "shard": shard_idx + 1,
+                "of_shards": shard_count,
+                "url_range": [start, end],
+                "stats": shard_stats,
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+            }, indent=2).encode()
+            info = tarfile.TarInfo(name=f"cloudinary-images/_shard_{shard_idx + 1:03d}_stats.json")
+            info.size = len(stats_json)
+            info.mtime = int(datetime.now(timezone.utc).timestamp())
+            async with tar_lock:
+                tar.addfile(info, io.BytesIO(stats_json))
+        finally:
+            tar.close()
+
+        shard_mb = os.path.getsize(shard_path) / 1024 / 1024
+        logger.info(f"[SITEVAULT] Shard {shard_idx + 1}/{shard_count} closed: "
+                    f"{shard_mb:.1f} MB, ok={shard_stats['ok']} fail={shard_stats['fail']}")
+
+        # Upload immediately
+        if drive_folder_id:
             try:
-                resp = await client.get(url, timeout=60.0, follow_redirects=True)
-                if resp.status_code != 200:
-                    stats["fail"] += 1
-                    return
-                # Build deterministic filename: collection/item_id/sha1-of-url.ext
-                parsed = urlparse(url)
-                ext = os.path.splitext(parsed.path)[1] or ".jpg"
-                if len(ext) > 6:
-                    ext = ".jpg"
-                url_hash = hashlib.sha1(url.encode()).hexdigest()[:16]
-                dest_dir = os.path.join(images_dir, coll, item_id)
-                os.makedirs(dest_dir, exist_ok=True)
-                dest_path = os.path.join(dest_dir, f"{url_hash}{ext}")
-                with open(dest_path, "wb") as fp:
-                    fp.write(resp.content)
-                stats["ok"] += 1
-                stats["bytes"] += len(resp.content)
+                res = _drive.upload_file(
+                    shard_path, drive_folder_id,
+                    description=f"weekly_cloudinary_shard_{shard_idx + 1}_of_{shard_count}_{ts}",
+                )
+                logger.info(f"[SITEVAULT] Shard uploaded → drive id={res.get('id')}")
+                uploaded_tars.append(shard_path)
+                overall_stats["shards_uploaded"] += 1
             except Exception as e:
-                stats["fail"] += 1
-                logger.debug(f"[SITEVAULT] image fetch {url} failed: {e}")
+                logger.error(f"[SITEVAULT] Shard {shard_idx + 1} upload failed: {e}")
 
-    async with httpx.AsyncClient() as client:
-        tasks = [fetch_one(client, c, i, u) for (c, i, u) in all_urls]
-        # Process in chunks so we can log progress
-        chunk = 200
-        for i in range(0, len(tasks), chunk):
-            await asyncio.gather(*tasks[i:i + chunk])
-            logger.info(f"[SITEVAULT] Cloudinary progress: {min(i + chunk, len(tasks))}/{len(tasks)}"
-                        f" (ok={stats['ok']} fail={stats['fail']} "
-                        f"{stats['bytes'] / 1024 / 1024:.1f} MB)")
+        # Free disk immediately
+        try:
+            os.unlink(shard_path)
+        except OSError:
+            pass
 
-    # Write stats file
-    with open(os.path.join(images_dir, "_download_stats.json"), "w") as f:
-        json.dump({"stats": stats, "total_urls": len(all_urls),
-                   "generated_at": datetime.now(timezone.utc).isoformat()}, f, indent=2)
+        overall_stats["ok"] += shard_stats["ok"]
+        overall_stats["fail"] += shard_stats["fail"]
+        overall_stats["bytes"] += shard_stats["bytes"]
 
-    # Tar the whole directory
-    archive = os.path.join(workdir, f"cloudinary-full-{_timestamp()}.tar.gz")
-    cmd = ["tar", "-czf", archive, "-C", workdir, "cloudinary-images"]
-    rc, out = _run(cmd, timeout=3600)
-    if rc not in (0, 1) or not os.path.exists(archive):
-        raise RuntimeError(f"cloudinary tar failed (rc={rc}): {out[-2000:]}")
-
-    # Free disk — remove raw files
-    shutil.rmtree(images_dir, ignore_errors=True)
-
-    logger.info(f"[SITEVAULT] cloudinary full → {archive} "
-                f"({os.path.getsize(archive) / 1024 / 1024:.1f} MB, "
-                f"ok={stats['ok']} fail={stats['fail']})")
-    return archive
+    logger.info(f"[SITEVAULT] Cloudinary full complete: "
+                f"{overall_stats['shards_uploaded']}/{shard_count} shards uploaded, "
+                f"{overall_stats['ok']} ok / {overall_stats['fail']} fail, "
+                f"{overall_stats['bytes'] / 1024 / 1024 / 1024:.2f} GB total")
+    return uploaded_tars
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -616,13 +686,22 @@ async def run_weekly_backup() -> Dict[str, Any]:
             report["errors"].append(f"shopify: {e}")
 
         # 9. Cloudinary FULL (heavy — gated by env)
+        # New streaming-chunked approach: uploads each ~2000-image shard
+        # as it's built, so a crash mid-way doesn't lose all progress.
         do_cloudinary = os.environ.get("SITEVAULT_CLOUDINARY_BACKUP", "true").lower() == "true"
         if do_cloudinary:
             try:
-                cl = await download_all_cloudinary(workdir)
-                res = drive.upload_file(cl, folders["Cloudinary-Images"],
-                                        description=f"weekly_cloudinary_full_{run_id}")
-                report["uploads"].append({"name": os.path.basename(cl), "drive_id": res["id"]})
+                shard_size = int(os.environ.get("SITEVAULT_CLOUDINARY_SHARD_SIZE", "2000"))
+                uploaded = await download_all_cloudinary(
+                    workdir,
+                    shard_size=shard_size,
+                    drive_folder_id=folders["Cloudinary-Images"],
+                )
+                for path in uploaded:
+                    report["uploads"].append({
+                        "name": os.path.basename(path),
+                        "drive_folder": "Cloudinary-Images",
+                    })
             except Exception as e:
                 report["errors"].append(f"cloudinary_full: {e}")
                 logger.exception("[SITEVAULT] cloudinary full download failed")
