@@ -22,6 +22,7 @@ from datetime import datetime, timezone, timedelta
 from bson import ObjectId
 import uuid
 import os
+import asyncio
 import jwt
 import logging
 import re
@@ -799,6 +800,15 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "conversation":  ticket_doc.get("conversation", []),
     }
     await db.service_desk_tickets.insert_one(admin_ticket)
+
+    # ── Zoho Desk fire-and-forget sync (no-op if ZOHO_ENABLED=false) ─────
+    try:
+        import zoho_desk_client as _zoho
+        if _zoho.is_enabled():
+            asyncio.create_task(_zoho.fire_and_forget_push(ticket_id))
+    except Exception as _zoho_err:
+        logger.warning(f"[ZOHO] Could not schedule sync for {ticket_id}: {_zoho_err}")
+    # ────────────────────────────────────────────────────────────────────
 
     # ── Admin notification ─────────────────────────────────────────
     await db.admin_notifications.insert_one({
