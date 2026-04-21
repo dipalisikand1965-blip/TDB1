@@ -62,16 +62,44 @@ def _sa_file_path() -> Optional[str]:
     return None
 
 
+def _sa_json_from_env() -> Optional[Dict[str, Any]]:
+    """
+    Read service-account JSON directly from an env var.
+    Used on production where we can't ship secret files.
+    Accepts either raw JSON or base64-encoded JSON.
+    """
+    raw = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
+    if not raw:
+        return None
+    raw = raw.strip()
+    # Try raw JSON first
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        pass
+    # Try base64
+    try:
+        import base64
+        decoded = base64.b64decode(raw).decode("utf-8")
+        return json.loads(decoded)
+    except Exception:
+        return None
+
+
 def is_configured() -> bool:
-    """Service-account JSON present AND root folder/drive ID set."""
-    return bool(_sa_file_path()) and bool(os.environ.get("GDRIVE_TDC_FOLDER_ID"))
+    """SA creds present (file OR json env) AND root folder/drive ID set."""
+    has_creds = bool(_sa_file_path()) or bool(_sa_json_from_env())
+    return has_creds and bool(os.environ.get("GDRIVE_TDC_FOLDER_ID"))
 
 
 def config_status() -> Dict[str, Any]:
     sa_path = _sa_file_path()
+    sa_json_env = _sa_json_from_env()
     sa_email = None
     project_id = None
+    sa_source = None
     if sa_path:
+        sa_source = "file"
         try:
             with open(sa_path) as f:
                 data = json.load(f)
@@ -79,14 +107,20 @@ def config_status() -> Dict[str, Any]:
                 project_id = data.get("project_id")
         except Exception:
             pass
+    elif sa_json_env:
+        sa_source = "env_var"
+        sa_email = sa_json_env.get("client_email")
+        project_id = sa_json_env.get("project_id")
     root_id = os.environ.get("GDRIVE_TDC_FOLDER_ID", "")
     return {
         "enabled": is_enabled(),
         "configured": is_configured(),
         "auth_mode": "service_account",
+        "sa_source": sa_source,
         "sa_email": sa_email,
         "project_id": project_id,
         "sa_file_present": bool(sa_path),
+        "sa_env_present": bool(sa_json_env),
         "root_id_present": bool(root_id),
         "root_id_type": _detect_root_type(root_id),
         "timezone": os.environ.get("SITEVAULT_TZ", "Asia/Kolkata"),
@@ -112,15 +146,21 @@ def _build_creds() -> service_account.Credentials:
     global _creds
     if _creds is None:
         sa_path = _sa_file_path()
-        if not sa_path:
-            raise RuntimeError(
-                "SiteVault not configured — service-account JSON missing "
-                "(expected at /app/backend/secrets/sitevault-sa.json "
-                "or GOOGLE_SERVICE_ACCOUNT_FILE env var)"
+        if sa_path:
+            _creds = service_account.Credentials.from_service_account_file(
+                sa_path, scopes=DRIVE_SCOPES,
             )
-        _creds = service_account.Credentials.from_service_account_file(
-            sa_path, scopes=DRIVE_SCOPES,
-        )
+        else:
+            sa_info = _sa_json_from_env()
+            if not sa_info:
+                raise RuntimeError(
+                    "SiteVault not configured — service-account creds missing. "
+                    "Set either GOOGLE_SERVICE_ACCOUNT_JSON env var (full JSON as string) "
+                    "or GOOGLE_SERVICE_ACCOUNT_FILE path pointing to a valid JSON key file."
+                )
+            _creds = service_account.Credentials.from_service_account_info(
+                sa_info, scopes=DRIVE_SCOPES,
+            )
     return _creds
 
 
