@@ -12,15 +12,22 @@
 |---|---|---|---|---|
 | 1 | **MongoDB dump** (ALL collections) | `mongodump --gzip` | Daily 3:00 AM IST | `Daily-DB-Snapshots/` |
 | 2 | **Weekly Gold Master DB dump** | `mongodump --gzip` | Monday 3:00 AM IST | `Weekly-Gold-Masters/` |
-| 3 | **Memory files** (`/app/memory/*` + backend *.md) | tar.gz | Daily + Weekly | `Documents/` |
-| 4 | **Supervisor logs** (last 7 days) | tar.gz | Daily + Weekly | `Logs/` |
-| 5 | **Cloudinary manifest** (URLs + public_ids, lightweight JSON) | JSON | Daily | `Documents/` |
-| 6 | **Source code** (`backend/` + `frontend/src/` + configs) | tar.gz | Weekly | `Source-Code-Archive/` |
-| 7 | **Frontend public assets** (`/app/frontend/public/`) | tar.gz | Weekly | `Source-Code-Archive/` |
-| 8 | **`.env` template** (keys only, values redacted) | .txt | Weekly | `Documents/` |
-| 9 | **Admin reports CSV** (tickets, orders, users) | .csv | Weekly | `Admin-Reports/` |
-| 10 | **Shopify sync state** (local↔Shopify ID map) | JSON | Weekly | `Documents/` |
-| 11 | **Cloudinary full image download** (EVERY image) | tar.gz (can be 10-30GB) | Weekly | `Cloudinary-Images/` |
+| 3 | **🟢 FULL PROJECT Gold Master tarball** (entire `/app` tree minus `node_modules`, `.git`, `__pycache__`, `secrets`, `.env`) — restore-ready | tar.gz | Weekly | `Weekly-Gold-Masters/` |
+| 4 | **Documents mirror** — every `.md`, `.html`, `.css`, `.txt`, `.xlsx`, `.csv`, `.json` across the whole project (PetWrapped pages, roadmaps, architecture docs, design tokens, seed XLSX files) | tar.gz | **Daily + Weekly** | `Documents/` |
+| 5 | **User / admin uploads** (`/app/uploads`, `/app/backend/uploads`, `/app/backend/static/uploads`) | tar.gz | Weekly | `Documents/` |
+| 6 | **Memory files** (`/app/memory/*` + backend `*.md`) | tar.gz | Daily + Weekly | `Documents/` |
+| 7 | **Supervisor logs** (last 7 days) | tar.gz | Daily + Weekly | `Logs/` |
+| 8 | **Cloudinary manifest** (URLs + public_ids, lightweight JSON) | JSON | Daily | `Documents/` |
+| 9 | **Source code** tarball (`backend/` + `frontend/src/`) — redundant with full-project but useful for quick code restore | tar.gz | Weekly | `Source-Code-Archive/` |
+| 10 | **Frontend public assets** (`/app/frontend/public/`) | tar.gz | Weekly | `Source-Code-Archive/` |
+| 11 | **`.env` template** (keys only, values redacted) | .txt | Weekly | `Documents/` |
+| 12 | **Admin reports CSV** (tickets, orders, users) | .csv | Weekly | `Admin-Reports/` |
+| 13 | **Shopify sync state** (local↔Shopify ID map) | JSON | Weekly | `Documents/` |
+| 14 | **Cloudinary full image download** (EVERY image across 21,000+ URLs, in 11 crash-resilient shards) | tar.gz (~6 GB) | Weekly | `Cloudinary-Images/` |
+
+**The rule:** every `.md`, `.html`, `.css`, seed script, uploaded document, and configuration file exists in at least TWO places in the backup:
+- Inside the `full-project` Gold Master tarball (weekly)
+- Inside the `documents-mirror` tarball (daily + weekly)
 
 ---
 

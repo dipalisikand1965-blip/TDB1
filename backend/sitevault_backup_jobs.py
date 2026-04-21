@@ -134,6 +134,175 @@ def tar_source_code(workdir: str) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────
+# 2b. FULL PROJECT TARBALL (Gold Master — EVERYTHING except junk)
+# ─────────────────────────────────────────────────────────────────────
+# These are the ONLY things we exclude. Everything else — every .md,
+# .html, .css, .xlsx, .csv, .py, .js, .json, .env.template, uploaded
+# files, seed scripts, notes — gets archived.
+FULL_PROJECT_EXCLUDES = [
+    "node_modules",
+    ".git",
+    "__pycache__",
+    ".next",
+    "build",
+    "dist",
+    ".venv", "venv",
+    ".pytest_cache",
+    ".ruff_cache",
+    "*.pyc",
+    ".DS_Store",
+    # Our own backup's temp workdirs (if archived run overlaps)
+    "sitevault-daily-*",
+    "sitevault-weekly-*",
+    # secrets folder — contains Google SA key; NEVER goes into the archive
+    "secrets",
+    # raw .env files — redacted template goes separately
+    ".env",
+]
+
+
+def tar_full_project(workdir: str) -> str:
+    """
+    Creates a single tar.gz of the ENTIRE /app directory tree minus
+    FULL_PROJECT_EXCLUDES. This is the weekly 'Gold Master' — every
+    .md doc, .html page, .css file, config, seed script, user upload,
+    EVERYTHING, in one restore-ready archive.
+    """
+    archive = os.path.join(workdir, f"full-project-{_timestamp()}.tar.gz")
+    exclude_args = [f"--exclude={p}" for p in FULL_PROJECT_EXCLUDES]
+    # -C / means we start from filesystem root, and 'app' is relative —
+    # this lets us restore with `tar -xzf archive.tar.gz -C /` to put
+    # files exactly back where they were.
+    cmd = ["tar", "-czf", archive] + exclude_args + ["-C", "/", "app"]
+
+    rc, out = _run(cmd, timeout=1800)  # allow 30 min for huge projects
+    if rc not in (0, 1) or not os.path.exists(archive):
+        raise RuntimeError(f"full-project tar failed (rc={rc}): {out[-2000:]}")
+    size_mb = os.path.getsize(archive) / 1024 / 1024
+    logger.info(f"[SITEVAULT] full-project tar OK → {archive} ({size_mb:.1f} MB)")
+    return archive
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 2c. DOCUMENTS MIRROR (.md + .html + .css + .txt + .xlsx + .csv)
+# ─────────────────────────────────────────────────────────────────────
+DOCS_PATTERNS = ["*.md", "*.html", "*.css", "*.txt", "*.xlsx", "*.csv", "*.json"]
+DOCS_SEARCH_ROOTS = [
+    "/app",
+    "/app/memory",
+    "/app/backend",
+    "/app/frontend",
+    "/app/frontend/public",
+    "/app/frontend/src",
+]
+DOCS_EXCLUDE_DIRS = [
+    "node_modules", ".git", "__pycache__", "build", "dist",
+    ".next", ".venv", "venv", ".pytest_cache", ".ruff_cache",
+    "secrets",
+]
+
+
+def mirror_documents(workdir: str) -> str:
+    """
+    Collect EVERY .md, .html, .css, .txt, .xlsx, .csv, .json across the
+    project (excluding noise dirs) into a single tarball preserving
+    relative paths under /app/.
+
+    Specifically includes:
+      - PetWrapped intro pages (investor.html, pet-wrapped-mystique.html, etc.)
+      - All roadmaps / architecture docs (SYSTEM_OVERVIEW.md, MIRA_OS_ARCHITECTURE.md, etc.)
+      - Design tokens (tdc-design-tokens.css, index.css, all CSS)
+      - Seed data (Celebrate_ProductCatalogue_SEED.xlsx, bundles_catalog.csv, etc.)
+      - Any session summary / handover / status .md files
+    """
+    archive = os.path.join(workdir, f"documents-mirror-{_timestamp()}.tar.gz")
+
+    # Build a file list using `find` — fast, correct, handles exclusions.
+    # One find per search root, patterns OR'd together.
+    candidates: set = set()
+    for root in DOCS_SEARCH_ROOTS:
+        if not os.path.isdir(root):
+            continue
+        for pattern in DOCS_PATTERNS:
+            # Build `find ROOT -type f -name pattern` while pruning noise
+            prune_args = []
+            for ex in DOCS_EXCLUDE_DIRS:
+                prune_args.extend(["-name", ex, "-prune", "-o"])
+            cmd = ["find", root] + prune_args + [
+                "-type", "f", "-name", pattern, "-print"
+            ]
+            rc, out = _run(cmd, timeout=60)
+            if rc == 0:
+                for line in out.splitlines():
+                    p = line.strip()
+                    if p and os.path.isfile(p):
+                        candidates.add(p)
+
+    # Convert to relative paths for tar -T
+    rel_paths = []
+    for p in sorted(candidates):
+        if p.startswith("/app/"):
+            rel_paths.append(p[len("/"):])  # strip leading "/" → "app/..."
+    if not rel_paths:
+        logger.warning("[SITEVAULT] documents mirror: no files found")
+        return ""
+
+    # Use tar -T with a list file (handles thousands of paths safely)
+    list_file = os.path.join(workdir, "_docs_list.txt")
+    with open(list_file, "w") as f:
+        f.write("\n".join(rel_paths))
+
+    cmd = ["tar", "-czf", archive, "-C", "/", "-T", list_file]
+    rc, out = _run(cmd, timeout=300)
+    if rc not in (0, 1) or not os.path.exists(archive):
+        raise RuntimeError(f"documents mirror tar failed (rc={rc}): {out[-2000:]}")
+
+    # Clean up list file
+    try:
+        os.unlink(list_file)
+    except OSError:
+        pass
+
+    size_mb = os.path.getsize(archive) / 1024 / 1024
+    logger.info(f"[SITEVAULT] documents mirror OK → {len(rel_paths)} files, {size_mb:.1f} MB")
+    return archive
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 2d. USER UPLOADS (everything users + admins have uploaded)
+# ─────────────────────────────────────────────────────────────────────
+UPLOAD_DIRS = [
+    "/app/uploads",
+    "/app/backend/uploads",
+    "/app/backend/static/uploads",
+    "/mnt/user-data/uploads",  # agent-uploaded artifacts (may not exist)
+]
+
+
+def tar_user_uploads(workdir: str) -> str:
+    """
+    Tarball every user/admin-uploaded file across all known upload dirs.
+    Ignores dirs that don't exist.
+    """
+    archive = os.path.join(workdir, f"user-uploads-{_timestamp()}.tar.gz")
+    existing = [d for d in UPLOAD_DIRS if os.path.isdir(d) and os.listdir(d)]
+    if not existing:
+        logger.info("[SITEVAULT] user-uploads: no upload dirs found, skipping")
+        return ""
+
+    # tar each existing dir into the archive, preserving absolute-ish paths
+    # (we use `-C /` and strip leading slash from each arg)
+    rel_dirs = [d[len("/"):] for d in existing]
+    cmd = ["tar", "-czf", archive, "-C", "/"] + rel_dirs
+    rc, out = _run(cmd, timeout=600)
+    if rc not in (0, 1) or not os.path.exists(archive):
+        raise RuntimeError(f"user-uploads tar failed (rc={rc}): {out[-2000:]}")
+    size_mb = os.path.getsize(archive) / 1024 / 1024
+    logger.info(f"[SITEVAULT] user-uploads tar OK → {len(existing)} dirs, {size_mb:.1f} MB")
+    return archive
+
+
+# ─────────────────────────────────────────────────────────────────────
 # 3. MEMORY FILES
 # ─────────────────────────────────────────────────────────────────────
 def tar_memory_files(workdir: str) -> str:
@@ -592,6 +761,17 @@ async def run_daily_backup() -> Dict[str, Any]:
         except Exception as e:
             report["errors"].append(f"cloudinary_manifest: {e}")
 
+        # 5. Documents mirror (.md / .html / .css / .txt / .xlsx / .csv)
+        # Daily so we always have up-to-date docs even if weekly job hasn't run yet
+        try:
+            docs = mirror_documents(workdir)
+            if docs:
+                res = drive.upload_file(docs, folders["Documents"],
+                                        description=f"daily_documents_mirror_{run_id}")
+                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"]})
+        except Exception as e:
+            report["errors"].append(f"documents_mirror: {e}")
+
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
 
@@ -629,6 +809,37 @@ async def run_weekly_backup() -> Dict[str, Any]:
             report["uploads"].append({"name": os.path.basename(src), "drive_id": res["id"]})
         except Exception as e:
             report["errors"].append(f"source: {e}")
+
+        # 2b. FULL PROJECT GOLD MASTER tarball — EVERYTHING in /app
+        #     (minus node_modules / .git / __pycache__ / secrets / .env)
+        try:
+            full = tar_full_project(workdir)
+            res = drive.upload_file(full, folders["Weekly-Gold-Masters"],
+                                    description=f"weekly_full_project_gold_master_{run_id}")
+            report["uploads"].append({"name": os.path.basename(full), "drive_id": res["id"]})
+        except Exception as e:
+            report["errors"].append(f"full_project: {e}")
+            logger.exception("[SITEVAULT] full-project tar failed")
+
+        # 2c. Documents mirror (.md / .html / .css / .txt / .xlsx / .csv)
+        try:
+            docs = mirror_documents(workdir)
+            if docs:
+                res = drive.upload_file(docs, folders["Documents"],
+                                        description=f"weekly_documents_mirror_{run_id}")
+                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"]})
+        except Exception as e:
+            report["errors"].append(f"documents_mirror: {e}")
+
+        # 2d. User uploads (all upload dirs)
+        try:
+            uploads = tar_user_uploads(workdir)
+            if uploads:
+                res = drive.upload_file(uploads, folders["Documents"],
+                                        description=f"weekly_user_uploads_{run_id}")
+                report["uploads"].append({"name": os.path.basename(uploads), "drive_id": res["id"]})
+        except Exception as e:
+            report["errors"].append(f"user_uploads: {e}")
 
         # 3. Frontend public
         try:
