@@ -2194,6 +2194,48 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
 
+    # ── SiteVault: nightly 3AM IST daily + Monday 3AM IST weekly ─────────
+    try:
+        import sitevault_backup_jobs as _svjobs
+        import sitevault_drive_client as _svdrive
+        _sv_tz = os.environ.get("SITEVAULT_TZ", "Asia/Kolkata")
+
+        async def _sitevault_daily_wrapper():
+            if not _svdrive.is_enabled():
+                return
+            # Skip daily if today is Monday — weekly job will run the fuller pipeline
+            if datetime.now(timezone.utc).astimezone().weekday() == 0:
+                return
+            try:
+                await _svjobs.run_daily_backup()
+            except Exception as _e:
+                logger.exception(f"[SITEVAULT] daily job failed: {_e}")
+
+        async def _sitevault_weekly_wrapper():
+            if not _svdrive.is_enabled():
+                return
+            try:
+                await _svjobs.run_weekly_backup()
+            except Exception as _e:
+                logger.exception(f"[SITEVAULT] weekly job failed: {_e}")
+
+        scheduler.add_job(
+            _sitevault_daily_wrapper,
+            CronTrigger(hour=3, minute=0, timezone=_sv_tz),
+            id="sitevault_daily",
+            replace_existing=True,
+        )
+        scheduler.add_job(
+            _sitevault_weekly_wrapper,
+            CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=_sv_tz),
+            id="sitevault_weekly",
+            replace_existing=True,
+        )
+        logger.info(f"[SITEVAULT] Scheduler registered — daily 3:00 {_sv_tz}, weekly Mon 3:00 {_sv_tz}")
+    except Exception as _sv_err:
+        logger.warning(f"[SITEVAULT] Scheduler registration failed: {_sv_err}")
+    # ─────────────────────────────────────────────────────────────────────
+
     scheduler.start()
     logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10), DAILY DIGEST (8 AM IST)")
     
@@ -22951,6 +22993,12 @@ app.include_router(service_desk_router)  # Service Desk at /api/service_desk/*
 from zoho_desk_routes import router as zoho_desk_router, set_db as set_zoho_desk_db
 app.include_router(zoho_desk_router)  # Zoho Desk sync at /api/zoho/*
 set_zoho_desk_db(db)  # Initialize Zoho Desk client + routes with database
+# ────────────────────────────────────────────────────────────────────
+
+# ── SiteVault Google Drive Backup ───────────────────────────────────
+from sitevault_routes import router as sitevault_router, set_db as set_sitevault_db
+app.include_router(sitevault_router)  # SiteVault at /api/sitevault/*
+set_sitevault_db(db)  # Initialize SiteVault client + routes with database
 # ────────────────────────────────────────────────────────────────────
 
 app.include_router(live_threads_router)  # Live Conversation Threads at /api/live_threads/*
