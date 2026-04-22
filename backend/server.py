@@ -4452,6 +4452,69 @@ async def upload_soul_made_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Image upload failed. Please try again.")
 
 
+@api_router.post("/upload/document")
+async def upload_pet_document(
+    file: UploadFile = File(...),
+    pet_id: Optional[str] = Form(None),
+    category: Optional[str] = Form("document")
+):
+    """
+    Upload a pet document (PDF, image, DOCX, etc.) to Cloudinary.
+    Returns the CDN URL — caller is responsible for registering it in the pet vault
+    via POST /api/pet-vault/{pet_id}/documents.
+    """
+    allowed_types = [
+        'application/pdf',
+        'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+    ]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: {file.content_type}. Please upload PDF, image, or Word document.")
+
+    # 10 MB hard cap — pet docs shouldn't be bigger
+    MAX_BYTES = 10 * 1024 * 1024
+    contents = await file.read()
+    if len(contents) > MAX_BYTES:
+        raise HTTPException(status_code=413, detail="File too large. Maximum size is 10 MB.")
+    if len(contents) == 0:
+        raise HTTPException(status_code=400, detail="Empty file.")
+
+    try:
+        import io
+        folder = f"pet_documents/{pet_id}" if pet_id else "pet_documents/unassigned"
+        # PDFs/DOCX must be uploaded as "raw" (image resource_type triggers 401 PDF-delivery ACL).
+        # Images use "image" resource_type for CDN transformations.
+        is_image = (file.content_type or "").startswith("image/")
+        resource_type = "image" if is_image else "raw"
+        upload_kwargs = {
+            "folder": folder,
+            "resource_type": resource_type,
+            "public_id": f"{category}-{uuid.uuid4().hex[:10]}",
+            "use_filename": True,
+            "unique_filename": True,
+            "overwrite": False,
+        }
+        upload_result = cloudinary.uploader.upload(io.BytesIO(contents), **upload_kwargs)
+        return {
+            "success": True,
+            "url": upload_result.get("secure_url"),
+            "file_url": upload_result.get("secure_url"),  # alias for older callers
+            "public_id": upload_result.get("public_id"),
+            "resource_type": upload_result.get("resource_type"),
+            "format": upload_result.get("format"),
+            "bytes": upload_result.get("bytes"),
+            "filename": file.filename,
+        }
+    except Exception as e:
+        logger.error(f"Pet document upload to Cloudinary failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
+
 @api_router.post("/upload/about-image")
 async def upload_about_image(file: UploadFile = File(...)):
     """Upload an image for About page (dogs, team)"""
@@ -10514,7 +10577,7 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
         pet_name = data.get("pet_name", "")
         pet_id_from_request = data.get("pet_id")
         new_soul_answers = data.get("soul_answers", {})
-        soul_score = data.get("soul_score", 0)
+        # Ignore client-sent soul_score — backend is sole source of truth (per Soul Bible §1)
         pet_data = data.get("pet_data", {})
         answered_question_ids = data.get("answered_question_ids", [])
         
@@ -10550,14 +10613,20 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
                 # Update if new value is not skipped
                 merged_answers[key] = value
         
+        # Compute canonical score from merged answers — NEVER trust client (Soul Bible §1)
+        _score_data = calculate_pet_soul_score(merged_answers)
+        canonical_score = _score_data.get("total_score", 0)
+        canonical_tier_key = (_score_data.get("tier") or {}).get("key") or "newcomer"
+
         # Build update document
         update = {
             "id": pet_id,
             "name": pet_name,
             "owner_email": user.get("email", "").lower(),
             "doggy_soul_answers": merged_answers,
-            "soul_score": soul_score,
-            "overall_score": soul_score,
+            "soul_score": canonical_score,
+            "overall_score": canonical_score,
+            "score_tier": canonical_tier_key,
             "breed": pet_data.get("breed") or data.get("breed", "") or (existing_pet.get("breed") if existing_pet else ""),
             "gender": pet_data.get("gender", "") or (existing_pet.get("gender") if existing_pet else ""),
             "birth_date": pet_data.get("birth_date", "") or (existing_pet.get("birth_date") if existing_pet else ""),
@@ -10597,7 +10666,7 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             {"$addToSet": {"pets": pet_id, "pet_ids": pet_id}}
         )
         
-        logger.info(f"[SOUL BUILDER] Saved/merged {len(new_soul_answers)} answers for {pet_name} (total: {len(merged_answers)}, score: {soul_score}%)")
+        logger.info(f"[SOUL BUILDER] Saved/merged {len(new_soul_answers)} answers for {pet_name} (total: {len(merged_answers)}, canonical score: {canonical_score}%)")
         
         return {
             "success": True,
@@ -10605,7 +10674,9 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             "pet_name": pet_name,
             "answers_saved": len(new_soul_answers),
             "total_answers": len(merged_answers),
-            "soul_score": soul_score,
+            "soul_score": canonical_score,
+            "overall_score": canonical_score,
+            "score_tier": canonical_tier_key,
             "answered_question_ids": update["answered_question_ids"]
         }
     except HTTPException:
@@ -14618,6 +14689,13 @@ async def get_celebration_occasions():
 @api_router.post("/pets")
 async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends(get_current_user)):
     """Create a new pet profile linked to the authenticated user"""
+    # Guard: never allow a pet to be created without a real owner_email (prevents orphans).
+    auth_email = (current_user or {}).get("email") or ""
+    if not auth_email or "@" not in auth_email:
+        raise HTTPException(
+            status_code=401,
+            detail="Authenticated user has no email on file. Please sign in again.",
+        )
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     pet_pass_number = await generate_pet_pass_number_server()
     now = get_utc_timestamp()
@@ -14626,7 +14704,7 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
         "id": pet_id,
         "pet_pass_number": pet_pass_number,
         **pet.model_dump(),
-        "owner_email": current_user["email"],  # Link to authenticated user
+        "owner_email": auth_email.strip().lower(),  # Link to authenticated user (normalized)
         "achievements": [],
         "order_history": [],
         "created_at": now,
@@ -14715,21 +14793,34 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     user_pass_plan = "foundation" if current_user.get("membership_tier") in ("gold", "platinum", "pack_leader") else "trial"
     
     for pet in pets:
-        stored_score = pet.get("overall_score", 0) or 0
         answers = pet.get("doggy_soul_answers") or pet.get("soul_answers") or {}
+        stored_score = pet.get("overall_score", 0) or 0
 
-        # Fast path: use stored score if already calculated (skip CPU-intensive recalc)
-        if stored_score > 0:
-            pet["overall_score"] = stored_score
-            pet["score_tier"] = pet.get("score_tier", "explorer")
-        elif answers:
-            # Only recalculate if no stored score
+        # Soul Bible §1: backend is sole source of truth.
+        # Always recalculate from doggy_soul_answers — never trust stored value.
+        if answers:
             score_data = calculate_pet_soul_score(answers)
-            pet["overall_score"] = score_data["total_score"]
-            pet["score_tier"] = score_data["tier"]["key"] if score_data["tier"] else "newcomer"
+            fresh_score = score_data["total_score"]
+            fresh_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
         else:
-            pet["overall_score"] = 0
-            pet["score_tier"] = "newcomer"
+            fresh_score = 0
+            fresh_tier = "newcomer"
+
+        pet["overall_score"] = fresh_score
+        pet["score_tier"] = fresh_tier
+
+        # Self-heal DB: if stored value drifted from canonical, write back so
+        # downstream readers (wrapped, cron digests, admin, Zoho enrichment) see fresh values.
+        if fresh_score != stored_score or pet.get("score_tier") != fresh_tier:
+            async def _writeback(pid=pet["id"], s=fresh_score, t=fresh_tier):
+                try:
+                    await db.pets.update_one(
+                        {"id": pid},
+                        {"$set": {"overall_score": s, "soul_score": s, "score_tier": t}}
+                    )
+                except Exception as _e:
+                    logger.warning(f"[my-pets] score writeback failed for {pid}: {_e}")
+            asyncio.create_task(_writeback())
         
         # Inject user's pet_pass_status into pets that don't have it
         if not pet.get("pet_pass_status"):
@@ -14750,6 +14841,12 @@ async def get_public_pets(limit: int = 100, skip: int = 0):
 @api_router.post("/pets/public")
 async def create_pet_profile_public(pet: PetProfileCreate):
     """Create a new pet profile without authentication (public form)"""
+    # Guard: reject any pet-create without a real owner_email to prevent orphans.
+    if not pet.owner_email or not pet.owner_email.strip() or "@" not in pet.owner_email:
+        raise HTTPException(
+            status_code=400,
+            detail="owner_email is required to create a pet profile. Sign in or provide a valid email.",
+        )
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     pet_pass_number = await generate_pet_pass_number_server()
     now = get_utc_timestamp()
@@ -14758,7 +14855,7 @@ async def create_pet_profile_public(pet: PetProfileCreate):
         "id": pet_id,
         "pet_pass_number": pet_pass_number,
         **pet.model_dump(),
-        "owner_email": pet.owner_email,  # Use provided email
+        "owner_email": pet.owner_email.strip().lower(),  # Use provided email (normalized)
         "achievements": [],
         "order_history": [],
         "created_at": now,

@@ -140,6 +140,14 @@ const AddPetPage = () => {
     setIsSubmitting(true);
     setError('');
     
+    // Guard: refuse to submit without an authenticated user email — prevents orphans.
+    const ownerEmail = (user?.email || '').trim().toLowerCase();
+    if (!ownerEmail || !ownerEmail.includes('@')) {
+      setError('You need to be signed in to add a pet. Please sign in and try again.');
+      setIsSubmitting(false);
+      return;
+    }
+    
     try {
       // Calculate birth date
       let birthDate = null;
@@ -161,6 +169,7 @@ const AddPetPage = () => {
         photo: petData.photoPreview || null,
         food_allergies: petData.hasAllergies ? [petData.allergies] : [],
         activity_level: petData.activityLevel,
+        owner_email: ownerEmail,  // Belt-and-suspenders: backend overrides from JWT, but send explicitly.
         doggy_soul_answers: {
           activity_level: petData.activityLevel,
           has_allergies: petData.hasAllergies,

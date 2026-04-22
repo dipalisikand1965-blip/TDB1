@@ -167,12 +167,48 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - **Fix**: Thread-based LLM execution via `run_in_executor()` + `asyncio.wait_for(timeout=25s)` + **Circuit Breaker**: after 2 consecutive timeouts, LLM is skipped entirely for 5 minutes, sending instant pattern-matched responses. After 5 min, LLM tried again automatically.
 - **Result**: Response time: 25s (first 2 failures) → 1s (circuit open) → instant GPT when API recovers
 
+## Recent Fixes — Feb 22, 2026 (current session)
+- **Bug #13 (H,E,A,L,T,H,Y char-array render) — HARDENED ✅**: Two template-literal spots that could render a char-array as comma-separated letters. `SoulPillarExpanded.jsx:WellnessHeroCard` + `PetHomePage.jsx:getChapterSummary` both wrapped in new `fmtSafe()` formatter (`Array.isArray(v) ? v.filter(Boolean).map(String).join(', ') : String(v ?? '')`) plus expanded empty-condition list.
+- **Products stuck on "Loading..." for rare breeds (GoSoulPage) — FIXED ✅**: `GoSoulPage.jsx` had 3 compounding issues:
+  1. No explicit loading state — stuck message regardless of fetch status. Now tracks `productsFetched` + `productsFetchError`.
+  2. Breed filter could yield zero products for rare breeds (like "tun tun"), with no fallback. Now falls back to universal set with console warning.
+  3. Dim category matching only checked `p.category`, so "Calming Travel Spray" (category=travel-health) never landed in Calming dim. Now matches against category + name + sub_category.
+  - New empty-state: "No calming products available for {pet} yet. We're adding more — check back soon." (never infinite loading).
+- **Bug #17 prep — Anti-orphan guards SHIPPED ✅**: Backend + frontend hardened against pet creation without a valid `owner_email`.
+  - `server.py:14689` (auth `POST /api/pets`): 401 if JWT has no email. Normalizes `owner_email` to lowercase.
+  - `server.py:14834` (public `POST /api/pets/public`): 400 if body missing/null/whitespace-only owner_email or no `@`. Normalizes.
+  - `AddPetPage.jsx:140`: pre-submit guard — refuses to POST without `user.email`. Sends `owner_email` explicitly in payload.
+  - **Smoke-tested**: empty/null/whitespace all → HTTP 400 with clear message. Happy path → HTTP 200 with normalized owner_email.
+- **Document Vault upload UX — SHIPPED & E2E-TESTED ✅**: The "Missing" tiles in the Document Vault were not clickable (dead cards). Now they open an **inline upload modal** with a file picker, name, and notes. Uploaded files go to **Cloudinary** (persistent across container redeploys, CDN-served) via new `POST /api/upload/document` (server.py:4454), then registered in the pet vault via existing `POST /api/pet-vault/{pet_id}/documents`.
+  - **Backend**: New endpoint with 10 MB size cap, supports PDF/JPG/PNG/WEBP/DOCX/etc. Smart resource-type routing: PDFs/docs → `raw/upload/` (no 401 ACL), images → `image/upload/` (CDN-optimized).
+  - **Frontend**: `DocumentVault.jsx` fully rewritten — each tile clickable with "Tap to upload →" hint, inline modal with file picker + optional name/notes. Existing `/api/paperwork/documents/*` attempts removed.
+  - **E2E test**: Login as Dipali → open Mojo's pet-home → tap Insurance tile → modal opens → upload PDF → vault jumps 33% → 50% → tile shows "Complete · Uploaded · View · Replace →". 100% automated verification.
+- **Bug #10 (Document Vault / Insurance not saving) — CLOSED**: Above fix supersedes earlier partial fix. Documents now persistent (Cloudinary CDN, no container-disk risk).
+- **Bug #16 (Soul Score stuck at 0%) — CLOSED**: Hardcoded `0%` display in PetSoulOnboarding.jsx resume screen replaced with dynamic `{pct}%` + live SVG ring fill.
+- **MiraMeetsYourPet.jsx registration diagnostics**: replaced generic "Could not connect" catch block with detailed error surfacing (HTTP status, duplicate email detection, network-error message).
+- **Soul Score production-readiness — SHIPPED (Aditya's 3-change plan)**: Backend is now the sole source of truth for Soul Score across all endpoints.
+  - `server.py:10517` — ignores client-sent `soul_score` on `POST /api/pet-soul/save-answers`. Always computes canonical via `pet_score_logic.calculate_pet_soul_score` from merged answers.
+  - `server.py:14717` — `/api/pets/my-pets` always recalculates from `doggy_soul_answers`, removed "stored > 0, use it" fast-path.
+  - `server.py:14745` — added asyncio write-back: when fresh_score ≠ stored, fires `db.pets.update_one` in background.
+  - **Smoke-tested**: Mojo = 100% consistent across 4 endpoints. Dipali's 8 M-pet cluster auto-healed from stale 60% → canonical 90%. Malicious `soul_score: 999` payload ignored.
+
+## Soul Score Remaining Housekeeping (deferred, not urgent)
+- Extend `UI_TO_CANONICAL_MAP` in `canonical_answers.py` to recognize PetSoulOnboarding UI keys (`age_stage`, `personality_primary`, `attachment_style`, etc.) so pets answering onboarding get their full canonical contribution. Currently Badmash ceilings at 19% because only 4/26 canonical fields are reached.
+- 6 other backend calculators remain (pet_soul_routes.calculate_overall_score, household_routes.calculate_pet_soul_score, soul_intelligence.calculate_soul_completeness, server.calculate_pet_soul_score_legacy, canonical_answers.calculate_soul_score, pet_soul_routes.calculate_folder_score) — now harmless since writes/reads both use `pet_score_logic`, but would be cleaner to consolidate.
+- 3 frontend local calculators remain (PetSoulOnboarding 368-pts local, SoulBuilder 100-pts local, Mira sync) — show stale mid-session numbers until round-trip. Reconcile on next save. Low UX priority.
+- Regression tests: no test asserts Dashboard==MyPets==PetSoul consistency.
+
 ## 3rd Party Integrations
 - OpenAI GPT-4o — Emergent LLM Key
 - Gupshup WhatsApp — User API Key required
 - Razorpay — User API Key required
 - Cloudinary — User API Key required
+- Zoho Desk (Support) — OAuth, ZOHO_REFRESH_TOKEN with Desk.tickets.ALL + Desk.contacts.ALL
+- Google Drive (SiteVault backup) — Service Account JSON
+- Resend (Email) — User API Key
+- SendGrid (legacy Email) — User API Key
 
 ## Testing
 - Test suite: `/app/backend/tests/test_mira_wa.py` (4/4 passing)
 - Test reports: `/app/test_reports/iteration_205.json`, `206.json`, `207.json`
+- Bug #10 smoke test: GET/POST round-trip against Dipali's Mojo pet — HTTP 200 both directions, document persisted and cleaned up.

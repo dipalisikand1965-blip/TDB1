@@ -780,47 +780,90 @@ export default function MiraMeetsYourPet() {
     setError("");
     try {
       // Register parent — matches MembershipOnboardModel schema exactly
-      const regRes = await fetch(`${API_URL}/api/auth/membership/onboard`, {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({
-          parent: {
-            name:               form.name,
-            email:              form.email,
-            password:           form.password,
-            phone:              form.phone,
-            whatsapp:           form.whatsapp || form.phone,
-            city:               form.city || "Mumbai",
-            pincode:            form.pincode || "400001",
-            accepted_terms:     true,
-            accepted_privacy:   true,
-            preferred_contact:  "whatsapp",
-          },
-          pets: pets.filter(p => p.name).map(p => ({
-            name:    p.name,
-            breed:   p.breed || "Indie",
-            species: "dog",
-          })),
-          plan_type: "annual",
-          pet_count: pets.filter(p => p.name).length || 1,
-        }),
-      });
+      const payload = {
+        parent: {
+          name:               form.name,
+          email:              form.email,
+          password:           form.password,
+          phone:              form.phone,
+          whatsapp:           form.whatsapp || form.phone,
+          city:               form.city || "Mumbai",
+          pincode:            form.pincode || "400001",
+          accepted_terms:     true,
+          accepted_privacy:   true,
+          preferred_contact:  "whatsapp",
+        },
+        pets: pets.filter(p => p.name).map(p => ({
+          name:    p.name,
+          breed:   p.breed || "Indie",
+          species: "dog",
+        })),
+        plan_type: "annual",
+        pet_count: pets.filter(p => p.name).length || 1,
+      };
 
-      if (!regRes.ok) {
-        const err = await regRes.json();
-        setError(err.detail || "Something went wrong. Please try again.");
+      let regRes;
+      try {
+        regRes = await fetch(`${API_URL}/api/auth/membership/onboard`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } catch (netErr) {
+        // Real network failure (DNS, offline, CORS, etc.) — expose it
+        console.error("[/join] network error calling /api/auth/membership/onboard:", netErr);
+        setError(`Network error: ${netErr?.message || netErr}. Please retry.`);
         setLoading(false);
         return;
       }
 
-      const { access_token, user, pet_ids = [] } = await regRes.json();
-      localStorage.setItem("tdb_auth_token", access_token);
-      localStorage.setItem("user", JSON.stringify(user));
+      if (!regRes.ok) {
+        // Parse server error message (may be JSON or plain text)
+        let serverMsg = "";
+        try {
+          const errJson = await regRes.json();
+          serverMsg = errJson?.detail || errJson?.message || JSON.stringify(errJson);
+        } catch {
+          try { serverMsg = await regRes.text(); } catch { serverMsg = ""; }
+        }
+        console.error(`[/join] backend ${regRes.status}:`, serverMsg);
+        if (regRes.status === 409 || /already/i.test(serverMsg)) {
+          setError("This email is already registered. Try signing in instead.");
+        } else if (regRes.status === 422) {
+          setError(`Please check your details: ${serverMsg || "some fields are invalid."}`);
+        } else {
+          setError(serverMsg || `Server error (${regRes.status}). Please try again.`);
+        }
+        setLoading(false);
+        return;
+      }
+
+      let regData;
+      try {
+        regData = await regRes.json();
+      } catch (parseErr) {
+        console.error("[/join] failed to parse success JSON:", parseErr);
+        setError("Got an unexpected response. Please retry in a moment.");
+        setLoading(false);
+        return;
+      }
+
+      const { access_token, user, pet_ids = [] } = regData;
+      try {
+        localStorage.setItem("tdb_auth_token", access_token);
+        localStorage.setItem("user", JSON.stringify(user));
+      } catch (lsErr) {
+        console.warn("[/join] localStorage unavailable:", lsErr);
+      }
 
       // Refresh auth context in background; local token is already set.
-      login(form.email, form.password).catch(() => {
-        // If login refresh fails, manual token is still set — proceed
-      });
+      try {
+        login(form.email, form.password).catch((e) => {
+          console.warn("[/join] background login refresh failed:", e);
+        });
+      } catch (loginErr) {
+        console.warn("[/join] login() threw synchronously:", loginErr);
+      }
 
       // Membership onboarding already creates pets server-side and returns pet_ids.
       const createdPets = pets
@@ -841,13 +884,14 @@ export default function MiraMeetsYourPet() {
               headers: { Authorization: `Bearer ${access_token}` },
               body: photoForm,
             });
-          } catch(e) { console.warn("Photo upload failed for", petId, e); }
+          } catch (e) { console.warn("Photo upload failed for", petId, e); }
         }
       }
       const firstPetId = createdPets[0]?.id || pet_ids[0];
       window.location.href = firstPetId ? `/soul-builder?pet_id=${firstPetId}` : "/soul-builder";
-    } catch {
-      setError("Could not connect. Please check your connection and try again.");
+    } catch (outerErr) {
+      console.error("[/join] unexpected error:", outerErr);
+      setError(`Unexpected error: ${outerErr?.message || outerErr}. Please retry.`);
     }
     setLoading(false);
   };

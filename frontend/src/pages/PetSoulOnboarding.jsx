@@ -1042,7 +1042,7 @@ export default function PetSoulOnboarding() {
             <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8"/>
             <circle cx="60" cy="60" r="50" fill="none" strokeWidth="8" strokeLinecap="round"
               stroke="url(#introGrad)"
-              strokeDasharray="314" strokeDashoffset="250"
+              strokeDasharray="314" strokeDashoffset={314 - Math.round((pct / 100) * 314)}
               style={{ transform: 'rotate(-90deg)', transformOrigin: '60px 60px', transition: 'stroke-dashoffset 1.5s ease' }}
             />
             <defs>
@@ -1057,7 +1057,7 @@ export default function PetSoulOnboarding() {
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
           }}>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 300, color: C.amber }}>0%</div>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 300, color: C.amber }} data-testid="soul-score-intro-pct">{pct}%</div>
             <div style={{ fontSize: 10, color: C.dim, letterSpacing: '0.08em' }}>SOUL SCORE</div>
           </div>
         </div>

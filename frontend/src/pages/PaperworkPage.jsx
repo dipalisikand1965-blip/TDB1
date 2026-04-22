@@ -298,12 +298,21 @@ const PaperworkPage = () => {
 
   const fetchPetDocuments = async (petId) => {
     try {
-      const response = await fetch(`${API_URL}/api/paperwork/documents/${petId}`, {
+      const response = await fetch(`${API_URL}/api/pet-vault/${petId}/documents`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
         const data = await response.json();
-        setDocuments(data.documents_by_category || {});
+        // Backend returns a flat array; group by category for this legacy UI.
+        const docsByCategory = data.documents_by_category || {};
+        if (!data.documents_by_category && Array.isArray(data.documents)) {
+          for (const doc of data.documents) {
+            const cat = doc.category || doc.document_type || 'general';
+            if (!docsByCategory[cat]) docsByCategory[cat] = { documents: [] };
+            docsByCategory[cat].documents.push(doc);
+          }
+        }
+        setDocuments(docsByCategory);
       }
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -336,29 +345,51 @@ const PaperworkPage = () => {
     
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('pet_id', selectedPet.id);
-      formData.append('category', uploadForm.category);
-      formData.append('subcategory', uploadForm.subcategory);
-      formData.append('document_name', uploadForm.document_name);
-      formData.append('document_date', uploadForm.document_date);
-      formData.append('expiry_date', uploadForm.expiry_date);
-      formData.append('notes', uploadForm.notes);
-      formData.append('reminder_enabled', uploadForm.reminder_enabled);
-      formData.append('reminder_date', uploadForm.reminder_date);
-      formData.append('reminder_channel', uploadForm.reminder_channel);
-      
-      // Add file or URL
-      if (uploadForm.file) {
-        formData.append('file', uploadForm.file);
-      } else if (uploadForm.file_url) {
-        formData.append('file_url', uploadForm.file_url);
+      // Step 1: If user picked a file, upload it to Cloudinary first
+      let fileUrl = uploadForm.file_url;
+      if (uploadForm.file && !fileUrl) {
+        const uploadForm1 = new FormData();
+        uploadForm1.append('file', uploadForm.file);
+        if (selectedPet?.id) uploadForm1.append('pet_id', selectedPet.id);
+        uploadForm1.append('category', uploadForm.category || 'document');
+        const upRes = await fetch(`${API_URL}/api/upload/document`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: uploadForm1
+        });
+        if (upRes.ok) {
+          const upData = await upRes.json();
+          fileUrl = upData.url || upData.file_url || upData.secure_url;
+        } else {
+          const errJson = await upRes.json().catch(() => ({}));
+          toast({ title: "Upload failed", description: errJson.detail || `Server returned ${upRes.status}`, variant: "destructive" });
+          setUploading(false);
+          return;
+        }
       }
       
-      const response = await fetch(`${API_URL}/api/paperwork/documents/upload`, {
+      if (!fileUrl) {
+        toast({ title: "Upload failed", description: "Please paste a file URL (file-picker upload endpoint unavailable).", variant: "destructive" });
+        setUploading(false);
+        return;
+      }
+      
+      // Step 2: Register the document in the pet vault (JSON shape per HealthDocument model)
+      const docPayload = {
+        name: uploadForm.document_name,
+        document_type: uploadForm.subcategory || uploadForm.category || 'other',
+        file_url: fileUrl,
+        notes: [
+          uploadForm.category && `Category: ${uploadForm.category}`,
+          uploadForm.document_date && `Dated: ${uploadForm.document_date}`,
+          uploadForm.expiry_date && `Expires: ${uploadForm.expiry_date}`,
+          uploadForm.notes
+        ].filter(Boolean).join(' · ') || null,
+      };
+      const response = await fetch(`${API_URL}/api/pet-vault/${selectedPet.id}/documents`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(docPayload)
       });
       
       if (response.ok) {
@@ -379,7 +410,7 @@ const PaperworkPage = () => {
         });
         fetchPetDocuments(selectedPet.id);
       } else {
-        const error = await response.json();
+        const error = await response.json().catch(() => ({}));
         toast({ title: "Error", description: error.detail || "Failed to upload", variant: "destructive" });
       }
     } catch (error) {

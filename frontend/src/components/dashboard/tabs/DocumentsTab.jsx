@@ -33,7 +33,7 @@ const DocumentsTab = ({ pets, token, API_URL }) => {
       const allDocs = [];
       
       for (const petId of petIds) {
-        const res = await fetch(`${API_URL}/api/paperwork/documents/${petId}`, {
+        const res = await fetch(`${API_URL}/api/pet-vault/${petId}/documents`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
