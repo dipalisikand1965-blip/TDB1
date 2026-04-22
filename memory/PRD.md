@@ -123,6 +123,17 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
   - New endpoints: `/api/zoho/preview/{id}` (dry-run), `/api/zoho/re-push/{id}`, `/api/zoho/re-push-all?only_unenriched=true`
   - Backfill: 500 old tickets upgrading with rich context + 485 new tickets syncing fresh = ~985 tickets in flight, 0 errors
 
+- [x] **QA Report Batch 2604 (Apr 22, 2026, pending deploy)** — 7 fixes ready
+  - Bug #1: Order confirmation email + WhatsApp (Resend + Gupshup) with smart ETA logic
+  - Bug #2: Mira breed-memory doctrine — profile = single source of truth, never reference old breed from chat history
+  - Bug #3: WhatsApp "where is my order" → real Mongo lookup with order ID/status/tracking (no more Amazon redirect for tracking queries)
+  - Bug #4: Shipping tier update — cart < ₹500 → ₹75 (was ₹150); ₹500-3000 stays ₹150 synced with TheDoggyBakery.com; ₹3000+ free
+  - Bug #6: Dashboard tabs auto smooth-scroll to content + sticky TabsList
+  - Mobile /care crash fixed (activeServicePath undeclared useState)
+  - ServicesMobilePage: added ConciergeCTA banner
+  - Bonus: Zoho cf_pet_photo field name synced with Tanisha's config; cf_pet_profile_photo added for pet profile pics
+  - Helper: Bespoke delivery ETA computed from cart items + delivery city (cakes same-day in Bangalore/Mumbai/Delhi NCR, custom Soul Picks 5-7 days, outstation 5-10 days, default 3-7 days)
+
 ### P1 (High — Next Sprint)
 - [ ] Fix Razorpay checkout `/api/orders/create-order` body error
 - [ ] Celebrate mobile parity: `BirthdayCountdown`, `CelebrationMemoryWall`, `MiraSoulNudge`
