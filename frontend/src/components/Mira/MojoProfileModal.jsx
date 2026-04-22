@@ -1451,10 +1451,10 @@ const DocumentsProfileContent = memo(({ pet, apiUrl, token, onUploadClick }) => 
         const headers = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         
-        const response = await fetch(`${apiUrl}/api/paperwork/documents/${pet.id}`, { headers });
+        const response = await fetch(`${apiUrl}/api/pet-vault/${pet.id}/documents`, { headers });
         if (response.ok) {
           const data = await response.json();
-          setPaperworkDocs(data.all_documents || []);
+          setPaperworkDocs(data.documents || data.all_documents || []);
         }
       } catch (err) {
         console.error('[MOJO] Failed to fetch paperwork docs:', err);

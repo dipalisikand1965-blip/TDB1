@@ -167,12 +167,33 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - **Fix**: Thread-based LLM execution via `run_in_executor()` + `asyncio.wait_for(timeout=25s)` + **Circuit Breaker**: after 2 consecutive timeouts, LLM is skipped entirely for 5 minutes, sending instant pattern-matched responses. After 5 min, LLM tried again automatically.
 - **Result**: Response time: 25s (first 2 failures) → 1s (circuit open) → instant GPT when API recovers
 
+## Recent Fixes — Feb 22, 2026 (current session)
+- **Bug #10 (Document Vault / Insurance not saving) — CLOSED**: 4 frontend call sites were hitting non-existent `/api/paperwork/documents/*` endpoints. Swapped to the real `/api/pet-vault/{pet_id}/documents` namespace. Shape normalizations included.
+  - Files touched: `PaperworkPage.jsx` (GET fetchPetDocuments + POST handleUpload rewritten to 2-step: upload file → register JSON HealthDocument), `DocumentsTab.jsx`, `MojoProfileModal.jsx`.
+  - End-to-end smoke test passed (GET/POST round-trip against Dipali's Mojo, cleanup confirmed).
+- **Bug #16 (Soul Score stuck at 0%) — partial fix**: Hardcoded `0%` display in PetSoulOnboarding.jsx resume screen replaced with dynamic `{pct}%` + live SVG ring fill.
+- **MiraMeetsYourPet.jsx registration diagnostics**: replaced generic "Could not connect" catch block with detailed error surfacing (HTTP status, duplicate email detection, network-error message). Ready to deploy for Rajeev's retry.
+
+## Soul Score Architectural Audit (Feb 22, 2026 — NOT YET FIXED)
+- **Problem**: 3 frontend calculators (PetSoulOnboarding 368-pts, SoulBuilder 100-pts, Mira sync) + **7 backend calculators** (`pet_score_logic`, `canonical_answers`, `pet_soul_routes.calculate_overall_score`, `pet_soul_routes.calculate_folder_score`, `household_routes.calculate_pet_soul_score`, `soul_intelligence.calculate_soul_completeness`, `server.calculate_pet_soul_score_legacy`).
+- **Root causes producing production drift**:
+  1. `server.py:10517/10559` trusts client-sent `soul_score` from request payload
+  2. `routes/wrapped/welcome.py:48,155` uses `max(stored, calculated)` ratchet (scores only go up)
+  3. No regression test asserts Dashboard score == MyPets score == Onboarding score for the same pet
+- **Impact at scale**: Drift between surfaces (parent sees 64% / 82% / 100% simultaneously), stuck-at-60% symptom (Dipali's Mynx/Mars/Moon/Mia/Magica/Maya/Mercury/Miracle), tier benefits denied/granted to wrong users.
+- **Fix plan proposed (Day 1 P0, ~2hrs)**: Kill FE score math → backend sole source · complete `UI_TO_CANONICAL_MAP` · drop "stored > 0, skip recalc" fast-path · ignore client-sent scores · add 3 regression tests · run `POST /api/admin/pets/recalculate-all-scores` backfill.
+
 ## 3rd Party Integrations
 - OpenAI GPT-4o — Emergent LLM Key
 - Gupshup WhatsApp — User API Key required
 - Razorpay — User API Key required
 - Cloudinary — User API Key required
+- Zoho Desk (Support) — OAuth, ZOHO_REFRESH_TOKEN with Desk.tickets.ALL + Desk.contacts.ALL
+- Google Drive (SiteVault backup) — Service Account JSON
+- Resend (Email) — User API Key
+- SendGrid (legacy Email) — User API Key
 
 ## Testing
 - Test suite: `/app/backend/tests/test_mira_wa.py` (4/4 passing)
 - Test reports: `/app/test_reports/iteration_205.json`, `206.json`, `207.json`
+- Bug #10 smoke test: GET/POST round-trip against Dipali's Mojo pet — HTTP 200 both directions, document persisted and cleaned up.
