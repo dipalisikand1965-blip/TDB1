@@ -374,8 +374,18 @@ const PawtyPlannerCard = ({ pet }) => {
 /* ── Special Panel: WellnessHeroCard (Pillar 7 only) ─────────────────────── */
 const WellnessHeroCard = ({ pet }) => {
   const petName = pet?.name || 'your pet';
-  const condition = pet?.doggy_soul_answers?.health_conditions || pet?.health_conditions || '';
-  const hasCondition = condition && condition !== 'none' && condition.length > 2;
+  const rawCondition = pet?.doggy_soul_answers?.health_conditions || pet?.health_conditions || '';
+  // Safe formatter: arrays join with ", " explicitly, strings pass through, everything else stringified.
+  // Prevents "H,E,A,L,T,H,Y" bug where a char-array gets coerced via template literal.
+  const formatCondition = (v) => {
+    if (!v) return '';
+    if (Array.isArray(v)) return v.filter(Boolean).map(String).join(', ');
+    return String(v);
+  };
+  const condition = formatCondition(rawCondition);
+  const conditionLower = condition.toLowerCase().trim();
+  const EMPTY_CONDITIONS = ['', 'none', 'none known', 'healthy', 'no', 'no issues', 'all healthy'];
+  const hasCondition = condition && !EMPTY_CONDITIONS.includes(conditionLower) && condition.length > 2;
   return (
     <div className="rounded-2xl p-5 text-center mb-4"
       style={{ background: 'linear-gradient(135deg, #E0F7FA, #E8F5E9)' }}>

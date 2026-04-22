@@ -539,7 +539,16 @@ const PetHomePage = () => {
     const soul = pet?.doggy_soul_answers || {};
     const name = pet?.name || 'your dog';
     const fmt = (s) => s ? String(s).charAt(0).toUpperCase() + String(s).slice(1) : '';
-    const allergies = Array.isArray(soul.food_allergies) ? soul.food_allergies.join(', ') : soul.food_allergies;
+    // Safe array/string formatter — prevents "H,E,A,L,T,H,Y" bug from template-literal coercion.
+    const fmtSafe = (v) => {
+      if (v == null) return '';
+      if (Array.isArray(v)) return v.filter(Boolean).map(String).join(', ');
+      return String(v);
+    };
+    const allergies = fmtSafe(soul.food_allergies);
+    const conditions = fmtSafe(soul.health_conditions);
+    const EMPTY = ['', 'none', 'no', 'no allergies', 'none known', 'no known allergies', 'healthy', 'all healthy'];
+    const isEmpty = (v) => EMPTY.includes(String(v).toLowerCase().trim());
     const treats = Array.isArray(soul.favorite_treats) ? soul.favorite_treats[0] : (soul.treat_preference || soul.favorite_treats);
     const summaries = {
       identity: (soul.life_stage || soul.age_stage)
@@ -548,10 +557,10 @@ const PetHomePage = () => {
       behaviour: soul.training_level
         ? `${fmt(soul.training_level)} · ${soul.separation_anxiety ? soul.separation_anxiety + ' separation' : 'no issues'}`
         : `Tell Mira how ${name} behaves`,
-      health: allergies && !['none','no','no allergies','none known','no known allergies'].includes(String(allergies).toLowerCase())
-        ? `${allergies} allergy · ${soul.health_conditions && !['none','healthy','no','none known'].includes(String(soul.health_conditions).toLowerCase()) ? soul.health_conditions : 'otherwise healthy'}`
-        : soul.health_conditions && !['none','healthy','no','none known'].includes(String(soul.health_conditions).toLowerCase())
-        ? `${soul.health_conditions} · being monitored`
+      health: allergies && !isEmpty(allergies)
+        ? `${allergies} allergy · ${conditions && !isEmpty(conditions) ? conditions : 'otherwise healthy'}`
+        : conditions && !isEmpty(conditions)
+        ? `${conditions} · being monitored`
         : `${name} is healthy`,
       social: soul.behavior_with_dogs
         ? `${fmt(soul.behavior_with_dogs)} · ${soul.stranger_reaction || soul.social_with_people || 'friendly'}`
