@@ -364,6 +364,68 @@ def _fmt_list(items, separator=", ", max_items=5) -> str:
     return out
 
 
+# ─────────────────────────────────────────────────────────────────────
+# Zoho Desk picklist catalogs — MUST MATCH what's in Zoho Setup → Layouts.
+# Unknown values are DROPPED from the payload (Zoho rejects unknown
+# picklist values with a 400 if sent, which would kill the whole ticket).
+# Update these sets when Tanisha adds new picklist options in Zoho.
+# ─────────────────────────────────────────────────────────────────────
+_ZOHO_PICKLIST_ARCHETYPE = {
+    "the velcro baby", "the wild explorer", "the social butterfly",
+    "the guardian", "the sensitive soul", "the old soul",
+    "the performer", "the quiet thinker", "the golden heart",
+    "the feisty spirit",
+}
+_ZOHO_PICKLIST_TIER = {"gold", "silver", "bronze", "free", "trial"}
+_ZOHO_PICKLIST_PILLAR = {
+    "dine", "care", "go", "play", "learn", "stay", "celebrate",
+    "paperwork", "emergency", "fit", "adopt", "farewell", "love",
+}
+
+# Map of legacy/alternate pillar values → canonical pillar
+_PILLAR_ALIASES = {
+    "grooming": "care",
+    "travel": "go",
+    "feed": "dine",
+    "shop": "dine",
+    "training": "learn",
+    "engagement": "play",
+    "membership": "love",
+    "concierge": "",  # generic — no single pillar
+    "support": "",
+    "general": "",
+    "advisory": "",
+    "search": "",
+    "services": "",
+    "enjoy": "play",
+    "mira_os": "",
+}
+
+
+def _normalize_picklist(value: Any, valid_set: set, aliases: Optional[Dict[str, str]] = None) -> str:
+    """
+    Return canonical Title-Case form if value is in the picklist, else "".
+    Never raises. Empty/None/dict/unknown all → "".
+
+    Zoho Desk rejects ticket creation if a picklist field contains a value
+    not in the allowed list, so unknown values MUST be dropped.
+    """
+    if not value or not isinstance(value, str):
+        return ""
+    v = value.strip().lower()
+    if not v:
+        return ""
+    # Alias mapping first
+    if aliases and v in aliases:
+        v = aliases[v]
+        if not v:
+            return ""
+    if v not in valid_set:
+        return ""
+    # Zoho's convention: Title Case for every word
+    return " ".join(w.capitalize() for w in v.split())
+
+
 async def _enrich_ticket_context(ticket: Dict[str, Any]) -> Dict[str, Any]:
     """
     Pull member + pet profile context from Mongo for a ticket.
@@ -623,14 +685,24 @@ def _build_zoho_custom_fields(ticket: Dict[str, Any], ctx: Dict[str, Any]) -> Di
     cf = {
         "cf_pet_name": pet.get("name") or ticket.get("pet_name") or "",
         "cf_pet_breed": pet.get("breed") or ticket.get("pet_breed") or "",
-        "cf_pet_age": str(pet.get("age") or pet.get("age_years") or ""),
+        "cf_pet_age_years": str(pet.get("age") or pet.get("age_years") or ""),
         "cf_pet_city": pet.get("city") or ctx.get("parent_city") or "",
-        "cf_soul_archetype": soul.get("archetype_name") or soul.get("primary_archetype") or "",
+        "cf_soul_archetype": _normalize_picklist(
+            soul.get("archetype_name") or soul.get("primary_archetype"),
+            _ZOHO_PICKLIST_ARCHETYPE,
+        ),
         "cf_allergies": _fmt_list(allergies, max_items=10) or "",
         "cf_health_conditions": _fmt_list(conditions, max_items=10) or "",
-        "cf_membership_tier": member.get("membership_tier") or "",
+        "cf_membership_tier": _normalize_picklist(
+            member.get("membership_tier"),
+            _ZOHO_PICKLIST_TIER,
+        ),
         "cf_internal_ticket_id": ticket.get("ticket_id") or "",
-        "cf_pillar": ticket.get("pillar") or "",
+        "cf_pillar": _normalize_picklist(
+            ticket.get("pillar"),
+            _ZOHO_PICKLIST_PILLAR,
+            aliases=_PILLAR_ALIASES,
+        ),
     }
     # Strip empty values — Zoho is happier without them
     return {k: v for k, v in cf.items() if v not in (None, "", [])}
@@ -720,7 +792,9 @@ async def push_ticket_to_zoho(local_ticket_id: str, force: bool = False) -> Dict
         ctx = await _enrich_ticket_context(ticket)
         payload = _map_local_to_zoho_payload(ticket, ctx)
 
-        # Upsert Zoho contact record (pet parent becomes a first-class contact)
+        # Upsert Zoho contact record (pet parent becomes a first-class contact).
+        # If this fails (e.g. 401 for missing Desk.contacts scope), we KEEP the
+        # embedded contact object so the ticket still shows contact name/email/phone.
         contact_id = None
         if ctx.get("parent_email"):
             contact_payload = {
@@ -737,6 +811,7 @@ async def push_ticket_to_zoho(local_ticket_id: str, force: bool = False) -> Dict
                 # Prefer contactId over embedded contact object
                 payload["contactId"] = contact_id
                 payload.pop("contact", None)
+            # else: keep payload["contact"] as-is so Zoho still gets name/email/phone
 
         # Either create new or patch existing
         if already_synced_zoho_id and force:
