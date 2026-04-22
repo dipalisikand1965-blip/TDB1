@@ -344,6 +344,44 @@ def _safe_get(d: Dict[str, Any], *keys, default=None):
     return default
 
 
+def _extract_ticket_photo_url(ticket: Dict[str, Any]) -> str:
+    """
+    Extract the most relevant photo URL from a ticket's many possible photo fields.
+    Covers: direct fields, metadata nested fields, attachments list.
+
+    Order of preference:
+      1. Top-level `photo_url` (Soul-Made cake photo, product customization photo)
+      2. Top-level `soul_made_photo`
+      3. Top-level `image_url`
+      4. `metadata.photo_url` / `metadata.image_url` / `metadata.document_url`
+      5. First string attachment URL
+    Returns "" if no photo is found.
+    """
+    if not isinstance(ticket, dict):
+        return ""
+    for k in ("photo_url", "soul_made_photo", "image_url"):
+        v = ticket.get(k)
+        if isinstance(v, str) and v.startswith(("http://", "https://")):
+            return v
+    md = ticket.get("metadata") or {}
+    if isinstance(md, dict):
+        for k in ("photo_url", "image_url", "document_url", "file_url"):
+            v = md.get(k)
+            if isinstance(v, str) and v.startswith(("http://", "https://")):
+                return v
+    atts = ticket.get("attachments") or []
+    if isinstance(atts, list) and atts:
+        first = atts[0]
+        if isinstance(first, str) and first.startswith(("http://", "https://")):
+            return first
+        if isinstance(first, dict):
+            for k in ("url", "file_url", "src", "href"):
+                v = first.get(k)
+                if isinstance(v, str) and v.startswith(("http://", "https://")):
+                    return v
+    return ""
+
+
 def _fmt_list(items, separator=", ", max_items=5) -> str:
     """Compact human-readable list formatter."""
     if not items:
@@ -656,6 +694,19 @@ def _build_rich_description(ticket: Dict[str, Any], ctx: Dict[str, Any]) -> str:
         lines.append("")
 
     # ── Footer / references ─────────────────────────────────────────
+    # Photo links (clickable in Zoho — it auto-linkifies http/https URLs)
+    ticket_photo = _extract_ticket_photo_url(ticket)
+    profile_photo = (pet or {}).get("photo_url") or (pet or {}).get("profile_photo")
+    if ticket_photo or profile_photo:
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        lines.append("  📸 PHOTOS")
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        if ticket_photo:
+            lines.append(f"Ticket photo:   {ticket_photo}")
+        if profile_photo and profile_photo != ticket_photo:
+            lines.append(f"Pet profile:    {profile_photo}")
+        lines.append("")
+
     lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     tid = ticket.get("ticket_id", "?")
     lines.append(f"🔗 Internal Ticket ID: {tid}")
@@ -703,6 +754,9 @@ def _build_zoho_custom_fields(ticket: Dict[str, Any], ctx: Dict[str, Any]) -> Di
             _ZOHO_PICKLIST_PILLAR,
             aliases=_PILLAR_ALIASES,
         ),
+        # Photo/image URLs — clickable in Zoho when field type = URL
+        "cf_pet_photo_url": _extract_ticket_photo_url(ticket),
+        "cf_pet_profile_photo": pet.get("photo_url") or pet.get("profile_photo") or "",
     }
     # Strip empty values — Zoho is happier without them
     return {k: v for k, v in cf.items() if v not in (None, "", [])}
