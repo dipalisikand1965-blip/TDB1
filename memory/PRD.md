@@ -104,6 +104,14 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
   - `SILENT_MEMBER_INTENT_TYPES` frozenset in `mira_service_desk.py`
   - `_is_silent_intent()` helper (also catches `mira_*_concern` pattern)
   - Member bell notification + `send_concierge_request_email` both gated
+- [x] **Zoho Desk + SiteVault deployed to production (Apr 22, 2026)** — DONE ✅
+  - Cleaned GitHub history via git-filter-repo (removed leaked secrets from 2965 commits)
+  - Replaced dirty `main` with scrubbed clean branch (2893 commits)
+  - Dirty main archived to Google Drive (193MB safety blanket) before deletion
+  - Production re-deployed from clean `main` — HTTP 200, all health checks green
+  - `/api/zoho/health` reports `ok: true`, all 4 credentials present
+  - `/api/sitevault/health` reports `ok: true`, shared drive connected
+  - 500 service-desk tickets bulk-queued to Zoho (10/10 first-batch success, zero failures)
 
 ### P1 (High — Next Sprint)
 - [ ] Fix Razorpay checkout `/api/orders/create-order` body error
@@ -111,6 +119,11 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - [ ] Add `LearnNearMe` (LearnMobilePage), `PaperworkNearMe` (PaperworkMobilePage), `GoNearMe` (GoMobilePage)
 - [ ] Multi-Pet Household Safety: basket splitting on health condition conflicts
 - [ ] Real-time WebSocket notifications (Admin reply → user sees instantly)
+- [ ] **Mira "Explains Why" expandable row** on ProductCard/MealBoxCard (breed match + allergen logic reveal)
+- [ ] **Zoho Desk webhook registration** in Zoho UI (Setup → Developer Space → Webhooks) with URL: `https://thedoggycompany.com/api/zoho/webhook?token=<ZOHO_WEBHOOK_TOKEN>`
+- [ ] **Rotate remaining leaked keys** (public repo leak): Razorpay Live, Google Service Account, Google Places, SendGrid
+- [ ] **Rotate `ZOHO_WEBHOOK_TOKEN`** — currently still the placeholder `petlifeos_zoho_webhook_secret_change_me_2026`
+- [ ] Clean up bad `Daily Meals` admin data (mats/bandanas miscategorised)
 
 ### P2 (Medium — Upcoming)
 - [ ] "Watch & Learn" YouTube sections (Care + Go pillars)

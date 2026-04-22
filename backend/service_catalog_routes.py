@@ -486,6 +486,13 @@ async def service_checkout(
         
         await db.service_desk_tickets.insert_one(ticket)
         await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
+        # ── Zoho Desk fire-and-forget sync (no-op if ZOHO_ENABLED=false) ─────
+        try:
+            import zoho_desk_client as _zoho
+            _zoho.schedule_push(ticket.get("ticket_id"))
+        except Exception as _zoho_err:
+            logger.warning(f"[ZOHO] Could not schedule sync for service cart ticket: {_zoho_err}")
+        # ────────────────────────────────────────────────────────────────────
     
     # Clear cart
     await db.service_carts.delete_one({"cart_id": cart_id})

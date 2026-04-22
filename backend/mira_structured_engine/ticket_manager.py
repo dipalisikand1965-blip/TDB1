@@ -108,6 +108,13 @@ async def create_draft_ticket(
     try:
         await _db.service_desk_tickets.insert_one(ticket_doc)
         logger.info(f"[TICKET] Created draft: {ticket_id} for {service_type} ({status})")
+        # ── Zoho Desk fire-and-forget sync (no-op if ZOHO_ENABLED=false) ─────
+        try:
+            import zoho_desk_client as _zoho
+            _zoho.schedule_push(ticket_id)
+        except Exception as _zoho_err:
+            logger.warning(f"[ZOHO] Could not schedule sync for {ticket_id}: {_zoho_err}")
+        # ────────────────────────────────────────────────────────────────────
         
         # Create notifications
         await _create_ticket_notifications(ticket_doc)
