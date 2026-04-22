@@ -112,6 +112,16 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
   - `/api/zoho/health` reports `ok: true`, all 4 credentials present
   - `/api/sitevault/health` reports `ok: true`, shared drive connected
   - 500 service-desk tickets bulk-queued to Zoho (10/10 first-batch success, zero failures)
+- [x] **Zoho Desk rich enrichment shipped to production (Apr 22, 2026)** — DONE ✅
+  - PR #103 merged cleanly (6 commits, 0 conflicts — fast-forward)
+  - New Zoho OAuth refresh token with full scopes (`Desk.tickets.ALL`, `Desk.contacts.ALL`)
+  - 10 custom fields created in Zoho (cf_pet_name, cf_pet_breed, cf_pet_age_years, cf_pet_city, cf_soul_archetype, cf_allergies, cf_health_conditions, cf_membership_tier, cf_internal_ticket_id, cf_pillar)
+  - Picklist normalizer + aliases protect against unknown values (gold → Gold, grooming → Care)
+  - Auto-sync hooks wired into 6 ticket-creation sites (orders, conversations, meal_box, service_catalog, central_signal_flow, mira_structured_engine)
+  - Rich structured description: Pet Profile + Member + Request sections with Unicode box drawing
+  - Contact upsert by email → no more "Website Visitor"
+  - New endpoints: `/api/zoho/preview/{id}` (dry-run), `/api/zoho/re-push/{id}`, `/api/zoho/re-push-all?only_unenriched=true`
+  - Backfill: 500 old tickets upgrading with rich context + 485 new tickets syncing fresh = ~985 tickets in flight, 0 errors
 
 ### P1 (High — Next Sprint)
 - [ ] Fix Razorpay checkout `/api/orders/create-order` body error
