@@ -945,7 +945,7 @@ function TripProfile({ pet, token }) {
 // ─────────────────────────────────────────────────────────────
 // DIM EXPANDED — mirrors CareSoulPage DimExpanded exactly
 // ─────────────────────────────────────────────────────────────
-export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
+export function DimExpanded({ dim, pet, onClose, apiProducts = {}, productsFetched = false, productsFetchError = null }) {
   const petName   = pet?.name || "your dog";
   const allergies = getAllergies(pet);
   const condition = pet?.health_condition || pet?.medical_condition || null;
@@ -1090,8 +1090,14 @@ export function DimExpanded({ dim, pet, onClose, apiProducts = {} }) {
           )}
 
           {products.length === 0 ? (
-            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }}>
-              {allRaw.length===0 ? `Loading ${dim.label} products for ${petName}…` : `No products available for this filter.`}
+            <div style={{ textAlign:"center", padding:"24px 0", color:"#888", fontSize:13 }} data-testid="go-dim-empty-state">
+              {productsFetchError
+                ? `Couldn't load products (${productsFetchError}). Please refresh.`
+                : !productsFetched
+                  ? `Loading ${dim.label} products for ${petName}…`
+                  : allRaw.length === 0
+                    ? `No ${dim.label.toLowerCase()} products available for ${petName} yet. We're adding more — check back soon.`
+                    : `No products available for this filter.`}
             </div>
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(200px,100%),1fr))", gap:12 }}>
@@ -1926,6 +1932,8 @@ const GoSoulPage = () => {
   const [petData, setPetData]       = useState(null);
   const [soulScore, setSoulScore]   = useState(0);
   const [apiProducts, setApiProducts] = useState({});
+  const [productsFetched, setProductsFetched] = useState(false);
+  const [productsFetchError, setProductsFetchError] = useState(null);
   const [conciergeToast, setConciergeToast] = useState(null);
 
   usePlatformTracking({ pillar: "go", pet: currentPet });
@@ -1975,20 +1983,38 @@ const GoSoulPage = () => {
   // Fetch Go products — group by dim.id, filter soul products by breed
   useEffect(() => {
     if (!petData) return;
-    const petBreed = (petData?.breed || "indie").toLowerCase().trim();
+    setProductsFetched(false);
+    setProductsFetchError(null);
 
     fetch(`${API_URL}/api/admin/pillar-products?pillar=go&limit=300`)
-      .then(r => r.ok ? r.json() : null)
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
       .then(async data => {
-        if (!data?.products?.length) return;
+        const rawProducts = data?.products || [];
+        if (!rawProducts.length) {
+          setApiProducts({});
+          setProductsFetched(true);
+          return;
+        }
         // Apply v2 breed filter before grouping (synonym-aware)
-        const breedFiltered = filterBreedProducts(data.products, petData?.breed);
+        let breedFiltered = filterBreedProducts(rawProducts, petData?.breed);
+        // Fallback: if breed filter yields zero but raw had products, show universal set
+        // so rare/unknown breeds (e.g., "tun tun") don't get stuck on "Loading..."
+        const usingFallback = breedFiltered.length === 0;
+        if (usingFallback) {
+          breedFiltered = rawProducts;
+          console.warn(`[GoSoulPage] No breed-specific products for "${petData?.breed}"; falling back to universal set (${rawProducts.length} items)`);
+        }
         const grouped = {};
         breedFiltered.forEach(p => {
           const catLower = (p.category || "").toLowerCase();
+          const nameLower = (p.name || "").toLowerCase();
+          const subLower = (p.sub_category || "").toLowerCase();
+          const searchSpace = `${catLower} ${nameLower} ${subLower}`;
           let matched = false;
           Object.entries(DIM_ID_TO_KEYWORDS).forEach(([dimId, keywords]) => {
-            if (keywords.some(kw => catLower.includes(kw))) {
+            // Match keyword against category/name/sub_category so products like
+            // "Calming Travel Spray" (category=travel-health) land in the calming dim.
+            if (keywords.some(kw => searchSpace.includes(kw))) {
               if (!grouped[dimId]) grouped[dimId] = {};
               const sub = p.sub_category || "General";
               if (!grouped[dimId][sub]) grouped[dimId][sub] = [];
@@ -2007,7 +2033,12 @@ const GoSoulPage = () => {
         // Breed-specific soul products for Go appear through GoContentModal's Personalised tab
         // (no soul dim in goDims — handled by GoCategoryStrip → GoContentModal → PersonalisedBreedSection)
         setApiProducts(grouped);
-      }).catch(e => console.error("[GoSoulPage] products fetch:", e));
+        setProductsFetched(true);
+      }).catch(e => {
+        console.error("[GoSoulPage] products fetch:", e);
+        setProductsFetchError(e?.message || "Could not load products.");
+        setProductsFetched(true);
+      });
   }, [petData]);
 
   useEffect(() => {
@@ -2159,7 +2190,7 @@ const GoSoulPage = () => {
             {/* Expanded panel */}
             {activeDim && (
               <div style={{ display:"grid", gridTemplateColumns:"1fr", marginBottom:8 }}>
-                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} />
+                <DimExpanded dim={activeDim} pet={petData} onClose={() => setOpenDim(null)} apiProducts={apiProducts} productsFetched={productsFetched} productsFetchError={productsFetchError} />
               </div>
             )}
 
