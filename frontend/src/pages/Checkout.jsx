@@ -67,7 +67,8 @@ const Checkout = () => {
     bakery_pickup_only_categories: DEFAULT_BAKERY_CATEGORIES,
     pan_india_shipping: true,
     shipping_thresholds: [
-      { min_cart_value: 0, max_cart_value: 3000, shipping_fee: 150 },
+      { min_cart_value: 0, max_cart_value: 500, shipping_fee: 75 },
+      { min_cart_value: 500, max_cart_value: 3000, shipping_fee: 150 },
       { min_cart_value: 3000, max_cart_value: 999999, shipping_fee: 0 }
     ],
     free_shipping_threshold: DEFAULT_FREE_SHIPPING_THRESHOLD,
@@ -345,7 +346,8 @@ const Checkout = () => {
             bakery_pickup_only_categories: data.bakery_pickup_only_categories || DEFAULT_BAKERY_CATEGORIES,
             pan_india_shipping: data.pan_india_shipping !== false,
             shipping_thresholds: data.shipping_thresholds || [
-              { min_cart_value: 0, max_cart_value: 3000, shipping_fee: 150 },
+              { min_cart_value: 0, max_cart_value: 500, shipping_fee: 75 },
+              { min_cart_value: 500, max_cart_value: 3000, shipping_fee: 150 },
               { min_cart_value: 3000, max_cart_value: 999999, shipping_fee: 0 }
             ],
             free_shipping_threshold: data.free_shipping_threshold || DEFAULT_FREE_SHIPPING_THRESHOLD,
