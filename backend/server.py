@@ -14689,6 +14689,13 @@ async def get_celebration_occasions():
 @api_router.post("/pets")
 async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends(get_current_user)):
     """Create a new pet profile linked to the authenticated user"""
+    # Guard: never allow a pet to be created without a real owner_email (prevents orphans).
+    auth_email = (current_user or {}).get("email") or ""
+    if not auth_email or "@" not in auth_email:
+        raise HTTPException(
+            status_code=401,
+            detail="Authenticated user has no email on file. Please sign in again.",
+        )
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     pet_pass_number = await generate_pet_pass_number_server()
     now = get_utc_timestamp()
@@ -14697,7 +14704,7 @@ async def create_pet_profile(pet: PetProfileCreate, current_user: dict = Depends
         "id": pet_id,
         "pet_pass_number": pet_pass_number,
         **pet.model_dump(),
-        "owner_email": current_user["email"],  # Link to authenticated user
+        "owner_email": auth_email.strip().lower(),  # Link to authenticated user (normalized)
         "achievements": [],
         "order_history": [],
         "created_at": now,
@@ -14834,6 +14841,12 @@ async def get_public_pets(limit: int = 100, skip: int = 0):
 @api_router.post("/pets/public")
 async def create_pet_profile_public(pet: PetProfileCreate):
     """Create a new pet profile without authentication (public form)"""
+    # Guard: reject any pet-create without a real owner_email to prevent orphans.
+    if not pet.owner_email or not pet.owner_email.strip() or "@" not in pet.owner_email:
+        raise HTTPException(
+            status_code=400,
+            detail="owner_email is required to create a pet profile. Sign in or provide a valid email.",
+        )
     pet_id = f"pet-{uuid.uuid4().hex[:12]}"
     pet_pass_number = await generate_pet_pass_number_server()
     now = get_utc_timestamp()
@@ -14842,7 +14855,7 @@ async def create_pet_profile_public(pet: PetProfileCreate):
         "id": pet_id,
         "pet_pass_number": pet_pass_number,
         **pet.model_dump(),
-        "owner_email": pet.owner_email,  # Use provided email
+        "owner_email": pet.owner_email.strip().lower(),  # Use provided email (normalized)
         "achievements": [],
         "order_history": [],
         "created_at": now,

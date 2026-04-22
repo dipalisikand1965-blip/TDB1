@@ -168,6 +168,12 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - **Result**: Response time: 25s (first 2 failures) → 1s (circuit open) → instant GPT when API recovers
 
 ## Recent Fixes — Feb 22, 2026 (current session)
+- **Bug #17 prep — Anti-orphan guards SHIPPED ✅**: Backend + frontend hardened against pet creation without a valid `owner_email`. Prevents future orphan pets even if auth context glitches.
+  - `server.py:14689` (auth `POST /api/pets`): 401 if JWT has no email. Normalizes `owner_email` to lowercase.
+  - `server.py:14834` (public `POST /api/pets/public`): 400 if body missing/null/whitespace-only owner_email or no `@`. Normalizes.
+  - `AddPetPage.jsx:140`: pre-submit guard — refuses to POST without `user.email`. Sends `owner_email` explicitly in payload (backend overrides from JWT, but belt-and-suspenders).
+  - **Smoke-tested**: empty/null/whitespace all → HTTP 400 with clear message. Happy path → HTTP 200 with normalized owner_email. DB orphan count unchanged (4 pre-existing demo-seed pets `pet-demo-001..004`).
+  - **Deferred**: Orphan cleanup + `dipali@mindescapes.in` ↔ `dipali@mindesapes.in` duplicate user merge. Awaiting business-side decision.
 - **Document Vault upload UX — SHIPPED & E2E-TESTED ✅**: The "Missing" tiles in the Document Vault were not clickable (dead cards). Now they open an **inline upload modal** with a file picker, name, and notes. Uploaded files go to **Cloudinary** (persistent across container redeploys, CDN-served) via new `POST /api/upload/document` (server.py:4454), then registered in the pet vault via existing `POST /api/pet-vault/{pet_id}/documents`.
   - **Backend**: New endpoint with 10 MB size cap, supports PDF/JPG/PNG/WEBP/DOCX/etc. Smart resource-type routing: PDFs/docs → `raw/upload/` (no 401 ACL), images → `image/upload/` (CDN-optimized).
   - **Frontend**: `DocumentVault.jsx` fully rewritten — each tile clickable with "Tap to upload →" hint, inline modal with file picker + optional name/notes. Existing `/api/paperwork/documents/*` attempts removed.
