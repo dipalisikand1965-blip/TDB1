@@ -150,6 +150,72 @@ async def bulk_sync(
 
 
 # ─────────────────────────────────────────────────────────────────────
+# 3b. RE-PUSH — upgrade ALREADY-SYNCED tickets with fresh rich context
+# ─────────────────────────────────────────────────────────────────────
+async def _re_push(tid: str):
+    """Background worker: force-repush a single ticket (PATCH in Zoho)."""
+    try:
+        await zoho.push_ticket_to_zoho(tid, force=True)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"[ZOHO] re-push failed for {tid}: {e}")
+
+
+@router.post("/re-push/{local_ticket_id}")
+async def re_push_one(
+    local_ticket_id: str,
+    x_admin_secret: Optional[str] = Header(None),
+):
+    """Force-update a single ticket in Zoho with refreshed rich context."""
+    _require_admin(x_admin_secret)
+    result = await zoho.push_ticket_to_zoho(local_ticket_id, force=True)
+    if result.get("success") or result.get("skipped"):
+        return result
+    raise HTTPException(status_code=502, detail=result.get("error", "Unknown re-push error"))
+
+
+@router.post("/re-push-all")
+async def re_push_all(
+    background_tasks: BackgroundTasks,
+    limit: int = Query(100, ge=1, le=500),
+    only_unenriched: bool = Query(True, description="If true, skip tickets already marked zoho_enriched=true"),
+    x_admin_secret: Optional[str] = Header(None),
+):
+    """
+    Batch-upgrade already-synced Zoho tickets with the new rich description
+    + custom fields + contact linkage.
+
+    Use this after deploying the enrichment code to backfill old tickets.
+    """
+    _require_admin(x_admin_secret)
+    if _db is None:
+        raise HTTPException(status_code=500, detail="DB not initialized")
+
+    query: Dict[str, Any] = {"zoho_ticket_id": {"$exists": True, "$ne": None}}
+    if only_unenriched:
+        query["$or"] = [
+            {"zoho_enriched": {"$exists": False}},
+            {"zoho_enriched": False},
+        ]
+
+    cursor = _db.service_desk_tickets.find(
+        query, {"ticket_id": 1, "_id": 0}
+    ).sort("created_at", -1).limit(limit)
+
+    ticket_ids = [doc["ticket_id"] async for doc in cursor if doc.get("ticket_id")]
+
+    for tid in ticket_ids:
+        background_tasks.add_task(_re_push, tid)
+
+    return {
+        "queued": len(ticket_ids),
+        "only_unenriched": only_unenriched,
+        "message": "Re-push queued. Poll /api/zoho/sync-log for status.",
+        "sample_ids": ticket_ids[:10],
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────
 # 4. SYNC LOG (audit)
 # ─────────────────────────────────────────────────────────────────────
 @router.get("/sync-log")
@@ -174,6 +240,47 @@ async def list_webhook_events(
         return {"events": []}
     cursor = _db.zoho_webhook_events.find({}, {"_id": 0}).sort("received_at", -1).limit(limit)
     return {"events": [doc async for doc in cursor]}
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 4b. PREVIEW — see the exact Zoho payload for a ticket (no push)
+# ─────────────────────────────────────────────────────────────────────
+@router.get("/preview/{local_ticket_id}")
+async def preview_zoho_payload(
+    local_ticket_id: str,
+    x_admin_secret: Optional[str] = Header(None),
+):
+    """
+    Dry-run: returns the exact payload that WOULD be sent to Zoho for this
+    ticket — including rich description, custom fields, and resolved contact.
+    No actual API call is made. Useful for debugging enrichment before push.
+    """
+    _require_admin(x_admin_secret)
+    if _db is None:
+        raise HTTPException(status_code=500, detail="DB not initialized")
+
+    ticket = await _db.service_desk_tickets.find_one(
+        {"ticket_id": local_ticket_id}, {"_id": 0}
+    )
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+
+    ctx = await zoho._enrich_ticket_context(ticket)
+    payload = zoho._map_local_to_zoho_payload(ticket, ctx)
+
+    return {
+        "local_ticket_id": local_ticket_id,
+        "context_found": {
+            "member": bool(ctx.get("member")),
+            "pet": bool(ctx.get("pet")),
+            "pets_count": len(ctx.get("pets") or []),
+            "parent_name": ctx.get("parent_name"),
+            "parent_email": ctx.get("parent_email"),
+        },
+        "zoho_payload": payload,
+        "rendered_description": payload.get("description"),
+    }
+
 
 
 # ─────────────────────────────────────────────────────────────────────
