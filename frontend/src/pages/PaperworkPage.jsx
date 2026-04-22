@@ -345,14 +345,14 @@ const PaperworkPage = () => {
     
     setUploading(true);
     try {
-      // Step 1: If user picked a file, upload it first to get a URL
+      // Step 1: If user picked a file, upload it to Cloudinary first
       let fileUrl = uploadForm.file_url;
       if (uploadForm.file && !fileUrl) {
         const uploadForm1 = new FormData();
         uploadForm1.append('file', uploadForm.file);
-        uploadForm1.append('pet_id', selectedPet.id);
-        uploadForm1.append('category', 'document');
-        const upRes = await fetch(`${API_URL}/api/upload/pet-document`, {
+        if (selectedPet?.id) uploadForm1.append('pet_id', selectedPet.id);
+        uploadForm1.append('category', uploadForm.category || 'document');
+        const upRes = await fetch(`${API_URL}/api/upload/document`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: uploadForm1
@@ -360,6 +360,11 @@ const PaperworkPage = () => {
         if (upRes.ok) {
           const upData = await upRes.json();
           fileUrl = upData.url || upData.file_url || upData.secure_url;
+        } else {
+          const errJson = await upRes.json().catch(() => ({}));
+          toast({ title: "Upload failed", description: errJson.detail || `Server returned ${upRes.status}`, variant: "destructive" });
+          setUploading(false);
+          return;
         }
       }
       

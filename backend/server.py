@@ -4452,6 +4452,69 @@ async def upload_soul_made_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Image upload failed. Please try again.")
 
 
+@api_router.post("/upload/document")
+async def upload_pet_document(
+    file: UploadFile = File(...),
+    pet_id: Optional[str] = Form(None),
+    category: Optional[str] = Form("document")
+):
+    """
+    Upload a pet document (PDF, image, DOCX, etc.) to Cloudinary.
+    Returns the CDN URL — caller is responsible for registering it in the pet vault
+    via POST /api/pet-vault/{pet_id}/documents.
+    """
+    allowed_types = [
+        'application/pdf',
+        'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain',
+    ]
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: {file.content_type}. Please upload PDF, image, or Word document.")
+
+    # 10 MB hard cap — pet docs shouldn't be bigger
+    MAX_BYTES = 10 * 1024 * 1024
+    contents = await file.read()
+    if len(contents) > MAX_BYTES:
+        raise HTTPException(status_code=413, detail="File too large. Maximum size is 10 MB.")
+    if len(contents) == 0:
+        raise HTTPException(status_code=400, detail="Empty file.")
+
+    try:
+        import io
+        folder = f"pet_documents/{pet_id}" if pet_id else "pet_documents/unassigned"
+        # PDFs/DOCX must be uploaded as "raw" (image resource_type triggers 401 PDF-delivery ACL).
+        # Images use "image" resource_type for CDN transformations.
+        is_image = (file.content_type or "").startswith("image/")
+        resource_type = "image" if is_image else "raw"
+        upload_kwargs = {
+            "folder": folder,
+            "resource_type": resource_type,
+            "public_id": f"{category}-{uuid.uuid4().hex[:10]}",
+            "use_filename": True,
+            "unique_filename": True,
+            "overwrite": False,
+        }
+        upload_result = cloudinary.uploader.upload(io.BytesIO(contents), **upload_kwargs)
+        return {
+            "success": True,
+            "url": upload_result.get("secure_url"),
+            "file_url": upload_result.get("secure_url"),  # alias for older callers
+            "public_id": upload_result.get("public_id"),
+            "resource_type": upload_result.get("resource_type"),
+            "format": upload_result.get("format"),
+            "bytes": upload_result.get("bytes"),
+            "filename": file.filename,
+        }
+    except Exception as e:
+        logger.error(f"Pet document upload to Cloudinary failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
+
 @api_router.post("/upload/about-image")
 async def upload_about_image(file: UploadFile = File(...)):
     """Upload an image for About page (dogs, team)"""

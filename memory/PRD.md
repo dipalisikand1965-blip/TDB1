@@ -168,16 +168,18 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - **Result**: Response time: 25s (first 2 failures) → 1s (circuit open) → instant GPT when API recovers
 
 ## Recent Fixes — Feb 22, 2026 (current session)
-- **Bug #10 (Document Vault / Insurance not saving) — CLOSED**: 4 frontend call sites were hitting non-existent `/api/paperwork/documents/*` endpoints. Swapped to the real `/api/pet-vault/{pet_id}/documents` namespace. Shape normalizations included.
-  - Files touched: `PaperworkPage.jsx` (GET fetchPetDocuments + POST handleUpload rewritten to 2-step: upload file → register JSON HealthDocument), `DocumentsTab.jsx`, `MojoProfileModal.jsx`.
-  - End-to-end smoke test passed (GET/POST round-trip against Dipali's Mojo, cleanup confirmed).
+- **Document Vault upload UX — SHIPPED & E2E-TESTED ✅**: The "Missing" tiles in the Document Vault were not clickable (dead cards). Now they open an **inline upload modal** with a file picker, name, and notes. Uploaded files go to **Cloudinary** (persistent across container redeploys, CDN-served) via new `POST /api/upload/document` (server.py:4454), then registered in the pet vault via existing `POST /api/pet-vault/{pet_id}/documents`.
+  - **Backend**: New endpoint with 10 MB size cap, supports PDF/JPG/PNG/WEBP/DOCX/etc. Smart resource-type routing: PDFs/docs → `raw/upload/` (no 401 ACL), images → `image/upload/` (CDN-optimized).
+  - **Frontend**: `DocumentVault.jsx` fully rewritten — each tile clickable with "Tap to upload →" hint, inline modal with file picker + optional name/notes. Existing `/api/paperwork/documents/*` attempts removed.
+  - **E2E test**: Login as Dipali → open Mojo's pet-home → tap Insurance tile → modal opens → upload PDF → vault jumps 33% → 50% → tile shows "Complete · Uploaded · View · Replace →". 100% automated verification.
+- **Bug #10 (Document Vault / Insurance not saving) — CLOSED**: Above fix supersedes earlier partial fix. Documents now persistent (Cloudinary CDN, no container-disk risk).
 - **Bug #16 (Soul Score stuck at 0%) — CLOSED**: Hardcoded `0%` display in PetSoulOnboarding.jsx resume screen replaced with dynamic `{pct}%` + live SVG ring fill.
-- **MiraMeetsYourPet.jsx registration diagnostics**: replaced generic "Could not connect" catch block with detailed error surfacing (HTTP status, duplicate email detection, network-error message). Ready to deploy for Rajeev's retry.
+- **MiraMeetsYourPet.jsx registration diagnostics**: replaced generic "Could not connect" catch block with detailed error surfacing (HTTP status, duplicate email detection, network-error message).
 - **Soul Score production-readiness — SHIPPED (Aditya's 3-change plan)**: Backend is now the sole source of truth for Soul Score across all endpoints.
   - `server.py:10517` — ignores client-sent `soul_score` on `POST /api/pet-soul/save-answers`. Always computes canonical via `pet_score_logic.calculate_pet_soul_score` from merged answers.
   - `server.py:14717` — `/api/pets/my-pets` always recalculates from `doggy_soul_answers`, removed "stored > 0, use it" fast-path.
-  - `server.py:14745` — added asyncio write-back: when fresh_score ≠ stored, fires `db.pets.update_one` in background so downstream readers (wrapped, cron, admin, Zoho) see fresh values.
-  - **Smoke-tested**: Mojo = 100% consistent across 4 endpoints (`/my-pets`, `/pets/{id}`, `/pet-soul/profile/{id}`, `/pet-score/{id}/score_state`). Badmash = 19% consistent. Dipali's 8 M-pet cluster (Mynx/Mars/Moon/Mia/Magica/Maya/Mercury/Miracle) auto-healed from stale 60% → canonical 90% on first read. Malicious `soul_score: 999` payload ignored — backend stored canonical 100.
+  - `server.py:14745` — added asyncio write-back: when fresh_score ≠ stored, fires `db.pets.update_one` in background.
+  - **Smoke-tested**: Mojo = 100% consistent across 4 endpoints. Dipali's 8 M-pet cluster auto-healed from stale 60% → canonical 90%. Malicious `soul_score: 999` payload ignored.
 
 ## Soul Score Remaining Housekeeping (deferred, not urgent)
 - Extend `UI_TO_CANONICAL_MAP` in `canonical_answers.py` to recognize PetSoulOnboarding UI keys (`age_stage`, `personality_primary`, `attachment_style`, etc.) so pets answering onboarding get their full canonical contribution. Currently Badmash ceilings at 19% because only 4/26 canonical fields are reached.
