@@ -1899,6 +1899,94 @@ async def get_mira_ai_response(message_text: str, user_name: str = "friend", use
     # ── 2. Detect near-me intent ──────────────────────────────────────────────
     is_near_me = _detect_near_me(message_text)
 
+    # ── 2-ORDER. BUG #3 FIX — Order-status intent SHORT-CIRCUIT ─────────────────
+    # If the user is asking about an order they already placed, DO NOT run
+    # catalog search (that results in 0 matches → Amazon fallback). Instead,
+    # look up their real orders from Mongo and reply with actual status.
+    try:
+        import re as _re
+        _order_status_re = _re.compile(
+            r"\b("
+            r"where\s+is\s+my\s+order|where('?s|\s+is)\s+my\s+(order|package|delivery|parcel|shipment)|"
+            r"track(\s+my)?\s+order|order\s+(status|update|tracking)|"
+            r"status\s+of\s+my\s+order|update\s+on\s+my\s+order|"
+            r"my\s+order\s+(status|update)|did\s+my\s+order|"
+            r"has\s+my\s+order|my\s+(package|parcel|delivery|shipment)|"
+            r"order\s+placed\s+today|TDC[-\s]?[A-Z0-9\-]{4,}"
+            r")\b",
+            _re.IGNORECASE,
+        )
+        if _order_status_re.search(message_text or ""):
+            logger.info(f"[MIRA-AI] Order-status intent detected for {phone_10}: {message_text!r}")
+            # Look up the user's recent orders from Mongo
+            recent_orders = []
+            if db is not None:
+                # Try by phone first, then by email
+                _order_query = {"$or": []}
+                if phone_10:
+                    _order_query["$or"].extend([
+                        {"customer.phone": {"$regex": phone_10, "$options": "i"}},
+                        {"customer.whatsappNumber": {"$regex": phone_10, "$options": "i"}},
+                    ])
+                if user_email:
+                    _order_query["$or"].append({"customer.email": user_email})
+                if _order_query["$or"]:
+                    try:
+                        async for o in db.orders.find(_order_query, {"_id": 0}).sort("created_at", -1).limit(3):
+                            recent_orders.append(o)
+                    except Exception as _oe:
+                        logger.warning(f"[MIRA-AI] Order lookup error: {_oe}")
+
+            if recent_orders:
+                # Build a warm, personalised multi-order reply
+                _first_name = (user_name or "friend").split()[0] if user_name else "friend"
+                lines = []
+                _pet_greet = ticket_pet_name or (all_pet_names[0] if all_pet_names else None)
+                lines.append(f"Hi {_first_name}! 🐾" if _first_name != "friend" else "Hi there! 🐾")
+                lines.append("")
+                if len(recent_orders) == 1:
+                    lines.append(f"Here's the latest on your order{' for ' + _pet_greet if _pet_greet else ''}:")
+                else:
+                    lines.append("Here are your recent orders:")
+                lines.append("")
+                for o in recent_orders:
+                    oid = o.get("orderId") or o.get("order_id") or o.get("id", "?")
+                    status = (o.get("status") or o.get("order_status") or "confirmed").replace("_", " ").title()
+                    total = o.get("total") or o.get("amount", 0)
+                    created = str(o.get("created_at", ""))[:10]
+                    _items = o.get("items") or []
+                    _summary = ", ".join((it.get("name") or "Item")[:40] for it in _items[:2]) or "your order"
+                    if len(_items) > 2:
+                        _summary += f" + {len(_items) - 2} more"
+                    tracking_url = o.get("order_tracking_url") or "https://thedoggycompany.com/my-orders"
+                    lines.append(f"📦 *Order {oid}*")
+                    lines.append(f"  📅 Placed: {created}")
+                    lines.append(f"  🛍️ {_summary}")
+                    lines.append(f"  💰 ₹{float(total):,.0f}")
+                    lines.append(f"  📍 Status: *{status}*")
+                    lines.append(f"  🔗 {tracking_url}")
+                    lines.append("")
+                lines.append("Questions about timing? Just reply — your Concierge is one message away 🎩")
+                _order_reply = "\n".join(lines).strip()
+                await _wa_save_history(db, phone_10, message_text, _order_reply)
+                return _order_reply
+            else:
+                # No orders found — polite, doesn't say "I can't help you"
+                _first_name = (user_name or "friend").split()[0] if user_name else "friend"
+                _pet_greet = ticket_pet_name or (all_pet_names[0] if all_pet_names else None)
+                _no_order_reply = (
+                    f"Hi {_first_name}! 🐾\n\n"
+                    f"I can't find a recent order on this number. A few possibilities:\n\n"
+                    f"• Was it placed using a different phone number or email? Reply with the order ID (starts with *TDC-*) and I'll look it up.\n"
+                    f"• Still paying? Complete checkout at: https://thedoggycompany.com/my-orders\n\n"
+                    f"Your Concierge can also help directly — just say the word 🎩"
+                )
+                await _wa_save_history(db, phone_10, message_text, _no_order_reply)
+                return _no_order_reply
+    except Exception as _os_err:
+        # Never break the main flow on order-status detection errors
+        logger.warning(f"[MIRA-AI] Order-status detection error: {_os_err}")
+
     # ── 2a. Stale ticket guard — if ticket pet no longer exists, ignore it ────
     if ticket_pet_name and all_pet_names:
         if ticket_pet_name.lower() not in [n.lower() for n in all_pet_names]:

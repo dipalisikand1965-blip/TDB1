@@ -755,7 +755,7 @@ def _build_zoho_custom_fields(ticket: Dict[str, Any], ctx: Dict[str, Any]) -> Di
             aliases=_PILLAR_ALIASES,
         ),
         # Photo/image URLs — clickable in Zoho when field type = URL
-        "cf_pet_photo_url": _extract_ticket_photo_url(ticket),
+        "cf_pet_photo": _extract_ticket_photo_url(ticket),
         "cf_pet_profile_photo": pet.get("photo_url") or pet.get("profile_photo") or "",
     }
     # Strip empty values — Zoho is happier without them

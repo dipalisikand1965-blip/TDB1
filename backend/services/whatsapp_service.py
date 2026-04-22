@@ -266,6 +266,7 @@ async def send_order_confirmed(
     order_id = order.get("orderId") or order.get("id") or order.get("razorpay_order_id", "")
     amount = order.get("total") or order.get("amount", 0)
     items_summary = order.get("items_summary") or order.get("plan_name") or "your order"
+    eta_line = order.get("eta_line") or "📦 Expected: 3–7 business days"
 
     fallback = f"""✦ Order Confirmed for {pet_name}!
 
@@ -276,6 +277,8 @@ Your order has been confirmed.
 📦 Order: {order_id}
 🛍️ Items: {items_summary}
 💰 Total: ₹{amount:,.0f}
+
+{eta_line}
 
 We'll notify you when it's on its way.
 
