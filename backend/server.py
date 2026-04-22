@@ -7417,7 +7417,8 @@ async def get_app_settings(username: str = Depends(verify_admin)):
                 {"id": "bangalore", "city": "Bangalore", "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034"}
             ],
             "shipping_thresholds": [
-                {"min_cart_value": 0, "max_cart_value": 3000, "shipping_fee": 150},
+                {"min_cart_value": 0, "max_cart_value": 500, "shipping_fee": 75},
+                {"min_cart_value": 500, "max_cart_value": 3000, "shipping_fee": 150},
                 {"min_cart_value": 3000, "max_cart_value": 999999, "shipping_fee": 0}
             ],
             "free_shipping_threshold": 3000,

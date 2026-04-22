@@ -337,6 +337,10 @@ async def send_order_confirmed_email(
     {_btn("Download Invoice PDF →", invoice_url)}
     {_divider()}
     <p style="color:#1A0A2E;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin:0 0 12px;">What happens next</p>
+    <div style="background:#FFF7E4;border-left:4px solid #D4A840;border-radius:6px;padding:14px 18px;margin:0 0 16px;">
+      <p style="color:#1A0A2E;font-size:14px;font-weight:700;margin:0 0 4px;">{order.get("eta_line") or "📦 Expected: 3–7 business days"}</p>
+      <p style="color:#6B7280;font-size:12px;margin:0;">Your Concierge® will share courier + tracking as soon as dispatched.</p>
+    </div>
     <div style="margin:0 0 8px;display:flex;gap:12px;align-items:flex-start;">
       <span style="font-size:20px;">🎩</span>
       <div><p style="color:#2C1810;font-size:13px;font-weight:600;margin:0 0 2px;">Your Concierge® will confirm delivery details within 24 hours</p></div>

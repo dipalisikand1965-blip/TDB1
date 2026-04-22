@@ -386,7 +386,8 @@ const PricingHub = ({ getAuthHeader }) => {
     free_shipping_threshold: 3000,
     default_shipping_fee: 150,
     shipping_thresholds: [
-      { min_cart_value: 0, max_cart_value: 3000, shipping_fee: 150 },
+      { min_cart_value: 0, max_cart_value: 500, shipping_fee: 75 },
+      { min_cart_value: 500, max_cart_value: 3000, shipping_fee: 150 },
       { min_cart_value: 3000, max_cart_value: 999999, shipping_fee: 0 }
     ],
     pickup_cities: ['Mumbai', 'Gurugram', 'Bangalore'],

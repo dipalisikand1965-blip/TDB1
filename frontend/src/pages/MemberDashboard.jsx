@@ -987,10 +987,27 @@ const MemberDashboard = () => {
           </div>
 
         {/* Main Tabs - Wraps everything */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs 
+          value={activeTab} 
+          onValueChange={(newTab) => {
+            // BUG #6 FIX — auto-scroll tab content into view.
+            // Previously, tab content rendered ~3000px below the TabsList,
+            // making the tabs FEEL unresponsive. Now clicking any tab
+            // smooth-scrolls its content anchor into view.
+            setActiveTab(newTab);
+            // Defer scroll to next tick so React re-render completes first
+            requestAnimationFrame(() => {
+              const anchor = document.getElementById('tab-content-anchor');
+              if (anchor) {
+                anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            });
+          }}
+          className="w-full"
+        >
           
           {/* 📌 NAVIGATION TABS - Top Right after header */}
-          <div className="mb-6">
+          <div className="mb-6 sticky top-14 lg:top-16 z-30 bg-slate-950/95 backdrop-blur-lg -mx-4 px-4 py-2 border-b border-white/5">
             {/* Desktop Tab Navigation */}
             <div className="hidden lg:flex justify-end">
               <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl !inline-flex !h-auto flex-wrap justify-end gap-1">
@@ -1379,6 +1396,11 @@ const MemberDashboard = () => {
             </div>
           )}
           
+          {/* BUG #6 anchor — always rendered, regardless of active tab.
+              Sits just before TabsContent so smooth-scroll lands the user
+              right at the start of their chosen tab's content. */}
+          <div id="tab-content-anchor" className="scroll-mt-28" />
+
           <TabsContent value="overview">
             <Suspense fallback={<TabLoader />}>
               <OverviewTab 

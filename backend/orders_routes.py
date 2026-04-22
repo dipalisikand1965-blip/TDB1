@@ -14,6 +14,63 @@ import jwt
 
 logger = logging.getLogger(__name__)
 
+# Same-day bakery cities (per TheDoggyBakery.com — morning orders only)
+_CAKE_SAME_DAY_CITIES = {"bangalore", "bengaluru", "mumbai", "delhi", "gurgaon", "gurugram", "noida", "ncr"}
+
+
+def _compute_eta_line(pillar: str, items: list, delivery: dict) -> str:
+    """
+    Returns a human-readable delivery ETA line for order confirmation emails/WhatsApp.
+
+    Rules:
+      • Cake orders (celebrate pillar OR any item with "cake" in name/category):
+          - If customer chose a specific `delivery.date` → use that date
+          - Else if city is in same-day bakery zone → "Same-day in <city> (morning orders)"
+          - Else → "Scheduled cakes: 24–48 hrs with your Concierge"
+      • Custom Soul Picks / Soul-Made products: "5–7 business days (custom craft)"
+      • Everything else: "3–7 business days"
+      • If outstation / non-metro detected → "5–10 business days"
+
+    Safe: never raises. Returns a plain string.
+    """
+    try:
+        pillar = (pillar or "").lower()
+        items = items or []
+        delivery = delivery or {}
+        city = str(delivery.get("city") or delivery.get("deliveryCity") or "").strip().lower()
+        chosen_date = delivery.get("date") or delivery.get("scheduledDate")
+
+        is_cake = pillar == "celebrate" or any(
+            "cake" in (str(it.get("name") or "") + str(it.get("category") or "")).lower()
+            for it in items
+        )
+        is_custom = any(
+            (it.get("is_soul_made") or it.get("customized") or
+             "soul" in (it.get("name") or "").lower() or
+             (it.get("custom_details") or {}))
+            for it in items
+        )
+
+        if is_cake:
+            if chosen_date:
+                return f"📅 Scheduled delivery: {chosen_date}"
+            if city and any(c in city for c in _CAKE_SAME_DAY_CITIES):
+                return f"⚡ Same-day in {city.title()} (morning orders) — your Concierge will confirm the slot"
+            return "🍰 Bakery cakes: 24–48 hrs — your Concierge will confirm the slot"
+
+        if is_custom:
+            return "✦ Custom Soul Picks: 5–7 business days (handcrafted for your pet)"
+
+        # Outstation heuristic — if city is empty OR clearly outside major metros
+        metros = _CAKE_SAME_DAY_CITIES | {"pune", "hyderabad", "chennai", "kolkata", "ahmedabad"}
+        if city and not any(m in city for m in metros):
+            return "📦 Outstation delivery: 5–10 business days"
+
+        return "📦 Expected: 3–7 business days"
+    except Exception:
+        return "📦 Expected: 3–7 business days"
+
+
 # Create router
 orders_router = APIRouter(prefix="/api", tags=["Orders"])
 
@@ -170,7 +227,78 @@ async def create_order(order: dict):
     except Exception as db_err:
         logger.error(f"[ORDERS] Failed to save order {order_id}: {db_err}")
         raise HTTPException(status_code=500, detail=f"Failed to save order: {db_err}")
-    
+
+    # ═══════════════════════════════════════════════════════════════════════
+    # BUG #1 FIX — Order confirmation via email (Resend) + WhatsApp (Gupshup)
+    # Fire-and-forget: never blocks or fails the order response.
+    # Both helpers (send_order_confirmed_email / send_order_confirmed) are
+    # idempotent via order_id — double-clicks won't cause double-sends.
+    # ═══════════════════════════════════════════════════════════════════════
+    try:
+        import asyncio as _asyncio
+        customer_info = order.get("customer") or {}
+        delivery_info = order.get("delivery") or {}
+        pet_info = order.get("pet") or {}
+
+        # Build the user dict the helpers expect
+        _user = {
+            "email": customer_info.get("email"),
+            "name": customer_info.get("parentName") or customer_info.get("name"),
+            "phone": customer_info.get("whatsappNumber") or customer_info.get("phone"),
+        }
+
+        # Build items_summary (short, for WhatsApp template)
+        _items = order.get("items", []) or []
+        if _items:
+            _names = [(it.get("name") or it.get("product_name") or "Item") for it in _items[:3]]
+            _summary = ", ".join(_names)
+            if len(_items) > 3:
+                _summary += f" + {len(_items) - 3} more"
+        else:
+            _summary = "your order"
+
+        # Build ETA line from delivery.date if customer chose one (cakes),
+        # else smart default based on items + shipping city.
+        # (`pillar` is computed below this block — we let the helper
+        #  infer cake-ness from item names/categories instead.)
+        _eta_line = _compute_eta_line("", _items, delivery_info)
+
+        # Enrich order dict with fields the email template expects
+        _order_for_email = dict(order)
+        _order_for_email["orderId"] = order.get("orderId") or order_id
+        _order_for_email["items_summary"] = _summary
+        _order_for_email["order_date"] = datetime.now(timezone.utc).strftime("%d %b %Y")
+        _order_for_email["eta_line"] = _eta_line
+
+        # Fire both (fire-and-forget — errors logged but never raised)
+        async def _send_order_confirmations():
+            # Email
+            try:
+                from services.email_service import send_order_confirmed_email
+                if _user.get("email"):
+                    await send_order_confirmed_email(_user, pet_info, _order_for_email)
+                    logger.info(f"[ORDERS] Confirmation email queued for {order_id} → {_user['email']}")
+            except Exception as e:
+                logger.error(f"[ORDERS] Email send failed for {order_id}: {e}")
+            # WhatsApp
+            try:
+                from services.whatsapp_service import send_order_confirmed
+                if _user.get("phone"):
+                    await send_order_confirmed(_user, pet_info, _order_for_email)
+                    logger.info(f"[ORDERS] Confirmation WA queued for {order_id} → {_user['phone']}")
+            except Exception as e:
+                logger.error(f"[ORDERS] WhatsApp send failed for {order_id}: {e}")
+
+        # Schedule on the running loop — never await here, never block
+        try:
+            _asyncio.get_running_loop().create_task(_send_order_confirmations())
+        except RuntimeError:
+            # No loop — fallback to direct run (rare in FastAPI path)
+            await _send_order_confirmations()
+    except Exception as _conf_err:
+        # NEVER block order creation on confirmation-send failure
+        logger.warning(f"[ORDERS] Could not schedule confirmations for {order_id}: {_conf_err}")
+
     # Determine pillar from items
     items = order.get("items", [])
     pillar = "shop"  # Default

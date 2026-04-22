@@ -20,6 +20,7 @@ import { PawrentFirstStepsTab } from '../components/pawrent/PawrentJourney';
 import PillarCategoryStrip from '../components/common/PillarCategoryStrip';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
 import PillarHero from '../components/PillarHero';
+import ConciergeCTA from '../components/ConciergeCTA';
 import '../styles/mobile-design-system.css';
 
 // ── Service groups — identical to desktop (source of truth) ──────────────────
@@ -313,6 +314,12 @@ export default function ServicesMobilePage() {
             Book via Concierge® →
           </button>
         </div>
+      </div>
+
+      {/* BUG #6 companion — universal Concierge CTA so unusual requests 
+          (rare breeds, uncommon services) can always reach Mira */}
+      <div style={{ padding: '0 16px 24px' }}>
+        <ConciergeCTA pillar="services" pet={currentPet} />
       </div>
 
       {/* BookingModal — intake style, no prices (same as desktop ServicesSoulPage) */}
