@@ -10514,7 +10514,7 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
         pet_name = data.get("pet_name", "")
         pet_id_from_request = data.get("pet_id")
         new_soul_answers = data.get("soul_answers", {})
-        soul_score = data.get("soul_score", 0)
+        # Ignore client-sent soul_score — backend is sole source of truth (per Soul Bible §1)
         pet_data = data.get("pet_data", {})
         answered_question_ids = data.get("answered_question_ids", [])
         
@@ -10550,14 +10550,20 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
                 # Update if new value is not skipped
                 merged_answers[key] = value
         
+        # Compute canonical score from merged answers — NEVER trust client (Soul Bible §1)
+        _score_data = calculate_pet_soul_score(merged_answers)
+        canonical_score = _score_data.get("total_score", 0)
+        canonical_tier_key = (_score_data.get("tier") or {}).get("key") or "newcomer"
+
         # Build update document
         update = {
             "id": pet_id,
             "name": pet_name,
             "owner_email": user.get("email", "").lower(),
             "doggy_soul_answers": merged_answers,
-            "soul_score": soul_score,
-            "overall_score": soul_score,
+            "soul_score": canonical_score,
+            "overall_score": canonical_score,
+            "score_tier": canonical_tier_key,
             "breed": pet_data.get("breed") or data.get("breed", "") or (existing_pet.get("breed") if existing_pet else ""),
             "gender": pet_data.get("gender", "") or (existing_pet.get("gender") if existing_pet else ""),
             "birth_date": pet_data.get("birth_date", "") or (existing_pet.get("birth_date") if existing_pet else ""),
@@ -10597,7 +10603,7 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             {"$addToSet": {"pets": pet_id, "pet_ids": pet_id}}
         )
         
-        logger.info(f"[SOUL BUILDER] Saved/merged {len(new_soul_answers)} answers for {pet_name} (total: {len(merged_answers)}, score: {soul_score}%)")
+        logger.info(f"[SOUL BUILDER] Saved/merged {len(new_soul_answers)} answers for {pet_name} (total: {len(merged_answers)}, canonical score: {canonical_score}%)")
         
         return {
             "success": True,
@@ -10605,7 +10611,9 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             "pet_name": pet_name,
             "answers_saved": len(new_soul_answers),
             "total_answers": len(merged_answers),
-            "soul_score": soul_score,
+            "soul_score": canonical_score,
+            "overall_score": canonical_score,
+            "score_tier": canonical_tier_key,
             "answered_question_ids": update["answered_question_ids"]
         }
     except HTTPException:
@@ -14715,21 +14723,34 @@ async def get_my_pets(current_user: dict = Depends(get_current_user)):
     user_pass_plan = "foundation" if current_user.get("membership_tier") in ("gold", "platinum", "pack_leader") else "trial"
     
     for pet in pets:
-        stored_score = pet.get("overall_score", 0) or 0
         answers = pet.get("doggy_soul_answers") or pet.get("soul_answers") or {}
+        stored_score = pet.get("overall_score", 0) or 0
 
-        # Fast path: use stored score if already calculated (skip CPU-intensive recalc)
-        if stored_score > 0:
-            pet["overall_score"] = stored_score
-            pet["score_tier"] = pet.get("score_tier", "explorer")
-        elif answers:
-            # Only recalculate if no stored score
+        # Soul Bible §1: backend is sole source of truth.
+        # Always recalculate from doggy_soul_answers — never trust stored value.
+        if answers:
             score_data = calculate_pet_soul_score(answers)
-            pet["overall_score"] = score_data["total_score"]
-            pet["score_tier"] = score_data["tier"]["key"] if score_data["tier"] else "newcomer"
+            fresh_score = score_data["total_score"]
+            fresh_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
         else:
-            pet["overall_score"] = 0
-            pet["score_tier"] = "newcomer"
+            fresh_score = 0
+            fresh_tier = "newcomer"
+
+        pet["overall_score"] = fresh_score
+        pet["score_tier"] = fresh_tier
+
+        # Self-heal DB: if stored value drifted from canonical, write back so
+        # downstream readers (wrapped, cron digests, admin, Zoho enrichment) see fresh values.
+        if fresh_score != stored_score or pet.get("score_tier") != fresh_tier:
+            async def _writeback(pid=pet["id"], s=fresh_score, t=fresh_tier):
+                try:
+                    await db.pets.update_one(
+                        {"id": pid},
+                        {"$set": {"overall_score": s, "soul_score": s, "score_tier": t}}
+                    )
+                except Exception as _e:
+                    logger.warning(f"[my-pets] score writeback failed for {pid}: {_e}")
+            asyncio.create_task(_writeback())
         
         # Inject user's pet_pass_status into pets that don't have it
         if not pet.get("pet_pass_status"):

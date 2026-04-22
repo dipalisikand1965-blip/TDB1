@@ -171,17 +171,19 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - **Bug #10 (Document Vault / Insurance not saving) — CLOSED**: 4 frontend call sites were hitting non-existent `/api/paperwork/documents/*` endpoints. Swapped to the real `/api/pet-vault/{pet_id}/documents` namespace. Shape normalizations included.
   - Files touched: `PaperworkPage.jsx` (GET fetchPetDocuments + POST handleUpload rewritten to 2-step: upload file → register JSON HealthDocument), `DocumentsTab.jsx`, `MojoProfileModal.jsx`.
   - End-to-end smoke test passed (GET/POST round-trip against Dipali's Mojo, cleanup confirmed).
-- **Bug #16 (Soul Score stuck at 0%) — partial fix**: Hardcoded `0%` display in PetSoulOnboarding.jsx resume screen replaced with dynamic `{pct}%` + live SVG ring fill.
+- **Bug #16 (Soul Score stuck at 0%) — CLOSED**: Hardcoded `0%` display in PetSoulOnboarding.jsx resume screen replaced with dynamic `{pct}%` + live SVG ring fill.
 - **MiraMeetsYourPet.jsx registration diagnostics**: replaced generic "Could not connect" catch block with detailed error surfacing (HTTP status, duplicate email detection, network-error message). Ready to deploy for Rajeev's retry.
+- **Soul Score production-readiness — SHIPPED (Aditya's 3-change plan)**: Backend is now the sole source of truth for Soul Score across all endpoints.
+  - `server.py:10517` — ignores client-sent `soul_score` on `POST /api/pet-soul/save-answers`. Always computes canonical via `pet_score_logic.calculate_pet_soul_score` from merged answers.
+  - `server.py:14717` — `/api/pets/my-pets` always recalculates from `doggy_soul_answers`, removed "stored > 0, use it" fast-path.
+  - `server.py:14745` — added asyncio write-back: when fresh_score ≠ stored, fires `db.pets.update_one` in background so downstream readers (wrapped, cron, admin, Zoho) see fresh values.
+  - **Smoke-tested**: Mojo = 100% consistent across 4 endpoints (`/my-pets`, `/pets/{id}`, `/pet-soul/profile/{id}`, `/pet-score/{id}/score_state`). Badmash = 19% consistent. Dipali's 8 M-pet cluster (Mynx/Mars/Moon/Mia/Magica/Maya/Mercury/Miracle) auto-healed from stale 60% → canonical 90% on first read. Malicious `soul_score: 999` payload ignored — backend stored canonical 100.
 
-## Soul Score Architectural Audit (Feb 22, 2026 — NOT YET FIXED)
-- **Problem**: 3 frontend calculators (PetSoulOnboarding 368-pts, SoulBuilder 100-pts, Mira sync) + **7 backend calculators** (`pet_score_logic`, `canonical_answers`, `pet_soul_routes.calculate_overall_score`, `pet_soul_routes.calculate_folder_score`, `household_routes.calculate_pet_soul_score`, `soul_intelligence.calculate_soul_completeness`, `server.calculate_pet_soul_score_legacy`).
-- **Root causes producing production drift**:
-  1. `server.py:10517/10559` trusts client-sent `soul_score` from request payload
-  2. `routes/wrapped/welcome.py:48,155` uses `max(stored, calculated)` ratchet (scores only go up)
-  3. No regression test asserts Dashboard score == MyPets score == Onboarding score for the same pet
-- **Impact at scale**: Drift between surfaces (parent sees 64% / 82% / 100% simultaneously), stuck-at-60% symptom (Dipali's Mynx/Mars/Moon/Mia/Magica/Maya/Mercury/Miracle), tier benefits denied/granted to wrong users.
-- **Fix plan proposed (Day 1 P0, ~2hrs)**: Kill FE score math → backend sole source · complete `UI_TO_CANONICAL_MAP` · drop "stored > 0, skip recalc" fast-path · ignore client-sent scores · add 3 regression tests · run `POST /api/admin/pets/recalculate-all-scores` backfill.
+## Soul Score Remaining Housekeeping (deferred, not urgent)
+- Extend `UI_TO_CANONICAL_MAP` in `canonical_answers.py` to recognize PetSoulOnboarding UI keys (`age_stage`, `personality_primary`, `attachment_style`, etc.) so pets answering onboarding get their full canonical contribution. Currently Badmash ceilings at 19% because only 4/26 canonical fields are reached.
+- 6 other backend calculators remain (pet_soul_routes.calculate_overall_score, household_routes.calculate_pet_soul_score, soul_intelligence.calculate_soul_completeness, server.calculate_pet_soul_score_legacy, canonical_answers.calculate_soul_score, pet_soul_routes.calculate_folder_score) — now harmless since writes/reads both use `pet_score_logic`, but would be cleaner to consolidate.
+- 3 frontend local calculators remain (PetSoulOnboarding 368-pts local, SoulBuilder 100-pts local, Mira sync) — show stale mid-session numbers until round-trip. Reconcile on next save. Low UX priority.
+- Regression tests: no test asserts Dashboard==MyPets==PetSoul consistency.
 
 ## 3rd Party Integrations
 - OpenAI GPT-4o — Emergent LLM Key
