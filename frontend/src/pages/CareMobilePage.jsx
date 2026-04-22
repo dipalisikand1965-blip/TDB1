@@ -136,6 +136,9 @@ export default function CareMobilePage() {
   const [openDim, setOpenDim]             = useState(null);
   const [apiProducts, setApiProducts]     = useState({});
   const [careConciergeMobileOpen, setCareConciergeMobileOpen] = useState(false);
+  // BUG #6 FIX — state was referenced but never declared, causing
+  // "Can't find variable: activeServicePath" error on mobile /care page.
+  const [activeSvcPath, setActiveSvcPath] = useState(null);
   const dimExpandedRef                    = useRef(null);
 
   // Auto-scroll into expanded dim panel whenever a dim is opened
@@ -511,9 +514,9 @@ export default function CareMobilePage() {
 
       {/* Service Booking Modal */}
       {/* CareServiceFlowModal — exact same Mira-powered modal as desktop (GroomingFlow/VetFlow etc.) */}
-      {activeServicePath && currentPet && (
+      {activeSvcPath && currentPet && (
         <CareServiceFlowModal
-          service={activeServicePath}
+          service={activeSvcPath}
           pet={currentPet}
           onClose={() => setActiveSvcPath(null)}
         />
