@@ -171,6 +171,13 @@ async def create_signal(
     }
     
     await _db.service_desk_tickets.insert_one(ticket_doc)
+    # ── Zoho Desk fire-and-forget sync (no-op if ZOHO_ENABLED=false) ─────
+    try:
+        import zoho_desk_client as _zoho
+        _zoho.schedule_push(ticket_id)
+    except Exception as _zoho_err:
+        logger.warning(f"[ZOHO] Could not schedule sync for {ticket_id}: {_zoho_err}")
+    # ────────────────────────────────────────────────────────────────────
     logger.info(f"[CENTRAL FLOW] ✓ Ticket: {ticket_id}")
     
     # ==================== 3. UNIFIED INBOX ====================

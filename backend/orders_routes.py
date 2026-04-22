@@ -373,6 +373,13 @@ async def create_order(order: dict):
                 "updated_at": now_iso,
             }
             await db.service_desk_tickets.insert_one(sd_ticket)
+            # ── Zoho Desk fire-and-forget sync (no-op if ZOHO_ENABLED=false) ─────
+            try:
+                import zoho_desk_client as _zoho
+                _zoho.schedule_push(sd_ticket_id)
+            except Exception as _zoho_err:
+                logger.warning(f"[ZOHO] Could not schedule sync for {sd_ticket_id}: {_zoho_err}")
+            # ────────────────────────────────────────────────────────────────────
             # Remove _id before logging
             sd_ticket.pop("_id", None)
             logger.info(f"✅ Rich service desk ticket {sd_ticket_id} created for order {order_id_val}")

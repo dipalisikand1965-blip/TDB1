@@ -372,6 +372,13 @@ Customer: {payload.user_name or 'Unknown'} ({payload.user_email or 'No email'})
     }
 
     await db.service_desk_tickets.insert_one(ticket)
+    # ── Zoho Desk fire-and-forget sync (no-op if ZOHO_ENABLED=false) ─────
+    try:
+        import zoho_desk_client as _zoho
+        _zoho.schedule_push(ticket_id)
+    except Exception as _zoho_err:
+        logger.warning(f"[ZOHO] Could not schedule sync for {ticket_id}: {_zoho_err}")
+    # ────────────────────────────────────────────────────────────────────
     logger.info(f"[MEAL BOX] Ticket created: {ticket_id} for pet {payload.pet_name}")
 
     return {

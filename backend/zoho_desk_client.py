@@ -437,3 +437,30 @@ async def fire_and_forget_push(local_ticket_id: str):
         await push_ticket_to_zoho(local_ticket_id)
     except Exception as e:
         logger.error(f"[ZOHO] Background push crashed for {local_ticket_id}: {e}")
+
+
+def schedule_push(local_ticket_id: str):
+    """
+    Sync wrapper — schedules a fire-and-forget Zoho push without blocking
+    the caller. Safe to call from any ticket-creation site after
+    `await db.service_desk_tickets.insert_one(...)`.
+
+    - No-op if ZOHO_ENABLED is false
+    - No-op if no event loop is running
+    - Never raises: logs warnings and continues
+    """
+    try:
+        if not is_enabled():
+            return
+        import asyncio as _asyncio
+        try:
+            loop = _asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+        if loop and loop.is_running():
+            loop.create_task(fire_and_forget_push(local_ticket_id))
+        else:
+            # Fallback: run in a new event loop (rare — e.g. sync code path)
+            _asyncio.run(fire_and_forget_push(local_ticket_id))
+    except Exception as e:
+        logger.warning(f"[ZOHO] schedule_push failed for {local_ticket_id}: {e}")
