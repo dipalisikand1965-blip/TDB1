@@ -27,6 +27,7 @@ import SharedProductCard from "../ProductCard";
 import { tdc } from "../../utils/tdc_intent";
 import NearMeConciergeModal from "../common/NearMeConciergeModal";
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { NearMeResultBadges, TDCVerifiedBadge, sortByTDCVerified } from '../common/NearMeBadges';
 
 const G = {
   deep:"#2D1B69", mid:"#4A2C8F", purple:"#9B59B6", gold:"#C9973A",
@@ -104,12 +105,11 @@ function VendorCard({ vendor, pet, onBook, onOpenModal }) {
           ?<img src={vendor.photo_url} alt={vendor.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={()=>setImgErr(true)}/>
           :<span style={{fontSize:36}}>{type.icon}</span>}
         <span style={{position:"absolute",top:10,left:10,background:G.purple,color:"#fff",fontSize:9,fontWeight:700,borderRadius:20,padding:"3px 8px"}}>{type.icon} {type.label}</span>
-        {vendor.tdc_verified&&<span style={{position:"absolute",top:10,right:10,fontSize:9,fontWeight:700,borderRadius:8,padding:"2px 8px",background:"#FFF8E1",color:G.gold}}>✦ TDC Verified</span>}
       </div>
       <div style={{padding:"12px 14px 14px"}}>
         <div style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{vendor.name}</div>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
-          <StarRating rating={vendor.rating} count={vendor.review_count}/>
+          <NearMeResultBadges place={vendor} />
           <OpenBadge openNow={vendor.open_now}/>
         </div>
         {vendor.vicinity&&<div style={{fontSize:11,color:G.mutedText,marginBottom:6,display:"flex",alignItems:"flex-start",gap:4}}><span style={{fontSize:12}}>📍</span><span style={{lineHeight:1.4}}>{vendor.vicinity}</span></div>}
@@ -133,7 +133,7 @@ function MiraTopPick({ vendor, pet, onOpenModal }) {
         <div style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>✦ Mira's Top Pick for {pet?.name||"your dog"}'s celebration</div>
         <div style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:4}}>{vendor.name}</div>
         <div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginBottom:8}}>{vendor.vicinity}</div>
-        <StarRating rating={vendor.rating} count={vendor.review_count}/>
+        <NearMeResultBadges place={vendor} />
       </div>
       <button onClick={()=>{ tdc.nearme({ query: vendor.name||"venue", pillar:"celebrate", pet }); onOpenModal?.(vendor); }}
         style={{background:G.light,color:G.deep,border:"none",borderRadius:20,padding:"10px 20px",fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0,whiteSpace:"nowrap"}}>
@@ -246,9 +246,12 @@ function DoggyBakerySection({ pet }) {
         </div>
       ) : (
         <>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))",gap:12,marginBottom:16}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(180px,100%),1fr))",gap:12,marginBottom:16}} data-testid="celebrate-bakery-grid">
             {displayProducts.slice(0,12).map(p=>(
-              <div key={p.id||p._id}>
+              <div key={p.id||p._id} style={{ position:"relative" }}>
+                <div style={{ position:"absolute", top:8, left:8, zIndex:2 }}>
+                  <TDCVerifiedBadge verified={true} variant="bakery" />
+                </div>
                 <SharedProductCard product={p} pillar="celebrate" selectedPet={pet} miraContext={miraCtx}/>
               </div>
             ))}
@@ -444,7 +447,7 @@ export default function CelebrateNearMe({ pet, onBook }) {
                 {vendors.length} {activeTypeObj.label.toLowerCase()} found{displayCity&&displayCity!=="near_me"?` in ${displayCity}`:" near you"}
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
-                {restList.map((v,i)=><VendorCard key={v.place_id||i} vendor={v} pet={pet} onBook={onBook} onOpenModal={setSelectedVendor}/>)}
+                {restList.slice().sort(sortByTDCVerified).map((v,i)=><VendorCard key={v.place_id||i} vendor={v} pet={pet} onBook={onBook} onOpenModal={setSelectedVendor}/>)}
               </div>
               <button onClick={()=>{ tdc.nearme({ query: displayCity||"your area", pillar:"celebrate", pet }); bookViaConcierge({ service: `Celebration venue in ${displayCity||"your area"}`, pillar:"celebrate", pet, channel:"celebrate_nearme_city" }); }}
                 style={{width:"100%",marginTop:16,padding:"12px",borderRadius:10,background:G.pale,border:`1px solid rgba(155,89,182,0.25)`,color:G.purple,fontSize:13,fontWeight:600,cursor:"pointer"}}>

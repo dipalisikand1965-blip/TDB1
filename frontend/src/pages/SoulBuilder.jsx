@@ -1307,8 +1307,18 @@ const SoulBuilder = () => {
       b.toLowerCase().includes(breedSearch.toLowerCase())
     );
     
-    // Quick breed options - mutually exclusive with typed breed
-    const quickBreedOptions = ['Mixed / Indie', 'Not sure', 'Mixed Breed', 'Other'];
+    // Quick breed options — India-first. Mixes are first-class, NOT hidden in "Other".
+    const quickBreedOptions = [
+      'Mixed / Indie',
+      'Indie mix',
+      'Lab mix',
+      'Golden mix',
+      'Shih Tzu mix',
+      'Pomeranian mix',
+      'Mixed Breed',
+      'Not sure',
+      'Other',
+    ];
     
     // Handle breed selection from search - clears quick options
     const handleBreedSelect = (breed) => {

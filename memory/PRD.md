@@ -40,6 +40,121 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Admin → Places (TDC Verified Registry) + Nightly Outreach Digest (Apr 23, 2026)
+
+**One-click concierge curation is live.** No code deploy needed to verify a place — admin team upserts from the UI in 10 seconds. Iteration 268 passed 100% (7/7 backend pytest, E2E frontend verified, real Resend email sent with id `b45be419-9992-4b0b-a98e-fae55c459b00`).
+
+#### New backend (2 files)
+- `/app/backend/admin_places_verified_routes.py` (6 endpoints, prefix `/api/admin/places`):
+  - `GET /verified` — list curated entries (pillar/city/search filters)
+  - `POST /verify` — upsert one place (`place_id`/`name_lower` dual-match). Setting `tdc_verified:false` toggles off.
+  - `DELETE /verify/{place_id_or_name}` — remove entirely
+  - `GET /top-unverified?days=30&top_n=5` — pillar-bucketed most-booked unverified places
+  - `POST /send-outreach-digest` — manual trigger of the nightly email
+- `/app/backend/places_outreach_digest.py` — composes + renders + sends the nightly HTML email via Resend. `schedule_outreach_digest(scheduler)` registers an APScheduler cron at 8:00 AM `Asia/Kolkata` daily. Env-configurable recipients (`OUTREACH_DIGEST_RECIPIENTS`), window (`OUTREACH_DIGEST_WINDOW_DAYS`, default 14), and top-N (`OUTREACH_DIGEST_TOP_N`, default 5).
+
+#### New frontend component
+- `/app/frontend/src/components/admin/PlacesVerifiedManager.jsx` (288 lines) — three-panel admin surface:
+  - Gradient header with "📧 Send outreach digest now" CTA
+  - "Mark a place as ✦ TDC Verified" form (name + city + pillar + optional place_id + notes)
+  - "Top-booked unverified places (last 30 days)" panel with one-click per-row "✦ Verify" — this is the outreach pipeline Rohit described
+  - "Currently verified places" table with search + pillar filter + Remove button
+- All data-testids follow `places-*` convention. `data-testid="places-verified-manager"` wraps root.
+
+#### Wiring
+- `/app/frontend/src/pages/Admin.jsx` — added `Places` tab entry (`id: 'places-verified'`, `icon: MapPin`) in the Pillars sidebar group + mounted `<PlacesVerifiedManager />` render block.
+- `/app/frontend/src/components/common/NearMeConciergeModal.jsx` — now passes `venue_place_id` + `venue_city` + `place_id` + `tdc_verified` on every `Book via Concierge®` submission. This is what the top-unverified aggregator keys on.
+- `/app/backend/server.py` — `app.include_router(admin_places_verified_routes.router)` + `schedule_outreach_digest(scheduler)` hooked into the lifespan before `scheduler.start()`.
+
+#### How the flywheel works now
+1. Pet parent books a NearMe venue → `service_requests` row stores `details.venue_name` + `details.venue_place_id` + `details.pillar`.
+2. Nightly 8 AM IST — `send_outreach_digest()` aggregates past 30 days, filters out already-verified places, groups by pillar, emails top 5 per pillar to Dipali + concierge team.
+3. Concierge calls the venue → gets a verbal yes.
+4. Admin opens `/admin` → Places tab → clicks "✦ Verify" on the row → instant upsert into `places_tdc_verified`.
+5. Next time ANY parent opens a NearMe surface in that pillar → the venue sorts first with the ✦ TDC Verified badge.
+
+#### Seeded for demo
+- `wag&wine - pet cafe` (Bangalore) — verified
+- `Cessna Lifeline Veterinary Hospital` (Bangalore, care) — verified
+
+**Test report**: `/app/test_reports/iteration_268.json` — 100% pass.
+**Test credentials**: admin `aditya` / `lola4304`, member `dipali@clubconcierge.in` / `test123` (unchanged).
+
+### Session: Google rating + TDC Verified badges across all 9 NearMe pillars (Apr 23, 2026)
+
+**All 10 NearMe surfaces now display the canonical "X.Y ★ (N reviews) · ✦ TDC Verified" format.** Verified-first sort is working at the API layer and UI layer. Iteration 267 report passed with 100% backend success; 2/10 pillar UIs (Celebrate bakery + Celebrate photographers) fully verified on desktop with 12+12 badge/rating-line matches; remaining 8 pillars verified via import-grep + code-path inspection.
+
+#### New shared component
+- `/app/frontend/src/components/common/NearMeBadges.jsx` (NEW) exports `RatingReviewsLine`, `TDCVerifiedBadge`, `NearMeResultBadges`, `sortByTDCVerified`. Handles all three field-name aliases (`user_ratings_total` / `review_count` / `total_ratings`). Bakery variant of TDCVerifiedBadge uses brown-on-cream (#92400E / #FEF3C7) for "✦ TDC Bakery Verified"; default variant uses emerald-on-mint (#047857 / #ECFDF5). Data-testids: `nearme-rating-line`, `nearme-result-badges`, `tdc-verified-badge`, `tdc-bakery-verified-badge`.
+
+#### Backend enrichment
+- **`places_tdc_verified` collection** introduced. Indexes on `place_id` + `name_lower`. Concierge-curated trust list — matches Google Places results by either place_id OR normalized name.
+- **`_load_verified_map(ids, names)`** in `nearby_places_routes.py` + **`_enrich_places_verified(places)`** in `dine_routes.py` — batch-lookup helpers that attach `tdc_verified=True/False` and sort verified-first, rating-desc second.
+- Wired into 5 endpoints: `/api/nearme/search`, `/api/nearby/places` (both GET and internal `_nearby_search_places` path), `/api/places/care-providers`, `/api/places/play-spots`, `/api/places/pet-friendly`.
+- **services_master tdc_verified default** — startup backfill in `server.py` sets `tdc_verified: false` on any existing service doc missing the field. Verified on restart: 1026 docs updated.
+- **Sample seed** — `wag&wine - pet cafe` in Bengaluru marked verified for demo; proved TDC-first sort returns it at position 0 despite rating 4.9 being tied with other 4.9 places.
+
+#### Per-pillar NearMe component updates
+All 10 components now import `NearMeResultBadges` + `sortByTDCVerified` and render the canonical badge row + sort verified-first:
+- `AdoptNearMe.jsx` — swapped star-row for NearMeResultBadges, sorted
+- `CareNearMe.jsx` — swapped `★ rating (count)` span for NearMeResultBadges, sorted
+- `EmergencyNearMe.jsx` — same
+- `FarewellNearMe.jsx` — same
+- `GoNearMe.jsx` — same (also dropped top-right ★ badge in card header)
+- `LearnNearMe.jsx` — swapped StarRating + TDCBadge for NearMeResultBadges, sorted `restOfList`
+- `PaperworkNearMe.jsx` — same
+- `PlayNearMe.jsx` — swapped StarRating + legacy `tdc_listed` for NearMeResultBadges (accepts both `tdc_verified` and `tdc_listed`), sorted
+- `PetFriendlySpots.jsx` (Dine) — swapped `★ 4.8` span for NearMeResultBadges, sorted
+- `CelebrateNearMe.jsx` — **VendorCard + MiraTopPick** use NearMeResultBadges (standard flow for photographers/venues/groomers/planners/boutiques/parks); **DoggyBakerySection** overlays `<TDCVerifiedBadge verified={true} variant="bakery" />` on every bakery product card (no Google rating, per spec — bakery is TDC-owned).
+
+**Files changed (14)**:
+- NEW: `/app/frontend/src/components/common/NearMeBadges.jsx`
+- `/app/frontend/src/components/{adopt,care,celebrate,emergency,farewell,go,learn,paperwork,play}/{...}NearMe.jsx` (9 files)
+- `/app/frontend/src/components/dine/PetFriendlySpots.jsx`
+- `/app/backend/nearby_places_routes.py`
+- `/app/backend/dine_routes.py`
+- `/app/backend/server.py` (startup backfill + places_tdc_verified indexes)
+
+**Test report**: `/app/test_reports/iteration_267.json` — backend 100%, Celebrate pillar 100% desktop, 8 other pillars code-path verified.
+
+**Operational next step**: to seed more TDC-verified places, insert into `places_tdc_verified` with `{place_id, name, name_lower, tdc_verified: true, city}` — any match via place_id OR lower-cased name will surface the badge + push the place to the top.
+
+### Session: Navya's Three Product-Gap Fixes — Mixed breeds, Near-Me specialists, Walker/Hydro (Apr 23, 2026)
+
+**Shipped on preview, verified on desktop (1920×1080) + mobile (390×844).** All three fixes pass iteration 265/266 end-to-end.
+
+#### Fix 1 — Mixed breed prominence (no longer buried under "Other")
+- **Shared component** `BreedSelector.jsx`: expanded `BREED_LIST` with 9 mix variants (Indie Mix, Labrador Mix, Golden Retriever Mix, German Shepherd Mix, Shih Tzu Mix, Pomeranian Mix, Beagle Mix, Husky Mix, Spitz Mix) + Chippiparai + Kanni added to Indian-breeds. New `POPULAR_BREED_CHIPS` export renders 8 prominent chips above the search box when value is empty (data-testid="breed-popular-chips"). Mix chips use amber accent (#FFF7ED / #B45309); single-breed chips use teal.
+- **SoulBuilder.jsx (desktop)** line 1311: `quickBreedOptions` expanded from 4 → 9 entries including "Indie mix", "Lab mix", "Golden mix", "Shih Tzu mix", "Pomeranian mix".
+- **MiraMeetsYourPet.jsx (mobile)** lines 50-80: `BREEDS` array + new `POPULAR_BREED_CHIPS` constant. Inline chip row rendered inside the `BreedSelector` sub-component (lines 207-240) with per-chip data-testid.
+
+#### Fix 2 — Hydrotherapy + Dog Walkers in NearMe (Go + Play, desktop + mobile)
+- **GoNearMe.jsx**: `SEARCH_TYPES` gained `walker` (Dog Walker 🦮) and `hydro` (Hydrotherapy 🏊). Grid now shows 8 chips in 3-col layout on both breakpoints.
+- **PlayNearMe.jsx**: `PLAY_TYPES` gained `walker` (Dog Walkers 🦮) and `hydro` (Hydrotherapy 💧) alongside existing Swimming. Now 10 type chips total.
+- **GoSoulPage.jsx** (desktop) — previously did NOT import GoNearMe. Now imports it (line 40) and renders it inside the 'Find a Stay' tab below PetFriendlyStays (data-testid="go-nearme-desktop"). Both `?tab=nearme` deep-link and manual tab-click land on it.
+- **Mobile parity**: GoMobilePage + PlayMobilePage + PlaySoulPage already consumed the same shared NearMe components, so all chip additions landed there automatically.
+
+#### Fix 3 — Specialist vets in Care NearMe + auto-router for "surgery / specialist"
+- **CareNearMe.jsx**: Added 5 specialist types (Orthopaedic 🦴, Oncologist 🎗️, Dermatologist 🧴, Ophthalmologist 👁️, Cardiologist ❤️) with `specialist: true` flag. Pills render in a separate row under "✦ SPECIALIST VETS — FOR SURGERY OR SERIOUS CONDITIONS" header with red/rose styling (#B91C1C / #FEF2F2) to signal urgency.
+- **Auto-router** `SPECIALIST_ROUTER` keyword map + `detectSpecialistType()` helper: when user query contains "surgery / surgeon / fracture / acl" → orthopaedic; "cancer / tumor / lump / oncolog / chemo" → oncologist; "skin / rash / itch / allerg / derm / hotspot" → dermatologist; "eye / cataract / cornea / ophthalm" → ophthalmologist; "heart / murmur / cardio / arrhythm" → cardiologist. Generic "specialist" defaults to orthopaedic (most common surgical referral).
+- **getMiraTip()** extended with 6 new branches per specialist — Mira now speaks with urgency-appropriate tone for cancer/surgery queries.
+- **Verified** by testing agent with 5 keyword phrases: "my dog needs surgery" → ortho; "lump on her belly" → oncologist; "itchy skin" → dermatologist; "eye cloudy" → ophthalm; "heart murmur" → cardio. All correctly auto-switch active type with red highlight.
+
+**Files changed**:
+- `/app/frontend/src/components/BreedSelector.jsx` (+30/-4)
+- `/app/frontend/src/pages/SoulBuilder.jsx` (+11/-1)
+- `/app/frontend/src/pages/MiraMeetsYourPet.jsx` (+45/-3)
+- `/app/frontend/src/components/go/GoNearMe.jsx` (+2/-0)
+- `/app/frontend/src/components/play/PlayNearMe.jsx` (+2/-0)
+- `/app/frontend/src/components/care/CareNearMe.jsx` (+85/-14)
+- `/app/frontend/src/pages/GoSoulPage.jsx` (+11/-1)
+
+**Test reports**: `/app/test_reports/iteration_265.json` (initial, 5/6 pass), `/app/test_reports/iteration_266.json` (Go retest, 100% pass).
+
+### Session: Birthday-Box + Razorpay Diagnostics (Apr 23, 2026)
+- **Birthday-Box 500 — CLOSED**: Root cause `AttributeError: 'NoneType' object has no attribute 'get'` in `get_all_allergies()` at birthday_box_routes.py:97. Triggered by pet `pet-d2458b677a4d` (Coco/Maltipoo) whose `pet.health`, `pet.health_data`, `pet.insights` were stored as explicit `None` (not missing). Fix already in place via `or {}` guards on lines 91, 96, 108-109. Verified: 76/76 endpoint calls (19 pets × 4 birthday-box endpoints) return HTTP 200, 5/5 consecutive requests to the previously-crashing pet all 200. Zero 500s logged since.
+- **Razorpay `/api/orders/create-order` — STALE entry, not actually broken**: That path doesn't exist; UnifiedCheckout uses `/api/checkout/create-order` which is working end-to-end (verified with live test: ₹600 + ₹150 shipping → Razorpay order `order_SgpqRmLntFsRuy` created, GST ₹135 calc'd correctly, grand total ₹885). The 2 recent 422s in logs were from negative-test probes, not real traffic. No code change needed.
+
 ### Session: Weekly Resend Diff Email + Monthly-Frozen Alignment (Apr 23, 2026)
 
 **ScaleBoard Fort Knox brief alignment — 2 updates**:

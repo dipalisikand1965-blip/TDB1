@@ -16,6 +16,7 @@ import { useState, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
 import { tdc } from '../../utils/tdc_intent';
 import { bookViaConcierge } from '../../utils/MiraCardActions';
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 const G = { deep:"#1E293B", mid:"#334155", teal:"#0D9488", light:"#99F6E4", pale:"#F0FDFA", cream:"#F8FAFC", darkText:"#1E293B", mutedText:"#475569", amber:"#C9973A" };
 
@@ -65,12 +66,11 @@ function ProviderCard({ provider, pet, onSelectPlace }) {
           ?<img src={provider.photo_url} alt={provider.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={()=>setImgErr(true)}/>
           :<span style={{fontSize:36}}>{type.icon}</span>}
         <span style={{position:"absolute",top:10,left:10,background:G.teal,color:"#fff",fontSize:9,fontWeight:700,borderRadius:20,padding:"3px 8px"}}>{type.icon} {type.label}</span>
-        {provider.tdc_verified&&<span style={{position:"absolute",top:10,right:10,fontSize:9,fontWeight:700,borderRadius:8,padding:"2px 8px",background:"#FFF8E1",color:G.amber}}>✦ TDC Verified</span>}
       </div>
       <div style={{padding:"12px 14px 14px"}}>
         <div style={{fontSize:14,fontWeight:700,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{provider.name}</div>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,flexWrap:"wrap"}}>
-          <StarRating rating={provider.rating} count={provider.review_count}/>
+          <NearMeResultBadges place={provider} />
           <OpenBadge openNow={provider.open_now}/>
         </div>
         {provider.vicinity&&<div style={{fontSize:11,color:G.mutedText,marginBottom:6,display:"flex",alignItems:"flex-start",gap:4}}><span style={{fontSize:12}}>📍</span><span style={{lineHeight:1.4}}>{provider.vicinity}</span></div>}
@@ -96,7 +96,7 @@ function MiraTopPick({ provider, pet, onSelectPlace }) {
         <div style={{fontSize:10,fontWeight:700,color:G.light,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>✦ Mira's Top Pick for {petName}</div>
         <div style={{fontSize:16,fontWeight:700,color:"#fff",marginBottom:4}}>{provider.name}</div>
         <div style={{fontSize:12,color:"rgba(255,255,255,0.65)",marginBottom:8}}>{provider.vicinity}</div>
-        <StarRating rating={provider.rating} count={provider.review_count}/>
+        <NearMeResultBadges place={provider} />
       </div>
       <button onClick={()=>{ tdc.nearme({ query: provider.name || "venue", pillar:"paperwork", pet, channel:"paperwork_nearme_top_pick" }); onSelectPlace?.(provider); }}
         data-testid="paperwork-nearme-top-pick-button"
@@ -251,7 +251,7 @@ export default function PaperworkNearMe({ pet, onBook }) {
           {topPick&&<MiraTopPick provider={topPick} pet={pet} onSelectPlace={setSelectedPlace}/>} 
           <div style={{fontSize:12,color:G.mutedText,marginBottom:12}}>{providers.length} {PAPER_TYPES.find(t=>t.id===activeType)?.label?.toLowerCase()||"services"} found{displayCity&&displayCity!=="near_me"?` in ${displayCity}`:" near you"}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
-            {restList.map((p,i)=><ProviderCard key={p.place_id||i} provider={p} pet={pet} onSelectPlace={setSelectedPlace}/>)}
+            {restList.slice().sort(sortByTDCVerified).map((p,i)=><ProviderCard key={p.place_id||i} provider={p} pet={pet} onSelectPlace={setSelectedPlace}/>)}
           </div>
           <button onClick={()=>requestConciergeHelp(displayCity||"your area")}
             data-testid="paperwork-nearme-more-options-button"

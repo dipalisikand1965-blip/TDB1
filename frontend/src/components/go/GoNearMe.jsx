@@ -8,16 +8,19 @@ import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../utils/api';
 import { tdc } from '../../utils/tdc_intent';
 import NearMeConciergeModal from '../common/NearMeConciergeModal';
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 const G = { teal:'#1ABC9C', deep:'#0E4D45', pale:'#F0FDFA', border:'rgba(26,188,156,0.2)', dark:'#0A2D2A', muted:'#475569' };
 
 const SEARCH_TYPES = [
   { id:'hotel',    label:'Pet Hotels',  emoji:'🏨', query:'pet friendly hotel resort dog allowed' },
   { id:'boarding', label:'Boarding',    emoji:'🐾', query:'dog boarding kennel pet hotel' },
+  { id:'walker',   label:'Dog Walker',  emoji:'🦮', query:'dog walker pet walking service' },
   { id:'taxi',     label:'Pet Taxi',    emoji:'🚖', query:'pet taxi dog transport animal transport' },
   { id:'airport',  label:'Travel Vet', emoji:'✈️', query:'travel certificate vet health certificate dog' },
   { id:'daycare',  label:'Day Care',   emoji:'☀️', query:'dog daycare pet daycare centre' },
   { id:'park',     label:'Dog Parks',  emoji:'🌿', query:'off leash dog park pet friendly park' },
+  { id:'hydro',    label:'Hydrotherapy', emoji:'🏊', query:'dog hydrotherapy canine pool rehab physiotherapy' },
 ];
 
 export default function GoNearMe({ currentPet, setConciergeToast }) {
@@ -130,24 +133,20 @@ export default function GoNearMe({ currentPet, setConciergeToast }) {
 
       {!loading && results.length > 0 && (
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-          {results.map((place, i) => (
+          {results.slice().sort(sortByTDCVerified).map((place, i) => (
             <div key={place.place_id || i}
               style={{ background:'#fff', borderRadius:16, border:`1px solid ${G.border}`, overflow:'hidden', boxShadow:'0 2px 8px rgba(26,188,156,0.08)' }}>
               {place.photo_url && (
                 <img src={place.photo_url} alt={place.name} style={{ width:'100%', height:120, objectFit:'cover' }} />
               )}
               <div style={{ padding:'12px 14px' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:4 }}>
-                  <div style={{ fontSize:14, fontWeight:700, color:G.dark, flex:1 }}>{place.name}</div>
-                  {place.rating && (
-                    <div style={{ fontSize:12, fontWeight:700, color:'#F59E0B', flexShrink:0, marginLeft:8 }}>
-                      ★ {place.rating}
-                    </div>
-                  )}
-                </div>
+                <div style={{ fontSize:14, fontWeight:700, color:G.dark, marginBottom:4 }}>{place.name}</div>
                 {place.vicinity && (
-                  <div style={{ fontSize:13, color:G.muted, marginBottom:8, lineHeight:1.4 }}>{place.vicinity}</div>
+                  <div style={{ fontSize:13, color:G.muted, marginBottom:6, lineHeight:1.4 }}>{place.vicinity}</div>
                 )}
+                <div style={{ marginBottom:8 }}>
+                  <NearMeResultBadges place={place} />
+                </div>
                 <div style={{ display:'flex', gap:8, alignItems:'center' }}>
                   {place.open_now !== undefined && (
                     <span style={{ fontSize:12, fontWeight:600, color: place.open_now ? '#22C55E' : '#EF4444' }}>

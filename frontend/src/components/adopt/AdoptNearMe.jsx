@@ -9,6 +9,7 @@ import { bookViaConcierge } from '../../utils/MiraCardActions';
 import { tdc } from '../../utils/tdc_intent';
 import { API_URL } from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 const G = {
   deep:"#4A0E2E", mid:"#7B1D4E", rose:"#D4537E", light:"#F9A8C9",
@@ -104,7 +105,7 @@ export default function AdoptNearMe({ pet, onBook }) {
         <>
           <p style={{fontSize:12,color:"#888",marginBottom:14,fontWeight:600}}>{results.length} rescue partner{results.length>1?"s":""} near {city}</p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))",gap:14}}>
-            {results.map((place,i)=>(
+            {results.slice().sort(sortByTDCVerified).map((place,i)=>(
               <div key={place.place_id||i} style={{background:"#fff",borderRadius:16,border:`1.5px solid ${G.border}`,overflow:"hidden",transition:"transform 0.15s"}}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow=`0 6px 20px rgba(212,83,126,0.12)`;}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}>
@@ -116,7 +117,9 @@ export default function AdoptNearMe({ pet, onBook }) {
                 <div style={{padding:"14px 16px 16px"}}>
                   <div style={{fontSize:14,fontWeight:800,color:G.darkText,marginBottom:4,lineHeight:1.3}}>{place.name}</div>
                   <div style={{fontSize:11,color:"#888",marginBottom:8,lineHeight:1.4}}>📍 {place.vicinity||place.formatted_address}</div>
-                  {place.rating&&<div style={{display:"flex",alignItems:"center",gap:6,marginBottom:8}}>{[1,2,3,4,5].map(s=><span key={s} style={{fontSize:11,color:s<=Math.round(place.rating)?"#F59E0B":"#D1D5DB"}}>★</span>)}<span style={{fontSize:11,fontWeight:600,color:G.mutedText}}>{place.rating}</span></div>}
+                  <div style={{marginBottom:8}}>
+                    <NearMeResultBadges place={place} />
+                  </div>
                   <div style={{display:"flex",gap:8}}>
                     {place.phone&&<a href={`tel:${place.phone}`} style={{flex:1,textAlign:"center",padding:"8px",borderRadius:10,border:`1.5px solid ${G.border}`,fontSize:12,fontWeight:600,color:G.mid,textDecoration:"none",background:"#fff"}}>📞 Call</a>}
                     <button onClick={()=>{ tdc.nearme({ query: "venue", pillar:"adopt", pet }); setSelectedPlace(place); bookViaConcierge({ service: place.name||"venue", pillar:"adopt", pet, channel:"adopt_nearme" }); onBook?.({name:place.name,pillar:"adopt",id:"rescue_partner",accentColor:G.rose})}}   style={{flex:2,background:`linear-gradient(135deg,${G.rose},${G.mid})`,color:"#fff",border:"none",borderRadius:10,padding:"8px",fontSize:12,fontWeight:700,cursor:"pointer"}}>✦ Connect via Mira</button>

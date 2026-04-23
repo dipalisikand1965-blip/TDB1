@@ -52,6 +52,7 @@ import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
 import { tdc } from '../../utils/tdc_intent';
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 // ─── Colour system — indigo (mirrors LearnSoulPage) ──────────
 const G = {
@@ -173,12 +174,6 @@ function TrainerCard({ provider, pet, onBook, onOpenModal }) {
           {LEARN_TYPES.find(t=>t.id===provider.type)?.icon || "🎓"}{" "}
           {LEARN_TYPES.find(t=>t.id===provider.type)?.label || "Trainer"}
         </span>
-
-        {provider.tdc_verified && (
-          <span style={{ position:"absolute", top:10, right:10 }}>
-            <TDCBadge />
-          </span>
-        )}
       </div>
 
       {/* Info */}
@@ -187,7 +182,7 @@ function TrainerCard({ provider, pet, onBook, onOpenModal }) {
                       marginBottom:4, lineHeight:1.3 }}>{provider.name}</div>
 
         <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6, flexWrap:"wrap" }}>
-          <StarRating rating={provider.rating} reviewCount={provider.review_count} />
+          <NearMeResultBadges place={provider} />
           <OpenBadge openNow={provider.open_now} />
         </div>
 
@@ -245,7 +240,7 @@ function MiraTopPick({ provider, pet, onBook }) {
         <div style={{ fontSize:12, color:"rgba(255,255,255,0.65)", marginBottom:8 }}>
           {provider.vicinity}
         </div>
-        <StarRating rating={provider.rating} reviewCount={provider.review_count} />
+        <NearMeResultBadges place={provider} />
       </div>
       <button
         onClick={() => onBook?.(provider, provider.city||provider.vicinity)}
@@ -353,7 +348,7 @@ export default function LearnNearMe({ pet, dimId="training", onBook }) {
   };
 
   const topPick    = providers.find(p=>p.tdc_verified) || (providers[0]?.rating>=4.5 ? providers[0] : null);
-  const restOfList = topPick ? providers.filter(p=>p!==topPick) : providers;
+  const restOfList = (topPick ? providers.filter(p=>p!==topPick) : providers).slice().sort(sortByTDCVerified);
 
   return (
     <>
