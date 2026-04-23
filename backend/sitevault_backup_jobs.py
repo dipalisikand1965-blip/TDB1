@@ -712,15 +712,26 @@ async def build_shopify_sync_state(workdir: str) -> str:
 # 11. ORCHESTRATORS
 # ─────────────────────────────────────────────────────────────────────
 async def run_daily_backup() -> Dict[str, Any]:
-    """Nightly 3am: Mongo dump + memory + supervisor logs + cloudinary manifest."""
+    """Nightly 3am: Mongo dump + memory + supervisor logs + cloudinary manifest.
+
+    HARDENED (Apr 2026, ScaleBoard Bug E pattern):
+    - Pre-registers run record with status="running" so watchdog can detect
+      crashes between start and terminal status write
+    - try/finally guarantees a terminal status ("success" | "failed" | "skipped")
+      is written even if the body crashes unexpectedly
+    """
     if not drive.is_enabled():
         return {"skipped": True, "reason": "SITEVAULT_ENABLED=false"}
 
     run_id = _timestamp()
     report = {"run_id": run_id, "type": "daily", "started_at": datetime.now(timezone.utc).isoformat(),
-              "uploads": [], "errors": []}
+              "uploads": [], "errors": [], "status": "running"}
+
+    # Pre-register so watchdog can flip crashed runs to status="failed"
+    await _pre_register_run(report)
 
     workdir = tempfile.mkdtemp(prefix=f"sitevault-daily-{run_id}-")
+    crashed = False
     try:
         folders = drive.ensure_folder_tree()
 
@@ -772,24 +783,45 @@ async def run_daily_backup() -> Dict[str, Any]:
         except Exception as e:
             report["errors"].append(f"documents_mirror: {e}")
 
+    except Exception as e:
+        # Catch-all for unexpected failures (e.g. drive auth, workdir permissions)
+        report["errors"].append(f"fatal: {e}")
+        logger.exception("[SITEVAULT] daily backup crashed unexpectedly")
+        crashed = True
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
+        # Always write terminal status — crash or not
+        report["completed_at"] = datetime.now(timezone.utc).isoformat()
+        if crashed:
+            report["status"] = "failed"
+        # _persist_report summarises and upserts — safe to call after crash
+        try:
+            await _persist_report(report)
+        except Exception as _pe:
+            logger.exception(f"[SITEVAULT] persist_report failed in finally: {_pe}")
 
-    report["completed_at"] = datetime.now(timezone.utc).isoformat()
-    await _persist_report(report)
     return report
 
 
 async def run_weekly_backup() -> Dict[str, Any]:
-    """Monday 3am: EVERYTHING (including Cloudinary full download + gold master)."""
+    """Monday 3am: EVERYTHING (including Cloudinary full download + gold master).
+
+    HARDENED (Apr 2026, ScaleBoard Bug E pattern):
+    - Pre-registers run record with status="running"
+    - try/finally guarantees terminal status on crash
+    """
     if not drive.is_enabled():
         return {"skipped": True, "reason": "SITEVAULT_ENABLED=false"}
 
     run_id = _timestamp()
     report = {"run_id": run_id, "type": "weekly", "started_at": datetime.now(timezone.utc).isoformat(),
-              "uploads": [], "errors": []}
+              "uploads": [], "errors": [], "status": "running"}
+
+    # Pre-register so watchdog can detect crashes
+    await _pre_register_run(report)
 
     workdir = tempfile.mkdtemp(prefix=f"sitevault-weekly-{run_id}-")
+    crashed = False
     try:
         folders = drive.ensure_folder_tree()
 
@@ -917,13 +949,66 @@ async def run_weekly_backup() -> Dict[str, Any]:
                 report["errors"].append(f"cloudinary_full: {e}")
                 logger.exception("[SITEVAULT] cloudinary full download failed")
 
+        # 10. Fort Knox (c) — Monthly Frozen Snapshot.
+        # On the first Monday of each month, copy today's DB dump into
+        # Monthly-Frozen-Snapshots (which retention cleaner never touches).
+        # This gives us a 12-month-year rolling history of immutable points
+        # in time, even if all other backups get pruned.
+        try:
+            from datetime import datetime as _dt
+            now_ist = _dt.now(timezone.utc)  # UTC date is close enough for "first Monday" heuristic
+            if now_ist.day <= 7:  # first Monday always falls in days 1-7
+                # Find our already-uploaded DB file from this run and clone it
+                db_upload = next(
+                    (u for u in report["uploads"]
+                     if u.get("drive_folder") == "Daily-DB-Snapshots"
+                     or "db_" in u.get("name", "").lower()),
+                    None,
+                )
+                if db_upload and db_upload.get("drive_id"):
+                    # Copy into Monthly-Frozen-Snapshots (server-side copy)
+                    from sitevault_drive_client import _get_service, _shared_drive_args
+                    svc = _get_service()
+                    frozen_name = f"FROZEN_{now_ist.strftime('%Y_%m')}_{db_upload['name']}"
+                    copied = svc.files().copy(
+                        fileId=db_upload["drive_id"],
+                        body={
+                            "name": frozen_name,
+                            "parents": [folders["Monthly-Frozen-Snapshots"]],
+                            "description": f"frozen_monthly_{now_ist.strftime('%Y-%m')} — NEVER AUTO-DELETE",
+                            "keepRevisionForever": True,
+                        },
+                        supportsAllDrives=True,
+                        fields="id,name,size",
+                    ).execute()
+                    report["uploads"].append({
+                        "name": frozen_name,
+                        "drive_id": copied.get("id"),
+                        "drive_folder": "Monthly-Frozen-Snapshots",
+                        "size_bytes": int(copied.get("size") or 0),
+                        "frozen": True,
+                    })
+                    logger.info(f"[SITEVAULT] Fort Knox — frozen monthly snapshot created: {frozen_name}")
+        except Exception as e:
+            report["errors"].append(f"monthly_frozen: {e}")
+            logger.exception("[SITEVAULT] monthly frozen snapshot failed")
+
+    except Exception as e:
+        report["errors"].append(f"fatal: {e}")
+        logger.exception("[SITEVAULT] weekly backup crashed unexpectedly")
+        crashed = True
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
+        report["completed_at"] = datetime.now(timezone.utc).isoformat()
+        if crashed:
+            report["status"] = "failed"
+        try:
+            await _persist_report(report)
+        except Exception as _pe:
+            logger.exception(f"[SITEVAULT] persist_report failed in finally: {_pe}")
 
-    report["completed_at"] = datetime.now(timezone.utc).isoformat()
-    await _persist_report(report)
-
-    # After weekly, run retention cleaner
+    # After weekly, run retention cleaner (outside the main try so it runs even
+    # if the body partially succeeded — _persist_report already captured status)
     try:
         cleaned = run_retention_cleaner()
         report["retention_cleanup"] = cleaned
@@ -941,27 +1026,32 @@ def run_retention_cleaner() -> Dict[str, Any]:
       - Daily-DB-Snapshots: keep 30 days
       - Logs: keep 30 days
       - Documents (daily only): keep 30 days
-      - Weekly-Gold-Masters: keep 12 weeks (84 days) UNLESS pinned
+      - Weekly-Gold-Masters: keep 52 weeks (Fort Knox — was 12) UNLESS pinned
+      - Monthly-Frozen-Snapshots: NEVER deleted (Fort Knox — kept forever)
       - Source-Code-Archive: keep 12 weeks
       - Cloudinary-Images: keep 12 weeks
       - Admin-Reports: keep 12 weeks
     Files with description='gold_master_pinned' are NEVER deleted.
+    Monthly-Frozen-Snapshots folder is explicitly EXCLUDED from retention.
     """
     if not drive.is_enabled():
         return {"skipped": True}
 
     folders = drive.ensure_folder_tree()
     daily_cutoff = datetime.now(timezone.utc) - timedelta(days=int(os.environ.get("SITEVAULT_DAILY_RETENTION_DAYS", "30")))
+    # Gold Masters: Fort Knox upgrade to 52 weeks. Override via env if needed.
+    weekly_gold_cutoff = datetime.now(timezone.utc) - timedelta(weeks=int(os.environ.get("SITEVAULT_GOLD_RETENTION_WEEKS", "52")))
     weekly_cutoff = datetime.now(timezone.utc) - timedelta(weeks=int(os.environ.get("SITEVAULT_WEEKLY_RETENTION_WEEKS", "12")))
 
     folder_cutoff_map = {
         "Daily-DB-Snapshots": daily_cutoff,
         "Logs": daily_cutoff,
         "Documents": daily_cutoff,           # weekly docs also captured as "weekly_*"; pinned survives
-        "Weekly-Gold-Masters": weekly_cutoff,
+        "Weekly-Gold-Masters": weekly_gold_cutoff,  # 52 weeks (Fort Knox)
         "Source-Code-Archive": weekly_cutoff,
         "Cloudinary-Images": weekly_cutoff,
         "Admin-Reports": weekly_cutoff,
+        # Monthly-Frozen-Snapshots is intentionally OMITTED — kept forever.
     }
 
     deleted = []
@@ -1033,12 +1123,86 @@ def _summarize_report(report: Dict[str, Any]) -> Dict[str, Any]:
     return report
 
 
+async def _pre_register_run(report: Dict[str, Any]):
+    """Insert a run record with status='running' at the start of a backup job.
+    Ensures the watchdog can detect crashes between start and completion.
+    Idempotent via upsert on _id.
+    """
+    if _db is None:
+        return
+    try:
+        await _db.sitevault_runs.update_one(
+            {"_id": report["run_id"]},
+            {"$setOnInsert": {**report, "_id": report["run_id"]}},
+            upsert=True,
+        )
+    except Exception as e:
+        logger.warning(f"[SITEVAULT] pre_register failed: {e}")
+
+
+async def watchdog_stuck_runs(stuck_after_minutes: int = 30) -> Dict[str, Any]:
+    """Find sitevault_runs that started >N min ago but never wrote terminal
+    status. Stamp them as status='failed' with reason='watchdog_timeout'.
+    Also backfills legacy records (no status field at all) as 'unknown_legacy_crash'.
+
+    Called by the 15-minute watchdog cron registered in server.py lifespan.
+    """
+    if _db is None:
+        return {"scanned": 0, "flagged": 0, "backfilled": 0}
+
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    cutoff = (now - timedelta(minutes=stuck_after_minutes)).isoformat()
+
+    flagged = 0
+    backfilled = 0
+
+    # Pattern 1: running/missing status + started before cutoff → mark failed
+    cursor = _db.sitevault_runs.find({
+        "started_at": {"$lt": cutoff},
+        "$or": [
+            {"status": {"$exists": False}},
+            {"status": "running"},
+        ],
+    })
+    async for doc in cursor:
+        is_legacy = "status" not in doc
+        new_status = "unknown_legacy_crash" if is_legacy else "failed"
+        reason = "pre-hardening record, no try/finally" if is_legacy else "watchdog_timeout"
+        await _db.sitevault_runs.update_one(
+            {"_id": doc["_id"]},
+            {"$set": {
+                "status": new_status,
+                "watchdog_flagged_at": now.isoformat(),
+                "watchdog_reason": reason,
+            }}
+        )
+        if is_legacy:
+            backfilled += 1
+        else:
+            flagged += 1
+
+    if flagged or backfilled:
+        logger.warning(
+            f"[SITEVAULT] Watchdog: flagged {flagged} stuck run(s) as failed, "
+            f"backfilled {backfilled} legacy record(s)"
+        )
+    return {"flagged": flagged, "backfilled": backfilled, "cutoff": cutoff}
+
+
 async def _persist_report(report: Dict[str, Any]):
     if _db is None:
         return
     try:
         _summarize_report(report)
-        await _db.sitevault_runs.insert_one({**report, "_id": report["run_id"]})
+        # Upsert so we overwrite the pre-register record with the full report.
+        # Use update_one+upsert (not insert_one) because the pre-register
+        # path has already created a partial doc.
+        await _db.sitevault_runs.update_one(
+            {"_id": report["run_id"]},
+            {"$set": {**report, "_id": report["run_id"]}},
+            upsert=True,
+        )
         logger.info(
             f"[SITEVAULT] Run {report['run_id']} persisted: status={report['status']} "
             f"files={report['files_uploaded']} bytes={report['bytes_uploaded']:,} errors={report['error_count']}"

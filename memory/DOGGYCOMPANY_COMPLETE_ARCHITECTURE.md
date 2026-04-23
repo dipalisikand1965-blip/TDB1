@@ -1,5 +1,5 @@
 # 🐾 The Doggy Company — Complete Architecture Audit
-**Generated**: Apr 23, 2026 · **Version**: 1.0 (Initial ScaleBoard-style audit)
+**Generated**: 2026-04-23T05:02:58.005763+00:00 (auto-refresh)
 **Environment audited**: Preview (`pet-soul-ranking.preview.emergentagent.com`)
 **Production URL**: `thedoggycompany.com`
 **Stack**: React 18 + FastAPI + MongoDB 7 + Cloudinary CDN
@@ -31,62 +31,33 @@
 ## 1. 🗄️ DATABASE AUDIT
 <!-- AUDIT:DATABASE:START -->
 
-### Top 40 Collections by Document Count
+### Live stats (as of 2026-04-23T05:02:58.004712+00:00)
+- **Total collections**: 221
+- **Total documents**: 115,001
 
-| Docs | Collection | Purpose |
-|------|-----------|---------|
-| 26,179 | `mira_signals` | AI behavior telemetry for learning |
-| 17,178 | `mira_product_scores` | Per-pet product match scores |
-| 9,498 | `products_master` | Canonical product catalog (Shopify-synced) |
-| 8,628 | `products_master_backup_20260404` | Backup snapshot (Apr 4) |
-| 7,079 | `unified_products` | Cross-pillar unified product view |
-| 5,131 | `products_master_backup_20260322` | Older backup (Mar 22) |
-| 4,941 | `breed_products` | Breed-specific merchandise |
-| 4,940 | `mira_conversations` | Mira chat history |
-| 4,549 | `admin_notifications` | Admin event feed |
-| 2,729 | `member_notifications` | Member event feed |
-| 1,635 | `products` | Legacy product collection |
-| 1,082 | `channel_intakes` | Concierge/WhatsApp intakes |
-| 1,026 | `services_master` | Canonical services catalog |
-| 973 | `live_conversation_threads` | Active Mira chat threads |
-| 641 | `email_logs` | Resend email delivery audit |
-| 615 | `service_desk_tickets` | Zoho Desk mirror |
-| 606 | `product_soul_tiers` | Soul-tier product rankings |
-| 522 | `tickets` | Legacy tickets |
-| 520 | `pillar_requests` | Cross-pillar Concierge requests |
-| 509 | `mira_tickets` | Mira-initiated Concierge tickets |
-
-### Business / Financial Collections
-
-| Collection | Count | Notes |
-|------------|-------|-------|
-| `orders` | 33 | Live member orders |
-| `payments` | 6 | Razorpay payment records |
-| `payment_orders` | 3 | Razorpay order creation records |
-| `invoices` | 0 | Not yet used |
-| `subscriptions` | 0 | Membership billing not yet tracked here |
-| `refunds` | 0 | Not yet used |
-
-### Backup / Replica Collections Present
-
-`products_master_backup_20260404`, `products_master_backup_20260322`, `unified_products_backup_20260322`, `breed_products_backup_20260322`, `products_backup_20260322`, `services_master_backup_20260322`, `product_soul_tiers_backup_20260322`, `bundles_backup_20260322`, `service_catalog_backup_20260322`, `celebrate_products_backup_20260322`, `enhanced_collections_backup_20260322`, `farewell_bundles_backup_20260322`, `learn_products_backup_20260322`.
-
-> **Housekeeping note**: 13 backup-* collections exist. Recommend keeping the two most recent per collection and deleting older ones to reduce DB size.
-
-### Empty / Near-Empty Collections (candidates for deprecation)
-
-`wishlists (1)`, `members (1)`, `reservations (1)`, `reviews (1)`, `admin_settings (1)`, `foster_applications (1)`, `zoho_token_cache (1)`, `zoho_sync_log (1)`, `social_share_claims (1)`, `quotes (1)`, `agents (1)`, `rainbow_bridge_tributes (1)`, `member_password_resets (1)`, `wa_pet_state (1)`, plus ~4 at 0 docs.
-
-### Sitevault Run Status — 🔴 PROBLEM FOUND
-
-```
-started_at: 2026-04-21T04:00   status: MISSING
-started_at: 2026-04-21T04:29   status: MISSING
-started_at: 2026-04-21T04:39   status: MISSING
-started_at: 2026-04-22T15:42   status: MISSING
-started_at: 2026-04-23T02:36   status: "success"  ← ONLY THIS ONE LOGGED
-```
-**4 of 5 `sitevault_runs` have no `status` field** — jobs started but never wrote a terminal status. This matches the ScaleBoard Bug E pattern exactly.
+### Top 20 collections by doc count
+| Docs | Collection |
+|-----:|------------|
+| 26,179 | `mira_signals` |
+| 17,178 | `mira_product_scores` |
+| 9,498 | `products_master` |
+| 8,628 | `products_master_backup_20260404` |
+| 7,079 | `unified_products` |
+| 5,131 | `products_master_backup_20260322` |
+| 4,941 | `breed_products` |
+| 4,940 | `mira_conversations` |
+| 4,558 | `unified_products_backup_20260322` |
+| 4,549 | `admin_notifications` |
+| 3,775 | `breed_products_backup_20260322` |
+| 2,729 | `member_notifications` |
+| 1,635 | `products` |
+| 1,635 | `products_backup_20260322` |
+| 1,082 | `channel_intakes` |
+| 1,026 | `services_master` |
+| 1,025 | `services_master_backup_20260322` |
+| 973 | `live_conversation_threads` |
+| 641 | `email_logs` |
+| 615 | `service_desk_tickets` |
 
 <!-- AUDIT:DATABASE:END -->
 
@@ -95,36 +66,31 @@ started_at: 2026-04-23T02:36   status: "success"  ← ONLY THIS ONE LOGGED
 ## 2. 🔌 API ENDPOINTS
 <!-- AUDIT:API:START -->
 
-### Routes by Module (top 20)
+**Total endpoints**: 1463
 
-| Routes | File | Domain |
-|-------:|------|--------|
-| 150 | `mira_routes.py` | AI assistant / semantic search / briefings |
-| 98 | `ticket_routes.py` | Service desk / Zoho integration |
-| 53 | `concierge_routes.py` | White-glove concierge flows |
-| 50 | `server.py` (core) | Auth, health, admin, utility |
-| 45 | `travel_routes.py` | Go pillar (stays, travel planning) |
-| 42 | `paperwork_routes.py` | Pet Vault (documents, ID cards) |
-| 37 | `learn_routes.py` | Learn pillar (trainers, CMS) |
-| 34 | `fit_routes.py` | Fitness / workouts |
-| 33 | `enjoy_routes.py` | Enjoy pillar (play, toys) |
-| 32 | `care_routes.py` | Care pillar (grooming, vet) |
-| 30 | `engagement_engine.py` | Nudges / campaigns |
-| 30 | `emergency_routes.py` | Emergency pillar |
-| 30 | `celebrate_routes.py` | Celebrate pillar (birthdays, boxes) |
-| 28 | `advisory_routes.py` | Advisory services |
-| 27 | `adopt_routes.py` | Adoption pillar |
-| 21 | `shop_routes.py` | Shop cart/checkout |
-| 21 | `breed_catalogue.py` | Breed-aware products + **NEW** soul fallback + favourites |
-| 20 | `service_box_routes.py` | Service bundles |
-| 19 | `farewell_routes.py` | Rainbow Bridge pillar |
-
-**Key public endpoints (no auth)**:
-- `GET /api/health` · `GET /health` · `GET /health/db`
-- `GET /api/public/inventory-csv` · `GET /api/public/system-overview` · `GET /api/public/docs-zip`
-- `GET /api/breed-catalogue/products` · `GET /api/breed-catalogue/favourites`
-
-**Admin-gated endpoints** use `Depends(verify_admin)` or HTTPBasicCredentials → admin_member_routes pattern.
+### Top files by route count
+| Routes | File |
+|-------:|------|
+| 331 | `server.py` |
+| 150 | `mira_routes.py` |
+| 98 | `ticket_routes.py` |
+| 53 | `concierge_routes.py` |
+| 45 | `travel_routes.py` |
+| 42 | `paperwork_routes.py` |
+| 37 | `learn_routes.py` |
+| 34 | `fit_routes.py` |
+| 33 | `enjoy_routes.py` |
+| 32 | `care_routes.py` |
+| 30 | `emergency_routes.py` |
+| 30 | `celebrate_routes.py` |
+| 30 | `engagement_engine.py` |
+| 28 | `advisory_routes.py` |
+| 27 | `adopt_routes.py` |
+| 21 | `pricing_routes.py` |
+| 21 | `breed_catalogue.py` |
+| 21 | `shop_routes.py` |
+| 20 | `service_box_routes.py` |
+| 19 | `farewell_routes.py` |
 
 <!-- AUDIT:API:END -->
 
@@ -133,22 +99,29 @@ started_at: 2026-04-23T02:36   status: "success"  ← ONLY THIS ONE LOGGED
 ## 3. 🖥️ FRONTEND PAGES
 <!-- AUDIT:FRONTEND:START -->
 
-**Total routes**: 164 declared in `App.js`
+**Total frontend routes**: 165
 
-### Core member routes (sample)
-`/`, `/dashboard`, `/dine`, `/care`, `/celebrate`, `/shop`, `/go`, `/play`, `/learn`, `/emergency`, `/paperwork`, `/farewell`, `/pet/:petId`, `/pets`, `/add-pet`, `/pet-soul-onboarding`, `/mira-search`, `/mira`, `/ask-mira`, `/services`, `/accessories`, `/advisory`, `/adopt`
-
-### Admin routes (9)
-`/admin`, `/admin/concierge`, `/admin/concierge-realtime`, `/admin/docs`, `/admin/forgot-password`, `/admin/mira-concierge`, `/admin/reset-password`, `/admin/service-desk`, `/admin/services`
-
-### Auth routes
-`/login`, `/register`, `/signup`, `/forgot-password`, `/reset-password`, `/verify-email`
-
-### Key data-fetching patterns
-- **Pillar pages** → read `usePillarContext().currentPet` + call `/api/breed-catalogue/*` + `/api/mira/*`
-- **Mira Search** → `/api/mira/semantic-search` (POST) with per-turn state
-- **Pet Vault** → `/api/upload/document` (Cloudinary) + `/api/paperwork/*`
-- **Soul Builder** → `/api/pet-soul/save-answers` (merge-safe)
+Sample routes:
+- `*`
+- `/`
+- `/*`
+- `/about`
+- `/accessories`
+- `/add-pet`
+- `/admin`
+- `/admin/concierge`
+- `/admin/concierge-realtime`
+- `/admin/docs`
+- `/admin/forgot-password`
+- `/admin/mira-concierge`
+- `/admin/reset-password`
+- `/admin/service-desk`
+- `/admin/services`
+- `/adopt`
+- `/advisory`
+- `/agent`
+- `/ai-disclaimer`
+- `/all`
 
 <!-- AUDIT:FRONTEND:END -->
 
@@ -182,32 +155,16 @@ started_at: 2026-04-23T02:36   status: "success"  ← ONLY THIS ONE LOGGED
 ## 5. ⏰ CRON JOBS
 <!-- AUDIT:CRON:START -->
 
-All scheduled via APScheduler inside `server.py` lifespan. Timezone: IST unless noted.
+**Registered APScheduler jobs**: 6
 
-| Job ID | Schedule | Function | Status Tracking |
-|--------|---------|----------|-----------------|
-| `celebration_reminders` | 9:00 AM IST daily | `check_upcoming_celebrations` | ⚠️ No status record |
-| `abandoned_cart_check` | Every 30 min | `check_abandoned_carts` | ⚠️ No status record |
-| `feedback_processor` | Every 15 min | `process_pending_feedback` | ⚠️ No status record |
-| `daily_reports` | 8:00 AM IST | `process_daily_reports` | ⚠️ No status record |
-| `escalation_check` | Every 15 min | `run_escalation_check` | ⚠️ No status record |
-| `health_reminders` | 9:00 AM IST | `check_health_reminders` | ⚠️ No status record |
-| `mira_nudges` | 10:00 AM IST | `process_mira_nudges` | ⚠️ No status record |
-| `pet_wrapped_birthday` | 9:00 AM IST | `wrapped_birthday_check` | ⚠️ No status record |
-| `pet_wrapped_annual` | Dec 10, 10 AM IST | `wrapped_annual_batch` | ⚠️ No status record |
-| `daily_morning_digest` | 8:00 AM IST | `run_daily_digest` | ⚠️ No status record |
-| `auto_db_re_export` | Every 6 hours | `auto_re_export_and_atlas_sync` | ⚠️ No status, **🔴 wipes Atlas** |
-| `sitevault_daily` | 3:00 AM IST (not Mon) | `_sitevault_daily_wrapper` | 🔴 **STATUS BROKEN** (4/5 records no status) |
-| `sitevault_weekly` | Mon 3:00 AM IST | `_sitevault_weekly_wrapper` | 🔴 Same issue |
-
-### 🔴 Critical cron issue — Atlas Sync wipes destination
-
-`auto_re_export_and_atlas_sync` at line 2180 in `server.py`:
-```py
-atlas_db_sync[coll_name].delete_many({})   # ← wipes Atlas
-atlas_db_sync[coll_name].insert_many(docs, ordered=False)
-```
-If the local DB ever returns zero docs for a collection (transient issue, index corruption, etc.), the `insert_many` gets skipped (`if not docs: continue`) but `delete_many({})` has already wiped that collection in Atlas. **Atlas backup becomes unreliable as a true backup.**
+| Job ID | Trigger | Function |
+|--------|---------|----------|
+| `escalation_check` | `IntervalTrigger(minutes=15)` | `run_escalation_check` |
+| `health_reminders` | `CronTrigger(hour=3, minute=30)` | `check_health_reminders` |
+| `auto_db_re_export` | `IntervalTrigger(hours=6)` | `auto_re_export_and_atlas_sync` |
+| `sitevault_daily` | `CronTrigger(hour=3, minute=0, timezone=_sv_tz)` | `_sitevault_daily_wrapper` |
+| `sitevault_weekly` | `CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=_sv_tz)` | `_sitevault_weekly_wrapper` |
+| `sitevault_watchdog` | `IntervalTrigger(minutes=15)` | `_sitevault_watchdog_wrapper` |
 
 <!-- AUDIT:CRON:END -->
 

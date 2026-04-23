@@ -204,7 +204,8 @@ def _is_shared_drive_root() -> bool:
 MIME_FOLDER = "application/vnd.google-apps.folder"
 
 SUBFOLDERS = [
-    "Weekly-Gold-Masters",
+    "Weekly-Gold-Masters",     # keep 52 weeks (1 year) — Fort Knox upgrade
+    "Monthly-Frozen-Snapshots",# NEW — kept forever (never deleted by retention cleaner)
     "Daily-DB-Snapshots",
     "Source-Code-Archive",
     "Documents",
@@ -293,6 +294,11 @@ def upload_file(
     meta = {"name": name, "parents": [drive_folder_id]}
     if description:
         meta["description"] = description
+    # Fort Knox (a) — keep ALL prior Drive revisions forever.
+    # Without this, Drive prunes old versions of the same filename after 30 days.
+    # Since backup filenames timestamp themselves the collision case is rare, but
+    # enabling this means even an accidental overwrite has full recoverable history.
+    meta["keepRevisionForever"] = True
 
     request = svc.files().create(
         body=meta,

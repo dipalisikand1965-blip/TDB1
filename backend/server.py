@@ -2149,43 +2149,100 @@ async def lifespan(app: FastAPI):
         Every 6 hours:
         1. Re-export all collections to migration_data/*.json.gz (GitHub backup)
         2. Sync all collections to MongoDB Atlas (cloud backup)
-        """
-        # Step 1 — Re-export migration files
-        try:
-            from db_restore_routes import _do_export
-            await _do_export()
-            logger.info("[AUTO-EXPORT] ✅ Migration files re-exported")
-        except Exception as e:
-            logger.warning(f"[AUTO-EXPORT] ⚠️ Migration export failed: {e}")
 
-        # Step 2 — Sync to Atlas (PRODUCTION_MONGO_URL must be set in .env — no hardcoded fallback)
-        ATLAS_URL = os.environ.get("PRODUCTION_MONGO_URL")
-        if not ATLAS_URL:
-            logger.warning("[ATLAS-SYNC] PRODUCTION_MONGO_URL not set — skipping Atlas sync")
-            return
+        HARDENING (Apr 2026, ScaleBoard Bug B variant):
+        - Writes a status record to `atlas_sync_runs` on every run
+        - try/finally guarantees final status even on crash
+        - delete_many({}) is now EMPTY-GUARDED — only runs when we have docs
+          to insert, preventing the "Atlas wipe with no re-insert" disaster.
+        """
+        from datetime import datetime, timezone as _tz
+        run_id = f"atlas-sync-{datetime.now(_tz.utc).strftime('%Y%m%dT%H%M%S')}"
+        started_at = datetime.now(_tz.utc).isoformat()
+        run_status = "running"
+        run_error = None
+        collections_synced = 0
+        total_synced = 0
+        total_collections_attempted = 0
+
+        # Pre-register the run so watchdog can see it exists even if we crash
         try:
+            await db.atlas_sync_runs.insert_one({
+                "_id": run_id,
+                "run_id": run_id,
+                "started_at": started_at,
+                "status": run_status,
+                "kind": "auto_re_export_and_atlas_sync",
+            })
+        except Exception as _e:
+            logger.warning(f"[ATLAS-SYNC] Failed to write initial run record: {_e}")
+
+        try:
+            # Step 1 — Re-export migration files
+            try:
+                from db_restore_routes import _do_export
+                await _do_export()
+                logger.info("[AUTO-EXPORT] ✅ Migration files re-exported")
+            except Exception as e:
+                logger.warning(f"[AUTO-EXPORT] ⚠️ Migration export failed: {e}")
+
+            # Step 2 — Sync to Atlas (PRODUCTION_MONGO_URL must be set; no fallback)
+            ATLAS_URL = os.environ.get("PRODUCTION_MONGO_URL")
+            if not ATLAS_URL:
+                logger.warning("[ATLAS-SYNC] PRODUCTION_MONGO_URL not set — skipping Atlas sync")
+                run_status = "skipped"
+                run_error = "PRODUCTION_MONGO_URL not set"
+                return
+
             import pymongo as pymongo_sync
             local_db_sync = pymongo_sync.MongoClient("mongodb://localhost:27017")["pet-os-live-test_database"]
             atlas_db_sync = pymongo_sync.MongoClient(ATLAS_URL, serverSelectionTimeoutMS=15000)["pet-os-live-test_database"]
 
             collections = local_db_sync.list_collection_names()
-            total_synced = 0
             for coll_name in collections:
                 if coll_name.startswith("system."):
                     continue
+                total_collections_attempted += 1
                 try:
                     docs = list(local_db_sync[coll_name].find({}))
+                    # EMPTY GUARD: Only wipe Atlas if we actually have new docs.
+                    # Prevents the "local momentarily empty → Atlas wiped forever"
+                    # disaster scenario.
                     if not docs:
+                        logger.info(f"[ATLAS-SYNC] Skipping {coll_name}: local returned 0 docs (empty guard)")
                         continue
                     atlas_db_sync[coll_name].delete_many({})
                     atlas_db_sync[coll_name].insert_many(docs, ordered=False)
                     total_synced += len(docs)
+                    collections_synced += 1
                 except Exception as ce:
                     logger.warning(f"[ATLAS-SYNC] Skipped {coll_name}: {ce}")
 
-            logger.info(f"[ATLAS-SYNC] ✅ Synced {total_synced:,} documents across {len(collections)} collections to Atlas")
+            logger.info(f"[ATLAS-SYNC] ✅ Synced {total_synced:,} documents across {collections_synced} collections to Atlas")
+            run_status = "success"
+
         except Exception as e:
-            logger.warning(f"[ATLAS-SYNC] ⚠️ Atlas sync failed: {e}")
+            logger.exception(f"[ATLAS-SYNC] ⚠️ Atlas sync failed: {e}")
+            run_status = "failed"
+            run_error = str(e)
+        finally:
+            # GUARANTEED terminal status write (Bug E pattern)
+            try:
+                ended_at = datetime.now(_tz.utc).isoformat()
+                await db.atlas_sync_runs.update_one(
+                    {"_id": run_id},
+                    {"$set": {
+                        "status": run_status,
+                        "ended_at": ended_at,
+                        "error": run_error,
+                        "total_synced": total_synced,
+                        "collections_synced": collections_synced,
+                        "collections_attempted": total_collections_attempted,
+                    }},
+                    upsert=True,
+                )
+            except Exception as _e:
+                logger.warning(f"[ATLAS-SYNC] Failed to write final status: {_e}")
 
     scheduler.add_job(
         auto_re_export_and_atlas_sync,
@@ -2231,7 +2288,44 @@ async def lifespan(app: FastAPI):
             id="sitevault_weekly",
             replace_existing=True,
         )
-        logger.info(f"[SITEVAULT] Scheduler registered — daily 3:00 {_sv_tz}, weekly Mon 3:00 {_sv_tz}")
+
+        # ── SiteVault watchdog — runs every 15 min, flags stuck runs ────
+        # (ScaleBoard Bug E hardening: any run started >60 min ago without
+        # terminal status is marked "failed", orphaned legacy records with
+        # no status field at all are backfilled as "unknown_legacy_crash")
+        async def _sitevault_watchdog_wrapper():
+            try:
+                result = await _svjobs.watchdog_stuck_runs(stuck_after_minutes=60)
+                if result.get("flagged") or result.get("backfilled"):
+                    logger.info(f"[SITEVAULT] Watchdog: {result}")
+            except Exception as _e:
+                logger.exception(f"[SITEVAULT] watchdog failed: {_e}")
+
+        scheduler.add_job(
+            _sitevault_watchdog_wrapper,
+            IntervalTrigger(minutes=15),
+            id="sitevault_watchdog",
+            replace_existing=True,
+        )
+
+        # ── Architecture auditor — nightly refresh of the memory doc ──
+        # (ScaleBoard Bug F pattern)
+        async def _architecture_auditor_wrapper():
+            try:
+                import architecture_auditor as _aa
+                result = await _aa.refresh_architecture_doc()
+                logger.info(f"[ARCH-AUDIT] Nightly refresh: {result}")
+            except Exception as _e:
+                logger.exception(f"[ARCH-AUDIT] Nightly refresh failed: {_e}")
+
+        scheduler.add_job(
+            _architecture_auditor_wrapper,
+            CronTrigger(hour=22, minute=30, timezone="UTC"),  # 4:00 AM IST
+            id="architecture_auditor_nightly",
+            replace_existing=True,
+        )
+
+        logger.info(f"[SITEVAULT] Scheduler registered — daily 3:00 {_sv_tz}, weekly Mon 3:00 {_sv_tz}, watchdog every 15min, arch-auditor 4 AM IST")
     except Exception as _sv_err:
         logger.warning(f"[SITEVAULT] Scheduler registration failed: {_sv_err}")
     # ─────────────────────────────────────────────────────────────────────
@@ -20467,14 +20561,24 @@ async def seed_about_content(username: str = Depends(verify_admin)):
         {"id": "dog-street-heroes", "name": "Street Heroes", "breed": "Mixed Breeds", "role": "The Reason We Do This", "story": "Through our Streats program, 10% of every sale feeds and cares for street dogs. These unsung heroes remind us daily why we started - because every dog deserves love, not just those with homes.", "image": "", "emoji": "💛", "order": 5, "is_active": True}
     ]
     
-    await db.team_members.delete_many({})
-    await db.featured_dogs.delete_many({})
-    
-    if team_members:
-        await db.team_members.insert_many(team_members)
-    if featured_dogs:
-        await db.featured_dogs.insert_many(featured_dogs)
-    
+    # ── IDEMPOTENT UPSERT (Apr 2026 hardening) ──
+    # Previous behavior was `delete_many({})` + `insert_many`. If an admin
+    # triggered this by accident, it wiped all team/featured-dog data before
+    # re-inserting. Now we upsert by `id` so re-running never destroys existing
+    # customisations. Matches ScaleBoard Bug B hardening pattern.
+    for member in team_members:
+        await db.team_members.update_one(
+            {"id": member["id"]},
+            {"$set": member},
+            upsert=True,
+        )
+    for dog in featured_dogs:
+        await db.featured_dogs.update_one(
+            {"id": dog["id"]},
+            {"$set": dog},
+            upsert=True,
+        )
+
     return {"message": "About content seeded successfully", "team_count": len(team_members), "dogs_count": len(featured_dogs)}
 
 
@@ -23016,6 +23120,36 @@ async def _get_batch_image_status(username: str = Depends(verify_admin)):
     return job
 
 app.include_router(_batch_router)
+
+# ── HARDENING BUNDLE (Apr 2026) — backup health + soft-delete + arch auditor ──
+try:
+    import backup_health_routes
+    backup_health_routes.set_deps(db)
+    app.include_router(backup_health_routes.router)
+
+    import admin_soft_delete_routes
+    admin_soft_delete_routes.set_deps(db, verify_admin)
+    app.include_router(admin_soft_delete_routes.router)
+
+    import architecture_auditor
+    architecture_auditor.set_deps(db)
+
+    # Admin-triggered manual refresh + diff endpoints
+    from fastapi import APIRouter as _APIRouter
+    _arch_router = _APIRouter(prefix="/api/admin/architecture", tags=["Architecture Auditor"])
+
+    @_arch_router.post("/refresh")
+    async def _arch_refresh(username: str = Depends(verify_admin)):
+        return await architecture_auditor.refresh_architecture_doc()
+
+    @_arch_router.get("/diff")
+    async def _arch_diff(username: str = Depends(verify_admin)):
+        return await architecture_auditor.diff_latest_snapshots()
+
+    app.include_router(_arch_router)
+    logger.info("[HARDENING] Backup health, soft-delete, architecture auditor routes mounted")
+except Exception as _he:
+    logger.exception(f"[HARDENING] Failed to mount hardening routes: {_he}")
 
 app.include_router(api_router)
 app.include_router(admin_router)

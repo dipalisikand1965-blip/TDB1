@@ -40,6 +40,76 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Production Hardening Bundle (Apr 23, 2026) — STAGED ON PREVIEW
+
+**ScaleBoard playbook applied end-to-end. 7 fixes + Fort Knox Drive hardening + 4 new backend files.**
+
+#### Fix 4 (URGENT) — Seeder idempotency
+- `seed_about_content` — `team_members.delete_many({})` + `featured_dogs.delete_many({})` REMOVED
+- Replaced with upsert-by-id loops. Re-running the seeder no longer wipes data.
+
+#### Fix 1 — SiteVault status hardening (Bug E)
+- `run_daily_backup` + `run_weekly_backup` now pre-register a `status: "running"` record before work starts
+- try/finally guarantees terminal status (`success` | `failed`) on every exit path
+- `watchdog_stuck_runs()` helper — detects runs >60 min old without terminal status, flips to `failed`
+- Orphan backfill — 4 legacy records from Apr 21-22 now stamped `status: "unknown_legacy_crash"` ✅ verified
+
+#### Fix 2 — Atlas sync safety + `atlas_sync_runs` collection
+- Empty-guard BEFORE `delete_many({})` — never wipes Atlas when local returns 0 docs
+- Pre-register + try/finally writes to new `atlas_sync_runs` collection
+- Tracks `status`, `total_synced`, `collections_attempted`, `error`, `ended_at`
+
+#### Fix 3 — Soft-delete scaffolding (`soft_delete.py`)
+- `soft_delete()` — moves doc to `<collection>_deleted` with audit fields before delete_one
+- `soft_restore()` — CEO-only restore path
+- `list_soft_deleted()` — audit viewer
+- Whitelist of 10 protected collections (orders, payments, pets, team_members, etc.)
+
+#### Fix 5 — CEO Dashboard backup-health API
+- `GET /api/admin/backup-health` — three rails: sitevault / atlas_sync / migration_export
+- Traffic-light buckets: green <24h, amber <36h, red >36h (tighter for Atlas: green <8h)
+- Tested live — returns proper status with 2.4h since last success
+
+#### Fix 6 — Architecture Auditor (Bug F)
+- `architecture_auditor.py` — scans live DB + backend routes + frontend routes + crons + env names
+- Rewrites marker-bounded sections of `DOGGYCOMPANY_COMPLETE_ARCHITECTURE.md`
+- Snapshots persisted to `architecture_snapshots` collection for diffing
+- Nightly cron at 4 AM IST + admin-triggered `POST /api/admin/architecture/refresh`
+- Tested live — doc refreshed, snapshot persisted ✅
+
+#### New routes
+- `GET /api/admin/backup-health`
+- `GET /api/admin/soft-deletes/{collection}`
+- `POST /api/admin/soft-deletes/{collection}/{doc_id}/restore`
+- `POST /api/admin/architecture/refresh`
+- `GET /api/admin/architecture/diff`
+
+#### New APScheduler jobs
+- `sitevault_watchdog` — every 15 min
+- `architecture_auditor_nightly` — 4 AM IST
+
+#### Google Drive Fort Knox
+- **(a) Drive Version History**: ENABLED IN CODE — `keepRevisionForever: true` on every upload
+- **(b) Gold Master 52-week retention**: ENABLED — env-configurable `SITEVAULT_GOLD_RETENTION_WEEKS=52`
+- **(c) Monthly Frozen Snapshots**: NEW FOLDER — first Monday of each month, DB copy goes to `Monthly-Frozen-Snapshots/` which retention cleaner NEVER touches. Naming: `FROZEN_YYYY_MM_*.tar.gz`
+- **(d) Shared Drive Content-Manager restriction**: Runbook at `/app/memory/TDC_DRIVE_FORT_KNOX_RUNBOOK.md` — Dipali to execute manually in Google Workspace UI
+
+#### Files changed (backend)
+- `soft_delete.py` — NEW (158 lines)
+- `admin_soft_delete_routes.py` — NEW (88 lines)
+- `backup_health_routes.py` — NEW (148 lines)
+- `architecture_auditor.py` — NEW (222 lines)
+- `sitevault_backup_jobs.py` — HARDENED (+120 lines)
+- `sitevault_drive_client.py` — HARDENED (+keepRevisionForever, Monthly-Frozen-Snapshots folder)
+- `server.py` — lifespan updates + 3 router inclusions + 2 new cron jobs + seeder upsert
+
+#### Memory docs
+- `DOGGYCOMPANY_COMPLETE_ARCHITECTURE.md` — full audit (428 lines, auto-maintainable)
+- `DOGGYCOMPANY_AGENT_CONTEXT.md` — paste-able primer
+- `TDC_DRIVE_FORT_KNOX_RUNBOOK.md` — Dipali's manual-action guide
+
+**Status**: STAGED ON PREVIEW. NOT PUSHED TO GITHUB. Awaits Dipali's review.
+
 ### Session: Favourites Surfacing Everywhere — Pillar Pages + Mira Search (Apr 23, 2026)
 
 **Mission**: Make "Mira knows what Mojo loves" visible across the whole app. The reusable `FavouritePicksRow` component (built in previous session) is now wired into 5 surfaces + Mira Search.
