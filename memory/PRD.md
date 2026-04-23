@@ -1,5 +1,12 @@
 # Pet Life OS — PRD (Source of Truth)
 
+> **📖 MANDATORY READING FOR ALL AGENTS (in order)**:
+> 1. **`/app/memory/DOGGYCOMPANY_AGENT_CONTEXT.md`** — Short paste-able primer (3 min read)
+> 2. **`/app/memory/DOGGYCOMPANY_COMPLETE_ARCHITECTURE.md`** — Full system audit (10 min read) — includes ScaleBoard-style bug class hunt + production hardening findings
+> 3. **`/app/memory/PRD.md`** — This file (session history + product requirements)
+> 4. **`/app/memory/CHANGELOG.md`** — Dated session-level changelog
+> 5. **`/app/memory/test_credentials.md`** — Admin/member login for testing
+
 ## Original Problem Statement
 Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn, Stay, Celebrate, Paperwork, Emergency, Fit, Adopt, Farewell). AI-powered by Mira. Mobile-first consumer experience with WhatsApp concierge integration. Admin panel for product/service/ticket management.
 
