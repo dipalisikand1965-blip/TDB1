@@ -23171,6 +23171,59 @@ try:
         return await _aw.send_weekly_diff_email()
 
     app.include_router(_arch_router)
+
+    # ── SiteVault admin endpoints — Fort Knox diagnostic + dedupe ─────────
+    # (ScaleBoard pattern — CEO-only)
+    _sv_admin = _APIRouter(prefix="/api/sitevault", tags=["SiteVault Admin"])
+
+    @_sv_admin.get("/drive-permissions")
+    async def _sv_drive_permissions(username: str = Depends(verify_admin)):
+        """Diagnostic: what role does the service account have on the Shared Drive?
+        Reports SA email + file capabilities (canDelete, canTrash, etc.) + inferred role.
+        """
+        import sitevault_drive_client as _sdc
+        return _sdc.inspect_file_permissions()
+
+    @_sv_admin.post("/dedupe")
+    async def _sv_dedupe(
+        payload: dict,
+        username: str = Depends(verify_admin),
+    ):
+        """Group files by name within SiteVault subfolders, keep newest of each
+        group, trash the rest. Body: {"dry_run": true|false, "scope": "all"|<folder_key>}
+        """
+        import sitevault_drive_client as _sdc
+        dry_run = bool(payload.get("dry_run", True))
+        scope = payload.get("scope", "all")
+
+        folders = _sdc.ensure_folder_tree()
+        if scope != "all":
+            if scope not in folders:
+                raise HTTPException(status_code=400, detail=f"Unknown scope '{scope}'. Valid: 'all' or one of {list(folders.keys())}")
+            targets = {scope: folders[scope]}
+        else:
+            # Never dedupe Monthly-Frozen-Snapshots — it's append-only and
+            # each file is named uniquely with the month tag anyway.
+            targets = {k: v for k, v in folders.items() if k != "Monthly-Frozen-Snapshots"}
+
+        per_folder: Dict[str, Any] = {}
+        total_would_trash = 0
+        total_trashed = 0
+        for folder_name, folder_id in targets.items():
+            result = _sdc.dedupe_folder(folder_id, dry_run=dry_run)
+            per_folder[folder_name] = result
+            total_would_trash += result.get("would_trash", 0)
+            total_trashed += result.get("actually_trashed", 0)
+
+        return {
+            "dry_run": dry_run,
+            "scope": scope,
+            "total_would_trash": total_would_trash,
+            "total_actually_trashed": total_trashed,
+            "per_folder": per_folder,
+        }
+
+    app.include_router(_sv_admin)
     logger.info("[HARDENING] Backup health, soft-delete, architecture auditor routes mounted")
 except Exception as _he:
     logger.exception(f"[HARDENING] Failed to mount hardening routes: {_he}")

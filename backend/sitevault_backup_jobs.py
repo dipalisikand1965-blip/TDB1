@@ -1091,8 +1091,15 @@ def run_retention_cleaner() -> Dict[str, Any]:
                 continue
             if created < cutoff:
                 try:
-                    drive.delete_file(f["id"])
-                    deleted.append({"folder": folder_name, "name": f["name"], "created": ct})
+                    # ScaleBoard hardening: delete_file now returns
+                    # {"action": "deleted"|"trashed"|"failed", "error": ...}
+                    # Trash fallback happens automatically if SA lacks canDelete.
+                    result = drive.delete_file(f["id"])
+                    action = (result or {}).get("action", "unknown")
+                    if action in ("deleted", "trashed"):
+                        deleted.append({"folder": folder_name, "name": f["name"], "created": ct, "action": action})
+                    else:
+                        logger.warning(f"[SITEVAULT] retention cleanup couldn't remove {f['name']}: {result}")
                 except Exception as e:
                     logger.warning(f"[SITEVAULT] retention delete failed for {f['name']}: {e}")
 
