@@ -1,5 +1,12 @@
 # Pet Life OS — PRD (Source of Truth)
 
+> **📖 MANDATORY READING FOR ALL AGENTS (in order)**:
+> 1. **`/app/memory/DOGGYCOMPANY_AGENT_CONTEXT.md`** — Short paste-able primer (3 min read)
+> 2. **`/app/memory/DOGGYCOMPANY_COMPLETE_ARCHITECTURE.md`** — Full system audit (10 min read) — includes ScaleBoard-style bug class hunt + production hardening findings
+> 3. **`/app/memory/PRD.md`** — This file (session history + product requirements)
+> 4. **`/app/memory/CHANGELOG.md`** — Dated session-level changelog
+> 5. **`/app/memory/test_credentials.md`** — Admin/member login for testing
+
 ## Original Problem Statement
 Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn, Stay, Celebrate, Paperwork, Emergency, Fit, Adopt, Farewell). AI-powered by Mira. Mobile-first consumer experience with WhatsApp concierge integration. Admin panel for product/service/ticket management.
 
@@ -32,6 +39,277 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 - `/app/frontend/src/pages/*MobilePage.jsx` — All 12 mobile pillar pages
 
 ## What's Been Implemented
+
+### Session: Weekly Resend Diff Email + Monthly-Frozen Alignment (Apr 23, 2026)
+
+**ScaleBoard Fort Knox brief alignment — 2 updates**:
+
+#### 1. Monthly-frozen snapshot logic realigned to brief
+- Switched from "first Monday of month" gate → "check if FROZEN_YYYY_MM_* exists, if not create it" pattern
+- More resilient: if Monday cron fails, Tuesday's still creates the monthly frozen
+- Uses `sitevault_drive_client.list_files()` with prefix check before `files().copy()`
+- `_get_service().files().copy()` with `keepRevisionForever: true`
+
+#### 2. Weekly Resend diff email — Monday 8 AM IST
+- New file `architecture_weekly_email.py` (+215 lines)
+- Compares last 2 architecture snapshots from `architecture_snapshots` collection
+- Renders rich HTML with:
+  - Backup health traffic light (SiteVault + Atlas + Migration)
+  - Collections added / removed
+  - Top 15 doc-count movers (with Δ formatting)
+  - Backend route changes per file
+  - Crons added / removed
+  - Env vars added / removed
+  - Frontend route delta + total
+- Resend-powered, uses existing `RESEND_API_KEY`
+- Recipient: `ARCH_DIFF_EMAIL_TO` env → fallback to `NOTIFICATION_EMAIL`
+- New cron: `weekly_arch_diff_email` — Monday 2:30 UTC (8:00 AM IST)
+- New admin endpoint: `POST /api/admin/architecture/email-diff` (manual trigger)
+- Tested live: HTML generates correctly (3.4KB), diff logic verified
+
+**Files changed**:
+- `/app/backend/architecture_weekly_email.py` (NEW)
+- `/app/backend/sitevault_backup_jobs.py` (monthly-frozen logic aligned with brief)
+- `/app/backend/server.py` (cron + admin endpoint)
+
+### Session: Production Hardening Bundle (Apr 23, 2026) — STAGED ON PREVIEW
+
+**ScaleBoard playbook applied end-to-end. 7 fixes + Fort Knox Drive hardening + 4 new backend files.**
+
+#### Fix 4 (URGENT) — Seeder idempotency
+- `seed_about_content` — `team_members.delete_many({})` + `featured_dogs.delete_many({})` REMOVED
+- Replaced with upsert-by-id loops. Re-running the seeder no longer wipes data.
+
+#### Fix 1 — SiteVault status hardening (Bug E)
+- `run_daily_backup` + `run_weekly_backup` now pre-register a `status: "running"` record before work starts
+- try/finally guarantees terminal status (`success` | `failed`) on every exit path
+- `watchdog_stuck_runs()` helper — detects runs >60 min old without terminal status, flips to `failed`
+- Orphan backfill — 4 legacy records from Apr 21-22 now stamped `status: "unknown_legacy_crash"` ✅ verified
+
+#### Fix 2 — Atlas sync safety + `atlas_sync_runs` collection
+- Empty-guard BEFORE `delete_many({})` — never wipes Atlas when local returns 0 docs
+- Pre-register + try/finally writes to new `atlas_sync_runs` collection
+- Tracks `status`, `total_synced`, `collections_attempted`, `error`, `ended_at`
+
+#### Fix 3 — Soft-delete scaffolding (`soft_delete.py`)
+- `soft_delete()` — moves doc to `<collection>_deleted` with audit fields before delete_one
+- `soft_restore()` — CEO-only restore path
+- `list_soft_deleted()` — audit viewer
+- Whitelist of 10 protected collections (orders, payments, pets, team_members, etc.)
+
+#### Fix 5 — CEO Dashboard backup-health API
+- `GET /api/admin/backup-health` — three rails: sitevault / atlas_sync / migration_export
+- Traffic-light buckets: green <24h, amber <36h, red >36h (tighter for Atlas: green <8h)
+- Tested live — returns proper status with 2.4h since last success
+
+#### Fix 6 — Architecture Auditor (Bug F)
+- `architecture_auditor.py` — scans live DB + backend routes + frontend routes + crons + env names
+- Rewrites marker-bounded sections of `DOGGYCOMPANY_COMPLETE_ARCHITECTURE.md`
+- Snapshots persisted to `architecture_snapshots` collection for diffing
+- Nightly cron at 4 AM IST + admin-triggered `POST /api/admin/architecture/refresh`
+- Tested live — doc refreshed, snapshot persisted ✅
+
+#### New routes
+- `GET /api/admin/backup-health`
+- `GET /api/admin/soft-deletes/{collection}`
+- `POST /api/admin/soft-deletes/{collection}/{doc_id}/restore`
+- `POST /api/admin/architecture/refresh`
+- `GET /api/admin/architecture/diff`
+
+#### New APScheduler jobs
+- `sitevault_watchdog` — every 15 min
+- `architecture_auditor_nightly` — 4 AM IST
+
+#### Google Drive Fort Knox
+- **(a) Drive Version History**: ENABLED IN CODE — `keepRevisionForever: true` on every upload
+- **(b) Gold Master 52-week retention**: ENABLED — env-configurable `SITEVAULT_GOLD_RETENTION_WEEKS=52`
+- **(c) Monthly Frozen Snapshots**: NEW FOLDER — first Monday of each month, DB copy goes to `Monthly-Frozen-Snapshots/` which retention cleaner NEVER touches. Naming: `FROZEN_YYYY_MM_*.tar.gz`
+- **(d) Shared Drive Content-Manager restriction**: Runbook at `/app/memory/TDC_DRIVE_FORT_KNOX_RUNBOOK.md` — Dipali to execute manually in Google Workspace UI
+
+#### Files changed (backend)
+- `soft_delete.py` — NEW (158 lines)
+- `admin_soft_delete_routes.py` — NEW (88 lines)
+- `backup_health_routes.py` — NEW (148 lines)
+- `architecture_auditor.py` — NEW (222 lines)
+- `sitevault_backup_jobs.py` — HARDENED (+120 lines)
+- `sitevault_drive_client.py` — HARDENED (+keepRevisionForever, Monthly-Frozen-Snapshots folder)
+- `server.py` — lifespan updates + 3 router inclusions + 2 new cron jobs + seeder upsert
+
+#### Memory docs
+- `DOGGYCOMPANY_COMPLETE_ARCHITECTURE.md` — full audit (428 lines, auto-maintainable)
+- `DOGGYCOMPANY_AGENT_CONTEXT.md` — paste-able primer
+- `TDC_DRIVE_FORT_KNOX_RUNBOOK.md` — Dipali's manual-action guide
+
+**Status**: STAGED ON PREVIEW. NOT PUSHED TO GITHUB. Awaits Dipali's review.
+
+### Session: Favourites Surfacing Everywhere — Pillar Pages + Mira Search (Apr 23, 2026)
+
+**Mission**: Make "Mira knows what Mojo loves" visible across the whole app. The reusable `FavouritePicksRow` component (built in previous session) is now wired into 5 surfaces + Mira Search.
+
+**Pillar coverage** (10 min):
+- **Celebrate Mobile** (`CelebrateMobilePage.jsx`) — above MiraImaginesBreed on the Celebrate tab
+- **Celebrate Desktop** (`CelebratePageNew.jsx`) — above `CelebrateMiraPicksSection`
+- **Shop Mobile** (`ShopMobilePage.jsx`) — in Mira tab, above `MiraPicksSection`
+- **Shop Desktop** (`ShopSoulPage.jsx`) — when Mira section active
+- **Dine** (both mobile + desktop) — already done in previous session
+- Shop uses `pillar={null}` (cross-pillar surfacing — a coconut toy and a coconut treat are both worth showing)
+
+**Mira Search integration** (30 min, `MiraSearchPage.jsx`):
+- Added `getPetFavouriteTokens()` helper (client mirror of backend tokenizer) — handles array / comma-string / stopwords identically to Python version
+- Added `queryMatchesFavourites()` — returns matched tokens for a given query
+- `useMemo` hook computes favourite tokens once per pet; recomputes on pet switch
+- In each turn's render, if query mentions a favourite → `FavouritePicksRow` renders BEFORE the turn's generic products
+- Stays silent when query doesn't match (no visual noise on "rope toy" when Mojo loves salmon)
+
+**Verified**: 4 unit tests pass for the tokenizer (Mojo's array, Coco's comma-string, stopword stripping, empty pet). Match logic confirmed: "coconut biscuit" → matches Coco, "rope toy" → doesn't match Mojo, "Peanut Butter birthday cake" → matches Mojo.
+
+**The experience**: A parent searches "coconut" → Mira surfaces the preference row FIRST with "{pet} loves coconut — here's a personal shortlist" + coconut-matched products from the full catalog, BEFORE the generic semantic-search results. This is the "Mira knows your dog" differentiator that sets TDC apart from Supertails / HUFT / generic pet ecommerce.
+
+**Files changed**:
+- `/app/frontend/src/pages/MiraSearchPage.jsx` (+63 / -1 — helpers + render injection)
+- `/app/frontend/src/pages/CelebrateMobilePage.jsx` (+4)
+- `/app/frontend/src/pages/CelebratePageNew.jsx` (+4)
+- `/app/frontend/src/pages/ShopMobilePage.jsx` (+5)
+- `/app/frontend/src/pages/ShopSoulPage.jsx` (+3)
+- `/app/frontend/src/components/common/FavouritePicksRow.jsx` (previously created, now consumed by 6 surfaces total)
+
+### Session: Favourite-Treat Preference Surfacing + Bug #12 (Apr 23, 2026)
+
+**Two wins in one session.**
+
+#### Bug #12 — Dead links on Personalized Dashboard (P1, FIXED)
+- `PersonalizedDashboard.jsx:345` — changed `Link to={`/pets/${id}?tab=soul`}` → `/pet/` (singular; matches live route at `App.js:528`)
+- `App.js:97` — `PetSoulJourneyRedirect` redirected to non-existent `/pets/:petId/soul` → now `/pet/:petId?tab=soul` consistent with the above
+- `App.js:648` — removed duplicate `/services` route (ServicesPage was unreachable; ServicesSoulPage at line 627 is the live one)
+
+#### Favourite-Treat Preference Surfacing — "Mojo loves coconut" → coconut products appear
+
+**Problem**: Mira talks about favourite treats in conversation prose ("Buddy loves peanut butter") but never connects them to product picks. 77 coconut products exist in `products_master` but were invisible to Mojo unless he searched manually.
+
+**Backend** (`breed_catalogue.py` +206 lines):
+- New endpoint `GET /api/breed-catalogue/favourites?pet_id=…&pillar=…&limit=…`
+- New helper `_tokenise_treat_preferences()` — handles list, comma-separated string, and dict-with-skipped-flag formats; strips stop-words ("loves", "the", "and"); returns clean lowercase tokens
+- Reads from 9 possible preference locations (doggy_soul_answers, preferences, soul_enrichments, root-level — covering all places Mira chat + onboarding store treats)
+- Regex-OR query across `products_master.name + description + short_description`
+- **Allergy safety rail**: reuses `_product_contains_allergen` from `pillar_products_routes.py` to exclude products containing the pet's allergens
+- Returns products grouped by matched preference with counts, Mira voice-note, and `_matched_preference` tag on each product
+
+**Frontend**:
+- New component `FavouritePicksRow.jsx` (~190 lines) — horizontal scroll row with Mira header, preference chips ("Salmon · 11"), and per-product "✦ preference" labels
+- Wired into both `DineMobilePage.jsx` (mobile) and `DineSoulPageDesktopLegacy.jsx` (desktop) above `MiraPicksSection`
+- Silently hides when pet has no favourite_treats OR when 0 products match
+- Cross-pillar product surfacing (doesn't filter strict by pillar=dine because many treats like "Coconut & Honey Ladoos" are tagged `pillar: celebrate`)
+
+**Verified end-to-end**:
+- TestCoco (loves coconut + peanut butter, allergic to chicken) → 10 products surfaced, all chicken-free
+- Mojo (loves Salmon + Peanut Butter) → dine pillar surfaces "Peanut Butter & Banana Morning Mash", "Coconut Oil", "Cold-Pressed Coconut Biscuits"
+- Mobile screenshot confirmed row renders correctly between the meal categories and the MiraImagines row
+- Mira voice: *"Mojo loves salmon and peanut butter — here's a personal shortlist."*
+
+**Files changed**:
+- `/app/backend/breed_catalogue.py` (+206 / -1, imported `re`)
+- `/app/frontend/src/components/common/FavouritePicksRow.jsx` (NEW, ~190 lines)
+- `/app/frontend/src/pages/DineMobilePage.jsx` (+4)
+- `/app/frontend/src/pages/DineSoulPageDesktopLegacy.jsx` (+4)
+- `/app/frontend/src/App.js` (Bug #12 — -1 route, redirect URL fix)
+- `/app/frontend/src/components/PersonalizedDashboard.jsx` (Bug #12 — `/pets/` → `/pet/`)
+
+**Problem**: Custom-breed pets (Kanni, Chippiparai, Mudhol) had NO watercolour art — cache missed and stayed permanently empty. Only pre-seeded breeds (Indie, Labrador, etc.) got images.
+
+**Fix**: Extended the `MiraImaginesBreed.jsx` `useEffect` to fire `POST /api/ai-images/pipeline/mira-imagines?pillar=…&breed=…&limit=1` in background on GET cache miss. Uses the **same gpt-image-1 → Gemini Nano Banana** stack as product images, so custom-breed parents get the same visual quality as Labrador parents.
+
+**Pattern**:
+- **Visit 1** → cache miss → emoji placeholder shown + POST fires silently → image generates in ~6 sec
+- **Visit 2+** → cache hit → watercolour appears
+
+**Verified end-to-end**:
+- Kanni × care: cache empty → POST fired → Cloudinary URL live in **6 seconds** (54KB WebP, 1024×1536)
+- AI-verified image depicts a dog in a grooming/wellness scene matching the pillar prompt
+- HTTP 200 from Cloudinary CDN, proper caching headers
+
+**Cost**: ~$0.04/image × ~5-6 pillars browsed per custom-breed pet = **~$0.24 per pet lifetime**. Negligible.
+
+**Files changed**: `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+31 / -9)
+
+**No backend changes** — the existing `POST /api/ai-images/pipeline/mira-imagines` endpoint already handles custom breeds natively via `BREED_NAMES.get(b_key, b_key.replace("_"," ").title())` fallback.
+
+### Session: Custom Breed On-Demand Watercolour Generation (Apr 23, 2026)
+
+**Problem**: Custom-breed pets (Kanni, Chippiparai, Mudhol) had NO watercolour art — cache missed and stayed permanently empty. Only pre-seeded breeds (Indie, Labrador, etc.) got images.
+
+**Fix**: Extended the `MiraImaginesBreed.jsx` `useEffect` to fire `POST /api/ai-images/pipeline/mira-imagines?pillar=…&breed=…&limit=1` in background on GET cache miss. Uses the same gpt-image-1 → Gemini Nano Banana stack as product images, so custom-breed parents get the same visual quality as Labrador parents.
+
+**Pattern**: Visit 1 → cache miss → emoji placeholder + POST fires → ~6 sec later cached. Visit 2+ → cache hit → watercolour appears.
+
+**Cost**: ~$0.04/image × ~5-6 pillars browsed = ~$0.24 per custom-breed pet lifetime.
+
+### Session: Mira Imagines Watercolour Hook-up (Apr 23, 2026)
+
+**Problem**: `MiraImaginesBreed.jsx` had `imageUrl` state on every card but NEVER fetched — so 42 pre-generated Cloudinary watercolours in the `mira_imagines_cache` collection (Indie, Labrador, Shih Tzu, Maltese, Maltipoo, Golden Retriever across 4-10 pillars each) were sitting unused. Cards showed emoji icons instead of real art.
+
+**Fix**: Added a `useEffect` in the parent `MiraImaginesBreed` that fetches `GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}` once per `(pillar, breed)` pair. Only runs for known breeds in `BREED_TRAITS` (skips soul-imagined custom breeds that aren't in the cache). Passes `heroImageUrl` down to each `ImagineCard` via prop.
+
+**Verified**:
+- Indie × care → returns Cloudinary URL ✓
+- Labrador × paperwork → returns URL ✓
+- Beagle × care (cache miss) → returns `null`, card gracefully falls back to emoji ✓
+
+**Result**: Indie parents now see beautiful breed-specific watercolours on all 10 pillars. Labrador/Shih Tzu/Maltese/Maltipoo/Golden Retriever parents see them on 4-6 pillars each. Zero regression for uncached breeds (emoji fallback unchanged). No backend changes needed.
+
+**Files changed**: `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+22 / -2)
+
+### Session: Path B — MiraImaginesBreed Soul-Hydration (Apr 23, 2026)
+
+**Problem**: Even after Fix 1/2/3, the `MiraImaginesBreed` component (rendered on 12+ pillar pages) ignored `doggy_soul_answers` for custom breeds. A Kanni parent saw: "Mira hasn't met many Kanni yet" + generic "medium coat / medium energy / no sensitivities" filler cards. Two components on the same page spoke with different voices.
+
+**Fix**: Added `hydrateTraitsFromSoul(pet)` helper inside `MiraImaginesBreed.jsx`. When breed is NOT in the 32-breed `BREED_TRAITS` catalog, synthesize traits from soul answers:
+- `exercise_needs` + `energy_level` → `energy` (high / medium / low)
+- `general_nature` + `separation_anxiety` + `loud_sounds` + `handling_comfort` → anxiety signal + trait chips (sensitive/affectionate/playful/loyal)
+- `food_allergies` → sensitivities (allergy / digestive) — maps to existing card branches
+- `weight` → size (small / medium / large)
+- Composite → `personality` string (used in celebrate + fit pillar cards)
+
+**UI changes**:
+- Subtitle now says "Since [name] is one of a kind, Mira is imagining based on their soul — not a breed template." for soul-hydrated pets
+- Trait chips now render for soul-hydrated breeds (coat chip hidden — honest, since we don't ask coat in soul yet)
+- New `✦ from [name]'s soul` badge differentiates soul-synthesized traits from hardcoded catalog
+- Bottom banner acknowledges: "Mira's imagining these from [name]'s answers so far — every new one sharpens the picks"
+
+**Verified**: 4 unit-test cases pass for `hydrateTraitsFromSoul` (rich anxious/active/allergic soul, thin soul, empty soul, calm affectionate small dog). Lint clean. No API changes needed.
+
+**Result**: The two components (`PersonalisedBreedSection` soul_fallback + `MiraImaginesBreed` soul hydration) now speak with ONE unified voice for custom-breed pets. Known breeds (Labrador, Indie, etc.) flow UNCHANGED.
+
+**Files changed**:
+- `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+114 / -12)
+
+### Session: Custom Breed Soul Fallback (Apr 23, 2026) — Fix 1/2/3 bundle
+
+**Problem solved**: Free-text breed (Kanni, Chippiparai, mixed) saved OK but Mira fell back to "Indie" / generic products — ignoring soul characteristics. Also breed wasn't mirrored into `doggy_soul_answers`.
+
+**Fix 1 — Tag custom breeds on save** (`SoulBuilder.jsx` + `server.py:/pet-soul/save-answers`)
+- Frontend sends `custom_breed: otherBreedSelected` flag in payload
+- Backend persists `pets.custom_breed` (bool). Also auto-infers `true` when breed is provided but not in `BREED_PROFILES` catalog
+
+**Fix 2 — Soul-based product fallback** (`breed_catalogue.py`)
+- New helpers: `is_known_breed()`, `_extract_soul_signals()`, `_build_soul_query()`, `_soul_thin()`, `_mira_note_for()`
+- `/api/breed-catalogue/products` now accepts `pet_id` + `custom_breed` query params
+- When custom breed or unknown breed + pet_id given: switches to soul-mode, excludes breed-specific merchandise categories, returns `context` with `mode` (`breed` / `soul_fallback` / `thin_fallback`), extracted `signals`, Mira voice-note, and Concierge prompt
+- Known breeds (Labrador etc.) flow UNCHANGED
+
+**Fix 3 — Mirror breed into soul answers + Concierge thin-soul card**
+- `doggy_soul_answers.breed` now set on save alongside `pets.breed` (single source of truth)
+- `PersonalisedBreedSection.jsx`: new Mira italic voice-note banner + Concierge CTA card when `mode === 'thin_fallback'`. Empty state also adapted for soul-mode (replaces generic "We're curating X-breed picks" with personality-based copy)
+
+**Verified end-to-end**:
+- Kanni (rich soul) → `soul_fallback`, Mira: "Since TestKanni is one of a kind, I'm matching on their sensitive side, their active streak and their allergies."
+- Chippiparai (thin soul, 2 answers) → `thin_fallback`, Concierge prompt: "Tell us more about Chippiparai — our Concierge will curate something perfect for TestChippi."
+- Labrador (known breed) → `mode: breed`, 102 products, unchanged
+
+**Files changed**:
+- `/app/backend/server.py` (save-answers endpoint — custom_breed persist + breed mirror + auto-infer via `is_known_breed`)
+- `/app/backend/breed_catalogue.py` (+ ~180 lines: `is_known_breed`, soul signals, soul query, Mira note, `/products` endpoint soul fallback)
+- `/app/frontend/src/pages/SoulBuilder.jsx` (payload includes `custom_breed`)
+- `/app/frontend/src/components/common/PersonalisedBreedSection.jsx` (consumes `context`, renders Mira note + Concierge card, adapts empty state)
 
 ### Session: Race Condition Fix — Breed Guard Across All Pillar Pages (Apr 2026)
 - Fixed P0 race condition: `useEffect` product fetches now wait for `pet.breed` to be populated before calling `/api/admin/pillar-products`

@@ -4,7 +4,7 @@
  * Members only. No nav, no sidebar, no footer.
  * Standalone — does not affect any existing pages.
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -15,6 +15,7 @@ import { toast, Toaster } from 'sonner';
 import CartSidebar from '../components/CartSidebar';
 import { ProductDetailModal } from '../components/ProductCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import FavouritePicksRow from '../components/common/FavouritePicksRow';
 import GroomingFlowModal from '../components/GroomingFlowModal';
 import VetVisitFlowModal from '../components/VetVisitFlowModal';
 import ServiceBookingModal from '../components/ServiceBookingModal';
@@ -377,6 +378,53 @@ const QUICK_PROMPTS = [
   { emoji: '✈️', label: 'Plan a trip' },
 ];
 
+// ── Favourite-treat tokenizer (client mirror of backend logic) ───────────
+// Used so Mira Search can detect when a query mentions a flavour/ingredient
+// the pet is already known to love, and surface FavouritePicksRow at top.
+const _FAV_STOP_WORDS = new Set([
+  'and','or','with','the','a','an','&',
+  'loves','love','likes','like','favourite','favorite',
+  'treats','treat','food',
+]);
+
+function getPetFavouriteTokens(pet) {
+  if (!pet) return [];
+  const raw = [
+    pet.doggy_soul_answers?.favorite_treats,
+    pet.doggy_soul_answers?.favourite_treats,
+    pet.doggy_soul_answers?.favorite_treat,
+    pet.doggy_soul_answers?.favourite_treat,
+    pet.doggy_soul_answers?.favorite_foods,
+    pet.preferences?.favorite_treats,
+    pet.preferences?.favorite_foods,
+    pet.soul_enrichments?.favorite_treats,
+    pet.favorite_treats,
+  ].filter(Boolean);
+  const items = raw.flatMap(v =>
+    Array.isArray(v) ? v.filter(x => typeof x === 'string')
+      : (typeof v === 'string' ? [v] : [])
+  );
+  const tokens = [];
+  const seen = new Set();
+  for (const item of items) {
+    for (const frag of String(item).split(/[,/;]|\band\b|\bor\b|&/i)) {
+      const cleaned = frag.trim().toLowerCase().split(/\s+/)
+        .filter(w => w && !_FAV_STOP_WORDS.has(w)).join(' ');
+      if (cleaned.length >= 3 && !seen.has(cleaned)) {
+        tokens.push(cleaned);
+        seen.add(cleaned);
+      }
+    }
+  }
+  return tokens;
+}
+
+function queryMatchesFavourites(query, tokens) {
+  if (!query || !tokens?.length) return [];
+  const q = String(query).toLowerCase();
+  return tokens.filter(t => q.includes(t));
+}
+
 // ── Main Page ──────────────────────────────────────────────────────────────
 export default function MiraSearchPage() {
   const { user, token } = useAuth();
@@ -388,6 +436,14 @@ export default function MiraSearchPage() {
   const [followUp, setFollowUp] = useState('');
   // turns = [{ id, query, response, products, services, streaming }]
   const [turns, setTurns] = useState([]);
+
+  // Memoised favourite-treat tokens for the active pet (recomputes only
+  // when pet switches). Used below to decide when to surface the
+  // "Mojo loves coconut" row above search results.
+  const petFavouriteTokens = useMemo(
+    () => getPetFavouriteTokens(activePet),
+    [activePet?.id, activePet?.favorite_treats]
+  );
 
   // ── Component-level turn patcher (used by "Show more" button in render) ──
   const patchTurn = useCallback((turnId, patch) =>
@@ -901,6 +957,12 @@ export default function MiraSearchPage() {
             )}
 
             {/* Products for this turn */}
+            {/* ✦ If the query mentions a flavour/ingredient this pet loves, */}
+            {/*   surface Mira's "favourites" row FIRST — before generic results. */}
+            {queryMatchesFavourites(turn.query, petFavouriteTokens).length > 0 && (
+              <FavouritePicksRow pet={activePet} pillar={null} limit={8} />
+            )}
+
             {turn.products?.length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 <p style={{ fontSize: 11, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10, fontWeight: 600 }}>

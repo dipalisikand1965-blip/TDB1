@@ -89,6 +89,83 @@ const BREED_TRAITS = {
   "dalmatian":       { traits:["energetic","loyal","athletic"], coat:"short-smooth", energy:"very-high", size:"large", sensitivities:["urinary","deafness-risk"], personality:"born to run" },
 };
 
+// ── Soul-based trait hydrator ──────────────────────────────────────────
+// For custom / unknown breeds (not in BREED_TRAITS), synthesize a traits
+// object from the pet's doggy_soul_answers so Mira can still imagine
+// breed-aware cards with a coherent personality. This keeps the voice
+// unified with the `PersonalisedBreedSection` soul-fallback instead of
+// falling back to generic "medium / medium / no sensitivities" filler.
+function hydrateTraitsFromSoul(pet) {
+  const sa = pet?.doggy_soul_answers || {};
+  const asStr = (v) => {
+    if (v == null) return "";
+    if (typeof v === "object") return String(v.value || v.label || "").toLowerCase();
+    return String(v).toLowerCase();
+  };
+
+  // Energy — from exercise_needs / activity_level
+  const exerciseRaw = asStr(sa.exercise_needs);
+  const energyRaw   = asStr(sa.energy_level || sa.activity_level);
+  let energy = "medium";
+  if (/(active|high|energetic|very.active)/.test(exerciseRaw + " " + energyRaw)) energy = "high";
+  else if (/(calm|low|couch|relaxed)/.test(exerciseRaw + " " + energyRaw)) energy = "low";
+
+  // Temperament → trait chips + anxiety signal
+  const temp    = asStr(sa.general_nature || sa.temperament);
+  const sepAnx  = asStr(sa.separation_anxiety);
+  const noise   = asStr(sa.loud_sounds);
+  const handling= asStr(sa.handling_comfort);
+  const anxietyBlob = [temp, sepAnx, noise, handling].join(" ");
+  const isAnxious = /(anxious|scared|shy|nervous|sensitive|often|yes)/.test(anxietyBlob);
+
+  const chips = [];
+  if (isAnxious) chips.push("sensitive");
+  if (/(friendly|social|affectionate|cuddly)/.test(temp)) chips.push("affectionate");
+  if (/(playful|joyful|bouncy)/.test(temp)) chips.push("playful");
+  if (/(loyal|protective|watchful|alert)/.test(temp)) chips.push("loyal");
+  if (energy === "high") chips.push("energetic");
+  else if (energy === "low") chips.push("chill");
+  if (chips.length === 0) chips.push("one-of-a-kind");
+
+  // Sensitivities — map into the SAME keywords the card generator already
+  // branches on (weight / dental / joint) + a soul-specific allergy flag.
+  const allergies = sa.food_allergies;
+  const hasAllergies = Array.isArray(allergies)
+    ? allergies.some(a => a && !/^(none|no|unknown)$/i.test(String(a).trim()))
+    : (allergies && !/^(none|no|unknown)$/i.test(String(allergies).trim()));
+
+  const sensitivities = [];
+  if (hasAllergies) sensitivities.push("allergy", "digestive");
+  if (isAnxious)   sensitivities.push("anxiety");
+
+  // Size from weight if present
+  const weight = parseFloat(pet?.weight);
+  let size = "medium";
+  if (!Number.isNaN(weight) && weight > 0) {
+    if (weight < 10)      size = "small";
+    else if (weight > 25) size = "large";
+  }
+
+  // Personality line — threaded through celebrate / fit cards
+  const personality = isAnxious
+    ? "a sensitive soul who trusts deeply"
+    : energy === "high"
+      ? "a high-spirited adventurer"
+      : chips.includes("affectionate")
+        ? "an affectionate companion"
+        : "a one-of-a-kind companion";
+
+  return {
+    traits: chips,
+    coat: "unique",       // we don't ask coat in soul yet — honest placeholder
+    energy,
+    size,
+    sensitivities,
+    personality,
+    _fromSoul: true,
+  };
+}
+
 // ── Pillar-specific imagine card generators ────────────────────────────
 // Returns 3 cards per pillar, personalised to breed traits
 function generateImagineCards(petName, breed, traits, pillar) {
@@ -460,8 +537,10 @@ function generateImagineCards(petName, breed, traits, pillar) {
 }
 
 // ── Imagine Card ───────────────────────────────────────────────────────
-function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, token }) {
-  const [imageUrl, setImageUrl] = useState(null);
+function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, token, imageUrl: imageUrlProp }) {
+  // Parent fetches one watercolour per (pillar, breed) and passes it in.
+  // Local state still allowed in case future per-card images are added.
+  const [imageUrl] = useState(imageUrlProp || null);
   const [hovered,  setHovered]  = useState(false);
   const [sending,  setSending]  = useState(false);
   const [sent,     setSent]     = useState(false);
@@ -590,12 +669,57 @@ export default function MiraImaginesBreed({
   const breedKey   = Object.keys(BREED_TRAITS).find(k =>
     rawBreed.includes(k) || k.includes(rawBreed.split(" ")[0])
   );
-  const traits     = BREED_TRAITS[breedKey] || null;
+  const hardcodedTraits = BREED_TRAITS[breedKey] || null;
+  // Soul hydration: if the breed isn't in our 32-breed catalog, synthesize
+  // traits from the pet's soul answers so Mira's cards + voice stay coherent
+  // with the backend soul_fallback (Path B — one voice for custom breeds).
+  const soulTraits = hardcodedTraits ? null : hydrateTraitsFromSoul(pet);
+  const traits     = hardcodedTraits || soulTraits;
   const breedDisplay = (pet?.breed || "").split("(")[0].trim();
-  const isKnown    = !!traits;
+  const isKnown       = !!hardcodedTraits;
+  const isSoulImagined = !!soulTraits && !isKnown;
   const { token }  = useAuth();
 
   const cards = generateImagineCards(petName, breedDisplay, traits, pillar);
+
+  // Mira Imagines watercolour — GET cached image; on cache miss, fire a
+  // background POST to generate one. Runs for BOTH known breeds (32-breed
+  // catalog with pre-seeded cache) AND soul-imagined custom breeds (Kanni,
+  // Chippiparai, etc — generated on first visit, cached forever).
+  //
+  //   Visit 1 → cache miss → emoji placeholder + POST fires → ~5s later cached
+  //   Visit 2+ → cache hit → watercolour appears
+  //
+  // Endpoint: GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}
+  //           POST /api/ai-images/pipeline/mira-imagines?pillar=…&breed=…&limit=1
+  const [heroImageUrl, setHeroImageUrl] = useState(null);
+  useEffect(() => {
+    if (!rawBreed || !pillar) return;
+    const cacheSlug = (breedKey || rawBreed).toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
+    if (!cacheSlug) return;
+
+    let cancelled = false;
+    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/${encodeURIComponent(pillar)}/${encodeURIComponent(cacheSlug)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (cancelled) return;
+        if (data?.url) {
+          // Cache hit — show watercolour immediately
+          setHeroImageUrl(data.url);
+          return;
+        }
+        // Cache miss — trigger on-demand generation in background.
+        // Uses same gpt-image-1 → Gemini Nano Banana pipeline as product images,
+        // so Kanni parents get the same visual quality as Labrador parents.
+        // Fire-and-forget; result lands in cache for the next visit.
+        fetch(
+          `${API_URL}/api/ai-images/pipeline/mira-imagines?pillar=${encodeURIComponent(pillar)}&breed=${encodeURIComponent(cacheSlug)}&limit=1`,
+          { method: "POST" }
+        ).catch(() => {}); // silent — emoji placeholder stays on this visit
+      })
+      .catch(() => {}); // silent — emoji placeholder
+    return () => { cancelled = true; };
+  }, [rawBreed, breedKey, pillar]);
 
   // Fire background scoring so next visit has real picks
   useEffect(() => {
@@ -649,14 +773,16 @@ export default function MiraImaginesBreed({
             <div style={{ fontSize: 12, color: "#555", marginTop: 2 }}>
               {isKnown
                 ? `Mira knows ${breedDisplay}s. She's imagining what ${petName} needs while she scores your picks.`
-                : `Mira hasn't met many ${breedDisplay || "dogs of this breed"} yet — but she's already thinking about ${petName}.`
+                : isSoulImagined
+                  ? `Since ${petName} is one of a kind, Mira is imagining based on their soul — not a breed template.`
+                  : `Mira hasn't met many ${breedDisplay || "dogs of this breed"} yet — but she's already thinking about ${petName}.`
               }
             </div>
           </div>
         </div>
 
-        {/* Breed trait chips — shown if breed is known */}
-        {isKnown && traits && (
+        {/* Breed trait chips — shown for known breeds OR soul-hydrated custom breeds */}
+        {traits && (isKnown || isSoulImagined) && (
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
             {traits.traits.map(t => (
               <span key={t} style={{
@@ -669,18 +795,33 @@ export default function MiraImaginesBreed({
                 {t}
               </span>
             ))}
-            <span style={{
-              background: "#f0f0f0", borderRadius: 20,
-              padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#444",
-            }}>
-              {traits.coat} coat
-            </span>
+            {/* Coat chip hidden for soul-hydrated (we don't ask coat in soul yet) */}
+            {isKnown && (
+              <span style={{
+                background: "#f0f0f0", borderRadius: 20,
+                padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#444",
+              }}>
+                {traits.coat} coat
+              </span>
+            )}
             <span style={{
               background: "#f0f0f0", borderRadius: 20,
               padding: "3px 10px", fontSize: 10, fontWeight: 600, color: "#444",
             }}>
               {traits.energy} energy
             </span>
+            {/* Soul-imagined marker chip so UI honestly differentiates the source */}
+            {isSoulImagined && (
+              <span style={{
+                background: "rgba(155,89,182,0.12)",
+                border: "1px solid rgba(155,89,182,0.35)",
+                borderRadius: 20, padding: "3px 10px",
+                fontSize: 10, fontWeight: 700,
+                color: "#9B59B6",
+              }}>
+                ✦ from {petName}'s soul
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -709,6 +850,7 @@ export default function MiraImaginesBreed({
               pet={pet}
               pillar={pillar}
               token={token}
+              imageUrl={heroImageUrl}
             />
           </div>
         ))}
@@ -734,7 +876,9 @@ export default function MiraImaginesBreed({
             Complete {petName}'s Soul Profile to get real scored picks.
             {isKnown
               ? ` Mira already knows ${breedDisplay} traits — your profile adds the personal layer.`
-              : ` Every answer helps Mira understand ${petName} better.`
+              : isSoulImagined
+                ? ` Mira's imagining these from ${petName}'s answers so far — every new one sharpens the picks.`
+                : ` Every answer helps Mira understand ${petName} better.`
             }
           </div>
         </div>

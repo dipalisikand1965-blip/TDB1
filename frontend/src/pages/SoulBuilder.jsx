@@ -614,16 +614,22 @@ const SoulBuilder = () => {
       // DOCTRINE: TOTAL_WEIGHT = 100, score is earned/100
       const calculatedScore = Math.min(Math.round((earnedWeight / TOTAL_WEIGHT) * 100), 100);
       
+      // Flag custom/free-text breed so Mira can fall back to soul-based matching
+      // True when user picked "Other" chip (petData.breed was reset or typed freely).
+      const customBreedFlag = Boolean(otherBreedSelected);
+
       const payload = {
         pet_id: currentPetId,
         pet_name: petName,
         breed: petData.breed || detectedBreed,
+        custom_breed: customBreedFlag,
         gender: petData.gender,
         birth_date: petData.birth_date,
         soul_answers: allAnswers,
         soul_score: calculatedScore,
         pet_data: {
           ...petData,
+          custom_breed: customBreedFlag,
           photo: petPhotoPreview || petData.photo || null,
         },
         photo: petPhotoPreview || petData.photo || null,

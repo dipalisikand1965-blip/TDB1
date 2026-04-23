@@ -204,7 +204,8 @@ def _is_shared_drive_root() -> bool:
 MIME_FOLDER = "application/vnd.google-apps.folder"
 
 SUBFOLDERS = [
-    "Weekly-Gold-Masters",
+    "Weekly-Gold-Masters",     # keep 52 weeks (1 year) — Fort Knox upgrade
+    "Monthly-Frozen-Snapshots",# NEW — kept forever (never deleted by retention cleaner)
     "Daily-DB-Snapshots",
     "Source-Code-Archive",
     "Documents",
@@ -237,7 +238,7 @@ def ensure_subfolder(name: str, parent_id: Optional[str] = None) -> str:
         "q": q,
         "spaces": "drive",
         "fields": "files(id,name)",
-        "pageSize": 5,
+        "pageSize": 1000,   # Fort Knox hardening: was 5, expanded to full page
         **_shared_drive_args(),
     }
     # If parent is a Shared Drive root, restrict search to that drive
@@ -293,6 +294,11 @@ def upload_file(
     meta = {"name": name, "parents": [drive_folder_id]}
     if description:
         meta["description"] = description
+    # Fort Knox (a) — keep ALL prior Drive revisions forever.
+    # Without this, Drive prunes old versions of the same filename after 30 days.
+    # Since backup filenames timestamp themselves the collision case is rare, but
+    # enabling this means even an accidental overwrite has full recoverable history.
+    meta["keepRevisionForever"] = True
 
     request = svc.files().create(
         body=meta,
@@ -314,6 +320,11 @@ def upload_file(
         f"[SITEVAULT] Uploaded {name} ({size / 1024 / 1024:.1f} MB) "
         f"→ id={result.get('id')}"
     )
+    # Ensure `size_bytes` is always an int even if Drive returned a string.
+    try:
+        result["size_bytes"] = int(result.get("size") or size or 0)
+    except (TypeError, ValueError):
+        result["size_bytes"] = size
     return result
 
 
@@ -343,10 +354,200 @@ def list_files(drive_folder_id: str, limit: int = 1000) -> List[Dict[str, Any]]:
     return files
 
 
-def delete_file(file_id: str):
+def delete_file(file_id: str) -> Dict[str, Any]:
+    """Delete a Drive file. Tries hard-delete first; if the service account
+    role lacks `canDelete` (common on Shared Drives where SA is `fileOrganizer`
+    or `Content Manager`), falls back to trashing the file.
+
+    ScaleBoard Fort Knox hardening (Apr 2026): before this, a 403/404 from
+    files().delete() would propagate and break the retention cleaner loop.
+    Now we try/except + trash-fallback so cleanup always succeeds.
+
+    Returns {"file_id": str, "action": "deleted" | "trashed" | "failed", "error": str|None}
+    """
     svc = _get_service()
-    svc.files().delete(fileId=file_id, supportsAllDrives=True).execute()
-    logger.info(f"[SITEVAULT] Deleted Drive file {file_id}")
+    try:
+        svc.files().delete(fileId=file_id, supportsAllDrives=True).execute()
+        logger.info(f"[SITEVAULT] Hard-deleted Drive file {file_id}")
+        return {"file_id": file_id, "action": "deleted", "error": None}
+    except Exception as e:
+        # Fall back to trash — recoverable within Drive's 30-day window
+        try:
+            svc.files().update(
+                fileId=file_id,
+                body={"trashed": True},
+                supportsAllDrives=True,
+            ).execute()
+            logger.info(f"[SITEVAULT] Trashed Drive file {file_id} (hard-delete unavailable: {e})")
+            return {"file_id": file_id, "action": "trashed", "error": str(e)}
+        except Exception as te:
+            logger.warning(f"[SITEVAULT] Both hard-delete AND trash failed for {file_id}: {te}")
+            return {"file_id": file_id, "action": "failed", "error": f"delete={e}; trash={te}"}
+
+
+def trash_file(file_id: str) -> Dict[str, Any]:
+    """Explicitly trash (soft-delete) a Drive file without attempting hard-delete.
+    Useful for dedupe paths where we always want recoverability.
+    """
+    svc = _get_service()
+    try:
+        svc.files().update(
+            fileId=file_id,
+            body={"trashed": True},
+            supportsAllDrives=True,
+        ).execute()
+        return {"file_id": file_id, "action": "trashed", "error": None}
+    except Exception as te:
+        return {"file_id": file_id, "action": "failed", "error": str(te)}
+
+
+def inspect_file_permissions(file_id: Optional[str] = None) -> Dict[str, Any]:
+    """Query the service account's capabilities on a sample Drive file.
+    If `file_id` is None, pick the first file in the SiteVault root folder.
+
+    Returns service account email + file capabilities (canDelete, canTrash,
+    canDownload, canEdit, canShare, canRemoveChildren, etc.).
+
+    ScaleBoard Fort Knox hardening: without this endpoint, diagnosing
+    "silently failing deletes" requires guesswork about the SA's Drive role.
+    """
+    svc = _get_service()
+
+    # Service account email from the credentials JSON
+    sa_email = None
+    try:
+        import json
+        sa_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
+        if sa_json:
+            sa_email = json.loads(sa_json).get("client_email")
+        else:
+            sa_path = os.environ.get("GOOGLE_SERVICE_ACCOUNT_FILE")
+            if sa_path and os.path.exists(sa_path):
+                with open(sa_path) as _f:
+                    sa_email = json.load(_f).get("client_email")
+    except Exception as _e:
+        logger.warning(f"[SITEVAULT] Could not read SA email: {_e}")
+
+    # Pick a sample file if none given
+    if not file_id:
+        root = _root_id()
+        # Try a known subfolder first
+        try:
+            folders = ensure_folder_tree()
+            target_folder = folders.get("Daily-DB-Snapshots") or root
+            sample_files = list_files(target_folder, limit=1)
+            if sample_files:
+                file_id = sample_files[0]["id"]
+        except Exception:
+            pass
+
+    if not file_id:
+        return {
+            "service_account_email": sa_email,
+            "file_id": None,
+            "note": "No sample file found — upload at least one backup first",
+        }
+
+    # Fetch capabilities
+    try:
+        meta = svc.files().get(
+            fileId=file_id,
+            fields="id, name, capabilities, driveId, parents",
+            supportsAllDrives=True,
+        ).execute()
+    except Exception as e:
+        return {
+            "service_account_email": sa_email,
+            "file_id": file_id,
+            "error": f"Failed to fetch capabilities: {e}",
+        }
+
+    caps = meta.get("capabilities", {})
+    # Infer role from capabilities matrix
+    if caps.get("canDelete") and caps.get("canShare"):
+        inferred_role = "Manager (or Owner)"
+    elif caps.get("canDelete"):
+        inferred_role = "Content Manager"
+    elif caps.get("canEdit") and caps.get("canTrash"):
+        inferred_role = "Content Manager OR fileOrganizer"
+    elif caps.get("canEdit"):
+        inferred_role = "Writer / Contributor"
+    elif caps.get("canDownload"):
+        inferred_role = "Reader / Viewer"
+    else:
+        inferred_role = "Unknown"
+
+    return {
+        "service_account_email": sa_email,
+        "sample_file_id": meta.get("id"),
+        "sample_file_name": meta.get("name"),
+        "drive_id": meta.get("driveId"),
+        "capabilities": caps,
+        "inferred_role": inferred_role,
+        "recommendation": (
+            "Service account has full delete powers — current role is fine."
+            if caps.get("canDelete") and caps.get("canTrash")
+            else "Service account can TRASH but not hard-DELETE. Retention cleaner will auto-fallback to trash (recoverable for 30 days). Consider upgrading to Content Manager if you need permanent deletion."
+            if caps.get("canTrash")
+            else "Service account cannot trash OR delete. Retention cleanup will fail. Upgrade SA to at least fileOrganizer or Content Manager."
+        ),
+    }
+
+
+def dedupe_folder(drive_folder_id: str, dry_run: bool = True) -> Dict[str, Any]:
+    """Group files by NAME within a folder, keep the NEWEST of each group,
+    trash (soft-delete) the rest. Returns per-group stats.
+
+    ScaleBoard Fort Knox pattern: duplicate-file cleanup after a bug shipped
+    20 duplicate backups. TDC uses timestamped filenames so duplicates are
+    rare, but this still runs as a safety net.
+
+    - dry_run=True  → report duplicates without touching anything
+    - dry_run=False → trash all but the newest of each name group
+    """
+    files = list_files(drive_folder_id, limit=10000)
+
+    by_name: Dict[str, List[Dict[str, Any]]] = {}
+    for f in files:
+        by_name.setdefault(f.get("name", ""), []).append(f)
+
+    groups_with_dupes = {n: fs for n, fs in by_name.items() if len(fs) > 1}
+    actions: List[Dict[str, Any]] = []
+    trashed = 0
+    kept = 0
+
+    for name, dupes in groups_with_dupes.items():
+        # Sort by modifiedTime desc; keep [0], trash the rest
+        dupes.sort(key=lambda f: f.get("modifiedTime") or f.get("createdTime") or "", reverse=True)
+        newest = dupes[0]
+        to_remove = dupes[1:]
+        kept += 1
+
+        for victim in to_remove:
+            if not dry_run:
+                res = trash_file(victim["id"])
+                if res["action"] == "trashed":
+                    trashed += 1
+            actions.append({
+                "name": name,
+                "kept_id": newest["id"],
+                "kept_modified": newest.get("modifiedTime"),
+                "trashed_id": victim["id"],
+                "trashed_modified": victim.get("modifiedTime"),
+                "dry_run": dry_run,
+            })
+
+    return {
+        "folder_id": drive_folder_id,
+        "total_files": len(files),
+        "unique_names": len(by_name),
+        "duplicate_groups": len(groups_with_dupes),
+        "would_trash": sum(len(fs) - 1 for fs in groups_with_dupes.values()),
+        "actually_trashed": trashed if not dry_run else 0,
+        "kept_per_group": kept,
+        "dry_run": dry_run,
+        "actions": actions,
+    }
 
 
 def pin_gold_master(file_id: str):

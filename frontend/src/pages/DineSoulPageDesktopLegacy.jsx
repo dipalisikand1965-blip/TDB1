@@ -29,6 +29,7 @@ import { useMiraIntelligence, getMiraIntelligenceSubtitle } from "../hooks/useMi
 import { applyMiraFilter, getAllergiesFromPet } from "../hooks/useMiraFilter";
 import MiraImaginesCard from "../components/common/MiraImaginesCard";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
+import FavouritePicksRow from "../components/common/FavouritePicksRow";
 import SharedProductCard, { ProductDetailModal } from "../components/ProductCard";
 import PersonalisedBreedSection from "../components/common/PersonalisedBreedSection";
 import SoulMadeCollection from "../components/SoulMadeCollection";
@@ -1603,6 +1604,9 @@ const DineSoulPage = () => {
                 <span style={{ color: '#C44400', fontWeight: 600 }}>Glowing ones match what {petData.name} loves.</span>
               </p>
             </section>
+
+            {/* Mojo's Favourites — coconut / peanut butter / salmon etc. */}
+            <FavouritePicksRow pet={petData} pillar="dine" limit={12} />
 
             {/* Mira's Picks — AI scored, products + services mix */}
             <MiraPicksSection pet={petData} />

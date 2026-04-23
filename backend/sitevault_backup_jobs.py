@@ -712,15 +712,26 @@ async def build_shopify_sync_state(workdir: str) -> str:
 # 11. ORCHESTRATORS
 # ─────────────────────────────────────────────────────────────────────
 async def run_daily_backup() -> Dict[str, Any]:
-    """Nightly 3am: Mongo dump + memory + supervisor logs + cloudinary manifest."""
+    """Nightly 3am: Mongo dump + memory + supervisor logs + cloudinary manifest.
+
+    HARDENED (Apr 2026, ScaleBoard Bug E pattern):
+    - Pre-registers run record with status="running" so watchdog can detect
+      crashes between start and terminal status write
+    - try/finally guarantees a terminal status ("success" | "failed" | "skipped")
+      is written even if the body crashes unexpectedly
+    """
     if not drive.is_enabled():
         return {"skipped": True, "reason": "SITEVAULT_ENABLED=false"}
 
     run_id = _timestamp()
     report = {"run_id": run_id, "type": "daily", "started_at": datetime.now(timezone.utc).isoformat(),
-              "uploads": [], "errors": []}
+              "uploads": [], "errors": [], "status": "running"}
+
+    # Pre-register so watchdog can flip crashed runs to status="failed"
+    await _pre_register_run(report)
 
     workdir = tempfile.mkdtemp(prefix=f"sitevault-daily-{run_id}-")
+    crashed = False
     try:
         folders = drive.ensure_folder_tree()
 
@@ -729,7 +740,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             mongo_file = dump_mongodb(workdir)
             res = drive.upload_file(mongo_file, folders["Daily-DB-Snapshots"],
                                     description=f"daily_db_{run_id}")
-            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"mongodump: {e}")
             logger.exception("[SITEVAULT] daily mongo dump failed")
@@ -739,7 +750,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             mem = tar_memory_files(workdir)
             if mem:
                 res = drive.upload_file(mem, folders["Documents"], description=f"daily_memory_{run_id}")
-                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"memory: {e}")
 
@@ -748,7 +759,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             logs = collect_supervisor_logs(workdir)
             if logs:
                 res = drive.upload_file(logs, folders["Logs"], description=f"daily_logs_{run_id}")
-                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"logs: {e}")
 
@@ -757,7 +768,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             mani = await build_cloudinary_manifest(workdir)
             res = drive.upload_file(mani, folders["Documents"],
                                     description=f"daily_cloudinary_manifest_{run_id}")
-            report["uploads"].append({"name": os.path.basename(mani), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(mani), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"cloudinary_manifest: {e}")
 
@@ -768,28 +779,49 @@ async def run_daily_backup() -> Dict[str, Any]:
             if docs:
                 res = drive.upload_file(docs, folders["Documents"],
                                         description=f"daily_documents_mirror_{run_id}")
-                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"documents_mirror: {e}")
 
+    except Exception as e:
+        # Catch-all for unexpected failures (e.g. drive auth, workdir permissions)
+        report["errors"].append(f"fatal: {e}")
+        logger.exception("[SITEVAULT] daily backup crashed unexpectedly")
+        crashed = True
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
+        # Always write terminal status — crash or not
+        report["completed_at"] = datetime.now(timezone.utc).isoformat()
+        if crashed:
+            report["status"] = "failed"
+        # _persist_report summarises and upserts — safe to call after crash
+        try:
+            await _persist_report(report)
+        except Exception as _pe:
+            logger.exception(f"[SITEVAULT] persist_report failed in finally: {_pe}")
 
-    report["completed_at"] = datetime.now(timezone.utc).isoformat()
-    await _persist_report(report)
     return report
 
 
 async def run_weekly_backup() -> Dict[str, Any]:
-    """Monday 3am: EVERYTHING (including Cloudinary full download + gold master)."""
+    """Monday 3am: EVERYTHING (including Cloudinary full download + gold master).
+
+    HARDENED (Apr 2026, ScaleBoard Bug E pattern):
+    - Pre-registers run record with status="running"
+    - try/finally guarantees terminal status on crash
+    """
     if not drive.is_enabled():
         return {"skipped": True, "reason": "SITEVAULT_ENABLED=false"}
 
     run_id = _timestamp()
     report = {"run_id": run_id, "type": "weekly", "started_at": datetime.now(timezone.utc).isoformat(),
-              "uploads": [], "errors": []}
+              "uploads": [], "errors": [], "status": "running"}
+
+    # Pre-register so watchdog can detect crashes
+    await _pre_register_run(report)
 
     workdir = tempfile.mkdtemp(prefix=f"sitevault-weekly-{run_id}-")
+    crashed = False
     try:
         folders = drive.ensure_folder_tree()
 
@@ -798,7 +830,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             mongo_file = dump_mongodb(workdir)
             res = drive.upload_file(mongo_file, folders["Weekly-Gold-Masters"],
                                     description=f"weekly_db_{run_id}")
-            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"mongodump: {e}")
 
@@ -806,7 +838,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
         try:
             src = tar_source_code(workdir)
             res = drive.upload_file(src, folders["Source-Code-Archive"], description=f"weekly_src_{run_id}")
-            report["uploads"].append({"name": os.path.basename(src), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(src), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"source: {e}")
 
@@ -816,7 +848,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             full = tar_full_project(workdir)
             res = drive.upload_file(full, folders["Weekly-Gold-Masters"],
                                     description=f"weekly_full_project_gold_master_{run_id}")
-            report["uploads"].append({"name": os.path.basename(full), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(full), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"full_project: {e}")
             logger.exception("[SITEVAULT] full-project tar failed")
@@ -827,7 +859,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             if docs:
                 res = drive.upload_file(docs, folders["Documents"],
                                         description=f"weekly_documents_mirror_{run_id}")
-                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"documents_mirror: {e}")
 
@@ -837,7 +869,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             if uploads:
                 res = drive.upload_file(uploads, folders["Documents"],
                                         description=f"weekly_user_uploads_{run_id}")
-                report["uploads"].append({"name": os.path.basename(uploads), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(uploads), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"user_uploads: {e}")
 
@@ -847,7 +879,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             if pub:
                 res = drive.upload_file(pub, folders["Source-Code-Archive"],
                                         description=f"weekly_frontend_public_{run_id}")
-                report["uploads"].append({"name": os.path.basename(pub), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(pub), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"frontend_public: {e}")
 
@@ -856,7 +888,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             mem = tar_memory_files(workdir)
             if mem:
                 res = drive.upload_file(mem, folders["Documents"], description=f"weekly_memory_{run_id}")
-                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"memory: {e}")
 
@@ -865,7 +897,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             logs = collect_supervisor_logs(workdir)
             if logs:
                 res = drive.upload_file(logs, folders["Logs"], description=f"weekly_logs_{run_id}")
-                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"logs: {e}")
 
@@ -873,7 +905,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
         try:
             env_t = build_env_template(workdir)
             res = drive.upload_file(env_t, folders["Documents"], description=f"weekly_env_template_{run_id}")
-            report["uploads"].append({"name": os.path.basename(env_t), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(env_t), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"env_template: {e}")
 
@@ -883,7 +915,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             for c in csvs:
                 res = drive.upload_file(c, folders["Admin-Reports"],
                                         description=f"weekly_report_{run_id}")
-                report["uploads"].append({"name": os.path.basename(c), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(c), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"admin_reports: {e}")
 
@@ -892,7 +924,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             shop = await build_shopify_sync_state(workdir)
             if shop:
                 res = drive.upload_file(shop, folders["Documents"], description=f"weekly_shopify_{run_id}")
-                report["uploads"].append({"name": os.path.basename(shop), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(shop), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"shopify: {e}")
 
@@ -917,13 +949,82 @@ async def run_weekly_backup() -> Dict[str, Any]:
                 report["errors"].append(f"cloudinary_full: {e}")
                 logger.exception("[SITEVAULT] cloudinary full download failed")
 
+        # 10. Fort Knox (c) — Monthly Frozen Snapshot.
+        # Check: does a `FROZEN_YYYY_MM_*` already exist in Monthly-Frozen-Snapshots?
+        # If not, copy today's DB dump there. This pattern is resilient — if the
+        # first-of-month weekly job fails, the next weekly job still creates the
+        # monthly frozen. Matches ScaleBoard's reference implementation.
+        # Monthly-Frozen-Snapshots folder is excluded from retention cleaner → forever.
+        try:
+            from datetime import datetime as _dt
+            now_utc = _dt.now(timezone.utc)
+            month_tag = now_utc.strftime("%Y_%m")
+            frozen_folder_id = folders.get("Monthly-Frozen-Snapshots")
+            if not frozen_folder_id:
+                raise RuntimeError("Monthly-Frozen-Snapshots folder id missing")
+
+            # Check existence via Drive list (name prefix FROZEN_<month_tag>_)
+            from sitevault_drive_client import list_files as _list_files
+            existing_frozen = _list_files(frozen_folder_id, limit=50)
+            already_frozen = any(
+                f.get("name", "").startswith(f"FROZEN_{month_tag}_")
+                for f in existing_frozen
+            )
+
+            if already_frozen:
+                logger.info(f"[SITEVAULT] Monthly frozen for {month_tag} already exists — skipping")
+            else:
+                # Find the DB snapshot file from this run and clone it into frozen folder
+                db_upload = next(
+                    (u for u in report["uploads"]
+                     if "db_" in u.get("name", "").lower()),
+                    None,
+                )
+                if db_upload and db_upload.get("drive_id"):
+                    from sitevault_drive_client import _get_service
+                    svc = _get_service()
+                    frozen_name = f"FROZEN_{month_tag}_{db_upload['name']}"
+                    copied = svc.files().copy(
+                        fileId=db_upload["drive_id"],
+                        body={
+                            "name": frozen_name,
+                            "parents": [frozen_folder_id],
+                            "description": f"frozen_monthly_{month_tag} — NEVER AUTO-DELETE",
+                            "keepRevisionForever": True,
+                        },
+                        supportsAllDrives=True,
+                        fields="id,name,size",
+                    ).execute()
+                    report["uploads"].append({
+                        "name": frozen_name,
+                        "drive_id": copied.get("id"),
+                        "drive_folder": "Monthly-Frozen-Snapshots",
+                        "size_bytes": int(copied.get("size") or 0),
+                        "frozen": True,
+                    })
+                    logger.info(f"[SITEVAULT] Fort Knox — frozen monthly snapshot created: {frozen_name}")
+                else:
+                    logger.warning(f"[SITEVAULT] No DB upload found this run to freeze for {month_tag}")
+        except Exception as e:
+            report["errors"].append(f"monthly_frozen: {e}")
+            logger.exception("[SITEVAULT] monthly frozen snapshot failed")
+
+    except Exception as e:
+        report["errors"].append(f"fatal: {e}")
+        logger.exception("[SITEVAULT] weekly backup crashed unexpectedly")
+        crashed = True
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
+        report["completed_at"] = datetime.now(timezone.utc).isoformat()
+        if crashed:
+            report["status"] = "failed"
+        try:
+            await _persist_report(report)
+        except Exception as _pe:
+            logger.exception(f"[SITEVAULT] persist_report failed in finally: {_pe}")
 
-    report["completed_at"] = datetime.now(timezone.utc).isoformat()
-    await _persist_report(report)
-
-    # After weekly, run retention cleaner
+    # After weekly, run retention cleaner (outside the main try so it runs even
+    # if the body partially succeeded — _persist_report already captured status)
     try:
         cleaned = run_retention_cleaner()
         report["retention_cleanup"] = cleaned
@@ -941,27 +1042,32 @@ def run_retention_cleaner() -> Dict[str, Any]:
       - Daily-DB-Snapshots: keep 30 days
       - Logs: keep 30 days
       - Documents (daily only): keep 30 days
-      - Weekly-Gold-Masters: keep 12 weeks (84 days) UNLESS pinned
+      - Weekly-Gold-Masters: keep 52 weeks (Fort Knox — was 12) UNLESS pinned
+      - Monthly-Frozen-Snapshots: NEVER deleted (Fort Knox — kept forever)
       - Source-Code-Archive: keep 12 weeks
       - Cloudinary-Images: keep 12 weeks
       - Admin-Reports: keep 12 weeks
     Files with description='gold_master_pinned' are NEVER deleted.
+    Monthly-Frozen-Snapshots folder is explicitly EXCLUDED from retention.
     """
     if not drive.is_enabled():
         return {"skipped": True}
 
     folders = drive.ensure_folder_tree()
     daily_cutoff = datetime.now(timezone.utc) - timedelta(days=int(os.environ.get("SITEVAULT_DAILY_RETENTION_DAYS", "30")))
+    # Gold Masters: Fort Knox upgrade to 52 weeks. Override via env if needed.
+    weekly_gold_cutoff = datetime.now(timezone.utc) - timedelta(weeks=int(os.environ.get("SITEVAULT_GOLD_RETENTION_WEEKS", "52")))
     weekly_cutoff = datetime.now(timezone.utc) - timedelta(weeks=int(os.environ.get("SITEVAULT_WEEKLY_RETENTION_WEEKS", "12")))
 
     folder_cutoff_map = {
         "Daily-DB-Snapshots": daily_cutoff,
         "Logs": daily_cutoff,
         "Documents": daily_cutoff,           # weekly docs also captured as "weekly_*"; pinned survives
-        "Weekly-Gold-Masters": weekly_cutoff,
+        "Weekly-Gold-Masters": weekly_gold_cutoff,  # 52 weeks (Fort Knox)
         "Source-Code-Archive": weekly_cutoff,
         "Cloudinary-Images": weekly_cutoff,
         "Admin-Reports": weekly_cutoff,
+        # Monthly-Frozen-Snapshots is intentionally OMITTED — kept forever.
     }
 
     deleted = []
@@ -985,8 +1091,15 @@ def run_retention_cleaner() -> Dict[str, Any]:
                 continue
             if created < cutoff:
                 try:
-                    drive.delete_file(f["id"])
-                    deleted.append({"folder": folder_name, "name": f["name"], "created": ct})
+                    # ScaleBoard hardening: delete_file now returns
+                    # {"action": "deleted"|"trashed"|"failed", "error": ...}
+                    # Trash fallback happens automatically if SA lacks canDelete.
+                    result = drive.delete_file(f["id"])
+                    action = (result or {}).get("action", "unknown")
+                    if action in ("deleted", "trashed"):
+                        deleted.append({"folder": folder_name, "name": f["name"], "created": ct, "action": action})
+                    else:
+                        logger.warning(f"[SITEVAULT] retention cleanup couldn't remove {f['name']}: {result}")
                 except Exception as e:
                     logger.warning(f"[SITEVAULT] retention delete failed for {f['name']}: {e}")
 
@@ -998,10 +1111,124 @@ def run_retention_cleaner() -> Dict[str, Any]:
 # ─────────────────────────────────────────────────────────────────────
 # REPORT PERSISTENCE
 # ─────────────────────────────────────────────────────────────────────
+def _summarize_report(report: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Compute derived fields (status, files_uploaded, bytes_uploaded) from raw uploads/errors.
+    Mutates report in place AND returns it.
+    """
+    uploads = report.get("uploads") or []
+    errors = report.get("errors") or []
+    files_uploaded = len(uploads)
+    # Prefer our own size_bytes (int), fall back to Drive's str "size" field.
+    bytes_uploaded = 0
+    for u in uploads:
+        sz = u.get("size_bytes")
+        if sz is None:
+            try:
+                sz = int(u.get("size") or 0)
+            except (TypeError, ValueError):
+                sz = 0
+        bytes_uploaded += sz or 0
+
+    if errors and files_uploaded == 0:
+        status = "failed"
+    elif errors:
+        status = "partial"
+    elif files_uploaded > 0:
+        status = "success"
+    else:
+        status = "empty"  # no files, no errors — probably skipped
+
+    report["status"] = status
+    report["files_uploaded"] = files_uploaded
+    report["bytes_uploaded"] = bytes_uploaded
+    report["error_count"] = len(errors)
+    return report
+
+
+async def _pre_register_run(report: Dict[str, Any]):
+    """Insert a run record with status='running' at the start of a backup job.
+    Ensures the watchdog can detect crashes between start and completion.
+    Idempotent via upsert on _id.
+    """
+    if _db is None:
+        return
+    try:
+        await _db.sitevault_runs.update_one(
+            {"_id": report["run_id"]},
+            {"$setOnInsert": {**report, "_id": report["run_id"]}},
+            upsert=True,
+        )
+    except Exception as e:
+        logger.warning(f"[SITEVAULT] pre_register failed: {e}")
+
+
+async def watchdog_stuck_runs(stuck_after_minutes: int = 30) -> Dict[str, Any]:
+    """Find sitevault_runs that started >N min ago but never wrote terminal
+    status. Stamp them as status='failed' with reason='watchdog_timeout'.
+    Also backfills legacy records (no status field at all) as 'unknown_legacy_crash'.
+
+    Called by the 15-minute watchdog cron registered in server.py lifespan.
+    """
+    if _db is None:
+        return {"scanned": 0, "flagged": 0, "backfilled": 0}
+
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    cutoff = (now - timedelta(minutes=stuck_after_minutes)).isoformat()
+
+    flagged = 0
+    backfilled = 0
+
+    # Pattern 1: running/missing status + started before cutoff → mark failed
+    cursor = _db.sitevault_runs.find({
+        "started_at": {"$lt": cutoff},
+        "$or": [
+            {"status": {"$exists": False}},
+            {"status": "running"},
+        ],
+    })
+    async for doc in cursor:
+        is_legacy = "status" not in doc
+        new_status = "unknown_legacy_crash" if is_legacy else "failed"
+        reason = "pre-hardening record, no try/finally" if is_legacy else "watchdog_timeout"
+        await _db.sitevault_runs.update_one(
+            {"_id": doc["_id"]},
+            {"$set": {
+                "status": new_status,
+                "watchdog_flagged_at": now.isoformat(),
+                "watchdog_reason": reason,
+            }}
+        )
+        if is_legacy:
+            backfilled += 1
+        else:
+            flagged += 1
+
+    if flagged or backfilled:
+        logger.warning(
+            f"[SITEVAULT] Watchdog: flagged {flagged} stuck run(s) as failed, "
+            f"backfilled {backfilled} legacy record(s)"
+        )
+    return {"flagged": flagged, "backfilled": backfilled, "cutoff": cutoff}
+
+
 async def _persist_report(report: Dict[str, Any]):
     if _db is None:
         return
     try:
-        await _db.sitevault_runs.insert_one({**report, "_id": report["run_id"]})
+        _summarize_report(report)
+        # Upsert so we overwrite the pre-register record with the full report.
+        # Use update_one+upsert (not insert_one) because the pre-register
+        # path has already created a partial doc.
+        await _db.sitevault_runs.update_one(
+            {"_id": report["run_id"]},
+            {"$set": {**report, "_id": report["run_id"]}},
+            upsert=True,
+        )
+        logger.info(
+            f"[SITEVAULT] Run {report['run_id']} persisted: status={report['status']} "
+            f"files={report['files_uploaded']} bytes={report['bytes_uploaded']:,} errors={report['error_count']}"
+        )
     except Exception as e:
         logger.warning(f"[SITEVAULT] persist report failed: {e}")

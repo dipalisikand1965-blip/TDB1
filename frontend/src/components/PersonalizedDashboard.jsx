@@ -342,7 +342,7 @@ const PersonalizedDashboard = ({ user, pets = [], onOpenMira }) => {
                   <span>
                     Add {soulCompleteness.missing_essential[0]} to unlock better recommendations
                   </span>
-                  <Link to={`/pets/${selectedPet?.id}?tab=soul`} className="font-semibold hover:underline">
+                  <Link to={`/pet/${selectedPet?.id}?tab=soul`} className="font-semibold hover:underline">
                     Complete Now →
                   </Link>
                 </div>

@@ -94,7 +94,7 @@ function ConditionalFooter() {
 // Redirect component for deprecated pet-soul-journey route
 function PetSoulJourneyRedirect() {
   const { petId } = useParams();
-  return <Navigate to={`/pets/${petId}/soul`} replace />;
+  return <Navigate to={`/pet/${petId}?tab=soul`} replace />;
 }
 
 // Redirect from old /mira-demo to new /mira-search
@@ -645,7 +645,6 @@ function MainLayout() {
         <Route path="/adopt" element={<AdoptPage />} />
         <Route path="/farewell" element={<FarewellPage />} />
         <Route path="/shop" element={<ShopPage />} />
-        <Route path="/services" element={<ServicesPage />} />
         <Route path="/services/:pillar/:serviceId" element={<ServiceDetailPage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/community" element={<PillarPage />} />

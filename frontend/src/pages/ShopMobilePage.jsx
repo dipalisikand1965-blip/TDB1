@@ -19,6 +19,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import SoulMadeModal from '../components/SoulMadeModal';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import FavouritePicksRow from '../components/common/FavouritePicksRow';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
@@ -618,6 +619,10 @@ export default function ShopMobilePage() {
               <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, color: G.darkText, fontFamily: 'Georgia,serif' }}>
                 Made for {petName}
               </div>
+
+              {/* Mojo's Favourites — surfaces coconut/PB/salmon products from catalog */}
+              <FavouritePicksRow pet={currentPet} pillar={null} limit={12} />
+
               <MiraPicksSection pet={currentPet} token={token} />
 
               <div style={{ margin: '24px 0 16px', height: 1, background: G.border }} />
