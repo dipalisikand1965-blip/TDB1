@@ -40,6 +40,46 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Admin → Places (TDC Verified Registry) + Nightly Outreach Digest (Apr 23, 2026)
+
+**One-click concierge curation is live.** No code deploy needed to verify a place — admin team upserts from the UI in 10 seconds. Iteration 268 passed 100% (7/7 backend pytest, E2E frontend verified, real Resend email sent with id `b45be419-9992-4b0b-a98e-fae55c459b00`).
+
+#### New backend (2 files)
+- `/app/backend/admin_places_verified_routes.py` (6 endpoints, prefix `/api/admin/places`):
+  - `GET /verified` — list curated entries (pillar/city/search filters)
+  - `POST /verify` — upsert one place (`place_id`/`name_lower` dual-match). Setting `tdc_verified:false` toggles off.
+  - `DELETE /verify/{place_id_or_name}` — remove entirely
+  - `GET /top-unverified?days=30&top_n=5` — pillar-bucketed most-booked unverified places
+  - `POST /send-outreach-digest` — manual trigger of the nightly email
+- `/app/backend/places_outreach_digest.py` — composes + renders + sends the nightly HTML email via Resend. `schedule_outreach_digest(scheduler)` registers an APScheduler cron at 8:00 AM `Asia/Kolkata` daily. Env-configurable recipients (`OUTREACH_DIGEST_RECIPIENTS`), window (`OUTREACH_DIGEST_WINDOW_DAYS`, default 14), and top-N (`OUTREACH_DIGEST_TOP_N`, default 5).
+
+#### New frontend component
+- `/app/frontend/src/components/admin/PlacesVerifiedManager.jsx` (288 lines) — three-panel admin surface:
+  - Gradient header with "📧 Send outreach digest now" CTA
+  - "Mark a place as ✦ TDC Verified" form (name + city + pillar + optional place_id + notes)
+  - "Top-booked unverified places (last 30 days)" panel with one-click per-row "✦ Verify" — this is the outreach pipeline Rohit described
+  - "Currently verified places" table with search + pillar filter + Remove button
+- All data-testids follow `places-*` convention. `data-testid="places-verified-manager"` wraps root.
+
+#### Wiring
+- `/app/frontend/src/pages/Admin.jsx` — added `Places` tab entry (`id: 'places-verified'`, `icon: MapPin`) in the Pillars sidebar group + mounted `<PlacesVerifiedManager />` render block.
+- `/app/frontend/src/components/common/NearMeConciergeModal.jsx` — now passes `venue_place_id` + `venue_city` + `place_id` + `tdc_verified` on every `Book via Concierge®` submission. This is what the top-unverified aggregator keys on.
+- `/app/backend/server.py` — `app.include_router(admin_places_verified_routes.router)` + `schedule_outreach_digest(scheduler)` hooked into the lifespan before `scheduler.start()`.
+
+#### How the flywheel works now
+1. Pet parent books a NearMe venue → `service_requests` row stores `details.venue_name` + `details.venue_place_id` + `details.pillar`.
+2. Nightly 8 AM IST — `send_outreach_digest()` aggregates past 30 days, filters out already-verified places, groups by pillar, emails top 5 per pillar to Dipali + concierge team.
+3. Concierge calls the venue → gets a verbal yes.
+4. Admin opens `/admin` → Places tab → clicks "✦ Verify" on the row → instant upsert into `places_tdc_verified`.
+5. Next time ANY parent opens a NearMe surface in that pillar → the venue sorts first with the ✦ TDC Verified badge.
+
+#### Seeded for demo
+- `wag&wine - pet cafe` (Bangalore) — verified
+- `Cessna Lifeline Veterinary Hospital` (Bangalore, care) — verified
+
+**Test report**: `/app/test_reports/iteration_268.json` — 100% pass.
+**Test credentials**: admin `aditya` / `lola4304`, member `dipali@clubconcierge.in` / `test123` (unchanged).
+
 ### Session: Google rating + TDC Verified badges across all 9 NearMe pillars (Apr 23, 2026)
 
 **All 10 NearMe surfaces now display the canonical "X.Y ★ (N reviews) · ✦ TDC Verified" format.** Verified-first sort is working at the API layer and UI layer. Iteration 267 report passed with 100% backend success; 2/10 pillar UIs (Celebrate bakery + Celebrate photographers) fully verified on desktop with 12+12 badge/rating-line matches; remaining 8 pillars verified via import-grep + code-path inspection.
