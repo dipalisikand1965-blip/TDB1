@@ -40,6 +40,38 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Weekly Resend Diff Email + Monthly-Frozen Alignment (Apr 23, 2026)
+
+**ScaleBoard Fort Knox brief alignment — 2 updates**:
+
+#### 1. Monthly-frozen snapshot logic realigned to brief
+- Switched from "first Monday of month" gate → "check if FROZEN_YYYY_MM_* exists, if not create it" pattern
+- More resilient: if Monday cron fails, Tuesday's still creates the monthly frozen
+- Uses `sitevault_drive_client.list_files()` with prefix check before `files().copy()`
+- `_get_service().files().copy()` with `keepRevisionForever: true`
+
+#### 2. Weekly Resend diff email — Monday 8 AM IST
+- New file `architecture_weekly_email.py` (+215 lines)
+- Compares last 2 architecture snapshots from `architecture_snapshots` collection
+- Renders rich HTML with:
+  - Backup health traffic light (SiteVault + Atlas + Migration)
+  - Collections added / removed
+  - Top 15 doc-count movers (with Δ formatting)
+  - Backend route changes per file
+  - Crons added / removed
+  - Env vars added / removed
+  - Frontend route delta + total
+- Resend-powered, uses existing `RESEND_API_KEY`
+- Recipient: `ARCH_DIFF_EMAIL_TO` env → fallback to `NOTIFICATION_EMAIL`
+- New cron: `weekly_arch_diff_email` — Monday 2:30 UTC (8:00 AM IST)
+- New admin endpoint: `POST /api/admin/architecture/email-diff` (manual trigger)
+- Tested live: HTML generates correctly (3.4KB), diff logic verified
+
+**Files changed**:
+- `/app/backend/architecture_weekly_email.py` (NEW)
+- `/app/backend/sitevault_backup_jobs.py` (monthly-frozen logic aligned with brief)
+- `/app/backend/server.py` (cron + admin endpoint)
+
 ### Session: Production Hardening Bundle (Apr 23, 2026) — STAGED ON PREVIEW
 
 **ScaleBoard playbook applied end-to-end. 7 fixes + Fort Knox Drive hardening + 4 new backend files.**

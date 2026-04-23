@@ -2325,7 +2325,24 @@ async def lifespan(app: FastAPI):
             replace_existing=True,
         )
 
-        logger.info(f"[SITEVAULT] Scheduler registered — daily 3:00 {_sv_tz}, weekly Mon 3:00 {_sv_tz}, watchdog every 15min, arch-auditor 4 AM IST")
+        # ── Weekly Resend diff email — Monday 8 AM IST ──
+        async def _weekly_arch_diff_email_wrapper():
+            try:
+                import architecture_weekly_email as _aw
+                _aw.set_deps(db)
+                result = await _aw.send_weekly_diff_email()
+                logger.info(f"[ARCH-EMAIL] Monday send: {result}")
+            except Exception as _e:
+                logger.exception(f"[ARCH-EMAIL] Send failed: {_e}")
+
+        scheduler.add_job(
+            _weekly_arch_diff_email_wrapper,
+            CronTrigger(day_of_week="mon", hour=2, minute=30, timezone="UTC"),  # 8:00 AM IST
+            id="weekly_arch_diff_email",
+            replace_existing=True,
+        )
+
+        logger.info(f"[SITEVAULT] Scheduler registered — daily 3:00 {_sv_tz}, weekly Mon 3:00 {_sv_tz}, watchdog every 15min, arch-auditor 4 AM IST, weekly email Mon 8 AM IST")
     except Exception as _sv_err:
         logger.warning(f"[SITEVAULT] Scheduler registration failed: {_sv_err}")
     # ─────────────────────────────────────────────────────────────────────
@@ -23145,6 +23162,13 @@ try:
     @_arch_router.get("/diff")
     async def _arch_diff(username: str = Depends(verify_admin)):
         return await architecture_auditor.diff_latest_snapshots()
+
+    @_arch_router.post("/email-diff")
+    async def _arch_email_diff(username: str = Depends(verify_admin)):
+        """Manually trigger the weekly architecture diff email (for testing)."""
+        import architecture_weekly_email as _aw
+        _aw.set_deps(db)
+        return await _aw.send_weekly_diff_email()
 
     app.include_router(_arch_router)
     logger.info("[HARDENING] Backup health, soft-delete, architecture auditor routes mounted")

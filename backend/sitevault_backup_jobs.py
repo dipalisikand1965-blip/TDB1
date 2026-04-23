@@ -950,32 +950,46 @@ async def run_weekly_backup() -> Dict[str, Any]:
                 logger.exception("[SITEVAULT] cloudinary full download failed")
 
         # 10. Fort Knox (c) — Monthly Frozen Snapshot.
-        # On the first Monday of each month, copy today's DB dump into
-        # Monthly-Frozen-Snapshots (which retention cleaner never touches).
-        # This gives us a 12-month-year rolling history of immutable points
-        # in time, even if all other backups get pruned.
+        # Check: does a `FROZEN_YYYY_MM_*` already exist in Monthly-Frozen-Snapshots?
+        # If not, copy today's DB dump there. This pattern is resilient — if the
+        # first-of-month weekly job fails, the next weekly job still creates the
+        # monthly frozen. Matches ScaleBoard's reference implementation.
+        # Monthly-Frozen-Snapshots folder is excluded from retention cleaner → forever.
         try:
             from datetime import datetime as _dt
-            now_ist = _dt.now(timezone.utc)  # UTC date is close enough for "first Monday" heuristic
-            if now_ist.day <= 7:  # first Monday always falls in days 1-7
-                # Find our already-uploaded DB file from this run and clone it
+            now_utc = _dt.now(timezone.utc)
+            month_tag = now_utc.strftime("%Y_%m")
+            frozen_folder_id = folders.get("Monthly-Frozen-Snapshots")
+            if not frozen_folder_id:
+                raise RuntimeError("Monthly-Frozen-Snapshots folder id missing")
+
+            # Check existence via Drive list (name prefix FROZEN_<month_tag>_)
+            from sitevault_drive_client import list_files as _list_files
+            existing_frozen = _list_files(frozen_folder_id, limit=50)
+            already_frozen = any(
+                f.get("name", "").startswith(f"FROZEN_{month_tag}_")
+                for f in existing_frozen
+            )
+
+            if already_frozen:
+                logger.info(f"[SITEVAULT] Monthly frozen for {month_tag} already exists — skipping")
+            else:
+                # Find the DB snapshot file from this run and clone it into frozen folder
                 db_upload = next(
                     (u for u in report["uploads"]
-                     if u.get("drive_folder") == "Daily-DB-Snapshots"
-                     or "db_" in u.get("name", "").lower()),
+                     if "db_" in u.get("name", "").lower()),
                     None,
                 )
                 if db_upload and db_upload.get("drive_id"):
-                    # Copy into Monthly-Frozen-Snapshots (server-side copy)
-                    from sitevault_drive_client import _get_service, _shared_drive_args
+                    from sitevault_drive_client import _get_service
                     svc = _get_service()
-                    frozen_name = f"FROZEN_{now_ist.strftime('%Y_%m')}_{db_upload['name']}"
+                    frozen_name = f"FROZEN_{month_tag}_{db_upload['name']}"
                     copied = svc.files().copy(
                         fileId=db_upload["drive_id"],
                         body={
                             "name": frozen_name,
-                            "parents": [folders["Monthly-Frozen-Snapshots"]],
-                            "description": f"frozen_monthly_{now_ist.strftime('%Y-%m')} — NEVER AUTO-DELETE",
+                            "parents": [frozen_folder_id],
+                            "description": f"frozen_monthly_{month_tag} — NEVER AUTO-DELETE",
                             "keepRevisionForever": True,
                         },
                         supportsAllDrives=True,
@@ -989,6 +1003,8 @@ async def run_weekly_backup() -> Dict[str, Any]:
                         "frozen": True,
                     })
                     logger.info(f"[SITEVAULT] Fort Knox — frozen monthly snapshot created: {frozen_name}")
+                else:
+                    logger.warning(f"[SITEVAULT] No DB upload found this run to freeze for {month_tag}")
         except Exception as e:
             report["errors"].append(f"monthly_frozen: {e}")
             logger.exception("[SITEVAULT] monthly frozen snapshot failed")
