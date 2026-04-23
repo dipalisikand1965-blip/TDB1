@@ -18,6 +18,7 @@ import { bookViaConcierge } from '../../utils/MiraCardActions';
 import { tdc } from '../../utils/tdc_intent';
 import { API_URL } from "../../utils/api";
 import { useAuth } from "../../context/AuthContext";
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 const G = {
   deep:"#1A1A2E", mid:"#4B4B6E", indigo:"#6366F1", light:"#C7D2FE",
@@ -207,7 +208,7 @@ export default function FarewellNearMe({ pet, onBook }) {
             {results.length} service{results.length > 1 ? "s" : ""} found near {city}
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(280px,100%),1fr))", gap: 14 }}>
-            {results.map((place, i) => (
+            {results.slice().sort(sortByTDCVerified).map((place, i) => (
               <div key={place.place_id || i}
                 style={{ background: "#fff", borderRadius: 16, border: `1.5px solid ${G.borderLight||G.border}`,
                   overflow: "hidden", transition: "transform 0.15s, box-shadow 0.15s" }}
@@ -240,17 +241,10 @@ export default function FarewellNearMe({ pet, onBook }) {
                     📍 {place.vicinity || place.formatted_address}
                   </div>
 
-                  {/* Rating */}
-                  {place.rating && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                      <div style={{ display: "flex", gap: 2 }}>
-                        {[1,2,3,4,5].map(s => (
-                          <span key={s} style={{ fontSize: 11, color: s <= Math.round(place.rating) ? "#F59E0B" : "#D1D5DB" }}>★</span>
-                        ))}
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: G.mutedText }}>{place.rating}</span>
-                    </div>
-                  )}
+                  {/* Rating + TDC Verified */}
+                  <div style={{ marginBottom: 8 }}>
+                    <NearMeResultBadges place={place} />
+                  </div>
 
                   {/* Mira note */}
                   {place.mira_note && (

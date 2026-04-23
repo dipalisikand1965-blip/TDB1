@@ -3,6 +3,7 @@
  * Powered by Google Places API via backend proxy.
  */
 import { useState, useEffect, useRef } from "react";
+import { NearMeResultBadges, sortByTDCVerified } from "../common/NearMeBadges";
 
 const POPULAR_CITIES = [
   "Bengaluru", "Mumbai", "Delhi", "Hyderabad", "Chennai",
@@ -58,8 +59,8 @@ function SpotCard({ spot, onReserve }) {
       <div style={{ padding: "10px 12px 12px" }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "#1A0A00", marginBottom: 3, lineHeight: 1.3 }}>{spot.name}</div>
         <div style={{ fontSize: 10, color: "#888", marginBottom: 6 }}>{spot.address}{spot.distance ? ` · ${spot.distance}` : ""}</div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-          <span style={{ fontSize: 11, color: "#F59E0B", fontWeight: 700 }}>★ {spot.rating || "—"}</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, flexWrap: "wrap", gap: 6 }}>
+          <NearMeResultBadges place={{ rating: spot.rating, user_ratings_total: spot.reviewCount || spot.user_ratings_total, tdc_verified: spot.tdc_verified }} />
           {spot.tag && <span style={{ fontSize: 9, fontWeight: 600, background: "#E8F5E9", color: "#2E7D32", borderRadius: 8, padding: "2px 7px" }}>{spot.tag}</span>}
         </div>
         <div style={{ display: "flex", gap: 6 }}>
@@ -271,7 +272,7 @@ export default function PetFriendlySpots({ pet, onReserve }) {
         </div>
       ) : (
         <div className="spots-grid">
-          {spots.map((spot, i) => <SpotCard key={spot.placeId || i} spot={spot} onReserve={s => onReserve && onReserve(s, activeCity)} />)}
+          {spots.slice().sort(sortByTDCVerified).map((spot, i) => <SpotCard key={spot.placeId || i} spot={spot} onReserve={s => onReserve && onReserve(s, activeCity)} />)}
         </div>
       )}
 

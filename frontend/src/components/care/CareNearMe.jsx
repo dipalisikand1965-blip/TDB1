@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../utils/api';
 import { tdc } from '../../utils/tdc_intent';
 import NearMeConciergeModal from '../common/NearMeConciergeModal';
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 const G = { forest:"#40916C", sage:"#52B788", paleGreen:"#F0FFF4", border:"rgba(64,145,108,0.2)" };
 
@@ -259,7 +260,7 @@ export default function CareNearMe({ currentPet, setConciergeToast }) {
       )}
 
       {/* Results */}
-      {results.map((place, i) => (
+      {results.slice().sort(sortByTDCVerified).map((place, i) => (
         <div key={i}
           style={{
             background: '#fff', border: `1px solid ${G.border}`,
@@ -278,12 +279,10 @@ export default function CareNearMe({ currentPet, setConciergeToast }) {
               <div style={{ fontSize: 12, color: '#64748B', marginBottom: 6 }}>
                 {place.formatted_address || place.vicinity}
               </div>
+              <div style={{ marginBottom: 6 }}>
+                <NearMeResultBadges place={place} />
+              </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                {place.rating && (
-                  <span style={{ fontSize: 11, color: G.forest, fontWeight: 600 }}>
-                    ★ {place.rating} {place.user_ratings_total ? `(${place.user_ratings_total})` : ''}
-                  </span>
-                )}
                 {place.opening_hours?.open_now !== undefined && (
                   <span style={{
                     fontSize: 11, fontWeight: 600,

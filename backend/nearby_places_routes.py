@@ -105,6 +105,7 @@ async def _text_search_places(lat: float, lng: float, keyword: str, radius: int)
         
         data = response.json()
         places = _process_places_response(data)
+        places = await _enrich_verified_and_sort(places)
         
         return {"places": places, "total": len(places)}
 
@@ -159,6 +160,7 @@ async def _nearby_search_places(lat: float, lng: float, place_type: str, radius:
         
         data = response.json()
         places = _process_places_response(data)
+        places = await _enrich_verified_and_sort(places)
         
         return {"places": places, "total": len(places)}
 
@@ -185,27 +187,56 @@ def _process_places_response(data: dict) -> list:
         
         processed = {
             "id": place.get("id"),
+            "place_id": place.get("id"),
             "name": place.get("displayName", {}).get("text", "Unknown"),
             "address": place.get("formattedAddress", ""),
+            "vicinity": place.get("formattedAddress", ""),
             "phone": place.get("nationalPhoneNumber") or place.get("internationalPhoneNumber"),
             "rating": place.get("rating"),
             "total_ratings": place.get("userRatingCount", 0),
+            "user_ratings_total": place.get("userRatingCount", 0),
+            "review_count": place.get("userRatingCount", 0),
             "website": place.get("websiteUri"),
             "is_open_now": is_open_now,
+            "open_now": is_open_now,
             "opening_hours": opening_hours,
             "status": place.get("businessStatus", "OPERATIONAL"),
             "photo_url": photo_url,
             "location": {
                 "lat": place.get("location", {}).get("latitude"),
                 "lng": place.get("location", {}).get("longitude")
-            }
+            },
+            "tdc_verified": False,  # enriched downstream via _enrich_verified_and_sort
         }
         
         places.append(processed)
     
-    # Sort by rating (descending)
+    # Sort by rating (descending) — downstream may re-sort after TDC enrichment
     places.sort(key=lambda x: (x.get("rating") or 0), reverse=True)
     
+    return places
+
+
+async def _enrich_verified_and_sort(places: list) -> list:
+    """
+    Attach tdc_verified to each place via places_tdc_verified collection lookup,
+    then sort: TDC-verified first, rating desc second. Safe no-op if collection
+    empty or lookup fails.
+    """
+    if not places:
+        return places
+    try:
+        ids = [p.get("place_id") for p in places if p.get("place_id")]
+        names = [(p.get("name") or "").strip().lower() for p in places if p.get("name")]
+        verified_map = await _load_verified_map(ids, names)
+        for p in places:
+            pid = p.get("place_id")
+            nkey = (p.get("name") or "").strip().lower()
+            if verified_map.get(pid) or verified_map.get(nkey):
+                p["tdc_verified"] = True
+        places.sort(key=lambda r: (0 if r.get("tdc_verified") else 1, -(r.get("rating") or 0)))
+    except Exception as e:
+        logger.warning(f"[_enrich_verified_and_sort] non-blocking: {e}")
     return places
 
 
@@ -262,24 +293,81 @@ async def nearme_search(
             data = response.json()
             raw_places = _process_places_response(data)
 
+            # Enrich with TDC-verified flag from places_tdc_verified collection
+            verified_map = await _load_verified_map([p.get("id") for p in raw_places], [p.get("name") for p in raw_places])
+
             # Map to the format CareNearMe expects
             results = []
             for p in raw_places:
+                pid = p.get("id")
+                pname = (p.get("name") or "").strip().lower()
+                is_verified = bool(verified_map.get(pid) or verified_map.get(pname))
                 results.append({
+                    "place_id": pid,
                     "name": p["name"],
                     "formatted_address": p["address"],
                     "vicinity": p["address"],
                     "rating": p.get("rating"),
                     "user_ratings_total": p.get("total_ratings", 0),
+                    "review_count": p.get("total_ratings", 0),
                     "formatted_phone_number": p.get("phone"),
                     "website": p.get("website"),
                     "opening_hours": {"open_now": p.get("is_open_now")} if p.get("is_open_now") is not None else None,
                     "photo_url": p.get("photo_url"),
                     "geometry": {"location": p.get("location", {})},
+                    "tdc_verified": is_verified,
                 })
+
+            # TDC-verified first, then by rating
+            results.sort(key=lambda r: (0 if r.get("tdc_verified") else 1, -(r.get("rating") or 0)))
 
             return {"results": results, "places": results, "total": len(results)}
 
     except Exception as e:
         logger.error(f"NearMe search error: {e}")
         return {"results": [], "places": []}
+
+
+async def _load_verified_map(place_ids: list, place_names: list) -> dict:
+    """
+    Load TDC-verified flags for a batch of Google place_ids / names from
+    the `places_tdc_verified` collection. Looks up by place_id OR normalized
+    name match. Returns {key: True} for verified entries only.
+
+    Collection shape:
+      { place_id: "ChIJ...", name: "Doggy Style Grooming", tdc_verified: True, city: "Bangalore" }
+
+    Matching logic is soft (lower-cased name) so the Concierge team can curate
+    a verified list without needing exact place_id matches.
+    """
+    try:
+        # Import here to avoid circular imports with server.py lifespan
+        from server import db as _db
+        if _db is None:
+            return {}
+        ids = [pid for pid in (place_ids or []) if pid]
+        names = [(n or "").strip().lower() for n in (place_names or []) if n]
+        if not ids and not names:
+            return {}
+        or_clauses = []
+        if ids:
+            or_clauses.append({"place_id": {"$in": ids}})
+        if names:
+            or_clauses.append({"name_lower": {"$in": names}})
+        if not or_clauses:
+            return {}
+        cursor = _db.places_tdc_verified.find(
+            {"$or": or_clauses, "tdc_verified": True},
+            {"_id": 0, "place_id": 1, "name": 1, "name_lower": 1}
+        )
+        out = {}
+        async for doc in cursor:
+            if doc.get("place_id"):
+                out[doc["place_id"]] = True
+            nkey = doc.get("name_lower") or (doc.get("name") or "").strip().lower()
+            if nkey:
+                out[nkey] = True
+        return out
+    except Exception as e:
+        logger.warning(f"[_load_verified_map] lookup failed (non-blocking): {e}")
+        return {}

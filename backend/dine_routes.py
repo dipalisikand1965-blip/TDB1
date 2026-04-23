@@ -377,15 +377,23 @@ async def get_pet_friendly_places(
 
             spots.append({
                 "placeId": place.get("place_id"),
+                "place_id": place.get("place_id"),
                 "name": place.get("name"),
                 "address": place.get("formatted_address", ""),
                 "distance": distance,
                 "rating": place.get("rating"),
+                "user_ratings_total": place.get("user_ratings_total", 0),
+                "reviewCount": place.get("user_ratings_total", 0),
                 "photoUrl": photo_url,
                 "openNow": place.get("opening_hours", {}).get("open_now"),
                 "tag": tag_for_breed(breed, place),
+                "tdc_verified": False,
                 "mapsUrl": f"https://www.google.com/maps/place/?q=place_id:{place.get('place_id')}",
             })
+
+        # Enrich with TDC-verified flag and sort verified-first
+        spots = await _enrich_places_verified(spots)
+
         return {"city": city, "spots": spots}
 
     except Exception as e:
@@ -603,6 +611,7 @@ async def get_care_providers(
                 "distance":    distance,
                 "rating":      p.get("rating"),
                 "user_ratings_total": p.get("user_ratings_total"),
+                "review_count": p.get("user_ratings_total"),
                 "photo_url":   photo_url,
                 "type":        provider_type,
                 "open_now":    p.get("opening_hours", {}).get("open_now"),
@@ -612,6 +621,7 @@ async def get_care_providers(
                 "mapsUrl":     f"https://www.google.com/maps/place/?q=place_id:{p.get('place_id')}",
             })
 
+        places = await _enrich_places_verified(places)
         return {"location_name": city, "places": places}
 
     except Exception as e:
@@ -762,6 +772,7 @@ async def get_play_spots(
                 "distance":    distance,
                 "rating":      p.get("rating"),
                 "user_ratings_total": p.get("user_ratings_total"),
+                "review_count": p.get("user_ratings_total"),
                 "photo_url":   photo_url,
                 "type":        spot_type,
                 "types":       p.get("types", []),
@@ -773,11 +784,58 @@ async def get_play_spots(
                 "mapsUrl":     f"https://www.google.com/maps/place/?q=place_id:{p.get('place_id')}",
             })
 
+        places = await _enrich_places_verified(places)
         return {"location_name": city, "places": places}
 
     except Exception as e:
         logger.error(f"get_play_spots error: {e}")
         return {"location_name": city, "places": [], "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# TDC-Verified enrichment for Google Places results.
+# Attaches tdc_verified=True when a place_id OR normalized name matches the
+# places_tdc_verified collection (Concierge-curated trust list).
+# Sorts results so TDC-verified places show first, then by rating descending.
+# ═══════════════════════════════════════════════════════════════════════════
+
+async def _enrich_places_verified(places: list) -> list:
+    """Enrich Google Places results with tdc_verified flag + sort verified-first."""
+    if not places:
+        return places
+    try:
+        from server import db as _db
+        if _db is None:
+            return places
+        ids = [p.get("place_id") for p in places if p.get("place_id")]
+        names = [(p.get("name") or "").strip().lower() for p in places if p.get("name")]
+        or_clauses = []
+        if ids:
+            or_clauses.append({"place_id": {"$in": ids}})
+        if names:
+            or_clauses.append({"name_lower": {"$in": names}})
+        if not or_clauses:
+            return places
+        verified = {}
+        cursor = _db.places_tdc_verified.find(
+            {"$or": or_clauses, "tdc_verified": True},
+            {"_id": 0, "place_id": 1, "name": 1, "name_lower": 1}
+        )
+        async for doc in cursor:
+            if doc.get("place_id"):
+                verified[doc["place_id"]] = True
+            nkey = doc.get("name_lower") or (doc.get("name") or "").strip().lower()
+            if nkey:
+                verified[nkey] = True
+        for p in places:
+            pid = p.get("place_id")
+            nkey = (p.get("name") or "").strip().lower()
+            if verified.get(pid) or verified.get(nkey):
+                p["tdc_verified"] = True
+        places.sort(key=lambda r: (0 if r.get("tdc_verified") else 1, -(r.get("rating") or 0)))
+    except Exception as e:
+        logger.warning(f"[_enrich_places_verified] non-blocking: {e}")
+    return places
 
 
 @dine_router.get("/dine/restaurants")

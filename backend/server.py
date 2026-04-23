@@ -1433,7 +1433,25 @@ async def lifespan(app: FastAPI):
             [("pillar", 1), ("is_active", 1)],
             name="idx_service_pillar_active")
 
-        logger.info("✅ Critical indexes ensured: products_master / mira_product_scores / services_master")
+        # places_tdc_verified — Concierge-curated trust list for Google Places enrichment.
+        # Keyed by place_id (preferred) or name_lower (fallback). Accessed by
+        # nearby_places_routes._load_verified_map and dine_routes._enrich_places_verified.
+        await safe_index(db.places_tdc_verified, [("place_id", 1)], name="idx_places_verified_pid", unique=False)
+        await safe_index(db.places_tdc_verified, [("name_lower", 1)], name="idx_places_verified_name")
+
+        # One-time backfill: ensure every existing service in services_master carries
+        # tdc_verified (default False). New documents should still explicitly set this.
+        try:
+            r = await db.services_master.update_many(
+                {"tdc_verified": {"$exists": False}},
+                {"$set": {"tdc_verified": False}}
+            )
+            if r.modified_count:
+                logger.info(f"[startup] Backfilled tdc_verified=False on {r.modified_count} services_master docs")
+        except Exception as e:
+            logger.warning(f"[startup] services_master tdc_verified backfill skipped: {e}")
+
+        logger.info("✅ Critical indexes ensured: products_master / mira_product_scores / services_master / places_tdc_verified")
 
     await safe_startup_step("ensure_critical_indexes", ensure_critical_indexes())
 

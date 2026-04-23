@@ -50,6 +50,7 @@ import { tdc } from '../../utils/tdc_intent';
 import NearMeConciergeModal from '../common/NearMeConciergeModal';
 import { useState, useEffect, useCallback, useRef } from "react";
 import { API_URL } from "../../utils/api";
+import { NearMeResultBadges, sortByTDCVerified } from '../common/NearMeBadges';
 
 // ─── Colour system — vibrant green + orange (mirrors PlaySoulPage) ──
 const G = {
@@ -171,13 +172,12 @@ function MiraTopPick({ spot, pet, onBook }) {
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4, flexWrap:"wrap" }}>
           <span style={{ fontSize:10, fontWeight:700, background:`linear-gradient(135deg,${G.orange},${G.mid})`, color:"#fff", borderRadius:20, padding:"3px 10px" }}>✦ Mira's Top Pick</span>
-          {spot.tdc_listed && <span style={{ fontSize:9, fontWeight:700, background:"#FFF8E1", color:"#C9973A", borderRadius:8, padding:"2px 8px" }}>✦ TDC Listed</span>}
           <OpenBadge openNow={spot.open_now} />
         </div>
         <div style={{ fontSize:16, fontWeight:800, color:G.darkText, marginBottom:4 }}>{spot.name}</div>
         <div style={{ fontSize:13, color:G.mutedText, marginBottom:6 }}>📍 {spot.vicinity||spot.formatted_address}</div>
-        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8 }}>
-          <StarRating rating={spot.rating} reviewCount={spot.user_ratings_total} />
+        <div style={{ marginBottom:8 }}>
+          <NearMeResultBadges place={{ ...spot, tdc_verified: spot.tdc_verified || spot.tdc_listed }} />
         </div>
         <FeatureChips features={spot.features} />
         {spot.mira_note && (
@@ -216,13 +216,6 @@ function SpotCard({ spot, pet, onBook }) {
           {typeConfig.icon} {typeConfig.label}
         </div>
 
-        {/* TDC listed */}
-        {spot.tdc_listed && (
-          <div style={{ position:"absolute", top:10, right:10, background:G.yellow, color:G.deep, fontSize:9, fontWeight:700, borderRadius:20, padding:"3px 8px" }}>
-            ✦ TDC Listed
-          </div>
-        )}
-
         {/* Open/closed */}
         {spot.open_now !== undefined && (
           <div style={{ position:"absolute", bottom:10, right:10 }}>
@@ -235,8 +228,8 @@ function SpotCard({ spot, pet, onBook }) {
       <div style={{ padding:"12px 14px 16px" }}>
         <div style={{ fontSize:14, fontWeight:700, color:G.darkText, marginBottom:4, lineHeight:1.3 }}>{spot.name}</div>
         <div style={{ fontSize:13, color:G.mutedText, marginBottom:6, lineHeight:1.4 }}>📍 {spot.vicinity||spot.formatted_address||"—"}</div>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-          <StarRating rating={spot.rating} reviewCount={spot.user_ratings_total} />
+        <div style={{ marginBottom:8 }}>
+          <NearMeResultBadges place={{ ...spot, tdc_verified: spot.tdc_verified || spot.tdc_listed }} />
         </div>
         <FeatureChips features={spot.features} />
         {spot.mira_note && (
@@ -586,7 +579,7 @@ export default function PlayNearMe({ pet, onBook }) {
           {/* Rest */}
           {restList.length > 0 && (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(min(280px,100%),1fr))", gap:16, marginBottom:20 }}>
-              {restList.map((spot,i) => <SpotCard key={spot.place_id||i} spot={spot} pet={pet} onBook={onBook} />)}
+              {restList.slice().sort(sortByTDCVerified).map((spot,i) => <SpotCard key={spot.place_id||i} spot={spot} pet={pet} onBook={onBook} />)}
             </div>
           )}
         </>

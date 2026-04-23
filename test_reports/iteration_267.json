@@ -1,0 +1,38 @@
+{
+  "summary": "Tested Google rating + TDC Verified badge integration across all 9 NearMe pillars + Celebrate bakery variant on desktop (1920x1080). Backend /api/places/pet-friendly?city=Bengaluru confirms wag&wine - pet cafe at position 0 with tdc_verified=true, rating=4.9, user_ratings_total=139 — sort-by-TDC-first working at API level. /api/places/care-providers returns rating + user_ratings_total + tdc_verified fields on every place object. All 10 frontend NearMe components (adopt, care, celebrate, dine/PetFriendlySpots, emergency, farewell, go, learn, paperwork, play) correctly import NearMeBadges helpers (grep-verified). Celebrate pillar UI verified end-to-end on both variants. Other pillars render the card code path but results did not populate during automated runs (Google Places returned zero or required search-action to load in preview env) — per main-agent note this is acceptable gracefully-empty state.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Dine /dine PetFriendlySpots auto-render", "issue": "On /dine landing there is no visible city pill/chip (Bengaluru/Bangalore) above the grid — automated scroll could not trigger the section with wag&wine to render. Manual city-select path likely works but no deep-link to Bengaluru exists and the pet-friendly section may be below the fold or gated behind a city context. Recommend adding data-testid='dine-petfriendly-section' wrapper + city chips with data-testid='dine-city-<slug>' for reliable E2E coverage.", "affected_selectors": ["[data-testid='nearme-result-badges']", "[data-testid='tdc-verified-badge']"]}
+    ],
+    "design_issues": []
+  },
+  "observations": [
+    "PASS — /celebrate?tab=nearme → '🎂 The Doggy Bakery' pill: 12x [data-testid='tdc-bakery-verified-badge'] rendered + 1x [data-testid='celebrate-bakery-grid']. Amber pill '✦ TDC Bakery Verified' overlays each bakery product card. NO Google rating line present on these cards (correct per spec).",
+    "PASS — /celebrate?tab=nearme → 'Pet Photographers' pill → Bangalore popular-city pill: 12x [data-testid='nearme-result-badges'] + 12x [data-testid='nearme-rating-line'] rendered. Non-bakery Celebrate vendors correctly show '★ rating (N reviews)' line — distinct from bakery treatment. tdc_verified badge count=0 because none of the Google photographer results in Bangalore are currently marked verified (expected).",
+    "BACKEND VERIFIED — curl /api/places/pet-friendly?city=Bengaluru → 'spots' array len=8, spots[0]={name:'wag&wine - pet cafe', tdc_verified:true, rating:4.9, user_ratings_total:139, reviewCount:139}. Sort-by-TDC-first working at API layer. Response field naming consistent for PetFriendlySpots.jsx consumption.",
+    "BACKEND VERIFIED — curl /api/places/care-providers?city=Bengaluru&type=vet → 'places' array returns rating + user_ratings_total + review_count + tdc_verified on every place. Enrichment pipeline _enrich_places_verified is wired.",
+    "CODE-PATH VERIFIED — grep 'NearMeBadges\\|NearMeResultBadges\\|TDCVerifiedBadge' found in: /adopt/AdoptNearMe.jsx, /care/CareNearMe.jsx, /celebrate/CelebrateNearMe.jsx, /dine/PetFriendlySpots.jsx, /emergency/EmergencyNearMe.jsx, /farewell/FarewellNearMe.jsx, /go/GoNearMe.jsx, /learn/LearnNearMe.jsx, /paperwork/PaperworkNearMe.jsx, /play/PlayNearMe.jsx — all 10 surfaces import the shared helpers.",
+    "EMPTY-STATE (acceptable per main-agent brief) — /care (vet click), /play (dog parks click), /go (boarding click), /emergency, /paperwork, /learn, /farewell, /adopt: 0x nearme-result-badges after 7s wait on each. The card code path is in place; results simply did not populate in the preview env during automation (either Google Places returned nothing for the auto-detected location, or the flow requires an additional search action that the script did not simulate). Not flagged as bugs."
+  ],
+  "test_report_links": [],
+  "action_items": [
+    "(Optional) Add data-testid='dine-petfriendly-section' on the PetFriendlySpots wrapper and data-testid='dine-city-<slug>' on city pills in /app/frontend/src/components/dine/PetFriendlySpots.jsx so automated tests can reliably scroll+select Bengaluru to demo the TDC-first sort with wag&wine on screen.",
+    "(Optional) Consider deep-linking ?city=Bengaluru on /dine to auto-focus the pet-friendly grid on Bengaluru — would make the wag&wine TDC-verified-first proof visible without manual chip tapping."
+  ],
+  "critical_code_review_comments": [
+    "NearMeBadges.jsx is clean, well-contracted, and correctly handles the three alias field names (user_ratings_total / review_count / total_ratings). No issues.",
+    "sortByTDCVerified comparator correctly falls back to rating-desc when both are verified or both unverified — matches the 'wag&wine first, others by rating desc' requirement.",
+    "TDCVerifiedBadge bakery variant uses brown (#92400E on #FEF3C7) and default uses emerald (#047857 on #ECFDF5) — matches the brief's colour coding.",
+    "Backend enrichment (/app/backend/dine_routes.py _enrich_places_verified + /app/backend/nearby_places_routes.py _load_verified_map) consistently attaches tdc_verified to every place object — no missing-field risk on the client."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (2/2 endpoints spot-checked return rating + review-count + tdc_verified)", "frontend": "Celebrate pillar: 100% (bakery + non-bakery both verified). Other 8 pillars: code-path verified via import grep; empty-state in automation — main agent should self-test a single pillar manually to confirm live Google data."},
+  "test_credentials": "dipali@clubconcierge.in / test123 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "none (wag&wine - pet cafe seed already in places_tdc_verified collection from main-agent setup)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Celebrate pillar (both The Doggy Bakery tab AND Pet Photographers tab) is fully verified — bakery shows 12x tdc-bakery-verified-badge amber overlays, Bangalore photographers show 12x nearme-result-badges + 12x nearme-rating-line green/amber rating rows. Backend /api/places/pet-friendly?city=Bengaluru returns wag&wine at spots[0] with tdc_verified=true, rating 4.9, 139 reviews — TDC-first sort proven at API level. All 10 NearMe components import NearMeBadges helpers (grep-verified). Only gap in automation coverage was /dine UI could not auto-select Bengaluru city (no visible pill in popular-cities within default viewport) — main agent should manually scroll to PetFriendlySpots and click Bengaluru to visually confirm wag&wine appears first with tdc-verified-badge. Desktop-only run (1920x1080). Mobile (390x844) not re-run because no responsive-specific risk was identified — the shared NearMeBadges component is breakpoint-agnostic and the rendering path is identical.",
+  "mobile_run_note": "Skipped mobile 390x844 because NearMeBadges is a pure React inline-style component with no responsive branches — same DOM renders on both breakpoints. If mobile-specific regression is required, re-run with viewport 390x844 and the same celebrate/dine flows."
+}
