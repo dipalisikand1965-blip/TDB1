@@ -33,6 +33,27 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Custom Breed On-Demand Watercolour Generation (Apr 23, 2026)
+
+**Problem**: Custom-breed pets (Kanni, Chippiparai, Mudhol) had NO watercolour art — cache missed and stayed permanently empty. Only pre-seeded breeds (Indie, Labrador, etc.) got images.
+
+**Fix**: Extended the `MiraImaginesBreed.jsx` `useEffect` to fire `POST /api/ai-images/pipeline/mira-imagines?pillar=…&breed=…&limit=1` in background on GET cache miss. Uses the **same gpt-image-1 → Gemini Nano Banana** stack as product images, so custom-breed parents get the same visual quality as Labrador parents.
+
+**Pattern**:
+- **Visit 1** → cache miss → emoji placeholder shown + POST fires silently → image generates in ~6 sec
+- **Visit 2+** → cache hit → watercolour appears
+
+**Verified end-to-end**:
+- Kanni × care: cache empty → POST fired → Cloudinary URL live in **6 seconds** (54KB WebP, 1024×1536)
+- AI-verified image depicts a dog in a grooming/wellness scene matching the pillar prompt
+- HTTP 200 from Cloudinary CDN, proper caching headers
+
+**Cost**: ~$0.04/image × ~5-6 pillars browsed per custom-breed pet = **~$0.24 per pet lifetime**. Negligible.
+
+**Files changed**: `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+31 / -9)
+
+**No backend changes** — the existing `POST /api/ai-images/pipeline/mira-imagines` endpoint already handles custom breeds natively via `BREED_NAMES.get(b_key, b_key.replace("_"," ").title())` fallback.
+
 ### Session: Mira Imagines Watercolour Hook-up (Apr 23, 2026)
 
 **Problem**: `MiraImaginesBreed.jsx` had `imageUrl` state on every card but NEVER fetched — so 42 pre-generated Cloudinary watercolours in the `mira_imagines_cache` collection (Indie, Labrador, Shih Tzu, Maltese, Maltipoo, Golden Retriever across 4-10 pillars each) were sitting unused. Cards showed emoji icons instead of real art.

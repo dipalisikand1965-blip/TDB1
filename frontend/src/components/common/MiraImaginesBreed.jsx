@@ -682,22 +682,44 @@ export default function MiraImaginesBreed({
 
   const cards = generateImagineCards(petName, breedDisplay, traits, pillar);
 
-  // Fetch the cached Mira Imagines watercolour for this (pillar, breed) combo.
-  // Backend endpoint: GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}
-  // Only runs for known breeds (soul-imagined breeds aren't in the cache).
+  // Mira Imagines watercolour — GET cached image; on cache miss, fire a
+  // background POST to generate one. Runs for BOTH known breeds (32-breed
+  // catalog with pre-seeded cache) AND soul-imagined custom breeds (Kanni,
+  // Chippiparai, etc — generated on first visit, cached forever).
+  //
+  //   Visit 1 → cache miss → emoji placeholder + POST fires → ~5s later cached
+  //   Visit 2+ → cache hit → watercolour appears
+  //
+  // Endpoint: GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}
+  //           POST /api/ai-images/pipeline/mira-imagines?pillar=…&breed=…&limit=1
   const [heroImageUrl, setHeroImageUrl] = useState(null);
   useEffect(() => {
-    if (!isKnown || !breedKey || !pillar) return;
+    if (!rawBreed || !pillar) return;
+    const cacheSlug = (breedKey || rawBreed).toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
+    if (!cacheSlug) return;
+
     let cancelled = false;
-    const breedSlug = breedKey.toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
-    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/${encodeURIComponent(pillar)}/${encodeURIComponent(breedSlug)}`)
+    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/${encodeURIComponent(pillar)}/${encodeURIComponent(cacheSlug)}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (!cancelled && data?.url) setHeroImageUrl(data.url);
+        if (cancelled) return;
+        if (data?.url) {
+          // Cache hit — show watercolour immediately
+          setHeroImageUrl(data.url);
+          return;
+        }
+        // Cache miss — trigger on-demand generation in background.
+        // Uses same gpt-image-1 → Gemini Nano Banana pipeline as product images,
+        // so Kanni parents get the same visual quality as Labrador parents.
+        // Fire-and-forget; result lands in cache for the next visit.
+        fetch(
+          `${API_URL}/api/ai-images/pipeline/mira-imagines?pillar=${encodeURIComponent(pillar)}&breed=${encodeURIComponent(cacheSlug)}&limit=1`,
+          { method: "POST" }
+        ).catch(() => {}); // silent — emoji placeholder stays on this visit
       })
-      .catch(() => {}); // silent — falls back to emoji icon
+      .catch(() => {}); // silent — emoji placeholder
     return () => { cancelled = true; };
-  }, [isKnown, breedKey, pillar]);
+  }, [rawBreed, breedKey, pillar]);
 
   // Fire background scoring so next visit has real picks
   useEffect(() => {
