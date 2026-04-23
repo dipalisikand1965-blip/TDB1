@@ -37,6 +37,7 @@ import GuidedGoPaths from "../components/go/GuidedGoPaths";
 import GoConciergeSection from "../components/go/GoConciergeSection";
 import GoConciergeModal from "../components/go/GoConciergeModal";
 import PetFriendlyStays from "../components/go/PetFriendlyStays";
+import GoNearMe from "../components/go/GoNearMe";
 import ConciergeToast from "../components/common/ConciergeToast";
 import { API_URL } from "../utils/api";
 import { MiraPicksSkeleton, ProductGridSkeleton } from "../components/common/ProductSkeleton";
@@ -2218,6 +2219,13 @@ const GoSoulPage = () => {
               pet={petData}
               onBook={handleNearMeBook}
             />
+            {/* GoNearMe — Pet Hotels, Boarding, Dog Walkers, Hydrotherapy, Pet Taxi, Travel Vet, Day Care, Dog Parks */}
+            <div style={{ marginTop: 32, paddingTop: 32, borderTop: '1px solid rgba(26,188,156,0.10)' }} data-testid="go-nearme-desktop">
+              <div style={{ fontSize: 12, fontWeight: 700, color: G.teal, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>
+                ✦ Near {petData?.name || 'your dog'} — local services
+              </div>
+              <GoNearMe currentPet={petData} setConciergeToast={setConciergeToast} />
+            </div>
           </div>
         )}
 
