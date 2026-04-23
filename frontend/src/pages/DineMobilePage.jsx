@@ -24,6 +24,7 @@ import DineConciergeSection from '../components/dine/DineConciergeSection';
 import GuidedNutritionPaths from '../components/dine/GuidedNutritionPaths';
 import MealBoxCard from '../components/dine/MealBoxCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import FavouritePicksRow from '../components/common/FavouritePicksRow';
 import MiraEmptyRequest from '../components/common/MiraEmptyRequest';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import MiraPlanModal from '../components/mira/MiraPlanModal';
@@ -497,6 +498,9 @@ export default function DineMobilePage() {
                 />
               </div>
             )}
+
+            {/* ── Mojo's Favourites (coconut, peanut butter, salmon, etc.) ── */}
+            <FavouritePicksRow pet={currentPet} pillar="dine" limit={12} />
 
             {/* ── MiraImaginesBreed ── */}
             <div style={{ padding:'0 16px 24px' }}>

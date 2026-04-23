@@ -19,6 +19,7 @@ from bson import ObjectId
 import os
 import uuid
 import logging
+import re
 
 # Initialize router
 router = APIRouter(prefix="/api/breed-catalogue", tags=["Breed Catalogue"])
@@ -441,6 +442,211 @@ def _mira_note_for(pet_name: str, breed: str, signals: dict, thin: bool) -> str:
 # ============================================
 # API ENDPOINTS - PRODUCTS
 # ============================================
+
+# ── Favourite-treat preference surfacing ─────────────────────────────────────
+# "Mojo loves coconut" → surface coconut products from products_master
+# so Mira's conversation prose ("Buddy loves peanut butter") finally connects
+# to actual picks she can show. Respects allergies as a safety rail.
+
+# Common stop-words we strip from user-entered favourite strings so
+# "loves coconut" / "peanut butter and chicken" become clean tokens.
+_TREAT_STOPWORDS = {
+    "and", "or", "with", "the", "a", "an", "&",
+    "loves", "love", "likes", "like", "favourite", "favorite",
+    "treats", "treat", "food",
+}
+
+def _tokenise_treat_preferences(value) -> List[str]:
+    """Extract individual preference tokens from a favourite_treats value.
+    Accepts list[str] OR comma-separated str OR single str. Returns
+    de-duplicated lowercase tokens with stop-words removed.
+    """
+    if not value:
+        return []
+    # Skip explicit {"skipped": true} markers
+    if isinstance(value, dict):
+        if value.get("skipped"):
+            return []
+        value = value.get("value") or value.get("label") or ""
+    # Normalise to list
+    if isinstance(value, str):
+        items = [value]
+    elif isinstance(value, list):
+        items = [str(x) for x in value if x]
+    else:
+        items = [str(value)]
+
+    tokens: List[str] = []
+    seen = set()
+    for item in items:
+        # Split on commas/slashes/semicolons/'and'
+        for frag in re.split(r"[,/;]|\band\b|\bor\b|&", item, flags=re.I):
+            frag = frag.strip().lower()
+            # Drop stop-words that form the entire fragment
+            words = [w for w in re.split(r"\s+", frag) if w and w not in _TREAT_STOPWORDS]
+            cleaned = " ".join(words).strip()
+            if len(cleaned) >= 3 and cleaned not in seen:
+                tokens.append(cleaned)
+                seen.add(cleaned)
+    return tokens
+
+
+@router.get("/favourites", include_in_schema=True)
+async def get_favourite_preference_picks(
+    pet_id: str = Query(..., description="Pet ID to load preferences for"),
+    pillar: Optional[str] = Query(None, description="Optional pillar filter (e.g. 'dine')"),
+    limit: int = Query(20, ge=1, le=50),
+):
+    """Surface products matching a pet's favourite treats / foods.
+
+    Reads `doggy_soul_answers.favorite_treats` (+ legacy fallbacks), tokenises
+    ingredients/flavours, queries products_master via regex on name+description,
+    and filters out products that contain any of the pet's food allergens.
+
+    Returns products grouped by which preference they matched so the UI can
+    say "Mojo's coconut picks (12)" vs "Mojo's peanut butter picks (5)".
+    """
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not initialised")
+
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+
+    # ── Collect favourite-treat signals from all the places they can live ────
+    soul = pet.get("doggy_soul_answers") or {}
+    prefs = pet.get("preferences") or {}
+    enrich = pet.get("soul_enrichments") or {}
+    raw_signals = [
+        soul.get("favorite_treats"),
+        soul.get("favourite_treats"),
+        soul.get("favorite_treat"),
+        soul.get("favourite_treat"),
+        soul.get("favorite_foods"),
+        prefs.get("favorite_treats"),
+        prefs.get("favorite_foods"),
+        enrich.get("favorite_treats"),
+        pet.get("favorite_treats"),  # root-level (set by Mira chat)
+    ]
+    preference_tokens: List[str] = []
+    seen = set()
+    for sig in raw_signals:
+        for t in _tokenise_treat_preferences(sig):
+            if t not in seen:
+                preference_tokens.append(t)
+                seen.add(t)
+
+    if not preference_tokens:
+        return {
+            "pet_id": pet_id,
+            "pet_name": pet.get("name"),
+            "preferences": [],
+            "products": [],
+            "matches_by_preference": {},
+            "total": 0,
+            "mira_note": None,
+            "allergies_applied": [],
+        }
+
+    # ── Allergy safety rail ──────────────────────────────────────────────────
+    allergens_raw = soul.get("food_allergies") or (pet.get("health") or {}).get("allergies") or []
+    if isinstance(allergens_raw, str):
+        allergens_raw = [allergens_raw]
+    allergens = [
+        str(a).strip().lower()
+        for a in (allergens_raw or [])
+        if a and str(a).strip().lower() not in ("", "none", "no", "unknown")
+    ]
+
+    # ── Build Mongo regex-OR query across name + description ────────────────
+    or_clauses = []
+    for tok in preference_tokens:
+        # Escape regex metacharacters in user input
+        esc = re.escape(tok)
+        or_clauses.append({"name": {"$regex": esc, "$options": "i"}})
+        or_clauses.append({"short_description": {"$regex": esc, "$options": "i"}})
+        or_clauses.append({"description": {"$regex": esc, "$options": "i"}})
+
+    query: dict = {"is_active": True, "$or": or_clauses}
+
+    # Pillar filter — accept either singular `pillar` or legacy array `pillars`
+    if pillar:
+        query = {
+            "$and": [
+                query,
+                {"$or": [{"pillar": pillar}, {"pillars": pillar}]},
+            ]
+        }
+
+    # Fetch a generous pool then post-filter (allergy exclusion + preference grouping)
+    raw_products = await db.products_master.find(
+        query, {"_id": 0}
+    ).limit(limit * 4).to_list(limit * 4)
+
+    # ── Allergy exclusion (reuse helper from pillar_products_routes) ────────
+    if allergens:
+        try:
+            from pillar_products_routes import _product_contains_allergen
+            raw_products = [
+                p for p in raw_products
+                if not any(_product_contains_allergen(p, a) for a in allergens)
+            ]
+        except Exception:
+            # Fallback: basic name-only substring exclusion
+            def _excluded(p):
+                blob = " ".join([
+                    str(p.get("name") or ""),
+                    str(p.get("description") or ""),
+                ]).lower()
+                return any(a in blob for a in allergens)
+            raw_products = [p for p in raw_products if not _excluded(p)]
+
+    # ── Group products by which preference matched + de-duplicate ───────────
+    matches_by_pref: Dict[str, int] = {t: 0 for t in preference_tokens}
+    tagged: List[dict] = []
+    seen_ids = set()
+    for p in raw_products:
+        pid = p.get("id") or p.get("name")
+        if pid in seen_ids:
+            continue
+        seen_ids.add(pid)
+        name_blob = (str(p.get("name") or "") + " "
+                     + str(p.get("short_description") or "") + " "
+                     + str(p.get("description") or "")).lower()
+        matched = [t for t in preference_tokens if t in name_blob]
+        if matched:
+            matches_by_pref[matched[0]] = matches_by_pref.get(matched[0], 0) + 1
+            p["_matched_preference"] = matched[0]
+            tagged.append(p)
+
+    # Sort so products with matches_by_pref[primary] descending come first
+    tagged.sort(key=lambda p: (p.get("_matched_preference") or "", p.get("name") or ""))
+    products = tagged[:limit]
+
+    # ── Mira voice note ─────────────────────────────────────────────────────
+    pet_name = pet.get("name") or "your dog"
+    if not products:
+        mira_note = (
+            f"I know {pet_name} loves {preference_tokens[0]}, but I haven't sourced "
+            f"{preference_tokens[0]} products yet — our Concierge® can curate some."
+        )
+    elif len(preference_tokens) == 1:
+        mira_note = f"{pet_name} loves {preference_tokens[0]} — here's what I found."
+    else:
+        trail = ", ".join(preference_tokens[:-1]) + f" and {preference_tokens[-1]}"
+        mira_note = f"{pet_name} loves {trail} — here's a personal shortlist."
+
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "preferences": preference_tokens,
+        "products": products,
+        "matches_by_preference": {k: v for k, v in matches_by_pref.items() if v > 0},
+        "total": len(products),
+        "mira_note": mira_note,
+        "allergies_applied": allergens,
+    }
+
 
 @router.get("/products")
 async def get_breed_products(

@@ -33,7 +33,46 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
-### Session: Custom Breed On-Demand Watercolour Generation (Apr 23, 2026)
+### Session: Favourite-Treat Preference Surfacing + Bug #12 (Apr 23, 2026)
+
+**Two wins in one session.**
+
+#### Bug #12 — Dead links on Personalized Dashboard (P1, FIXED)
+- `PersonalizedDashboard.jsx:345` — changed `Link to={`/pets/${id}?tab=soul`}` → `/pet/` (singular; matches live route at `App.js:528`)
+- `App.js:97` — `PetSoulJourneyRedirect` redirected to non-existent `/pets/:petId/soul` → now `/pet/:petId?tab=soul` consistent with the above
+- `App.js:648` — removed duplicate `/services` route (ServicesPage was unreachable; ServicesSoulPage at line 627 is the live one)
+
+#### Favourite-Treat Preference Surfacing — "Mojo loves coconut" → coconut products appear
+
+**Problem**: Mira talks about favourite treats in conversation prose ("Buddy loves peanut butter") but never connects them to product picks. 77 coconut products exist in `products_master` but were invisible to Mojo unless he searched manually.
+
+**Backend** (`breed_catalogue.py` +206 lines):
+- New endpoint `GET /api/breed-catalogue/favourites?pet_id=…&pillar=…&limit=…`
+- New helper `_tokenise_treat_preferences()` — handles list, comma-separated string, and dict-with-skipped-flag formats; strips stop-words ("loves", "the", "and"); returns clean lowercase tokens
+- Reads from 9 possible preference locations (doggy_soul_answers, preferences, soul_enrichments, root-level — covering all places Mira chat + onboarding store treats)
+- Regex-OR query across `products_master.name + description + short_description`
+- **Allergy safety rail**: reuses `_product_contains_allergen` from `pillar_products_routes.py` to exclude products containing the pet's allergens
+- Returns products grouped by matched preference with counts, Mira voice-note, and `_matched_preference` tag on each product
+
+**Frontend**:
+- New component `FavouritePicksRow.jsx` (~190 lines) — horizontal scroll row with Mira header, preference chips ("Salmon · 11"), and per-product "✦ preference" labels
+- Wired into both `DineMobilePage.jsx` (mobile) and `DineSoulPageDesktopLegacy.jsx` (desktop) above `MiraPicksSection`
+- Silently hides when pet has no favourite_treats OR when 0 products match
+- Cross-pillar product surfacing (doesn't filter strict by pillar=dine because many treats like "Coconut & Honey Ladoos" are tagged `pillar: celebrate`)
+
+**Verified end-to-end**:
+- TestCoco (loves coconut + peanut butter, allergic to chicken) → 10 products surfaced, all chicken-free
+- Mojo (loves Salmon + Peanut Butter) → dine pillar surfaces "Peanut Butter & Banana Morning Mash", "Coconut Oil", "Cold-Pressed Coconut Biscuits"
+- Mobile screenshot confirmed row renders correctly between the meal categories and the MiraImagines row
+- Mira voice: *"Mojo loves salmon and peanut butter — here's a personal shortlist."*
+
+**Files changed**:
+- `/app/backend/breed_catalogue.py` (+206 / -1, imported `re`)
+- `/app/frontend/src/components/common/FavouritePicksRow.jsx` (NEW, ~190 lines)
+- `/app/frontend/src/pages/DineMobilePage.jsx` (+4)
+- `/app/frontend/src/pages/DineSoulPageDesktopLegacy.jsx` (+4)
+- `/app/frontend/src/App.js` (Bug #12 — -1 route, redirect URL fix)
+- `/app/frontend/src/components/PersonalizedDashboard.jsx` (Bug #12 — `/pets/` → `/pet/`)
 
 **Problem**: Custom-breed pets (Kanni, Chippiparai, Mudhol) had NO watercolour art — cache missed and stayed permanently empty. Only pre-seeded breeds (Indie, Labrador, etc.) got images.
 
@@ -53,6 +92,16 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 **Files changed**: `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+31 / -9)
 
 **No backend changes** — the existing `POST /api/ai-images/pipeline/mira-imagines` endpoint already handles custom breeds natively via `BREED_NAMES.get(b_key, b_key.replace("_"," ").title())` fallback.
+
+### Session: Custom Breed On-Demand Watercolour Generation (Apr 23, 2026)
+
+**Problem**: Custom-breed pets (Kanni, Chippiparai, Mudhol) had NO watercolour art — cache missed and stayed permanently empty. Only pre-seeded breeds (Indie, Labrador, etc.) got images.
+
+**Fix**: Extended the `MiraImaginesBreed.jsx` `useEffect` to fire `POST /api/ai-images/pipeline/mira-imagines?pillar=…&breed=…&limit=1` in background on GET cache miss. Uses the same gpt-image-1 → Gemini Nano Banana stack as product images, so custom-breed parents get the same visual quality as Labrador parents.
+
+**Pattern**: Visit 1 → cache miss → emoji placeholder + POST fires → ~6 sec later cached. Visit 2+ → cache hit → watercolour appears.
+
+**Cost**: ~$0.04/image × ~5-6 pillars browsed = ~$0.24 per custom-breed pet lifetime.
 
 ### Session: Mira Imagines Watercolour Hook-up (Apr 23, 2026)
 
