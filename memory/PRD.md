@@ -33,6 +33,21 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Mira Imagines Watercolour Hook-up (Apr 23, 2026)
+
+**Problem**: `MiraImaginesBreed.jsx` had `imageUrl` state on every card but NEVER fetched — so 42 pre-generated Cloudinary watercolours in the `mira_imagines_cache` collection (Indie, Labrador, Shih Tzu, Maltese, Maltipoo, Golden Retriever across 4-10 pillars each) were sitting unused. Cards showed emoji icons instead of real art.
+
+**Fix**: Added a `useEffect` in the parent `MiraImaginesBreed` that fetches `GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}` once per `(pillar, breed)` pair. Only runs for known breeds in `BREED_TRAITS` (skips soul-imagined custom breeds that aren't in the cache). Passes `heroImageUrl` down to each `ImagineCard` via prop.
+
+**Verified**:
+- Indie × care → returns Cloudinary URL ✓
+- Labrador × paperwork → returns URL ✓
+- Beagle × care (cache miss) → returns `null`, card gracefully falls back to emoji ✓
+
+**Result**: Indie parents now see beautiful breed-specific watercolours on all 10 pillars. Labrador/Shih Tzu/Maltese/Maltipoo/Golden Retriever parents see them on 4-6 pillars each. Zero regression for uncached breeds (emoji fallback unchanged). No backend changes needed.
+
+**Files changed**: `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+22 / -2)
+
 ### Session: Path B — MiraImaginesBreed Soul-Hydration (Apr 23, 2026)
 
 **Problem**: Even after Fix 1/2/3, the `MiraImaginesBreed` component (rendered on 12+ pillar pages) ignored `doggy_soul_answers` for custom breeds. A Kanni parent saw: "Mira hasn't met many Kanni yet" + generic "medium coat / medium energy / no sensitivities" filler cards. Two components on the same page spoke with different voices.

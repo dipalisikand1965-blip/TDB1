@@ -537,8 +537,10 @@ function generateImagineCards(petName, breed, traits, pillar) {
 }
 
 // ── Imagine Card ───────────────────────────────────────────────────────
-function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, token }) {
-  const [imageUrl, setImageUrl] = useState(null);
+function ImagineCard({ card, petName, index, onConcierge, colour, pet, pillar, token, imageUrl: imageUrlProp }) {
+  // Parent fetches one watercolour per (pillar, breed) and passes it in.
+  // Local state still allowed in case future per-card images are added.
+  const [imageUrl] = useState(imageUrlProp || null);
   const [hovered,  setHovered]  = useState(false);
   const [sending,  setSending]  = useState(false);
   const [sent,     setSent]     = useState(false);
@@ -680,6 +682,23 @@ export default function MiraImaginesBreed({
 
   const cards = generateImagineCards(petName, breedDisplay, traits, pillar);
 
+  // Fetch the cached Mira Imagines watercolour for this (pillar, breed) combo.
+  // Backend endpoint: GET /api/ai-images/pipeline/mira-imagines/{pillar}/{breed}
+  // Only runs for known breeds (soul-imagined breeds aren't in the cache).
+  const [heroImageUrl, setHeroImageUrl] = useState(null);
+  useEffect(() => {
+    if (!isKnown || !breedKey || !pillar) return;
+    let cancelled = false;
+    const breedSlug = breedKey.toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
+    fetch(`${API_URL}/api/ai-images/pipeline/mira-imagines/${encodeURIComponent(pillar)}/${encodeURIComponent(breedSlug)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!cancelled && data?.url) setHeroImageUrl(data.url);
+      })
+      .catch(() => {}); // silent — falls back to emoji icon
+    return () => { cancelled = true; };
+  }, [isKnown, breedKey, pillar]);
+
   // Fire background scoring so next visit has real picks
   useEffect(() => {
     if (!pet?.id) return;
@@ -809,6 +828,7 @@ export default function MiraImaginesBreed({
               pet={pet}
               pillar={pillar}
               token={token}
+              imageUrl={heroImageUrl}
             />
           </div>
         ))}
