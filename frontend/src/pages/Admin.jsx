@@ -3323,6 +3323,7 @@ const Admin = () => {
               { id: 'adopt', emoji: '🐾', label: 'Adopt' },
               { id: 'shop', emoji: '🛒', label: 'Shop' },
               { id: 'service-box', emoji: '🔧', label: 'Services' },
+              { id: 'places-verified', emoji: '✦', label: 'Places' },
             ].map((tab) => (
               <Button
                 key={tab.id}
