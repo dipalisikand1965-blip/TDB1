@@ -131,12 +131,14 @@ export default function GoHero({ pet, soulScore }) {
             {photoUrl
               ? <img src={photoUrl} alt={petName} style={{ width:84, height:84, borderRadius:"50%", objectFit:"cover" }} />
               : <span style={{ fontSize:44 }}>🐕</span>}
-            <div
-              className="absolute whitespace-nowrap rounded-full text-white font-bold"
-              style={{ bottom:-8, left:"50%", transform:"translateX(-50%)", background:`linear-gradient(135deg,${G.teal},${G.deepMid})`, fontSize:10, fontWeight:700, padding:"2px 8px" }}
-            >
-              Soul {score}%
-            </div>
+          </div>
+          {/* Soul-score pill — rendered as sibling (not child) so it isn't clipped
+              by the avatar's overflow:hidden. Matches Celebrate/Dine hero layout. */}
+          <div
+            className="whitespace-nowrap rounded-full text-white font-bold"
+            style={{ marginTop:-10, background:`linear-gradient(135deg,${G.teal},${G.deepMid})`, fontSize:10, fontWeight:700, padding:"3px 10px", boxShadow:"0 2px 6px rgba(0,0,0,0.25)", zIndex:3 }}
+          >
+            Soul {score}%
           </div>
         </motion.div>
 
