@@ -3294,6 +3294,7 @@ const Admin = () => {
               { id: 'abandoned', label: 'Abandoned', icon: ShoppingBag },
               { id: 'discounts', label: 'Discounts', icon: Tag },
               { id: 'places-verified', label: '✦ Places', icon: MapPin },
+              { id: 'clarity-analytics', label: '📊 Clarity', icon: TrendingUp },
             ].map((tab) => (
               <Button
                 key={tab.id}
