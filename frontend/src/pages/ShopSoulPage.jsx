@@ -27,6 +27,7 @@ import PillarPageLayout from "../components/PillarPageLayout";
 import ConciergeToast from "../components/common/ConciergeToast";
 import AmazonExplorerBox from "../components/shop/AmazonExplorerBox";
 import MiraImaginesBreed from "../components/common/MiraImaginesBreed";
+import FavouritePicksRow from "../components/common/FavouritePicksRow";
 import { API_URL } from "../utils/api";
 import { tdc } from "../utils/tdc_intent";
 import { applyMiraFilter, filterBreedProducts, getAllergiesFromPet } from "../hooks/useMiraFilter";
@@ -855,6 +856,8 @@ const ShopSoulPage = () => {
         {/* Mira picks — always shown unless a section is active */}
         {(!activeSection || activeSection === "mira") && (
           <>
+            {/* Pet's Favourites — surfaces coconut/peanut butter/salmon products */}
+            <FavouritePicksRow pet={petData} pillar={null} limit={12} />
             <MiraPicksSection pet={petData}/>
           </>
         )}

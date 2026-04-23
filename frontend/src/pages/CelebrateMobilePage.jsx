@@ -21,6 +21,7 @@ import PillarPageLayout from '../components/PillarPageLayout';
 import PillarSoulProfile from '../components/PillarSoulProfile';
 import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import FavouritePicksRow from '../components/common/FavouritePicksRow';
 import SharedProductCard, { ProductDetailModal } from '../components/ProductCard';
 import PersonalisedBreedSection from '../components/common/PersonalisedBreedSection';
 import CelebrateCategoryStrip from '../components/celebrate/CelebrateCategoryStrip';
@@ -545,6 +546,9 @@ export default function CelebrateMobilePage() {
 
         {/* ── CELEBRATE TAB CONTENT (below birthday box) ── */}
         {activeTab === 'celebrate' && (<>
+
+        {/* Mojo's Favourites — coconut/PB/salmon treats as celebration picks */}
+        <FavouritePicksRow pet={currentPet} pillar="celebrate" limit={12} />
 
         {/* MiraImaginesBreed — restored on mobile, fires tickets + tdc.imagine() internally */}
         <MiraImaginesBreed

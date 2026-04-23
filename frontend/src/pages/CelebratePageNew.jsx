@@ -51,6 +51,7 @@ import CelebrateContentModal from '../components/celebrate/CelebrateContentModal
 import MiraImaginesCard from '../components/common/MiraImaginesCard';
 import { useMiraIntelligence, getMiraIntelligenceSubtitle } from '../hooks/useMiraIntelligence';
 import MiraImaginesBreed from '../components/common/MiraImaginesBreed';
+import FavouritePicksRow from '../components/common/FavouritePicksRow';
 import { ProductDetailModal } from '../components/ProductCard';
 import DesktopSoulCard from '../components/common/DesktopSoulCard';
 import DoggyBakeryCakeModal from '../components/celebrate/BreedCakeOrderModal';
@@ -519,6 +520,9 @@ const CelebratePageNew = () => {
           pet={selectedPet}
           onCategorySelect={handleCategorySelect}
         />
+
+        {/* Pet's Favourites — surfaces coconut/peanut butter/salmon as celebration treats */}
+        <FavouritePicksRow pet={selectedPet} pillar="celebrate" limit={12} />
 
         {/* MIRA'S CELEBRATION PICKS — imagines immediately + AI scored below */}
         <CelebrateMiraPicksSection pet={selectedPet} token={token} onOpenService={handleOpenCelebrateService}/>

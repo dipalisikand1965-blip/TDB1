@@ -33,6 +33,37 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Favourites Surfacing Everywhere — Pillar Pages + Mira Search (Apr 23, 2026)
+
+**Mission**: Make "Mira knows what Mojo loves" visible across the whole app. The reusable `FavouritePicksRow` component (built in previous session) is now wired into 5 surfaces + Mira Search.
+
+**Pillar coverage** (10 min):
+- **Celebrate Mobile** (`CelebrateMobilePage.jsx`) — above MiraImaginesBreed on the Celebrate tab
+- **Celebrate Desktop** (`CelebratePageNew.jsx`) — above `CelebrateMiraPicksSection`
+- **Shop Mobile** (`ShopMobilePage.jsx`) — in Mira tab, above `MiraPicksSection`
+- **Shop Desktop** (`ShopSoulPage.jsx`) — when Mira section active
+- **Dine** (both mobile + desktop) — already done in previous session
+- Shop uses `pillar={null}` (cross-pillar surfacing — a coconut toy and a coconut treat are both worth showing)
+
+**Mira Search integration** (30 min, `MiraSearchPage.jsx`):
+- Added `getPetFavouriteTokens()` helper (client mirror of backend tokenizer) — handles array / comma-string / stopwords identically to Python version
+- Added `queryMatchesFavourites()` — returns matched tokens for a given query
+- `useMemo` hook computes favourite tokens once per pet; recomputes on pet switch
+- In each turn's render, if query mentions a favourite → `FavouritePicksRow` renders BEFORE the turn's generic products
+- Stays silent when query doesn't match (no visual noise on "rope toy" when Mojo loves salmon)
+
+**Verified**: 4 unit tests pass for the tokenizer (Mojo's array, Coco's comma-string, stopword stripping, empty pet). Match logic confirmed: "coconut biscuit" → matches Coco, "rope toy" → doesn't match Mojo, "Peanut Butter birthday cake" → matches Mojo.
+
+**The experience**: A parent searches "coconut" → Mira surfaces the preference row FIRST with "{pet} loves coconut — here's a personal shortlist" + coconut-matched products from the full catalog, BEFORE the generic semantic-search results. This is the "Mira knows your dog" differentiator that sets TDC apart from Supertails / HUFT / generic pet ecommerce.
+
+**Files changed**:
+- `/app/frontend/src/pages/MiraSearchPage.jsx` (+63 / -1 — helpers + render injection)
+- `/app/frontend/src/pages/CelebrateMobilePage.jsx` (+4)
+- `/app/frontend/src/pages/CelebratePageNew.jsx` (+4)
+- `/app/frontend/src/pages/ShopMobilePage.jsx` (+5)
+- `/app/frontend/src/pages/ShopSoulPage.jsx` (+3)
+- `/app/frontend/src/components/common/FavouritePicksRow.jsx` (previously created, now consumed by 6 surfaces total)
+
 ### Session: Favourite-Treat Preference Surfacing + Bug #12 (Apr 23, 2026)
 
 **Two wins in one session.**
