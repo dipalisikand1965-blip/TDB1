@@ -35,6 +35,7 @@ import CelebrateManager from '../components/admin/CelebrateManager';
 import NPSManager from '../components/admin/NPSManager';
 import AdoptManager from '../components/admin/AdoptManager';
 import PlacesVerifiedManager from '../components/admin/PlacesVerifiedManager';
+import ClarityAnalyticsPanel from '../components/admin/ClarityAnalyticsPanel';
 import FarewellManager from '../components/admin/FarewellManager';
 import ShopManager from '../components/admin/ShopManager';
 import DataMigration from '../components/DataMigration';
@@ -4994,6 +4995,11 @@ const Admin = () => {
         {/* Places Verified Registry — Concierge-curated TDC Verified list */}
         {activeTab === 'places-verified' && (
           <PlacesVerifiedManager />
+        )}
+
+        {/* Clarity Analytics — deep-links to Microsoft Clarity project wg80h6tw9z */}
+        {activeTab === 'clarity-analytics' && (
+          <ClarityAnalyticsPanel />
         )}
 
         {/* Shop Tab */}
