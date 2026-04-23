@@ -17,7 +17,35 @@ const SEARCH_TYPES = [
   { id:"walker",   label:"Dog Walker",   emoji:"🦮",  query:"dog walker pet walking service" },
   { id:"daycare",  label:"Daycare",      emoji:"🐾",  query:"dog daycare pet daycare centre" },
   { id:"boarding", label:"Boarding",     emoji:"🏠",  query:"dog boarding kennel pet hotel" },
+  // ─── Specialist vets — surfaced when pet needs surgery / specialist care ───
+  { id:"orthopaedic",  label:"Orthopaedic",  emoji:"🦴", query:"veterinary orthopaedic surgeon animal bone joint specialist", specialist:true },
+  { id:"oncologist",   label:"Oncologist",   emoji:"🎗️", query:"veterinary oncologist animal cancer specialist", specialist:true },
+  { id:"dermatologist",label:"Dermatologist",emoji:"🧴", query:"veterinary dermatologist animal skin specialist", specialist:true },
+  { id:"ophthalmologist",label:"Ophthalmologist",emoji:"👁️", query:"veterinary ophthalmologist animal eye specialist", specialist:true },
+  { id:"cardiologist", label:"Cardiologist", emoji:"❤️",  query:"veterinary cardiologist animal heart specialist", specialist:true },
 ];
+
+// Keywords that auto-switch the search type to a specialist vet.
+// When a parent types "my dog needs surgery" or "she has a lump" Mira surfaces
+// specialist vets, not general clinics.
+const SPECIALIST_ROUTER = [
+  { match: ['surgery', 'surgeon', 'fracture', 'acl', 'ccl', 'luxation', 'hip dysplasia', 'ortho', 'orthopaed', 'orthoped', 'joint replacement', 'bone', 'limp'], type: 'orthopaedic' },
+  { match: ['cancer', 'tumor', 'tumour', 'lump', 'mass', 'oncolog', 'chemo', 'lymphoma', 'mast cell'], type: 'oncologist' },
+  { match: ['skin', 'rash', 'itch', 'allerg', 'derm', 'hotspot', 'hot spot', 'mange', 'hair loss'], type: 'dermatologist' },
+  { match: ['eye', 'cataract', 'blind', 'cornea', 'glaucoma', 'ophthalm', 'vision'], type: 'ophthalmologist' },
+  { match: ['heart', 'murmur', 'cardio', 'arrhythm', 'heart disease', 'heart failure'], type: 'cardiologist' },
+  // Generic "specialist" — default to orthopaedic (most common surgical referral)
+  { match: ['specialist'], type: 'orthopaedic' },
+];
+
+function detectSpecialistType(q) {
+  if (!q) return null;
+  const lower = q.toLowerCase();
+  for (const rule of SPECIALIST_ROUTER) {
+    if (rule.match.some(kw => lower.includes(kw))) return rule.type;
+  }
+  return null;
+}
 
 export default function CareNearMe({ currentPet, setConciergeToast }) {
   const { token } = useAuth();
@@ -45,15 +73,31 @@ export default function CareNearMe({ currentPet, setConciergeToast }) {
     if (searchType === 'vet') return `Regular wellness checks keep ${petName} healthy. Mira tracks your vet schedule and will remind you.`;
     if (searchType === 'daycare') return `${petName} ${soul.social_with_dogs === 'reactive' ? 'can be reactive with dogs — ask about small group or solo play options.' : 'loves other dogs — a good daycare will keep them stimulated all day.'}`;
     if (searchType === 'boarding') return `When choosing boarding for ${petName}, ask about their daily routine, staff ratio, and whether dogs sleep in individual spaces.`;
+    if (searchType === 'walker') return `A trusted walker knows ${petName}'s pace, leash manners and weather comfort. Ask for a trial walk first.`;
+    if (searchType === 'orthopaedic') return `For surgery, fractures or joint issues, ${petName} needs a board-certified orthopaedic surgeon — not a generalist. Ask about post-op physio too.`;
+    if (searchType === 'oncologist') return `A veterinary oncologist will stage, treat and plan ${petName}'s care with chemo/surgery options a GP vet usually cannot offer. Always seek one for a confirmed tumour.`;
+    if (searchType === 'dermatologist') return `Chronic itch, recurring infections and mystery rashes belong to a dermatologist — not a GP. They run allergy panels your regular vet doesn't.`;
+    if (searchType === 'ophthalmologist') return `For cataracts, corneal ulcers or sudden vision changes, ${petName} deserves a veterinary ophthalmologist with a slit-lamp and tonometer.`;
+    if (searchType === 'cardiologist') return `Murmurs, arrhythmias and breed-linked heart disease (Cavalier, Doxie, Boxer) call for a cardiologist with echo capability — not routine bloodwork.`;
     return `Mira knows what ${petName} needs. Our Concierge® team can vet (pun intended) any provider before you book.`;
   };
 
   const handleSearch = async (customQuery) => {
     const q = customQuery || query.trim();
     if (!q) return;
+
+    // Auto-route: if the query mentions surgery/specialist keywords, switch search type
+    // so Mira surfaces specialist vets (not general clinics) for frightened parents.
+    const routed = detectSpecialistType(q);
+    let effectiveType = searchType;
+    if (routed && searchType !== routed) {
+      setSearchType(routed);
+      effectiveType = routed;
+    }
+
     setLoading(true); setSearched(true);
 
-    const type = SEARCH_TYPES.find(t => t.id === searchType);
+    const type = SEARCH_TYPES.find(t => t.id === effectiveType);
     const fullQuery = `${type?.query || 'pet grooming'} ${q}`;
 
     tdc.search({ query: fullQuery, pillar: 'care', pet: currentPet, channel: 'care_nearme' });
@@ -93,19 +137,44 @@ export default function CareNearMe({ currentPet, setConciergeToast }) {
       </div>
 
       {/* Search type pills */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-        {SEARCH_TYPES.map(t => (
-          <button key={t.id} onClick={() => setSearchType(t.id)} style={{
-            padding: '7px 14px', borderRadius: 999,
-            border: `1.5px solid ${searchType === t.id ? G.forest : 'rgba(0,0,0,0.1)'}`,
-            background: searchType === t.id ? G.forest : '#fff',
-            color:      searchType === t.id ? '#fff' : '#475569',
-            fontSize: 13, fontWeight: searchType === t.id ? 700 : 400,
-            cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
-          }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }} data-testid="care-search-types">
+        {SEARCH_TYPES.filter(t => !t.specialist).map(t => (
+          <button key={t.id} onClick={() => setSearchType(t.id)}
+            data-testid={`care-type-${t.id}`}
+            style={{
+              padding: '7px 14px', borderRadius: 999,
+              border: `1.5px solid ${searchType === t.id ? G.forest : 'rgba(0,0,0,0.1)'}`,
+              background: searchType === t.id ? G.forest : '#fff',
+              color:      searchType === t.id ? '#fff' : '#475569',
+              fontSize: 13, fontWeight: searchType === t.id ? 700 : 400,
+              cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
+            }}>
             {t.emoji} {t.label}
           </button>
         ))}
+      </div>
+
+      {/* Specialist vet row — Mira's referral tier for surgery / serious conditions */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: G.forest, letterSpacing: '0.08em', marginBottom: 8, textTransform: 'uppercase', display:'flex', alignItems:'center', gap:6 }}>
+          <span>✦</span> Specialist Vets — for surgery or serious conditions
+        </div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }} data-testid="care-specialist-types">
+          {SEARCH_TYPES.filter(t => t.specialist).map(t => (
+            <button key={t.id} onClick={() => setSearchType(t.id)}
+              data-testid={`care-type-${t.id}`}
+              style={{
+                padding: '6px 12px', borderRadius: 999,
+                border: `1.5px solid ${searchType === t.id ? '#B91C1C' : 'rgba(185,28,28,0.25)'}`,
+                background: searchType === t.id ? '#B91C1C' : '#FEF2F2',
+                color:      searchType === t.id ? '#fff' : '#991B1B',
+                fontSize: 12, fontWeight: searchType === t.id ? 700 : 600,
+                cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
+              }}>
+              {t.emoji} {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Search bar */}

@@ -57,10 +57,27 @@ const BREEDS = [
   "Pomeranian","Havanese","Shetland Sheepdog","Cocker Spaniel","Maltese",
   "Chihuahua","Pug","Boston Terrier","Bichon Frise","Lhasa Apso",
   "Maltipoo","Goldendoodle","Labradoodle","Cockapoo","Cavapoo","Morkie",
-  "Indian Pariah Dog (Indie)","Rajapalayam","Mudhol Hound","Chippiparai",
+  "Indian Pariah Dog (Indie)","Rajapalayam","Mudhol Hound","Chippiparai","Kanni",
   "Spitz","Tibetan Mastiff","Samoyed","Dalmatian","Weimaraner",
   "Irish Setter","Saint Bernard","Newfoundland","Great Pyrenees",
-  "Akita","Shiba Inu","Mixed Breed / Other",
+  "Akita","Shiba Inu",
+  // Mixes — first-class options, extremely common in India
+  "Indie Mix","Labrador Mix","Golden Retriever Mix","German Shepherd Mix",
+  "Shih Tzu Mix","Pomeranian Mix","Beagle Mix","Husky Mix","Spitz Mix",
+  "Mixed Breed / Other",
+];
+
+// Prominent chip row shown above the breed search input.
+// India-first: Indie + common mixes lead. Mixes are NOT hidden under "Other".
+const POPULAR_BREED_CHIPS = [
+  "Indian Pariah Dog (Indie)",
+  "Indie Mix",
+  "Labrador Mix",
+  "Golden Retriever Mix",
+  "Mixed Breed / Other",
+  "Labrador Retriever",
+  "Golden Retriever",
+  "Shih Tzu",
 ];
 
 // ── Mira's count responses ─────────────────────────────────────────────
@@ -208,6 +225,32 @@ function BreedSelector({ value, onChange, petName }) {
         title={petName ? `What breed is ${petName}?` : "What breed are they?"}
         sub="Mira uses this to personalise everything — from food to farewell."
       />
+      {/* Popular breed chips — India-first, mixes first-class */}
+      {!value && (
+        <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12 }} data-testid="breed-popular-chips">
+          {POPULAR_BREED_CHIPS.map(b => {
+            const isMix = /mix|other/i.test(b);
+            return (
+              <button
+                key={b}
+                type="button"
+                onClick={() => { setQuery(b); onChange(b); setOpen(false); }}
+                data-testid={`breed-chip-${b.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
+                style={{
+                  padding:"7px 12px", borderRadius:999,
+                  border:`1.5px solid ${isMix ? "rgba(245,158,11,0.45)" : "rgba(107,70,193,0.25)"}`,
+                  background: isMix ? "#FFF7ED" : "#fff",
+                  color: isMix ? "#B45309" : G.text,
+                  fontSize:12, fontWeight:600, cursor:"pointer",
+                  transition:"all 0.15s",
+                }}
+              >
+                {isMix ? "✨ " : "🐾 "}{b}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <div style={{ position:"relative" }}>
         <input
           value={query}

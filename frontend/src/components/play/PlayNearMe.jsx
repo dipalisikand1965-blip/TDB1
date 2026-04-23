@@ -69,11 +69,13 @@ const G = {
 const PLAY_TYPES = [
   { id:"all",     label:"All",            icon:"🌳", term:"dog friendly"              },
   { id:"park",    label:"Dog Parks",      icon:"🌳", term:"dog park off leash"        },
+  { id:"walker",  label:"Dog Walkers",    icon:"🦮", term:"dog walker pet walking service" },
   { id:"beach",   label:"Beaches",        icon:"🏖️", term:"dog friendly beach"        },
   { id:"trail",   label:"Trails & Hikes", icon:"🥾", term:"dog friendly trail hiking" },
   { id:"cafe",    label:"Dog Cafes",      icon:"☕", term:"dog cafe pet friendly cafe" },
   { id:"agility", label:"Agility",        icon:"🏃", term:"dog agility centre training"},
   { id:"swimming",label:"Swimming",       icon:"🏊", term:"dog swimming pool lake"    },
+  { id:"hydro",   label:"Hydrotherapy",   icon:"💧", term:"canine hydrotherapy dog pool rehab physiotherapy"},
   { id:"resort",  label:"Dog Resorts",    icon:"🏡", term:"dog resort pet friendly"   },
 ];
 

@@ -50,10 +50,34 @@ const BREED_LIST = [
   { name: 'Rajapalayam', category: 'Indian', aliases: [] },
   { name: 'Mudhol Hound', category: 'Indian', aliases: [] },
   { name: 'Kombai', category: 'Indian', aliases: [] },
-  
-  // Mixed/Other
-  { name: 'Mixed Breed', category: 'Other', aliases: ['mixed', 'mutt', 'crossbreed'] },
+  { name: 'Chippiparai', category: 'Indian', aliases: [] },
+  { name: 'Kanni', category: 'Indian', aliases: [] },
+
+  // Mixed / Indie mixes — extremely common in India, surfaced as first-class breeds
+  { name: 'Indie Mix', category: 'Mixed', aliases: ['indie mix', 'indie-mix', 'indian mix', 'desi mix'] },
+  { name: 'Labrador Mix', category: 'Mixed', aliases: ['lab mix', 'lab-mix', 'labmix'] },
+  { name: 'Golden Retriever Mix', category: 'Mixed', aliases: ['golden mix', 'golden-mix', 'goldmix'] },
+  { name: 'German Shepherd Mix', category: 'Mixed', aliases: ['gsd mix', 'shepherd mix'] },
+  { name: 'Shih Tzu Mix', category: 'Mixed', aliases: ['shihtzu mix', 'shih-tzu-mix'] },
+  { name: 'Pomeranian Mix', category: 'Mixed', aliases: ['pom mix', 'pom-mix'] },
+  { name: 'Beagle Mix', category: 'Mixed', aliases: ['beagle-mix'] },
+  { name: 'Husky Mix', category: 'Mixed', aliases: ['husky-mix', 'siberian husky mix'] },
+  { name: 'Spitz Mix', category: 'Mixed', aliases: ['indian spitz mix', 'spitz-mix'] },
+  { name: 'Mixed Breed', category: 'Mixed', aliases: ['mixed', 'mutt', 'crossbreed', 'cross breed', 'cross-breed'] },
   { name: 'Unknown', category: 'Other', aliases: [] },
+];
+
+// Prominent "quick pick" breeds shown as chips above the search box.
+// Optimised for India: Indie + common mixes lead the list. Do NOT hide mixes in "Other".
+export const POPULAR_BREED_CHIPS = [
+  'Indian Pariah',
+  'Indie Mix',
+  'Labrador Mix',
+  'Golden Retriever Mix',
+  'Mixed Breed',
+  'Labrador Retriever',
+  'Golden Retriever',
+  'Shih Tzu',
 ];
 
 const BreedSelector = ({ 
@@ -170,6 +194,32 @@ const BreedSelector = ({
 
   return (
     <div className={`relative ${className}`}>
+      {/* Popular breed chips — India-first, mixes surfaced as first-class options */}
+      {!value && (
+        <div className="flex flex-wrap gap-2 mb-3" data-testid="breed-popular-chips">
+          {POPULAR_BREED_CHIPS.map(name => {
+            const breed = BREED_LIST.find(b => b.name === name);
+            if (!breed) return null;
+            const isMix = breed.category === 'Mixed';
+            return (
+              <button
+                key={name}
+                type="button"
+                onClick={() => handleSelectBreed(breed)}
+                data-testid={`breed-chip-${name.toLowerCase().replace(/\s+/g, '-')}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+                  isMix
+                    ? 'bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100'
+                    : 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100'
+                }`}
+              >
+                {isMix ? '✨ ' : '🐾 '}{name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <Input

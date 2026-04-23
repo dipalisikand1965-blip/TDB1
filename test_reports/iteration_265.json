@@ -1,0 +1,42 @@
+{
+  "summary": "Frontend verification of 3 product-gap fixes (mixed-breed chips, Hydrotherapy+Dog Walker in NearMe, Care specialist vets + auto-router). 2 of 3 fixes fully landed. Fix 2 is only partially landed — Go NearMe updates never reach the UI because /go route only uses GoSoulPage, which does not import/render GoNearMe.jsx.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "GoSoulPage (pages/GoSoulPage.jsx)",
+        "issue": "GoSoulPage does NOT import or render GoNearMe.jsx. The updated SEARCH_TYPES in /app/frontend/src/components/go/GoNearMe.jsx (which now include 'Dog Walker' and 'Hydrotherapy') are effectively dead code because /go (the only Go route in App.js) maps to GoSoulPage and its 'Find & Stay' tab shows a different Stay-finder — not GoNearMe. Verified on BOTH desktop (1920x1080) and mobile (390x844) viewports: 'Dog Walker' and 'Hydrotherapy' strings are NOT present in the /go DOM on any tab.",
+        "selector": "/go → Find & Stay tab",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "verified_working": {
+    "FIX_1_breed_chips": "PASS — MiraMeetsYourPet mobile (/pet-soul-onboard): data-testid='breed-popular-chips' rendered above search input with chips: 'Indian Pariah Dog (Indie)', '✨ Indie Mix', '✨ Labrador Mix', '✨ Golden Retriever Mix', '✨ Mixed Breed / Other'. Amber/orange accent styling applied on mix chips. Screenshot: mm_breedstep.png.",
+    "FIX_2_play_nearme": "PASS — /play → Find Play tab on BOTH desktop and mobile shows 'Dog Walkers' + 'Hydrotherapy' chips along with Dog Parks, Beaches, Agility, Swimming.",
+    "FIX_2_go_nearme": "FAIL — see frontend_issues.ui_bugs above.",
+    "FIX_3_care_specialist_chips": "PASS — /care → Find Care tab on BOTH desktop and mobile renders 6 general pills (Grooming, Vet Clinic, Pet Spa, Dog Walker, Daycare, Boarding) then '✦ SPECIALIST VETS — FOR SURGERY OR SERIOUS CONDITIONS' label, then 5 red/rose specialist pills (Orthopaedic, Oncologist, Dermatologist, Ophthalmologist, Cardiologist). data-testid='care-specialist-types' + data-testid='care-type-{id}' all present.",
+    "FIX_3_auto_router": "PASS — Tested 5 keyword phrases, each correctly auto-switches the active type with red background (rgb(185,28,28) / #B91C1C) highlight: 'my dog needs surgery' → orthopaedic; 'lump on her belly' → oncologist; 'itchy skin' → dermatologist; 'eye cloudy' → ophthalmologist; 'heart murmur' → cardiologist.",
+    "FIX_3_regression_general_types": "PASS — General pills Grooming, Vet Clinic, Pet Spa, Dog Walker, Daycare, Boarding remain clickable with forest-green selection state."
+  },
+  "test_report_links": [],
+  "action_items": [
+    "FIX 2 Go pillar: wire GoNearMe.jsx (or equivalent Walker/Hydrotherapy chips) into GoSoulPage.jsx so the updated SEARCH_TYPES actually render in the /go route on desktop AND mobile. Currently GoNearMe is imported ONLY by GoMobilePage, which has no route in App.js. Either (a) add a NearMe/Find & Stay sub-view that mounts <GoNearMe/> inside GoSoulPage, or (b) register a /go-mobile route to GoMobilePage and update navigation to use it on small viewports.",
+    "Verify the agent-to-agent note in review_request — it incorrectly claims 'GoMobilePage + GoSoulPage both import the SAME GoNearMe.jsx component'. grep shows only GoMobilePage imports it."
+  ],
+  "critical_code_review_comments": [
+    "GoSoulPage is 2000+ lines — should be split into smaller modules for maintainability.",
+    "PlaySoulPage.jsx line 1333 shadows activeTab from earlier useState on line 859 (two activeTab states in same file). Rename one to avoid confusion during future edits.",
+    "CareNearMe.jsx and similar components use Emergent-style inline styles. The `[class*=\"error\"]` detection pattern in testing will not work here — acceptable for this component but note for future error-state surfacing."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "83% (5/6 sub-features fully pass; Go NearMe fails)"},
+  "test_credentials": "dipali@clubconcierge.in / test123 (used successfully)",
+  "seed_data_creation": "none",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Login + navigate to /go, /play?tab=nearme or click Find Play tab, /care?tab=nearme or click Find Care tab. Mobile uses same routes (/care, /play, /go) — CareMobilePage/PlayMobilePage/GoMobilePage exist as components but /care-mobile, /play-mobile, /go-mobile routes are NOT defined in App.js. Care specialist auto-router is verified working for 5 keyword phrases. Only outstanding issue: Go NearMe integration.",
+  "rca_of_issue": "Go pillar fix incomplete: File /app/frontend/src/components/go/GoNearMe.jsx correctly has 'walker' and 'hydro' entries in SEARCH_TYPES (lines 17, 22), but /app/frontend/src/pages/GoSoulPage.jsx never imports or renders this component. Grep confirms: `grep -rn \"GoNearMe\" /app/frontend/src/pages/` returns only GoMobilePage.jsx. App.js routes /go → GoSoulPage only (no GoMobilePage route). Therefore the Hydrotherapy/Dog Walker chips exist in code but never reach the browser for either desktop or mobile users on /go."
+}

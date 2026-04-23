@@ -14,10 +14,12 @@ const G = { teal:'#1ABC9C', deep:'#0E4D45', pale:'#F0FDFA', border:'rgba(26,188,
 const SEARCH_TYPES = [
   { id:'hotel',    label:'Pet Hotels',  emoji:'🏨', query:'pet friendly hotel resort dog allowed' },
   { id:'boarding', label:'Boarding',    emoji:'🐾', query:'dog boarding kennel pet hotel' },
+  { id:'walker',   label:'Dog Walker',  emoji:'🦮', query:'dog walker pet walking service' },
   { id:'taxi',     label:'Pet Taxi',    emoji:'🚖', query:'pet taxi dog transport animal transport' },
   { id:'airport',  label:'Travel Vet', emoji:'✈️', query:'travel certificate vet health certificate dog' },
   { id:'daycare',  label:'Day Care',   emoji:'☀️', query:'dog daycare pet daycare centre' },
   { id:'park',     label:'Dog Parks',  emoji:'🌿', query:'off leash dog park pet friendly park' },
+  { id:'hydro',    label:'Hydrotherapy', emoji:'🏊', query:'dog hydrotherapy canine pool rehab physiotherapy' },
 ];
 
 export default function GoNearMe({ currentPet, setConciergeToast }) {
