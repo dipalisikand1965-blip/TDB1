@@ -3292,6 +3292,7 @@ const Admin = () => {
               { id: 'autoship', label: 'Autoship', icon: RefreshCw },
               { id: 'abandoned', label: 'Abandoned', icon: ShoppingBag },
               { id: 'discounts', label: 'Discounts', icon: Tag },
+              { id: 'places-verified', label: '✦ Places', icon: MapPin },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -3323,7 +3324,6 @@ const Admin = () => {
               { id: 'adopt', emoji: '🐾', label: 'Adopt' },
               { id: 'shop', emoji: '🛒', label: 'Shop' },
               { id: 'service-box', emoji: '🔧', label: 'Services' },
-              { id: 'places-verified', emoji: '✦', label: 'Places' },
             ].map((tab) => (
               <Button
                 key={tab.id}
