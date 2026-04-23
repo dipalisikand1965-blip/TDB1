@@ -729,7 +729,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             mongo_file = dump_mongodb(workdir)
             res = drive.upload_file(mongo_file, folders["Daily-DB-Snapshots"],
                                     description=f"daily_db_{run_id}")
-            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"mongodump: {e}")
             logger.exception("[SITEVAULT] daily mongo dump failed")
@@ -739,7 +739,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             mem = tar_memory_files(workdir)
             if mem:
                 res = drive.upload_file(mem, folders["Documents"], description=f"daily_memory_{run_id}")
-                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"memory: {e}")
 
@@ -748,7 +748,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             logs = collect_supervisor_logs(workdir)
             if logs:
                 res = drive.upload_file(logs, folders["Logs"], description=f"daily_logs_{run_id}")
-                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"logs: {e}")
 
@@ -757,7 +757,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             mani = await build_cloudinary_manifest(workdir)
             res = drive.upload_file(mani, folders["Documents"],
                                     description=f"daily_cloudinary_manifest_{run_id}")
-            report["uploads"].append({"name": os.path.basename(mani), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(mani), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"cloudinary_manifest: {e}")
 
@@ -768,7 +768,7 @@ async def run_daily_backup() -> Dict[str, Any]:
             if docs:
                 res = drive.upload_file(docs, folders["Documents"],
                                         description=f"daily_documents_mirror_{run_id}")
-                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"documents_mirror: {e}")
 
@@ -798,7 +798,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             mongo_file = dump_mongodb(workdir)
             res = drive.upload_file(mongo_file, folders["Weekly-Gold-Masters"],
                                     description=f"weekly_db_{run_id}")
-            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(mongo_file), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"mongodump: {e}")
 
@@ -806,7 +806,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
         try:
             src = tar_source_code(workdir)
             res = drive.upload_file(src, folders["Source-Code-Archive"], description=f"weekly_src_{run_id}")
-            report["uploads"].append({"name": os.path.basename(src), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(src), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"source: {e}")
 
@@ -816,7 +816,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             full = tar_full_project(workdir)
             res = drive.upload_file(full, folders["Weekly-Gold-Masters"],
                                     description=f"weekly_full_project_gold_master_{run_id}")
-            report["uploads"].append({"name": os.path.basename(full), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(full), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"full_project: {e}")
             logger.exception("[SITEVAULT] full-project tar failed")
@@ -827,7 +827,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             if docs:
                 res = drive.upload_file(docs, folders["Documents"],
                                         description=f"weekly_documents_mirror_{run_id}")
-                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(docs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"documents_mirror: {e}")
 
@@ -837,7 +837,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             if uploads:
                 res = drive.upload_file(uploads, folders["Documents"],
                                         description=f"weekly_user_uploads_{run_id}")
-                report["uploads"].append({"name": os.path.basename(uploads), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(uploads), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"user_uploads: {e}")
 
@@ -847,7 +847,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             if pub:
                 res = drive.upload_file(pub, folders["Source-Code-Archive"],
                                         description=f"weekly_frontend_public_{run_id}")
-                report["uploads"].append({"name": os.path.basename(pub), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(pub), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"frontend_public: {e}")
 
@@ -856,7 +856,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             mem = tar_memory_files(workdir)
             if mem:
                 res = drive.upload_file(mem, folders["Documents"], description=f"weekly_memory_{run_id}")
-                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(mem), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"memory: {e}")
 
@@ -865,7 +865,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             logs = collect_supervisor_logs(workdir)
             if logs:
                 res = drive.upload_file(logs, folders["Logs"], description=f"weekly_logs_{run_id}")
-                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(logs), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"logs: {e}")
 
@@ -873,7 +873,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
         try:
             env_t = build_env_template(workdir)
             res = drive.upload_file(env_t, folders["Documents"], description=f"weekly_env_template_{run_id}")
-            report["uploads"].append({"name": os.path.basename(env_t), "drive_id": res["id"]})
+            report["uploads"].append({"name": os.path.basename(env_t), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"env_template: {e}")
 
@@ -883,7 +883,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             for c in csvs:
                 res = drive.upload_file(c, folders["Admin-Reports"],
                                         description=f"weekly_report_{run_id}")
-                report["uploads"].append({"name": os.path.basename(c), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(c), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"admin_reports: {e}")
 
@@ -892,7 +892,7 @@ async def run_weekly_backup() -> Dict[str, Any]:
             shop = await build_shopify_sync_state(workdir)
             if shop:
                 res = drive.upload_file(shop, folders["Documents"], description=f"weekly_shopify_{run_id}")
-                report["uploads"].append({"name": os.path.basename(shop), "drive_id": res["id"]})
+                report["uploads"].append({"name": os.path.basename(shop), "drive_id": res["id"], "size_bytes": res.get("size_bytes", 0)})
         except Exception as e:
             report["errors"].append(f"shopify: {e}")
 
@@ -998,10 +998,50 @@ def run_retention_cleaner() -> Dict[str, Any]:
 # ─────────────────────────────────────────────────────────────────────
 # REPORT PERSISTENCE
 # ─────────────────────────────────────────────────────────────────────
+def _summarize_report(report: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Compute derived fields (status, files_uploaded, bytes_uploaded) from raw uploads/errors.
+    Mutates report in place AND returns it.
+    """
+    uploads = report.get("uploads") or []
+    errors = report.get("errors") or []
+    files_uploaded = len(uploads)
+    # Prefer our own size_bytes (int), fall back to Drive's str "size" field.
+    bytes_uploaded = 0
+    for u in uploads:
+        sz = u.get("size_bytes")
+        if sz is None:
+            try:
+                sz = int(u.get("size") or 0)
+            except (TypeError, ValueError):
+                sz = 0
+        bytes_uploaded += sz or 0
+
+    if errors and files_uploaded == 0:
+        status = "failed"
+    elif errors:
+        status = "partial"
+    elif files_uploaded > 0:
+        status = "success"
+    else:
+        status = "empty"  # no files, no errors — probably skipped
+
+    report["status"] = status
+    report["files_uploaded"] = files_uploaded
+    report["bytes_uploaded"] = bytes_uploaded
+    report["error_count"] = len(errors)
+    return report
+
+
 async def _persist_report(report: Dict[str, Any]):
     if _db is None:
         return
     try:
+        _summarize_report(report)
         await _db.sitevault_runs.insert_one({**report, "_id": report["run_id"]})
+        logger.info(
+            f"[SITEVAULT] Run {report['run_id']} persisted: status={report['status']} "
+            f"files={report['files_uploaded']} bytes={report['bytes_uploaded']:,} errors={report['error_count']}"
+        )
     except Exception as e:
         logger.warning(f"[SITEVAULT] persist report failed: {e}")

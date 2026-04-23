@@ -314,6 +314,11 @@ def upload_file(
         f"[SITEVAULT] Uploaded {name} ({size / 1024 / 1024:.1f} MB) "
         f"→ id={result.get('id')}"
     )
+    # Ensure `size_bytes` is always an int even if Drive returned a string.
+    try:
+        result["size_bytes"] = int(result.get("size") or size or 0)
+    except (TypeError, ValueError):
+        result["size_bytes"] = size
     return result
 
 
