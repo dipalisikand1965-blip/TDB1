@@ -2365,6 +2365,13 @@ async def lifespan(app: FastAPI):
         logger.warning(f"[SITEVAULT] Scheduler registration failed: {_sv_err}")
     # ─────────────────────────────────────────────────────────────────────
 
+    # ── Places Outreach Digest — nightly 8 AM IST email ──
+    try:
+        from places_outreach_digest import schedule_outreach_digest
+        schedule_outreach_digest(scheduler)
+    except Exception as _od_err:
+        logger.warning(f"[OUTREACH-DIGEST] Scheduler registration failed: {_od_err}")
+
     scheduler.start()
     logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10), DAILY DIGEST (8 AM IST)")
     
@@ -23155,6 +23162,14 @@ async def _get_batch_image_status(username: str = Depends(verify_admin)):
     return job
 
 app.include_router(_batch_router)
+
+# ── Admin Places Verified Registry (Concierge-curated TDC-verified list) ──
+try:
+    import admin_places_verified_routes
+    app.include_router(admin_places_verified_routes.router)
+    logger.info("✅ admin_places_verified_routes loaded — Admin → Places → Mark as Verified")
+except Exception as e:
+    logger.error(f"Failed to load admin_places_verified_routes: {e}")
 
 # ── HARDENING BUNDLE (Apr 2026) — backup health + soft-delete + arch auditor ──
 try:

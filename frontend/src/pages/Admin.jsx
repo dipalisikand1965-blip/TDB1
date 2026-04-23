@@ -34,6 +34,7 @@ import EmergencyManager from '../components/admin/EmergencyManager';
 import CelebrateManager from '../components/admin/CelebrateManager';
 import NPSManager from '../components/admin/NPSManager';
 import AdoptManager from '../components/admin/AdoptManager';
+import PlacesVerifiedManager from '../components/admin/PlacesVerifiedManager';
 import FarewellManager from '../components/admin/FarewellManager';
 import ShopManager from '../components/admin/ShopManager';
 import DataMigration from '../components/DataMigration';
@@ -2601,6 +2602,7 @@ const Admin = () => {
                     { id: 'adopt', label: 'Adopt', icon: PawPrint },
                     { id: 'shop-manager', label: 'Shop', icon: ShoppingBag },
                     { id: 'services', label: 'Services', icon: Activity },
+                    { id: 'places-verified', label: 'Places', icon: MapPin },
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -4986,6 +4988,11 @@ const Admin = () => {
         {/* Adopt Tab */}
         {activeTab === 'adopt' && (
           <AdoptManager getAuthHeader={getAuthHeaders} />
+        )}
+
+        {/* Places Verified Registry — Concierge-curated TDC Verified list */}
+        {activeTab === 'places-verified' && (
+          <PlacesVerifiedManager />
         )}
 
         {/* Shop Tab */}
