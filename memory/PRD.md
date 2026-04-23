@@ -33,6 +33,30 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Path B — MiraImaginesBreed Soul-Hydration (Apr 23, 2026)
+
+**Problem**: Even after Fix 1/2/3, the `MiraImaginesBreed` component (rendered on 12+ pillar pages) ignored `doggy_soul_answers` for custom breeds. A Kanni parent saw: "Mira hasn't met many Kanni yet" + generic "medium coat / medium energy / no sensitivities" filler cards. Two components on the same page spoke with different voices.
+
+**Fix**: Added `hydrateTraitsFromSoul(pet)` helper inside `MiraImaginesBreed.jsx`. When breed is NOT in the 32-breed `BREED_TRAITS` catalog, synthesize traits from soul answers:
+- `exercise_needs` + `energy_level` → `energy` (high / medium / low)
+- `general_nature` + `separation_anxiety` + `loud_sounds` + `handling_comfort` → anxiety signal + trait chips (sensitive/affectionate/playful/loyal)
+- `food_allergies` → sensitivities (allergy / digestive) — maps to existing card branches
+- `weight` → size (small / medium / large)
+- Composite → `personality` string (used in celebrate + fit pillar cards)
+
+**UI changes**:
+- Subtitle now says "Since [name] is one of a kind, Mira is imagining based on their soul — not a breed template." for soul-hydrated pets
+- Trait chips now render for soul-hydrated breeds (coat chip hidden — honest, since we don't ask coat in soul yet)
+- New `✦ from [name]'s soul` badge differentiates soul-synthesized traits from hardcoded catalog
+- Bottom banner acknowledges: "Mira's imagining these from [name]'s answers so far — every new one sharpens the picks"
+
+**Verified**: 4 unit-test cases pass for `hydrateTraitsFromSoul` (rich anxious/active/allergic soul, thin soul, empty soul, calm affectionate small dog). Lint clean. No API changes needed.
+
+**Result**: The two components (`PersonalisedBreedSection` soul_fallback + `MiraImaginesBreed` soul hydration) now speak with ONE unified voice for custom-breed pets. Known breeds (Labrador, Indie, etc.) flow UNCHANGED.
+
+**Files changed**:
+- `/app/frontend/src/components/common/MiraImaginesBreed.jsx` (+114 / -12)
+
 ### Session: Custom Breed Soul Fallback (Apr 23, 2026) — Fix 1/2/3 bundle
 
 **Problem solved**: Free-text breed (Kanni, Chippiparai, mixed) saved OK but Mira fell back to "Indie" / generic products — ignoring soul characteristics. Also breed wasn't mirrored into `doggy_soul_answers`.
