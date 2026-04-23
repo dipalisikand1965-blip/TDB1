@@ -3399,6 +3399,7 @@ const Admin = () => {
               { id: 'reviews', label: 'Reviews', icon: MessageCircle },
               { id: 'nps', label: 'Pawmoter', icon: Star },
               { id: 'site-status', label: 'Site Status', icon: FileText },
+              { id: 'clarity-analytics', label: '📊 Clarity', icon: TrendingUp },
             ].map((tab) => (
               <Button
                 key={tab.id}
