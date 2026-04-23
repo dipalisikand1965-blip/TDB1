@@ -10580,6 +10580,9 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
         # Ignore client-sent soul_score — backend is sole source of truth (per Soul Bible §1)
         pet_data = data.get("pet_data", {})
         answered_question_ids = data.get("answered_question_ids", [])
+        # Custom / free-text breed flag — explicit from frontend when user picked "Other" chip.
+        # Also auto-inferred below if breed is non-empty but not in the BREED_PROFILES catalog.
+        custom_breed_flag = bool(data.get("custom_breed") or pet_data.get("custom_breed"))
         
         if not pet_name:
             raise HTTPException(status_code=400, detail="Pet name required")
@@ -10618,6 +10621,28 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
         canonical_score = _score_data.get("total_score", 0)
         canonical_tier_key = (_score_data.get("tier") or {}).get("key") or "newcomer"
 
+        # Resolve breed value (new or preserved)
+        resolved_breed = (
+            pet_data.get("breed")
+            or data.get("breed", "")
+            or (existing_pet.get("breed") if existing_pet else "")
+            or ""
+        ).strip()
+
+        # Mirror breed into canonical soul answers so any surface reading from
+        # doggy_soul_answers sees it (Fix 3 — single source of truth for breed).
+        if resolved_breed and resolved_breed.lower() != "other":
+            merged_answers["breed"] = resolved_breed
+
+        # Auto-infer custom_breed when breed is provided but not in the curated catalog.
+        # Frontend explicit flag wins; else fall back to catalogue lookup.
+        try:
+            from breed_catalogue import is_known_breed  # type: ignore
+            auto_custom = bool(resolved_breed) and not is_known_breed(resolved_breed)
+        except Exception:
+            auto_custom = False
+        is_custom_breed = bool(custom_breed_flag or auto_custom)
+
         # Build update document
         update = {
             "id": pet_id,
@@ -10627,7 +10652,8 @@ async def save_soul_builder_answers(request: Request, authorization: Optional[st
             "soul_score": canonical_score,
             "overall_score": canonical_score,
             "score_tier": canonical_tier_key,
-            "breed": pet_data.get("breed") or data.get("breed", "") or (existing_pet.get("breed") if existing_pet else ""),
+            "breed": resolved_breed,
+            "custom_breed": is_custom_breed,
             "gender": pet_data.get("gender", "") or (existing_pet.get("gender") if existing_pet else ""),
             "birth_date": pet_data.get("birth_date", "") or (existing_pet.get("birth_date") if existing_pet else ""),
             "weight": pet_data.get("weight") or (existing_pet.get("weight") if existing_pet else None),

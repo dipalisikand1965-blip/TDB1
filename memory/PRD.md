@@ -33,6 +33,35 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Custom Breed Soul Fallback (Apr 23, 2026) — Fix 1/2/3 bundle
+
+**Problem solved**: Free-text breed (Kanni, Chippiparai, mixed) saved OK but Mira fell back to "Indie" / generic products — ignoring soul characteristics. Also breed wasn't mirrored into `doggy_soul_answers`.
+
+**Fix 1 — Tag custom breeds on save** (`SoulBuilder.jsx` + `server.py:/pet-soul/save-answers`)
+- Frontend sends `custom_breed: otherBreedSelected` flag in payload
+- Backend persists `pets.custom_breed` (bool). Also auto-infers `true` when breed is provided but not in `BREED_PROFILES` catalog
+
+**Fix 2 — Soul-based product fallback** (`breed_catalogue.py`)
+- New helpers: `is_known_breed()`, `_extract_soul_signals()`, `_build_soul_query()`, `_soul_thin()`, `_mira_note_for()`
+- `/api/breed-catalogue/products` now accepts `pet_id` + `custom_breed` query params
+- When custom breed or unknown breed + pet_id given: switches to soul-mode, excludes breed-specific merchandise categories, returns `context` with `mode` (`breed` / `soul_fallback` / `thin_fallback`), extracted `signals`, Mira voice-note, and Concierge prompt
+- Known breeds (Labrador etc.) flow UNCHANGED
+
+**Fix 3 — Mirror breed into soul answers + Concierge thin-soul card**
+- `doggy_soul_answers.breed` now set on save alongside `pets.breed` (single source of truth)
+- `PersonalisedBreedSection.jsx`: new Mira italic voice-note banner + Concierge CTA card when `mode === 'thin_fallback'`. Empty state also adapted for soul-mode (replaces generic "We're curating X-breed picks" with personality-based copy)
+
+**Verified end-to-end**:
+- Kanni (rich soul) → `soul_fallback`, Mira: "Since TestKanni is one of a kind, I'm matching on their sensitive side, their active streak and their allergies."
+- Chippiparai (thin soul, 2 answers) → `thin_fallback`, Concierge prompt: "Tell us more about Chippiparai — our Concierge will curate something perfect for TestChippi."
+- Labrador (known breed) → `mode: breed`, 102 products, unchanged
+
+**Files changed**:
+- `/app/backend/server.py` (save-answers endpoint — custom_breed persist + breed mirror + auto-infer via `is_known_breed`)
+- `/app/backend/breed_catalogue.py` (+ ~180 lines: `is_known_breed`, soul signals, soul query, Mira note, `/products` endpoint soul fallback)
+- `/app/frontend/src/pages/SoulBuilder.jsx` (payload includes `custom_breed`)
+- `/app/frontend/src/components/common/PersonalisedBreedSection.jsx` (consumes `context`, renders Mira note + Concierge card, adapts empty state)
+
 ### Session: Race Condition Fix — Breed Guard Across All Pillar Pages (Apr 2026)
 - Fixed P0 race condition: `useEffect` product fetches now wait for `pet.breed` to be populated before calling `/api/admin/pillar-products`
 - Added `!currentPet?.breed` / `!pet?.breed` guard to 15 files: `PlayMobilePage.jsx`, `GoMobilePage.jsx`, `EmergencyMobilePage.jsx`, `CelebrateMobilePage.jsx`, `CareMobilePage.jsx`, `DineMobilePage.jsx`, `LearnMobilePage.jsx`, `AdoptSoulPage.jsx`, `PaperworkMobilePage.jsx`, `ShopMobilePage.jsx`, `CareSoulPage.jsx`, `PlaySoulPage.jsx`, `PaperworkSoulPage.jsx`, `DineSoulPageDesktopLegacy.jsx`, `ShopSoulPage.jsx`

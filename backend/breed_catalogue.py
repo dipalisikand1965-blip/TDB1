@@ -282,6 +282,162 @@ def get_breed_profile(breed_name: str) -> dict:
     }
 
 
+def is_known_breed(breed_name: str) -> bool:
+    """True if the given breed (or an alias) is in our curated BREED_PROFILES catalog."""
+    if not breed_name:
+        return False
+    normalized = normalize_breed(breed_name)
+    return normalized in BREED_PROFILES
+
+
+# ============================================
+# SOUL-BASED PRODUCT FALLBACK
+# ============================================
+# When a pet has a custom / unknown breed, we cannot match on breed tags.
+# Instead, derive product-filter signals from the pet's doggy_soul_answers
+# (allergies, temperament, energy, age stage) and build a Mongo query
+# that picks products matching those traits.
+# ============================================
+
+_ACTIVE_ENERGY_SIGNALS    = {"active", "high", "high_energy", "very_active", "energetic"}
+_CALM_ENERGY_SIGNALS      = {"calm", "low", "low_energy", "couch_potato", "relaxed"}
+_ANXIOUS_SIGNALS          = {"anxious", "scared", "fearful", "shy", "nervous", "stressed"}
+_PUPPY_SIGNALS            = {"puppy", "pup", "baby"}
+_SENIOR_SIGNALS           = {"senior", "elderly", "old"}
+
+
+def _extract_soul_signals(soul_answers: dict, pet_doc: dict = None) -> dict:
+    """
+    Reduce a pet's soul answers + extracted pet fields to a compact signal dict
+    that's easy to map into a product-filter query.
+    """
+    soul_answers = soul_answers or {}
+    pet_doc = pet_doc or {}
+
+    def _as_str(v):
+        if isinstance(v, dict):
+            return str(v.get("value") or v.get("label") or "").lower()
+        return str(v or "").lower()
+
+    # Energy / exercise
+    exercise = _as_str(soul_answers.get("exercise_needs") or pet_doc.get("care", {}).get("exercise_needs"))
+    energy_raw = _as_str(soul_answers.get("energy_level") or soul_answers.get("activity_level"))
+    energy = None
+    if any(s in exercise for s in _ACTIVE_ENERGY_SIGNALS) or any(s in energy_raw for s in _ACTIVE_ENERGY_SIGNALS):
+        energy = "active"
+    elif any(s in exercise for s in _CALM_ENERGY_SIGNALS) or any(s in energy_raw for s in _CALM_ENERGY_SIGNALS):
+        energy = "calm"
+    elif exercise or energy_raw:
+        energy = "moderate"
+
+    # Temperament / anxiety
+    temperament_raw = _as_str(
+        soul_answers.get("general_nature")
+        or soul_answers.get("temperament")
+        or pet_doc.get("personality", {}).get("temperament")
+    )
+    separation = _as_str(soul_answers.get("separation_anxiety") or pet_doc.get("personality", {}).get("separation_anxiety"))
+    noise      = _as_str(soul_answers.get("loud_sounds")        or pet_doc.get("personality", {}).get("noise_sensitivity"))
+    handling   = _as_str(soul_answers.get("handling_comfort")   or pet_doc.get("care", {}).get("handling_sensitivity"))
+    is_anxious = (
+        any(s in temperament_raw for s in _ANXIOUS_SIGNALS)
+        or any(s in separation for s in _ANXIOUS_SIGNALS) or "often" in separation or "yes" in separation
+        or any(s in noise for s in _ANXIOUS_SIGNALS) or "scared" in noise
+        or "sensitive" in handling or "uncomfortable" in handling
+    )
+
+    # Allergies / sensitivities
+    allergies_raw = soul_answers.get("food_allergies") or (pet_doc.get("health", {}) or {}).get("allergies")
+    has_allergies = False
+    if isinstance(allergies_raw, list):
+        has_allergies = any(str(a).strip().lower() not in ("", "none", "no", "unknown") for a in allergies_raw)
+    elif allergies_raw:
+        has_allergies = str(allergies_raw).strip().lower() not in ("", "none", "no", "unknown")
+
+    # Age stage
+    age_stage = _as_str(
+        soul_answers.get("age_stage")
+        or soul_answers.get("life_stage")
+        or pet_doc.get("age_stage")
+        or pet_doc.get("life_stage")
+    )
+    stage = None
+    if any(s in age_stage for s in _PUPPY_SIGNALS):
+        stage = "puppy"
+    elif any(s in age_stage for s in _SENIOR_SIGNALS):
+        stage = "senior"
+    elif age_stage:
+        stage = "adult"
+
+    return {
+        "energy": energy,                 # "active" | "calm" | "moderate" | None
+        "anxious": is_anxious,            # bool
+        "has_allergies": has_allergies,   # bool
+        "stage": stage,                   # "puppy" | "adult" | "senior" | None
+    }
+
+
+def _build_soul_query(signals: dict) -> dict:
+    """
+    Build a Mongo query on products that likely suit the given soul signals.
+
+    Design note: most of our breed_products are EITHER breed-specific merch
+    (bandanas/bowls in category "breed-*") OR breed-agnostic lifestyle items
+    (null/other category). For a custom/unknown breed, we deliberately
+    surface the NON-breed-merch pool (so the user does NOT see a wrong-breed
+    bandana). Soul signals are also recorded in the response context so the
+    UI can show Mira's "matching on personality" note.
+    """
+    # Exclude breed-specific merchandise categories (e.g. "breed-bandanas",
+    # "breed-mugs") so custom-breed users don't see Irish Setter / Labrador merch.
+    return {
+        "$or": [
+            {"category": None},
+            {"category": {"$exists": False}},
+            {"category": {"$not": {"$regex": "^breed-", "$options": "i"}}},
+        ]
+    }
+
+
+def _soul_thin(soul_answers: dict) -> bool:
+    """A pet's soul is 'thin' if they have fewer than 5 meaningful answers."""
+    if not soul_answers:
+        return True
+    meaningful = [
+        k for k, v in soul_answers.items()
+        if v and not (isinstance(v, dict) and v.get("skipped"))
+    ]
+    return len(meaningful) < 5
+
+
+def _mira_note_for(pet_name: str, breed: str, signals: dict, thin: bool) -> str:
+    """Generate Mira's voice-over for the soul fallback panel."""
+    name = pet_name or "your dog"
+    if thin:
+        return (
+            f"Since {name} is one of a kind, I'm pulling together picks based on what you've told me so far. "
+            f"Tell me a little more and I'll get sharper."
+        )
+    parts = []
+    if signals.get("anxious"):
+        parts.append("their sensitive side")
+    if signals.get("energy") == "active":
+        parts.append("their active streak")
+    elif signals.get("energy") == "calm":
+        parts.append("their calm nature")
+    if signals.get("has_allergies"):
+        parts.append("their allergies")
+    if signals.get("stage") == "senior":
+        parts.append("their senior years")
+    elif signals.get("stage") == "puppy":
+        parts.append("their puppy stage")
+
+    if not parts:
+        return f"Since {name} is one of a kind, I'm matching based on their personality."
+    trait_text = ", ".join(parts[:-1]) + (f" and {parts[-1]}" if len(parts) > 1 else parts[0])
+    return f"Since {name} is one of a kind, I'm matching on {trait_text}."
+
+
 # ============================================
 # API ENDPOINTS - PRODUCTS
 # ============================================
@@ -293,12 +449,18 @@ async def get_breed_products(
     breed: Optional[str] = None,
     size: Optional[str] = None,
     age_group: Optional[str] = None,
+    pet_id: Optional[str] = None,
+    custom_breed: Optional[bool] = None,
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0)
 ):
     """Get breed-aware products with filtering.
     STRICT RULE: breed_products are ALWAYS breed-specific.
     A Labrador only sees Labrador products. NEVER cross-breed.
+
+    SOUL FALLBACK: If the pet is a custom/unknown breed (or `custom_breed=true`
+    is passed, or `pet_id` points to a pet flagged custom_breed), we switch to
+    soul-characteristic matching (energy, anxiety, allergies, age stage).
     """
     query = {"is_active": True}
     
@@ -307,11 +469,33 @@ async def get_breed_products(
     if pillar:
         query["pillars"] = pillar
 
-    # STRICT BREED FILTER: when breed is specified, only return that breed's products
-    # We do this via the `breed` field (now correctly set by the fix script)
-    if breed:
+    # Resolve pet context (needed for soul fallback + mira_note)
+    pet_doc = None
+    if pet_id:
+        try:
+            pet_doc = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        except Exception:
+            pet_doc = None
+        if pet_doc:
+            breed = breed or pet_doc.get("breed") or (pet_doc.get("doggy_soul_answers") or {}).get("breed")
+            if custom_breed is None:
+                custom_breed = bool(pet_doc.get("custom_breed"))
+
+    # Decide whether to use soul fallback
+    is_custom = bool(custom_breed) or (bool(breed) and not is_known_breed(breed))
+    use_soul_fallback = is_custom and bool(pet_doc)
+
+    context: Dict[str, Any] = {
+        "mode": "breed",
+        "breed": breed or None,
+        "custom_breed": bool(is_custom),
+        "mira_note": None,
+        "concierge_prompt": None,
+    }
+
+    # STRICT BREED FILTER: when breed is specified AND known, only return that breed's products.
+    if breed and not use_soul_fallback:
         normalized_breed = normalize_breed(breed)
-        # Normalised form for tag matching (e.g. "shih_tzu" or "shih tzu")
         breed_tag_forms = [
             normalized_breed,
             normalized_breed.lower(),
@@ -326,11 +510,39 @@ async def get_breed_products(
             {"who_for": {"$regex": normalized_breed.replace("_", " "), "$options": "i"}},
         ]
 
+    # SOUL FALLBACK FILTER
+    if use_soul_fallback:
+        soul_answers = (pet_doc or {}).get("doggy_soul_answers") or {}
+        signals = _extract_soul_signals(soul_answers, pet_doc or {})
+        soul_query = _build_soul_query(signals)
+        thin = _soul_thin(soul_answers)
+
+        if soul_query:
+            # Intersect category/pillar with soul_query via $and
+            base = {k: v for k, v in query.items() if k != "$or"}
+            query = {"$and": [base, soul_query]}
+
+        context["mode"] = "soul_fallback"
+        context["signals"] = signals
+        context["mira_note"] = _mira_note_for(
+            pet_name=(pet_doc or {}).get("name"),
+            breed=breed or "",
+            signals=signals,
+            thin=thin,
+        )
+        if thin:
+            context["mode"] = "thin_fallback"
+            context["concierge_prompt"] = (
+                f"Tell us more about {breed or 'your dog'} — our Concierge will curate "
+                f"something perfect for {(pet_doc or {}).get('name') or 'them'}."
+            )
+
     total = await db.breed_products.count_documents(query)
     raw_products = await db.breed_products.find(query, {"_id": 0}).skip(offset).limit(limit).to_list(limit)
 
     # Post-fetch safety: remove products whose name belongs to a DIFFERENT breed
-    if breed:
+    # (only when doing a strict breed match; soul fallback already is breed-agnostic).
+    if breed and not use_soul_fallback:
         req = (breed or "").lower().strip().replace("_", " ")
         from pillar_products_routes import KNOWN_BREED_NAMES, _detect_product_breed
         def is_correct_breed(p):
@@ -340,6 +552,14 @@ async def get_breed_products(
                 return req in detected or detected in req
             return True  # no breed in name → keep
         products = [p for p in raw_products if is_correct_breed(p)]
+    elif use_soul_fallback:
+        # Soul fallback: strip any product whose NAME contains a different breed
+        # (prevents showing "Irish Setter Bandana" to a custom-breed dog).
+        from pillar_products_routes import _detect_product_breed
+        products = [
+            p for p in raw_products
+            if _detect_product_breed((p.get("name") or "").lower()) is None
+        ]
     else:
         products = raw_products
 
@@ -347,7 +567,8 @@ async def get_breed_products(
         "products": products,
         "total": total,
         "limit": limit,
-        "offset": offset
+        "offset": offset,
+        "context": context,
     }
 
 

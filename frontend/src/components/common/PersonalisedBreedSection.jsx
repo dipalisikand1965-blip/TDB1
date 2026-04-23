@@ -58,6 +58,7 @@ export default function PersonalisedBreedSection({
   const [selected, setSelected] = useState(null);
   const [soulMadeOpen, setSoulMadeOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(4);
+  const [soulContext, setSoulContext] = useState(null);  // { mode, mira_note, concierge_prompt, custom_breed }
 
   const breed    = pet?.doggy_soul_answers?.breed || pet?.breed || "Indie";
   const petName  = pet?.name || "your dog";
@@ -93,14 +94,21 @@ export default function PersonalisedBreedSection({
   useEffect(() => {
     if (!breed) { setLoading(false); return; }
     const breedEncoded = encodeURIComponent(breed);
+    // Pass pet_id so backend can detect custom_breed and fall back to soul-based matching.
+    const petIdParam = pet?.id ? `&pet_id=${encodeURIComponent(pet.id)}` : '';
+    const customBreedParam = pet?.custom_breed ? '&custom_breed=true' : '';
     // Fetch ALL breed products (no pillar filter) so user always sees a full Soul Made collection.
     // Sort current-pillar products first, then fill with cross-pillar picks.
-    fetch(`${API_URL}/api/breed-catalogue/products?breed=${breedEncoded}&limit=40`)
+    fetch(`${API_URL}/api/breed-catalogue/products?breed=${breedEncoded}${petIdParam}${customBreedParam}&limit=40`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const raw = data?.products || [];
+        setSoulContext(data?.context || null);
         // Step 1 — strict breed filter: exclude products named for a different breed
-        const breedFiltered = filterBreedProducts(raw, breed);
+        // SKIP this filter when backend used soul fallback (products are breed-agnostic by design)
+        const ctxMode = data?.context?.mode;
+        const isSoulFallback = ctxMode === 'soul_fallback' || ctxMode === 'thin_fallback';
+        const breedFiltered = isSoulFallback ? raw : filterBreedProducts(raw, breed);
         // Step 2 — prefer products with a valid image (using the same smart resolver as the modal)
         // Also accepts soul- prefix files (e.g. soul-shih_tzu-breed-custom_portraits-c3d30cd3.webp)
         const withImages = breedFiltered.filter(p => {
@@ -148,6 +156,23 @@ export default function PersonalisedBreedSection({
   }
 
   if (!products.length) {
+    // Soul-fallback-aware copy: if the pet is a custom/unknown breed, show Mira's
+    // personality-based voice + (for thin soul) the Concierge prompt instead of the
+    // generic "We're curating X-breed picks" copy.
+    const isSoulMode = soulContext?.mode === 'soul_fallback' || soulContext?.mode === 'thin_fallback';
+    const isThin     = soulContext?.mode === 'thin_fallback';
+    const headerLabel = isSoulMode
+      ? `✦ PERSONALISED FOR ${petName?.toUpperCase()}`
+      : `✦ PERSONALISED FOR ${breed?.toUpperCase()}S`;
+    const titleText = isThin
+      ? (soulContext?.concierge_prompt || `Tell us more about ${breed} — our Concierge will curate something perfect for ${petName}.`)
+      : isSoulMode
+        ? `Matching on ${petName}'s personality.`
+        : `We're curating breed-specific ${entityType}s for ${petName}.`;
+    const subText = isSoulMode
+      ? (soulContext?.mira_note || `Mira is matching based on ${petName}'s soul.`)
+      : `Mira is working on ${breed}-matched picks. Check back soon.`;
+    const ctaText = isSoulMode ? `Talk to Concierge® about ${petName} →` : `Request ${breed} Collection →`;
     return (
       <div style={{ padding:"0", textAlign:"center" }}>
         <div style={{
@@ -155,16 +180,16 @@ export default function PersonalisedBreedSection({
           borderRadius:20, padding:'24px 20px', position:'relative', overflow:'hidden'
         }}>
           <div style={{ position:'absolute', top:-20, right:-10, width:100, height:100, borderRadius:'50%', background:'radial-gradient(circle,rgba(233,30,140,0.15) 0%,transparent 70%)' }} />
-          <div style={{ fontSize:10, letterSpacing:'0.14em', color:'rgba(233,30,140,0.9)', fontWeight:700, marginBottom:10 }}>✦ PERSONALISED FOR {breed?.toUpperCase()}S</div>
+          <div style={{ fontSize:10, letterSpacing:'0.14em', color:'rgba(233,30,140,0.9)', fontWeight:700, marginBottom:10 }}>{headerLabel}</div>
           <div style={{ fontSize:18, fontWeight:700, color:'#fff', lineHeight:1.3, marginBottom:8 }}>
-            We're curating breed-specific {entityType}s for {petName}.
+            {titleText}
           </div>
-          <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.6, marginBottom:16 }}>
-            Mira is working on {breed}-matched picks. Check back soon.
+          <div style={{ fontSize:13, color:'rgba(255,255,255,0.55)', lineHeight:1.6, marginBottom:16, fontStyle: isSoulMode ? 'italic' : 'normal' }}>
+            {subText}
           </div>
-          {/* Request collection CTA */}
+          {/* Request collection / Concierge CTA */}
           <button
-            data-testid="request-breed-collection-btn"
+            data-testid={isSoulMode ? "concierge-thin-soul-empty-btn" : "request-breed-collection-btn"}
             onClick={handleRequestCollection}
             style={{
               width:'100%', padding:'13px 18px', marginBottom:10,
@@ -175,7 +200,7 @@ export default function PersonalisedBreedSection({
               fontFamily:'inherit', letterSpacing:'0.01em',
             }}
           >
-            Request {breed} Collection →
+            {ctaText}
           </button>
           <button
             data-testid="soul-made-trigger"
@@ -223,6 +248,43 @@ export default function PersonalisedBreedSection({
         </div>
         <SoulChip bg={`${C.orange}20`} color={C.orange}>Soul Made</SoulChip>
       </div>
+
+      {/* Mira soul-fallback note — shown when pet has a custom/unknown breed */}
+      {soulContext?.mira_note && (soulContext.mode === 'soul_fallback' || soulContext.mode === 'thin_fallback') && (
+        <div
+          data-testid="mira-soul-fallback-note"
+          style={{
+            display:'flex', gap:10, alignItems:'flex-start',
+            background:'linear-gradient(135deg,rgba(155,89,182,0.08),rgba(233,30,140,0.06))',
+            border:'1px solid rgba(155,89,182,0.18)', borderRadius:12,
+            padding:'10px 12px', marginBottom:14,
+          }}
+        >
+          <div style={{ width:20, height:20, borderRadius:'50%', background:MIRA_ORB, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', fontSize:9, color:'#fff' }}>✦</div>
+          <div style={{ fontSize:12, color:C.deep, lineHeight:1.45, fontStyle:'italic' }}>{soulContext.mira_note}</div>
+        </div>
+      )}
+
+      {/* Concierge thin-soul card — shown when custom breed AND soul is thin */}
+      {soulContext?.mode === 'thin_fallback' && soulContext?.concierge_prompt && (
+        <button
+          data-testid="concierge-thin-soul-card"
+          onClick={handleRequestCollection}
+          style={{
+            width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+            gap:10, padding:'12px 14px', marginBottom:14,
+            background:'linear-gradient(135deg,rgba(233,30,140,0.85),rgba(155,89,182,0.85))',
+            border:'none', borderRadius:14, color:'#fff', cursor:'pointer',
+            fontFamily:'inherit', textAlign:'left',
+          }}
+        >
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:11, letterSpacing:'0.12em', fontWeight:700, opacity:0.85, marginBottom:3 }}>✦ BESPOKE · CONCIERGE®</div>
+            <div style={{ fontSize:13, fontWeight:700, lineHeight:1.35 }}>{soulContext.concierge_prompt}</div>
+          </div>
+          <div style={{ fontSize:18, opacity:0.85 }}>›</div>
+        </button>
+      )}
 
       {/* Product grid — 4 at a time */}
       <div style={{ display:"grid", gridTemplateColumns:"repeat(2, 1fr)", gap:10 }}>
