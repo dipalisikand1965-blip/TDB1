@@ -279,10 +279,39 @@ const PillarPageLayout = ({
     services  : { text: '#C9973A', border: 'rgba(201,151,58,0.35)',   bg: 'linear-gradient(135deg,#1C0A00,#3D1A00)' },
   };
   const accent = PILLAR_ACCENT[pillar] || PILLAR_ACCENT.services;
-  
+
+  // Top-cap colour — paints the outer wrapper with the dark hero-start colour
+  // so any sub-pixel seam between the global Navbar and the pillar's dark
+  // hero blends with the hero instead of letting the pale ${bgGradient} peek
+  // through. Only applied when hideHero=true — pages with a custom dark hero
+  // (Celebrate, Care, Dine, Go, Play, etc.) already paint their content area
+  // with their own pageBg, so the outer gradient is redundant. Rajesh flagged
+  // a thin pink sliver on Celebrate — this kills that class of bug for all
+  // hideHero pillars.
+  const PILLAR_TOP_CAP = {
+    celebrate: '#1a0020',
+    dine:      '#1A0E00',
+    care:      '#051209',
+    go:        '#00082A',
+    play:      '#0D001A',
+    learn:     '#00101A',
+    paperwork: '#0D0D0D',
+    emergency: '#1A0000',
+    farewell:  '#0D0014',
+    adopt:     '#1A0A00',
+  };
+  const topCap = hideHero ? (PILLAR_TOP_CAP[pillar] || null) : null;
+  const outerClass = topCap
+    ? `min-h-screen pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`
+    : `min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`;
+
   return (
     <>
-    <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
+    <div
+      className={outerClass}
+      data-testid={`${pillar}-page`}
+      style={topCap ? { backgroundColor: topCap } : undefined}
+    >
       {/* ── Mobile nav header — REMOVED: Navbar from MainLayout handles this ───────────── */}
       {/* Back button only on mobile, subtly placed below Navbar */}
 
