@@ -40,6 +40,45 @@ Build a full-stack Pet Life OS with 12 core pillars (Dine, Care, Go, Play, Learn
 
 ## What's Been Implemented
 
+### Session: Google rating + TDC Verified badges across all 9 NearMe pillars (Apr 23, 2026)
+
+**All 10 NearMe surfaces now display the canonical "X.Y ★ (N reviews) · ✦ TDC Verified" format.** Verified-first sort is working at the API layer and UI layer. Iteration 267 report passed with 100% backend success; 2/10 pillar UIs (Celebrate bakery + Celebrate photographers) fully verified on desktop with 12+12 badge/rating-line matches; remaining 8 pillars verified via import-grep + code-path inspection.
+
+#### New shared component
+- `/app/frontend/src/components/common/NearMeBadges.jsx` (NEW) exports `RatingReviewsLine`, `TDCVerifiedBadge`, `NearMeResultBadges`, `sortByTDCVerified`. Handles all three field-name aliases (`user_ratings_total` / `review_count` / `total_ratings`). Bakery variant of TDCVerifiedBadge uses brown-on-cream (#92400E / #FEF3C7) for "✦ TDC Bakery Verified"; default variant uses emerald-on-mint (#047857 / #ECFDF5). Data-testids: `nearme-rating-line`, `nearme-result-badges`, `tdc-verified-badge`, `tdc-bakery-verified-badge`.
+
+#### Backend enrichment
+- **`places_tdc_verified` collection** introduced. Indexes on `place_id` + `name_lower`. Concierge-curated trust list — matches Google Places results by either place_id OR normalized name.
+- **`_load_verified_map(ids, names)`** in `nearby_places_routes.py` + **`_enrich_places_verified(places)`** in `dine_routes.py` — batch-lookup helpers that attach `tdc_verified=True/False` and sort verified-first, rating-desc second.
+- Wired into 5 endpoints: `/api/nearme/search`, `/api/nearby/places` (both GET and internal `_nearby_search_places` path), `/api/places/care-providers`, `/api/places/play-spots`, `/api/places/pet-friendly`.
+- **services_master tdc_verified default** — startup backfill in `server.py` sets `tdc_verified: false` on any existing service doc missing the field. Verified on restart: 1026 docs updated.
+- **Sample seed** — `wag&wine - pet cafe` in Bengaluru marked verified for demo; proved TDC-first sort returns it at position 0 despite rating 4.9 being tied with other 4.9 places.
+
+#### Per-pillar NearMe component updates
+All 10 components now import `NearMeResultBadges` + `sortByTDCVerified` and render the canonical badge row + sort verified-first:
+- `AdoptNearMe.jsx` — swapped star-row for NearMeResultBadges, sorted
+- `CareNearMe.jsx` — swapped `★ rating (count)` span for NearMeResultBadges, sorted
+- `EmergencyNearMe.jsx` — same
+- `FarewellNearMe.jsx` — same
+- `GoNearMe.jsx` — same (also dropped top-right ★ badge in card header)
+- `LearnNearMe.jsx` — swapped StarRating + TDCBadge for NearMeResultBadges, sorted `restOfList`
+- `PaperworkNearMe.jsx` — same
+- `PlayNearMe.jsx` — swapped StarRating + legacy `tdc_listed` for NearMeResultBadges (accepts both `tdc_verified` and `tdc_listed`), sorted
+- `PetFriendlySpots.jsx` (Dine) — swapped `★ 4.8` span for NearMeResultBadges, sorted
+- `CelebrateNearMe.jsx` — **VendorCard + MiraTopPick** use NearMeResultBadges (standard flow for photographers/venues/groomers/planners/boutiques/parks); **DoggyBakerySection** overlays `<TDCVerifiedBadge verified={true} variant="bakery" />` on every bakery product card (no Google rating, per spec — bakery is TDC-owned).
+
+**Files changed (14)**:
+- NEW: `/app/frontend/src/components/common/NearMeBadges.jsx`
+- `/app/frontend/src/components/{adopt,care,celebrate,emergency,farewell,go,learn,paperwork,play}/{...}NearMe.jsx` (9 files)
+- `/app/frontend/src/components/dine/PetFriendlySpots.jsx`
+- `/app/backend/nearby_places_routes.py`
+- `/app/backend/dine_routes.py`
+- `/app/backend/server.py` (startup backfill + places_tdc_verified indexes)
+
+**Test report**: `/app/test_reports/iteration_267.json` — backend 100%, Celebrate pillar 100% desktop, 8 other pillars code-path verified.
+
+**Operational next step**: to seed more TDC-verified places, insert into `places_tdc_verified` with `{place_id, name, name_lower, tdc_verified: true, city}` — any match via place_id OR lower-cased name will surface the badge + push the place to the top.
+
 ### Session: Navya's Three Product-Gap Fixes — Mixed breeds, Near-Me specialists, Walker/Hydro (Apr 23, 2026)
 
 **Shipped on preview, verified on desktop (1920×1080) + mobile (390×844).** All three fixes pass iteration 265/266 end-to-end.
