@@ -301,17 +301,31 @@ const PillarPageLayout = ({
     adopt:     '#1A0A00',
   };
   const topCap = hideHero ? (PILLAR_TOP_CAP[pillar] || null) : null;
-  const outerClass = topCap
-    ? `min-h-screen pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`
-    : `min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`;
 
   return (
     <>
     <div
-      className={outerClass}
+      className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`}
       data-testid={`${pillar}-page`}
-      style={topCap ? { backgroundColor: topCap } : undefined}
     >
+      {/* Top-cap strip — 8px sliver painted with the hero's dark colour so any
+          sub-pixel seam between the global Navbar and the dark hero blends with
+          the hero instead of letting the pale gradient peek through. Only
+          rendered when a dark hero is in use (hideHero=true). */}
+      {topCap && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'sticky',
+            top: 0,
+            height: 8,
+            marginBottom: -8,
+            backgroundColor: topCap,
+            zIndex: 1,
+            pointerEvents: 'none',
+          }}
+        />
+      )}
       {/* ── Mobile nav header — REMOVED: Navbar from MainLayout handles this ───────────── */}
       {/* Back button only on mobile, subtly placed below Navbar */}
 
