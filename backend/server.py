@@ -2372,6 +2372,13 @@ async def lifespan(app: FastAPI):
     except Exception as _od_err:
         logger.warning(f"[OUTREACH-DIGEST] Scheduler registration failed: {_od_err}")
 
+    # ── SiteVault Daily Status Email — 8 AM IST "Safety Vault is healthy" ping ──
+    try:
+        from sitevault_daily_status_email import schedule_sitevault_daily_status
+        schedule_sitevault_daily_status(scheduler)
+    except Exception as _sv_em_err:
+        logger.warning(f"[SITEVAULT-EMAIL] Scheduler registration failed: {_sv_em_err}")
+
     scheduler.start()
     logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM), PET WRAPPED birthday (daily 9 AM), PET WRAPPED annual (Dec 10), DAILY DIGEST (8 AM IST)")
     

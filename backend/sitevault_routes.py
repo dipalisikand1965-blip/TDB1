@@ -107,6 +107,14 @@ async def run_weekly_now(
     return {"started": True, "type": "weekly", "note": "This may take 30+ minutes if Cloudinary full backup is on"}
 
 
+@router.post("/send-status-email-now")
+async def send_status_email_now(x_admin_secret: Optional[str] = Header(None)):
+    """Manually fire the daily SiteVault status email (for QA / on-demand)."""
+    _require_admin(x_admin_secret)
+    from sitevault_daily_status_email import send_sitevault_daily_status
+    return await send_sitevault_daily_status()
+
+
 @router.post("/cleanup-now")
 async def cleanup_now(x_admin_secret: Optional[str] = Header(None)):
     _require_admin(x_admin_secret)
