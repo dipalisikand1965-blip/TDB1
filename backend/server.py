@@ -18277,6 +18277,19 @@ async def get_member_unread_count(current_user: dict = Depends(get_current_user)
         user_email = current_user.get("email", "")
         user_id = current_user.get("id", "")
         
+        # Count unread member notifications (PRIMARY inbox — Mira, concierge, birthday, etc.)
+        unread_member_notifs = await db.member_notifications.count_documents({
+            "user_email": user_email,
+            "read": False,
+            "$or": [{"archived": {"$exists": False}}, {"archived": False}],
+        })
+
+        # Count unread legacy notifications (still written by some older flows)
+        unread_legacy_notifs = await db.notifications.count_documents({
+            "user_email": user_email,
+            "read": False,
+        })
+
         # Count unread push notifications for this user
         unread_push = await db.push_notification_logs.count_documents({
             "$or": [
@@ -18302,19 +18315,84 @@ async def get_member_unread_count(current_user: dict = Depends(get_current_user)
             "status": {"$in": ["pending", "in_progress"]}
         })
         
-        total_unread = unread_push + unread_tickets + pending_requests
+        total_unread = (
+            unread_member_notifs
+            + unread_legacy_notifs
+            + unread_push
+            + unread_tickets
+            + pending_requests
+        )
         
         return {
             "unread_count": total_unread,
             "breakdown": {
+                "member_notifications": unread_member_notifs,
+                "legacy_notifications": unread_legacy_notifs,
                 "push_notifications": unread_push,
                 "ticket_updates": unread_tickets,
-                "pending_requests": pending_requests
-            }
+                "pending_requests": pending_requests,
+            },
         }
     except Exception as e:
         # Return 0 if there's any error - badge is not critical
         return {"unread_count": 0, "error": str(e)}
+
+
+# ── Unified Inbox unread count (email-keyed, no JWT required) ──
+# Used by GlobalNotificationContext.refreshInbox() for the navbar bell.
+# Mirrors the auth'd endpoint above but accepts email as query param so it
+# works in the early render path before the JWT is attached.
+@api_router.get("/unified-inbox/unread-count")
+async def unified_inbox_unread_count(email: str):
+    """Public-by-email unread aggregation for the navbar bell."""
+    try:
+        if not email:
+            return {"count": 0, "unread_count": 0}
+
+        unread_member_notifs = await db.member_notifications.count_documents({
+            "user_email": email,
+            "read": False,
+            "$or": [{"archived": {"$exists": False}}, {"archived": False}],
+        })
+        unread_legacy_notifs = await db.notifications.count_documents({
+            "user_email": email,
+            "read": False,
+        })
+        unread_push = await db.push_notification_logs.count_documents({
+            "user_email": email,
+            "read": {"$ne": True},
+        })
+        unread_tickets = await db.tickets.count_documents({
+            "member.email": email,
+            "status": {"$in": ["open", "in_progress", "pending_response"]},
+            "has_unread_update": True,
+        })
+        pending_requests = await db.concierge_requests.count_documents({
+            "$or": [{"email": email}, {"user_email": email}],
+            "status": {"$in": ["pending", "in_progress"]},
+        })
+
+        total = (
+            unread_member_notifs
+            + unread_legacy_notifs
+            + unread_push
+            + unread_tickets
+            + pending_requests
+        )
+        return {
+            "count": total,
+            "unread_count": total,
+            "breakdown": {
+                "member_notifications": unread_member_notifs,
+                "legacy_notifications": unread_legacy_notifs,
+                "push_notifications": unread_push,
+                "ticket_updates": unread_tickets,
+                "pending_requests": pending_requests,
+            },
+        }
+    except Exception as e:
+        logger.error(f"[unified-inbox/unread-count] {e}")
+        return {"count": 0, "unread_count": 0, "error": str(e)}
 
 
 # ==================== EMERGENCY WHATSAPP NOTIFICATION ====================
