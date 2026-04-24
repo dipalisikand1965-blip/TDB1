@@ -155,15 +155,80 @@ async def send_outreach_digest(force: bool = False):
 # APScheduler integration — called once from server.py start-up
 # ────────────────────────────────────────────────────────────────────────────
 
+async def _mark_sent_today():
+    """Persist today's send timestamp so startup catch-up doesn't double-send."""
+    try:
+        from server import db
+        ist = pytz.timezone("Asia/Kolkata")
+        today = datetime.now(ist).strftime("%Y-%m-%d")
+        await db.outreach_digest_log.update_one(
+            {"_id": "last_sent"},
+            {"$set": {"date_ist": today, "sent_at_utc": datetime.now(timezone.utc).isoformat()}},
+            upsert=True,
+        )
+    except Exception as e:
+        logger.warning(f"[outreach_digest] could not persist last-sent marker: {e}")
+
+
+async def _was_sent_today() -> bool:
+    try:
+        from server import db
+        ist = pytz.timezone("Asia/Kolkata")
+        today = datetime.now(ist).strftime("%Y-%m-%d")
+        rec = await db.outreach_digest_log.find_one({"_id": "last_sent"}, {"_id": 0, "date_ist": 1})
+        return bool(rec and rec.get("date_ist") == today)
+    except Exception as e:
+        logger.warning(f"[outreach_digest] could not read last-sent marker: {e}")
+        return False
+
+
+async def _startup_catchup():
+    """
+    If the server starts AFTER 8 AM IST today and we haven't already sent today's
+    digest, fire it immediately. Prevents missed digests on mid-morning redeploys.
+    """
+    try:
+        ist = pytz.timezone("Asia/Kolkata")
+        now_ist = datetime.now(ist)
+        # Only catch up between 8 AM and 11 PM IST — avoid 3 AM surprise emails
+        if now_ist.hour < 8 or now_ist.hour >= 23:
+            return
+        if await _was_sent_today():
+            logger.info("[outreach_digest] catch-up skipped — already sent today")
+            return
+        logger.info(f"[outreach_digest] catch-up firing at {now_ist.strftime('%H:%M')} IST — missed 8 AM slot")
+        result = await send_outreach_digest()
+        if result.get("success"):
+            await _mark_sent_today()
+    except Exception as e:
+        logger.error(f"[outreach_digest] catch-up failed: {e}")
+
+
+async def send_outreach_digest_tracked():
+    """Scheduler-invoked wrapper that records the send so catch-up won't re-fire."""
+    result = await send_outreach_digest()
+    if result.get("success"):
+        await _mark_sent_today()
+    return result
+
+
+# Module-level pytz import (used by scheduler + catch-up + marker helpers)
+import pytz  # noqa: E402
+
+
 def schedule_outreach_digest(scheduler):
     """
     Schedule the digest for 8 AM IST daily.
     IST = UTC+5:30 → cron should use UTC 02:30 OR timezone-aware 08:00 IST.
+
+    Hardened:
+      - misfire_grace_time=3600 so a missed slot within 1 hour still fires
+      - startup catch-up: if server boots after 8 AM IST and today's not sent, fire now
+      - last-sent marker in Mongo to prevent double-sends across restarts
     """
-    import pytz
     try:
         scheduler.add_job(
-            send_outreach_digest,
+            send_outreach_digest_tracked,
             trigger="cron",
             hour=8, minute=0,
             timezone=pytz.timezone("Asia/Kolkata"),
@@ -171,7 +236,17 @@ def schedule_outreach_digest(scheduler):
             replace_existing=True,
             max_instances=1,
             coalesce=True,
+            misfire_grace_time=3600,  # 1 hour grace for missed slots
         )
-        logger.info("[outreach_digest] scheduled daily at 8:00 AM IST")
+        logger.info("[outreach_digest] scheduled daily at 8:00 AM IST (grace=3600s)")
+
+        # Fire-and-forget startup catch-up
+        import asyncio
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(_startup_catchup())
+            logger.info("[outreach_digest] startup catch-up task queued")
+        except Exception as e:
+            logger.warning(f"[outreach_digest] could not queue catch-up: {e}")
     except Exception as e:
         logger.error(f"[outreach_digest] schedule failed: {e}")

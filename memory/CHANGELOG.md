@@ -1,5 +1,66 @@
 # TDC Changelog
 
+
+## April 24, 2026 — Admin Clarity Button, Safety Vault Alerts, Navbar Bell Fix, Legacy Cleanup
+
+### Admin: Clarity Analytics Button Wired (`Admin.jsx`)
+- Root cause: Previous session built `ClarityAnalyticsPanel` component + registered the tab handler but forgot to add the navigation button
+- Fix: Added `{ id: 'clarity-analytics', label: '📊 Clarity', icon: TrendingUp }` to BOTH Commerce and Analytics rows
+- Now clickable from Admin → Commerce (next to ✦ Places) AND Admin → Analytics (after Site Status)
+
+### Safety Vault: Daily + Weekly Email Alerts + WhatsApp Failure Alert
+- New: `sitevault_daily_status_email.py` — daily 8 AM IST status email (success OR failure formats)
+  - SUCCESS: ✅ subject + primary file, size, doc count, duration, Drive location, file list, "All systems healthy"
+  - FAILURE: 🔴 subject + error, failing step, last successful backup, smart recommendation, manual backup path
+  - WhatsApp blast to `ADMIN_WHATSAPP_NUMBER` via Gupshup on any failure (freeform fallback)
+- New: `sitevault_weekly_summary_email.py` — Monday 9 AM IST weekly summary
+  - Daily backups X/7 ✅, Weekly full X/1 ✅, Monthly frozen ✅, Gold Masters retained, Total Drive storage, Next monthly frozen date
+- Recipients: `dipali@clubconcierge.in` + CC `sysadmin@clubconcierge.in`
+- Hardening (applied to ALL scheduled emails):
+  - `misfire_grace_time=3600` — missed slot within 1 hour still fires
+  - Startup catch-up — if server boots 8 AM–11 PM IST and today's not sent, fires immediately
+  - Mongo last-sent marker (`sitevault_status_email_log`, `outreach_digest_log`) — prevents double-sends across restarts
+- Admin endpoints: `POST /api/sitevault/send-status-email-now`, `POST /api/sitevault/send-weekly-summary-now`
+
+### Outreach Digest Scheduler Hardening (`places_outreach_digest.py`)
+- Root cause for missed 8 AM IST digest on 24 Apr: backend restarted at 8:02 AM — APScheduler doesn't run missed slots by default
+- Same hardening pattern: `misfire_grace_time=3600` + startup catch-up + Mongo last-sent marker
+- Today's digest fired manually + verified — Resend IDs logged
+
+### Navbar Bell / Unified Inbox Endpoint Fix (`server.py`)
+- Root cause: `/api/unified-inbox/unread-count` was 404 (never built); `/api/notifications/unread-count` was missing `member_notifications` (the PRIMARY inbox collection) in its aggregation
+- Impact: Bell showed 0 even when Dipali had 22 unread notifications
+- Fix: Built `GET /api/unified-inbox/unread-count?email=<email>` aggregating 5 sources:
+  - `member_notifications` (primary Mira/concierge/birthday inbox)
+  - `notifications` (legacy fallback)
+  - `push_notification_logs`
+  - `tickets` with `has_unread_update`
+  - `concierge_requests` pending
+- Also updated existing `GET /api/notifications/unread-count` (JWT auth'd) to include `member_notifications` + `notifications`
+- Returns `{count, unread_count, breakdown}` for both endpoints
+- Verified: Dipali preview now shows 22 unread (bell displays "9+")
+
+### Legacy Service Requests Cleanup
+- Soft-closed all 398 pending `service_requests` records → `status: "closed_legacy"` + `closure_note` + `closed_at` + `closed_by`
+- Investigation findings:
+  - 231 records had no email (from `mira_soulful` test flows)
+  - 167 records from Dipali's self-testing
+  - 0 real paying customers — confirmed safe to clean
+  - `test@example.com` generator does NOT exist — was a one-off Feb 25 QA hit, never repeated
+- Mira Soulful flow (`mira_soulful_brain.py:execute_create_service_ticket`) is CORRECT production behavior — creates pending tickets for the concierge team to process. Not a bug.
+- No code changes needed — DB-only cleanup.
+
+### Files Created
+- `/app/backend/sitevault_daily_status_email.py`
+- `/app/backend/sitevault_weekly_summary_email.py`
+
+### Files Modified
+- `/app/backend/server.py` — added `/api/unified-inbox/unread-count`, updated `/api/notifications/unread-count`, wired sitevault email schedulers
+- `/app/backend/places_outreach_digest.py` — hardened scheduler (misfire grace + catch-up + dedup marker)
+- `/app/backend/sitevault_routes.py` — added on-demand trigger endpoints
+- `/app/frontend/src/pages/Admin.jsx` — added Clarity tab buttons in Commerce + Analytics rows
+
+
 ## April 19, 2026 — Mira Soul Charter + Search Intelligence + Security
 
 ### Security: MongoDB Atlas Credential Rotation
