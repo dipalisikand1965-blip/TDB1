@@ -200,12 +200,32 @@ def _render_failure(run: dict | None, last_success: dict | None) -> tuple[str, s
     status = (run or {}).get("status", "unknown")
 
     errors = (run or {}).get("errors") or []
-    error_text = errors[0] if errors else f"status={status} — see Admin → Guide & Backup for details"
-    if isinstance(error_text, dict):
-        error_text = error_text.get("message") or str(error_text)
-    failing_step = (run or {}).get("failing_step") or (
-        errors[0].get("step") if errors and isinstance(errors[0], dict) else "unknown"
-    )
+
+    # Determine the REAL reason for the failure-email
+    # Case A: last run actually failed/crashed (status != success)
+    # Case B: last run was success but is too old (stale) — pod was sleeping
+    if errors:
+        error_text = errors[0]
+        if isinstance(error_text, dict):
+            error_text = error_text.get("message") or str(error_text)
+        failing_step = (run or {}).get("failing_step") or (
+            errors[0].get("step") if isinstance(errors[0], dict) else "unknown"
+        )
+    elif status == "success" and run:
+        # Stale-success case — backup is old, not failed
+        hours_old = _hours_since((run or {}).get("completed_at") or (run or {}).get("started_at"))
+        error_text = (
+            f"Last backup is {hours_old:.0f}h old (older than {FRESH_THRESHOLD_HOURS}h freshness threshold). "
+            f"Most likely cause: the server pod went to sleep overnight and missed the 3 AM IST cron. "
+            f"The backup itself succeeded — it just hasn't been re-run in over a day."
+        )
+        failing_step = "scheduler — pod sleep / missed cron slot"
+    elif not run:
+        error_text = "No SiteVault runs found in the database."
+        failing_step = "no records"
+    else:
+        error_text = f"Last run status: {status}"
+        failing_step = (run or {}).get("failing_step") or "unknown"
 
     last_success_date = _fmt_ist_date((last_success or {}).get("completed_at"))
     last_success_mb = _total_mb(last_success) if last_success else 0
@@ -213,7 +233,14 @@ def _render_failure(run: dict | None, last_success: dict | None) -> tuple[str, s
     # Recommended action — simple heuristic
     recommendation = "Run a manual backup from Admin → Guide & Backup → Run Backup Now."
     err_lower = str(error_text).lower()
-    if "quota" in err_lower or "storage" in err_lower:
+    if "pod" in err_lower or "sleep" in err_lower or "missed the" in err_lower:
+        recommendation = (
+            "The preview pod went to sleep and missed the 3 AM IST slot. Hit "
+            "Admin → Guide & Backup → Run Backup Now to backfill, then verify "
+            "tomorrow's 8 AM email shows green. Long-term fix: deploy backend "
+            "to a 24/7 host (AWS App Runner / EC2)."
+        )
+    elif "quota" in err_lower or "storage" in err_lower:
         recommendation = "Google Drive storage may be full. Free up space in the shared drive or increase quota."
     elif "credential" in err_lower or "auth" in err_lower or "401" in err_lower or "403" in err_lower:
         recommendation = "Service-account credentials may have expired. Check SITEVAULT_SA file and Drive sharing."

@@ -2299,13 +2299,56 @@ async def lifespan(app: FastAPI):
             CronTrigger(hour=3, minute=0, timezone=_sv_tz),
             id="sitevault_daily",
             replace_existing=True,
+            misfire_grace_time=7200,  # 2-hour grace if pod was sleeping
+            coalesce=True,
         )
         scheduler.add_job(
             _sitevault_weekly_wrapper,
             CronTrigger(day_of_week="mon", hour=3, minute=0, timezone=_sv_tz),
             id="sitevault_weekly",
             replace_existing=True,
+            misfire_grace_time=7200,
+            coalesce=True,
         )
+
+        # ── Startup catch-up: if last successful daily backup is >24h old, fire one now ──
+        # Critical for Emergent preview pods that sleep overnight and miss the 3 AM IST slot.
+        async def _sitevault_startup_catchup():
+            try:
+                # Wait a few seconds so the rest of startup can finish
+                import asyncio as _a
+                await _a.sleep(15)
+                if not _svdrive.is_enabled():
+                    return
+                last = await db.sitevault_runs.find_one(
+                    {"status": "success"},
+                    {"_id": 0, "completed_at": 1, "started_at": 1, "run_id": 1},
+                    sort=[("started_at", -1)],
+                )
+                from datetime import datetime as _dt, timezone as _tz
+                if last:
+                    last_iso = last.get("completed_at") or last.get("started_at")
+                    try:
+                        last_dt = _dt.fromisoformat(last_iso.replace("Z", "+00:00"))
+                        hours_old = (_dt.now(_tz.utc) - last_dt).total_seconds() / 3600
+                    except Exception:
+                        hours_old = 9999
+                else:
+                    hours_old = 9999
+                if hours_old > 24:
+                    logger.warning(f"[SITEVAULT] Startup catch-up: last backup {hours_old:.1f}h old — firing daily backup now")
+                    await _svjobs.run_daily_backup()
+                else:
+                    logger.info(f"[SITEVAULT] Startup catch-up: last backup {hours_old:.1f}h old — within 24h, skipping")
+            except Exception as _e:
+                logger.exception(f"[SITEVAULT] Startup catch-up failed: {_e}")
+
+        try:
+            import asyncio as _asyncio_sv
+            _asyncio_sv.get_event_loop().create_task(_sitevault_startup_catchup())
+            logger.info("[SITEVAULT] Startup catch-up task queued")
+        except Exception as _e:
+            logger.warning(f"[SITEVAULT] Could not queue startup catch-up: {_e}")
 
         # ── SiteVault watchdog — runs every 15 min, flags stuck runs ────
         # (ScaleBoard Bug E hardening: any run started >60 min ago without
