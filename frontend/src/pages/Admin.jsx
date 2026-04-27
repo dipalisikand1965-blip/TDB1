@@ -63,6 +63,7 @@ import BundleBox from '../components/admin/BundleBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
 import EnjoyExperiencesAdmin from '../components/admin/EnjoyExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
+import IntegrationsHealthPanel from '../components/admin/IntegrationsHealthPanel';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
@@ -3202,6 +3203,7 @@ const Admin = () => {
               { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
               { id: 'finance', label: 'Finance', icon: DollarSign },
               { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
+              { id: 'integrations-health', label: 'Health', icon: Activity },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -3995,6 +3997,11 @@ const Admin = () => {
         {/* Pillar Queues */}
         {activeTab === 'pillar-queues' && (
           <PillarQueues authHeaders={getAuthHeaders()} />
+        )}
+
+        {/* Integrations Health Panel — live status of all external services */}
+        {activeTab === 'integrations-health' && (
+          <IntegrationsHealthPanel />
         )}
 
         {/* Celebrations Calendar */}
