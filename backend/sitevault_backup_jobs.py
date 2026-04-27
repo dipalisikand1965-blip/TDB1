@@ -76,6 +76,12 @@ def dump_mongodb(workdir: str) -> str:
     """
     Runs mongodump for the entire DB_NAME, gzipped into a single archive.
     Returns path to the .gz archive.
+
+    Falls back to a Python-native JSON dump if mongodump binary is missing
+    (e.g. on minimal production pods that don't ship mongo-tools). This
+    fallback produces a tar.gz of one .jsonl.gz per collection — slower
+    but identical in restorability via mongorestore --uri --archive
+    (after re-import) or pymongo bulk_insert.
     """
     mongo_url = os.environ["MONGO_URL"]
     db_name = os.environ["DB_NAME"]
@@ -88,11 +94,80 @@ def dump_mongodb(workdir: str) -> str:
         f"--archive={archive}",
         "--gzip",
     ]
-    rc, out = _run(cmd, timeout=1800)
-    if rc != 0:
-        raise RuntimeError(f"mongodump failed (rc={rc}): {out[-2000:]}")
-    logger.info(f"[SITEVAULT] mongodump OK → {archive} ({os.path.getsize(archive) / 1024 / 1024:.1f} MB)")
-    return archive
+    try:
+        rc, out = _run(cmd, timeout=1800)
+        if rc != 0:
+            raise RuntimeError(f"mongodump failed (rc={rc}): {out[-2000:]}")
+        logger.info(f"[SITEVAULT] mongodump OK → {archive} ({os.path.getsize(archive) / 1024 / 1024:.1f} MB)")
+        return archive
+    except FileNotFoundError as fnf:
+        # mongodump binary missing — use Python fallback.
+        logger.warning(f"[SITEVAULT] mongodump binary missing ({fnf}). Falling back to pymongo JSON dump.")
+        return _dump_mongodb_python(workdir, mongo_url, db_name)
+
+
+def _dump_mongodb_python(workdir: str, mongo_url: str, db_name: str) -> str:
+    """
+    Python-native MongoDB dump used when the `mongodump` binary is unavailable.
+    Produces a single .tar.gz containing one gzipped .jsonl per collection.
+    Restorable via:
+        for f in *.jsonl.gz:
+            mongoimport --uri=... --db=... --collection=<name> --file=<f> --gzip
+    """
+    import json
+    import tarfile
+    from datetime import datetime, timezone
+    from bson import json_util  # provided by pymongo
+    from pymongo import MongoClient
+
+    ts = _timestamp()
+    out_dir = os.path.join(workdir, f"mongo-py-{ts}")
+    os.makedirs(out_dir, exist_ok=True)
+
+    client = MongoClient(mongo_url, serverSelectionTimeoutMS=15000)
+    try:
+        db = client[db_name]
+        collections = db.list_collection_names()
+        manifest = {
+            "db": db_name,
+            "method": "pymongo_jsonl",
+            "exported_at": datetime.now(timezone.utc).isoformat(),
+            "collections": {},
+        }
+        total_docs = 0
+        for col in collections:
+            if col.startswith("system."):
+                continue
+            path = os.path.join(out_dir, f"{col}.jsonl.gz")
+            count = 0
+            with gzip.open(path, "wt", encoding="utf-8") as fh:
+                cursor = db[col].find({}, no_cursor_timeout=False)
+                try:
+                    for doc in cursor:
+                        fh.write(json_util.dumps(doc) + "\n")
+                        count += 1
+                finally:
+                    cursor.close()
+            manifest["collections"][col] = {"count": count, "file": f"{col}.jsonl.gz"}
+            total_docs += count
+            logger.info(f"[SITEVAULT] py-dump {col}: {count} docs")
+
+        manifest_path = os.path.join(out_dir, "_manifest.json")
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=2)
+
+        # Bundle into a single .tar.gz (matches the `archive.gz` interface)
+        archive = os.path.join(workdir, f"mongo-{db_name}-{ts}.archive.gz")
+        with tarfile.open(archive, "w:gz") as tar:
+            tar.add(out_dir, arcname=f"mongo-{db_name}-{ts}")
+        size_mb = os.path.getsize(archive) / 1024 / 1024
+        logger.info(
+            f"[SITEVAULT] pymongo dump OK → {archive} ({size_mb:.1f} MB, "
+            f"{total_docs} docs across {len(manifest['collections'])} collections)"
+        )
+        return archive
+    finally:
+        client.close()
 
 
 # ─────────────────────────────────────────────────────────────────────
