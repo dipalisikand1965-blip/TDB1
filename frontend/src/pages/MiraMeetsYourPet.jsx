@@ -202,12 +202,38 @@ function SectionHead({ title, sub }) {
   );
 }
 
-// ── Breed selector ─────────────────────────────────────────────────────
+// ── Breed selector (multi-select for genuine mixes) ───────────────────
 function BreedSelector({ value, onChange, petName }) {
-  const [query,   setQuery]   = useState(value || "");
+  // value is stored as a " × "-separated string (e.g. "Boxer × Golden Retriever")
+  // so the backend schema (single string field) stays unchanged.
+  const SEP = " × ";
+  const selected = value
+    ? value.split(SEP).map(s => s.trim()).filter(Boolean)
+    : [];
+
+  const [query,   setQuery]   = useState("");
   const [results, setResults] = useState([]);
   const [open,    setOpen]    = useState(false);
   const ref = useRef(null);
+
+  const isPicked = b => selected.some(s => s.toLowerCase() === b.toLowerCase());
+
+  const toggle = (b) => {
+    let next;
+    if (isPicked(b)) {
+      next = selected.filter(s => s.toLowerCase() !== b.toLowerCase());
+    } else {
+      next = [...selected, b];
+    }
+    onChange(next.join(SEP));
+    setQuery("");
+    setOpen(false);
+  };
+
+  const removeOne = (b) => {
+    const next = selected.filter(s => s.toLowerCase() !== b.toLowerCase());
+    onChange(next.join(SEP));
+  };
 
   useEffect(() => {
     setResults(query.length > 0 ? searchBreeds(query) : []);
@@ -223,40 +249,74 @@ function BreedSelector({ value, onChange, petName }) {
     <div ref={ref}>
       <SectionHead
         title={petName ? `What breed is ${petName}?` : "What breed are they?"}
-        sub="Mira uses this to personalise everything — from food to farewell."
+        sub={
+          selected.length > 1
+            ? `Beautiful mix — Mira will treat ${petName || "them"} as a ${selected.length}-breed cross.`
+            : "Tap one — or tap multiple if your dog is a genuine mix."
+        }
       />
-      {/* Popular breed chips — India-first, mixes first-class */}
-      {!value && (
-        <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12 }} data-testid="breed-popular-chips">
-          {POPULAR_BREED_CHIPS.map(b => {
-            const isMix = /mix|other/i.test(b);
-            return (
-              <button
-                key={b}
-                type="button"
-                onClick={() => { setQuery(b); onChange(b); setOpen(false); }}
-                data-testid={`breed-chip-${b.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
-                style={{
-                  padding:"7px 12px", borderRadius:999,
-                  border:`1.5px solid ${isMix ? "rgba(245,158,11,0.45)" : "rgba(107,70,193,0.25)"}`,
-                  background: isMix ? "#FFF7ED" : "#fff",
-                  color: isMix ? "#B45309" : G.text,
-                  fontSize:12, fontWeight:600, cursor:"pointer",
-                  transition:"all 0.15s",
-                }}
-              >
-                {isMix ? "✨ " : "🐾 "}{b}
-              </button>
-            );
-          })}
+
+      {/* Selected-breed chips (removable) */}
+      {selected.length > 0 && (
+        <div
+          style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12 }}
+          data-testid="breed-selected-chips"
+        >
+          {selected.map((b, i) => (
+            <button
+              key={`${b}-${i}`}
+              type="button"
+              onClick={() => removeOne(b)}
+              data-testid={`breed-chip-selected-${b.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}`}
+              style={{
+                padding:"7px 12px 7px 12px", borderRadius:999,
+                border:"1.5px solid rgba(107,70,193,0.6)",
+                background: G.purple, color:"#fff",
+                fontSize:12, fontWeight:700, cursor:"pointer",
+                display:"inline-flex", alignItems:"center", gap:6,
+              }}
+            >
+              ✓ {b}
+              <span style={{ opacity:0.85, fontWeight:400, fontSize:14, lineHeight:1 }}>×</span>
+            </button>
+          ))}
         </div>
       )}
+
+      {/* Popular-breed chips */}
+      <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12 }} data-testid="breed-popular-chips">
+        {POPULAR_BREED_CHIPS.map(b => {
+          const isMix = /mix|other/i.test(b);
+          const picked = isPicked(b);
+          if (picked) return null; // hide; it's already up top
+          return (
+            <button
+              key={b}
+              type="button"
+              onClick={() => toggle(b)}
+              data-testid={`breed-chip-${b.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`}
+              style={{
+                padding:"7px 12px", borderRadius:999,
+                border:`1.5px solid ${isMix ? "rgba(245,158,11,0.45)" : "rgba(107,70,193,0.25)"}`,
+                background: isMix ? "#FFF7ED" : "#fff",
+                color: isMix ? "#B45309" : G.text,
+                fontSize:12, fontWeight:600, cursor:"pointer",
+                transition:"all 0.15s",
+              }}
+            >
+              {isMix ? "✨ " : "🐾 "}{b}
+            </button>
+          );
+        })}
+      </div>
+
       <div style={{ position:"relative" }}>
         <input
           value={query}
-          onChange={e => { setQuery(e.target.value); setOpen(true); onChange(""); }}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
-          placeholder="Search… Indie, Labrador, Maltipoo"
+          placeholder={selected.length ? "Add another breed (for mixes)…" : "Search… Indie, Labrador, Maltipoo"}
+          data-testid="breed-search-input"
           style={{
             width:"100%", padding:"14px 16px", borderRadius:12, fontSize:15,
             border:`2px solid ${query ? G.purple : "rgba(107,70,193,0.2)"}`,
@@ -271,37 +331,36 @@ function BreedSelector({ value, onChange, petName }) {
             borderRadius:12, boxShadow:"0 8px 24px rgba(0,0,0,0.1)",
             marginTop:4, overflow:"hidden",
           }}>
-            {results.map(b => (
-              <div key={b} onClick={() => { setQuery(b); onChange(b); setOpen(false); }}
-                style={{
-                  padding:"11px 16px", fontSize:14, cursor:"pointer",
-                  color:G.text, borderBottom:"1px solid rgba(107,70,193,0.07)",
-                  display:"flex", alignItems:"center", gap:8,
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = G.pale}
-                onMouseLeave={e => e.currentTarget.style.background = "#fff"}
-              >
-                🐾 {b}
-              </div>
-            ))}
+            {results.map(b => {
+              const picked = isPicked(b);
+              return (
+                <div
+                  key={b}
+                  onClick={() => toggle(b)}
+                  data-testid={`breed-search-result-${b.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}`}
+                  style={{
+                    padding:"11px 16px", fontSize:14, cursor:"pointer",
+                    color: picked ? G.purple : G.text,
+                    fontWeight: picked ? 700 : 400,
+                    borderBottom:"1px solid rgba(107,70,193,0.07)",
+                    display:"flex", alignItems:"center", gap:8,
+                    background: picked ? G.pale : "#fff",
+                  }}
+                  onMouseEnter={e => { if (!picked) e.currentTarget.style.background = G.pale; }}
+                  onMouseLeave={e => { if (!picked) e.currentTarget.style.background = "#fff"; }}
+                >
+                  {picked ? "✓" : "🐾"} {b}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
-      {value && (
-        <div style={{
-          background:G.pale, border:"1.5px solid rgba(107,70,193,0.25)",
-          borderRadius:10, padding:"10px 14px",
-          display:"flex", alignItems:"center", gap:8, marginTop:8,
-        }}>
-          <span style={{ fontSize:16 }}>🐾</span>
-          <div>
-            <div style={{ fontSize:13, fontWeight:700, color:G.muted }}>{value}</div>
-            <div style={{ fontSize:11, color:G.sub }}>Mira knows this breed ✓</div>
-          </div>
-        </div>
-      )}
+
       <div style={{ fontSize:11, color:G.sub, marginTop:8, fontStyle:"italic" }}>
-        Don't see your breed? Type it — Mira is always learning.
+        {selected.length > 1
+          ? `Mira will personalise care for this ${selected.length}-breed mix ✨`
+          : "Don't see your breed? Type it — Mira is always learning."}
       </div>
     </div>
   );
@@ -477,11 +536,13 @@ function Screen2({ petCount, onNext }) {
   };
 
   const isLast = currentPetIndex >= pets.length - 1;
+  const blockNext = !!pet.nameWarning;
   const btnLabel = pet.name
     ? isLast ? `Mira, meet ${pet.name} — next step →` : `Next — tell Mira about dog ${currentPetIndex + 2} →`
     : isLast ? "Next step →" : `Next dog →`;
 
   const handleNext = () => {
+    if (blockNext) return;
     if (isLast) {
       onNext(pets);
     } else {
@@ -491,7 +552,55 @@ function Screen2({ petCount, onNext }) {
 
   return (
     <div>
-      <MiraBar label={pets.length > 1 ? `Dog ${currentPetIndex + 1} of ${pets.length}` : null}/>
+      <MiraBar/>
+
+      {/* PROMINENT per-pet header — impossible to miss when count > 1 */}
+      {pets.length > 1 && (
+        <div
+          style={{
+            background:"linear-gradient(135deg, #6B46C1 0%, #4C1D95 100%)",
+            color:"#fff", borderRadius:14, padding:"14px 18px",
+            marginBottom:16, boxShadow:"0 4px 12px rgba(107,70,193,0.25)",
+          }}
+          data-testid="pet-progress-banner"
+        >
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10 }}>
+            <div>
+              <div style={{ fontSize:11, letterSpacing:1.5, fontWeight:700, opacity:0.85, textTransform:"uppercase" }}>
+                Dog {currentPetIndex + 1} of {pets.length}
+              </div>
+              <div style={{ fontSize:18, fontWeight:700, marginTop:2, fontFamily:"Georgia,serif" }}>
+                {pet.name || `Dog ${currentPetIndex + 1}`}
+              </div>
+            </div>
+            <div style={{
+              fontSize:11, fontWeight:600, padding:"4px 10px",
+              borderRadius:999, background:"rgba(255,255,255,0.18)",
+              whiteSpace:"nowrap",
+            }}>
+              {pets.length - currentPetIndex - 1 === 0 ? "Last one!" : `${pets.length - currentPetIndex - 1} more after this`}
+            </div>
+          </div>
+
+          {/* Per-pet progress dots */}
+          <div style={{ display:"flex", gap:5, marginTop:12 }}>
+            {pets.map((p, i) => (
+              <div
+                key={i}
+                style={{
+                  flex:1, height:5, borderRadius:999,
+                  background: i < currentPetIndex
+                    ? "rgba(255,255,255,0.85)"
+                    : i === currentPetIndex
+                      ? "rgba(255,255,255,0.5)"
+                      : "rgba(255,255,255,0.18)",
+                  transition:"all 0.3s",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <h2 style={{ fontSize:"clamp(1.2rem,3vw,1.4rem)", fontWeight:800, color:G.text, fontFamily:"Georgia,serif", margin:"0 0 6px", lineHeight:1.3 }}>
         {pet.name ? `Tell Mira about ${pet.name}` : `Tell Mira about your ${currentPetIndex === 0 ? "first" : `dog ${currentPetIndex + 1}`}`}
@@ -504,19 +613,39 @@ function Screen2({ petCount, onNext }) {
       <div style={{ marginBottom:16 }}>
         <input
           value={pet.name}
-          onChange={e => updatePet("name", e.target.value)}
+          onChange={e => {
+            const v = e.target.value;
+            updatePet("name", v);
+            // Detect users typing multiple names in one field (Shirley's bug)
+            updatePet("nameWarning", /[,;/&]| and /i.test(v));
+          }}
           placeholder="What do you call them?"
           style={{
             width:"100%", padding:"15px 16px", borderRadius:12,
             fontSize:20, fontWeight:600,
-            border:`2px solid ${pet.name ? G.purple : "rgba(107,70,193,0.2)"}`,
+            border:`2px solid ${pet.nameWarning ? "#DC2626" : pet.name ? G.purple : "rgba(107,70,193,0.2)"}`,
             outline:"none", boxSizing:"border-box", color:G.text,
             fontFamily:"inherit",
           }}
+          data-testid={`pet-name-input-${currentPetIndex}`}
         />
-        <div style={{ fontSize:11, color:G.sub, marginTop:5 }}>
-          This is how Mira will always address your dog
-        </div>
+        {pet.nameWarning ? (
+          <div
+            style={{
+              fontSize:12, color:"#DC2626", marginTop:6, lineHeight:1.5,
+              padding:"8px 10px", background:"#FEF2F2",
+              border:"1px solid #FECACA", borderRadius:8,
+            }}
+            data-testid="pet-name-multi-warning"
+          >
+            ⚠️ Each dog gets their own profile — please enter just one name here.
+            You'll add the other dogs on the next screens.
+          </div>
+        ) : (
+          <div style={{ fontSize:11, color:G.sub, marginTop:5 }}>
+            This is how Mira will always address your dog
+          </div>
+        )}
       </div>
 
       <Divider/>
