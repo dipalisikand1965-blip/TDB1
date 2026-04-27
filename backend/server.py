@@ -23504,6 +23504,11 @@ app.include_router(sitevault_router)  # SiteVault at /api/sitevault/*
 set_sitevault_db(db)  # Initialize SiteVault client + routes with database
 # ────────────────────────────────────────────────────────────────────
 
+# ── Integrations Health Panel ─────────────────────────────────────────
+from integrations_health_routes import router as integrations_health_router
+app.include_router(integrations_health_router)  # GET /api/admin/integrations-health
+# ──────────────────────────────────────────────────────────────────────
+
 app.include_router(live_threads_router)  # Live Conversation Threads at /api/live_threads/*
 set_live_threads_db(db)  # Initialize Live Threads with database
 app.include_router(tts_router, prefix="/api")  # TTS at /api/tts/*
