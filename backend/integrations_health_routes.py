@@ -26,7 +26,6 @@ import logging
 from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Optional
-
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -492,5 +491,57 @@ async def integrations_health():
         "integrations": integrations,
         "counts": counts,
         "all_healthy": all_healthy,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# Multi-pet name detector (Shirley bug — Apr 27 2026)
+# Finds pets whose `name` field contains commas/semicolons/" and " — i.e.
+# users who typed multiple dog names into one pet record.
+# ────────────────────────────────────────────────────────────────────────────
+
+@router.get("/find-multi-name-pets")
+async def find_multi_name_pets(secret: str = "", limit: int = 200):
+    """Return all pets whose name field appears to contain MULTIPLE dog names."""
+    expected = os.environ.get("ADMIN_PASSWORD") or os.environ.get("ADMIN_SECRET")
+    if not expected or secret != expected:
+        raise HTTPException(status_code=401, detail="Admin secret required (?secret=...)")
+
+    from server import db
+    import re
+
+    # Match commas, semicolons, " and " (case-insensitive), " & ", or "/"
+    bad_pattern = re.compile(r"[,;/&]| and ", re.IGNORECASE)
+
+    affected_pets = []
+    affected_owners = {}  # owner_email → list of pet docs
+
+    try:
+        cursor = db.pets.find(
+            {"name": {"$regex": "[,;/&]| and ", "$options": "i"}},
+            {"_id": 0, "id": 1, "pet_id": 1, "name": 1, "breed": 1, "owner_email": 1, "user_email": 1, "created_at": 1},
+        ).limit(limit)
+        async for p in cursor:
+            owner = p.get("owner_email") or p.get("user_email") or "(unknown)"
+            entry = {
+                "pet_id": p.get("id") or p.get("pet_id"),
+                "name": p.get("name"),
+                "breed": p.get("breed"),
+                "owner_email": owner,
+                "created_at": p.get("created_at"),
+                "names_detected": [s.strip() for s in bad_pattern.split(p.get("name", "")) if s.strip()],
+            }
+            affected_pets.append(entry)
+            affected_owners.setdefault(owner, []).append(entry)
+    except Exception as e:
+        logger.exception(f"[find-multi-name-pets] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {
+        "total_affected_pets": len(affected_pets),
+        "total_affected_owners": len(affected_owners),
+        "by_owner": affected_owners,
+        "all_affected": affected_pets,
         "generated_at": datetime.now(timezone.utc).isoformat(),
     }

@@ -342,6 +342,17 @@ const SoulBuilder = () => {
           const pets = Array.isArray(data) ? data : data.pets || [];
           setExistingPets(pets);
           
+          // ── PHASE 2: Per-pet Soul Builder ──
+          // If user has MULTIPLE pets and no specific pet was chosen via URL,
+          // show the pet picker so they explicitly choose which dog they're
+          // filling out the quiz for. Each dog gets their own profile.
+          if (pets.length > 1 && !targetPetId) {
+            console.log('[SoulBuilder] Multi-pet family detected:', pets.length, 'dogs — showing picker');
+            setScreen('pet-picker');
+            setIsLoadingPets(false);
+            return;
+          }
+          
           // If user just signed up and has a pet, auto-load that pet's data
           // This handles the case where they come from onboarding
           if (pets.length >= 1) {
@@ -456,6 +467,92 @@ const SoulBuilder = () => {
   const hasAnsweredAny = Object.keys(answers).length > 0;
   
   const fileInputRef = useRef(null);
+  
+  // ── PHASE 2: Per-pet Soul Builder helpers ──
+  
+  // Detect which dogs already have a soul-quiz answer set (>= 5 answered questions)
+  const isPetCompleted = useCallback((pet) => {
+    const a = pet?.doggy_soul_answers || pet?.soul_answers || {};
+    const meaningful = Object.values(a).filter(v => 
+      v && v !== '' && v !== 'None' &&
+      !(Array.isArray(v) && v.length === 0) &&
+      !(typeof v === 'object' && v.skipped)
+    );
+    return meaningful.length >= 5;
+  }, []);
+  
+  // Find pets that still need their Soul Profile built
+  const pendingPets = existingPets.filter(p => !isPetCompleted(p));
+  const completedPets = existingPets.filter(p => isPetCompleted(p));
+  
+  // Load a specific pet into the quiz state and start the flow
+  const loadPetForQuiz = useCallback((pet) => {
+    if (!pet) return;
+    
+    // Reset quiz state for the new pet
+    setCurrentPetId(pet.id || pet._id);
+    setCurrentPet(pet);
+    setPetName(pet.name || '');
+    setPetPhotoPreview(pet.photo || null);
+    setDetectedBreed(pet.breed || '');
+    setPetData({
+      breed: pet.breed || '',
+      gender: pet.gender || '',
+      birth_date: pet.birth_date || '',
+      gotcha_date: pet.gotcha_date || '',
+      is_neutered: pet.is_neutered,
+      approximate_age: '',
+      weight: pet.weight || '',
+      weight_unit: pet.weight_unit || 'kg',
+    });
+    setCurrentChapter(0);
+    setCurrentQuestion(0);
+    setAnswers({});
+    setAnsweredQuestionIds(new Set());
+    setMultiSelectValues([]);
+    setTextInputValue('');
+    
+    // Pre-fill any answers this pet already has from onboarding
+    const fieldMapping = {
+      'life_stage': 'life_stage',
+      'stranger_reaction': 'stranger_reaction',
+      'food_allergies': 'food_allergies',
+      'health_conditions': 'health_conditions',
+      'exercise_needs': 'exercise_needs',
+      'grooming_tolerance': 'grooming_tolerance',
+      'separation_anxiety': 'separation_anxiety',
+      'lives_with': 'lives_with',
+      'other_pets': 'other_pets',
+      'is_neutered': 'spayed_neutered',
+      'main_goal': 'main_wish',
+      'temperament': 'general_nature',
+      'favorite_protein': 'favorite_protein',
+    };
+    const existingAnswers = pet.doggy_soul_answers || pet.soul_answers || {};
+    const prefilled = {};
+    const alreadyAnswered = new Set();
+    Object.keys(existingAnswers).forEach(key => {
+      const value = existingAnswers[key];
+      if (value && value !== 'None' && value !== '' &&
+          !(Array.isArray(value) && value.length === 0) &&
+          !(typeof value === 'object' && value.skipped)) {
+        const mappedKey = fieldMapping[key] || key;
+        alreadyAnswered.add(mappedKey);
+        alreadyAnswered.add(key);
+        if (['food_allergies', 'health_conditions', 'lives_with', 'main_goal', 'main_wish'].includes(key)) {
+          prefilled[mappedKey] = Array.isArray(value) ? value : [value];
+        } else {
+          prefilled[mappedKey] = value;
+        }
+      }
+    });
+    setAnsweredQuestionIds(alreadyAnswered);
+    setAnswers(prefilled);
+    
+    // Skip preboarding intro since user explicitly chose this pet
+    setScreen('basic-info');
+  }, []);
+  
   
   // Calculate soul score based on answered questions
   // Calculate Soul Score - ONLY scoring questions count (doctrine: 100 total points)
@@ -661,6 +758,34 @@ const SoulBuilder = () => {
         if (navigateAfter === 'pet-home') {
           // Navigate with pet context
           const petId = result.pet_id || currentPetId;
+          
+          // ── PHASE 2: If user has multiple dogs and another one still needs
+          // their Soul Profile, show the "next dog" prompt instead of leaving.
+          const completedNow = (existingPets || []).filter(p => {
+            if ((p.id || p._id) === petId) return true; // just-completed
+            return isPetCompleted(p);
+          });
+          const stillPending = (existingPets || []).filter(p => {
+            const pid = p.id || p._id;
+            if (pid === petId) return false;       // exclude the one we just finished
+            return !isPetCompleted(p);
+          });
+          
+          if (existingPets.length > 1 && stillPending.length > 0) {
+            console.log('[SoulBuilder] Multi-pet flow: still', stillPending.length, 'dogs to do');
+            setScreen('pet-complete');
+            // Refresh pets so completion state reflects this latest save
+            try {
+              const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token') || localStorage.getItem('auth_token');
+              const r = await fetch(`${API_URL}/api/pets/my-pets`, { headers: { 'Authorization': `Bearer ${token}` } });
+              if (r.ok) {
+                const data = await r.json();
+                const refreshed = Array.isArray(data) ? data : data.pets || [];
+                setExistingPets(refreshed);
+              }
+            } catch (_e) { /* non-fatal */ }
+            return true;
+          }
           
           // Check if this is first-time Soul Profile completion (score >= 10 and no wrapped shown yet)
           const wrappedShownKey = `wrapped_shown_${petId}`;
@@ -909,6 +1034,179 @@ const SoulBuilder = () => {
   
   // PREBOARDING SCREEN - Different for new users vs existing users
   console.log('[SoulBuilder] Current screen:', screen);
+  
+  // ── PHASE 2: PET PICKER SCREEN ─────────────────────────────────────────
+  // Shown when user has multiple dogs and hasn't picked one yet.
+  if (screen === 'pet-picker') {
+    return (
+      <div
+        className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center p-6 pt-12"
+        data-testid="soul-builder-pet-picker"
+      >
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-purple-500/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10 max-w-md w-full">
+          <div className="text-center mb-6">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-fuchsia-500 to-purple-600 mx-auto mb-4 flex items-center justify-center text-white text-xl">✦</div>
+            <h1 className="text-2xl font-serif text-white mb-2">Which dog first?</h1>
+            <p className="text-white/70 text-sm leading-relaxed">
+              You have <b className="text-white">{existingPets.length} dogs</b> — Mira will build a separate Soul Profile for each one.<br/>
+              Pick the one you'd like to start with.
+            </p>
+          </div>
+
+          {/* Progress overview pill row */}
+          {(completedPets.length > 0 || pendingPets.length < existingPets.length) && (
+            <div
+              className="flex flex-wrap gap-2 justify-center mb-6"
+              data-testid="pet-picker-progress-row"
+            >
+              {existingPets.map(p => {
+                const done = isPetCompleted(p);
+                return (
+                  <span
+                    key={p.id || p._id}
+                    className={`text-xs px-3 py-1 rounded-full border ${
+                      done
+                        ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-200'
+                        : 'bg-white/5 border-white/15 text-white/70'
+                    }`}
+                  >
+                    {done ? '✅' : '⏳'} {p.name}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Dog cards */}
+          <div className="space-y-3">
+            {existingPets.map((p) => {
+              const done = isPetCompleted(p);
+              const ringColor = done ? 'border-emerald-500/50' : 'border-purple-500/40';
+              return (
+                <button
+                  key={p.id || p._id}
+                  onClick={() => loadPetForQuiz(p)}
+                  data-testid={`pet-picker-card-${p.id || p._id}`}
+                  disabled={done}
+                  className={`w-full text-left p-4 rounded-2xl border-2 ${ringColor} transition-all hover:scale-[1.02] hover:bg-white/5 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-4`}
+                  style={{ background: 'rgba(255,255,255,0.04)' }}
+                >
+                  {/* Avatar */}
+                  <div className="shrink-0 w-14 h-14 rounded-full overflow-hidden border-2 border-white/15 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
+                    {p.photo
+                      ? <img src={p.photo} alt={p.name} className="w-full h-full object-cover" />
+                      : <span>🐾</span>
+                    }
+                  </div>
+                  {/* Body */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-white font-semibold text-lg truncate">{p.name}</span>
+                      {done && <span className="text-xs text-emerald-300">✅ Done</span>}
+                    </div>
+                    <div className="text-xs text-white/50 truncate">{p.breed || 'Mira will figure it out'}</div>
+                  </div>
+                  {/* Action chevron */}
+                  <span className="shrink-0 text-white/60">{done ? '' : '→'}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Skip-all */}
+          <button
+            onClick={() => { window.location.href = '/pet-home'; }}
+            className="block mx-auto mt-8 text-sm text-white/50 hover:text-white/80 underline"
+            data-testid="pet-picker-skip-all"
+          >
+            I'll do this later →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── PHASE 2: PET-COMPLETE SCREEN (between dogs) ────────────────────────
+  if (screen === 'pet-complete') {
+    const justFinished = currentPet?.name || petName || 'this dog';
+    const stillToDo = existingPets.filter(p => {
+      const pid = p.id || p._id;
+      if (pid === currentPetId) return false;
+      return !isPetCompleted(p);
+    });
+    const nextDog = stillToDo[0];
+    return (
+      <div
+        className="min-h-screen bg-gradient-to-b from-[#0f0a19] via-[#1a1025] to-[#0f0a19] flex flex-col items-center justify-center p-6"
+        data-testid="soul-builder-pet-complete"
+      >
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10 max-w-md w-full text-center">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 mx-auto mb-5 flex items-center justify-center text-white text-3xl">✓</div>
+          <h1 className="text-2xl font-serif text-white mb-3">
+            {justFinished}'s profile is complete!
+          </h1>
+          <p className="text-white/70 text-sm leading-relaxed mb-6">
+            Mira now knows {justFinished} truly. {stillToDo.length === 1
+              ? "One more dog to go — "
+              : `${stillToDo.length} more dogs to go — `}
+            keep teaching her about your pack.
+          </p>
+
+          {/* All-pets progress row */}
+          <div
+            className="flex flex-wrap gap-2 justify-center mb-8"
+            data-testid="pet-complete-progress-row"
+          >
+            {existingPets.map(p => {
+              const done = isPetCompleted(p) || (p.id || p._id) === currentPetId;
+              return (
+                <span
+                  key={p.id || p._id}
+                  className={`text-xs px-3 py-1 rounded-full border ${
+                    done
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-200'
+                      : 'bg-white/5 border-white/15 text-white/70'
+                  }`}
+                >
+                  {done ? '✅' : '⏳'} {p.name}
+                </span>
+              );
+            })}
+          </div>
+
+          {/* Primary CTA */}
+          {nextDog && (
+            <button
+              onClick={() => loadPetForQuiz(nextDog)}
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white font-semibold shadow-lg hover:shadow-purple-500/30 transition-all"
+              data-testid="pet-complete-next-dog-btn"
+            >
+              Start {nextDog.name}'s profile →
+            </button>
+          )}
+
+          {/* Secondary CTA */}
+          <button
+            onClick={() => {
+              const petId = currentPetId;
+              if (petId) {
+                window.location.href = `/pet-home?active_pet=${petId}`;
+              } else {
+                window.location.href = '/pet-home';
+              }
+            }}
+            className="w-full mt-3 py-3 text-sm text-white/70 hover:text-white underline"
+            data-testid="pet-complete-do-later-btn"
+          >
+            I'll do the others later
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (screen === 'preboarding') {
     console.log('[SoulBuilder] Rendering preboarding screen, hasExistingPet:', hasExistingPet);
     
