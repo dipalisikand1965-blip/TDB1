@@ -784,7 +784,7 @@ export default function PetSoulOnboarding() {
   const [params]     = useSearchParams();
   const { token, user } = useAuth();
 
-  const [screen,       setScreen]       = useState('intro');    // intro | question | celebration
+  const [screen,       setScreen]       = useState('intro');    // intro | pet-picker | question | celebration | pet-complete
   const [qIdx,         setQIdx]         = useState(0);
   const [selected,     setSelected]     = useState(null);
   const [score,        setScore]        = useState(0);
@@ -802,6 +802,17 @@ export default function PetSoulOnboarding() {
 
   const startChapterRef = useRef(null);
 
+  // ── Phase 2: Per-pet helper — does this pet already have its soul profile? ──
+  const isPetCompleted = (pet) => {
+    const a = pet?.doggy_soul_answers || {};
+    const meaningful = Object.values(a).filter(v =>
+      v && v !== '' && v !== 'None' &&
+      !(Array.isArray(v) && v.length === 0) &&
+      !(typeof v === 'object' && v.skipped)
+    );
+    return meaningful.length >= 5;
+  };
+
   // ── Load pets on mount ─────────────────────────────────────────────────
   useEffect(() => {
     if (!token) return;
@@ -813,8 +824,20 @@ export default function PetSoulOnboarding() {
         const petList = data.pets || data || [];
         setPets(petList);
         setPetsLoaded(true);
-        // Use pet from URL param or first pet
-        const paramPetId = params.get('pet_id');
+
+        // Use pet from URL param if present
+        const paramPetId = params.get('pet_id') || params.get('pet');
+
+        // ── PHASE 2: Multi-pet families see the picker first ──
+        // Each dog deserves their own Soul Profile. If the user has more
+        // than one pet AND no specific pet was chosen via URL, route them
+        // through the pet picker so they explicitly select one dog at a time.
+        if (petList.length > 1 && !paramPetId) {
+          setScreen('pet-picker');
+          return;
+        }
+
+        // Single-pet family OR a specific pet was requested via URL — pick it.
         const pet = paramPetId
           ? petList.find(p => p.id === paramPetId) || petList[0]
           : petList[0];
@@ -822,6 +845,21 @@ export default function PetSoulOnboarding() {
       })
       .catch(() => { setPetsLoaded(true); });
   }, [token, params]);
+
+  // ── PHASE 2: helper to load a specific pet and start the quiz ──
+  const loadPetForQuiz = (pet) => {
+    if (!pet) return;
+    // Reset quiz state so we don't carry over the previous dog's progress
+    setCurrentPet(pet);
+    setAnswers({});
+    setScore(0);
+    setQIdx(0);
+    setSelected(null);
+    setTextAnswer('');
+    setIsResuming(false);
+    setArchetype(null);
+    setScreen('intro');
+  };
 
   // ── No pets → redirect to /join ────────────────────────────────────────
   useEffect(() => {
@@ -927,8 +965,26 @@ export default function PetSoulOnboarding() {
           .then(data => { if (data?.archetype_label) setArchetype(data.archetype_label); })
           .catch(() => {});
       }
+      // ── PHASE 2: Multi-pet families see the "next dog" prompt instead ──
+      const stillPending = (pets || []).filter(p => {
+        if ((p.id || p._id) === currentPet?.id) return false;
+        return !isPetCompleted(p);
+      });
+      const screenAfter = (pets.length > 1 && stillPending.length > 0) ? 'pet-complete' : 'celebration';
       setTimeout(() => {
-        setScreen('celebration');
+        // Refresh pet list first so isPetCompleted reflects the just-saved profile
+        if (pets.length > 1 && token) {
+          fetch(`${API_URL}/api/pets/my-pets`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then(r => r.json())
+            .then(data => {
+              const fresh = data.pets || data || [];
+              setPets(fresh);
+            })
+            .catch(() => {});
+        }
+        setScreen(screenAfter);
         setAnimating(false);
       }, 400);
       return;
@@ -958,7 +1014,12 @@ export default function PetSoulOnboarding() {
           .then(data => { if (data?.archetype_label) setArchetype(data.archetype_label); })
           .catch(() => {});
       }
-      setScreen('celebration');
+      // ── PHASE 2: Multi-pet families see the "next dog" prompt instead ──
+      const stillPending = (pets || []).filter(p => {
+        if ((p.id || p._id) === currentPet?.id) return false;
+        return !isPetCompleted(p);
+      });
+      setScreen(pets.length > 1 && stillPending.length > 0 ? 'pet-complete' : 'celebration');
     } else {
       setQIdx(nextQIdx);
       setSelected(null);
@@ -986,6 +1047,216 @@ export default function PetSoulOnboarding() {
   const ringPct = Math.round((score / TOTAL_PTS) * 100);
   const RING_C = 314; // 2 * PI * 50
   const ringOffset = RING_C - (RING_C * ringPct / 100);
+
+  // ── SCREEN: PET PICKER (multi-pet families) ────────────────────────────
+  if (screen === 'pet-picker') {
+    const pendingPets = pets.filter(p => !isPetCompleted(p));
+    const completedCount = pets.length - pendingPets.length;
+    return (
+      <div
+        style={{
+          minHeight:'100vh', background: C.night,
+          display:'flex', flexDirection:'column', alignItems:'center',
+          padding:'48px 20px', color:'#fff',
+        }}
+        data-testid="psu-pet-picker"
+      >
+        <div style={{ maxWidth: 460, width:'100%' }}>
+          <div style={{ textAlign:'center', marginBottom: 24 }}>
+            <div style={{
+              width:56, height:56, borderRadius:9999,
+              background:'linear-gradient(135deg,#a855f7,#7c3aed)',
+              margin:'0 auto 16px', display:'flex', alignItems:'center',
+              justifyContent:'center', fontSize:24,
+            }}>✦</div>
+            <h1 style={{ fontFamily:'Georgia,serif', fontSize:24, marginBottom:8 }}>
+              Which dog first?
+            </h1>
+            <p style={{ fontSize:14, color:'rgba(255,255,255,0.7)', lineHeight:1.5 }}>
+              You have <b style={{ color:'#fff' }}>{pets.length} dogs</b> — Mira will build a separate Soul Profile for each one.
+              {completedCount > 0 && (
+                <> <span style={{ color:'#10b981' }}>{completedCount} done</span>, {pendingPets.length} to go.</>
+              )}
+            </p>
+          </div>
+
+          {/* Progress chips */}
+          {pets.length > 1 && (
+            <div style={{
+              display:'flex', flexWrap:'wrap', gap:6, justifyContent:'center', marginBottom:20,
+            }} data-testid="psu-progress-chips">
+              {pets.map(p => {
+                const done = isPetCompleted(p);
+                return (
+                  <span key={p.id || p._id} style={{
+                    fontSize:11, padding:'4px 10px', borderRadius:9999,
+                    border: done ? '1px solid rgba(16,185,129,0.5)' : '1px solid rgba(255,255,255,0.15)',
+                    background: done ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)',
+                    color: done ? '#a7f3d0' : 'rgba(255,255,255,0.7)',
+                  }}>
+                    {done ? '✅' : '⏳'} {p.name}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Cards */}
+          <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            {pets.map(p => {
+              const done = isPetCompleted(p);
+              return (
+                <button
+                  key={p.id || p._id}
+                  type="button"
+                  disabled={done}
+                  onClick={() => loadPetForQuiz(p)}
+                  data-testid={`psu-pet-card-${p.id || p._id}`}
+                  style={{
+                    textAlign:'left', padding:'14px 16px', borderRadius:14,
+                    border: done ? '2px solid rgba(16,185,129,0.4)' : '2px solid rgba(168,85,247,0.4)',
+                    background:'rgba(255,255,255,0.04)',
+                    color:'#fff', cursor: done ? 'not-allowed' : 'pointer',
+                    opacity: done ? 0.6 : 1,
+                    display:'flex', alignItems:'center', gap:14, transition:'all 0.15s',
+                  }}
+                  onMouseEnter={e => { if (!done) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+                  onMouseLeave={e => { if (!done) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                >
+                  <div style={{
+                    width:48, height:48, borderRadius:9999, overflow:'hidden',
+                    background:'linear-gradient(135deg,#ec4899,#a855f7)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontSize:24, flexShrink:0,
+                    border:'2px solid rgba(255,255,255,0.15)',
+                  }}>
+                    {(p.photo_url || p.photo)
+                      ? <img src={p.photo_url || p.photo} alt={p.name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                      : <span>🐾</span>}
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontWeight:700, fontSize:16, display:'flex', alignItems:'baseline', gap:8 }}>
+                      <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{p.name}</span>
+                      {done && <span style={{ fontSize:11, color:'#10b981' }}>✅ Done</span>}
+                    </div>
+                    <div style={{ fontSize:12, color:'rgba(255,255,255,0.5)', marginTop:2 }}>
+                      {p.breed || 'Mira will figure it out'}
+                    </div>
+                  </div>
+                  <span style={{ color:'rgba(255,255,255,0.6)', flexShrink:0 }}>{done ? '' : '→'}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate('/pet-home')}
+            data-testid="psu-pet-picker-skip-all"
+            style={{
+              display:'block', margin:'28px auto 0', background:'transparent',
+              border:'none', color:'rgba(255,255,255,0.5)', fontSize:13,
+              textDecoration:'underline', cursor:'pointer',
+            }}
+          >
+            I'll do this later →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── SCREEN: PET COMPLETE (between dogs in multi-pet flow) ──────────────
+  if (screen === 'pet-complete') {
+    const justFinished = currentPet?.name || 'this dog';
+    const stillToDo = pets.filter(p => {
+      if ((p.id || p._id) === currentPet?.id) return false;
+      return !isPetCompleted(p);
+    });
+    const nextDog = stillToDo[0];
+    return (
+      <div
+        style={{
+          minHeight:'100vh', background: C.night,
+          display:'flex', flexDirection:'column',
+          alignItems:'center', justifyContent:'center',
+          padding:'40px 24px', color:'#fff', textAlign:'center',
+        }}
+        data-testid="psu-pet-complete"
+      >
+        <div style={{ maxWidth: 460, width:'100%' }}>
+          <div style={{
+            width:80, height:80, borderRadius:9999,
+            background:'linear-gradient(135deg,#34d399,#059669)',
+            margin:'0 auto 20px', display:'flex', alignItems:'center',
+            justifyContent:'center', fontSize:36,
+          }}>✓</div>
+          <h1 style={{ fontFamily:'Georgia,serif', fontSize:24, marginBottom:12 }}>
+            {justFinished}'s profile is complete!
+          </h1>
+          <p style={{ fontSize:14, color:'rgba(255,255,255,0.7)', lineHeight:1.6, marginBottom:24 }}>
+            Mira now knows {justFinished} truly. {stillToDo.length === 1
+              ? "One more dog to go — "
+              : `${stillToDo.length} more dogs to go — `}
+            keep teaching her about your pack.
+          </p>
+
+          {/* Progress strip */}
+          <div style={{
+            display:'flex', flexWrap:'wrap', gap:6, justifyContent:'center', marginBottom:28,
+          }} data-testid="psu-pet-complete-progress">
+            {pets.map(p => {
+              const done = isPetCompleted(p) || (p.id || p._id) === currentPet?.id;
+              return (
+                <span key={p.id || p._id} style={{
+                  fontSize:11, padding:'4px 10px', borderRadius:9999,
+                  border: done ? '1px solid rgba(16,185,129,0.5)' : '1px solid rgba(255,255,255,0.15)',
+                  background: done ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)',
+                  color: done ? '#a7f3d0' : 'rgba(255,255,255,0.7)',
+                }}>
+                  {done ? '✅' : '⏳'} {p.name}
+                </span>
+              );
+            })}
+          </div>
+
+          {nextDog && (
+            <button
+              type="button"
+              onClick={() => loadPetForQuiz(nextDog)}
+              data-testid="psu-next-dog-btn"
+              style={{
+                width:'100%', padding:'15px 18px', borderRadius:12,
+                background:'linear-gradient(135deg,#ec4899,#7c3aed)',
+                color:'#fff', fontWeight:700, fontSize:15,
+                border:'none', cursor:'pointer',
+                boxShadow:'0 8px 24px rgba(168,85,247,0.3)',
+              }}
+            >
+              Start {nextDog.name}'s profile →
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => {
+              const pid = currentPet?.id;
+              navigate(pid ? `/pet-home?active_pet=${pid}` : '/pet-home');
+            }}
+            data-testid="psu-do-later-btn"
+            style={{
+              display:'block', margin:'14px auto 0', padding:'10px 18px',
+              background:'transparent', border:'none',
+              color:'rgba(255,255,255,0.7)', fontSize:13,
+              textDecoration:'underline', cursor:'pointer',
+            }}
+          >
+            I'll do the others later
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // ── SCREEN: INTRO ──────────────────────────────────────────────────────
   if (screen === 'intro') {
