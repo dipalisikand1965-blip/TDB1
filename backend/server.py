@@ -7734,6 +7734,20 @@ async def get_public_settings():
     }
 
 
+@api_router.get("/config/member-whatsapp")
+async def get_member_whatsapp_number():
+    """Return the Gupshup-configured member services WhatsApp number.
+    Single source of truth for the in-app 'WhatsApp Concierge®' button so the
+    number is never hardcoded on the frontend."""
+    raw = (
+        os.environ.get("GUPSHUP_SOURCE_NUMBER")
+        or os.environ.get("WHATSAPP_NUMBER")
+        or ""
+    )
+    digits = "".join(c for c in raw if c.isdigit())
+    return {"ok": True, "phone": digits, "configured": bool(digits)}
+
+
 @admin_router.put("/products/{product_id}/fulfilment")
 async def update_product_fulfilment(
     product_id: str, 
