@@ -27,6 +27,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { waLink } from "../utils/whatsappLink";
+import TryMiraOnYourDog from "../components/landing/TryMiraOnYourDog";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');`;
 
@@ -645,6 +646,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── TRY MIRA ON YOUR DOG — interactive demo (placed BEFORE Pet Soul proof) ── */}
+      <TryMiraOnYourDog />
+
       {/* ── PET SOUL DEMO — THE REAL SELL ── */}
       <section style={{
         background: C.deep,
@@ -660,15 +664,15 @@ export default function LandingPage() {
                 letterSpacing: "0.14em", marginBottom: 16,
                 fontFamily: "DM Sans, sans-serif",
               }}>
-                PET SOUL™ · WHAT MIRA KNOWS
+                PET SOUL™ · WHAT MIRA KNOWS AFTER A YEAR
               </div>
               <h2 style={{
                 fontFamily: "Cormorant Garamond, Georgia, serif",
                 fontSize: "clamp(2rem,5vw,3.2rem)",
                 fontWeight: 400, color: C.ivory,
               }}>
-                This is what it means<br/>
-                <em style={{ color: C.amber }}>to be truly known.</em>
+                This is what Mira knows after a year.<br/>
+                <em style={{ color: C.amber }}>Yours can look like this too. 🐾</em>
               </h2>
             </div>
           </FadeIn>
@@ -801,8 +805,8 @@ export default function LandingPage() {
               textAlign: "center", marginTop: 24,
               fontSize: 14, color: C.muted, fontStyle: "italic",
             }}>
-              This is Mojo's profile after one session.
-              Imagine what Mira knows after a year.
+              Mojo's profile, after a year of Mira knowing him.
+              This is what awaits your dog. 🌷
             </p>
           </FadeIn>
         </div>

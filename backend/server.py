@@ -7748,6 +7748,36 @@ async def get_member_whatsapp_number():
     return {"ok": True, "phone": digits, "configured": bool(digits)}
 
 
+@api_router.post("/leads/visitor-pet")
+async def save_visitor_pet_lead(payload: dict):
+    """Soft email-capture from the landing page 'Try Mira on your dog' demo.
+    Records visitor email + their dog's profile so we can follow up later.
+    No password required — pure lead capture, never used for auth."""
+    email = (payload.get("email") or "").strip().lower()
+    pet_name = (payload.get("pet_name") or "").strip()
+    if "@" not in email or not pet_name:
+        return {"ok": False, "error": "email_and_pet_name_required"}
+
+    doc = {
+        "email": email,
+        "pet_name": pet_name,
+        "breed": payload.get("breed"),
+        "age_band": payload.get("age"),
+        "source": payload.get("source", "try-mira-landing"),
+        "captured_at": datetime.now(timezone.utc).isoformat(),
+    }
+    try:
+        await db.visitor_pet_leads.update_one(
+            {"email": email, "pet_name": pet_name},
+            {"$set": doc},
+            upsert=True,
+        )
+    except Exception as e:
+        logger.exception(f"Failed to save visitor pet lead: {e}")
+        return {"ok": False, "error": "save_failed"}
+    return {"ok": True}
+
+
 @admin_router.put("/products/{product_id}/fulfilment")
 async def update_product_fulfilment(
     product_id: str, 
