@@ -23519,6 +23519,15 @@ try:
 except Exception as e:
     logger.exception(f"Failed to mount Partner Demo Generator: {e}")
 
+# Founding Members — TDB legacy customer import for May 15 launch
+try:
+    from founding_members_routes import founding_members_router, set_database as set_founding_db
+    set_founding_db(db)
+    app.include_router(founding_members_router)
+    logger.info("✓ Founding Members routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Founding Members routes: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
