@@ -529,6 +529,46 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
 
   const handleClose = useCallback(() => setIsOpen(false), []);
 
+  // ── iOS-safe body scroll lock while drawer is open ─────────────────────
+  // Same fix as BirthdayBoxBuilder. Without this, iOS Safari lets the
+  // page behind scroll while the drawer "sticks" to the bottom of the visual
+  // viewport — exactly the bug Dipali reported.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const prev = {
+      bodyPosition: body.style.position,
+      bodyTop:      body.style.top,
+      bodyLeft:     body.style.left,
+      bodyRight:    body.style.right,
+      bodyWidth:    body.style.width,
+      bodyOverflow: body.style.overflow,
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+    };
+    body.style.position = 'fixed';
+    body.style.top      = `-${scrollY}px`;
+    body.style.left     = '0';
+    body.style.right    = '0';
+    body.style.width    = '100%';
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'contain';
+    return () => {
+      body.style.position = prev.bodyPosition;
+      body.style.top      = prev.bodyTop;
+      body.style.left     = prev.bodyLeft;
+      body.style.right    = prev.bodyRight;
+      body.style.width    = prev.bodyWidth;
+      body.style.overflow = prev.bodyOverflow;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+      window.scrollTo(0, scrollY);
+    };
+  }, [isOpen]);
+
   const handleSwap = useCallback((tabId, swapData) => {
     if (!swapData) {
       // null = undo swap
@@ -641,7 +681,8 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
               justifyContent: 'center',
               padding: isMobile ? '110px 12px 80px' : '16px',
               pointerEvents: 'none',
-              overflowY: isMobile ? 'auto' : 'visible',
+              // iOS fix: outer wrapper must NOT scroll — let inner card handle it.
+              overflow: 'hidden',
             }}
           >
             <div
@@ -649,7 +690,10 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
                 position: 'relative',
                 width: '100%',
                 maxWidth: '560px',
-                maxHeight: isMobile ? 'none' : '88vh',
+                // iOS fix: bound height so inner scroll stays inside the modal.
+                maxHeight: isMobile
+                  ? 'calc(100vh - 110px - 80px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+                  : '88vh',
                 display: 'flex',
                 flexDirection: 'column',
                 borderRadius: '16px',
@@ -658,6 +702,10 @@ const BirthdayBoxBrowseDrawer = ({ onOpenBuilder, onConciergeRequest }) => {
                 border: '1px solid rgba(196,77,255,0.30)',
                 boxShadow: '0 8px 64px rgba(196,77,255,0.25)',
                 pointerEvents: 'all',
+                // iOS momentum scrolling + scroll-chain isolation
+                WebkitOverflowScrolling: 'touch',
+                overscrollBehavior: 'contain',
+                touchAction: 'pan-y',
               }}
             >
             {/* Header */}
