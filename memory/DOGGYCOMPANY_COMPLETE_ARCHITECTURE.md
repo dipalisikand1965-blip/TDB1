@@ -1,5 +1,5 @@
 # 🐾 The Doggy Company — Complete Architecture Audit
-**Generated**: 2026-04-23T05:02:58.005763+00:00 (auto-refresh)
+**Generated**: 2026-04-29T02:47:24.553736+00:00 (auto-refresh)
 **Environment audited**: Preview (`pet-soul-ranking.preview.emergentagent.com`)
 **Production URL**: `thedoggycompany.com`
 **Stack**: React 18 + FastAPI + MongoDB 7 + Cloudinary CDN
@@ -31,33 +31,33 @@
 ## 1. 🗄️ DATABASE AUDIT
 <!-- AUDIT:DATABASE:START -->
 
-### Live stats (as of 2026-04-23T05:02:58.004712+00:00)
-- **Total collections**: 221
-- **Total documents**: 115,001
+### Live stats (as of 2026-04-29T02:47:24.552785+00:00)
+- **Total collections**: 225
+- **Total documents**: 115,353
 
 ### Top 20 collections by doc count
 | Docs | Collection |
 |-----:|------------|
-| 26,179 | `mira_signals` |
+| 26,335 | `mira_signals` |
 | 17,178 | `mira_product_scores` |
 | 9,498 | `products_master` |
 | 8,628 | `products_master_backup_20260404` |
 | 7,079 | `unified_products` |
 | 5,131 | `products_master_backup_20260322` |
+| 4,949 | `mira_conversations` |
 | 4,941 | `breed_products` |
-| 4,940 | `mira_conversations` |
+| 4,578 | `admin_notifications` |
 | 4,558 | `unified_products_backup_20260322` |
-| 4,549 | `admin_notifications` |
 | 3,775 | `breed_products_backup_20260322` |
-| 2,729 | `member_notifications` |
+| 2,749 | `member_notifications` |
 | 1,635 | `products` |
 | 1,635 | `products_backup_20260322` |
-| 1,082 | `channel_intakes` |
+| 1,102 | `channel_intakes` |
 | 1,026 | `services_master` |
 | 1,025 | `services_master_backup_20260322` |
 | 973 | `live_conversation_threads` |
+| 644 | `service_desk_tickets` |
 | 641 | `email_logs` |
-| 615 | `service_desk_tickets` |
 
 <!-- AUDIT:DATABASE:END -->
 
@@ -66,12 +66,12 @@
 ## 2. 🔌 API ENDPOINTS
 <!-- AUDIT:API:START -->
 
-**Total endpoints**: 1463
+**Total endpoints**: 1473
 
 ### Top files by route count
 | Routes | File |
 |-------:|------|
-| 331 | `server.py` |
+| 332 | `server.py` |
 | 150 | `mira_routes.py` |
 | 98 | `ticket_routes.py` |
 | 53 | `concierge_routes.py` |
