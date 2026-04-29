@@ -25,6 +25,7 @@ import SEOHead from './SEOHead';
 import MiraChatWidget from './MiraChatWidget';
 import ConciergeRequestBuilder from './services/ConciergeRequestBuilder';
 import PillarConciergeCards from './common/PillarConciergeCards';
+import WhatsAppConciergeButton from './WhatsAppConciergeButton';
 // MobileMenu removed — Navbar from MainLayout handles mobile navigation
 
 // Pillar subcategories configuration - with REAL product images from Shopify
@@ -544,12 +545,15 @@ const PillarPageLayout = ({
                 margin: '0 auto',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 8 }}>
                 <div style={{ fontSize: 17, fontWeight: 800, color: '#1A0A2E' }}>✦ How can Concierge® help?</div>
-                <button
-                  onClick={() => setPillarCardsOpen(false)}
-                  style={{ background: '#F3F4F6', border: 'none', borderRadius: 20, padding: '6px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', color: '#6B7280' }}
-                >Close ✕</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <WhatsAppConciergeButton pet={activePet} pillar={pillar} testId="concierge-modal-whatsapp-btn" />
+                  <button
+                    onClick={() => setPillarCardsOpen(false)}
+                    style={{ background: '#F3F4F6', border: 'none', borderRadius: 20, padding: '6px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', color: '#6B7280' }}
+                  >Close ✕</button>
+                </div>
               </div>
               <PillarConciergeCards
                 pillar={pillar}
