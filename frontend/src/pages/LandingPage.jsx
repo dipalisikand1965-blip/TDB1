@@ -150,6 +150,27 @@ export default function LandingPage() {
   const { isAuthenticated } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAllPillars, setShowAllPillars] = useState(false);
+  const [hideStickyWA, setHideStickyWA] = useState(false);
+
+  // Hide the sticky WhatsApp CTA when the user is within 220px of the page
+  // bottom (i.e. inside the footer) — the footer already has a WhatsApp link,
+  // so we avoid visual duplication and footer overlap.
+  useEffect(() => {
+    const onScroll = () => {
+      const distFromBottom =
+        document.documentElement.scrollHeight -
+        (window.scrollY + window.innerHeight);
+      setHideStickyWA(distFromBottom < 220);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 40);
@@ -160,15 +181,17 @@ export default function LandingPage() {
   const handleJoin = () => navigate(isAuthenticated ? "/pet-home" : "/join");
 
   const PILLARS = [
+    // ── First 6: most-used "essential" pillars (above fold by default) ──
+    { icon:"🎂", label:"Celebrate",  colour:"#9B59B6" },
     { icon:"🌿", label:"Care",       colour:"#40916C" },
     { icon:"🍽️", label:"Dine",       colour:"#C9973A" },
     { icon:"✈️", label:"Go",         colour:"#1D9E75" },
+    { icon:"🚨", label:"Emergency",  colour:"#DC2626" },
+    { icon:"🛍️", label:"Shop",       colour:"#C9973A" },
+    // ── Hidden until "And 6 more →" tapped ──
     { icon:"🎾", label:"Play",       colour:"#E76F51" },
     { icon:"🎓", label:"Learn",      colour:"#7C3AED" },
-    { icon:"🎂", label:"Celebrate",  colour:"#9B59B6" },
-    { icon:"🛍️", label:"Shop",       colour:"#C9973A" },
     { icon:"📄", label:"Paperwork",  colour:"#0F6E56" },
-    { icon:"🚨", label:"Emergency",  colour:"#DC2626" },
     { icon:"🐾", label:"Adopt",      colour:"#7B3FA0" },
     { icon:"🌷", label:"Farewell",   colour:"#334155" },
     { icon:"🤝", label:"Services",   colour:"#1D9E75" },
@@ -202,7 +225,7 @@ export default function LandingPage() {
         ::selection { background: ${C.amber}40; }
 
         /* Mobile responsive */
-        .tdc-stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:40px; max-width:800px; margin:0 auto; }
+        .tdc-stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:40px; max-width:800px; margin:0 auto; }
         .tdc-isnot-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
         .tdc-how-grid   { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
         .tdc-soul-grid  { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
@@ -230,7 +253,7 @@ export default function LandingPage() {
           .tdc-how-grid { grid-template-columns:repeat(2,1fr); }
         }
         @media (max-width:640px) {
-          .tdc-stats-grid { grid-template-columns:repeat(2,1fr); gap:20px; }
+          .tdc-stats-grid { grid-template-columns:repeat(3,1fr); gap:14px; }
           .tdc-isnot-grid { grid-template-columns:1fr; gap:12px; }
           .tdc-isnot-grid > div { border-radius:16px !important; }
           .tdc-nav-text > button:not(:last-child) { display:none; }
@@ -240,6 +263,12 @@ export default function LandingPage() {
           .tdc-hero-btns { flex-direction:column; align-items:center; }
           .tdc-hero-btns > button { width:100%; max-width:280px; }
           .tdc-soul-grid { grid-template-columns:repeat(2,1fr); }
+          .tdc-mobile-wa-cta { display:flex !important; }
+        }
+        /* Sticky WhatsApp CTA — mobile-only by default */
+        .tdc-mobile-wa-cta { display:none; }
+        @media (min-width:769px) {
+          .tdc-mobile-wa-cta { display:none !important; }
         }
         @media (max-width:480px) {
           .tdc-how-grid { grid-template-columns:1fr 1fr; }
@@ -516,14 +545,13 @@ export default function LandingPage() {
         borderTop: `1px solid ${C.border}`,
         borderBottom: `1px solid ${C.border}`,
         padding: "48px clamp(20px,6vw,80px)",
-      }}>
+      }} data-testid="trust-numbers-section">
         <div className="tdc-stats-grid" style={{
           maxWidth: 900, margin: "0 auto",
         }}>
           <Counter target={45000} label="Pet Families" suffix="+"/>
-          <Counter target={12} label="Life Pillars"/>
-          <Counter target={5358} label="Curated Products"/>
-          <Counter target={1000} label="Concierge® Team" suffix="+"/>
+          <Counter target={1000}  label="Concierge® Team" suffix="+"/>
+          <Counter target={9497}  label="Curated Products"/>
         </div>
       </section>
 
@@ -779,6 +807,78 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── NAVYA TESTIMONIAL — placed right after Soul Profile peak emotion ── */}
+      <section
+        data-testid="navya-testimonial-section"
+        style={{
+          padding: "80px clamp(20px,6vw,80px)",
+          maxWidth: 1000,
+          margin: "0 auto",
+          textAlign: "center",
+        }}
+      >
+        <FadeIn>
+          <div style={{
+            position: "relative",
+            padding: "clamp(28px,5vw,48px) clamp(24px,5vw,56px)",
+            background: `linear-gradient(160deg, ${C.deep} 0%, rgba(20,18,15,0.95) 100%)`,
+            border: `1px solid ${C.border}`,
+            borderRadius: 24,
+            overflow: "hidden",
+          }}>
+            {/* decorative quote glyph */}
+            <div style={{
+              position: "absolute",
+              top: -10,
+              left: 24,
+              fontSize: 140,
+              lineHeight: 1,
+              color: C.amber,
+              opacity: 0.1,
+              fontFamily: "'Playfair Display', Georgia, serif",
+              pointerEvents: "none",
+            }}>"</div>
+
+            <p style={{
+              fontFamily: "'Playfair Display', Georgia, serif",
+              fontSize: "clamp(1.45rem, 4vw, 2.25rem)",
+              fontStyle: "italic",
+              fontWeight: 500,
+              lineHeight: 1.4,
+              color: C.bone,
+              margin: "0 0 28px 0",
+              position: "relative",
+              zIndex: 1,
+            }}>
+              Like a cult gym that took over all other gyms.
+            </p>
+
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              fontFamily: "DM Sans, sans-serif",
+              fontSize: 14,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: C.muted,
+              fontWeight: 600,
+            }}>
+              <span style={{
+                display: "inline-block",
+                width: 36, height: 1,
+                background: C.amber,
+                opacity: 0.6,
+              }} />
+              <span style={{ color: C.amber }}>Navya</span>
+              <span>·</span>
+              <span>Bangalore</span>
+              <span style={{ fontSize: 18 }}>🐾</span>
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+
       {/* ── HOW IT WORKS ── */}
       <section style={{
         padding: "100px clamp(20px,6vw,80px)",
@@ -880,10 +980,35 @@ export default function LandingPage() {
             </div>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <div className="tdc-pillar-grid">
-              {PILLARS.map(p => (
+            <div className="tdc-pillar-grid" data-testid="landing-pillar-grid">
+              {(showAllPillars ? PILLARS : PILLARS.slice(0, 6)).map(p => (
                 <PillarChip key={p.label} {...p}/>
               ))}
+            </div>
+            {/* "And 6 more →" toggle — keeps above-fold density manageable */}
+            <div style={{ textAlign: "center", marginTop: 28 }}>
+              <button
+                type="button"
+                onClick={() => setShowAllPillars(v => !v)}
+                data-testid="pillars-toggle-btn"
+                style={{
+                  background: "transparent",
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 999,
+                  padding: "10px 22px",
+                  color: C.amber,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: "0.06em",
+                  cursor: "pointer",
+                  fontFamily: "DM Sans, sans-serif",
+                  transition: "all 0.18s ease",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(201,151,58,0.08)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+              >
+                {showAllPillars ? "Show fewer ↑" : "And 6 more →"}
+              </button>
             </div>
           </FadeIn>
         </div>
@@ -1138,6 +1263,45 @@ export default function LandingPage() {
           © 2026 The Doggy Company · Mira is the Brain · Concierge® is the Hands
         </div>
       </footer>
+
+      {/* ── STICKY WHATSAPP CTA — mobile only, hides near footer ── */}
+      <a
+        href={`https://wa.me/919739908844?text=${encodeURIComponent("Hi! I'm exploring The Doggy Company for my dog 🐾. Could you tell me more?")}`}
+        target="_blank"
+        rel="noreferrer"
+        className="tdc-mobile-wa-cta"
+        data-testid="mobile-whatsapp-cta"
+        aria-label="Got a question? Chat with us on WhatsApp"
+        style={{
+          position: "fixed",
+          left: 16,
+          right: 16,
+          bottom: `calc(16px + env(safe-area-inset-bottom, 0px))`,
+          zIndex: 9000,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+          padding: "14px 20px",
+          background: "#25D366",
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: 15,
+          fontFamily: "DM Sans, sans-serif",
+          borderRadius: 999,
+          textDecoration: "none",
+          boxShadow: "0 8px 24px rgba(37,211,102,0.36), 0 2px 8px rgba(0,0,0,0.18)",
+          opacity: hideStickyWA ? 0 : 1,
+          pointerEvents: hideStickyWA ? "none" : "auto",
+          transform: hideStickyWA ? "translateY(110%)" : "translateY(0)",
+          transition: "transform 0.25s ease, opacity 0.25s ease",
+        }}
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0 0 20.464 3.488"/>
+        </svg>
+        <span>Got a question? We're on WhatsApp</span>
+      </a>
 
     </div>
   );
