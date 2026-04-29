@@ -418,6 +418,51 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
     setTicketId(null);
   }, []);
 
+  // ── iOS-safe body scroll lock while modal is open ─────────────────────
+  // Without this, iOS Safari lets the page behind the modal scroll
+  // while the modal sits glued to the bottom — exactly the bug Dipali saw.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const html = document.documentElement;
+    const body = document.body;
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+
+    // Save originals
+    const prev = {
+      bodyPosition: body.style.position,
+      bodyTop:      body.style.top,
+      bodyLeft:     body.style.left,
+      bodyRight:    body.style.right,
+      bodyWidth:    body.style.width,
+      bodyOverflow: body.style.overflow,
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+    };
+
+    // Lock — fixed-position trick keeps iOS Safari from rubber-banding
+    body.style.position = 'fixed';
+    body.style.top      = `-${scrollY}px`;
+    body.style.left     = '0';
+    body.style.right    = '0';
+    body.style.width    = '100%';
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'contain';
+
+    return () => {
+      body.style.position = prev.bodyPosition;
+      body.style.top      = prev.bodyTop;
+      body.style.left     = prev.bodyLeft;
+      body.style.right    = prev.bodyRight;
+      body.style.width    = prev.bodyWidth;
+      body.style.overflow = prev.bodyOverflow;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+      // Restore the user's previous scroll position
+      window.scrollTo(0, scrollY);
+    };
+  }, [isOpen]);
+
   // handleSendToConcierge — canonical via bookViaConcierge → /api/service_desk/attach_or_create_ticket
   const handleSendToConcierge = useCallback(async (allergyConfirmed) => {
     const resolvedPetId = petId || boxData?.petId;
@@ -519,7 +564,10 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
           justifyContent: 'center',
           padding: isMobile ? '110px 12px 80px' : '16px',
           pointerEvents: 'none',
-          overflowY: isMobile ? 'auto' : 'visible',
+          // iOS: outer container must NOT scroll — let the inner card handle it.
+          // Outer scroll on a position:fixed wrapper rubber-bands on iOS Safari
+          // and visually appears to "stick to bottom while back keeps rolling".
+          overflow: 'hidden',
         }}
       >
         <div
@@ -535,8 +583,19 @@ const BirthdayBoxBuilder = ({ onOpenBrowseDrawer }) => {
             background: 'linear-gradient(145deg, #140028 0%, #2D0060 60%, #1A0030 100%)',
             border: '1px solid rgba(196,77,255,0.30)',
             boxShadow: '0 8px 64px rgba(196,77,255,0.30)',
-            maxHeight: isMobile ? 'none' : '88vh',
+            // Mobile: cap at viewport so the inner scroll has clear bounds.
+            // Was `none` on mobile which caused iOS to size the inner div
+            // taller than the viewport and trap touch scrolls on the OUTER
+            // container — the root cause of the "stuck to bottom" symptom.
+            maxHeight: isMobile
+              ? 'calc(100vh - 110px - 80px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))'
+              : '88vh',
             pointerEvents: 'all',
+            // iOS hardware-accelerated, momentum scrolling — Apple's required magic
+            WebkitOverflowScrolling: 'touch',
+            // Prevent inner scroll from chaining to <body>
+            overscrollBehavior: 'contain',
+            touchAction: 'pan-y',
           }}
         >
           {/* Header */}
