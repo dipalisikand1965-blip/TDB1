@@ -53,17 +53,28 @@ CUSTOMERS_CSV = os.environ.get(
     "/tmp/tdb_import/customers_export.csv",
 )
 
-# Soft-launch May 14 — 10 named/criteria-matched records get the email one day early
+# Soft-launch May 14 — exactly 10 records sent one day early.
+# Per Dipali Apr 29 2026: Navya + Shirley are office testers (not TDB customers)
+# and will be hand-invited via WhatsApp by Dipali — DO NOT match by name.
 SOFT_LAUNCH_NAMES = {
     # (first_name_lower, last_name_starts_with) → reason
     ("balaji", "c"): "highest_spender",
-    ("navya", ""): "tester_cult_gym",
-    ("shirley", ""): "tester_six_dogs",
-    ("shreesha", ""): "six_dogs_merged",
+    # Shreesha Hemmige (Shunaka's Kingdom Dog Cafe). She has no email on Shopify
+    # — Dipali will WhatsApp her personally on May 14.
+    ("shreesha", "hemmige"): "six_dogs_merged",
+}
+
+# Specific email-match rules (more precise than name match)
+SOFT_LAUNCH_EMAILS: Dict[str, str] = {
+    # currently empty; add specific email matches here when needed
 }
 
 # Cities that get top-2-spender soft-launch slots
 SOFT_LAUNCH_TOP_CITIES = ["Mumbai", "Bangalore"]
+
+# After the named/criteria matches, fill remaining soft-launch slots
+# with the next-N highest spenders overall, until total reaches this target.
+SOFT_LAUNCH_TARGET_COUNT = 10
 
 # 10-day city stagger plan (from /tmp/tdb_import/audit.py)
 CITY_STAGGER = {
@@ -230,15 +241,26 @@ def parse_csv_records() -> List[Dict[str, Any]]:
 
 def pick_soft_launch_records(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Returns the records that should be flagged soft_launch=true:
-      - 4 named individuals (Balaji C., Navya, Shirley, Shreesha)
-      - Top-2 spenders from Mumbai
-      - Top-2 spenders from Bangalore
-    Total ≈ 8 (some overlap may shrink to 6-8). Per instructions doc Apr 29 v3.
+    Returns the records flagged soft_launch=true. Per Dipali Apr 29 2026:
+      - Balaji C. (highest spender, named)
+      - Shreesha (by email shreeshahemmige@gmail.com)
+      - Top-2 spenders from Mumbai (with email reachable)
+      - Top-2 spenders from Bangalore (with email reachable)
+      - Top up to SOFT_LAUNCH_TARGET_COUNT (10) with next highest spenders overall.
+    Navya + Shirley are EXCLUDED here — they're office testers, will be invited
+    by Dipali manually via WhatsApp.
     """
-    soft_launch = {}  # key=email or shopify_id → record
+    soft_launch: Dict[str, Dict[str, Any]] = {}  # key=email or shopify_id → record
 
-    # Named matches
+    def _key(r):
+        return r['email'] or r['shopify_customer_id']
+
+    # 1. Email-based matches (most precise)
+    for rec in records:
+        if rec['email'] and rec['email'] in SOFT_LAUNCH_EMAILS:
+            soft_launch[_key(rec)] = {**rec, '_soft_launch_reason': SOFT_LAUNCH_EMAILS[rec['email']]}
+
+    # 2. Named matches (only Balaji C. now)
     for rec in records:
         fn = (rec['first_name'] or '').lower().strip()
         ln = (rec['last_name'] or '').lower().strip()
@@ -246,20 +268,43 @@ def pick_soft_launch_records(records: List[Dict[str, Any]]) -> List[Dict[str, An
             if fn == target_fn and (
                 not target_ln_prefix or ln.startswith(target_ln_prefix)
             ):
-                key = rec['email'] or rec['shopify_customer_id']
+                # Take the highest-spending match for ambiguous names
+                key = _key(rec)
                 if key not in soft_launch:
-                    soft_launch[key] = {**rec, '_soft_launch_reason': reason}
+                    existing = next(
+                        (v for v in soft_launch.values()
+                         if v.get('_soft_launch_reason') == reason),
+                        None
+                    )
+                    if not existing or rec['total_spent_inr'] > existing['total_spent_inr']:
+                        # Remove any prior lower-spending match for this reason
+                        for k, v in list(soft_launch.items()):
+                            if v.get('_soft_launch_reason') == reason:
+                                del soft_launch[k]
+                        soft_launch[key] = {**rec, '_soft_launch_reason': reason}
 
-    # Top-2 spenders per soft-launch city
+    # 3. Top-2 spenders per soft-launch city (must have email reachable)
     for city in SOFT_LAUNCH_TOP_CITIES:
         in_city = sorted(
             [r for r in records if r['city'] == city and r['reachable']['email']],
             key=lambda r: -r['total_spent_inr'],
         )
         for r in in_city[:2]:
-            key = r['email'] or r['shopify_customer_id']
+            key = _key(r)
             if key not in soft_launch:
                 soft_launch[key] = {**r, '_soft_launch_reason': f'top_spender_{city.lower()}'}
+
+    # 4. Top up to target count with next-highest spenders overall (email reachable)
+    if len(soft_launch) < SOFT_LAUNCH_TARGET_COUNT:
+        already = set(soft_launch.keys())
+        remainder = sorted(
+            [r for r in records if _key(r) not in already and r['reachable']['email']],
+            key=lambda r: -r['total_spent_inr'],
+        )
+        for r in remainder:
+            if len(soft_launch) >= SOFT_LAUNCH_TARGET_COUNT:
+                break
+            soft_launch[_key(r)] = {**r, '_soft_launch_reason': 'next_top_spender_overall'}
 
     return list(soft_launch.values())
 
