@@ -640,3 +640,24 @@ Hero headline + subtext · 4 stats (% / ₹ / multiplier / absolute) · 8 demo s
 ### Industries supported
 Bank · Insurance · Pet Store · Grooming · Vet Hospital · Corporate · Hotel · Airline · Other
 
+
+
+---
+
+## 📑 Pages Directory + 4 More Proposals (Apr 29, 2026)
+
+### Pages Directory (new admin tab)
+- File: `/app/frontend/src/components/admin/PagesDirectory.jsx`
+- New Admin tab "📑 Pages" in Command Center
+- 42 pages indexed, grouped: Investors · B2B Demos · Docs · Marquee Experiences · 12 Pillars · Community · Policies
+- Live search, Production/Preview toggle, copy + open buttons per row
+- AI-Generated Partner Proposals section auto-pulls from `partner_demos` collection so new proposals appear automatically
+- Each proposal row shows view count + last-viewed timestamp
+
+### 4 Additional Partner Proposals Generated
+- `/proposal/federal-bank` — Sterling the Beagle (financial nod)
+- `/proposal/kiwi-insurance` — Kiki the Golden Retriever
+- `/proposal/redberyl` — Ruby the Cavalier King Charles Spaniel (jewel nod)
+- `/proposal/jaguar-land-rover-india` — Rover the Siberian Husky (Range Rover nod)
+
+All with industry-tailored stats, scenarios (incl. tax-benefit query for Federal, lifestyle for RedBeryl, "luxury beyond four wheels" for JLR), and partnership angles positioning against named competitors.

@@ -65,6 +65,7 @@ import EnjoyExperiencesAdmin from '../components/admin/EnjoyExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
 import IntegrationsHealthPanel from '../components/admin/IntegrationsHealthPanel';
 import PartnerDemoManager from '../components/admin/PartnerDemoManager';
+import PagesDirectory from '../components/admin/PagesDirectory';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
@@ -3206,6 +3207,7 @@ const Admin = () => {
               { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
               { id: 'integrations-health', label: 'Health', icon: Activity },
               { id: 'partner-demos', label: '✨ Proposals', icon: Sparkles },
+              { id: 'pages-directory', label: '📑 Pages', icon: BookOpen },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -4009,6 +4011,11 @@ const Admin = () => {
         {/* Partner Proposals — AI-generated B2B demo pages */}
         {activeTab === 'partner-demos' && (
           <PartnerDemoManager authHeaders={getAuthHeaders()} />
+        )}
+
+        {/* Pages Directory — index of every shareable URL on the site */}
+        {activeTab === 'pages-directory' && (
+          <PagesDirectory authHeaders={getAuthHeaders()} />
         )}
 
         {/* Celebrations Calendar */}
