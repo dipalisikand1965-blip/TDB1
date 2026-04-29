@@ -301,6 +301,7 @@ const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
+const PartnerDemoPage = lazy(() => import("./pages/PartnerDemoPage"));
 const DemoPage = lazy(() => import("./pages/DemoPage"));
 const MiraSearchPage = lazy(() => import("./pages/MiraSearchPage"));
 
@@ -362,6 +363,9 @@ function AppRouter() {
         
         {/* B2B Demo Pages - Standalone, no auth required */}
         <Route path="/demo/dreamfolks" element={<DreamfolksDemo />} />
+
+        {/* AI-Generated Partner Proposals — email-gated B2B pitch pages */}
+        <Route path="/proposal/:partnerSlug" element={<PartnerDemoPage />} />
         
         {/* Public Experience Demo Page - No auth, no navbar */}
         <Route path="/demo" element={<DemoPage />} />

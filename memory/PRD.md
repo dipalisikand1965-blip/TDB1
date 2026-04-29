@@ -605,3 +605,38 @@ All 10 components now import `NearMeResultBadges` + `sortByTDCVerified` and rend
 - Test suite: `/app/backend/tests/test_mira_wa.py` (4/4 passing)
 - Test reports: `/app/test_reports/iteration_205.json`, `206.json`, `207.json`
 - Bug #10 smoke test: GET/POST round-trip against Dipali's Mojo pet — HTTP 200 both directions, document persisted and cleaned up.
+
+---
+
+## 🌟 AI-Powered Partner Proposal Generator (Apr 29, 2026)
+
+### What was built
+- **Backend:** `/app/backend/partner_demo_routes.py` — 7 endpoints, `partner_demos` MongoDB collection
+- **Frontend public:** `/app/frontend/src/pages/PartnerDemoPage.jsx` — config-driven version of DreamfolksDemo, email-gated
+- **Frontend admin:** `/app/frontend/src/components/admin/PartnerDemoManager.jsx` — new "✨ Proposals" tab in Command Center
+- **Route:** `/proposal/:partnerSlug` (kept `/demo/dreamfolks` untouched as gold-standard handcrafted)
+- **AI:** Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`) via Emergent LLM Key
+- **Lead tracking:** Every email-gate unlock fires a Resend alert to `dipali@clubconcierge.in` with viewer email, partner, timestamp, and page URL
+
+### Endpoints
+- `POST /api/admin/partner-demos/generate` — Claude generates full demo JSON
+- `GET /api/admin/partner-demos` — admin list with view counts + viewer logs
+- `GET /api/admin/partner-demos/{slug}` — single demo (admin)
+- `PUT /api/admin/partner-demos/{slug}` — inline edit
+- `POST /api/admin/partner-demos/{slug}/regenerate-section?section=...` — re-roll one section (hero/stats/demo_pet/demo_scenarios/pitch_copy/all)
+- `DELETE /api/admin/partner-demos/{slug}` — soft delete (`is_active=false`)
+- `GET /api/partner-demos/{slug}/meta` — public, pre-gate metadata only
+- `POST /api/partner-demos/{slug}/unlock` — public, records viewer + fires lead alert + returns full demo
+
+### Generated content per partner
+Hero headline + subtext · 4 stats (% / ₹ / multiplier / absolute) · 8 demo scenarios (incl. emergency, multi-intent, industry-specific) · demo pet (name nods to brand) · 3-paragraph pitch · partnership angle
+
+### Test verification
+- Generated `HDFC Bank` proposal at `/proposal/hdfc-bank`
+- Demo pet: **Regalia** (Golden Retriever, ref to HDFC Regalia card)
+- Stats: 41% / ₹12.4L / 3.2x / 2.8M (industry-tailored)
+- Email gate works · unlock records viewer · lead alert email fires · full proposal renders correctly
+
+### Industries supported
+Bank · Insurance · Pet Store · Grooming · Vet Hospital · Corporate · Hotel · Airline · Other
+

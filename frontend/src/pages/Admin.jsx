@@ -64,6 +64,7 @@ import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesA
 import EnjoyExperiencesAdmin from '../components/admin/EnjoyExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
 import IntegrationsHealthPanel from '../components/admin/IntegrationsHealthPanel';
+import PartnerDemoManager from '../components/admin/PartnerDemoManager';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
@@ -3204,6 +3205,7 @@ const Admin = () => {
               { id: 'finance', label: 'Finance', icon: DollarSign },
               { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
               { id: 'integrations-health', label: 'Health', icon: Activity },
+              { id: 'partner-demos', label: '✨ Proposals', icon: Sparkles },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -4002,6 +4004,11 @@ const Admin = () => {
         {/* Integrations Health Panel — live status of all external services */}
         {activeTab === 'integrations-health' && (
           <IntegrationsHealthPanel />
+        )}
+
+        {/* Partner Proposals — AI-generated B2B demo pages */}
+        {activeTab === 'partner-demos' && (
+          <PartnerDemoManager authHeaders={getAuthHeaders()} />
         )}
 
         {/* Celebrations Calendar */}

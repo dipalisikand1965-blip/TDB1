@@ -23466,6 +23466,15 @@ app.include_router(order_queue_router)  # Concierge® Order Queue API
 app.include_router(pet_vault_router, prefix="/api")
 app.include_router(pet_vault_admin_router, prefix="/api/admin/pet-vault")
 
+# Partner Demo Generator — AI-generated B2B proposal pages at /proposal/{slug}
+try:
+    from partner_demo_routes import partner_demo_router, set_database as set_partner_demo_db
+    set_partner_demo_db(db)
+    app.include_router(partner_demo_router)
+    logger.info("✓ Partner Demo Generator routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Partner Demo Generator: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
