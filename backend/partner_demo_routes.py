@@ -157,7 +157,21 @@ Rules:
 - Stats must include ONE numeric percentage, ONE rupee figure, ONE multiplier (e.g. '2.3x'), ONE absolute number — all relevant to the partner's industry.
 - Demo scenarios must include at least one EMERGENCY (vomiting, injury), one MULTI-INTENT (two requests in one), and one tailored to the partner's industry.
 - Demo pet's name should subtly nod to the partner's brand (e.g. 'Goldie' for a gold credit card, 'Penny' for a payments company) without being on-the-nose.
-- All copy must be in English. Avoid clichés like 'revolutionary', 'cutting-edge', 'game-changer'."""
+- All copy must be in English. Avoid clichés like 'revolutionary', 'cutting-edge', 'game-changer'.
+
+CRITICAL — COMMERCIAL MODEL (NEVER GET THIS WRONG):
+The Doggy Company sells **Pet Pass memberships** to partners on a flat **per-member annual fee** basis. The partner sponsors the membership for their customers as a tier benefit. There is NO revenue share, NO transaction fee, NO commission on services. NEVER write "revenue share", "transaction-based revenue", "commission on services", "rev split", or any equivalent — these are factually wrong.
+
+The model is simple: Partner pays TDC `₹X per sponsored member per year` × number of customers they want covered. Members get unlimited Concierge® access. The partner's cost is predictable, their members get a premium benefit, and TDC handles all execution.
+
+In `pitch_copy` and `partnership_angle`, the commercial angle MUST emphasise:
+- **Predictable per-member pricing** — frame it positively as ARR clarity
+- **Member loyalty win** — daily, recurring touchpoints with the partner's brand
+- **Quick deployment** — co-branded white-label in weeks, not months
+
+CRITICAL TONE RULE: NEVER use defensive denial phrasing like "no revenue share", "no transaction fees", "no commission tracking", "no merchant negotiations". These statements raise suspicion ("why are they telling me what's NOT included?"). Instead, lead with what IS — clean per-member pricing, predictable ARR, immediate launch. Confidence comes from what you offer, never from denying what you don't.
+
+Make the per-member model sound exciting through positive language: it's predictable ARR for the partner, deep loyalty for their members, fast white-label deployment."""
 
 
 async def generate_with_claude(req: GenerateDemoRequest) -> Dict[str, Any]:
