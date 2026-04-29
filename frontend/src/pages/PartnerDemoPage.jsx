@@ -195,7 +195,7 @@ const PartnerDemoContent = ({ demo, viewerEmail }) => {
       // Graceful fallback so demo never dies in front of a client
       setChatMessages((prev) => [...prev, {
         role: 'mira',
-        content: `Great question! Here's how I'd handle this for ${pet.name}:\n\n**1.** I'd check ${pet.name}'s profile, allergies (${pet.allergy || 'none on file'}), and recent history.\n**2.** I'd surface 2-3 best options across our 12 pillars (Care, Shop, Travel, Celebrate…).\n**3.** Concierge® would handle execution end-to-end.\n\nIn production, this is a streaming AI response with live data. Try another scenario above!`,
+        content: `Great question! Here's how I'd handle this for ${pet.name}:\n\n**1.** I'd check ${pet.name}'s profile, allergies (${pet.allergy || 'none on file'}), and recent history.\n**2.** I'd surface 2-3 best options across our 12 pillars (Care, Shop, Travel, Celebrate…).\n**3.** Concierge® would handle execution end-to-end.\n\n✨ *With membership, your Concierge® is always one message away — every day of ${pet.name}'s life. Try another scenario above to see more.*`,
       }]);
     } finally {
       setStreamingText('');
