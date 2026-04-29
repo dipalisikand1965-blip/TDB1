@@ -26,6 +26,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { waLink } from "../utils/whatsappLink";
 
 const FONTS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');`;
 
@@ -1254,7 +1255,7 @@ export default function LandingPage() {
           >
             ✦ Experience Demo
           </button>
-          <a href="https://wa.me/919739908844?text=Hi! I'd like to know more about The Doggy Company 🐕" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>WhatsApp</a>
+          <a href={waLink('919739908844', "Hi! I'd like to know more about The Doggy Company 🐕")} target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>WhatsApp</a>
           <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Instagram</a>
           <a href="https://www.facebook.com/thedoggybaker" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>Facebook</a>
           <a href="https://www.youtube.com/channel/UCtnx2cZ0p5FGkV5l3P0Iz1g" target="_blank" rel="noreferrer" style={{color:C.muted,fontSize:13,textDecoration:'none'}}>YouTube</a>
@@ -1266,7 +1267,7 @@ export default function LandingPage() {
 
       {/* ── STICKY WHATSAPP CTA — mobile only, hides near footer ── */}
       <a
-        href={`https://wa.me/919739908844?text=${encodeURIComponent("Hi! I'm exploring The Doggy Company for my dog 🐾. Could you tell me more?")}`}
+        href={waLink('919739908844', "Hi! I'm exploring The Doggy Company for my dog 🐾. Could you tell me more?")}
         target="_blank"
         rel="noreferrer"
         className="tdc-mobile-wa-cta"
