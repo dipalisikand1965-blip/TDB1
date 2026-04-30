@@ -23561,6 +23561,15 @@ try:
 except Exception as e:
     logger.exception(f"Failed to mount Founding Member Email routes: {e}")
 
+# Shopify Order Webhook + Admin CSV re-import (Aditya feedback Apr 30)
+try:
+    from shopify_ingest_routes import shopify_router as _shopify_router, admin_router as _shopify_admin_router
+    app.include_router(_shopify_router)
+    app.include_router(_shopify_admin_router)
+    logger.info("✓ Shopify webhook + admin CSV upload routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Shopify ingest routes: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
