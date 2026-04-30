@@ -99,44 +99,42 @@ def _build_complete(parent, primary_pet):
         last_cake = ""
 
     yrs_str = _fmt_years(parent.get("years_with_tdb"))
-    cakes = parent.get("total_cakes") or 0
-    orders = parent.get("total_orders") or 0
-    city = (parent.get("city") or "").strip()
 
-    # Sanity rules: drop weak stats
-    show_stats_line = (orders >= 3) and yrs_str
-
-    # Lines 1–3 (the "we remembered" stack)
+    # ── Lines (the "we remembered" stack) ──
     remembered_lines = [f"We remembered {pet}'s birthday."]
     if fav:
         remembered_lines.append(f"We remembered {pet} loves {fav}.")
     if last_cake:
-        remembered_lines.append(f"We remembered the {last_cake} cake we made for you.")
+        remembered_lines.append(f"We remembered the {last_cake} cake we made together.")
 
     subject = f"{pet}'s birthday is {month_name} — we remembered. 🌷"
     preheader = "Your founding place is held. Free until May 2027."
 
-    # Build the stats sentence
-    stats_bits = []
-    if cakes >= 1:
-        stats_bits.append(f"{cakes} cake{'s' if cakes != 1 else ''}")
-    if orders >= 3:
-        stats_bits.append(f"{orders} order{'s' if orders != 1 else ''}")
-    if city:
-        stats_bits.append(f"{city} to here")
-    stats_line = ", ".join(stats_bits)
+    # Tenure line — only show when meaningful
+    tenure_line = None
+    if yrs_str:
+        tenure_line = f"You've been family to The Doggy Bakery for {yrs_str.lower()}."
 
-    # Plain-text body
+    # Pronoun for "She's/He's been waiting" — best-guess from breed/name impossible,
+    # so we honour the user's request literally with "She's been waiting" (a poetic
+    # device referring to Mira, not the pet — Mira is feminine).
+    mira_line = f"Mira already knows {pet}.\nShe's been waiting."
+
+    # ── Plain text ──
     text_parts = [f"Hi {first},", ""]
     text_parts.extend(remembered_lines)
     text_parts.append("")
-    if show_stats_line and stats_line:
-        text_parts.append(f"For {yrs_str.lower()}, you trusted us with the small things —")
-        text_parts.append(stats_line + ".")
+    if tenure_line:
+        text_parts.append(tenure_line)
         text_parts.append("")
     text_parts += [
-        "The Doggy Bakery is now The Doggy Company.",
-        f"Same hands. Bigger home. Mira knows {pet} now.",
+        f"Now we've built something bigger —",
+        f"for {pet}, and every dog like him.",
+        "",
+        "The Doggy Company is India's first",
+        "Pet Life Platform.",
+        f"Mira already knows {pet}.",
+        "She's been waiting.",
         "",
         f"We saved {pet}'s founding place.",
         "Free until May 2027 · Founding discount, forever · No card needed.",
@@ -150,45 +148,57 @@ def _build_complete(parent, primary_pet):
         "",
         "⚘ Built in memory of Mystique.",
         "",
-        f"P.S. — {pet}'s next birthday nudge will land 7 days before. We'll be there.",
+        f"P.S. — {pet}'s birthday nudge will land 7 days before {month_name}.",
+        "We'll be there.",
     ]
     text = "\n".join(text_parts)
+
+    # ── HTML ──
+    body_blocks = [
+        {"type": "stack", "lines": remembered_lines},
+    ]
+    if tenure_line:
+        body_blocks.append({"type": "p", "text": tenure_line})
+    body_blocks += [
+        {
+            "type": "p",
+            "text": f"Now we've built something bigger — for {_e(pet)}, and every dog like him.",
+            "raw_html": True,
+        },
+        {
+            "type": "p_bold",
+            "text": (
+                "The Doggy Company is India's first<br/>Pet Life Platform."
+            ),
+            "raw_html": True,
+        },
+        {
+            "type": "p",
+            "text": (
+                f"Mira already knows <b>{_e(pet)}</b>.<br/>"
+                "She's been waiting."
+            ),
+            "raw_html": True,
+        },
+        {
+            "type": "p",
+            "text": (
+                f"We saved <b>{_e(pet)}'s</b> founding place.<br/>"
+                "Free until <b>May 2027</b> · Founding discount, forever · No card needed."
+            ),
+            "raw_html": True,
+        },
+    ]
 
     html = _wrap_html(
         first_name=first,
         token=parent.get("invite_token", ""),
-        body_blocks=[
-            {"type": "stack", "lines": remembered_lines},
-            (
-                {
-                    "type": "p",
-                    "text": (
-                        f"For {yrs_str.lower()}, you trusted us with the small things — "
-                        f"{stats_line}."
-                    ),
-                }
-                if show_stats_line and stats_line
-                else None
-            ),
-            {
-                "type": "p",
-                "text": "The Doggy Bakery is now The Doggy Company.",
-            },
-            {
-                "type": "p_bold",
-                "text": f"Same hands. Bigger home. Mira knows {pet} now.",
-            },
-            {
-                "type": "p",
-                "text": (
-                    f"We saved <b>{_e(pet)}'s</b> founding place.<br/>"
-                    "Free until <b>May 2027</b> · Founding discount, forever · No card needed."
-                ),
-                "raw_html": True,
-            },
-        ],
+        body_blocks=body_blocks,
         cta_label=f"Claim {pet}'s place",
-        ps=f"P.S. — {pet}'s next birthday nudge will land 7 days before. We'll be there.",
+        ps=(
+            f"P.S. — {pet}'s birthday nudge will land 7 days before {month_name}. "
+            "We'll be there."
+        ),
     )
 
     return {
@@ -205,32 +215,32 @@ def _build_high(parent, primary_pet):
     first = _safe_first_name(parent)
     pet = (primary_pet or {}).get("name") or parent.get("primary_pet_name") or "your pet"
     orders = parent.get("total_orders") or 0
-    yrs_str = _fmt_years(parent.get("years_with_tdb"))
 
     subject = f"We remembered {pet}. 🐾"
-    preheader = "From The Doggy Bakery to The Doggy Company — your founding place is held."
+    preheader = "Your founding place is held. Free until May 2027."
 
-    # Approved stats line: "12 times you came home to us. 1.5 years. Thank you."
-    # Sanity rule: drop weak stats. If orders<3 we omit the line entirely
-    # (use the gentler "thank you" sentence instead).
-    has_strong_stats = (orders >= 3) and yrs_str is not None
-    stats_line = None
-    if has_strong_stats:
-        stats_line = f"{orders} times you came home to us. {yrs_str}. Thank you."
+    # Tenure paragraph — only show "X times you came home to us" when stats are strong
+    has_strong_orders = orders >= 3
+    tenure_lines: List[str] = [f"You've trusted The Doggy Bakery with {pet}'s celebrations."]
+    if has_strong_orders:
+        tenure_lines.append(f"{orders} times you came home to us.")
 
+    # ── Plain text ──
     text_parts = [
         f"Hi {first},",
         "",
         f"We remembered {pet}.",
         "",
     ]
-    if stats_line:
-        text_parts += [stats_line, ""]
+    text_parts.extend(tenure_lines)
+    text_parts.append("")
     text_parts += [
-        "The small things you've trusted us with — they built this.",
+        "Now we've built something bigger.",
         "",
-        "The Doggy Bakery is now The Doggy Company.",
-        f"Same hands. Bigger home. Mira knows {pet} now.",
+        "The Doggy Company is India's first",
+        "Pet Life Platform.",
+        f"Mira already knows {pet}.",
+        "She's been waiting.",
         "",
         f"{pet}'s founding place is saved.",
         "Free until May 2027 · Founding discount, forever · No card needed.",
@@ -244,19 +254,32 @@ def _build_high(parent, primary_pet):
         "",
         "⚘ Built in memory of Mystique.",
         "",
-        f"P.S. — Tell us {pet}'s birthday and we'll remember it forever.",
+        f"P.S. — Tell us {pet}'s birthday and Mira will remember it forever.",
     ]
     text = "\n".join(text_parts)
 
+    # ── HTML ──
     body_blocks = [
         {"type": "h_remembered", "text": f"We remembered {pet}."},
-    ]
-    if stats_line:
-        body_blocks.append({"type": "p", "text": stats_line})
-    body_blocks += [
-        {"type": "p", "text": "The small things you've trusted us with — they built this."},
-        {"type": "p", "text": "The Doggy Bakery is now The Doggy Company."},
-        {"type": "p_bold", "text": f"Same hands. Bigger home. Mira knows {pet} now."},
+        {
+            "type": "p",
+            "text": "<br/>".join(_e(line) for line in tenure_lines),
+            "raw_html": True,
+        },
+        {"type": "p", "text": "Now we've built something bigger."},
+        {
+            "type": "p_bold",
+            "text": "The Doggy Company is India's first<br/>Pet Life Platform.",
+            "raw_html": True,
+        },
+        {
+            "type": "p",
+            "text": (
+                f"Mira already knows <b>{_e(pet)}</b>.<br/>"
+                "She's been waiting."
+            ),
+            "raw_html": True,
+        },
         {
             "type": "p",
             "text": (
@@ -272,7 +295,7 @@ def _build_high(parent, primary_pet):
         token=parent.get("invite_token", ""),
         body_blocks=body_blocks,
         cta_label=f"Claim {pet}'s place",
-        ps=f"P.S. — Tell us {pet}'s birthday and we'll remember it forever.",
+        ps=f"P.S. — Tell us {pet}'s birthday and Mira will remember it forever.",
     )
 
     return {
@@ -296,10 +319,13 @@ def _build_minimal(parent, primary_pet):
         "",
         "You were here before we were here.",
         "",
-        "The Doggy Bakery — Bangalore, 2023 to today —",
-        "is now The Doggy Company.",
-        "Same hands. Bigger home.",
-        "A Pet Life OS for the way you actually live with your dog.",
+        "You trusted The Doggy Bakery",
+        "with your dog's celebrations.",
+        "That trust built this.",
+        "",
+        "The Doggy Company is India's first",
+        "Pet Life Platform — built for the way",
+        "you actually live with your dog.",
         "",
         "Your founding place is held.",
         "Free until May 2027 · Founding discount, forever · No card needed.",
@@ -307,8 +333,8 @@ def _build_minimal(parent, primary_pet):
         "→ Claim your founding place",
         _claim_url(parent.get("invite_token", "")),
         "",
-        "If your pet's name is missing here,",
-        "we'll get to know them when you arrive.",
+        "We'll get to know your dog",
+        "when you arrive.",
         "That's the whole idea.",
         "",
         "With care,",
@@ -317,7 +343,8 @@ def _build_minimal(parent, primary_pet):
         "",
         "⚘ Built in memory of Mystique.",
         "",
-        "P.S. — When you claim your place, we start listening. That's the only difference.",
+        "P.S. — When you claim your place, we start listening.",
+        "That's the only difference.",
     ]
     text = "\n".join(text_parts)
 
@@ -329,10 +356,17 @@ def _build_minimal(parent, primary_pet):
             {
                 "type": "p",
                 "text": (
-                    "The Doggy Bakery — Bangalore, 2023 to today —<br/>"
-                    "is now <b>The Doggy Company</b>.<br/>"
-                    "Same hands. Bigger home.<br/>"
-                    "A Pet Life OS for the way you actually live with your dog."
+                    "You trusted <b>The Doggy Bakery</b><br/>"
+                    "with your dog's celebrations.<br/>"
+                    "That trust built this."
+                ),
+                "raw_html": True,
+            },
+            {
+                "type": "p_bold",
+                "text": (
+                    "The Doggy Company is India's first<br/>Pet Life Platform —<br/>"
+                    "built for the way you actually live with your dog."
                 ),
                 "raw_html": True,
             },
@@ -347,8 +381,7 @@ def _build_minimal(parent, primary_pet):
             {
                 "type": "p_italic",
                 "text": (
-                    "If your pet's name is missing here, "
-                    "we'll get to know them when you arrive. "
+                    "We'll get to know your dog when you arrive. "
                     "That's the whole idea."
                 ),
             },
