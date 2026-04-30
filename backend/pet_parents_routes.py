@@ -64,9 +64,12 @@ def _get_prod_db():
     global _prod_client, _prod_db
     if _prod_db is None:
         url = os.environ.get('PRODUCTION_MONGO_URL') or os.environ.get('MONGO_URL')
+        # SOURCE DB is always 'pet-os-live-test_database' on cluster B —
+        # that's where the founding-member import was placed. We deliberately
+        # ignore prod's prefixed DB_NAME (`pet-soul-ranking-...`) here because
+        # the source cluster doesn't carry that prefix.
         db_name = (
             os.environ.get('PRODUCTION_DB_NAME')
-            or os.environ.get('DB_NAME')
             or 'pet-os-live-test_database'
         )
         _prod_client = AsyncIOMotorClient(url, serverSelectionTimeoutMS=10000)
