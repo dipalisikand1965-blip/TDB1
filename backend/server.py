@@ -23553,6 +23553,14 @@ try:
 except Exception as e:
     logger.exception(f"Failed to mount Founding Member Activation routes: {e}")
 
+# Founding Member Email — preview + test send + orchestrator (admin)
+try:
+    from founding_member_email_routes import router as founding_email_router
+    app.include_router(founding_email_router)
+    logger.info("✓ Founding Member Email routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Founding Member Email routes: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
