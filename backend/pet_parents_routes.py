@@ -61,21 +61,20 @@ _prod_db = None
 
 
 def _get_prod_db():
-    global _prod_client, _prod_db
-    if _prod_db is None:
-        url = os.environ.get('PRODUCTION_MONGO_URL') or os.environ.get('MONGO_URL')
-        # SOURCE DB is always 'pet-os-live-test_database' on cluster B —
-        # that's where the founding-member import was placed. We deliberately
-        # ignore prod's prefixed DB_NAME (`pet-soul-ranking-...`) here because
-        # the source cluster doesn't carry that prefix.
-        db_name = (
-            os.environ.get('PRODUCTION_DB_NAME')
-            or 'pet-os-live-test_database'
-        )
-        _prod_client = AsyncIOMotorClient(url, serverSelectionTimeoutMS=10000)
-        _prod_db = _prod_client[db_name]
-        logger.info(f"[pet_parents_routes] Connected to DB: {db_name}")
-    return _prod_db
+    """
+    Returns the DB where the founding-member dataset lives.
+
+    Production (after seed): MONGO_URL → customer-apps.ll3qet
+                             DB → pet-soul-ranking-pet-os-live-test_database
+    Pod (after local seed):  MONGO_URL → localhost
+                             DB → pet-os-live-test_database
+
+    We deliberately DO NOT use PRODUCTION_MONGO_URL anymore — on production
+    that env points to an empty secondary cluster (yrmj3k), and on the pod
+    we no longer need it because the seed-from-files workflow wrote the
+    data into MONGO_URL directly.
+    """
+    return _get_target_db()
 
 
 # ────────────────────────────────────────────────────────────────────
@@ -142,13 +141,9 @@ async def _audit(coll: str, doc_id: str, action: str, before: dict, after: dict,
 async def diagnostic(x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret")):
     _require_admin(x_admin_secret)
     db = _get_prod_db()
-    used_url = os.environ.get('PRODUCTION_MONGO_URL') or os.environ.get('MONGO_URL') or '(none)'
-    used_db_name = (
-        os.environ.get('PRODUCTION_DB_NAME')
-        or os.environ.get('DB_NAME')
-        or 'pet-os-live-test_database'
-    )
-    # Mask credentials in URL
+    # Admin endpoints now read from MONGO_URL (target DB) — that's where
+    # the seed wrote and where prod's live primary is.
+    used_url = os.environ.get('MONGO_URL') or 'mongodb://localhost:27017'
     masked = used_url
     if '@' in masked:
         prefix = masked.split('@')[0].split('://')[0] + '://***:***'
@@ -172,7 +167,6 @@ async def diagnostic(x_admin_secret: Optional[str] = Header(None, alias="x-admin
         'expected': {
             'pet_parents': 40025,
             'tdb_pets_staging': 26650,
-            'pets_live': 47,
         },
     }
 
@@ -465,7 +459,11 @@ async def list_pets(
         ]
     if breed: q['breed'] = breed
     if migration_status: q['migration_status'] = migration_status
-    if rainbow_bridge is not None: q['is_rainbow_bridge'] = rainbow_bridge
+    if rainbow_bridge is True:
+        q['is_rainbow_bridge'] = True
+    elif rainbow_bridge is False:
+        # Treat "not rainbow bridge" as: field is False OR field absent
+        q['is_rainbow_bridge'] = {'$ne': True}
     if parent_email: q['parent_email'] = parent_email.strip().lower()
 
     total = await db.tdb_pets_staging.count_documents(q)
@@ -676,7 +674,7 @@ async def bulk_action(req: BulkRequest, x_admin_secret: Optional[str] = Header(N
 # ────────────────────────────────────────────────────────────────────
 # EXPORT (CSV)
 # ────────────────────────────────────────────────────────────────────
-@router.get("/pet-parents/export.csv")
+@router.get("/pet-parents/exports/csv")
 async def export_csv(
     kind: str = Query('full', regex='^(full|emails|whatsapp|birthdays|overdue)$'),
     customer_status: Optional[str] = None,
