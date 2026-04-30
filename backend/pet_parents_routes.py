@@ -36,7 +36,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 
-from fastapi import APIRouter, HTTPException, Header, Query, Body, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Header, Query, Body, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from bson import ObjectId
@@ -1057,4 +1057,301 @@ async def bootstrap_status(
         }
     except Exception as e:
         out['target_error'] = str(e)
+    return out
+
+
+
+# ════════════════════════════════════════════════════════════════════
+# SEED-FROM-FILES — Load 40k pet_parents + 26k tdb_pets_staging from
+# bundled .jsonl.gz seed files (committed to repo at backend/data/tdb_seed)
+# into the production server's primary DB (MONGO_URL).
+#
+# Why this exists:
+#   The pod's PRODUCTION_MONGO_URL points to cluster0.pndqo6o (where the
+#   founding-member dataset was originally imported). Production's
+#   PRODUCTION_MONGO_URL points to a different cluster (customer-apps.yrmj3k)
+#   that is empty for these collections. Cluster-to-cluster bootstrap
+#   therefore can't work — credentials don't cross.
+#
+#   So we ship the data with the deploy: tiny gzipped JSONL files
+#   (~7 MB total) that the production server reads from disk and
+#   upserts into its own MONGO_URL primary (customer-apps.ll3qet).
+#
+# Safety:
+#   - `pets` collection count is asserted unchanged before/after.
+#   - Idempotent — upserts on customer_key / staging_id.
+#   - dry_run=true returns a plan without any writes.
+# ════════════════════════════════════════════════════════════════════
+import gzip as _gzip
+import json as _json
+from pathlib import Path as _Path
+
+_SEED_DIR = _Path(__file__).resolve().parent / "data" / "tdb_seed"
+
+# In-process state for the background seed job. Single-flight by design —
+# we don't expect concurrent seeds, and it's a one-shot launch operation.
+_SEED_JOB: Dict[str, Any] = {}
+
+
+async def _run_seed_job(pp_path: str, tdb_path: str, batch_size: int, mode: str):
+    """Background worker: stream seed files into the target DB."""
+    import asyncio as _asyncio
+    pp_p = _Path(pp_path)
+    tdb_p = _Path(tdb_path)
+    tgt_db = _get_target_db()
+
+    try:
+        # ─── pet_parents ────────────────────────────────────────────
+        _SEED_JOB['phase'] = 'pet_parents'
+        batch: List[Dict[str, Any]] = []
+        for doc in _read_jsonl_gz(pp_p):
+            batch.append(doc)
+            if len(batch) >= batch_size:
+                r = await _flush_pp_batch_mode(tgt_db, batch, mode)
+                _SEED_JOB['pet_parents']['inserted'] += r['inserted']
+                _SEED_JOB['pet_parents']['updated'] += r['updated']
+                _SEED_JOB['pet_parents']['failed'] += r['failed']
+                batch = []
+                # yield so progress polls see updates
+                await _asyncio.sleep(0)
+        if batch:
+            r = await _flush_pp_batch_mode(tgt_db, batch, mode)
+            _SEED_JOB['pet_parents']['inserted'] += r['inserted']
+            _SEED_JOB['pet_parents']['updated'] += r['updated']
+            _SEED_JOB['pet_parents']['failed'] += r['failed']
+
+        # ─── tdb_pets_staging ───────────────────────────────────────
+        _SEED_JOB['phase'] = 'tdb_pets_staging'
+        batch = []
+        for doc in _read_jsonl_gz(tdb_p):
+            batch.append(doc)
+            if len(batch) >= batch_size:
+                r = await _flush_tdb_batch_mode(tgt_db, batch, mode)
+                _SEED_JOB['tdb_pets_staging']['inserted'] += r['inserted']
+                _SEED_JOB['tdb_pets_staging']['updated'] += r['updated']
+                _SEED_JOB['tdb_pets_staging']['failed'] += r['failed']
+                batch = []
+                await _asyncio.sleep(0)
+        if batch:
+            r = await _flush_tdb_batch_mode(tgt_db, batch, mode)
+            _SEED_JOB['tdb_pets_staging']['inserted'] += r['inserted']
+            _SEED_JOB['tdb_pets_staging']['updated'] += r['updated']
+            _SEED_JOB['tdb_pets_staging']['failed'] += r['failed']
+
+        # ─── verify pets unchanged ──────────────────────────────────
+        tgt_pets_after = await tgt_db.pets.count_documents({})
+        pets_before = _SEED_JOB.get('pets_before', tgt_pets_after)
+        _SEED_JOB['pets_after'] = tgt_pets_after
+        _SEED_JOB['pets_drift'] = tgt_pets_after - pets_before
+        _SEED_JOB['pets_safe'] = (tgt_pets_after - pets_before) == 0
+        _SEED_JOB['phase'] = 'done'
+        _SEED_JOB['status'] = 'success'
+        _SEED_JOB['finished_at'] = datetime.now(timezone.utc).isoformat()
+        logger.info(f"[SEED] ✅ completed: {_SEED_JOB}")
+    except Exception as e:
+        logger.error(f"[SEED] ❌ failed: {e}", exc_info=True)
+        _SEED_JOB['status'] = 'failed'
+        _SEED_JOB['error'] = str(e)
+        _SEED_JOB['finished_at'] = datetime.now(timezone.utc).isoformat()
+
+
+async def _flush_pp_batch_mode(tgt_db, batch: List[Dict[str, Any]], mode: str) -> Dict[str, int]:
+    """insert_many (fast, errors out on dupes) or upsert by customer_key."""
+    if mode == "insert":
+        try:
+            res = await tgt_db.pet_parents.insert_many(batch, ordered=False)
+            return {'inserted': len(res.inserted_ids), 'updated': 0, 'failed': 0}
+        except Exception as e:
+            # Mongo raises BulkWriteError with partial success info
+            n_inserted = getattr(getattr(e, 'details', None), 'get', lambda k, d=0: d)('nInserted', 0) \
+                         if hasattr(e, 'details') else 0
+            try:
+                n_inserted = e.details.get('nInserted', 0)
+            except Exception:
+                n_inserted = 0
+            return {
+                'inserted': n_inserted,
+                'updated': 0,
+                'failed': len(batch) - n_inserted,
+            }
+    return await _flush_pp_batch(tgt_db, batch)
+
+
+async def _flush_tdb_batch_mode(tgt_db, batch: List[Dict[str, Any]], mode: str) -> Dict[str, int]:
+    if mode == "insert":
+        try:
+            res = await tgt_db.tdb_pets_staging.insert_many(batch, ordered=False)
+            return {'inserted': len(res.inserted_ids), 'updated': 0, 'failed': 0}
+        except Exception as e:
+            try:
+                n_inserted = e.details.get('nInserted', 0)
+            except Exception:
+                n_inserted = 0
+            return {
+                'inserted': n_inserted,
+                'updated': 0,
+                'failed': len(batch) - n_inserted,
+            }
+    return await _flush_tdb_batch(tgt_db, batch)
+
+
+def _read_jsonl_gz(path: _Path):
+    """Yield records from a gzipped JSONL file."""
+    with _gzip.open(path, 'rt', encoding='utf-8') as gz:
+        for line in gz:
+            line = line.strip()
+            if not line:
+                continue
+            yield _json.loads(line)
+
+
+@router.get("/tdb-bootstrap/seed-info")
+async def seed_info(
+    x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret"),
+):
+    """Inspect the bundled seed files (read-only)."""
+    _require_admin(x_admin_secret)
+    manifest_path = _SEED_DIR / "manifest.json"
+    if not manifest_path.exists():
+        return {
+            'available': False,
+            'reason': f'No seed manifest at {manifest_path}',
+            'seed_dir': str(_SEED_DIR),
+        }
+    manifest = _json.loads(manifest_path.read_text())
+    files_present: Dict[str, Dict[str, Any]] = {}
+    for fname in ('pet_parents.jsonl.gz', 'tdb_pets_staging.jsonl.gz'):
+        fp = _SEED_DIR / fname
+        files_present[fname] = {
+            'exists': fp.exists(),
+            'size_bytes': fp.stat().st_size if fp.exists() else 0,
+        }
+    return {
+        'available': True,
+        'seed_dir': str(_SEED_DIR),
+        'manifest': manifest,
+        'files_present': files_present,
+    }
+
+
+@router.post("/tdb-bootstrap/seed-from-files")
+async def seed_from_files(
+    background_tasks: BackgroundTasks,
+    dry_run: bool = Query(True, description="Plan only — no writes"),
+    batch_size: int = Query(1000, ge=50, le=2000),
+    mode: str = Query("auto", regex="^(auto|insert|upsert)$",
+                      description="auto = insert if target empty else upsert"),
+    x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret"),
+):
+    """
+    Load the bundled `tdb_seed/*.jsonl.gz` files into the production
+    server's primary DB (MONGO_URL).
+
+    Runs as a BACKGROUND TASK — returns immediately with a job_id you
+    can poll via GET /api/admin/tdb-bootstrap/seed-progress.
+
+    Pets collection is asserted unchanged before/after.
+    Idempotent: re-running upserts existing records.
+    """
+    _require_admin(x_admin_secret)
+
+    pp_path = _SEED_DIR / "pet_parents.jsonl.gz"
+    tdb_path = _SEED_DIR / "tdb_pets_staging.jsonl.gz"
+    if not pp_path.exists() or not tdb_path.exists():
+        raise HTTPException(
+            500,
+            f'Seed files missing — looked in {_SEED_DIR}. '
+            f'Did the deploy include backend/data/tdb_seed/?'
+        )
+
+    tgt_db = _get_target_db()
+
+    tgt_pp_before = await tgt_db.pet_parents.count_documents({})
+    tgt_tdb_before = await tgt_db.tdb_pets_staging.count_documents({})
+    tgt_pets_before = await tgt_db.pets.count_documents({})
+
+    # Resolve mode now (so dry_run reports accurately)
+    resolved_mode = mode
+    if mode == "auto":
+        resolved_mode = "insert" if (tgt_pp_before == 0 and tgt_tdb_before == 0) else "upsert"
+
+    plan = {
+        'seed_dir': str(_SEED_DIR),
+        'seed_files': {
+            'pet_parents': {'size_mb': round(pp_path.stat().st_size / 1_048_576, 2)},
+            'tdb_pets_staging': {'size_mb': round(tdb_path.stat().st_size / 1_048_576, 2)},
+        },
+        'target': {
+            'uri': _mask_uri(os.environ.get('MONGO_URL') or 'mongodb://localhost:27017'),
+            'db': os.environ.get('DB_NAME') or 'pet-os-live-test_database',
+            'pet_parents_before': tgt_pp_before,
+            'tdb_pets_staging_before': tgt_tdb_before,
+            'pets_before': tgt_pets_before,
+        },
+        'mode_requested': mode,
+        'mode_resolved': resolved_mode,
+        'batch_size': batch_size,
+        'guarantees': [
+            f'pets collection (currently {tgt_pets_before}) will not be touched',
+            'idempotent — upserts on customer_key / staging_id (when mode=upsert)',
+        ],
+    }
+
+    if dry_run:
+        return {'ok': True, 'dry_run': True, 'plan': plan}
+
+    # Reject if a previous job is still running
+    if _SEED_JOB.get('status') == 'running':
+        return {
+            'ok': False,
+            'reason': 'A seed job is already running',
+            'job': _SEED_JOB,
+        }
+
+    # Initialize job state and dispatch
+    job_id = f"seed_{int(datetime.now(timezone.utc).timestamp())}"
+    _SEED_JOB.clear()
+    _SEED_JOB.update({
+        'job_id': job_id,
+        'status': 'running',
+        'mode': resolved_mode,
+        'batch_size': batch_size,
+        'started_at': datetime.now(timezone.utc).isoformat(),
+        'pets_before': tgt_pets_before,
+        'pet_parents': {'inserted': 0, 'updated': 0, 'failed': 0, 'total': 40025},
+        'tdb_pets_staging': {'inserted': 0, 'updated': 0, 'failed': 0, 'total': 26650},
+        'plan': plan,
+    })
+    background_tasks.add_task(_run_seed_job, str(pp_path), str(tdb_path), batch_size, resolved_mode)
+
+    return {
+        'ok': True,
+        'dry_run': False,
+        'job_id': job_id,
+        'status': 'running',
+        'poll': '/api/admin/tdb-bootstrap/seed-progress',
+        'plan': plan,
+    }
+
+
+@router.get("/tdb-bootstrap/seed-progress")
+async def seed_progress(
+    x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret"),
+):
+    """Live progress + final result of the most recent seed job."""
+    _require_admin(x_admin_secret)
+    if not _SEED_JOB:
+        return {'status': 'idle', 'message': 'No seed job has run yet'}
+
+    # Live counts so user can watch totals climb in real time
+    tgt_db = _get_target_db()
+    out = dict(_SEED_JOB)
+    try:
+        out['live_target_counts'] = {
+            'pet_parents': await tgt_db.pet_parents.count_documents({}),
+            'tdb_pets_staging': await tgt_db.tdb_pets_staging.count_documents({}),
+            'pets': await tgt_db.pets.count_documents({}),
+        }
+    except Exception as e:
+        out['live_target_error'] = str(e)
     return out

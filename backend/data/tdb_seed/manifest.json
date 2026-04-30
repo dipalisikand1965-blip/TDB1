@@ -1,0 +1,17 @@
+{
+  "created_at": "2026-04-30T11:29:52.051585Z",
+  "source_cluster": "cluster0.pndqo6o.mongodb.net",
+  "source_db": "pet-os-live-test_database",
+  "files": {
+    "pet_parents.jsonl.gz": {
+      "records": 40025,
+      "size_mb": 6.19
+    },
+    "tdb_pets_staging.jsonl.gz": {
+      "records": 26650,
+      "size_mb": 0.91
+    }
+  },
+  "expected_pets_live_unchanged": true,
+  "notes": "Seed for production tdb-bootstrap/seed-from-files endpoint. Idempotent upsert."
+}
