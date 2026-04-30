@@ -1,0 +1,48 @@
+==============================================================================
+STEP 5 — ASSIGN SEND DATES
+==============================================================================
+[07:18:25] Eligible parents (has_email=True AND customer_status != never_ordered): 12,440
+[07:18:25] Loading eligible parent IDs in priority order (highest spend first)...
+[07:18:27] Loaded 12,440 eligible IDs from Atlas
+[07:18:27] Assigning send dates: 2000/day starting 2026-05-15
+[07:18:27]   → wave will run 2026-05-15 to 2026-05-21
+[07:18:27] Writing assigned_send_date to all eligible parents...
+[07:19:13]   ✅ Updated assigned_send_date on 12,440 eligible parents
+[07:19:15] 
+[07:19:15] ==============================================================================
+[07:19:15] STEP 5 RESULTS
+[07:19:15] ==============================================================================
+[07:19:15]   Total eligible (wave 1)     : 12,440
+[07:19:15]   First send date             : 2026-05-15
+[07:19:15]   Last send date              : 2026-05-21
+[07:19:15]   Peak day load (must be ≤2K) : 2,000
+[07:19:15]   Untouched (no email or never_ordered): 27,585
+[07:19:15] 
+[07:19:15]   Per-day breakdown:
+[07:19:15]     2026-05-15: 2,000
+[07:19:15]     2026-05-16: 2,000
+[07:19:15]     2026-05-17: 2,000
+[07:19:15]     2026-05-18: 2,000
+[07:19:15]     2026-05-19: 2,000
+[07:19:15]     2026-05-20: 2,000
+[07:19:15]     2026-05-21:   440
+
+==============================================================================
+STEP 6 — SOFT LAUNCH FLAGGING (PREVIEW — NO DB WRITES)
+==============================================================================
+⚠️  shreeshahemmige@gmail.com NOT FOUND in pet_parents — skipping this match.
+
+Soft-launch list — 6 unique records (after dedup):
+
+   1. Balaji          Chakravarthy     Bangalore        ₹   112,344  balaji.chakravarthy@gmail.com             intel=COMPLETE loyalty=VIP        reason=top_complete_overall, top_complete_bangalore, top_vip
+   2. Papiya          Shekh            Mumbai           ₹    16,749  payalpayalji594@gmail.com                 intel=COMPLETE loyalty=Founding   reason=top_complete_mumbai
+   3. Simpy           .                Mumbai           ₹    13,042  simpsbali@gmail.com                       intel=COMPLETE loyalty=Regular    reason=top_complete_mumbai
+   4. Ronan           Rodrigues        Mumbai           ₹    11,860  (no email)                                intel=COMPLETE loyalty=Founding   reason=top_complete_mumbai
+   5. Aanchal         Kothari          Bangalore        ₹    89,398  aanchalkothari57@gmail.com                intel=COMPLETE loyalty=VIP        reason=top_complete_bangalore, top_vip
+   6. Anupama         Ravi             Bangalore        ₹    60,729  anupamaravi6@yahoo.com                    intel=COMPLETE loyalty=VIP        reason=top_complete_bangalore
+
+STEP 6 — PREVIEW ONLY. No DB writes performed.
+Awaiting Dipali's ✅ before applying soft_launch=True + assigned_send_date=2026-05-14
+==============================================================================
+
+💾 Saved 6 _ids to /app/data/tdb_import/_step6_candidates.json (will apply on approval)

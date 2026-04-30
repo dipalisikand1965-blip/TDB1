@@ -1,0 +1,72 @@
+[
+  {
+    "_id": "69f2fd6296e43bbd4e54f42a",
+    "whatsapp_only": false,
+    "email": "balaji.chakravarthy@gmail.com",
+    "name": "Balaji Chakravarthy",
+    "reason": "top_complete_overall, top_complete_bangalore, top_vip"
+  },
+  {
+    "_id": "69f2fd8496e43bbd4e55085e",
+    "whatsapp_only": false,
+    "email": "payalpayalji594@gmail.com",
+    "name": "Papiya Shekh",
+    "reason": "top_complete_mumbai"
+  },
+  {
+    "_id": "69f2fd9c96e43bbd4e551487",
+    "whatsapp_only": false,
+    "email": "simpsbali@gmail.com",
+    "name": "Simpy .",
+    "reason": "top_complete_mumbai"
+  },
+  {
+    "_id": "69f2fd2896e43bbd4e54d279",
+    "whatsapp_only": true,
+    "email": null,
+    "name": "Ronan Rodrigues",
+    "reason": "top_complete_mumbai"
+  },
+  {
+    "_id": "69f2fd5896e43bbd4e54ed57",
+    "whatsapp_only": false,
+    "email": "aanchalkothari57@gmail.com",
+    "name": "Aanchal Kothari",
+    "reason": "top_complete_bangalore, top_vip"
+  },
+  {
+    "_id": "69f2fd5f96e43bbd4e54f1a9",
+    "whatsapp_only": false,
+    "email": "anupamaravi6@yahoo.com",
+    "name": "Anupama Ravi",
+    "reason": "top_complete_bangalore"
+  },
+  {
+    "_id": "69f2fd9f96e43bbd4e55178d",
+    "whatsapp_only": false,
+    "email": "sumiknagaraj@gmail.com",
+    "name": "Sumana None",
+    "reason": "next_top_complete_with_email"
+  },
+  {
+    "_id": "69f2fd8e96e43bbd4e550d30",
+    "whatsapp_only": false,
+    "email": "renuka.halla@gmail.com",
+    "name": "Renuka Halla",
+    "reason": "next_top_complete_with_email"
+  },
+  {
+    "_id": "69f2fd9296e43bbd4e550e58",
+    "whatsapp_only": false,
+    "email": "rojimathew73@gmail.com",
+    "name": "ROji Mathew",
+    "reason": "next_top_complete_with_email"
+  },
+  {
+    "_id": "69f2fda396e43bbd4e551984",
+    "whatsapp_only": false,
+    "email": "thevikranttiwari@gmail.com",
+    "name": "Vikrant Tiwari",
+    "reason": "next_top_complete_with_email"
+  }
+]

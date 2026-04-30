@@ -23519,6 +23519,32 @@ try:
 except Exception as e:
     logger.exception(f"Failed to mount Partner Demo Generator: {e}")
 
+# Founding Members — TDB legacy customer import for May 15 launch
+try:
+    from founding_members_routes import founding_members_router, set_database as set_founding_db
+    set_founding_db(db)
+    app.include_router(founding_members_router)
+    logger.info("✓ Founding Members routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Founding Members routes: {e}")
+
+# Admin Snapshot — pin Gold Master + freeze Monthly snapshot endpoints
+try:
+    from admin_snapshot_routes import router as admin_snapshot_router, set_db as set_snapshot_db
+    set_snapshot_db(db)
+    app.include_router(admin_snapshot_router)
+    logger.info("✓ Admin Snapshot routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Admin Snapshot routes: {e}")
+
+# Pet Parents Admin — viewer for the 40,025 founding members on production Atlas
+try:
+    from pet_parents_routes import router as pet_parents_router
+    app.include_router(pet_parents_router)
+    logger.info("✓ Pet Parents Admin routes mounted (production Atlas)")
+except Exception as e:
+    logger.exception(f"Failed to mount Pet Parents Admin routes: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*

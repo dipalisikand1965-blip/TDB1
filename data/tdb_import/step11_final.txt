@@ -1,0 +1,150 @@
+==============================================================================
+STEP 11 — FINAL CONSOLIDATED REPORT
+==============================================================================
+
+Generated: 2026-04-30T07:42:18.321539+00:00
+
+✅ STEP 0 — Connection verified
+   - PRODUCTION_MONGO_URL: confirmed
+   - Database: pet-os-live-test_database
+   - pets count before: 47
+   - pet_parents count before: 0
+   - tdb_pets_staging count before: 0
+
+✅ STEP 1 — Pre-import backup
+   - Run ID: 20260430-061835
+   - Drive folder: Daily-DB-Snapshots
+   - File: mongo-pet-soul-ranking-pet-os-live-test_database-20260430-061835.archive.gz
+   - Drive ID: 1tNoxod5wHgXS_EFMEyjBS_cV_F8Vbjci
+   - File size: 143,792,258 bytes (143.8 MB)
+
+✅ STEP 4 — Imports complete
+   - pet_parents: 40,025 inserted (target 40,025)
+   - tdb_pets_staging: 26,650 inserted (target 26,650)
+   - pets (untouched): 47 (target 47)
+   - parents with linked pets: 23,738
+
+✅ STEP 5 — Send dates assigned
+   - Eligible for wave 1: 12,431
+   - First send: 2026-05-15
+   - Last send: 2026-05-21
+   - Peak day load: 2,000
+   - Untouched cohort (no email or never_ordered): 27,584
+
+✅ STEP 6 — Soft launch flagged (10 records)
+    1. Balaji Chakravarthy                  Bangalore    ₹   112,344  balaji.chakravarthy@gmail.com           send=2026-05-14
+    2. Aanchal Kothari                      Bangalore    ₹    89,398  aanchalkothari57@gmail.com              send=2026-05-14
+    3. Anupama Ravi                         Bangalore    ₹    60,729  anupamaravi6@yahoo.com                  send=2026-05-14
+    4. Sumana                               Bangalore    ₹    41,649  sumiknagaraj@gmail.com                  send=2026-05-14
+    5. Renuka Halla                         Bangalore    ₹    39,380  renuka.halla@gmail.com                  send=2026-05-14
+    6. ROji Mathew                          Bangalore    ₹    38,621  rojimathew73@gmail.com                  send=2026-05-14
+    7. Vikrant Tiwari                       Bangalore    ₹    37,224  thevikranttiwari@gmail.com              send=2026-05-14
+    8. Papiya Shekh                         Mumbai       ₹    16,749  payalpayalji594@gmail.com               send=2026-05-14
+    9. Simpy .                              Mumbai       ₹    13,042  simpsbali@gmail.com                     send=2026-05-14
+   10. Ronan Rodrigues                      Mumbai       ₹    11,860  (no email)                              send=2026-05-14 [whatsapp_only]
+
+✅ STEP 7 — Indexes created (13 on pet_parents, 7 on tdb_pets_staging)
+
+   db.pet_parents.getIndexes():
+      _id_                                              keys={'_id': 1}  opts={}
+      customer_key_1                                    keys={'customer_key': 1}  opts={'unique': True}
+      email_1                                           keys={'email': 1}  opts={'sparse': True}
+      phone_1                                           keys={'phone': 1}  opts={'sparse': True}
+      invite_token_1                                    keys={'invite_token': 1}  opts={'unique': True, 'sparse': True}
+      assigned_send_date_1                              keys={'assigned_send_date': 1}  opts={}
+      customer_status_1_loyalty_tier_1                  keys={'customer_status': 1, 'loyalty_tier': 1}  opts={}
+      intelligence_tier_1                               keys={'intelligence_tier': 1}  opts={}
+      total_spent_inr_-1                                keys={'total_spent_inr': -1}  opts={}
+      pet_birthday_month_1_pet_birthday_day_1           keys={'pet_birthday_month': 1, 'pet_birthday_day': 1}  opts={}
+      soft_launch_1                                     keys={'soft_launch': 1}  opts={}
+      city_1_state_1                                    keys={'city': 1, 'state': 1}  opts={}
+      activation_status_1                               keys={'activation_status': 1}  opts={}
+
+   db.tdb_pets_staging.getIndexes():
+      _id_                                              keys={'_id': 1}  opts={}
+      staging_id_1                                      keys={'staging_id': 1}  opts={'unique': True}
+      parent_customer_key_1                             keys={'parent_customer_key': 1}  opts={}
+      parent_email_1                                    keys={'parent_email': 1}  opts={'sparse': True}
+      parent_phone_1                                    keys={'parent_phone': 1}  opts={'sparse': True}
+      migration_status_1                                keys={'migration_status': 1}  opts={}
+      name_1                                            keys={'name': 1}  opts={'sparse': True}
+
+✅ STEP 8 — Post-import backup
+   - Run ID: 20260430-073644 (success after retry)
+   - Drive ID: 15cx_YDNqqL4MwxV9shGL_JKwNAlIm5Q8
+   - File: mongo-...20260430-073644.archive.gz
+   - Size: 143,792,615 bytes (143.8 MB)
+
+✅ STEP 9 — Gold Master pinned
+   - Label: founding-members-import-may2026
+   - Pinned File ID: 15INljD6A8A1C9JqCBad_ggtJUID57LC5
+   - Folder: Weekly-Gold-Masters
+   - URL: https://drive.google.com/file/d/15INljD6A8A1C9JqCBad_ggtJUID57LC5/view
+
+✅ STEP 10 — Frozen Snapshot archived (forever-retention)
+   - Folder: Monthly-Frozen-Snapshots/2026-05-founding-members/
+   - File ID: 16Jk1NjTpZ8MUHw36qKHz9MCbtdAgMcMO
+   - File present: ✅ verified by list_files()
+   - Folder URL: https://drive.google.com/drive/folders/1ef1NShpNrm6fVi-KADpn_1hLEQYvj5M-
+
+✅ Sample records (5 random per collection)
+
+   pet_parents samples:
+
+{
+  "customer_key": "+918050383344",
+  "email": null,
+  "phone": "918050383344",
+  "first_name": "Arathi",
+  "last_name": "Mohan",
+  "city": "Bangalore",
+  "state": "Karnataka",
+  "pincode": "560049",
+  "pet_names": [
+    "Leia",
+    "Maya"
+  ],
+  "primary_pet_name": "Leia",
+  "pet_birthday_month": 1,
+  "pet_birthday_day": 1,
+  "total_orders": 3,
+  "total_spent_inr": 5195.96,
+  "customer_status": "active",
+  "intelligence_tier": "COMPLETE",
+  "loyalty_tier": "Regular",
+  "is_tdb_founding_member": true,
+  "soft_launch": false,
+  "whatsapp_only": null,
+  "assigned_send_date": null,
+  "activation_status": "imported_pending_invite",
+  "invite_token": "vAvipX-Vk4lJCTqTBA_Z3BwJ-hFPgESx"
+}
+
+{
+  "customer_key": "+919739658244",
+  "email": null,
+  "phone": "919739658244",
+  "first_name": "Surabhi",
+  "last_name": "Bera",
+  "city": "Bangalore",
+  "state": "Karnataka",
+  "pincode": "560093",
+  "pet_names": [
+    "BabuMoshai"
+  ],
+  "primary_pet_name": "BabuMoshai",
+  "pet_birthday_month": 8,
+  "pet_birthday_day": 14,
+  "total_orders": 1,
+  "total_spent_inr": 1387.82,
+  "customer_status": "churned",
+  "intelligence_tier": "HIGH",
+  "loyalty_tier": "Regular",
+  "is_tdb_founding_member": true,
+  "soft_launch": false,
+  "whatsapp_only": null,
+  "assigned_send_date": null,
+  "activation_status": "imported_pending_invite",
+  "invite_token": "61BHhXG_nHbUuu_iAe0ar2ydb4MJmMyL"
+}
+

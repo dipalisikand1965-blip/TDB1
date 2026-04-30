@@ -1,0 +1,63 @@
+==============================================================================
+STEP 6 (APPLY) — Soft launch flags
+==============================================================================
+[07:29:09] Loaded 10 candidates from preview
+[07:29:11]   ✅ Soft launch applied: matched=10, modified=10
+[07:29:12]   soft_launch=True            : 10
+[07:29:12]   soft_launch + 2026-05-14    : 10
+[07:29:12]   whatsapp_only (soft launch) : 1
+[07:29:12]   ✅ pets still = 47 after STEP 6 apply
+
+==============================================================================
+STEP 7 — BUILD INDEXES
+==============================================================================
+[07:29:12] Creating indexes on pet_parents...
+[07:29:12]   ✓ pet_parents customer_key_1
+[07:29:13]   ✓ pet_parents email_1
+[07:29:13]   ✓ pet_parents phone_1
+[07:29:14]   ✓ pet_parents invite_token_1
+[07:29:14]   ✓ pet_parents assigned_send_date_1
+[07:29:15]   ✓ pet_parents customer_status_1_loyalty_tier_1
+[07:29:15]   ✓ pet_parents intelligence_tier_1
+[07:29:15]   ✓ pet_parents total_spent_inr_-1
+[07:29:16]   ✓ pet_parents pet_birthday_month_1_pet_birthday_day_1
+[07:29:16]   ✓ pet_parents soft_launch_1
+[07:29:17]   ✓ pet_parents city_1_state_1
+[07:29:17]   ✓ pet_parents activation_status_1
+[07:29:17] Creating indexes on tdb_pets_staging...
+[07:29:18]   ✓ tdb_pets_staging staging_id_1
+[07:29:18]   ✓ tdb_pets_staging parent_customer_key_1
+[07:29:18]   ✓ tdb_pets_staging parent_email_1
+[07:29:19]   ✓ tdb_pets_staging parent_phone_1
+[07:29:19]   ✓ tdb_pets_staging migration_status_1
+[07:29:19]   ✓ tdb_pets_staging name_1
+[07:29:19] 
+[07:29:19] All pet_parents indexes:
+[07:29:20]   _id_  keys={'_id': 1}  opts={}
+[07:29:20]   customer_key_1  keys={'customer_key': 1}  opts={'unique': True}
+[07:29:20]   email_1  keys={'email': 1}  opts={'sparse': True}
+[07:29:20]   phone_1  keys={'phone': 1}  opts={'sparse': True}
+[07:29:20]   invite_token_1  keys={'invite_token': 1}  opts={'unique': True, 'sparse': True}
+[07:29:20]   assigned_send_date_1  keys={'assigned_send_date': 1}  opts={}
+[07:29:20]   customer_status_1_loyalty_tier_1  keys={'customer_status': 1, 'loyalty_tier': 1}  opts={}
+[07:29:20]   intelligence_tier_1  keys={'intelligence_tier': 1}  opts={}
+[07:29:20]   total_spent_inr_-1  keys={'total_spent_inr': -1}  opts={}
+[07:29:20]   pet_birthday_month_1_pet_birthday_day_1  keys={'pet_birthday_month': 1, 'pet_birthday_day': 1}  opts={}
+[07:29:20]   soft_launch_1  keys={'soft_launch': 1}  opts={}
+[07:29:20]   city_1_state_1  keys={'city': 1, 'state': 1}  opts={}
+[07:29:20]   activation_status_1  keys={'activation_status': 1}  opts={}
+[07:29:20] 
+[07:29:20] All tdb_pets_staging indexes:
+[07:29:20]   _id_  keys={'_id': 1}  opts={}
+[07:29:20]   staging_id_1  keys={'staging_id': 1}  opts={'unique': True}
+[07:29:20]   parent_customer_key_1  keys={'parent_customer_key': 1}  opts={}
+[07:29:20]   parent_email_1  keys={'parent_email': 1}  opts={'sparse': True}
+[07:29:20]   parent_phone_1  keys={'parent_phone': 1}  opts={'sparse': True}
+[07:29:20]   migration_status_1  keys={'migration_status': 1}  opts={}
+[07:29:20]   name_1  keys={'name': 1}  opts={'sparse': True}
+
+==============================================================================
+STEP 8 — POST-IMPORT BACKUP (will be triggered next via API)
+==============================================================================
+[07:29:20] STEP 7 complete. STEP 8 backup will be triggered by main script via curl.
+[07:29:20]   ✅ pets count (final): 47

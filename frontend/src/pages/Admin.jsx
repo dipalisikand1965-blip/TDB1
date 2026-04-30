@@ -66,6 +66,7 @@ import PillarQueues from '../components/admin/PillarQueues';
 import IntegrationsHealthPanel from '../components/admin/IntegrationsHealthPanel';
 import PartnerDemoManager from '../components/admin/PartnerDemoManager';
 import PagesDirectory from '../components/admin/PagesDirectory';
+import FoundingMembersManager from '../components/admin/FoundingMembersManager';
 import AdminGuideDashboard from '../components/admin/AdminGuideDashboard';
 import AdminRainbowBridge from '../components/admin/AdminRainbowBridge';
 import PetWrappedAdmin from '../components/admin/PetWrappedAdmin';
@@ -3208,6 +3209,7 @@ const Admin = () => {
               { id: 'integrations-health', label: 'Health', icon: Activity },
               { id: 'partner-demos', label: '✨ Proposals', icon: Sparkles },
               { id: 'pages-directory', label: '📑 Pages', icon: BookOpen },
+              { id: 'founding-members', label: '🌷 Founding Members', icon: Heart },
             ].map((tab) => (
               <Button
                 key={tab.id}
@@ -4016,6 +4018,11 @@ const Admin = () => {
         {/* Pages Directory — index of every shareable URL on the site */}
         {activeTab === 'pages-directory' && (
           <PagesDirectory authHeaders={getAuthHeaders()} />
+        )}
+
+        {/* Founding Members — TDB legacy customers (40,025 parents + 26,650 pets) */}
+        {activeTab === 'founding-members' && (
+          <FoundingMembersManager authHeaders={getAuthHeaders()} />
         )}
 
         {/* Celebrations Calendar */}

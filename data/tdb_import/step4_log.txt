@@ -1,0 +1,60 @@
+==============================================================================
+STEP 4 — REAL IMPORT TO PRODUCTION ATLAS
+==============================================================================
+[06:55:47] Connecting to production Atlas...
+[06:55:49]    Connected. DB: pet-os-live-test_database, Mongo 8.0.21
+[06:55:49] Pre-insert pets count check...
+[06:55:50]    db.pets.countDocuments() = 47
+[06:55:50]    ✅ pets = 47 before insert — safe to proceed
+[06:55:50]    db.pet_parents = 0, db.tdb_pets_staging = 0
+[06:55:50] Loading tdb_enriched_customers.csv...
+[06:55:50]    Loaded 40,025 parent rows
+[06:55:50] Loading tdb_pets_staging.csv...
+[06:55:50]    Loaded 26,650 pet rows
+[06:55:50] Transforming all 40,025 parent rows...
+[06:55:53]    Transformed 40,025 parent docs
+[06:55:53] Transforming all 26,650 pet rows...
+[06:55:54]    Transformed 26,650 pet docs
+[06:55:54]    ✅ All 40,025 invite_tokens are unique
+[06:55:54] Inserting pet_parents in batches of 500, ordered=False...
+[06:56:20]    inserted 5,000/40,025 parent docs (25.8s)
+[06:56:54]    inserted 10,000/40,025 parent docs (59.8s)
+[06:57:28]    inserted 15,000/40,025 parent docs (93.9s)
+[06:58:02]    inserted 20,000/40,025 parent docs (128.0s)
+[06:58:36]    inserted 25,000/40,025 parent docs (162.2s)
+[06:59:01]    inserted 30,000/40,025 parent docs (187.6s)
+[06:59:30]    inserted 35,000/40,025 parent docs (216.5s)
+[07:00:04]    inserted 40,000/40,025 parent docs (250.1s)
+[07:00:04]    ✅ pet_parents insert complete: 40,025 inserted, 0 errors in 250.6s
+[07:00:04] Inserting tdb_pets_staging in batches of 500, ordered=False...
+[07:00:30]    inserted 5,000/26,650 pet docs (25.9s)
+[07:00:54]    inserted 10,000/26,650 pet docs (49.3s)
+[07:01:14]    inserted 15,000/26,650 pet docs (69.3s)
+[07:01:34]    inserted 20,000/26,650 pet docs (89.4s)
+[07:01:54]    inserted 25,000/26,650 pet docs (109.4s)
+[07:02:01]    ✅ tdb_pets_staging insert complete: 26,650 inserted, 0 errors in 116.4s
+[07:02:01] POST-INSERT pets count check...
+[07:02:01]    db.pets.countDocuments() = 47
+[07:02:01]    ✅ pets = 47 after insert (UNCHANGED — live collection safe)
+[07:02:01]    db.pet_parents       = 40,025  (target 40,025)
+[07:02:01]    db.tdb_pets_staging  = 26,650  (target 26,650)
+[07:02:01]    db.pets              = 47  (target 47, UNCHANGED)
+[07:02:01] Building parent → pet linkage map...
+[07:02:01]    23,738 parents have at least 1 pet staged
+[07:02:01] Bulk linking pets_staging_ids on parents...
+[07:09:06]    ✅ Linked 23,738 parents in 424.8s
+[07:09:07]    Parents with non-empty pets_staging_ids: 23,738
+[07:09:07] 
+[07:09:07] ==============================================================================
+[07:09:07] STEP 4 COMPLETE
+[07:09:07] ==============================================================================
+{
+  "pets_before": 47,
+  "pets_after": 47,
+  "pet_parents_inserted": 40025,
+  "pet_parents_errors": 0,
+  "tdb_pets_staging_inserted": 26650,
+  "tdb_pets_staging_errors": 0,
+  "parents_linked": 23738,
+  "parents_with_at_least_one_pet": 23738
+}
