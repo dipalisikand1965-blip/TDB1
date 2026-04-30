@@ -58,8 +58,14 @@ def _get_prod_db():
     global _prod_client, _prod_db
     if _prod_db is None:
         url = os.environ.get('PRODUCTION_MONGO_URL') or os.environ.get('MONGO_URL')
+        db_name = (
+            os.environ.get('PRODUCTION_DB_NAME')
+            or os.environ.get('DB_NAME')
+            or 'pet-os-live-test_database'
+        )
         _prod_client = AsyncIOMotorClient(url, serverSelectionTimeoutMS=10000)
-        _prod_db = _prod_client['pet-os-live-test_database']
+        _prod_db = _prod_client[db_name]
+        logger.info(f"[pet_parents_routes] Connected to DB: {db_name}")
     return _prod_db
 
 
@@ -118,6 +124,48 @@ async def _audit(coll: str, doc_id: str, action: str, before: dict, after: dict,
         'diffs': diffs,
         'reason': reason,
     })
+
+
+# ────────────────────────────────────────────────────────────────────
+# DIAGNOSTIC — confirm which DB this router is connected to
+# ────────────────────────────────────────────────────────────────────
+@router.get("/pet-parents/diagnostic")
+async def diagnostic(x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret")):
+    _require_admin(x_admin_secret)
+    db = _get_prod_db()
+    used_url = os.environ.get('PRODUCTION_MONGO_URL') or os.environ.get('MONGO_URL') or '(none)'
+    used_db_name = (
+        os.environ.get('PRODUCTION_DB_NAME')
+        or os.environ.get('DB_NAME')
+        or 'pet-os-live-test_database'
+    )
+    # Mask credentials in URL
+    masked = used_url
+    if '@' in masked:
+        prefix = masked.split('@')[0].split('://')[0] + '://***:***'
+        masked = prefix + '@' + masked.split('@', 1)[1]
+    pp_count = await db.pet_parents.count_documents({})
+    pets_count = await db.tdb_pets_staging.count_documents({})
+    live_pets = await db.pets.count_documents({})
+    sample = await db.pet_parents.find_one({'is_tdb_founding_member': True}, {'first_name': 1, 'email': 1, 'city': 1, '_id': 0})
+    return {
+        'connection_url': masked,
+        'database_name': db.name,
+        'env_DB_NAME': os.environ.get('DB_NAME'),
+        'env_PRODUCTION_DB_NAME': os.environ.get('PRODUCTION_DB_NAME'),
+        'env_has_PRODUCTION_MONGO_URL': bool(os.environ.get('PRODUCTION_MONGO_URL')),
+        'collections': {
+            'pet_parents': pp_count,
+            'tdb_pets_staging': pets_count,
+            'pets_live': live_pets,
+        },
+        'sample_first_record': sample,
+        'expected': {
+            'pet_parents': 40025,
+            'tdb_pets_staging': 26650,
+            'pets_live': 47,
+        },
+    }
 
 
 # ────────────────────────────────────────────────────────────────────
