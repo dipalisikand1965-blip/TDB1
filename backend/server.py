@@ -23545,6 +23545,14 @@ try:
 except Exception as e:
     logger.exception(f"Failed to mount Pet Parents Admin routes: {e}")
 
+# Founding Member Activation — public token landing /api/public/founding-member/*
+try:
+    from founding_member_activation_routes import router as founding_activation_router
+    app.include_router(founding_activation_router)
+    logger.info("✓ Founding Member Activation routes mounted (public, token-protected)")
+except Exception as e:
+    logger.exception(f"Failed to mount Founding Member Activation routes: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
