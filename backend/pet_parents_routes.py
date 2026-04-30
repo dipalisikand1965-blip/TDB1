@@ -61,21 +61,20 @@ _prod_db = None
 
 
 def _get_prod_db():
-    global _prod_client, _prod_db
-    if _prod_db is None:
-        url = os.environ.get('PRODUCTION_MONGO_URL') or os.environ.get('MONGO_URL')
-        # SOURCE DB is always 'pet-os-live-test_database' on cluster B —
-        # that's where the founding-member import was placed. We deliberately
-        # ignore prod's prefixed DB_NAME (`pet-soul-ranking-...`) here because
-        # the source cluster doesn't carry that prefix.
-        db_name = (
-            os.environ.get('PRODUCTION_DB_NAME')
-            or 'pet-os-live-test_database'
-        )
-        _prod_client = AsyncIOMotorClient(url, serverSelectionTimeoutMS=10000)
-        _prod_db = _prod_client[db_name]
-        logger.info(f"[pet_parents_routes] Connected to DB: {db_name}")
-    return _prod_db
+    """
+    Returns the DB where the founding-member dataset lives.
+
+    Production (after seed): MONGO_URL → customer-apps.ll3qet
+                             DB → pet-soul-ranking-pet-os-live-test_database
+    Pod (after local seed):  MONGO_URL → localhost
+                             DB → pet-os-live-test_database
+
+    We deliberately DO NOT use PRODUCTION_MONGO_URL anymore — on production
+    that env points to an empty secondary cluster (yrmj3k), and on the pod
+    we no longer need it because the seed-from-files workflow wrote the
+    data into MONGO_URL directly.
+    """
+    return _get_target_db()
 
 
 # ────────────────────────────────────────────────────────────────────
