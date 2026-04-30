@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { Search, Users, Heart, Send, AlertTriangle, Download, Edit2, Trash2, Plus, X, RefreshCw, Calendar, Star } from 'lucide-react';
+import { Search, Users, Heart, Send, AlertTriangle, Download, Edit2, Trash2, Plus, X, RefreshCw, Calendar, Star, Upload, FileText } from 'lucide-react';
 
 const API = process.env.REACT_APP_BACKEND_URL;
 
@@ -213,6 +213,40 @@ const FoundingMembersManager = ({ authHeaders }) => {
       });
   };
 
+  // ── CSV upload (re-import) ────────────────────────────────────
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadDryRun, setUploadDryRun] = useState(true);
+  const [uploadBusy, setUploadBusy] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
+
+  const submitUpload = async () => {
+    if (!uploadFile) return;
+    setUploadBusy(true);
+    setUploadResult(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', uploadFile);
+      fd.append('dry_run', uploadDryRun ? 'true' : 'false');
+      const r = await fetch(`${API}/api/admin/founding-members/csv-upload`, {
+        method: 'POST',
+        headers: getAdminHeaders(),
+        body: fd,
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.detail || 'Upload failed');
+      setUploadResult(j);
+      if (!uploadDryRun) {
+        showToast(`Imported: ${j.counts.created} new, ${j.counts.updated} updated, ${j.counts.skipped} skipped`);
+        load();
+      }
+    } catch (e) {
+      showToast(e.message, 'error');
+    } finally {
+      setUploadBusy(false);
+    }
+  };
+
   const totalPages = Math.ceil(total / pageSize);
 
   // ── Render ────────────────────────────────────────────────────
@@ -318,6 +352,15 @@ const FoundingMembersManager = ({ authHeaders }) => {
           <Plus className="h-4 w-4" /> Add
         </button>
         {tab === 'parents' && (
+          <button
+            onClick={() => { setUploadOpen(true); setUploadResult(null); setUploadFile(null); setUploadDryRun(true); }}
+            className="px-3 py-2 border rounded-lg hover:bg-gray-50 flex items-center gap-1"
+            data-testid="btn-import-csv"
+          >
+            <Upload className="h-4 w-4" /> Import CSV
+          </button>
+        )}
+        {tab === 'parents' && (
           <div className="relative group">
             <button className="px-3 py-2 border rounded-lg hover:bg-gray-50 flex items-center gap-1" data-testid="btn-export">
               <Download className="h-4 w-4" /> Export
@@ -416,6 +459,83 @@ const FoundingMembersManager = ({ authHeaders }) => {
           onCreated={() => { setShowCreate(false); loadList(); loadStats(); }}
           onClose={() => setShowCreate(false)}
         />
+      )}
+
+      {/* CSV Upload Modal */}
+      {uploadOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !uploadBusy && setUploadOpen(false)}>
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()} data-testid="csv-upload-modal">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-semibold flex items-center gap-2"><FileText className="h-5 w-5" /> Re-import Shopify CSV</h2>
+                <p className="text-sm text-gray-500 mt-1">Upserts only. New rows added, existing rows updated. Live <code>pets</code> collection untouched.</p>
+              </div>
+              <button onClick={() => !uploadBusy && setUploadOpen(false)} className="p-1 hover:bg-gray-100 rounded" data-testid="btn-close-upload"><X className="h-5 w-5" /></button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">CSV file</label>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                  className="block w-full text-sm border rounded p-2"
+                  data-testid="input-upload-file"
+                />
+                {uploadFile && <p className="text-xs text-gray-500 mt-1">{uploadFile.name} · {Math.round(uploadFile.size / 1024)} KB</p>}
+              </div>
+
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={uploadDryRun}
+                  onChange={(e) => setUploadDryRun(e.target.checked)}
+                  className="mt-1"
+                  data-testid="checkbox-dry-run"
+                />
+                <div>
+                  <div className="font-medium">Dry run (preview only)</div>
+                  <div className="text-xs text-gray-500">Reports what would change. No writes. Recommended first.</div>
+                </div>
+              </label>
+
+              {uploadResult && (
+                <div className="bg-gray-50 border rounded-lg p-4 text-sm" data-testid="upload-result">
+                  <div className="font-medium mb-2">
+                    {uploadResult.dry_run ? '🔍 Preview' : '✅ Committed'} · {uploadResult.rows_in_file} rows in file
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <div className="bg-green-50 rounded p-2"><div className="text-2xl font-semibold text-green-700">{uploadResult.counts.created}</div><div className="text-xs text-green-600">New</div></div>
+                    <div className="bg-blue-50 rounded p-2"><div className="text-2xl font-semibold text-blue-700">{uploadResult.counts.updated}</div><div className="text-xs text-blue-600">Updated</div></div>
+                    <div className="bg-gray-100 rounded p-2"><div className="text-2xl font-semibold text-gray-700">{uploadResult.counts.skipped}</div><div className="text-xs text-gray-600">Skipped</div></div>
+                  </div>
+                  {uploadResult.dry_run && (
+                    <p className="text-xs text-gray-500 mt-3">Uncheck "Dry run" and click Upload again to commit.</p>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <button
+                  onClick={submitUpload}
+                  disabled={!uploadFile || uploadBusy}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
+                  data-testid="btn-submit-upload"
+                >
+                  {uploadBusy ? 'Processing…' : (uploadDryRun ? 'Preview' : 'Commit Upload')}
+                </button>
+                <button
+                  onClick={() => !uploadBusy && setUploadOpen(false)}
+                  className="px-4 py-2 border rounded"
+                  data-testid="btn-cancel-upload"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

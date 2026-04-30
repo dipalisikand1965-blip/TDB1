@@ -23545,6 +23545,31 @@ try:
 except Exception as e:
     logger.exception(f"Failed to mount Pet Parents Admin routes: {e}")
 
+# Founding Member Activation — public token landing /api/public/founding-member/*
+try:
+    from founding_member_activation_routes import router as founding_activation_router
+    app.include_router(founding_activation_router)
+    logger.info("✓ Founding Member Activation routes mounted (public, token-protected)")
+except Exception as e:
+    logger.exception(f"Failed to mount Founding Member Activation routes: {e}")
+
+# Founding Member Email — preview + test send + orchestrator (admin)
+try:
+    from founding_member_email_routes import router as founding_email_router
+    app.include_router(founding_email_router)
+    logger.info("✓ Founding Member Email routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Founding Member Email routes: {e}")
+
+# Shopify Order Webhook + Admin CSV re-import (Aditya feedback Apr 30)
+try:
+    from shopify_ingest_routes import shopify_router as _shopify_router, admin_router as _shopify_admin_router
+    app.include_router(_shopify_router)
+    app.include_router(_shopify_admin_router)
+    logger.info("✓ Shopify webhook + admin CSV upload routes mounted")
+except Exception as e:
+    logger.exception(f"Failed to mount Shopify ingest routes: {e}")
+
 # Pet-First Gating & Soul Drip
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*

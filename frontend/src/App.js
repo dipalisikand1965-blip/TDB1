@@ -270,6 +270,7 @@ const Insights = lazy(() => import("./pages/Insights"));
 const Streaties = lazy(() => import("./pages/Streaties"));
 const Franchise = lazy(() => import("./pages/Franchise"));
 const Contact = lazy(() => import("./pages/Contact"));
+const FoundingMemberActivationPage = lazy(() => import("./pages/FoundingMemberActivationPage"));
 const PetProfile = lazy(() => import("./pages/PetProfile"));
 const PetSoulPage = lazy(() => import("./pages/PetSoulPage"));
 const PetSoulDemo = lazy(() => import("./pages/PetSoulDemo"));
@@ -659,6 +660,7 @@ function MainLayout() {
         {/* Pet Wrapped - The viral acquisition engine */}
         <Route path="/wrapped/:petId" element={<PetWrappedViewer />} />
         <Route path="/wrapped-welcome" element={<WrappedWelcomePage />} />
+        <Route path="/founding-member/:token" element={<FoundingMemberActivationPage />} />
         
         {/* Partner Onboarding */}
         <Route path="/partner" element={<PartnerOnboarding />} />
