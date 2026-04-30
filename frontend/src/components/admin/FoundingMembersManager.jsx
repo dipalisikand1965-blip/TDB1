@@ -201,7 +201,7 @@ const FoundingMembersManager = ({ authHeaders }) => {
     // Use admin secret in URL? No — must POST or use header. Use a temp form.
     // Simpler: trigger fetch + blob download
     const headers = getAdminHeaders();
-    fetch(`${API}/api/admin/pet-parents/export.csv?${params}`, { headers })
+    fetch(`${API}/api/admin/pet-parents/exports/csv?${params}`, { headers })
       .then(r => r.blob())
       .then(blob => {
         const url = URL.createObjectURL(blob);
