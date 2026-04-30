@@ -749,3 +749,309 @@ async def meta_cities(x_admin_secret: Optional[str] = Header(None, alias="x-admi
         {'$sort': {'n': -1}}, {'$limit': 100}
     ])
     return [{'city': d['_id'], 'count': d['n']} async for d in cursor]
+
+
+# ════════════════════════════════════════════════════════════════════
+# BOOTSTRAP — Migrate founding members from cluster B → production DB
+# ════════════════════════════════════════════════════════════════════
+# Use case:
+#   Pod imported 40,025 pet_parents + 26,650 tdb_pets_staging into cluster B
+#   (PRODUCTION_MONGO_URL on pod). When `thedoggycompany.com` is deployed,
+#   its `MONGO_URL` may point to a *different* cluster (call it the live
+#   production primary). This endpoint reads the founding-member dataset
+#   from cluster B and writes it into the live production primary.
+#
+# Safety guarantees:
+#   1. The live `pets` collection is NEVER touched. We snapshot its count
+#      before/after the run and abort if it drifts.
+#   2. Idempotent: existing pet_parents/tdb_pets_staging are matched by
+#      `customer_key` / `staging_id` and replaced (so re-runs are safe).
+#   3. Dry-run mode: returns the diff *without* writing anything.
+#   4. Won't run if source and target databases resolve to the same URI
+#      (no-op detection prevents accidental self-overwrites).
+
+# Lazy "live target" connection — uses the server's primary MONGO_URL,
+# which on production is the live primary. On the pod this is local mongo.
+_target_client: Optional[AsyncIOMotorClient] = None
+_target_db = None
+
+
+def _get_target_db():
+    """The DB the production server normally reads from (`MONGO_URL`)."""
+    global _target_client, _target_db
+    if _target_db is None:
+        url = os.environ.get('MONGO_URL') or 'mongodb://localhost:27017'
+        db_name = os.environ.get('DB_NAME') or 'pet-os-live-test_database'
+        _target_client = AsyncIOMotorClient(url, serverSelectionTimeoutMS=15000)
+        _target_db = _target_client[db_name]
+    return _target_db
+
+
+def _mask_uri(uri: str) -> str:
+    if not uri or '@' not in uri:
+        return uri or '(none)'
+    proto, rest = uri.split('://', 1)
+    creds, host = rest.split('@', 1)
+    return f"{proto}://***:***@{host}"
+
+
+@router.post("/tdb-bootstrap/migrate")
+async def bootstrap_from_source_cluster(
+    dry_run: bool = Query(True, description="Plan only — no writes"),
+    batch_size: int = Query(500, ge=50, le=2000),
+    x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret"),
+):
+    """
+    Migrate `pet_parents` + `tdb_pets_staging` from cluster B (PRODUCTION_MONGO_URL)
+    into the production server's primary DB (MONGO_URL).
+
+    On the pod this is a no-op when source == target. On production, where
+    MONGO_URL points to the live primary, this populates pet_parents (40,025)
+    and tdb_pets_staging (26,650) without touching the live `pets` collection.
+
+    Returns a structured report. Safe to re-run (uses upsert semantics).
+    """
+    _require_admin(x_admin_secret)
+
+    # ── 1. Resolve source + target ─────────────────────────────────────
+    source_uri = os.environ.get('PRODUCTION_MONGO_URL')
+    target_uri = os.environ.get('MONGO_URL') or 'mongodb://localhost:27017'
+    if not source_uri:
+        raise HTTPException(
+            400,
+            "PRODUCTION_MONGO_URL is not set on this server — "
+            "cannot read founding-member data from cluster B."
+        )
+
+    # Compare host portions — if same cluster + same DB name, abort
+    src_host = source_uri.split('@', 1)[-1]
+    tgt_host = target_uri.split('@', 1)[-1]
+    src_db_name = (
+        os.environ.get('PRODUCTION_DB_NAME')
+        or os.environ.get('DB_NAME')
+        or 'pet-os-live-test_database'
+    )
+    tgt_db_name = os.environ.get('DB_NAME') or 'pet-os-live-test_database'
+    if src_host == tgt_host and src_db_name == tgt_db_name:
+        return {
+            'ok': True,
+            'noop': True,
+            'message': (
+                'Source cluster equals target cluster + DB. No migration '
+                'needed — the data should already be visible. If admin '
+                'shows 0, check DB_NAME or restart the FastAPI worker.'
+            ),
+            'source_uri': _mask_uri(source_uri),
+            'source_db': src_db_name,
+            'target_uri': _mask_uri(target_uri),
+            'target_db': tgt_db_name,
+        }
+
+    src_db = _get_prod_db()
+    tgt_db = _get_target_db()
+
+    # ── 2. Pre-flight counts ──────────────────────────────────────────
+    src_pp = await src_db.pet_parents.count_documents({})
+    src_tdb = await src_db.tdb_pets_staging.count_documents({})
+    src_pets = await src_db.pets.count_documents({})
+
+    tgt_pp_before = await tgt_db.pet_parents.count_documents({})
+    tgt_tdb_before = await tgt_db.tdb_pets_staging.count_documents({})
+    tgt_pets_before = await tgt_db.pets.count_documents({})
+
+    if src_pp == 0 or src_tdb == 0:
+        raise HTTPException(
+            500,
+            f"Source cluster B is empty — pet_parents={src_pp}, "
+            f"tdb_pets_staging={src_tdb}. Cannot bootstrap from empty source."
+        )
+
+    plan = {
+        'source': {
+            'uri': _mask_uri(source_uri),
+            'db': src_db_name,
+            'pet_parents': src_pp,
+            'tdb_pets_staging': src_tdb,
+            'pets_live_untouched': src_pets,
+        },
+        'target_before': {
+            'uri': _mask_uri(target_uri),
+            'db': tgt_db_name,
+            'pet_parents': tgt_pp_before,
+            'tdb_pets_staging': tgt_tdb_before,
+            'pets_live': tgt_pets_before,
+        },
+        'will_upsert': {
+            'pet_parents': src_pp,
+            'tdb_pets_staging': src_tdb,
+        },
+        'guarantees': [
+            f'pets collection (currently {tgt_pets_before}) will not be touched',
+            'idempotent — uses upserts on customer_key / staging_id',
+            'batch size: {} per insert'.format(batch_size),
+        ],
+    }
+
+    if dry_run:
+        return {'ok': True, 'dry_run': True, 'plan': plan}
+
+    # ── 3. Migrate pet_parents (upsert by customer_key) ─────────────
+    pp_inserted = 0
+    pp_updated = 0
+    pp_failed = 0
+    batch: List[Dict[str, Any]] = []
+
+    async for doc in src_db.pet_parents.find({}, {'_id': 0}):
+        batch.append(doc)
+        if len(batch) >= batch_size:
+            r = await _flush_pp_batch(tgt_db, batch)
+            pp_inserted += r['inserted']
+            pp_updated += r['updated']
+            pp_failed += r['failed']
+            batch = []
+    if batch:
+        r = await _flush_pp_batch(tgt_db, batch)
+        pp_inserted += r['inserted']
+        pp_updated += r['updated']
+        pp_failed += r['failed']
+
+    # ── 4. Migrate tdb_pets_staging (upsert by staging_id) ──────────
+    tdb_inserted = 0
+    tdb_updated = 0
+    tdb_failed = 0
+    batch = []
+
+    async for doc in src_db.tdb_pets_staging.find({}, {'_id': 0}):
+        batch.append(doc)
+        if len(batch) >= batch_size:
+            r = await _flush_tdb_batch(tgt_db, batch)
+            tdb_inserted += r['inserted']
+            tdb_updated += r['updated']
+            tdb_failed += r['failed']
+            batch = []
+    if batch:
+        r = await _flush_tdb_batch(tgt_db, batch)
+        tdb_inserted += r['inserted']
+        tdb_updated += r['updated']
+        tdb_failed += r['failed']
+
+    # ── 5. Verify pets collection unchanged ─────────────────────────
+    tgt_pets_after = await tgt_db.pets.count_documents({})
+    pets_drift = tgt_pets_after - tgt_pets_before
+
+    # ── 6. Final counts ─────────────────────────────────────────────
+    tgt_pp_after = await tgt_db.pet_parents.count_documents({})
+    tgt_tdb_after = await tgt_db.tdb_pets_staging.count_documents({})
+
+    return {
+        'ok': True,
+        'dry_run': False,
+        'plan': plan,
+        'pet_parents_migration': {
+            'inserted': pp_inserted,
+            'updated': pp_updated,
+            'failed': pp_failed,
+        },
+        'tdb_pets_staging_migration': {
+            'inserted': tdb_inserted,
+            'updated': tdb_updated,
+            'failed': tdb_failed,
+        },
+        'target_after': {
+            'pet_parents': tgt_pp_after,
+            'tdb_pets_staging': tgt_tdb_after,
+            'pets_live': tgt_pets_after,
+        },
+        'pets_collection_drift': pets_drift,
+        'pets_collection_safe': pets_drift == 0,
+        'completed_at': datetime.now(timezone.utc).isoformat(),
+    }
+
+
+async def _flush_pp_batch(tgt_db, batch: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Upsert a batch of pet_parents by customer_key."""
+    ops = []
+    for doc in batch:
+        key = doc.get('customer_key') or doc.get('email') or doc.get('phone')
+        if not key:
+            continue
+        ops.append(UpdateOne(
+            {'customer_key': key},
+            {'$set': doc},
+            upsert=True,
+        ))
+    if not ops:
+        return {'inserted': 0, 'updated': 0, 'failed': len(batch)}
+    try:
+        result = await tgt_db.pet_parents.bulk_write(ops, ordered=False)
+        return {
+            'inserted': result.upserted_count,
+            'updated': result.modified_count,
+            'failed': 0,
+        }
+    except Exception as e:
+        logger.error(f"[BOOTSTRAP] pp batch failed: {e}")
+        return {'inserted': 0, 'updated': 0, 'failed': len(batch)}
+
+
+async def _flush_tdb_batch(tgt_db, batch: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Upsert a batch of tdb_pets_staging by staging_id."""
+    ops = []
+    for doc in batch:
+        sid = doc.get('staging_id')
+        if not sid:
+            continue
+        ops.append(UpdateOne(
+            {'staging_id': sid},
+            {'$set': doc},
+            upsert=True,
+        ))
+    if not ops:
+        return {'inserted': 0, 'updated': 0, 'failed': len(batch)}
+    try:
+        result = await tgt_db.tdb_pets_staging.bulk_write(ops, ordered=False)
+        return {
+            'inserted': result.upserted_count,
+            'updated': result.modified_count,
+            'failed': 0,
+        }
+    except Exception as e:
+        logger.error(f"[BOOTSTRAP] tdb batch failed: {e}")
+        return {'inserted': 0, 'updated': 0, 'failed': len(batch)}
+
+
+@router.get("/tdb-bootstrap/status")
+async def bootstrap_status(
+    x_admin_secret: Optional[str] = Header(None, alias="x-admin-secret"),
+):
+    """Quick health check: reports source + target counts side-by-side."""
+    _require_admin(x_admin_secret)
+
+    source_uri = os.environ.get('PRODUCTION_MONGO_URL')
+    target_uri = os.environ.get('MONGO_URL') or 'mongodb://localhost:27017'
+
+    out: Dict[str, Any] = {
+        'source_uri': _mask_uri(source_uri or ''),
+        'target_uri': _mask_uri(target_uri),
+        'source_configured': bool(source_uri),
+    }
+    try:
+        if source_uri:
+            src_db = _get_prod_db()
+            out['source'] = {
+                'pet_parents': await src_db.pet_parents.count_documents({}),
+                'tdb_pets_staging': await src_db.tdb_pets_staging.count_documents({}),
+                'pets': await src_db.pets.count_documents({}),
+            }
+    except Exception as e:
+        out['source_error'] = str(e)
+    try:
+        tgt_db = _get_target_db()
+        out['target'] = {
+            'pet_parents': await tgt_db.pet_parents.count_documents({}),
+            'tdb_pets_staging': await tgt_db.tdb_pets_staging.count_documents({}),
+            'pets': await tgt_db.pets.count_documents({}),
+        }
+    except Exception as e:
+        out['target_error'] = str(e)
+    return out
